@@ -264,7 +264,9 @@ var ModalWindow = (function () {
         if (options.body_text) body_text.text(options.body_text); else body_text.text('');
 
         // Повесить новый эвент
-        this.modalDialogInfo.find('#dialogInfoPageBtnOK').one('click', function(event) {
+        var btn_ok = this.modalDialogInfo.find('#dialogInfoPageBtnOK');
+        btn_ok.off('click');
+        btn_ok.on('click', function(event) {
             self.modalDialogInfoHide();
             var cb_ok = options.callback_ok;
             if (typeof(cb_ok) === 'function')
@@ -310,14 +312,18 @@ var ModalWindow = (function () {
         if (options.body_text) body_text.text(options.body_text); else body_text.text('');
 
         // Повесить новый эвент
-        this.modalAnswerInfo.find('#dialogAnswerPageBtnOK').one('click', function(event) {
+        var btn_ok = this.modalAnswerInfo.find('#dialogAnswerPageBtnOK');
+        var btn_cancel = this.modalAnswerInfo.find('#dialogAnswerPageBtnCancel');
+        btn_ok.off('click');
+        btn_cancel.off('click');
+        btn_ok.on('click', function(event) {
             self.modalDialogAnswerHide();
             var cb_ok = options.callback_ok;
             if (typeof(cb_ok) === 'function')
                 cb_ok(event);
         });
 
-        this.modalAnswerInfo.find('#dialogAnswerPageBtnCancel').one('click', function(event) {
+        btn_cancel.on('click', function(event) {
             self.modalDialogAnswerHide();
             var cb_cancel = options.callback_cancel;
             if (typeof(cb_cancel) === 'function')

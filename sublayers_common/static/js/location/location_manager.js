@@ -222,8 +222,14 @@ var LocationManager = (function () {
             //console.log('Попытка выйти из города');
             if (user.example_car)
                 clientManager.sendExitFromLocation();
-            else
-                alert('Попытка выйти из города без машинки !');
+            else {
+                modalWindow.modalDialogInfoShow({
+                    caption: 'Error Message',
+                    header: 'Внимание! Ошибка!',
+                    body_text: 'Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный.'
+                });
+            }
+
         }
         else {
             if (this.screens[this.active_screen_name])

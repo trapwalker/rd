@@ -335,9 +335,18 @@ var MapManager = (function(_super){
             greedy: true,
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
-                if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item'))
-                    clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
-                                                          null, null);
+                if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
+                    modalWindow.modalDialogAnswerShow({
+                        caption: 'Inventory Operation',
+                        header: 'Выкинуть?!',
+                        body_text: 'Вы уверены, что хотите выкинуть данный предмет на карту?',
+                        callback_ok: function() {
+                            clientManager.sendItemActionInventory(
+                                ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);
+                        }
+                    });
+
+                }
                 if (ui.draggable.hasClass('fire-controll-quick-btn-block'))
                     clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
             }
