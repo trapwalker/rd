@@ -61,10 +61,12 @@ class Node(AbstractDocument):
         )
 
     def to_cache(self):
-        assert self.uri
+        # assert self.uri, "Can't cache without URI"
+        if not self.uri:
+            log.warning('Trying to cache object without URI: {!r}'.format(self))
         super(Node, self).to_cache(self.uri)
 
-    def __init__(self, **kw):
+    def __init__(self, embedded=False, **kw):
         """
         @param str name: Name of node
         @param Node parent: Parent of node
@@ -73,8 +75,9 @@ class Node(AbstractDocument):
         """
         #_id=kw.pop('_id', ObjectId()),
         super(Node, self).__init__(**kw)
-        if self.uri is None:
-            self.uri = str(self.make_uri())
+        if self.uri is None and not embedded:  # todo: make_uri по-другому проверяет является ли объект встроенным.
+            uri = self.make_uri()
+            self.uri = uri and str(uri)
 
         self._subnodes = WeakSet()
 

@@ -42,6 +42,16 @@ class BinaryField           (MetaFieldMixin, motorengine.fields.BinaryField     
 class JsonField             (MetaFieldMixin, motorengine.fields.JsonField            ): pass
 
 
+class EmbeddedDocumentField(MetaFieldMixin, motorengine.fields.EmbeddedDocumentField):
+    # embedded_document_type
+    def from_son(self, value):
+        if value is None:
+            return None
+
+        value['embedded'] = True
+        return self.embedded_type.from_son(value)
+
+
 class UniReferenceField(ReferenceField): # todo: replace to mixed
     '''
     Field responsible for creating a reference to another document (Node) by _id or uri.

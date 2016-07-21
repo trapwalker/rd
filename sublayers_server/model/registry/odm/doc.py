@@ -160,7 +160,7 @@ class AbstractDocument(Document):
                         if proto:
                             from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
                             if isinstance(proto, Node):
-                                callback(proto.instantiate(by_uri=uri))
+                                callback(proto.instantiate(by_uri=uri, embedded=True))
                         else:
                             log.warning("Can't find any registry objects by link: %s", identificator)
                             callback(None)
@@ -216,10 +216,10 @@ class AbstractDocument(Document):
         callback(id)
 
     def to_cache(self, *av):
-        keys = set(av)
+        keys = set(filter(None, av))
         if self._id:
             keys.add(self._id)
-        assert keys
+
         for key in keys:
             self.__class__.objects_cache[key] = self
 
