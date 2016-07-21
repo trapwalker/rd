@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
-from sublayers_server.model.units import POIContainer
+from sublayers_server.model.poi_loot_objects import POIContainer
 from sublayers_server.model.barter import Barter
 
 
