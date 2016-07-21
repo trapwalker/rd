@@ -297,7 +297,7 @@ class Node(AbstractDocument):
 
             callback(*args)
 
-        log.debug('load_references({self})'.format(self=self))
+        # log.debug('load_references({self})'.format(self=self))
         super(Node, self).load_references(fields=fields, callback=on_load, alias=alias)
 
 class Root(Node):

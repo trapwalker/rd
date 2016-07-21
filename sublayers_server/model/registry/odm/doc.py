@@ -69,10 +69,10 @@ class AbstractDocument(Document):
 
         references = self.find_references(document=self, fields=fields)
         reference_count = len(references)
-        log.debug('AbstractDocument({self.uri}).load_references:  # refs: {refs}'.format(
-            self=self,
-            refs=', '.join(['{u}=[{c}]'.format(u=u, c=len(tasks)) for u, tasks in references.items()]),
-        ))
+        # log.debug('AbstractDocument({self.uri}).load_references:  # refs: {refs}'.format(
+        #     self=self,
+        #     refs=', '.join(['{u}=[{c}]'.format(u=u, c=len(tasks)) for u, tasks in references.items()]),
+        # ))
 
         if not reference_count:
             callback({
@@ -295,7 +295,6 @@ class AbstractDocument(Document):
         assert klass, 'Registry class {!r} is not found.'.format(klass_name)
         if cls is klass:
             doc = super(AbstractDocument, cls).from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
-            log.debug('AbstractDocument.from_son({doc.uri})'.format(**locals()))
             doc.to_cache()
         else:
             doc = klass.from_son(dic, _is_partly_loaded=False, _reference_loaded_fields=None)
