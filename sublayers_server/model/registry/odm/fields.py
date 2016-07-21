@@ -31,7 +31,6 @@ class BooleanField          (MetaFieldMixin, motorengine.fields.BooleanField    
 class DateTimeField         (MetaFieldMixin, motorengine.fields.DateTimeField        ): pass
 class UUIDField             (MetaFieldMixin, motorengine.fields.UUIDField            ): pass
 class ListField             (MetaFieldMixin, motorengine.fields.ListField            ): pass  # base_field
-class EmbeddedDocumentField (MetaFieldMixin, motorengine.fields.EmbeddedDocumentField): pass  # embedded_document_type
 class ReferenceField        (MetaFieldMixin, motorengine.fields.ReferenceField       ): pass  # reference_document_type
 class URLField              (MetaFieldMixin, motorengine.fields.URLField             ): pass
 class EmailField            (MetaFieldMixin, motorengine.fields.EmailField           ): pass
