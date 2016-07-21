@@ -10,10 +10,10 @@ from sublayers_server.model.registry.odm.fields import (
     IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
 
-from sublayers_server.model.transaction_events import (
-    TransactionActivateTank, TransactionActivateAmmoBullets,
-    TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
-)
+# from sublayers_server.model.transaction_events import (
+#     TransactionActivateTank, TransactionActivateAmmoBullets,
+#     TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
+# )
 
 
 class Item(Root):
@@ -48,6 +48,7 @@ class Tank(Item):
 class TankFull(Tank):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateTank
         return TransactionActivateTank
 
 
@@ -56,12 +57,14 @@ class BuildSet(Item):
 
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateRebuildSet
         return TransactionActivateRebuildSet
 
 
 class AmmoBullets(Item):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateAmmoBullets
         return TransactionActivateAmmoBullets
 
 
@@ -87,12 +90,14 @@ class MapWeaponItem(Item):
 class MapWeaponMineItem(MapWeaponItem):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateMine
         return TransactionActivateMine
 
 
 class MapWeaponRocketItem(MapWeaponItem):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateRocket
         return TransactionActivateRocket
 
 
