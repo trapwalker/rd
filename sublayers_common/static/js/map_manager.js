@@ -338,8 +338,8 @@ var MapManager = (function(_super){
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
                     modalWindow.modalDialogAnswerShow({
                         caption: 'Inventory Operation',
-                        header: 'Выкинуть?!',
-                        body_text: 'Вы уверены, что хотите выкинуть данный предмет на карту?',
+                        header: 'Выбросить?',
+                        body_text: 'Вы уверены, что хотите выбросить данный предмет на карту?',
                         callback_ok: function() {
                             clientManager.sendItemActionInventory(
                                 ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);

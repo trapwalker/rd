@@ -518,13 +518,28 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Die = function (event) {
-        // console.log('ClientManager.prototype.Die');
-        modalWindow.modalDeathShow();
+        //console.log('ClientManager.prototype.Die');
+        modalWindow.modalDialogInfoShow({
+            caption: 'Car Crash',
+            header: 'Крушение!',
+            body_text: 'Ваш автомобиль потерпел крушение. Вы можете взять другой в городе.',
+            callback_ok: function () {
+                window.location.reload();
+            }
+        });
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
         // console.log('ClientManager.prototype.QuickGameDie');
-        alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        modalWindow.modalDialogInfoShow({
+            caption: 'Car Crash',
+            header: 'Крушение!',
+            body_text: 'Ваш автомобиль потерпел крушение. Вы можете зарегистрироваться на сайте и играть полноценно.',
+            callback_ok: function () {
+                window.location.reload();
+            }
+        });
         window.location = '/#quick';
     };
 
