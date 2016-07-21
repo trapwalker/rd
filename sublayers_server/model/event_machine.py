@@ -18,6 +18,7 @@ from sublayers_server.model.vectors import Point
 
 import os
 import sys
+import tornado.ioloop
 from time import sleep
 from threading import Thread
 from collections import deque
@@ -33,6 +34,7 @@ class Server(object):
         """
         @param uuid.UUID uid: Unique id of server
         """
+        self.ioloop = tornado.ioloop.IOLoop.instance()
         self.uid = uid or get_uid()
         # todo: GEO-indexing collections
         self.objects = {}  # Total GEO-objects in game by uid
@@ -180,7 +182,6 @@ class LocalServer(Server):
         self.is_terminated = False
         self.app = app
         self.reg_agents = Collection(name='agents', db=app.db)
-        self.ioloop = None
         self.periodic = None
 
     def __getstate__(self):
@@ -231,8 +232,6 @@ class LocalServer(Server):
         self.ioloop.add_callback(callback=self.event_loop)
 
     def start(self):
-        import tornado.ioloop
-        self.ioloop = tornado.ioloop.IOLoop.instance()
         # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
         # self.periodic.start()
         self.ioloop.add_callback(callback=self.event_loop)
