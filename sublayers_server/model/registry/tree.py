@@ -62,8 +62,8 @@ class Node(AbstractDocument):
 
     def to_cache(self):
         # assert self.uri, "Can't cache without URI"
-        if not self.uri:
-            log.warning('Trying to cache object without URI: {!r}'.format(self))
+        # if not self.uri:
+        #     log.warning('Trying to cache object without URI: {!r}'.format(self))
         super(Node, self).to_cache(self.uri)
 
     def __init__(self, embedded=False, **kw):
