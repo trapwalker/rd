@@ -87,9 +87,19 @@
     height: 160px;
     margin: 0 13px;
     border: 1px solid #0e4b00;
-    background: url('/static/content/locations/institutions/girl/item_placeholder.png');
-    background-color: #082801;
     box-sizing: border-box;
     display: none;
+}
+.girl-drop-item-image.item1 {
+    background: url('/static/content/locations/institutions/girl/item_placeholder_1.png');
+    background-color: #082801;
+}
+.girl-drop-item-image.item2 {
+    background: url('/static/content/locations/institutions/girl/item_placeholder_2.png');
+    background-color: #082801;
+}
+.girl-drop-item-image.item3 {
+    background: url('/static/content/locations/institutions/girl/item_placeholder_3.png');
+    background-color: #082801;
 }
 .girl-drop-item-image:hover { background-color: #0e4b00; }

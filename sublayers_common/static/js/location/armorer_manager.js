@@ -314,7 +314,7 @@ var LocationArmorerNPC = (function (_super) {
             itemWrapDiv.empty();
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
-            var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
+            var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture town-interlacing"></div></div>' +
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
             var item = this.items[position];
