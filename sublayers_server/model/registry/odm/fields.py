@@ -47,7 +47,8 @@ class EmbeddedDocumentField(MetaFieldMixin, motorengine.fields.EmbeddedDocumentF
         if value is None:
             return None
 
-        value['embedded'] = True
+        if isinstance(value, dict):
+            value['embedded'] = True
         return self.embedded_type.from_son(value)
 
 
