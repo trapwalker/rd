@@ -44,7 +44,7 @@ class Effect(Root):
             EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
     def _modify(self, on, p, m_value, r_value):
-        assert not self.abstract
+        assert not self.abstract, 'Trying to _modify of abstract effect'
         sign = self.sign if on else -self.sign
         original = 1.0 if self.absolute else p.original
         p.current += sign * original * m_value * (1 - r_value)
@@ -61,7 +61,7 @@ class Effect(Root):
             self._modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
     def on_start(self, owner, time):
-        assert not self.abstract
+        assert not self.abstract, 'on_start event with abstract object: {}'.format(self)
         if self.is_stack or not (self in owner.effects):
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)

@@ -44,7 +44,7 @@ class Task(object):
 
 class TaskList(dict):
     def add(self, task):
-        assert not isinstance(task.document_id, Document)
+        assert not isinstance(task.document_id, Document), 'Trying to add Task with dokument_id instanced from Document'
         self.setdefault(task.document_id, []).append(task)
 
 

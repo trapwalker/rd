@@ -75,7 +75,7 @@ class URI(tuple):
 
         path = d.get('path', '')
         path = tuple([unquote(s).decode(URI_ENCODING) for s in path.split('/')])  # todo: add tailslash
-        assert path[0] == ''
+        assert path[0] == '', 'URI with non absolute path'
         path = path[1:]
         params = d.get('params', '') or ''
         params = tuple([(unquote(k).decode(URI_ENCODING), unquote(v).decode(URI_ENCODING)) for k, v in splitparams(params)])
@@ -219,7 +219,7 @@ class URI(tuple):
         params = params.copy() if params else {}
         params.update(kw)
         proto = self.resolve()
-        assert proto.abstract
+        assert proto.abstract, 'URI.instantiate: the try to instantiate of non abstract object: {}'.format(self)
         return proto.instantiate(storage=storage, name=name, **params)
 
 

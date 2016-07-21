@@ -52,7 +52,7 @@ class Node(AbstractDocument):
         owner = self.owner
         if owner is None and self.parent:  # Корневые элементы с предком -- это, скорее всего, субдокументы. URI нет.
             return
-        assert not owner or owner.uri
+        assert not owner or owner.uri, '{}.make_uri without owner.uri'.format(self)
         path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self.id_),)
         return URI(
             scheme='reg',
@@ -192,7 +192,7 @@ class Node(AbstractDocument):
                 yield name, attr, getter
 
     def instantiate(self, name=None, by_uri=None, **kw):
-        assert self.abstract
+        assert self.abstract, "Can't instantiate abstract object: {}".format(self)
         if by_uri:
             kw.update(by_uri.params)
         inst = self.__class__(name=name, parent=self, abstract=False, **kw)
@@ -216,10 +216,10 @@ class Node(AbstractDocument):
     # todo: rename to "_load_node_from_fs"
     @classmethod
     def _load_node(cls, path, owner=None):
-        assert isinstance(path, unicode)
+        assert isinstance(path, unicode), '{}._load_node: path is not unicode, but: {!r}'.format(cls, path)
         attrs = {}
         for f in os.listdir(path):
-            assert isinstance(f, unicode)
+            assert isinstance(f, unicode), '{}._load_node: listdir returns non unicode value'.format(cls)
             # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
             # todo: need to centralization of filtering
