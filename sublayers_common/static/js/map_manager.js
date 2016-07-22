@@ -336,10 +336,19 @@ var MapManager = (function(_super){
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
+                    var item = null;
+                    try {
+                        item = inventoryList.getInventory(ui.draggable.data('owner_id')).getItem(ui.draggable.data('pos'));
+                    }
+                    catch (e){
+                        console.warn('Не найден инвентерь или итем в инвентаре:', ui.draggable);
+                        item = null;
+                    }
+
                     modalWindow.modalDialogAnswerShow({
                         caption: 'Inventory Operation',
                         header: 'Выбросить?',
-                        body_text: 'Вы уверены, что хотите выбросить данный предмет на карту?',
+                        body_text: 'Вы уверены, что хотите выбросить ' + item.example.title + ' на карту?',
                         callback_ok: function() {
                             clientManager.sendItemActionInventory(
                                 ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);
