@@ -7,8 +7,8 @@
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     opacity: 0.6;
 }
-
-.insurance-item-block.selected {opacity: 1.0;}
+.insurance-item-block:hover { opacity: 1.0; }
+.insurance-item-block.selected { opacity: 1.0; }
 
 .insurance-item-price {
 position: absolute;
