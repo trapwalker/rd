@@ -107,7 +107,7 @@ class Node(AbstractDocument):
     def __getattribute__(self, name):
         # required for the next test
         if (
-            name in (
+            name in (  # todo: Убрать из этого списка все, кроме _fields
                 '_fields', '_subnodes',
                 'is_reference_field', 'find_list_field', 'find_reference_field', 'is_embedded_field', 'is_list_field',
                 'find_embed_field', '_values', '__class__', '_get_load_function', 'fill_values_collection',
