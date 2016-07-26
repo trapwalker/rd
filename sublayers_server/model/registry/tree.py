@@ -124,9 +124,10 @@ class Node(AbstractDocument):
         if name in self._fields:
             field = self._fields[name]
             is_reference_field = self.is_reference_field(field)
+            is_value_exists = name in self._values
             value = field.get_value(self._values.get(name, None))
 
-            if value is None and name not in {'parent', 'owner', 'uri'}:
+            if not is_value_exists and name not in {'parent', 'owner', 'uri'}:
                 parent = self.parent
                 value = getattr(parent, name, None)  # todo: may be exception need?
 

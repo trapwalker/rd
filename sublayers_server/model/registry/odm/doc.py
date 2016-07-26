@@ -53,6 +53,19 @@ class AbstractDocument(Document):
     __classes__ = {}
     __cls__ = StringField()
 
+    def to_son(self):
+        data = dict()
+
+        for name, field in self._fields.items():
+            if name not in self._values:
+                continue
+            value = self.get_field_value(name)
+            if field.sparse and field.is_empty(value):
+                continue
+            data[field.db_field] = field.to_son(value)
+
+        return data
+
     def _get_load_function(self, document, field_name, document_type):
         return document_type.objects.get
         # if isinstance(document, list):
@@ -262,8 +275,9 @@ class AbstractDocument(Document):
             self._reference_loaded_fields = {}
 
         for key, field in self._fields.items():
-            default = field.default() if callable(field.default) else field.default
-            self._values[field.name] = field.set_value(default) if hasattr(field, 'set_value') else default
+            if hasattr(field, 'has_default') and field.has_default or self.is_list_field(field):
+                default = field.default() if callable(field.default) else field.default
+                self._values[field.name] = field.set_value(default) if hasattr(field, 'set_value') else default
 
         for key, value in kw.items():
             field = self._fields.get(key)
