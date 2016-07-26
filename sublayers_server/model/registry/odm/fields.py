@@ -12,6 +12,7 @@ class MetaFieldMixin(object):
         self.name = name
         self.caption = caption
         self.doc = doc
+        self.has_default = 'default' in kw
         if tags is None:
             tags = set()
         elif isinstance(tags, basestring):
