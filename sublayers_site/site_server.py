@@ -87,6 +87,7 @@ class Application(BaseApplication):
                 self.quick_game_cars_examples.append(car_example)
 
             print 'Road Dogs Site load !'
+            log.info('Site server READY')
 
 
         Root.objects.find_all(callback=load_registry_done_callback)
