@@ -38,6 +38,7 @@ class Node(AbstractDocument):
     # todo: make sparse indexes
     # todo: override attributes in subclasses
     uid = UUIDField(default=get_uuid, unique=True)
+    title = StringField(caption=u"Название", tags='client')
     fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
     uri = StringField(unique=True)
     abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")

@@ -34,143 +34,122 @@ class Mobile(Root):
     )
 
     # атрибуты от ObserverObjects
-    p_observing_range = FloatField(default=1000, caption=u"Радиус обзора", tags="parameter")
+    p_observing_range = FloatField(caption=u"Радиус обзора", tags="parameter")
 
     # атрибуты от VisibleObjects
-    p_vigilance = FloatField(default=0, caption=u"Коэффициент зоркости", tags="parameter")
-    p_visibility_min = FloatField(default=1, caption=u"Минимальный коэффициент заметности", tags="parameter")
-    p_visibility_max = FloatField(default=1, caption=u"Максимальный коэффициент заметности", tags="parameter")
-    p_obs_range_rate_min = FloatField(
-        caption=u"Коэффициент радиуса обзора при максимальной скорости",
-        default=1, tags="parameter",
-    )
-    p_obs_range_rate_max = FloatField(
-        caption=u"Коэффициент радиуса обзора при скорости = 0",
-        default=1, tags="parameter",
-    )
+    p_vigilance          = FloatField(caption=u"Коэффициент зоркости", tags="parameter")
+    p_visibility_min     = FloatField(caption=u"Минимальный коэффициент заметности", tags="parameter")
+    p_visibility_max     = FloatField(caption=u"Максимальный коэффициент заметности", tags="parameter")
+    p_obs_range_rate_min = FloatField(caption=u"Коэффициент радиуса обзора при максимальной скорости", tags="parameter")
+    p_obs_range_rate_max = FloatField(caption=u"Коэффициент радиуса обзора при скорости = 0", tags="parameter")
     # Модификаторы эффектов зон
-    m_cc_dirt = FloatField(default=0.2, caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier')
-    m_cc_wood = FloatField(default=0.3, caption=u"Модификатор CC в лесу", tags='parameter p_modifier')
-    m_visibility_wood = FloatField(default=0.5, caption=u"Модификатор видимости в лесу", tags='parameter p_modifier')
-    m_observing_range_wood = FloatField(default=0.5, caption=u"Модификатор обзора в лесу", tags='parameter p_modifier')
-    m_cc_slope = FloatField(default=0.2, caption=u"Модификатор CC в горах", tags='parameter p_modifier')
-    m_cc_water = FloatField(default=0.45, caption=u"Модификатор CC на воде", tags='parameter p_modifier')
-    m_r_cc_wood_on_road = FloatField(
-        caption=u"Модификатор резиста штрафа СС в лесу на дороге",
-        default=1, tags='parameter p_modifier',
-    )
-    m_r_cc_water_on_road = FloatField(
-        caption=u"Модификатор резиста штрафа СС в воде на дороге ", default=1.0, tags='parameter p_modifier',
-    )
-    m_r_cc_dirt_on_road = FloatField(
-        caption=u"Модификатор резиста штрафа СС на бездорожье на дороге",
-        default=1.0, tags='parameter p_modifier',
-    )
-    m_r_cc_slope_on_road = FloatField(
-        caption=u"Модификатор резиста штрафа СС в горах на дороге",
-        default=1.0, tags='parameter p_modifier',
-    )
-    m_r_cc_dirt = FloatField(
-        caption=u"Модификатор резиста бездорожья для отмены бездорожья",
-        default=1.0, tags='parameter p_modifier',
-    )
-    m_cc_mine = FloatField(default=0.5, caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier')
-    m_cc_fuel_empty = FloatField(default=0.9, caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier')
+    m_cc_dirt            = FloatField(caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier')
+    m_cc_wood            = FloatField(caption=u"Модификатор CC в лесу", tags='parameter p_modifier')
+    m_visibility_wood    = FloatField(caption=u"Модификатор видимости в лесу", tags='parameter p_modifier')
+    m_observing_range_wood = FloatField(caption=u"Модификатор обзора в лесу", tags='parameter p_modifier')
+    m_cc_slope           = FloatField(caption=u"Модификатор CC в горах", tags='parameter p_modifier')
+    m_cc_water           = FloatField(caption=u"Модификатор CC на воде", tags='parameter p_modifier')
+    m_r_cc_wood_on_road  = FloatField(caption=u"Модификатор резиста штрафа СС в лесу на дороге", tags='parameter p_modifier')
+    m_r_cc_water_on_road = FloatField(caption=u"Модификатор резиста штрафа СС в воде на дороге ", tags='parameter p_modifier')
+    m_r_cc_dirt_on_road  = FloatField(caption=u"Модификатор резиста штрафа СС на бездорожье на дороге", tags='parameter p_modifier')
+    m_r_cc_slope_on_road = FloatField(caption=u"Модификатор резиста штрафа СС в горах на дороге", tags='parameter p_modifier')
+    m_r_cc_dirt          = FloatField(caption=u"Модификатор резиста бездорожья для отмены бездорожья", tags='parameter p_modifier')
+    m_cc_mine            = FloatField(caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier')
+    m_cc_fuel_empty      = FloatField(caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier')
 
     # Резисты к модификаторам эффетов зон
-    r_empty = FloatField(default=0.0, caption=u"Пустой резист", tags='parameter p_resist')
-    r_cc_dirt = FloatField(default=0.0, caption=u"Резист к модификатору CC на бездорожье", tags='parameter p_resist')
-    r_cc_wood = FloatField(default=0.0, caption=u"Резист к модификатору CC в лесу", tags='parameter p_resist')
-    r_visibility_wood = FloatField(default=0.0, caption=u"Резист к модификатору видимости в лесу", tags='parameter p_resist')
-    r_observing_range_wood = FloatField(default=0.0, caption=u"Резист к модификатору обзора в лесу", tags='parameter p_resist')
-    r_cc_slope = FloatField(default=0.0, caption=u"Резист к модификатору CC в горах", tags='parameter p_resist')
-    r_cc_water = FloatField(default=0.0, caption=u"Резист к модификатору CC в воде", tags='parameter p_resist')
-    r_cc_mine = FloatField(default=0.0, caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist')
-    r_cc_fuel_empty = FloatField(default=0.0, caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist')
+    r_empty                = FloatField(caption=u"Пустой резист", tags='parameter p_resist')
+    r_cc_dirt              = FloatField(caption=u"Резист к модификатору CC на бездорожье", tags='parameter p_resist')
+    r_cc_wood              = FloatField(caption=u"Резист к модификатору CC в лесу", tags='parameter p_resist')
+    r_visibility_wood      = FloatField(caption=u"Резист к модификатору видимости в лесу", tags='parameter p_resist')
+    r_observing_range_wood = FloatField(caption=u"Резист к модификатору обзора в лесу", tags='parameter p_resist')
+    r_cc_slope             = FloatField(caption=u"Резист к модификатору CC в горах", tags='parameter p_resist')
+    r_cc_water             = FloatField(caption=u"Резист к модификатору CC в воде", tags='parameter p_resist')
+    r_cc_mine              = FloatField(caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist')
+    r_cc_fuel_empty        = FloatField(caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist')
 
     # атрибуты от Unit
-    p_defence = FloatField(default=1, caption=u"Броня", tags='parameter')
-    max_hp = FloatField(caption=u"Максимальное значение HP", tags='client')
-    hp = FloatField(caption=u"Текущее значение HP", tags='client')
-    direction = FloatField(default=-pi/2, caption=u"Текущее направление машины")
+    p_defence            = FloatField(caption=u"Броня", tags='parameter')
+    max_hp               = FloatField(caption=u"Максимальное значение HP", tags='client')
+    hp                   = FloatField(caption=u"Текущее значение HP", tags='client')
+    direction            = FloatField(caption=u"Текущее направление машины")
 
     # атрибуты Mobile
-    r_min = FloatField(default=10, caption=u"Минимальный радиус разворота")
-    ac_max = FloatField(default=14, caption=u"Максимальная перегрузка при развороте")
-    max_control_speed = FloatField(default=28, caption=u"Абсолютная максимальная скорость движения")
-    v_forward = FloatField(default=20, caption=u"Максимальная скорость движения вперед")
-    v_backward = FloatField(default=-10, caption=u"Максимальная скорость движения назад")
-    a_forward = FloatField(default=5, caption=u"Ускорение разгона вперед")
-    a_backward = FloatField(default=-3, caption=u"Ускорение разгона назад")
-    a_braking = FloatField(default=-6, caption=u"Ускорение торможения")
+    r_min                = FloatField(caption=u"Минимальный радиус разворота")
+    ac_max               = FloatField(caption=u"Максимальная перегрузка при развороте")
+    max_control_speed    = FloatField(caption=u"Абсолютная максимальная скорость движения")
+    v_forward            = FloatField(caption=u"Максимальная скорость движения вперед")
+    v_backward           = FloatField(caption=u"Максимальная скорость движения назад")
+    a_forward            = FloatField(caption=u"Ускорение разгона вперед")
+    a_backward           = FloatField(caption=u"Ускорение разгона назад")
+    a_braking            = FloatField(caption=u"Ускорение торможения")
 
-    max_fuel = FloatField(default=100, caption=u"Максимальное количество топлива", tags="client")
-    fuel = FloatField(default=100, caption=u"Текущее количество топлива", tags="client")
-    p_fuel_rate = FloatField(default=0.5, caption=u"Расход топлива (л/с)")  # todo: Не нужно ли это поле пометить как параметр?
+    max_fuel             = FloatField(caption=u"Максимальное количество топлива", tags="client")
+    fuel                 = FloatField(caption=u"Текущее количество топлива", tags="client")
+    p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)")
 
     # атрибуты влияющие на эффективность стрельбы
-    dps_rate = FloatField(default=1.0, caption=u"Множитель модификации урона автоматического оружия")
-    damage_rate = FloatField(default=1.0, caption=u"Множитель модификации урона залпового оружия")
-    time_recharge_rate = FloatField(default=1.0, caption=u"Множитель модификации времени перезарядки залпового оружия")
-    radius_rate = FloatField(default=1.0, caption=u"Множитель модификации дальности стрельбы")
+    dps_rate             = FloatField(caption=u"Множитель модификации урона автоматического оружия")
+    damage_rate          = FloatField(caption=u"Множитель модификации урона залпового оружия")
+    time_recharge_rate   = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия")
+    radius_rate          = FloatField(caption=u"Множитель модификации дальности стрельбы")
 
     # атрибуты, отвечающие за авто-ремонт машины.
-    repair_rate = FloatField(default=0, caption=u"Скорость отхила в секунду")
-    repair_rate_on_stay = FloatField(default=0, caption=u"Дополнительная скорость отхила в стоячем положении")
+    repair_rate          = FloatField(caption=u"Скорость отхила в секунду")
+    repair_rate_on_stay  = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении")
 
     # атрибуты, связанные с критами.
-    crit_rate = FloatField(default=0.5, caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
-    crit_power = FloatField(default=0.5, caption=u"Сила крита [0 .. сколько угодно]")
+    crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
+    crit_power           = FloatField(caption=u"Сила крита [0 .. сколько угодно]")
 
     slot_FL   = SlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags='armorer')
-    slot_FL_f = StringField(default='FL_0', caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
+    slot_FL_f = StringField(caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
     slot_CL   = SlotField(caption=u'LeftSlot', doc=u'Центральный левый слот', tags='armorer')
-    slot_CL_f = StringField(default='FBL_0', caption=u'Флаги центрального левого слота [FBLR]', tags='client slot_limit')
+    slot_CL_f = StringField(caption=u'Флаги центрального левого слота [FBLR]', tags='client slot_limit')
     slot_BL   = SlotField(caption=u'BackwardLeftSlot', doc=u'Задний левый слот', tags='armorer')
-    slot_BL_f = StringField(default='BL_0', caption=u'Флаги залнего левого слота [FBLR]', tags='client slot_limit')
+    slot_BL_f = StringField(caption=u'Флаги залнего левого слота [FBLR]', tags='client slot_limit')
 
     slot_FC   = SlotField(caption=u'ForwardSlot', doc=u'Передний средний слот', tags='armorer')
-    slot_FC_f = StringField(default='FLR_0', caption=u'Флаги переднего среднего слота [FBLR]', tags='client slot_limit')
+    slot_FC_f = StringField(caption=u'Флаги переднего среднего слота [FBLR]', tags='client slot_limit')
     slot_CC   = SlotField(caption=u'CentralSlot', doc=u'Центральный средний слот', tags='armorer')
-    slot_CC_f = StringField(default='FBLR_0', caption=u'Флаги центрального среднего слота [FBLR]', tags='client slot_limit')
+    slot_CC_f = StringField(caption=u'Флаги центрального среднего слота [FBLR]', tags='client slot_limit')
     slot_BC   = SlotField(caption=u'BackwardSlot', doc=u'Задний средний слот', tags='armorer')
-    slot_BC_f = StringField(default='BLR_0', caption=u'Флаги заднего среднего слота [FBLR]', tags='client slot_limit')
+    slot_BC_f = StringField(caption=u'Флаги заднего среднего слота [FBLR]', tags='client slot_limit')
 
     slot_FR   = SlotField(caption=u'ForwardRightSlot', doc=u'Передний правый слот', tags='armorer')
-    slot_FR_f = StringField(default='FR_0', caption=u'Флаги переднего правого слота [FBLR]', tags='client slot_limit')
+    slot_FR_f = StringField(caption=u'Флаги переднего правого слота [FBLR]', tags='client slot_limit')
     slot_CR   = SlotField(caption=u'RightSlot', doc=u'Центральный правый слот', tags='armorer')
-    slot_CR_f = StringField(default='FBR_0', caption=u'Флаги центрального правого слота [FBLR]', tags='client slot_limit')
+    slot_CR_f = StringField(caption=u'Флаги центрального правого слота [FBLR]', tags='client slot_limit')
     slot_BR   = SlotField(caption=u'BackwardRightSlot', doc=u'Задний правый слот', tags='armorer')
-    slot_BR_f = StringField(default='BR_0', caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
+    slot_BR_f = StringField(caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
 
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
-    inventory_size = IntField(default=10, caption=u"Размер инвентаря")
+    inventory_size = IntField(caption=u"Размер инвентаря")
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
-    price = FloatField(default=0, caption=u"Цена", tags='client')
+    price = FloatField(caption=u"Цена", tags='client')
 
     # Косметика
-    title = StringField(default="", caption=u"Модель автомобиля", tags='client')
-    class_car = StringField(default="", caption=u"Класс автомобиля", tags='client')
-    sub_class_car = StringField(default="", caption=u"Подкласс автомобиля", tags='client')
-    name_car = StringField(default="", caption=u"Название автомобиля", tags='client')
+    class_car     = StringField(caption=u"Класс автомобиля", tags='client')
+    sub_class_car = StringField(caption=u"Подкласс автомобиля", tags='client')
+    name_car      = StringField(caption=u"Название автомобиля", tags='client')
 
     # Влияние скилов
-    driving_r_min = FloatField(default=0.0, caption=u"Влияние Вождения на Минимальный радиус разворота")
-    driving_ac_max = FloatField(default=0.0, caption=u"Влияние Вождения на Максимальную перегрузка при развороте")
-    driving_max_control_speed = FloatField(default=0.0, caption=u"Влияние Вождения на Абсолютную максимальную скорость движения")
-    driving_v_forward = FloatField(default=0.0, caption=u"Влияние Вождения на Максимальную скорость движения вперед")
-    driving_v_backward = FloatField(default=0.0, caption=u"Влияние Вождения на Максимальную скорость движения назад")
-    driving_a_forward = FloatField(default=0.0, caption=u"Влияние Вождения на Ускорение разгона вперед")
-    driving_a_backward = FloatField(default=0.0, caption=u"Влияние Вождения на Ускорение разгона назад")
-    driving_a_braking = FloatField(default=0.0, caption=u"Влияние Вождения на Ускорение торможения")
+    driving_r_min             = FloatField(caption=u"Влияние Вождения на Минимальный радиус разворота")
+    driving_ac_max            = FloatField(caption=u"Влияние Вождения на Максимальную перегрузка при развороте")
+    driving_max_control_speed = FloatField(caption=u"Влияние Вождения на Абсолютную максимальную скорость движения")
+    driving_v_forward         = FloatField(caption=u"Влияние Вождения на Максимальную скорость движения вперед")
+    driving_v_backward        = FloatField(caption=u"Влияние Вождения на Максимальную скорость движения назад")
+    driving_a_forward         = FloatField(caption=u"Влияние Вождения на Ускорение разгона вперед")
+    driving_a_backward        = FloatField(caption=u"Влияние Вождения на Ускорение разгона назад")
+    driving_a_braking         = FloatField(caption=u"Влияние Вождения на Ускорение торможения")
 
-    shooting_dps_rate = FloatField(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации урона автоматического оружия")
-    shooting_damage_rate = FloatField(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации урона залпового оружия")
-    shooting_time_recharge_rate = FloatField(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации времени перезарядки залпового оружия")
-    shooting_radius_rate = FloatField(default=0.0, caption=u"Влияние Стрельбы на Множитель модификации дальности стрельбы")
+    shooting_dps_rate           = FloatField(caption=u"Влияние Стрельбы на Множитель модификации урона автоматического оружия")
+    shooting_damage_rate        = FloatField(caption=u"Влияние Стрельбы на Множитель модификации урона залпового оружия")
+    shooting_time_recharge_rate = FloatField(caption=u"Влияние Стрельбы на Множитель модификации времени перезарядки залпового оружия")
+    shooting_radius_rate        = FloatField(caption=u"Влияние Стрельбы на Множитель модификации дальности стрельбы")
 
-    masking_p_visibility = FloatField(default=0.0, caption=u"Влияние Маскировки на Коэффициент заметности")
+    masking_p_visibility      = FloatField(caption=u"Влияние Маскировки на Коэффициент заметности")
 
     exp_table = UniReferenceField(
         reference_document_type='sublayers_server.model.registry.classes.exptable.ExpTable',

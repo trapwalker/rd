@@ -22,7 +22,7 @@ class Item(Root):
     amount = FloatField(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
     stack_size = FloatField(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
     position = IntField(caption=u'Позиция в инвентаре')
-    base_price = FloatField(default=0, caption=u'Базовая цена за 1', tags='client')
+    base_price = FloatField(caption=u'Базовая цена за 1', tags='client')
 
     description = StringField(caption=u'Расширенное описание предмета', tags='client')
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
@@ -30,8 +30,7 @@ class Item(Root):
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
     inv_icon_supersmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
-    title = StringField(caption=u'Название предмета для отображения в инвентаре', tags='client')
-    activate_type = StringField(default='none', caption=u'Способ активации: none, self ...', tags='client')
+    activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
 
     @classmethod
     def activate(cls):
@@ -102,20 +101,20 @@ class MapWeaponRocketItem(MapWeaponItem):
 
 
 class MechanicItem(SlotItem):
-    p_visibility_min = FloatField(default=0, caption=u"Коэффициент минимальной заметности")
-    p_visibility_max = FloatField(default=0, caption=u"Коэффициент максимальной заметности")
-    p_observing_range = FloatField(default=0, caption=u"Радиус обзора")
-    max_hp = FloatField(default=0, caption=u"Максимальное значение HP")
-    r_min = FloatField(default=0, caption=u"Минимальный радиус разворота")
-    ac_max = FloatField(default=0, caption=u"Максимальная перегрузка при развороте")
-    max_control_speed = FloatField(default=0, caption=u"Абсолютная максимальная скорость движения")
-    v_forward = FloatField(default=0, caption=u"Максимальная скорость движения вперед")
-    v_backward = FloatField(default=0, caption=u"Максимальная скорость движения назад")
-    a_forward = FloatField(default=0, caption=u"Ускорение разгона вперед")
-    a_backward = FloatField(default=0, caption=u"Ускорение разгона назад")
-    a_braking = FloatField(default=0, caption=u"Ускорение торможения")
-    max_fuel = FloatField(default=0, caption=u"Максимальное количество топлива")
-    p_fuel_rate = FloatField(default=0, caption=u"Расход топлива (л/с)")
+    p_visibility_min = FloatField(caption=u"Коэффициент минимальной заметности")
+    p_visibility_max = FloatField(caption=u"Коэффициент максимальной заметности")
+    p_observing_range = FloatField(caption=u"Радиус обзора")
+    max_hp = FloatField(caption=u"Максимальное значение HP")
+    r_min = FloatField(caption=u"Минимальный радиус разворота")
+    ac_max = FloatField(caption=u"Максимальная перегрузка при развороте")
+    max_control_speed = FloatField(caption=u"Абсолютная максимальная скорость движения")
+    v_forward = FloatField(caption=u"Максимальная скорость движения вперед")
+    v_backward = FloatField(caption=u"Максимальная скорость движения назад")
+    a_forward = FloatField(caption=u"Ускорение разгона вперед")
+    a_backward = FloatField(caption=u"Ускорение разгона назад")
+    a_braking = FloatField(caption=u"Ускорение торможения")
+    max_fuel = FloatField(caption=u"Максимальное количество топлива")
+    p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
 
 
 class TunerImageView(AbstractDocument):
@@ -130,7 +129,7 @@ class TunerImage(AbstractDocument):
 
 
 class TunerItem(SlotItem):
-    pont_points = FloatField(default=0, caption=u"Очки крутости для итемов тюнера", tags='client')
+    pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags='client')
     images = ListField(
         caption=u'Изображения у тюнера', tags='client',
         base_field=EmbeddedDocumentField(embedded_document_type=TunerImage),
@@ -155,7 +154,7 @@ class ArmorerItem(SlotItem):
         big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
 
 
-    weight_class = IntField(default=0, caption=u"Класс тяжести итема у оружейника", tags='client')
+    weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags='client')
     armorer_images = EmbeddedDocumentField(
         embedded_document_type=ArmorerImages,
         caption=u'Картинки оружейника',

@@ -21,16 +21,16 @@ from itertools import chain
 
 class POI(Root):
     position = PositionField(caption=u"Координаты")
-    p_visibility_min = FloatField(default=1, caption=u"Минимальный коэффициент заметности")
-    p_visibility_max = FloatField(default=1, caption=u"Максимальный коэффициент заметности")
+    p_visibility_min = FloatField(caption=u"Минимальный коэффициент заметности")
+    p_visibility_max = FloatField(caption=u"Максимальный коэффициент заметности")
 
     def get_modify_value(self, param_name, example_agent=None):
         return getattr(self, param_name, None)
 
 
 class POIObserver(POI):
-    p_observing_range = FloatField(default=50, caption=u"Радиус подбора лута")
-    p_vigilance = FloatField(default=1, caption=u"Коэффициент зоркости")
+    p_observing_range = FloatField(caption=u"Радиус подбора лута")
+    p_vigilance = FloatField(caption=u"Коэффициент зоркости")
 
 
 class PoiStash(POIObserver):
@@ -44,7 +44,6 @@ class RadioTower(POIObserver):
 
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
-    title = StringField(caption=u"Название локации", tags='client')
 
 
 class Building(AbstractDocument):
@@ -95,7 +94,6 @@ class GasStation(Town):
 
 
 class Institution(Root):
-    title = StringField(caption=u"Имя", tags='client')
     photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
     text = StringField(caption=u"Текст приветствия", tags='client')
     type = StringField(caption=u"Специальность NPC", tags='client')
@@ -109,11 +107,11 @@ class Institution(Root):
 
 
 class Trainer(Institution):
-    drop_price = IntField(default=10, caption=u"Цена за сброс перков и навыков", tags='client')
+    drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags='client')
 
 
 class Trader(Institution):
-    inventory_size = IntField(default=10, caption=u"Размер инвентаря")
+    inventory_size = IntField(caption=u"Размер инвентаря")
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceField(caption=u"Прайс-лист")
 
@@ -134,7 +132,7 @@ class Hangar(Institution):
 
 
 class Parking(Institution):
-    cost_for_day_parking = FloatField(default=10, caption=u'Стоимость дня у парковщика', tags='client')
+    cost_for_day_parking = FloatField(caption=u'Стоимость дня у парковщика', tags='client')
 
     def get_car_price(self, car):
         # todo: сделать иначе работу с датой

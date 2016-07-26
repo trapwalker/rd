@@ -13,21 +13,19 @@ from sublayers_server.model.registry.odm.fields import (
 
 
 class ClassSkill(Root):
-    target = StringField(default='', caption=u"Целевой навык", tags='client')
-    bonus_step = IntField(default=0, caption=u"Шаг начисления бонуса", tags='client')
-    limit = IntField(default=0, caption=u"Предел роста навыка", tags='client')
+    target = StringField(caption=u"Целевой навык", tags='client')
+    bonus_step = IntField(caption=u"Шаг начисления бонуса", tags='client')
+    limit = IntField(caption=u"Предел роста навыка", tags='client')
 
 
 class Skill(Root):
-    value = IntField(default=0, caption=u"Уровень навыка", tags='client')
-    limit = IntField(default=100, caption=u"Предел прокачки навыка", tags='client')
+    value = IntField(caption=u"Уровень навыка", tags='client')
+    limit = IntField(caption=u"Предел прокачки навыка", tags='client')
     mod = UniReferenceField(
-        caption=u"Модификатор навыка",
-        default='reg:///registry/rpg_settings/class_skill/empty_0', 
+        caption=u"Модификатор навыка",        
         reference_document_type=ClassSkill,
     )
     description = StringField(
-        default=u'Игрвой навык персонажа',
         caption=u'Расширенное описание',
         tags='client',
     )
@@ -60,9 +58,9 @@ class SkillPriceItem(AbstractDocument):
 
 
 class BuySkill(Root):
-    value = IntField(default=0, caption=u"Количество купленных очков навыка", tags='client')
-    limit = IntField(default=3, caption=u"Предел покупки очков навыка", tags='client')
-    description = StringField(default=u"Дополнительное очко навыка", caption=u"Расширенное описание", tags='client')
+    value = IntField(caption=u"Количество купленных очков навыка", tags='client')
+    limit = IntField(caption=u"Предел покупки очков навыка", tags='client')
+    description = StringField(caption=u"Расширенное описание", tags='client')
     price = ListField(
         caption=u'Таблица цен на очки навыков', tags='client',
         base_field=EmbeddedDocumentField(embedded_document_type=SkillPriceItem),
