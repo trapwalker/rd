@@ -401,6 +401,10 @@ var ClientManager = (function () {
             return;
         }
 
+        //if (car == user.userCar && hp_state.dps != car._hp_state.dps) {
+        //    console.log('Смена DPS: old - ', car._hp_state.dps, '    new - ', hp_state.dps);
+        //}
+
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
@@ -499,7 +503,7 @@ var ClientManager = (function () {
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
             if (! car) {
-                console.error('Out Error: Машины с данным id не существует на клиенте. Ошибка!');
+                console.error('Out Error: Машины с данным id [' + uid + '] не существует на клиенте. Ошибка!', event);
                 return;
             }
 

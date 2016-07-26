@@ -66,6 +66,9 @@ class FireSector(Sector):
         self.side = get_side_by_angle(self.fi)
         self.owner.fire_sectors.append(self)
 
+    def __str__(self):
+        return 'FireSector[{}|auto={}|disch={}]'.format(self.side, self.is_auto(), self.is_discharge())
+
     def as_dict(self):
         d = super(FireSector, self).as_dict()
         d.update(

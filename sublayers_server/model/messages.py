@@ -265,6 +265,7 @@ class Out(Contact):
         d.update(
             object_id=self.obj.uid,
             is_last=self.is_last,
+            obj_cls=self.obj.__class__.__name__,
         )
         return d
 
