@@ -92,7 +92,7 @@ class PointObject(Object):
 
     def __init__(self, example, position=None, **kw):
         super(PointObject, self).__init__(**kw)
-        self._position = example.position or position
+        self._position = example.position and example.position.as_point() or position
         self.example = example
         if example is None:
             log.warning('Object %s has no example node', self)
