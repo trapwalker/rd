@@ -25,7 +25,7 @@ class Agent(Root):
     )
 
     position = PositionField(caption=u"Последние координаты агента")
-    balance = FloatField(default=1000, caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить
+    balance = FloatField(caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить #release
 
     last_town = UniReferenceField(
         caption=u"Последний посещенный город",
