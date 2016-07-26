@@ -25,28 +25,35 @@ from pprint import pprint as pp
 def test_registry():
     log.debug('### test registry')
 
-    # reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+    #log.debug('Delete all: %s', (yield Root.objects.delete()))
+    #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
 
-    # car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
+    nodes = yield Root.objects.find_all()
+
+    #car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
     # log.debug('object by parents: %s', id(car.parent.parent.parent))
     # cars = yield Root.objects.get('reg:///registry/mobiles/cars')
     # log.debug('cars by uri: %s', id(cars))
-    c = yield Root.objects.get('reg:///registry/a/b/c')
+    # c = yield Root.objects.get('reg:///registry/a/b/c')
     #cc = yield Root.objects.get('reg:///registry/a/b/cc')
-    log.debug('A by parents of C: %s', id(c.parent.parent))
-    a = yield Root.objects.get('reg:///registry/a')
-    log.debug('A by uri: %s', id(a))
+    # log.debug('A by parents of C: %s', id(c.parent.parent))
+    # a = yield Root.objects.get('reg:///registry/a')
+    # log.debug('A by uri: %s', id(a))
 
-    nodes = yield Root.objects.find_all()
-    cc = yield Root.objects.get('reg:///registry/a/b/cc')
-    cc2 = Root.objects.get_cached('reg:///registry/a/b/cc')
+    # cc = yield Root.objects.get('reg:///registry/a/b/cc')
+    # cc2 = Root.objects.get_cached('reg:///registry/a/b/cc')
     log.debug('### Registry test end')
     print('\n'.join((
         '{v:6} - {k}'.format(v=v, k=k)
         for k, v in
         sorted(_call_stat.items(), key=lambda kv: kv[1], reverse=True)[:50]
     )))
+    r = Root.objects.get_cached('reg:///registry')
+    x = r['mobiles/cars/middle/sports/delorean_dmc12']
+    print('r_cc_dirt' in x._values)
     globals().update(**locals())
+    print('THE END')
+    tornado.ioloop.IOLoop.instance().add_callback(lambda: io_loop.stop())
 
 
 if __name__ == '__main__':
