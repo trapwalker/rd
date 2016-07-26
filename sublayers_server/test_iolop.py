@@ -28,18 +28,18 @@ class Cnt(object):
 
 
 io_loop = tornado.ioloop.IOLoop.instance()
-db = connect("test3", host="localhost", port=27017, io_loop=io_loop)
+db = connect("rd", host="localhost", port=27017, io_loop=io_loop)
 c = Cnt(25)
 
 
 def start():
-    tornado.ioloop.PeriodicCallback(lambda: (
-        print('%s,' % c.inc(-1), end='')
-        or io_loop._timeouts
-        or c.c > 0
-        or log.info('Stopping.')
-        or io_loop.stop()
-    ), 1000).start()
+    # tornado.ioloop.PeriodicCallback(lambda: (
+    #     print('%s,' % c.inc(-1), end='')
+    #     or io_loop._timeouts
+    #     or c.c > 0
+    #     or log.info('Stopping.')
+    #     or io_loop.stop()
+    # ), 1000).start()
     io_loop.start()
     log.info('Terminated.')
 
