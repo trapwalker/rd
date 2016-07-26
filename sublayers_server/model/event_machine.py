@@ -66,7 +66,7 @@ class Server(object):
 
     def on_load_registry(self):
         def load_registry_done_callback(all_registry_items):
-            self.reg = Root.objects.get_cached('reg://registry')
+            self.reg = Root.objects.get_cached('reg:///registry')
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
 
         #Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
@@ -86,7 +86,7 @@ class Server(object):
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        for zone in sorted(self.reg.get('/zones', ()), key=lambda a_zone: a_zone.order_key):
+        for zone in sorted(list(self.reg['zones']) or [], key=lambda a_zone: a_zone.order_key):
             try:
                 if not zone.is_active:
                     log.debug('Zone %s activation start', zone)

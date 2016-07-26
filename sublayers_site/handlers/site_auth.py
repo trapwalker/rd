@@ -81,7 +81,7 @@ class StandardLoginHandler(BaseSiteHandler):
 
         agent_example = self.application.reg_agents.get([str(user._id)])
         if agent_example is None:
-            agent_example = self.application.reg['/agents/user'].instantiate(
+            agent_example = self.application.reg['agents/user'].instantiate(
                 storage=self.application.reg_agents, name=str(user._id),
             )
         self.application.reg_agents.save_node(agent_example)
@@ -213,7 +213,7 @@ class StandardLoginHandler(BaseSiteHandler):
             role_class_ex = None
             try:
                 avatar_index = int(avatar_index)
-                avatar_link = self.application.reg['/world_settings'].values.get('avatar_list')[avatar_index]
+                avatar_link = self.application.reg['world_settings'].avatar_list[avatar_index]
                 role_class_ex = self.application.reg[class_node_hash]
             except:
                 self.finish({'status': 'fail_wrong_input'})
@@ -221,7 +221,7 @@ class StandardLoginHandler(BaseSiteHandler):
 
             agent_ex.role_class = role_class_ex
             # Установка классового навыка
-            empty_skill_mod = self.application.reg['reg://registry/rpg_settings/class_skill/empty_0']
+            empty_skill_mod = self.application.reg['reg:///registry/rpg_settings/class_skill/empty_0']
             for skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
                 skill = getattr(agent_ex, skill_name)
                 skill.mod = empty_skill_mod
