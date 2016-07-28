@@ -12,6 +12,7 @@ from sublayers_server.model.registry.odm.fields import (
 
 
 class Agent(Root):
+    profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
 

@@ -59,7 +59,7 @@ class CachebleQuerySet(QuerySet):
             # выбираем первое попавшеся уникальное поле с непустым значением. Если есть _id, то берем его.
             conditions = []
             for field_name, field in  [('_id', None)] + self.__klass__._fields.items():
-                if field is None or field.unique:
+                if field is None or getattr(field, 'identify', None):
                     value = getattr(document, field_name)
                     if value is not None:
                         conditions.append({field_name: value})
@@ -67,15 +67,33 @@ class CachebleQuerySet(QuerySet):
             self.update_field_on_save_values(document, document._id is not None)
             doc = document.to_son()
 
-            if conditions:  #document._id is not None:
+            assert not (upsert and not conditions), 'No one ID-field is not specified in: {!r}'.format(document)
+
+            if upsert and conditions or document._id:  #document._id is not None:
                 condition = {'$or': conditions} if len(conditions) > 1 else conditions[0]
                 self.coll(alias).update(
                     condition,  #{'_id': document._id},
                     doc,
                     callback=self.handle_update(document, callback),
-                    upsert=upsert,
+                    upsert=upsert or document._id and True,
                 )
             else:
                 self.coll(alias).insert(doc, callback=self.handle_save(document, callback))
+
+        return handle
+
+    def handle_update(self, document, callback):
+        def handle(*arguments, **kw):
+            if len(arguments) > 1 and arguments[1]:
+                # if isinstance(arguments[1], (DuplicateKeyError, )):  # todo: сделать проверку на дубликацию ключей
+                #     raise UniqueKeyViolationError.from_pymongo(str(arguments[1]), self.__klass__)
+                # else:
+                raise arguments[1]
+
+            stat = arguments[0]
+            if 'upserted' in stat:
+                document._id = stat['upserted']
+
+            callback(document)
 
         return handle

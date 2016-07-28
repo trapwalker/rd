@@ -228,21 +228,19 @@ class AbstractDocument(Document):
         log.debug('bypass load: %r', id)
         callback(id)
 
-    def to_cache(self, *av):
-        keys = set(filter(None, av))
-        if self._id:
-            keys.add(self._id)
-
-        for key in keys:
-            self.__class__.objects_cache[key] = self
+    def to_cache(self):
+        for key in self.__class__.key_fields | {'_id'}:
+            value = self._values.get(key, None)
+            if value is not None:
+                self.__class__.objects_cache[(key, value)] = self
 
     @classmethod
     def search_in_cache(cls, **kw):
-        key_fields = {'id', '_id', 'uri'}
-        for key_name in set(kw.keys()) & key_fields:
+        #key_fields = {'id', '_id', 'uri'}  # todo: Сделать функцию, возвращающую перечень ключей для поиска в кеше #OPTIMIZE
+        for key_name in set(kw.keys()) & cls.key_fields:
             key = kw[key_name]
             if key:
-                obj = cls.objects_cache.get(key)
+                obj = cls.objects_cache.get((key_name, key))
                 if obj:
                     return obj
 

@@ -37,10 +37,10 @@ class RegistryNodeFormatError(RegistryError):
 class Node(AbstractDocument):
     # todo: make sparse indexes
     # todo: override attributes in subclasses
-    uid = UUIDField(default=get_uuid, unique=True)
+    uid = UUIDField(default=get_uuid, unique=True, identify=True)
     title = StringField(caption=u"Название", tags='client')
     fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
-    uri = StringField(unique=True)
+    uri = StringField(sparse=True, identify=True)
     abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
     parent = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
     owner = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
@@ -60,12 +60,6 @@ class Node(AbstractDocument):
             #storage=self.__class__.__collection__,
             path=path,
         )
-
-    def to_cache(self):
-        # assert self.uri, "Can't cache without URI"
-        # if not self.uri:
-        #     log.warning('Trying to cache object without URI: {!r}'.format(self))
-        super(Node, self).to_cache(self.uri)
 
     def __init__(self, embedded=False, **kw):
         """

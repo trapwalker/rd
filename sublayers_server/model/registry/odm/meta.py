@@ -19,6 +19,10 @@ class NodeMeta(DocumentMetaClass):
         """
         return cls._objects_cache
 
+    @property
+    def key_fields(cls):
+        return {field_name for field_name, field in cls._fields.items() if getattr(field, 'identify', None)}
+
     def __new__(cls, name, bases, attrs):
         new_class = super(NodeMeta, cls).__new__(cls, name, bases, attrs)
         cls._classes[name] = new_class

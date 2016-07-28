@@ -7,12 +7,13 @@ from bson.objectid import ObjectId
 
 
 class MetaFieldMixin(object):
-    def __init__(self, name=None, caption=None, doc=None, tags=None, **kw):
+    def __init__(self, name=None, caption=None, doc=None, tags=None, identify=False, **kw):
         super(MetaFieldMixin, self).__init__(**kw)
         self.name = name
         self.caption = caption
         self.doc = doc
         self.has_default = 'default' in kw
+        self.identify = identify
         if tags is None:
             tags = set()
         elif isinstance(tags, basestring):
