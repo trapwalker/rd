@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 import time
 import math
 
+from tornado.ioloop import IOLoop
+import tornado.gen
+
 from sublayers_server.model.events import Event, ReEnterToLocation
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
@@ -18,7 +21,14 @@ import sublayers_server.model.messages as messages
 
 
 class TransactionEvent(Event):
-    pass
+    def on_perform(self):
+        super(TransactionEvent, self).on_perform()
+        # todo: возможно IOLoop.instance().add_callback(callback=self.on_perform_async())
+        IOLoop.instance().add_future(future=self.on_perform_async(), callback=None)
+
+    @tornado.gen.coroutine
+    def on_perform_async(self):
+        pass
 
 
 class TransactionActivateItem(TransactionEvent):
@@ -32,8 +42,9 @@ class TransactionActivateItem(TransactionEvent):
 
 
 class TransactionActivateTank(TransactionActivateItem):
-    def on_perform(self):
-        super(TransactionActivateTank, self).on_perform()
+    @tornado.gen.coroutine
+    def on_perform_async(self):
+        yield super(TransactionActivateTank, self).on_perform_async()
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -52,8 +63,10 @@ class TransactionActivateTank(TransactionActivateItem):
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
 
-        tank_proto = self.server.reg['/items/usable/tanks/tank_empty/tank' + str(item.example.value_fuel)]
-        ItemState(server=self.server, time=self.time, example=tank_proto.instantiate()) \
+        tank_ex = self.server.reg['items/usable/tanks/tank_empty/tank' + str(item.example.value_fuel)].instantiate()
+        yield tank_ex.load_references()
+
+        ItemState(server=self.server, time=self.time, example=tank_ex) \
             .set_inventory(time=self.time, inventory=inventory, position=position)
 
 
@@ -151,7 +164,8 @@ class TransactionGasStation(TransactionEvent):
         self.tank_list = tank_list
         self.npc_node_hash = npc_node_hash
 
-    def on_perform(self):
+    @tornado.gen.coroutine
+    def on_perform_async(self):
         # todo: Сделать единый механизм проверки консистентности и валидности состояния агента для всех транзакций
         super(TransactionGasStation, self).on_perform()
         return  # todo: (!) Разблокировать код заправки
@@ -186,7 +200,8 @@ class TransactionGasStation(TransactionEvent):
         ex_car.inventory = RegistryInventory()
         for item in old_inventory:
             if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
-                new_tank = self.server.reg['/items/usable/tanks/tank_full/tank' + str(item.value_fuel)].instantiate()
+                new_tank = self.server.reg['items/usable/tanks/tank_full/tank' + str(item.value_fuel)].instantiate()
+                yield new_tank.load_references()
                 new_tank.position = item.position
                 ex_car.inventory.append(new_tank)
             else:
@@ -241,7 +256,8 @@ class TransactionHangarBuy(TransactionEvent):
         self.car_number = car_number
         self.npc_node_hash = npc_node_hash
 
-    def on_perform(self):
+    @tornado.gen.coroutine
+    def on_perform_async(self):
         super(TransactionHangarBuy, self).on_perform()
 
         # Получение NPC и проверка валидности совершения транзакции
@@ -254,7 +270,7 @@ class TransactionHangarBuy(TransactionEvent):
            len(npc.car_list) <= self.car_number:
             return
 
-        car_proto = self.server.reg[npc.car_list[self.car_number]]
+        car_proto = npc.car_list[self.car_number]
 
         agent_balance = self.agent.example.balance
         agent_balance += 0 if self.agent.example.car is None else self.agent.example.car.price
@@ -274,6 +290,7 @@ class TransactionHangarBuy(TransactionEvent):
                                            info_string=info_string).post()
 
             car_example = car_proto.instantiate()
+            yield car_example.load_references()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
@@ -719,9 +736,9 @@ class TransactionTraderApply(TransactionEvent):
         self.position += 1
         return self.position - 1
 
-    def on_perform(self):
+    @tornado.gen.coroutine
+    def on_perform_async(self):
         super(TransactionTraderApply, self).on_perform()
-        reg = self.server.reg
         agent = self.agent
         ex_car = agent.example.car
         trader = self.agent.server.reg[self.npc_node_hash]
@@ -807,7 +824,9 @@ class TransactionTraderApply(TransactionEvent):
         # Добавление купленных итемов в инвентарь
         for item in bought_items:
             # todo: Брать количество правильно
-            new_inventory.append(item.instantiate(position=self._get_position(), amount=item.stack_size))
+            item_ex = item.instantiate(position=self._get_position(), amount=item.stack_size)
+            yield item_ex.load_references()
+            new_inventory.append(item_ex)
         ex_car.inventory = new_inventory
 
         for msg in tr_msg_list:
@@ -884,7 +903,7 @@ class TransactionSetRPGState(TransactionEvent):
         if cur_p > max_p:
             return  # todo: warning
 
-        for perk in agent.server.reg['/rpg_settings/perks'].deep_iter():
+        for perk in agent.server.reg['rpg_settings/perks'].deep_iter():
             self.perks[perk.node_hash()].update(perk=perk)
 
         for perk_node_hash in self.perks:

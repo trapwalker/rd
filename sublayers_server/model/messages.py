@@ -852,8 +852,8 @@ class UserExampleSelfShortMessage(Message):
                 dict(
                     perk=perk.as_client_dict(),
                     active=perk in self.agent.example.perks,
-                    perk_req=[self.agent.server.reg[p_req].node_hash() for p_req in perk.perks_req],
-                ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()
+                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
+                ) for perk in self.agent.server.reg['rpg_settings/perks'].deep_iter()
             ],
         )
         d['rpg_info'] = rpg_info
@@ -1013,13 +1013,11 @@ class HangarInfoMessage(NPCInfoMessage):
                 namespace=self.agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
 
-            prototypes = [self.agent.server.reg[car] for car in npc.car_list]
-
             d.update(cars=[dict(
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
-            ) for car in prototypes])
+            ) for car in npc.car_list])
         return d
 
 
@@ -1075,10 +1073,10 @@ class TraderInfoMessage(NPCInfoMessage):
                         item=dict(
                             cls='ItemState',
                             balance_cls=None,
-                            example=server.reg[ex].as_client_dict(),
-                            max_val=server.reg[ex].stack_size,
+                            example=ex.as_client_dict(),
+                            max_val=ex.stack_size,
                             t0=self.time,
-                            val0=server.reg[ex].stack_size,
+                            val0=ex.stack_size,
                             dvs=0,
                         )
                     ) for ex in npc.inventory
