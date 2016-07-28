@@ -671,7 +671,7 @@ var OwnerList = (function () {
             var curr_owner = this.owners[i];
             //if (party_id == curr_owner.party.id) {
                 for (var car_index = 0; i < curr_owner.cars.length; i++) {
-                    var widget_marker = visualManager.getVobjByType(curr_owner.cars[car_index], WCanvasUserCarMarker);
+                    var widget_marker = visualManager.getVobjByType(curr_owner.cars[car_index], WCanvasCarMarker);
                     if (widget_marker) widget_marker.updateIcon();
                 //}
             }

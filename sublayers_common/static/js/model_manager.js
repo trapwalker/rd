@@ -196,7 +196,7 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             //new WCarMarker(car);                 // виджет маркера
-            new WCanvasUserCarMarker(car);
+            new WCanvasCarMarker(car);
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
@@ -350,7 +350,7 @@ var ClientManager = (function () {
 
             // Виджеты:
             //new WCarMarker(mcar);    // виджет маркера
-            new WCanvasUserCarMarker(mcar);
+            new WCanvasCarMarker(mcar);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз
@@ -661,7 +661,7 @@ var ClientManager = (function () {
         if(event.subj.uid == user.ID) return;
         var owner = this._getOwner(event.subj);
         for (var i = 0; i < owner.cars.length; i++) {
-            var widget_marker = visualManager.getVobjByType(owner.cars[i], WCanvasUserCarMarker);
+            var widget_marker = visualManager.getVobjByType(owner.cars[i], WCanvasCarMarker);
             if (widget_marker) widget_marker.updateIcon();
         }
 
@@ -683,7 +683,7 @@ var ClientManager = (function () {
         ownerList.update_party_icons(user.party.id);
         var widget_marker = null;
         if (user.userCar)
-            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
         chat.party_info_message(event.party);
@@ -698,7 +698,7 @@ var ClientManager = (function () {
         ownerList.update_party_icons(old_party_id);
         var widget_marker = null;
         if (user.userCar)
-            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasCarMarker);
         if (widget_marker) widget_marker.updateIcon();
         chat.party_info_message(event);
         partyManager.exclude_from_party();
@@ -712,7 +712,7 @@ var ClientManager = (function () {
         ownerList.update_party_icons(old_party_id);
         var widget_marker = null;
         if (user.userCar)
-            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasUserCarMarker);
+            widget_marker = visualManager.getVobjByType(user.userCar, WCanvasCarMarker);
         if (widget_marker) widget_marker.updateIcon();
         chat.party_info_message(event);
         partyManager.exclude_from_party();

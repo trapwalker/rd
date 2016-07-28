@@ -16,8 +16,13 @@ function onMouseDownMap(mouseEventObject){
 }
 
 function onMouseUpMap(mouseEventObject) {
-    clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
     map._mouseDowned = false;
+    if (mapCanvasManager && mapCanvasManager._mouse_focus_widget) {
+        mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject.originalEvent);
+    }
+    else {
+        clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    }
 }
 
 function onMouseDblClick(mouseEventObject) {
@@ -36,42 +41,12 @@ function onMouseRightClick(mouseEventObject) {
 }
 
 function onMouseMoveMap(mouseEventObject) {
-    /*
-     var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
-     // Если флаг нажатия был установлен, то
-     if (myMap._mouseDowned && radialMenu.isHide) { // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
-     if (distancePoints(myMap.lastDownPoint, pointOfClick) > 50) {
-     // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
-     if (radialMenuTimeout)
-     clearTimeout(radialMenuTimeout);
-     // Вызвать меню
-
-     if (cookieStorage.enableRadialMenu())
-     radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
-     }
-     }
-
-     if(! radialMenu.isHide) { // Если меню уже открыто
-     // определяем угол и подсвечиваем выбранный сектор
-     var sectorUid = radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
-     if(sectorUid != null)
-     userCarMarker.sectorsView.setSelectedState({uid: sectorUid});
-     }
-     */
+    mapCanvasManager.set_mouse_look(true);
+    mapCanvasManager._on_mouse_hover(mouseEventObject.originalEvent)
 }
 
-function onMouseOutMap(){
-    /*
-    if(radialMenuTimeout)
-        clearTimeout(radialMenuTimeout);
-    // фолсим флаг нажатия
-    myMap._mouseDowned = false;
-    // если фокус ушёл с карты, то закрыть меню
-    if (! radialMenu.isHide) {
-        radialMenu.hideMenu(false);
-        userCarMarker.sectorsView.setSelectedToNormalState();
-    }
-    */
+function onMouseOutMap(mouseEventObject){
+    mapCanvasManager.set_mouse_look(false);
 }
 
 var pressedKey;
