@@ -167,6 +167,7 @@ class URI(tuple):
         pass
 
     def match(self, node):
+        assert False, "URI.match(%r, %r) # that's wrong. Need review!".format(self, node)
         original = node
         while node and (node.storage is None or node.storage.name != 'registry'):
             node = node.parent
