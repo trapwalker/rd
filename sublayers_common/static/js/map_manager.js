@@ -7,6 +7,7 @@
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
+var last_right_click_on_map = {x: 12517154, y:27028830};
 
 function onMouseDownMap(mouseEventObject){
     // Запомнить координаты начала нажатия и флаг нажатия = true
@@ -15,8 +16,13 @@ function onMouseDownMap(mouseEventObject){
 }
 
 function onMouseUpMap(mouseEventObject) {
-    clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
     map._mouseDowned = false;
+    if (mapCanvasManager && mapCanvasManager._mouse_focus_widget) {
+        mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject.originalEvent);
+    }
+    else {
+        clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+    }
 }
 
 function onMouseDblClick(mouseEventObject) {
@@ -26,6 +32,7 @@ function onMouseDblClick(mouseEventObject) {
 
 function onMouseRightClick(mouseEventObject) {
     var p = map.project(mouseEventObject.latlng, myMap.getMaxZoom());
+    last_right_click_on_map = p;
     chat.addMessageToSys(p);
     console.log(p);
 
@@ -34,42 +41,12 @@ function onMouseRightClick(mouseEventObject) {
 }
 
 function onMouseMoveMap(mouseEventObject) {
-    /*
-     var pointOfClick = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
-     // Если флаг нажатия был установлен, то
-     if (myMap._mouseDowned && radialMenu.isHide) { // Если кнопка нажата и меню не открыто, то проверить дистанцию и открыть меню
-     if (distancePoints(myMap.lastDownPoint, pointOfClick) > 50) {
-     // т.к меню уже вызвано, то очистить тайм-аут на вызво меню
-     if (radialMenuTimeout)
-     clearTimeout(radialMenuTimeout);
-     // Вызвать меню
-
-     if (cookieStorage.enableRadialMenu())
-     radialMenu.showMenu(myMap.lastDownPoint, userCarMarker.currentUserCarAngle);
-     }
-     }
-
-     if(! radialMenu.isHide) { // Если меню уже открыто
-     // определяем угол и подсвечиваем выбранный сектор
-     var sectorUid = radialMenu.setActiveSector(angleVectorRadCCW(subVector(pointOfClick, myMap.lastDownPoint)));
-     if(sectorUid != null)
-     userCarMarker.sectorsView.setSelectedState({uid: sectorUid});
-     }
-     */
+    mapCanvasManager.set_mouse_look(true);
+    mapCanvasManager._on_mouse_hover(mouseEventObject.originalEvent)
 }
 
-function onMouseOutMap(){
-    /*
-    if(radialMenuTimeout)
-        clearTimeout(radialMenuTimeout);
-    // фолсим флаг нажатия
-    myMap._mouseDowned = false;
-    // если фокус ушёл с карты, то закрыть меню
-    if (! radialMenu.isHide) {
-        radialMenu.hideMenu(false);
-        userCarMarker.sectorsView.setSelectedToNormalState();
-    }
-    */
+function onMouseOutMap(mouseEventObject){
+    mapCanvasManager.set_mouse_look(false);
 }
 
 var pressedKey;
@@ -128,13 +105,15 @@ function onKeyDownMap(event) {
             clientManager.sendRocket();
             break;
         case 84: // T // Crazy Click Timer
-            if (crazy_timer){
-                clearInterval(crazy_timer);
-                crazy_timer = null;
-            }
-            else{
-                crazy_timer = setInterval(sendRandGoTo, 100);
-            }
+            //if (crazy_timer){
+            //    clearInterval(crazy_timer);
+            //    crazy_timer = null;
+            //}
+            //else{
+            //    crazy_timer = setInterval(sendRandGoTo, 100);
+            //}
+            clientManager.sendTeleportCoord(last_right_click_on_map.x, last_right_click_on_map.y);
+
             break;
         case 87:  // W
             clientManager.sendFireDischarge('front');
@@ -331,9 +310,27 @@ var MapManager = (function(_super){
             greedy: true,
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
-                if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item'))
-                    clientManager.sendItemActionInventory(ui.draggable.data('owner_id'), ui.draggable.data('pos'),
-                                                          null, null);
+                if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
+                    var item = null;
+                    try {
+                        item = inventoryList.getInventory(ui.draggable.data('owner_id')).getItem(ui.draggable.data('pos'));
+                    }
+                    catch (e){
+                        console.warn('Не найден инвентерь или итем в инвентаре:', ui.draggable);
+                        item = null;
+                    }
+
+                    modalWindow.modalDialogAnswerShow({
+                        caption: 'Inventory Operation',
+                        header: 'Выбросить?',
+                        body_text: 'Вы уверены, что хотите выбросить ' + item.example.title + ' на карту?',
+                        callback_ok: function() {
+                            clientManager.sendItemActionInventory(
+                                ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);
+                        }
+                    });
+
+                }
                 if (ui.draggable.hasClass('fire-controll-quick-btn-block'))
                     clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
             }

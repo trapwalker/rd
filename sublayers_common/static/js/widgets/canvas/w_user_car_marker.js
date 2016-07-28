@@ -1,10 +1,11 @@
 var ConstMaxLengthToMoveMarker = 2;
 var ConstMaxAngleToMoveMarker = Math.PI / 90.;
 
-var WCanvasUserCarMarker = (function (_super) {
-    __extends(WCanvasUserCarMarker, _super);
 
-    function WCanvasUserCarMarker(car) {
+var WCanvasCarMarker = (function (_super) {
+    __extends(WCanvasCarMarker, _super);
+
+    function WCanvasCarMarker(car) {
         _super.call(this, [car]);
         this.car = car;
 
@@ -19,13 +20,34 @@ var WCanvasUserCarMarker = (function (_super) {
         this.last_position = this.car.getCurrentCoord(time);  // experimental
         this.last_direction = this.car.getCurrentDirection(time) + Math.PI / 2.;  // experimental
         this.last_direction_arrow = this.last_direction;
+
+        this._last_car_ctx_pos = new Point(-100, -100); // нужно для кеширования при расчёте теста мышки
     }
 
-    WCanvasUserCarMarker.prototype.redraw = function(ctx, time){
-        //console.log('WCanvasUserCarMarker.prototype.redraw');
+    WCanvasCarMarker.prototype.mouse_test = function(time) {
+        //console.log('WCanvasCarMarker.prototype.mouse_test');
+        var distance = distancePoints2(this._last_car_ctx_pos, mapCanvasManager._mouse_client);
+        var icon_size = this.icon_obj.iconSize[1] >> 2;
+        icon_size *= icon_size;
+        if (distance < icon_size)
+            return true;
+    };
+
+    WCanvasCarMarker.prototype.click_handler = function(event) {
+        //console.log('WCanvasCarMarker.prototype.click_handler', event);
+        console.log('Произведён клик на машинку ', this.car);
+
+    };
+
+    WCanvasCarMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasCarMarker.prototype.redraw');
+        var focused = mapCanvasManager._mouse_focus_widget == this;
+
         ctx.save();
-        if (this.car == user.userCar)
+        if (this.car == user.userCar) {
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos
+        }
         else {
             var car_pos_real = this.car.getCurrentCoord(time);
             var car_pos;
@@ -38,11 +60,10 @@ var WCanvasUserCarMarker = (function (_super) {
             else {
                 car_pos = car_pos_real;
             }
-
             this.last_position = car_pos;
-
             var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
             ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+            this._last_car_ctx_pos = ctx_car_pos;
         }
 
         var car_direction_real = this.car.getCurrentDirection(time) + Math.PI / 2.;
@@ -98,17 +119,22 @@ var WCanvasUserCarMarker = (function (_super) {
             ctx.fillText(label_str, 0, -15);
         }
 
+        if (focused) {
+            ctx.fillStyle = "red";
+            ctx.fillRect(-10, -10, 20, 20);
+        }
+
         ctx.restore();  // Возврат транслейта
     };
 
-    WCanvasUserCarMarker.prototype.delFromVisualManager = function () {
-        //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
+    WCanvasCarMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
         this.car = null;
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
     };
 
-    WCanvasUserCarMarker.prototype.updateIcon = function() {
+    WCanvasCarMarker.prototype.updateIcon = function() {
         var car = this.car;
         var icon_type = 'neutral';
         var icon_name = 'car';
@@ -174,7 +200,7 @@ var WCanvasUserCarMarker = (function (_super) {
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow', 'canvas_icon');
     };
 
-    return WCanvasUserCarMarker;
+    return WCanvasCarMarker;
 })(VisualObject);
 
 
@@ -205,7 +231,7 @@ var WCanvasStaticObjectMarker = (function (_super) {
     };
 
     WCanvasStaticObjectMarker.prototype.redraw = function(ctx, time){
-        //console.log('WCanvasUserCarMarker.prototype.redraw');
+        //console.log('WCanvasCarMarker.prototype.redraw');
         var visible_state = this.getVisibleState();
         if (visible_state == 0) return;
         ctx.save();
@@ -242,7 +268,6 @@ var WCanvasStaticObjectMarker = (function (_super) {
     WCanvasStaticObjectMarker.prototype.updateIcon = function() {
         var mobj = this.mobj;
         var icon_name = 'car';
-        var offset = null;
         switch (mobj.cls) {
             case 'Town':
                 switch (mobj.example.id) {

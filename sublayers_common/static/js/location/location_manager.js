@@ -1,5 +1,7 @@
 var LocationManager = (function () {
     function LocationManager() {
+        this.example = null;
+
         this.active_screen_name = null;
         this.screens = {
             location_screen: null,
@@ -88,12 +90,14 @@ var LocationManager = (function () {
         //console.log('LocationManager.prototype.openNPC', npcHTMLHash);
         if (!this.npc.hasOwnProperty(npcHTMLHash)) return;
         var npc = this.npc[npcHTMLHash];
+        if (npc.npc_rec.type == "mayor") return;
         npc.activate();
     };
 
     LocationManager.prototype.onEnter = function (data) {
         //console.log('LocationManager.prototype.onEnter', data);
         this.onExit();
+        this.example = data.location.example;
 
         this.location_cls = data.location.cls;
 
@@ -122,6 +126,9 @@ var LocationManager = (function () {
         this.setBtnState(2, '', false);
         this.setBtnState(3, '</br>Назад', false);
         this.setBtnState(4, '</br>Выход', true);
+
+        this.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+        this.panel_right.show({}, 'location');
 
         // Локации меню
         this.location_menu = new LocationPlaceMenu(this.jq_town_div);
@@ -216,8 +223,14 @@ var LocationManager = (function () {
             //console.log('Попытка выйти из города');
             if (user.example_car)
                 clientManager.sendExitFromLocation();
-            else
-                alert('Попытка выйти из города без машинки !');
+            else {
+                modalWindow.modalDialogInfoShow({
+                    caption: 'Error Message',
+                    header: 'Внимание! Ошибка!',
+                    body_text: 'Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный.'
+                });
+            }
+
         }
         else {
             if (this.screens[this.active_screen_name])
@@ -323,11 +336,30 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.panel-info-content').first().html(options.text);
     };
 
+    LocationPanelInfo.prototype.show_location = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_building', options);
+        var jq_panel = this.jq_main_div.find('.pi-location').first();
+        jq_panel.find('.location').text(locationManager.example.title);
+        jq_panel.find('.head').text('Нет');
+        for (var key in locationManager.npc)
+            if (locationManager.npc.hasOwnProperty(key) && (locationManager.npc[key].npc_rec.type == 'mayor')) {
+                jq_panel.find('.head').text(locationManager.npc[key].npc_rec.title);
+                break;
+            }
+        jq_panel.css('display', 'block');
+    };
+
     LocationPanelInfo.prototype.show_building = function (options) {
         //console.log('LocationPanelInfo.prototype.show_building', options);
         var jq_panel = this.jq_main_div.find('.pi-building').first();
-        jq_panel.find('.location').text(options.build.caption);
+        jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.css('display', 'block');
+    };
+
+    LocationPanelInfo.prototype.show_nukeoil = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_nukeoil', options);
+        var jq_panel = this.jq_main_div.find('.pi-nukeoil').first();
         jq_panel.css('display', 'block');
     };
 
@@ -536,8 +568,8 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.setBtnState(3, '</br>Назад', false);
             locationManager.setBtnState(4, '</br>Выход', true);
 
-            locationManager.panel_left.show({}, '');
-            locationManager.panel_right.show({}, '');
+            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+            locationManager.panel_right.show({}, 'location');
         }
     };
 

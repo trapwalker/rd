@@ -192,25 +192,6 @@
     fill: rgba(0, 128, 0, 0.6);
 }
 
-.fire-control-all {
-    fill: rgba(0, 128, 0, 0.4);
-    stroke: lime;
-    stroke-width: 1;
-    pointer-events: auto;
-}
-
-.fire-control-all:hover {
-    fill: rgba(0, 128, 0, 0.6);
-}
-
-.fire-control-all-active {
-    fill: rgba(0, 255, 0, 0.53);
-}
-
-.fire-control-all-active:hover {
-    fill: rgba(0, 255, 0, 0.6);
-}
-
 .fire-control-radar-point {
     fill: lime;
     stroke: lime;
@@ -234,6 +215,33 @@
 .fire-control-radar-circle {
     stroke-width: 1px;
 }
+
+
+
+.fire-control-all {
+    background-color: rgba(14, 75, 0, 0.6);
+    background-image: url("/static/img/fire_control/fire_widget_indicator/indicator_off.png");
+    background-position: 50% 40%;
+    background-repeat: no-repeat;
+    border: 1px solid lime;
+    pointer-events: auto;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    position: absolute;
+    top: 71px;
+    left: 167px;
+}
+
+.fire-control-all:hover {
+    background-image: url("/static/img/fire_control/fire_widget_indicator/indicator_hover.png");
+}
+
+.fire-control-all-active {
+    background-image: url("/static/img/fire_control/fire_widget_indicator/indicator_active.png");
+}
+
+
 
 @media screen and (max-width: 1366px) {
 

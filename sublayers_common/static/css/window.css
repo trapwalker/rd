@@ -12,3 +12,27 @@
     height: 0;
     width: 0;
 }
+
+.windowDragCloseHeader-main {
+    position: relative;
+    box-sizing: border-box;
+    height: 26px;
+    width: 100%;
+    border-bottom: solid 2px #2ffa00;
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00), linear-gradient(45deg, #2ffa00 25%, transparent 25%, transparent 74%, #2ffa00 75%, #2ffa00);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.windowDragCloseHeader-caption {
+    position: relative;
+    top: 4px;
+    left: 15px;
+    pointer-events: none;
+    float: left;
+    color: black;
+    background-color: transparent;
+    box-sizing: border-box;
+    font: 12pt Nouveau_IBM;
+}

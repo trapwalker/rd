@@ -196,7 +196,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     height: 845px;
     top: -95px;
     left: -769px;
-    /*background: transparent url(/static/static_site/img/1366/768_1-st_screen.png) no-repeat 100% 100%;*/
     background: white;
 }
 
@@ -591,26 +590,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 12px;
     background: transparent url(/static/static_site/img/1366_june/768_btn6_indicator.png) no-repeat 100% 100%;
     cursor: url('/static/img/cursors/main.png'), default;
-}
-
-.btn-fake-radio {
-    position: absolute;
-    cursor: url('/static/img/cursors/main.png'), default;
-    width: 110px;
-    height: 40px;
-    top: 557px;
-    right: 123px;
-    background: transparent url(/static/static_site/img/1366/768_fake_radiobuttons.png) no-repeat 100% 100%;
-}
-
-.light-indicator {
-    position: absolute;
-    cursor: url('/static/img/cursors/main.png'), default;
-    width: 29px;
-    height: 28px;
-    top: 478px;
-    right: 193px;
-    background: transparent url(/static/static_site/img/1366/768_light_indicator.png) no-repeat 100% 100%;
 }
 
 .box-shadow {
@@ -1025,7 +1004,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
         height: 1377px;
         top: -290px;
         left: -1503px;
-        /*background: transparent url(/static/static_site/img/1366/1080_1-st_screen_06-04-16.png) no-repeat 100% 100%;*/
         background: white;
     }
 

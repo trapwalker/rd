@@ -78,7 +78,15 @@ var WSConnector = (function(_super){
                     console.log('Соединение закрыто чисто ', event);
                     timeManager.timerStop();
                 } else {
-                    modalWindow.modalRestartShow();
+                    //modalWindow.modalRestartShow();
+                    modalWindow.modalDialogInfoShow({
+                        caption: 'Disconnect',
+                        header: 'Произошёл плановый рестарт сервера!',
+                        body_text: 'Вы можете подождать до автоматического переподключения к серверу или нажать ОК для мгновенного обновления страницы.',
+                        callback_ok: function () {
+                            window.location.reload();
+                        }
+                    });
                     // Автореконнект
                     var reconnect_interval;
 

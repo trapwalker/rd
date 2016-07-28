@@ -111,11 +111,13 @@
     <div id="townLeftPanel" class="town-panel left">
         {% include panel_info/npc_transaction_info.html %}
         {% include panel_info/pi_building_quest.html %}
+        {% include panel_info/pi_nukeoil.html %}
     </div>
     <div id="townRightPanel" class="town-panel right">
         {% include panel_info/car_info.html %}
         {% include panel_info/panel_description.html %}
         {% include panel_info/pi_building.html %}
+        {% include panel_info/pi_location.html %}
     </div>
 </div>
 
@@ -280,9 +282,9 @@
 
             var building = $(this).data('building');
             if (locationManager.buildings.hasOwnProperty(building) &&
-                !locationManager.buildings[building].isActivePlace()) {
-                locationManager.panel_left.show({}, '');
-                locationManager.panel_right.show({}, '');
+                !locationManager.isActivePlace(locationManager.buildings[building])) {
+                locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+                locationManager.panel_right.show({}, 'location');
             }
         });
 

@@ -1,5 +1,5 @@
 {% set window_caption = 'Nuke:\Party>' %}
-<div class="partyWindow-main">
+<div class="partyWindow-main town-back-interlacing-nocontent">
     {% include ../drag_close_header.html %}
     <div class="party-window-wrap">
         <div class="party-window-header-block">
@@ -13,6 +13,19 @@
                 <input class="party-page-create-name-input party-window-margin-top" type="text"  maxlength="30"/>
                 <div class="party-page-create-target-label">ЦЕЛИ:</div>
                 <textarea class="party-page-create-target-textarea party-window-margin-top" maxlength="250"></textarea>
+                <div class="party-page-create-images-block">
+                    <div class="party-page-create-images-slide-btn left"></div>
+                    <div class="party-page-create-images-wrap">
+                        <div class="party-page-create-images-container">
+                            <div class="party-page-create-images image1"></div>
+                            <div class="party-page-create-images image2"></div>
+                            <div class="party-page-create-images image3"></div>
+                            <div class="party-page-create-images image4"></div>
+                            <div class="party-page-create-images image5"></div>
+                        </div>
+                    </div>
+                    <div class="party-page-create-images-slide-btn right"></div>
+                </div>
                 <div class="party-page-create-btn party-window-btn">Создать</div>
             </div>
             <div class="party-window-page party_page_management">
@@ -123,3 +136,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    function makeScrollPartyAvatars(jq_block, d_scroll) {
+        var scroll_pos = jq_block.scrollLeft();
+        jq_block.scrollLeft(scroll_pos + d_scroll);
+    }
+    var party_avatar_scroll_interval = null;
+
+    $('.party-page-create-images').click(function() {
+        $('.party-page-create-images').removeClass('active');
+        $(this).addClass('active');
+    });
+    $('.party-page-create-images').first().click();
+
+
+    $('.party-page-create-images-slide-btn').mousedown(function(event) {
+        var jq_this = $(this);
+        var scroll_block = $('.party-page-create-images-wrap').first();
+        var d_scroll = 0;
+        if (jq_this.hasClass('left')) d_scroll = -10;
+        if (jq_this.hasClass('right')) d_scroll = 10;
+        party_avatar_scroll_interval = setInterval(makeScrollPartyAvatars, 50, scroll_block, d_scroll);
+    });
+    $('.party-page-create-images-slide-btn').mouseup(function(event) {
+        if (party_avatar_scroll_interval)
+            clearInterval(party_avatar_scroll_interval);
+    });
+</script>

@@ -20,17 +20,27 @@ var ECanvasLocationLaserAnimation = (function () {
             this.start_time = time;
             return 0;
         }
+
         var frame = Math.floor(time_off / this.time_of_frame);
         if (frame > this.frame_count - 1) return this.frame_count - 1;
         return frame % this.frame_count;
+
+        // Это для движения 12345432123... 
+        //var all_frame_number = Math.floor(time_off / this.time_of_frame);
+        //var fc2 = this.frame_count * 2 - 2;
+        //var frame = all_frame_number % fc2;
+        //if (frame > this.frame_count - 1) {frame = fc2 - frame;}
+        //return frame;
     };
 
     ECanvasLocationLaserAnimation.prototype.start = function () {
+        //console.log('ECanvasLocationLaserAnimation.prototype.start');
         this.start_time = clock.getClientTime();
         return this;
     };
 
     ECanvasLocationLaserAnimation.prototype.finish = function () {
+        //console.log('ECanvasLocationLaserAnimation.prototype.finish');
         this.start_time = 0;
     };
 

@@ -112,13 +112,15 @@ var LocationPlaceMenu = (function (_super) {
         if (! item.hasOwnProperty('example')) return;
         var count = item._item_state.val(clock.getCurrentTime());
         var itemWrapDiv = $('<div class="npcInventory-itemWrap"></div>');
-        var itemDiv = $('<div class="npcInventory-item">' +
-            '<div class="npcInventory-pictureWrap">' +
-                '<div class="npcInventory-picture"></div>' +
-            '</div>' +
-            '<div class="npcInventory-name">' + item.example.title + '</div>' +
-            '<div class="npcInventory-text count">' + count.toFixed(1) + '</div>' +
-            '</div>');
+        var itemDiv = $(
+            '<div class="npcInventory-item">' +
+                '<div class="npcInventory-pictureWrap">' +
+                    '<div class="npcInventory-picture town-interlacing"></div>' +
+                '</div>' +
+                '<div class="npcInventory-name">' + item.example.title + '</div>' +
+                '<div class="npcInventory-text count">' + count.toFixed(1) + '</div>' +
+            '</div>'
+        );
 
         itemDiv.find('.npcInventory-picture')
             .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');

@@ -49,6 +49,7 @@ class MapLocation(POIObserver):
 class Building(AbstractDocument):
     name = StringField(caption=u'Техническое имя', tags='client')  # todo: identify string constrain
     caption = StringField(caption=u'Название', tags='client')
+    title = StringField(caption=u'Заголовок', tags='client')
     head = UniReferenceField(
         reference_document_type='sublayers_server.model.registry.classes.poi.Institution',
         tags='client',
@@ -62,6 +63,7 @@ class Building(AbstractDocument):
     def as_client_dict(self):
         d = dict(
             caption=self.caption,
+            title=self.title,
             head=self.head and self.head.as_client_dict(),
             instances=[inst.as_client_dict() for inst in self.instances]
         )

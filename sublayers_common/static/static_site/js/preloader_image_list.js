@@ -110,8 +110,6 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/1366_june/768_btn6_over.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_btn6_pressed.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_btn6_indicator.png');
-        preloaderImage.add('/static/static_site/img/1366/768_fake_radiobuttons.png');
-        preloaderImage.add('/static/static_site/img/1366/768_light_indicator.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_scan.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_junk.png');
         preloaderImage.add('/static/static_site/img/1366_june/768_radio_text_maddog.png');

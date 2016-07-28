@@ -85,14 +85,11 @@ var WFireController = (function (_super) {
             document.getElementById('map').focus();
         });
 
-        // Кнопка All
-        this.allFire = document.createElementNS(this.NS, 'circle');
-        this.allFire.setAttribute('class', 'fire-control-all sublayers-clickable');
-        this.allFire.setAttribute('r', this.radiusAll);
-        this.allFire.setAttribute('cx', this.center.x);
-        this.allFire.setAttribute('cy', this.center.y);
-        this.SVG.appendChild(this.allFire);
-        $(this.allFire).on('click', {self: this}, this.changeAutoShootingEnable);
+        this.fCT.append($('<div class="fire-control-all sublayers-clickable"></div>'));
+        this.allFire = this.fCT.find('.fire-control-all').first();
+        this.allFire.on('click', {self: this}, this.changeAutoShootingEnable);
+
+
 
         // Создание общей группы для трансформации секторов
         this.SVGSectorsGroup = document.createElementNS(this.NS, 'g');
@@ -356,14 +353,13 @@ var WFireController = (function (_super) {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'OFF');
             self.autoShoot = false;
             self._setAutoShootingEnable(false);
-            //self.allFire.removeClass('fire-control-all-active');
-            self.allFire.setAttribute('class', 'fire-control-all sublayers-clickable');
+            self.allFire.removeClass('fire-control-all-active');
         }
         else {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
             self.autoShoot = true;
             self._setAutoShootingEnable(true);
-            self.allFire.setAttribute('class', 'fire-control-all sublayers-clickable fire-control-all-active');
+            self.allFire.addClass('fire-control-all-active');
         }
         document.getElementById('map').focus();
     };

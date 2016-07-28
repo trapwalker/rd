@@ -25,6 +25,9 @@ class Weapon(Consumer):
     def classname(self):
         return self.__class__.__name__
 
+    def __str__(self):
+        return '{}---{}'.format(self.classname, self.sector)
+
     def as_dict(self, **kw):
         return dict(
             cls=self.classname,

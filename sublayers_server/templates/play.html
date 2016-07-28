@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="{{ static_url('css/third_party/leaflet.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/third_party/jquery-ui.css') }}"/>
 
+    <link rel="stylesheet" href="{{ static_url('css/interlacing.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/controls/sliders.css') }}"/>
@@ -56,8 +57,10 @@
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/panel_info_common.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/pi_location.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/pi_building.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/pi_building_quest.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/pi_nukeoil.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/car_info.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/npc_transaction_info.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/panel_description.css') }}"/>
@@ -238,9 +241,9 @@
         <div id="modalWelcome"></div>
         <div id="modalOptions"></div>
         <div id="modalDeath"></div>
-        <div id="modalWin"></div>
-        <div id="modalLose"></div>
         <div id="modalRestart"></div>
+        <div id="modalInfoPage"></div>
+        <div id="modalAnswerPage"></div>
     </div>
 
     <div id="activeTownDivBack">
