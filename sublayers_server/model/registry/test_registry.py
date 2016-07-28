@@ -28,7 +28,12 @@ def test_registry():
     #log.debug('Delete all: %s', (yield Root.objects.delete()))
     #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
 
-    nodes = yield Root.objects.find_all()
+    nodes = yield Root.objects.filter(uri={'$ne': None}).find_all()
+    reg = Root.objects.get_cached('reg:///registry')
+    a = reg['agents/user']
+    u = a.instantiate(profile_id='123456')
+    yield u.load_references()
+    yield u.save(upsert=True)
 
     #car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
     # log.debug('object by parents: %s', id(car.parent.parent.parent))
