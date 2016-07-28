@@ -92,7 +92,7 @@ class Application(BaseApplication):
         self.clients = []
         self.chat = []
         # todo: truncate chat history
-        self.srv.load_world()
+        self.srv.load_registry()
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта

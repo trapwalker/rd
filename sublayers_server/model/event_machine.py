@@ -10,7 +10,7 @@ from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
-from sublayers_server.model.events import LoadWorldEvent
+from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
@@ -25,9 +25,20 @@ from time import sleep
 from threading import Thread
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
+from functools import partial, wraps
 
 
 MAX_SERVER_SLEEP_TIME = 0.1
+
+
+def async_call_deco(f):
+    wraps(f)
+    def closure(*av, **kw):
+        #callback = kw.pop('callback', None)  # todo: make result returning by callback
+        ff = partial(f, *av, **kw)
+        tornado.ioloop.IOLoop.instance().add_callback(ff)
+
+    return closure
 
 
 class Server(object):
@@ -51,7 +62,6 @@ class Server(object):
         # todo: blocking of init of servers with same uid
 
         self.reg = None  # Registry(name='registry')
-        self.ioloop.add_callback(callback=self.on_load_registry)
         # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
 
         self.zones = []
@@ -64,10 +74,14 @@ class Server(object):
         self.quick_game_cars_proto = []
         self.quick_game_start_pos = Point(12517168, 27028861)
 
-    def on_load_registry(self):
+        #self.ioloop.add_callback(callback=self.load_registry)
+
+    @async_call_deco
+    def load_registry(self):
         def load_registry_done_callback(all_registry_items):
             self.reg = Root.objects.get_cached('reg:///registry')
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
+            self.load_world()
 
         #Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
         Root.objects.find_all(callback=load_registry_done_callback)
@@ -80,9 +94,6 @@ class Server(object):
     @staticmethod
     def get_time():
         return get_time()
-
-    def load_world(self):
-        LoadWorldEvent(server=self, time=self.get_time()).post()
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
@@ -101,11 +112,14 @@ class Server(object):
             except Exception as e:
                 log.exception('Loading zone %s error: %s', zone, e)
 
+    def load_world(self):
+        LoadWorldEvent(server=self, time=self.get_time()).post()  # todo: remove deprecated event
+
     def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
-        self.init_zones(time=event.time)
+        #self.init_zones(time=event.time)
 
         # загрузка радиоточек
         towers_root = self.reg['poi/radio_towers']
@@ -129,6 +143,7 @@ class Server(object):
         for car_proto in self.quick_game_cars_proto:
             # todo: Здесь не должны инстанцироваться машинки
             car_example = car_proto.instantiate()
+            # todo: load_references Но правильнее инстанцировать перед выдачей каждому игроку
             # car_example.position = None
             # car_example.last_location = None
             self.quick_game_cars_examples.append(car_example)
