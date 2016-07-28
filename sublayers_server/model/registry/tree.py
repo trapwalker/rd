@@ -51,10 +51,8 @@ class Node(AbstractDocument):
 
     def make_uri(self):
         owner = self.owner
-        if owner is None and self.parent:  # Корневые элементы с предком -- это, скорее всего, субдокументы. URI нет.
-            return
         assert not owner or owner.uri, '{}.make_uri without owner.uri'.format(self)
-        path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self.id_),)
+        path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self._id),)
         return URI(
             scheme='reg',
             #storage=self.__class__.__collection__,
@@ -70,11 +68,18 @@ class Node(AbstractDocument):
         """
         #_id=kw.pop('_id', ObjectId()),
         super(Node, self).__init__(**kw)
-        if self.uri is None and not embedded:  # todo: make_uri по-другому проверяет является ли объект встроенным.
-            uri = self.make_uri()
-            self.uri = uri and str(uri)
-
         self._subnodes = WeakSet()
+
+        if self.uri is None and not embedded:
+            owner = self._values.get('owner')
+            if owner:  # todo: Сделать меньше вариантов назначения имени. Хочется определенности.
+                self_name = self.name or self.uid or self.profile_id and 'profile={}'.format(self.profile_id)
+                owner_uri = owner if isinstance(owner, basestring) else owner.uri
+                owner_uri = URI(owner_uri)
+                self_uri = owner_uri.replace(path=owner_uri.path + (self_name,))
+                self.uri = str(self_uri)
+            elif self.abstract and self.name:
+                self.uri = str(URI(scheme='reg', path=(self.name,)))
 
     def __getitem__(self, idx):
         path = None
@@ -122,7 +127,10 @@ class Node(AbstractDocument):
             value = field.get_value(self._values.get(name, None))
 
             if not is_value_exists and name not in {'parent', 'owner', 'uri'}:
-                parent = self.parent
+                try:
+                    parent = self.parent
+                except:
+                    assert False, "oops! where are you, mom!?"
                 value = getattr(parent, name, None)  # todo: may be exception need?
 
             if field.required and value is None:

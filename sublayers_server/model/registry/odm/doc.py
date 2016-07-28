@@ -75,7 +75,7 @@ class AbstractDocument(Document):
 
     @return_future
     def load_references(self, fields=None, callback=None, alias=None):
-        _call_stat['load_references', self.uri or self.parent and ('*' + self.parent.uri)] += 1
+        #_call_stat['load_references', self.uri or self.parent and ('*' + self.parent.uri)] += 1
 
         if callback is None:
             raise ValueError("Callback can't be None")
@@ -236,7 +236,6 @@ class AbstractDocument(Document):
 
     @classmethod
     def search_in_cache(cls, **kw):
-        #key_fields = {'id', '_id', 'uri'}  # todo: Сделать функцию, возвращающую перечень ключей для поиска в кеше #OPTIMIZE
         for key_name in set(kw.keys()) & cls.key_fields:
             key = kw[key_name]
             if key:

@@ -17,13 +17,14 @@ import json
 
 
 class BaseSiteHandler(BaseHandler):
+    @tornado.gen.coroutine
     def _get_car(self, user):
         user_info = dict(name=user.name)
         html_car_img = None
         name_car = None
         html_agent = None
 
-        agent_example = self.application.reg_agents.get([str(user._id)])
+        agent_example = yield self.application.reg.objects.get(profile_id=str(user._id))
         ex_car = None
         if agent_example:
             user_info['driving'] = agent_example.driving.value
@@ -58,12 +59,12 @@ class BaseSiteHandler(BaseHandler):
             ).load("car_info_ext_wrap.html")
             html_car_img = template_img.generate(car=ex_car)
 
-        return dict(
+        raise tornado.gen.Return(dict(
             user_info=user_info,
             html_car_img=html_car_img,
             name_car=None if ex_car is None else ex_car.name_car,
             html_agent=html_agent
-        )
+        ))
 
     def _get_quick_game(self):
         car_examples = self.application.quick_game_cars_examples

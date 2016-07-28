@@ -32,7 +32,7 @@ class GetRPGInfoHandler(BaseSiteHandler):
                 fp_skills=role_class.start_free_point_skills,
                 fp_perks=role_class.start_free_point_perks,
                 icon=role_class.icon,
-                node_hash=role_class.node_hash(),
+                node_hash=role_class.uri,  # todo: rename node_hash -> uri
                 start_perks=[self.get_perk_rec(self.application.reg[perk]) for perk in role_class.start_perks]
             ))
         self.finish({
@@ -117,13 +117,14 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
                 # print 'Add perk', perk
                 agent_ex.perks.append(perk_node)
 
+    @tornado.gen.coroutine
     def post(self):
         action = self.get_argument('action', None)
         user = self.current_user
         if user is None:
             self.finish({'status': 'User not auth'})
             return
-        agent_ex = self.application.reg_agents.get([str(user._id)])
+        agent_ex = yield self.application.reg.objects.get(profile_id=str(user._id))
         if agent_ex is None:
             self.finish({'status': 'Agent not found'})
             return         
@@ -138,5 +139,5 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         else:
             pass
 
-        self.application.reg_agents.save_node(agent_ex)
+        yield agent_ex.save()
         self.finish(self.get_full_site_rpg_settings(agent_ex))

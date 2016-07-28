@@ -53,7 +53,6 @@ class Application(BaseApplication):
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
         self.reg = None
-        self.reg_agents = None
         self.quick_game_cars_examples = []
         self.news_manager = NewsManager()
 
@@ -77,8 +76,6 @@ class Application(BaseApplication):
             self.reg = Root.objects.get_cached('reg:///registry')
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
 
-            self.reg_agents = Collection(name='agents', db=self.db)
-
             # Создание экземпляров машинок для быстрой игры
             quick_game_cars_proto = []
             for car_proto in self.reg['world_settings'].quick_game_car:
@@ -90,7 +87,7 @@ class Application(BaseApplication):
             log.info('Site server READY')
 
 
-        Root.objects.find_all(callback=load_registry_done_callback)
+        Root.objects.filter(uri={'$ne': None}).find_all(callback=load_registry_done_callback)
 
 
 def main():
