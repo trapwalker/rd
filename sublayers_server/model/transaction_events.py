@@ -923,7 +923,8 @@ class TransactionSetRPGState(TransactionEvent):
         for skill_name in self.skills:
             if hasattr(agent.example, skill_name):
                 ex_skill = getattr(agent.example, skill_name, None)
-                need_value = ex_skill.value + self.buy_skills[u'buy_' + skill_name]
+                need_value = ex_skill.value + (self.buy_skills[u'buy_' + skill_name] -
+                                               getattr(self.agent.example, 'buy_' + skill_name).value)
                 if self.skills[skill_name] < need_value:
                     price += npc.drop_price
                     break

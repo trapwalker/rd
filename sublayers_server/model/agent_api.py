@@ -753,6 +753,7 @@ class AgentAPI(API):
     @public_method
     def set_about_self(self, text):
         self.agent.example.about_self = text
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Запрос инфы о другом игроке
 

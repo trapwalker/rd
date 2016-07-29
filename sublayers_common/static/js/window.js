@@ -74,8 +74,8 @@ var Window = (function () {
     Window.prototype.closeWindow = function () {
         //console.log('Window.prototype.closeWindow');
         // todo: усовершенствовать снятие обработчиков
-        if (this.options.close_call_back)
-            this.options.close_call_back();
+        if (this.options.close_call_back && typeof(this.options.close_call_back) === 'function')
+            this.options.close_call_back(this.mainDiv);
         this.mainDiv.find('div').off(); // снять со всемх дивов, так как они скорее всего кнопки
         this.mainDiv.off(); // снять с главного дива - тут снимается draggable
         if (this.options.isModal)
@@ -203,7 +203,7 @@ var WindowTemplateManager = (function () {
                 self.z_index_list[win_name] = self.count;
                 temp_window.mainDiv.css('z-index', self.count);
 
-                if (open_call_back) open_call_back(temp_window.mainDiv);
+                if (open_call_back && typeof(open_call_back) === 'function') open_call_back(temp_window.mainDiv);
             }
         });
     };

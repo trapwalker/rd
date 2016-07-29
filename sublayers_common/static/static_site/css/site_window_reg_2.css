@@ -12,6 +12,8 @@
     cursor: url('/static/img/cursors/main.png'), default;
 }
 
+.window-reg2-main .window-qg-content-header:hover { font-size: 13pt }
+
 .window-reg2-path {
     position: relative;
     float: left;
@@ -51,13 +53,14 @@
 
 .reg2-skill-table-label {
     position: relative;
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
     padding-left: 10px;
     box-sizing: border-box;
     float: left;
     width: 70%;
     height: 100%;
 }
+.reg2-skill-table .reg2-skill-table-label:hover { font-size: 13pt; }
+.reg2-skill-table .reg2-skill-table-label { cursor: url('/static/img/cursors/hyper.png'), pointer; }
 
 .reg2-skill-table-counter-block {
     position: relative;
@@ -157,14 +160,15 @@
 /* Медиа Запросы для разрешения 1366 */
 
 @media screen and (max-width: 1366px), screen and (max-height: 800px) {
-    .window-reg2-main {
-        font-size: 10pt;
-    }
+    .window-reg2-main { font-size: 10pt; }
+    .window-reg2-main .window-qg-content-header:hover { font-size: 11pt }
 
     .window-reg2-path {
         margin-top: 14px;
         height: calc(58% - 24px - 9px);
     }
+
+    .reg2-skill-table .reg2-skill-table-label:hover { font-size: 11pt; }
 
     .reg2-table-line { height: 18px; margin-bottom: 0px; }
     .reg2-skill-table-counter-btn { margin-top: 1px; }

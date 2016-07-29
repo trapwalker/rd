@@ -161,7 +161,7 @@ var LocationTraderNPC = (function (_super) {
 
             var itemDiv = $(
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
-                    '<div class="npcInventory-item">' +
+                    '<div class="npcInventory-item" data-img_link="' + example.inv_icon_mid + '">' +
                         '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
                         '<div class="npcInventory-text name">' + example.title + '</div>' +
                         '<div class="npcInventory-text count">' + example.count.toFixed(1) + '</div>' +
@@ -170,7 +170,10 @@ var LocationTraderNPC = (function (_super) {
             );
 
             itemDiv.draggable({
-                helper: 'clone',
+                helper: function(event) {
+                    var img_link = $(event.target).parent().data('img_link');
+                    return $('<img width="130" height="70" src="' + img_link + '">')
+                },
                 opacity: 0.8,
                 revert: true,
                 revertDuration: 0,
