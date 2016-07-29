@@ -15,8 +15,6 @@ from bson.objectid import ObjectId, InvalidId
 import json
 
 
-
-
 class BaseSiteHandler(BaseHandler):
     @tornado.gen.coroutine
     def _get_car(self, user):
@@ -68,7 +66,6 @@ class BaseSiteHandler(BaseHandler):
         ))
 
     def _get_quick_game(self):
-        car_examples = self.application.quick_game_cars_examples
         car_templates_list = []
 
         template_car = tornado.template.Loader(
@@ -76,7 +73,7 @@ class BaseSiteHandler(BaseHandler):
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")
 
-        for car_ex in car_examples:
-            html_car_img = template_car.generate(car=car_ex)
+        for car_proto in self.application.reg['world_settings'].quick_game_car:
+            html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
