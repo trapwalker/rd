@@ -154,6 +154,10 @@
     box-sizing: border-box;
 }
 
+.character-window-about-area textarea:focus {
+    outline: none !important;
+}
+
 .character-window-bottom-menu {
     position: relative;
     box-sizing: border-box;
