@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
+from sublayers_server.model.registry.classes.agents import Agent
 
 import tornado.web
 import tornado.gen
@@ -24,7 +25,7 @@ class BaseSiteHandler(BaseHandler):
         name_car = None
         html_agent = None
 
-        agent_example = yield self.application.reg.objects.get(profile_id=str(user._id))
+        agent_example = yield Agent.objects.get(profile_id=str(user._id))
         ex_car = None
         if agent_example:
             user_info['driving'] = agent_example.driving.value
