@@ -35,8 +35,26 @@ var WCanvasCarMarker = (function (_super) {
 
     WCanvasCarMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasCarMarker.prototype.click_handler', event);
-        console.log('Произведён клик на машинку ', this.car);
-
+        //console.log('Произведён клик на машинку ', this.car);
+        var name = this.car.owner ? this.car.owner.login : user.login;
+        windowTemplateManager.openUniqueWindow(
+            'person_info_' + name,
+            '/person_info',
+            {person: name, mode: 'map'},
+            function(jq_window) {
+                jq_window.find('.person-window-btn').click(function(){
+                    if (user.party)
+                        clientManager.sendInvitePartyFromTemplate($(this).data('name'));
+                    else {
+                        modalWindow.modalDialogInfoShow({
+                            caption: 'Error Message',
+                            header: 'Вы не в пати',
+                            body_text: 'Для приглашения других игроков создайте пати'
+                        });
+                    }
+                });
+            }
+        );
     };
 
     WCanvasCarMarker.prototype.redraw = function(ctx, time){
