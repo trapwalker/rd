@@ -45,6 +45,10 @@ class Perk(Root):
             return True
         return False
 
+    def as_client_dict(self):
+        d = super(Perk, self).as_client_dict()
+        d.update(uri=self.uri)
+        return d
 
 class PerkPassive(Perk):
     p_visibility_min   = FloatField(caption=u"Коэффициент минимальной заметности")
