@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
+from sublayers_server.model.registry.classes.agents import Agent
 
 import tornado.web
 
@@ -72,7 +73,7 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             #                 perk=perk.as_client_dict(),
             #                 active=perk in agent_ex.perks,
             #             ))
-            d['role_class_target_0'] = self.application.reg[agent_ex.role_class.class_skills[0]].target  # todo: Для подсветки ролевого класса и навыка
+            d['role_class_target_0'] = agent_ex.role_class.class_skills[0].target  # todo: Для подсветки ролевого класса и навыка
         else:
             d['status'] = 'Agent Role class not found'
         return d
@@ -124,7 +125,7 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         if user is None:
             self.finish({'status': 'User not auth'})
             return
-        agent_ex = yield self.application.reg.objects.get(profile_id=str(user._id))
+        agent_ex = yield Agent.objects.get(profile_id=str(user._id))
         if agent_ex is None:
             self.finish({'status': 'Agent not found'})
             return         
