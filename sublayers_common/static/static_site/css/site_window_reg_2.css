@@ -99,6 +99,7 @@
     width: 85%;
     height: 100%;
 }
+.reg2-perk-table .reg2-perk-table-label:hover { font-size: 13pt; }
 
 .reg2-perk-table-checkbox-block {
     position: relative;
@@ -169,6 +170,7 @@
     }
 
     .reg2-skill-table .reg2-skill-table-label:hover { font-size: 11pt; }
+    .reg2-perk-table .reg2-perk-table-label:hover { font-size: 11pt; }
 
     .reg2-table-line { height: 18px; margin-bottom: 0px; }
     .reg2-skill-table-counter-btn { margin-top: 1px; }

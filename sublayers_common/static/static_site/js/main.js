@@ -633,7 +633,8 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                 $('#reg2_free_skils').text(reg2_skill_point);
 
                 // Перки
-                $('#reg2_free_perks').text(data.free_point_perks);
+                reg2_perk_point = data.free_point_perks;
+                $('#reg2_free_perks').text(reg2_perk_point);
                 var jq_perk_table = $('#re2_perk_table');
                 var jq_perk_chip_perk_list = $('#RDSiteWReg3_PerkList');
                 jq_perk_table.empty();
