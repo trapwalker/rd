@@ -3,12 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.odm.doc import AbstractDocument
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm.fields import IntField, FloatField, ListField, EmbeddedDocumentField
 
 
-class Pair(AbstractDocument):
+class Pair(Subdoc):
     k = IntField()
     v = FloatField()
 

@@ -7,13 +7,12 @@ from datetime import datetime
 import time
 import math
 
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.classes.inventory import InventoryField
 from sublayers_server.model.registry.odm.fields import (
     IntField, FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField,
 )
-from sublayers_server.model.registry.odm.doc import AbstractDocument
 from sublayers_server.model.registry.classes.price import PriceField
 
 from itertools import chain
@@ -46,7 +45,7 @@ class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
 
 
-class Building(AbstractDocument):
+class Building(Subdoc):
     name = StringField(caption=u'Техническое имя', tags='client')  # todo: identify string constrain
     caption = StringField(caption=u'Название', tags='client')
     title = StringField(caption=u'Заголовок', tags='client')
@@ -58,16 +57,6 @@ class Building(AbstractDocument):
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.Institution'),
         tags='client',
     )
-
-    # todo: Сделать as_dict(tag_filter='clent') вместо as_client_dict прямо в AbstractDocument
-    def as_client_dict(self):
-        d = dict(
-            caption=self.caption,
-            title=self.title,
-            head=self.head and self.head.as_client_dict(),
-            instances=[inst.as_client_dict() for inst in self.instances]
-        )
-        return d
 
 
 class Town(MapLocation):

@@ -5,8 +5,7 @@ log = logging.getLogger(__name__)
 
 import math
 
-from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.odm.doc import AbstractDocument
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
 )
@@ -52,7 +51,7 @@ class Skill(Root):
         return d
 
 
-class SkillPriceItem(AbstractDocument):
+class SkillPriceItem(Subdoc):
     count = IntField(caption=u"Количество")
     price = FloatField(caption=u"Цена")
 

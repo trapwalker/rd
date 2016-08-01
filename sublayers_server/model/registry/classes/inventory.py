@@ -4,12 +4,12 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_server.model.registry.odm import AbstractDocument
+from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm.fields import ListField, EmbeddedDocumentField
 
 from collections import Counter
 
-class Inventory(AbstractDocument):
+class Inventory(Subdoc):
     items = ListField(base_field=EmbeddedDocumentField(
         embedded_document_type='sublayers_server.model.registry.classes.item.Item',
     ))

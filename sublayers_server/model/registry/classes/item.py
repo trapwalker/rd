@@ -4,8 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.odm.doc import AbstractDocument
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm.fields import (
     IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
@@ -117,12 +116,12 @@ class MechanicItem(SlotItem):
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
 
 
-class TunerImageView(AbstractDocument):
+class TunerImageView(Subdoc):
     link = StringField(caption=u"Ссылка на картинку")
     z_index = IntField(default=0, caption=u"Уровень отображения слоя")
 
 
-class TunerImage(AbstractDocument):
+class TunerImage(Subdoc):
     car = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car')
     top = EmbeddedDocumentField(embedded_document_type=TunerImageView)
     side = EmbeddedDocumentField(embedded_document_type=TunerImageView)
@@ -137,8 +136,8 @@ class TunerItem(SlotItem):
 
 
 class ArmorerItem(SlotItem):
-    class ArmorerImages(AbstractDocument):
-        class ArmorerImagesSize(AbstractDocument):
+    class ArmorerImages(Subdoc):
+        class ArmorerImagesSize(Subdoc):
             armorer_side_F = StringField()
             armorer_side_B = StringField()
             armorer_side_R = StringField()

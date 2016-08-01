@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_server.model.registry.odm import AbstractDocument
+from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm.fields import (
     FloatField, ListField, EmbeddedDocumentField, UniReferenceField, StringField,
 )
@@ -12,7 +12,7 @@ from sublayers_server.model.registry.uri import URI
 from collections import namedtuple
 
 
-class PriceOption(AbstractDocument):
+class PriceOption(Subdoc):
     item = UniReferenceField(
         caption=u'Товар',
         reference_document_type='sublayers_server.model.registry.classes.item.Item',
@@ -31,7 +31,7 @@ class PriceOption(AbstractDocument):
 PriceBid = namedtuple('PriceBid', 'buy sale')
 
 
-class Price(AbstractDocument):
+class Price(Subdoc):
     items = ListField(base_field=EmbeddedDocumentField(embedded_document_type=PriceOption))
 
     def get_item_price(self, item):

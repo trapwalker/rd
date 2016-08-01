@@ -34,7 +34,36 @@ class RegistryNodeFormatError(RegistryError):
     pass
 
 
-class Node(AbstractDocument):
+class Doc(AbstractDocument):
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = {}
+        for name, attr, getter in self.iter_attrs(tags='client'):
+            d[name] = getter()
+        return d
+
+    def iter_attrs(self, tags=None, classes=None):
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
+
+        for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
+            if hasattr(attr, 'tags'):
+                if (
+                    (not tags or attr.tags & tags) and
+                    (not classes or isinstance(attr, classes))
+                ):
+                    getter = lambda: getattr(self, name)
+                    yield name, attr, getter
+            else:
+                log.warning(`'Doc.iter_attrs: dynamic field! %s in %r', name, self)
+
+
+class Subdoc(Doc):
+    pass
+
+
+class Node(Doc):
     # todo: make sparse indexes
     # todo: override attributes in subclasses
     uid = UUIDField(default=get_uuid, unique=True, identify=True)
@@ -172,28 +201,13 @@ class Node(AbstractDocument):
         return self.node_hash().replace('://', '-').replace('/', '-')
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
-        d = dict(
+        d = super(Node, self).as_client_dict()
+        d.update(
             id=self.id,
             node_hash=self.node_hash(),
             html_hash=self.node_html(),
         )
-        for name, attr, getter in self.iter_attrs(tags='client'):
-            d[name] = getter()
         return d
-
-    def iter_attrs(self, tags=None, classes=None):
-        if isinstance(tags, basestring):
-            tags = set(tags.split())
-        elif tags is not None:
-            tags = set(tags)
-
-        for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
-            if (
-                (not tags or attr.tags & tags) and
-                (not classes or isinstance(attr, classes))
-            ):
-                getter = lambda: getattr(self, name)
-                yield name, attr, getter
 
     def instantiate(self, name=None, by_uri=None, **kw):
         assert self.abstract, "Can't instantiate abstract object: {}".format(self)
@@ -303,6 +317,7 @@ class Node(AbstractDocument):
 
         # log.debug('load_references({self})'.format(self=self))
         super(Node, self).load_references(fields=fields, callback=on_load, alias=alias)
+
 
 class Root(Node):
     pass
