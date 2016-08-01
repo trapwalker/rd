@@ -406,11 +406,11 @@ class Agent(Object):
         log.debug('%s:: on_kill(%s)', self, obj)
 
         # todo: party
-        # todo: registry fix
-        # self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        # d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp')) * \
-        #              self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.stat_log.get_metric('exp'))
-        # self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
+        # todo: registry fix?
+        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
+        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp')) * \
+                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.stat_log.get_metric('exp'))
+        self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
 
         # Отправить сообщение на клиент о начисленной экспе
         AddExperienceMessage(agent=self, time=time,).post()
@@ -474,9 +474,9 @@ class Agent(Object):
 
     @property
     def skill_points(self):
-        # todo: registry fix it
-        return self.example.exp_table.agent_skill_points_by_exp(0)
-        # return self.example.exp_table.agent_skill_points_by_exp(self.stat_log.get_metric('exp'))
+        # todo: registry fix it?
+        #return self.example.exp_table.agent_skill_points_by_exp(0)
+        return self.example.exp_table.agent_skill_points_by_exp(self.stat_log.get_metric('exp'))
 
     @property
     def lvl(self):

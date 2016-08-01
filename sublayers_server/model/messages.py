@@ -825,9 +825,9 @@ class UserExampleSelfShortMessage(Message):
 
         # RPGInfo
         rpg_info = dict()
-        # # lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
-        # #     exp=agent.stat_log.get_metric('exp'))
-        # # todo: registry fix it
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
+            exp=agent.stat_log.get_metric('exp'))
+        # todo: registry fix it
         lvl = 0
         rpg_info.update(
             current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
@@ -846,9 +846,9 @@ class UserExampleSelfShortMessage(Message):
             buy_trading=agent.example.buy_trading.as_client_dict(),
             buy_engineering=agent.example.buy_engineering.as_client_dict(),
 
-            # current_exp=self.agent.stat_log.get_metric('exp'),
-            # next_level=nxt_lvl,
-            # next_level_exp=nxt_lvl_exp,
+            current_exp=self.agent.stat_log.get_metric('exp'),
+            next_level=nxt_lvl,
+            next_level_exp=nxt_lvl_exp,
 
             perks=[
                 dict(
