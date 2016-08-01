@@ -19,7 +19,7 @@ class Item(Root):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
     amount = FloatField(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
-    stack_size = FloatField(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
+    stack_size = FloatField(caption=u'Максимальный размер стека этих предметов в инвентаре')
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1', tags='client')
 

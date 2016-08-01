@@ -70,9 +70,8 @@ class Server(object):
         self.visibility_mng = VisibilityManager(server=self)
 
         # todo: QuickGame settings fix it
-        self.quick_game_cars_examples = []
         self.quick_game_cars_proto = []
-        self.quick_game_start_pos = Point(12517168, 27028861)
+        self.quick_game_start_pos = Point(12468002, 26989281)
 
         #self.ioloop.add_callback(callback=self.load_registry)
 
@@ -137,17 +136,10 @@ class Server(object):
             GasStation(time=event.time, server=self, example=gs_exm)
 
         # Создание экземпляров машинок для быстрой игры
-        self.quick_game_cars_proto = []
-        self.quick_game_cars_proto.append(self.reg['mobiles/cars/middle/sports/delorean_dmc12'])
-        self.quick_game_cars_proto.append(self.reg['mobiles/cars/heavy/btrs/m113a1'])
-        for car_proto in self.quick_game_cars_proto:
-            # todo: Здесь не должны инстанцироваться машинки
-            car_example = car_proto.instantiate()
-            # todo: load_references Но правильнее инстанцировать перед выдачей каждому игроку
-            # car_example.position = None
-            # car_example.last_location = None
-            self.quick_game_cars_examples.append(car_example)
+        for car_proto in self.reg['world_settings'].quick_game_car:
+            self.quick_game_cars_proto.append(car_proto)
 
+        print 'Load world complete !'
 
     def post_message(self, message):
         """

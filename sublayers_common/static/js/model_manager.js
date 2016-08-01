@@ -131,7 +131,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.receiveMessage = function (params) {
         //console.log('ClientManager.prototype.receiveMessage', params);
-
         if (params.message_type == "push") {
             if(params.events){
                 var e = params.events[0];
@@ -296,7 +295,7 @@ var ClientManager = (function () {
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
-        //console.log('ClientManager.prototype.InitAgent', event);
+        console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
         if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
             user.login = event.agent.login;
@@ -312,7 +311,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InitCar = function (event) {
-        //console.log('ClientManager.prototype.InitCar', event);
+        console.log('ClientManager.prototype.InitCar', event);
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
@@ -929,7 +928,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.example_agent.rpg_info = event.rpg_info;
@@ -990,7 +989,7 @@ var ClientManager = (function () {
 
     // Журнал (стоянка)
     ClientManager.prototype.JournalParkingInfoMessage = function (event) {
-        //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
+        console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
         journalManager.parking.update(event.cars);
     };
 

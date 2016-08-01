@@ -108,7 +108,9 @@ class Trader(Institution):
 
     def as_client_dict(self, items=()):
         d = super(Trader, self).as_client_dict()
-        d['price'] = self.price.get_pricelist(chain(items, self.inventory))
+        # todo: registry fix it
+        # d['price'] = self.price.get_pricelist(chain(items, self.inventory))
+        d['price'] = []
         return d
 
     def get_prices(self, items=()):

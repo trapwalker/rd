@@ -825,25 +825,26 @@ class UserExampleSelfShortMessage(Message):
 
         # RPGInfo
         rpg_info = dict()
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
-            exp=agent.stat_log.get_metric('exp'))
-
+        # # lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
+        # #     exp=agent.stat_log.get_metric('exp'))
+        # # todo: registry fix it
+        lvl = 0
         rpg_info.update(
             current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
             all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
-            driving=self.agent.example.driving.as_client_dict(),
-            shooting=self.agent.example.shooting.as_client_dict(),
-            masking=self.agent.example.masking.as_client_dict(),
-            leading=self.agent.example.leading.as_client_dict(),
-            trading=self.agent.example.trading.as_client_dict(),
-            engineering=self.agent.example.engineering.as_client_dict(),
+            driving=agent.example.driving.as_client_dict(),
+            shooting=agent.example.shooting.as_client_dict(),
+            masking=agent.example.masking.as_client_dict(),
+            leading=agent.example.leading.as_client_dict(),
+            trading=agent.example.trading.as_client_dict(),
+            engineering=agent.example.engineering.as_client_dict(),
 
-            buy_driving=self.agent.example.buy_driving.as_client_dict(),
-            buy_shooting=self.agent.example.buy_shooting.as_client_dict(),
-            buy_masking=self.agent.example.buy_masking.as_client_dict(),
-            buy_leading=self.agent.example.buy_leading.as_client_dict(),
-            buy_trading=self.agent.example.buy_trading.as_client_dict(),
-            buy_engineering=self.agent.example.buy_engineering.as_client_dict(),
+            buy_driving=agent.example.buy_driving.as_client_dict(),
+            buy_shooting=agent.example.buy_shooting.as_client_dict(),
+            buy_masking=agent.example.buy_masking.as_client_dict(),
+            buy_leading=agent.example.buy_leading.as_client_dict(),
+            buy_trading=agent.example.buy_trading.as_client_dict(),
+            buy_engineering=agent.example.buy_engineering.as_client_dict(),
 
             # current_exp=self.agent.stat_log.get_metric('exp'),
             # next_level=nxt_lvl,
@@ -863,14 +864,13 @@ class UserExampleSelfShortMessage(Message):
         d['avatar_link'] = user.avatar_link
         d['example_agent'] = agent.example.as_client_dict()
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
-
         if agent.example.role_class:
             d['free_point_skills'] = agent.skill_points + agent.example.role_class.start_free_point_skills - \
                                      agent.example.skill_point_summ()
             d['free_point_perks'] = agent.lvl + agent.example.role_class.start_free_point_perks - len(agent.example.perks)
 
         if ex_car:
-             # Шаблоны машинки
+            # Шаблоны машинки
             templates = dict()
             template_car_img = tornado.template.Loader(
                 "../sublayers_server/templates/location",
@@ -901,17 +901,16 @@ class UserExampleSelfShortMessage(Message):
                             dvs=0,
                         )
                     )
-                    for ex in ex_car.inventory
+                    for ex in ex_car.inventory.items
                 ],
                 owner_id=agent.uid
             )
-
             car_npc_info = dict()
             # Информация для оружейника
-            car_npc_info['armorer_slots'] = [
-                dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots(tags='armorer')
-            ]
+            # car_npc_info['armorer_slots'] = [
+            #     dict(name=k, value=v and v.as_client_dict())
+            #     for k, v in self.agent.example.car.iter_slots(tags='armorer')
+            # ]
             car_npc_info['armorer_slots_flags'] = [
                 dict(name=name, value=getter and getter())
                 for name, attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
@@ -928,7 +927,6 @@ class UserExampleSelfShortMessage(Message):
             ]
 
             d['car_npc_info'] = car_npc_info
-
         return d
 
 
@@ -937,7 +935,6 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
     def as_dict(self):
         d = super(UserExampleSelfMessage, self).as_dict()
         ex_car = self.agent.example.car
-
         if ex_car:
             template_armorer_car = tornado.template.Loader(
                 "../sublayers_common/",
@@ -979,7 +976,6 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
             d['templates']['mechanic_brakes'] = mechanic_brakes
             d['templates']['mechanic_cooling'] = mechanic_cooling
             d['templates']['mechanic_suspension'] = mechanic_suspension
-
         return d
 
 

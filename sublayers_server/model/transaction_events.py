@@ -24,12 +24,14 @@ class TransactionEvent(Event):
     def on_perform(self):
         super(TransactionEvent, self).on_perform()
         # todo: возможно IOLoop.instance().add_callback(callback=self.on_perform_async())
-        IOLoop.instance().add_future(future=self.on_perform_async(), callback=None)
+        IOLoop.instance().add_future(future=self.on_perform_async(), callback=self.on_done_perform_async)
 
     @tornado.gen.coroutine
     def on_perform_async(self):
         pass
 
+    def on_done_perform_async(self, *av, **kw):
+        pass
 
 class TransactionActivateItem(TransactionEvent):
     # todo: присвоить правильный __str__template, чтобы было видно какой итем активирован
@@ -73,7 +75,6 @@ class TransactionActivateTank(TransactionActivateItem):
 class TransactionActivateRebuildSet(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateRebuildSet, self).on_perform()
-
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
         inventory = self.inventory

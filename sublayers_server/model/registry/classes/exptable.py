@@ -56,15 +56,17 @@ class ExpTable(Root):
         return sorted_list[len(sorted_list) - 1][0]
 
     def agent_skill_points_by_exp(self, exp):
-        table = self.user_exp_table or []
-        sorted_list = sorted(table, key=lambda(k, v): v)
-        for index in range(0, len(sorted_list)):
-            rec = sorted_list[index]
-            if exp < rec[1]:
-                return sorted_list[index - 1 if index > 0 else 0][0]
-
-        # Если мы вылезли за пределы таблицы
-        return sorted_list[len(sorted_list) - 1][0]
+        # todo: registry fix it
+        # table = self.user_exp_table or []
+        # sorted_list = sorted(table, key=lambda(k, v): v)
+        # for index in range(0, len(sorted_list)):
+        #     rec = sorted_list[index]
+        #     if exp < rec[1]:
+        #         return sorted_list[index - 1 if index > 0 else 0][0]
+        #
+        # # Если мы вылезли за пределы таблицы
+        # return sorted_list[len(sorted_list) - 1][0]
+        return 0
 
     def car_exp_price_by_exp(self, exp):
         table = dict(self.car_exp_price) or {}
