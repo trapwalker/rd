@@ -13,8 +13,8 @@ class Weapon(ArmorerItem):
         reference_document_type=Item,
     )  # todo: store set of ammo types
     direction = StringField(caption=u'Направление (FBRL)', tags='client')
-    ammo_per_shot = FloatField(default=0, caption=u'Расход патронов за выстрел (< 0)')
-    ammo_per_second = FloatField(default=0, caption=u'Расход патронов в секунду')
+    ammo_per_shot = FloatField(caption=u'Расход патронов за выстрел (< 0)')
+    ammo_per_second = FloatField(caption=u'Расход патронов в секунду')
     radius = FloatField(caption=u'Дальность стрельбы (м)')
     width = FloatField(caption=u'Ширина сектора стрельбы (град)')
 
