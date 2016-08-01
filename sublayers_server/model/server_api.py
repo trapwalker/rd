@@ -26,8 +26,9 @@ class ServerAPI(API):
         if not agent and make:
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['/agents/user'].instantiate(
-                    storage=self.server.reg_agents, name=str(user._id), login=user.name,
+                # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
+                agent_exemplar = self.server.reg['agents/user'].instantiate(
+                    name=str(user._id), login=user.name,
                 )
             log.debug('Use agent exemplar: %r', agent_exemplar)
 

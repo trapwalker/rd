@@ -87,7 +87,6 @@ class Server(object):
 
     def __getstate__(self):
         d = self.__dict__.copy()
-        del d['reg_agents']
         return d
 
     @staticmethod
@@ -199,7 +198,6 @@ class LocalServer(Server):
         self.thread = None
         self.is_terminated = False
         self.app = app
-        self.reg_agents = Collection(name='agents', db=app.db)
         self.periodic = None
 
     def __getstate__(self):
