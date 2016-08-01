@@ -42,7 +42,7 @@ class ExpTable(Root):
         )
         for a, b in intervals:
             if value >= a.v and (value < b.v or b.v is None):
-                return a.k, b, (b.v - value) if b.v is not None else None
+                return a.k, (b.k, b.v), (b.v - value) if b.v is not None else None
 
     def by_exp(self, exp):
         """
