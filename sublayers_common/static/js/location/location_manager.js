@@ -116,7 +116,7 @@ var LocationManager = (function () {
         this.screens.location_screen = null;
         for (var i = 0; i < data.location.example.buildings.length; i++) {
             var building_rec = data.location.example.buildings[i];
-            this.buildings[building_rec.key] = this._getBuildingByType(building_rec, this.jq_town_div);
+            this.buildings[building_rec.name] = this._getBuildingByType(building_rec, this.jq_town_div);
         }
         if (this.location_cls == 'GasStation')
             this.screens.location_screen = this.buildings['nucoil'];
@@ -258,7 +258,7 @@ var LocationManager = (function () {
 
     LocationManager.prototype._getBuildingByType = function (building_rec, jq_town_div) {
         //console.log('LocationManager.prototype._getBuildingByType', building_rec);
-        switch (building_rec.key) {
+        switch (building_rec.name) {
             case 'autoservice':
                 return (new LocationServiceBuilding(building_rec, jq_town_div));
             case 'nucoil':
@@ -519,15 +519,15 @@ var LocationPlaceBuilding = (function (_super) {
     function LocationPlaceBuilding(building_rec, jq_town_div) {
         //console.log('LocationPlaceBuilding', building_rec);
         this.building_rec = building_rec;
-        _super.call(this, jq_town_div.find('#building_' + building_rec.key), 'location_screen');
+        _super.call(this, jq_town_div.find('#building_' + building_rec.name), 'location_screen');
 
         this.active_central_page = null;
 
         // Создаем специалистов этого здания
-        for (var i = 0; i < this.building_rec.build.instances.length; i++) {
-            var npc_rec = this.building_rec.build.instances[i];
+        for (var i = 0; i < this.building_rec.instances.length; i++) {
+            var npc_rec = this.building_rec.instances[i];
             if (!locationManager.npc.hasOwnProperty(npc_rec.html_hash))
-                locationManager.npc[npc_rec.html_hash] = this._getNPCByType(npc_rec.type, npc_rec, jq_town_div, this.building_rec.key);
+                locationManager.npc[npc_rec.html_hash] = this._getNPCByType(npc_rec.type, npc_rec, jq_town_div, this.building_rec.name);
             else
                 console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
         }

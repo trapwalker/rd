@@ -295,7 +295,7 @@ var ClientManager = (function () {
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
-        console.log('ClientManager.prototype.InitAgent', event);
+        //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
         if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
             user.login = event.agent.login;
@@ -738,7 +738,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.EnterToLocation', event);
+        console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
         mapCanvasManager.is_canvas_render = false;
     };
@@ -928,7 +928,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
         user.example_agent.rpg_info = event.rpg_info;
@@ -965,14 +965,15 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
-        //console.log('ClientManager.prototype.TraderInfoMessage', event);
+        console.log('ClientManager.prototype.TraderInfoMessage', event);
+        // todo: чуть-чуть ниже расскоментировать прайс, когда оно будет починено
         var inv = this._getInventory(event.inventory);
         if (inventoryList.getInventory(inv.owner_id))
             inventoryList.delInventory(inv.owner_id);
         inventoryList.addInventory(inv);
         if (locationManager.npc.hasOwnProperty(inv.owner_id)) {
             locationManager.npc[inv.owner_id].updateTraderInv();
-            locationManager.npc[inv.owner_id].updatePrice(event.price.price);
+            //locationManager.npc[inv.owner_id].updatePrice(event.price.price);
         }
     };
 
@@ -989,7 +990,7 @@ var ClientManager = (function () {
 
     // Журнал (стоянка)
     ClientManager.prototype.JournalParkingInfoMessage = function (event) {
-        console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
+        //console.log('ClientManager.prototype.JournalParkingInfoMessage', event);
         journalManager.parking.update(event.cars);
     };
 
@@ -1536,7 +1537,7 @@ var ClientManager = (function () {
     // Торговец
 
     ClientManager.prototype.sendGetTraderInfo = function (npc) {
-        //console.log('ClientManager.prototype.sendGetParkingInfo', npc);
+        console.log('ClientManager.prototype.sendGetParkingInfo', npc);
         var mes = {
             call: "get_trader_info",
             rpc_call_id: rpcCallList.getID(),
