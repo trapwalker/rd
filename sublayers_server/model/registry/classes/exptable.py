@@ -69,11 +69,13 @@ class ExpTable(Root):
         return 0
 
     def car_exp_price_by_exp(self, exp):
-        table = dict(self.car_exp_price) or {}
-        lvl = self.car_lvl_by_exp(exp=exp)
-        return table[lvl]
+        # table = dict(self.car_exp_price) or {}
+        # lvl = self.car_lvl_by_exp(exp=exp)
+        # return table[lvl]
+        return 0
 
     def car_m_exp_by_exp(self, exp):
-        table = dict(self.car_m_exp) or {}
-        lvl = self.car_lvl_by_exp(exp=exp)
-        return table[lvl]
+        # table = dict(self.car_m_exp) or {}
+        # lvl = self.car_lvl_by_exp(exp=exp)
+        # return table[lvl]
+        return 0
