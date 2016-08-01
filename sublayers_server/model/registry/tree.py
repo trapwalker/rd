@@ -189,12 +189,13 @@ class Node(Doc):
         return '<{self.__class__.__name__}@{details}>'.format(
             self=self, details=self.uri or self._id or id(self))
 
-    def node_hash(self):  # todo: (!) rename
+    def node_hash(self):  # todo: (!) rename to proto_uri
         u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
-        if self.abstract:
-            return '_{}'.format(str(self.uri))
+        if self.uri:
+            return self.uri
         elif self.parent:
             return self.parent.node_hash()
+
         raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
 
     def node_html(self):  # todo: rename
