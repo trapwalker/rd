@@ -214,6 +214,7 @@ class Node(Doc):
         assert self.abstract, "Can't instantiate abstract object: {}".format(self)
         if by_uri:
             kw.update(by_uri.params)
+        kw.setdefault('uid', self.__class__.uid.default())
         inst = self.__class__(name=name, parent=self, abstract=False, **kw)
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
