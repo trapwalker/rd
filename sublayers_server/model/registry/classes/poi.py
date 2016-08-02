@@ -106,15 +106,14 @@ class Trader(Institution):
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
     price = PriceField(caption=u"Прайс-лист")
 
-    def as_client_dict(self, items=()):
+    def as_client_dict(self, items=None):
         d = super(Trader, self).as_client_dict()
         # todo: registry fix it
-        # d['price'] = self.price.get_pricelist(chain(items, self.inventory))
-        d['price'] = []
+        d['price'] = {item.node_hash(): option for item, option in self.get_prices(items).items()}
         return d
 
-    def get_prices(self, items=()):
-        return self.price.get_pricelist(chain(items, self.inventory))
+    def get_prices(self, items=None):
+        return self.price.get_pricelist(chain(items or (), self.inventory))
 
 
 class Hangar(Institution):

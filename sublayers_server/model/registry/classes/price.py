@@ -14,12 +14,12 @@ from collections import namedtuple
 
 class PriceOption(Subdoc):
     item = UniReferenceField(
-        caption=u'Товар',
+        caption=u'Товар', #tags='client', #Клиенту не нужно описание итема опции. Он сопоставится с предметом инвентаря.
         reference_document_type='sublayers_server.model.registry.classes.item.Item',
     )
-    buy = FloatField(caption=u'Цена покупки торговцем')
-    sale = FloatField(caption=u'Цена продажи торговцем')
-    doc = StringField(caption=u'Описание товара от торговца')
+    buy = FloatField(caption=u'Цена покупки торговцем', tags='client')
+    sale = FloatField(caption=u'Цена продажи торговцем', tags='client')
+    doc = StringField(caption=u'Описание товара от торговца', tags='client')
 
     def __repr__(self):
         return '{self.__class__.__name__}({self.uri!r}, {self.buy!r}, {self.sale!r}{doctail})'.format(
@@ -27,8 +27,16 @@ class PriceOption(Subdoc):
             doctail=', {!r}'.format(self.doc) if self.doc else '',
         )
 
+    def is_match(self, item):
+        """
+        Returns True if self.item is not specified or immediate prototype of self.item is equal to @item
+        :param item: sublayers_server.model.registry.classes.item.Item
+        :return: bool
+        """
+        if self.item is None:
+            return True
 
-PriceBid = namedtuple('PriceBid', 'buy sale')
+        return item and self.item.node_hash() == item.node_hash()
 
 
 class Price(Subdoc):
@@ -36,19 +44,15 @@ class Price(Subdoc):
 
     def get_item_price(self, item):
         for option in self.items:
-            if option.item == item:  # todo: eq method
+            if option.is_match(item):
                 return option
 
-    def get_pricelist(self, items):
+    def get_pricelist(self, items):  # todo: review of usages
         price = {}
         for item in items:
-            assert not isinstance(item, basestring)
-            if isinstance(item, URI):
-                item = item.resolve()  # todo: (!!!!)
-
             option = self.get_item_price(item)
             if option:
-                price[item.id] = PriceBid(option.buy, option.sale)
+                price[item] = option
         return price
 
     # def __contains__  # todo: extended filtering
