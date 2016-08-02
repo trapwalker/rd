@@ -20,7 +20,7 @@ var LocationServiceBuilding = (function (_super) {
     LocationServiceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
         _super.prototype.addExtraPages.call(this, jq_center_menu, jq_center_pages);
         // Добавление дополнительных функций в здание
-        var page_id = 'buildingPageRepair_' + this.building_rec.key;
+        var page_id = 'buildingPageRepair_' + this.building_rec.name;
         jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Ремонт</br>автомобиля</div>');
         this.jq_repair_page = $('<div id="' + page_id + '" class="building-center-page">');
         jq_center_pages.append(this.jq_repair_page);

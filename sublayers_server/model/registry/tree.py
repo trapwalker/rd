@@ -76,7 +76,7 @@ class Node(Doc):
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     name = StringField()
     doc = StringField()
-    tags = ListField(base_field=StringField(), caption=u"Теги", doc=u"Набор тегов объекта", tags="client")
+    tags = ListField(base_field=StringField(tags="client"), caption=u"Теги", doc=u"Набор тегов объекта", tags="client")
 
     def make_uri(self):
         owner = self.owner

@@ -87,7 +87,7 @@ class Unit(Observer):
             ).set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
     def save_inventory(self, time):
-        self.example.inventory = RegistryInventory()
+        self.example.inventory.items = []
         for item_rec in self.inventory.get_all_items():
             item_rec['item'].example.position = item_rec['position']
             item_rec['item'].example.amount = item_rec['item'].val(t=time)

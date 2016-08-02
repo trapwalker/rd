@@ -146,19 +146,18 @@ class TunerItem(SlotItem):
 class ArmorerItem(SlotItem):
     class ArmorerImages(Subdoc):
         class ArmorerImagesSize(Subdoc):
-            armorer_side_F = StringField()
-            armorer_side_B = StringField()
-            armorer_side_R = StringField()
-            armorer_side_L = StringField()
-            armorer_top_F = StringField()
-            armorer_top_B = StringField()
-            armorer_top_R = StringField()
-            armorer_top_L = StringField()
+            armorer_side_F = StringField(tags='client')
+            armorer_side_B = StringField(tags='client')
+            armorer_side_R = StringField(tags='client')
+            armorer_side_L = StringField(tags='client')
+            armorer_top_F = StringField(tags='client')
+            armorer_top_B = StringField(tags='client')
+            armorer_top_R = StringField(tags='client')
+            armorer_top_L = StringField(tags='client')
 
-
-        small = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
-        middle = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
-        big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize)
+        small = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
+        middle = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
+        big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
 
 
     weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags='client')

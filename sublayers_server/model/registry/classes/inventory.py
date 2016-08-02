@@ -27,8 +27,8 @@ class Inventory(Subdoc):
                     if item.position is not None:
                         positions[item.position] -= 1
                     item.position = i
+                    positions[item.position] = 1
                     changes.append(item)
-                    i += 1
         return changes
 
     def get_item_by_uid(self, uid):
