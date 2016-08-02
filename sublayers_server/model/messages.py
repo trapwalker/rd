@@ -887,6 +887,8 @@ class UserExampleSelfShortMessage(Message):
             d['templates'] = templates
 
             # Инвентарь
+            # todo: сделать этот метод автоматическим
+            ex_car.inventory.placing()
             d['car_inventory'] = dict(
                 max_size=ex_car.inventory_size,
                 items=[
@@ -906,12 +908,15 @@ class UserExampleSelfShortMessage(Message):
                 ],
                 owner_id=agent.uid
             )
+
+            aaa = d['car_inventory']['items']
+
             car_npc_info = dict()
             # Информация для оружейника
-            # car_npc_info['armorer_slots'] = [
-            #     dict(name=k, value=v and v.as_client_dict())
-            #     for k, v in self.agent.example.car.iter_slots(tags='armorer')
-            # ]
+            car_npc_info['armorer_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in self.agent.example.car.iter_slots(tags='armorer')
+            ]
             car_npc_info['armorer_slots_flags'] = [
                 dict(name=name, value=getter and getter())
                 for name, attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')

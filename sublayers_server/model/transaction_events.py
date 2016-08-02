@@ -10,12 +10,14 @@ import math
 from tornado.ioloop import IOLoop
 import tornado.gen
 
-from sublayers_server.model.events import Event, ReEnterToLocation
+from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
-from sublayers_server.model.map_location import GasStation, Town
+from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
+
+from sublayers_server.model.registry.classes.inventory import InventoryField
 
 import sublayers_server.model.messages as messages
 
@@ -169,14 +171,14 @@ class TransactionGasStation(TransactionEvent):
     @tornado.gen.coroutine
     def on_perform_async(self):
         # todo: Сделать единый механизм проверки консистентности и валидности состояния агента для всех транзакций
-        super(TransactionGasStation, self).on_perform()
-        return  # todo: (!) Разблокировать код заправки
+        yield super(TransactionGasStation, self).on_perform_async()
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'npc_gas_station') or (ex_car is None):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return  # todo: warning
         if agent.current_location is None or npc not in self.agent.current_location.example.get_npc_list():
             return  # todo: warning
@@ -187,27 +189,28 @@ class TransactionGasStation(TransactionEvent):
 
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
-        for item in ex_car.inventory:
+        for item in ex_car.inventory.items:
             if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tags):
                 sum_fuel += item.value_fuel
         sum_fuel = math.ceil(sum_fuel)
         if sum_fuel > agent.example.balance:
             return  # todo: Сообщение о недостатке средств
         agent.example.balance -= sum_fuel
-
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
+
         # Далее заправляем канистры
-        old_inventory = ex_car.inventory
-        ex_car.inventory = RegistryInventory()
+        old_inventory = ex_car.inventory.items[:]
+        ex_car.inventory.items = []
         for item in old_inventory:
             if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
                 new_tank = self.server.reg['items/usable/tanks/tank_full/tank' + str(item.value_fuel)].instantiate()
                 yield new_tank.load_references()
                 new_tank.position = item.position
-                ex_car.inventory.append(new_tank)
+                ex_car.inventory.items.append(new_tank)
             else:
-                ex_car.inventory.append(item)
+                ex_car.inventory.items.append(item)
+        ex_car.inventory.placing()
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -215,7 +218,7 @@ class TransactionGasStation(TransactionEvent):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
-        info_string = date_str + ': Заправка ' + str(sum_fuel) + 'NC'
+        info_string = u'{}: Заправка {}NC'.format(date_str, str(sum_fuel))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -411,8 +414,10 @@ class TransactionArmorerApply(TransactionEvent):
         get_flags = '{}_f'.format
         agent = self.agent
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'armorer'):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
         if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
             return
@@ -424,7 +429,7 @@ class TransactionArmorerApply(TransactionEvent):
         # Заполняем буфер итемов
         ex_car = agent.example.car
         armorer_buffer = []
-        for item in agent.example.car.inventory:
+        for item in agent.example.car.inventory.items:
             armorer_buffer.append(item)
 
         # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в armorer_buffer)
@@ -434,7 +439,7 @@ class TransactionArmorerApply(TransactionEvent):
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
                 # todo: добавить стоимость демонтажа итема
                 armorer_buffer.append(slot_value)
-                ex_car.values[slot_name] = None
+                setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по armorer_slots и обработка всех ситуаций)
         for slot_name in self.armorer_slots.keys():
@@ -468,17 +473,17 @@ class TransactionArmorerApply(TransactionEvent):
                     if slot_weight >= item_weight:
                         armorer_buffer.remove(search_item)
                         search_item.direction = self.armorer_slots[slot_name]['direction']
-                        ex_car.values[slot_name] = search_item
+                        setattr(ex_car, slot_name, search_item)
                     else:
                         log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s', item_weight,
                                     slot_name, slot_weight)
 
         # Закидываем буффер в инвентарь
         position = 0
-        agent.example.car.inventory = RegistryInventory()
+        agent.example.car.inventory.items = []
         for item in armorer_buffer:
             item.position = position
-            agent.example.car.inventory.append(item)
+            agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -486,7 +491,7 @@ class TransactionArmorerApply(TransactionEvent):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
-        info_string = date_str + ': Установка на ' + ex_car.title + ', ' + str(0) + 'NC'
+        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -593,9 +598,9 @@ class TransactionMechanicRepairApply(TransactionEvent):
         super(TransactionMechanicRepairApply, self).on_perform()
         agent = self.agent
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
-        # todo: Проверить, есть ли в этом городе автосервис
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if npc is None:
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
         if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
             return
@@ -621,14 +626,13 @@ class TransactionMechanicRepairApply(TransactionEvent):
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
         # todo: Отправить транзакционное сообщение для здания (раньше такого не делали)
-
-        # Информация о транзакции
-        # now_date = datetime.now()
-        # date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        # # todo: правильную стоимость услуг вывести сюда
-        # info_string = date_str + ': Ремонт ' + ex_car.title + ', ' + str(0) + 'NC'
-        # messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
-        #                                info_string=info_string).post()
+        # Отправка сообщения о транзакции
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: правильную стоимость услуг вывести сюда
+        info_string = u'{}: Оставил {}, 0NC'.format(date_str, ex_car.title)
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
 
 
 class TransactionTunerApply(TransactionEvent):
