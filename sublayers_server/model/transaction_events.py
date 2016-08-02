@@ -728,8 +728,8 @@ class TransactionTraderApply(TransactionEvent):
     def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.player_table = player_table
-        self.trader_table = trader_table
+        self.player_table = player_table  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.trader_table = trader_table  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
         self.npc_node_hash = npc_node_hash
         self.position = 0
 
@@ -757,35 +757,43 @@ class TransactionTraderApply(TransactionEvent):
         if not (isinstance(agent.current_location, Town) and (trader in agent.current_location.example.get_npc_list())):
             return  # todo: а как может быть иначе? Может быть здесь должно быть исключение?
 
-        trader_price = trader.get_prices(items=ex_car.inventory)
+        trader_price = trader.get_prices(items=ex_car.inventory.items)
 
         # Заполняем буфер итемов игрока
-        buffer_player = [item.id for item in ex_car.inventory]
+        buffer_player = [item.uid for item in ex_car.inventory.items]
 
         # Обход столика игрока: формирование цены и проверка наличия
         price_player = 0
         temp_price = 0
-        for item_id in self.player_table:
-            if item_id not in buffer_player:
+        for item_ids in self.player_table:
+            item_uid = item_ids['uid']
+            item_node_hash = item_ids['node_hash']
+
+            if item_uid not in buffer_player:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
-            item = ex_car.inventory.get_item_by_id(item_id)
-            temp_price = 0.01 * item.base_price * trader_price[item_id].buy  # * item.amount / item.stack_size
+            item = ex_car.inventory.get_item_by_uid(item_uid)
+            price_option = trader_price.get(item_node_hash)
+            # todo: пересмотреть механизм торговли с NPC
+            temp_price = (0.01 * item.base_price * price_option.buy) if price_option and price_option.buy else None  # * item.amount / item.stack_size
 
-            tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(int(temp_price)) + 'NC')
-
-            price_player += temp_price
-            # todo: Учитывать количество
-            buffer_player.remove(item_id)
+            if temp_price is not None:
+                tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(int(temp_price)) + 'NC')
+                price_player += temp_price
+                # todo: Учитывать количество
+                buffer_player.remove(item_uid)
 
         price_player = round(price_player)
 
         # Формирование цены итемов для продажи торговцем (обход столика торговца)
         bought_items = []
         price_trader = 0
-        for item_id in self.trader_table:
+        for item_ids in self.trader_table:
+            item_uid = item_ids['uid']
+            item_node_hash = item_ids['node_hash']
+
             item = trader.inventory.get_item_by_id(item_id)
             if item is None:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
