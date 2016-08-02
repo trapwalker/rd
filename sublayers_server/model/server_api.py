@@ -30,7 +30,12 @@ class ServerAPI(API):
                 agent_exemplar = self.server.reg['agents/user'].instantiate(
                     name=str(user._id), login=user.name,
                 )
-            log.debug('Use agent exemplar: %r', agent_exemplar)
+                # todo: временный костыль - убрать потом!
+                yield agent_exemplar.load_references()
+                role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
+                agent_exemplar.role_class = role_class_ex
+                yield agent_exemplar.save(upsert=True)
+                log.debug('Use agent exemplar: %r', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
             # todo: rename User to UserAgent

@@ -154,6 +154,6 @@ class Agent(Root):
         res = []
         # todo: refactor to id
         for car in self.car_list:
-            if car.last_parking_npc.node_hash() == npc.node_hash():
+            if car.last_parking_npc == npc.node_hash():
                 res.append(car)
         return res

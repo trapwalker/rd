@@ -830,7 +830,8 @@ class UserExampleSelfShortMessage(Message):
         # todo: registry fix it
         lvl = 0
         rpg_info.update(
-            current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
+            current_level=math.floor(lvl / 10),
+            all_perks_points=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
             all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
             driving=agent.example.driving.as_client_dict(),
             shooting=agent.example.shooting.as_client_dict(),
@@ -984,7 +985,7 @@ class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
         super(NPCInfoMessage, self).__init__(**kw)
         self.npc_node_hash = npc_node_hash
-        self.npc = self.agent.server.reg[self.npc_node_hash]
+        self.npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
     def as_dict(self):
         d = super(NPCInfoMessage, self).as_dict()
@@ -1060,6 +1061,10 @@ class TraderInfoMessage(NPCInfoMessage):
         # Получаем сервер и экземпляр торговца
         server = self.agent.server
         npc = self.npc
+        if npc is None:
+            print self.npc_node_hash
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return d
 
         # Отправка инвентаря торговца
         d['inventory'] = dict(
@@ -1076,7 +1081,7 @@ class TraderInfoMessage(NPCInfoMessage):
                             val0=ex.stack_size,
                             dvs=0,
                         )
-                    ) for ex in npc.inventory
+                    ) for ex in npc.inventory.items
                 ],
                 owner_id=npc.node_html()
             )
@@ -1085,7 +1090,7 @@ class TraderInfoMessage(NPCInfoMessage):
         car_inventory = ()
         if self.agent.example.car:
             car_inventory = self.agent.example.car.inventory
-        d['price'] = npc.as_client_dict(items=car_inventory)
+        # d['price'] = npc.as_client_dict(items=car_inventory)
         return d
 
 
@@ -1093,6 +1098,10 @@ class TraderInfoMessage(NPCInfoMessage):
 class TrainerInfoMessage(NPCInfoMessage):
     def as_dict(self):
         d = super(TrainerInfoMessage, self).as_dict()
+        if self.npc is None:
+            print self.npc_node_hash
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return d
         d.update(drop_price=self.npc.drop_price)
         return d
 

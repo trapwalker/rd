@@ -33,6 +33,7 @@ class TransactionEvent(Event):
     def on_done_perform_async(self, *av, **kw):
         pass
 
+
 class TransactionActivateItem(TransactionEvent):
     # todo: присвоить правильный __str__template, чтобы было видно какой итем активирован
 
@@ -229,8 +230,9 @@ class TransactionHangarSell(TransactionEvent):
         super(TransactionHangarSell, self).on_perform()
 
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'hangar') or (self.agent.example.car is None):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
 
         if self.agent.current_location is None or \
@@ -240,8 +242,7 @@ class TransactionHangarSell(TransactionEvent):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = date_str + ': Продажа ' + self.agent.example.car.title + ', ' + \
-                      str(self.agent.example.car.price) + 'NC'
+        info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.car.title, str(self.agent.example.car.price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -259,34 +260,31 @@ class TransactionHangarBuy(TransactionEvent):
 
     @tornado.gen.coroutine
     def on_perform_async(self):
-        super(TransactionHangarBuy, self).on_perform()
+        yield super(TransactionHangarBuy, self).on_perform_async()
 
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'hangar'):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
-
         if self.agent.current_location is None or \
            npc not in self.agent.current_location.example.get_npc_list() or \
            len(npc.car_list) <= self.car_number:
             return
-
         car_proto = npc.car_list[self.car_number]
 
         agent_balance = self.agent.example.balance
         agent_balance += 0 if self.agent.example.car is None else self.agent.example.car.price
-
         # todo: refactoring (use inventory to choose car)
         if agent_balance >= car_proto.price:
-
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             if self.agent.example.car:
-                info_string = date_str + ': Обмен на ' + car_proto.title + ', ' + \
-                              str(self.agent.example.car.price - car_proto.price) + 'NC'
+                info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
+                                                               str(car_proto.price - self.agent.example.car.price))
             else:
-                info_string = date_str + ': Покупка ' + car_proto.title + ', -' + str(car_proto.price) + 'NC'
+                info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-car_proto.price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -297,6 +295,7 @@ class TransactionHangarBuy(TransactionEvent):
             self.agent.example.car = car_example
             self.agent.example.balance = agent_balance - car_proto.price
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+
         else:
             # todo: message to client if not enough money
             pass
@@ -314,8 +313,9 @@ class TransactionParkingSelect(TransactionEvent):
         agent_ex = self.agent.example
 
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (self.car_number is None) or (npc is None) or (npc.type != 'parking'):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
 
         car_list = [car for car in agent_ex.get_car_list_by_npc(npc)]
@@ -336,11 +336,9 @@ class TransactionParkingSelect(TransactionEvent):
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             if agent_ex.car:
-                info_string = date_str + ': Обмен на ' + car_list[self.car_number].title + ', -' + \
-                              str(summ_for_paying) + 'NC'
+                info_string = u'{}: Обмен на {}, -{}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
             else:
-                info_string = date_str + ': Забрал ' + car_list[self.car_number].title + ', -' + \
-                              str(summ_for_paying) + 'NC'
+                info_string = u'{}: Забрал {}, {}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -373,8 +371,9 @@ class TransactionParkingLeave(TransactionEvent):
         agent_ex = self.agent.example
 
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'parking') or (self.agent.example.car is None):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
 
         if self.agent.current_location is None or \
@@ -384,7 +383,7 @@ class TransactionParkingLeave(TransactionEvent):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = date_str + ': Оставил ' + agent_ex.car.title + ', ' + '0NC'
+        info_string = u'{}: Оставил {}, 0NC'.format(date_str, agent_ex.car.title)
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -882,9 +881,10 @@ class TransactionSetRPGState(TransactionEvent):
         agent = self.agent
 
         # Получение NPC и проверка валидности совершения транзакции
-        npc = agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'trainer'):
-            return  # todo: warning
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return
 
         if (agent.current_location is None) or (npc not in agent.current_location.example.get_npc_list()):
             return  # todo: warning

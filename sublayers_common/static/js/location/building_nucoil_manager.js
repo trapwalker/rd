@@ -78,7 +78,7 @@ var LocationNucoilBuilding = (function (_super) {
     LocationNucoilBuilding.prototype.set_panels = function (make) {
         if (!make && !locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({}, 'nukeoil');
-        locationManager.panel_right.show({build: this.building_rec.build}, 'building');
+        locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 
     LocationNucoilBuilding.prototype.clickBtn = function (btnIndex) {
