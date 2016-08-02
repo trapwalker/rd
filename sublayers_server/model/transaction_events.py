@@ -872,9 +872,10 @@ class TransactionSetRPGState(TransactionEvent):
         agent = self.agent
 
         # Получение NPC и проверка валидности совершения транзакции
-        npc = agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'trainer'):
-            return  # todo: warning
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return
 
         if (agent.current_location is None) or (npc not in agent.current_location.example.get_npc_list()):
             return  # todo: warning

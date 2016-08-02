@@ -830,7 +830,8 @@ class UserExampleSelfShortMessage(Message):
         # todo: registry fix it
         lvl = 0
         rpg_info.update(
-            current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
+            current_level=math.floor(lvl / 10),
+            all_perks_points=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
             all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
             driving=agent.example.driving.as_client_dict(),
             shooting=agent.example.shooting.as_client_dict(),

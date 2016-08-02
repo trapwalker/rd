@@ -6,6 +6,7 @@ var LocationTrainerNPC = (function (_super) {
         var self = this;
 
         this.all_skill_points = 0;  // без учета купленных
+        this.all_perks_points = 0;
         this.cur_level = 0;
         this.drop_price = 0;
         this.skills = {
@@ -181,7 +182,7 @@ var LocationTrainerNPC = (function (_super) {
         for (var key in this.perks)
             if (this.perks.hasOwnProperty(key))
                 if ((this.perks[key].state == 'default') || (this.perks[key].state == 'active')) res++;
-        return this.cur_level - res;
+        return this.all_perks_points - res;
     };
 
     LocationTrainerNPC.prototype._getActivePerks = function() {
@@ -234,6 +235,7 @@ var LocationTrainerNPC = (function (_super) {
         this.jq_main_div.find('.trainer-skill-free-points').text(this._getFreeSkillPoints());
 
         // Перки
+        this.all_perks_points = user.example_agent.rpg_info.all_perks_points;
         for (var i = 0; i < user.example_agent.rpg_info.perks.length; i++) {
             var ex_perk = user.example_agent.rpg_info.perks[i];
             var perk = {
@@ -528,7 +530,7 @@ var LocationTrainerNPC = (function (_super) {
         for(var key in perks)
             if (perks.hasOwnProperty(key))
                 if (perks[key].active) res++;
-        return user.example_agent.rpg_info.current_level - res;
+        return user.example_agent.rpg_info.all_perks_points - res;
     };
 
     return LocationTrainerNPC;
