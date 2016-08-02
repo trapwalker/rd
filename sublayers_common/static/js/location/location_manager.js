@@ -548,7 +548,7 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.activate = function () {
         //console.log('LocationPlaceBuilding.prototype.activate');
         _super.prototype.activate.call(this);
-        $('#' + this.building_rec.key + '-back').css('display', 'block');
+        $('#' + this.building_rec.name + '-back').css('display', 'block');
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
@@ -606,7 +606,7 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-        locationManager.panel_right.show({build: this.building_rec.build}, 'building');
+        locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 
     return LocationPlaceBuilding;

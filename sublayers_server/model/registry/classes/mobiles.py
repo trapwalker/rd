@@ -200,10 +200,12 @@ class Mobile(Root):
 
 
 class Car(Mobile):
-    last_parking_npc = UniReferenceField(
-        reference_document_type='sublayers_server.model.registry.classes.poi.Parking',
-        default=None, caption=u'Парковщик машины.',
-    )
+    # last_parking_npc = UniReferenceField(
+    #     reference_document_type='sublayers_server.model.registry.classes.poi.Parking',
+    #     default=None, caption=u'Парковщик машины.',
+    # )
+    last_parking_npc = StringField(default="", caption=u'Парковщик машины.')
+
     date_setup_parking = FloatField(default=0, caption=u'Дата оставления у парковщика')
 
     # todo: Написать, что это пути к шаблонам

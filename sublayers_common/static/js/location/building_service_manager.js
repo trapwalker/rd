@@ -150,12 +150,12 @@ var LocationServiceBuilding = (function (_super) {
                 var hp = this._get_hp_by_prc(this.current_prc_hp);
                 if (hp > user.example_car.max_hp) hp = user.example_car.max_hp;
                 hp = hp - user.example_car.hp;
-                clientManager.sendMechanicRepairApply(this.building_rec.build.head.node_hash, hp);
+                clientManager.sendMechanicRepairApply(this.building_rec.head.node_hash, hp);
                 return;
             }
             if (btnIndex == '2') {
                 console.log('Попытка отремонтировать машину на 100%');
-                clientManager.sendMechanicRepairApply(this.building_rec.build.head.node_hash,
+                clientManager.sendMechanicRepairApply(this.building_rec.head.node_hash,
                     user.example_car.max_hp - user.example_car.hp);
                 return;
             }
