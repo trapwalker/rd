@@ -47,6 +47,13 @@ class TaskList(dict):
         assert not isinstance(task.document_id, Document), 'Trying to add Task with dokument_id instanced from Document'
         self.setdefault(task.document_id, []).append(task)
 
+    def pop(self, id):
+        tasks = self[id]
+        result = tasks.pop(-1)
+        if not tasks:
+            super(TaskList, self).pop(id)
+        return result
+
 
 class AbstractDocument(Document):
     __metaclass__ = NodeMeta
@@ -97,23 +104,22 @@ class AbstractDocument(Document):
         for uri, tasks in references.items():
             #v = isinstance(document_id, Document) and document_id or self.search_in_cache(id=document_id)
             # todo: (optimize) Избавиться от асинхронного вызова, когда объект есть в кеше
-            tasks[0].dereference_function(
-                uri,
-                callback=self.handle_load_tasks(
-                    uri=uri,
-                    tasks=tasks,
-                    references=references,
-                    reference_count=reference_count,
-                    callback=callback,
+            for task in tasks:
+                task.dereference_function(
+                    uri,
+                    callback=self.handle_load_tasks(
+                        uri=uri,
+                        tasks=tasks,
+                        references=references,
+                        reference_count=reference_count,
+                        callback=callback,
+                    )
                 )
-            )
 
     def handle_load_tasks(self, uri, tasks, references, reference_count, callback):
         def handle(value):
-            for task in tasks:
-                task.do(value)
+            references.pop(uri).do(value)
 
-            references.pop(uri)
             if not references:
                 callback({
                     'loaded_reference_count': reference_count,
@@ -174,6 +180,9 @@ class AbstractDocument(Document):
                             from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
                             if isinstance(proto, Node):
                                 callback(proto.instantiate(by_uri=uri, embedded=True))
+                            else:
+                                callback(proto)
+                                log.warning('Doc.find_embeded_field: prototype of embeded field is not Node: %r!', proto)
                         else:
                             log.warning("Can't find any registry objects by link: %s", identificator)
                             callback(None)
