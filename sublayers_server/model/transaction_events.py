@@ -742,7 +742,8 @@ class TransactionTraderApply(TransactionEvent):
         super(TransactionTraderApply, self).on_perform()
         agent = self.agent
         ex_car = agent.example.car
-        trader = self.agent.server.reg[self.npc_node_hash]
+
+        trader = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
