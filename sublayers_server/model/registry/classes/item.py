@@ -31,6 +31,14 @@ class Item(Root):
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
 
+    def ids(self):
+        return dict(uid=self.uid, node_hash=self.node_hash())
+
+    def as_client_dict(self):
+        d = super(Item, self).as_client_dict()
+        d.update(ids=self.ids())
+        return d
+
     @classmethod
     def activate(cls):
         pass

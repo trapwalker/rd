@@ -31,6 +31,12 @@ class Inventory(Subdoc):
                     i += 1
         return changes
 
+    def get_item_by_uid(self, uid):
+        # todo: optimize
+        for item in self.items or []:
+            if item.uid == uid:
+                return item
+
 
 class InventoryField(EmbeddedDocumentField):
     def __init__(self, embedded_document_type=Inventory, *av, **kw):

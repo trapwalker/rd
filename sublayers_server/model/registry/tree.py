@@ -66,7 +66,7 @@ class Subdoc(Doc):
 class Node(Doc):
     # todo: make sparse indexes
     # todo: override attributes in subclasses
-    uid = UUIDField(default=get_uuid, unique=True, identify=True)
+    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
     title = StringField(caption=u"Название", tags='client')
     fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
     uri = StringField(sparse=True, identify=True)
@@ -230,7 +230,7 @@ class Node(Doc):
         return iter(self._subnodes)
 
     def __hash__(self):
-        return hash(self._id)  # todo: test just created objects
+        return hash(self.uid)  # todo: test just created objects
 
     # todo: rename to "_load_node_from_fs"
     @classmethod
