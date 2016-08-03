@@ -214,7 +214,7 @@ class Node(Doc):
             id=self.id,
             node_hash=self.node_hash(),
             html_hash=self.node_html(),
-            tags=self.tag_set,
+            tags=list(self.tag_set),
         )
         return d
 
