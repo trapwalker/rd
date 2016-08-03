@@ -782,6 +782,7 @@ class TransactionTraderApply(TransactionEvent):
 
             if item_uid not in buffer_player:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
+                # todo: translate
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
