@@ -16,10 +16,10 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
-
+import sublayers_server.model.messages as messages
 from sublayers_server.model.registry.classes.inventory import InventoryField
 
-import sublayers_server.model.messages as messages
+# todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
 
 
 class TransactionEvent(Event):
@@ -68,6 +68,7 @@ class TransactionActivateTank(TransactionActivateItem):
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
 
+        # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
         tank_ex = self.server.reg['items/usable/tanks/tank_empty/tank' + str(item.example.value_fuel)].instantiate()
         yield tank_ex.load_references()
 
@@ -218,6 +219,7 @@ class TransactionGasStation(TransactionEvent):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
+        # todo: translate
         info_string = u'{}: Заправка {}NC'.format(date_str, str(sum_fuel))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
@@ -245,6 +247,7 @@ class TransactionHangarSell(TransactionEvent):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: translate
         info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.car.title, str(self.agent.example.car.price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
@@ -283,6 +286,7 @@ class TransactionHangarBuy(TransactionEvent):
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+            # todo: translate
             if self.agent.example.car:
                 info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
                                                                str(car_proto.price - self.agent.example.car.price))
@@ -338,6 +342,7 @@ class TransactionParkingSelect(TransactionEvent):
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+            # todo: translate
             if agent_ex.car:
                 info_string = u'{}: Обмен на {}, -{}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
             else:
@@ -386,6 +391,7 @@ class TransactionParkingLeave(TransactionEvent):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        # todo: translate
         info_string = u'{}: Оставил {}, 0NC'.format(date_str, agent_ex.car.title)
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
@@ -491,6 +497,7 @@ class TransactionArmorerApply(TransactionEvent):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
+        # todo: translate
         info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
@@ -630,6 +637,7 @@ class TransactionMechanicRepairApply(TransactionEvent):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
+        # todo: translate
         info_string = u'{}: Оставил {}, 0NC'.format(date_str, ex_car.title)
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
@@ -749,7 +757,7 @@ class TransactionTraderApply(TransactionEvent):
         trader = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
         now_date = datetime.now()
-        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
         tr_msg_list = []
 
         # Проверяем есть ли у агента машинка
@@ -774,6 +782,7 @@ class TransactionTraderApply(TransactionEvent):
 
             if item_uid not in buffer_player:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
+                # todo: translate
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
@@ -783,6 +792,7 @@ class TransactionTraderApply(TransactionEvent):
             temp_price = (0.01 * item.base_price * price_option.buy) if price_option and price_option.buy else None  # * item.amount / item.stack_size
 
             if temp_price is not None:
+                # todo: translate
                 tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(int(temp_price)) + 'NC')
                 price_player += temp_price
                 # todo: Учитывать количество
@@ -800,10 +810,12 @@ class TransactionTraderApply(TransactionEvent):
             item = trader.inventory.get_item_by_id(item_id)
             if item is None:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
+                # todo: translate
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
             temp_price = 0.01 * item.base_price * trader_price[item_id].sale  # * item.amount / item.stack_size
+            # todo: translate
             tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(int(temp_price)) + 'NC')
 
             price_trader += temp_price
@@ -815,12 +827,14 @@ class TransactionTraderApply(TransactionEvent):
         # Проверка по цене
         if (agent.example.balance + price_player) < price_trader:
             # todo: вариативные реплики
+            # todo: translate
             messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'Куда хватаешь? У тебя нет столько денег').post()
             return
 
         # Проверка по слотам инвентаря
         if (ex_car.inventory_size - len(ex_car.inventory) + len(self.player_table)) < len(self.trader_table):
             # todo: вариативные реплики
+            # todo: translate
             messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
             return
 
@@ -848,6 +862,7 @@ class TransactionTraderApply(TransactionEvent):
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
         # todo: вариативные реплики
+        # todo: translate
         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
 
 
@@ -988,7 +1003,7 @@ class TransactionSetRPGState(TransactionEvent):
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
         now_date = datetime.now()
-        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
