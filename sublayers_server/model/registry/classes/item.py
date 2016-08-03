@@ -47,7 +47,12 @@ class Item(Root):
         return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
 
 
-class Tank(Item):
+class ItemUsable(Item):
+    post_activate_item = UniReferenceField(caption=u'Итем, который будет положен в инвентарь после активации',
+                                           reference_document_type="sublayers_server.model.registry.classes.item.Item")
+
+
+class Tank(ItemUsable):
     value_fuel = FloatField(caption=u'Объем канистры', tags='client')
 
 
@@ -58,7 +63,12 @@ class TankFull(Tank):
         return TransactionActivateTank
 
 
-class BuildSet(Item):
+class TankEmpty(Tank):
+    full_tank = UniReferenceField(caption=u'Ссылка на полную канистру, получаемую заправкой этой пустой канистры',
+                                       reference_document_type="sublayers_server.model.registry.classes.item.TankFull")
+
+
+class BuildSet(ItemUsable):
     build_points = FloatField(caption=u'Объем восстановления здоровья в единицах')
 
     @classmethod
@@ -67,15 +77,11 @@ class BuildSet(Item):
         return TransactionActivateRebuildSet
 
 
-class AmmoBullets(Item):
+class AmmoBullets(ItemUsable):
     @classmethod
     def activate(cls):
         from sublayers_server.model.transaction_events import TransactionActivateAmmoBullets
         return TransactionActivateAmmoBullets
-
-
-class TankEmpty(Tank):
-    pass
 
 
 class SlotItem(Item):

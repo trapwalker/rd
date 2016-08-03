@@ -69,11 +69,15 @@ class TransactionActivateTank(TransactionActivateItem):
         item.set_inventory(time=self.time, inventory=None)
 
         # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
-        tank_ex = self.server.reg['items/usable/tanks/tank_empty/tank' + str(item.example.value_fuel)].instantiate()
-        yield tank_ex.load_references()
+        tank_proto = item.example.post_activate_item
+        if tank_proto:
+            tank_ex = tank_proto.instantiate()
+            yield tank_ex.load_references()
 
-        ItemState(server=self.server, time=self.time, example=tank_ex) \
-            .set_inventory(time=self.time, inventory=inventory, position=position)
+            ItemState(server=self.server, time=self.time, example=tank_ex).set_inventory(
+                time=self.time, inventory=inventory, position=position)
+        else:
+            log.warning('Warning! post_activate_item dont set')
 
 
 class TransactionActivateRebuildSet(TransactionActivateItem):
@@ -191,7 +195,7 @@ class TransactionGasStation(TransactionEvent):
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
         for item in ex_car.inventory.items:
-            if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tags):
+            if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tag_set):
                 sum_fuel += item.value_fuel
         sum_fuel = math.ceil(sum_fuel)
         if sum_fuel > agent.example.balance:
@@ -204,14 +208,14 @@ class TransactionGasStation(TransactionEvent):
         old_inventory = ex_car.inventory.items[:]
         ex_car.inventory.items = []
         for item in old_inventory:
-            if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tags):
-                new_tank = self.server.reg['items/usable/tanks/tank_full/tank' + str(item.value_fuel)].instantiate()
+            if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tag_set) and item.full_tank:
+                new_tank = item.full_tank.instantiate()
                 yield new_tank.load_references()
                 new_tank.position = item.position
                 ex_car.inventory.items.append(new_tank)
             else:
                 ex_car.inventory.items.append(item)
-        ex_car.inventory.placing()
+        # ex_car.inventory.placing()
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
