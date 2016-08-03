@@ -518,8 +518,9 @@ class TransactionMechanicApply(TransactionEvent):
         super(TransactionMechanicApply, self).on_perform()
         agent = self.agent
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg[self.npc_node_hash]
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'mechanic'):
+            log.warning('NPC not found: %s', self.npc_node_hash)
             return
         if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
             return
@@ -534,20 +535,20 @@ class TransactionMechanicApply(TransactionEvent):
             slot = getattr(agent.example.car.__class__, slot_name)
             proto_item = None
             if new_item_in_slot:
-                proto_item = self.server.reg[new_item_in_slot['node_hash']]
+                proto_item = self.agent.server.reg.objects.get_cached(uri=new_item_in_slot['node_hash'])
 
             if slot and proto_item:
                 # Все элементы slot.tags входят в (принадлежат) proto_item.tags
-                if not (slot.tags.issubset(proto_item.tags)):
+                if not (slot.tags.issubset(proto_item.tag_set)):
                     log.warning('Try to LIE !!!! Error Transaction!!!')
                     log.warning([el for el in slot.tags])
-                    log.warning([el for el in proto_item.tags])
+                    log.warning([el for el in proto_item.tag_set])
                     return
 
         # Заполняем буфер итемов
         ex_car = agent.example.car
         mechanic_buffer = []
-        for item in agent.example.car.inventory:
+        for item in agent.example.car.inventory.items:
             mechanic_buffer.append(item)
 
         # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в mechanic_buffer)
@@ -557,7 +558,7 @@ class TransactionMechanicApply(TransactionEvent):
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
                 # todo: добавить стоимость демонтажа итема
                 mechanic_buffer.append(slot_value)
-                ex_car.values[slot_name] = None
+                setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по mechanic_slots и обработка всех ситуаций)
         for slot_name in self.mechanic_slots.keys():
@@ -578,14 +579,14 @@ class TransactionMechanicApply(TransactionEvent):
                 if search_item is not None:
                     # todo: добавить стоимость монтажа итема
                     mechanic_buffer.remove(search_item)
-                    ex_car.values[slot_name] = search_item
+                    setattr(ex_car, slot_name, search_item)
 
         # Закидываем буффер в инвентарь
         position = 0
-        agent.example.car.inventory = RegistryInventory()
+        agent.example.car.inventory.items = []
         for item in mechanic_buffer:
             item.position = position
-            agent.example.car.inventory.append(item)
+            agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -593,7 +594,8 @@ class TransactionMechanicApply(TransactionEvent):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
-        info_string = date_str + ': Установка на ' + ex_car.title + ', ' + str(0) + 'NC'
+        # todo: translate
+        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
