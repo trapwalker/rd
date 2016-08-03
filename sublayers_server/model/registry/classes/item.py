@@ -124,18 +124,28 @@ class MechanicItem(SlotItem):
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
 
 
-class TunerImageView(Subdoc):
-    link = StringField(caption=u"Ссылка на картинку")
-    z_index = IntField(default=0, caption=u"Уровень отображения слоя")
-
-
-class TunerImage(Subdoc):
-    car = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car')
-    top = EmbeddedDocumentField(embedded_document_type=TunerImageView)
-    side = EmbeddedDocumentField(embedded_document_type=TunerImageView)
 
 
 class TunerItem(SlotItem):
+    class TunerImage(Subdoc):
+        class TunerImageView(Subdoc):
+            link = StringField(caption=u"Ссылка на картинку", tags='client')
+            z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags='client')
+
+
+        car = UniReferenceField(
+            caption=u"Автомобиль, для которого указаны данные параметры",
+            reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'
+        )
+        top = EmbeddedDocumentField(embedded_document_type=TunerImageView, tags='client')
+        side = EmbeddedDocumentField(embedded_document_type=TunerImageView, tags='client')
+
+        def as_client_dict(self):
+            d = super(TunerItem.TunerImage, self).as_client_dict()
+            d['car'] = self.car and self.car.node_hash()
+            return d
+
+
     pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags='client')
     images = ListField(
         caption=u'Изображения у тюнера', tags='client',
