@@ -16,10 +16,10 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
-
+import sublayers_server.model.messages as messages
 from sublayers_server.model.registry.classes.inventory import InventoryField
 
-import sublayers_server.model.messages as messages
+# todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
 
 
 class TransactionEvent(Event):
