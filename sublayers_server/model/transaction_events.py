@@ -68,6 +68,7 @@ class TransactionActivateTank(TransactionActivateItem):
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
 
+        # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
         tank_ex = self.server.reg['items/usable/tanks/tank_empty/tank' + str(item.example.value_fuel)].instantiate()
         yield tank_ex.load_references()
 
