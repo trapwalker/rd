@@ -749,7 +749,7 @@ class TransactionTraderApply(TransactionEvent):
         trader = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
         now_date = datetime.now()
-        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
         tr_msg_list = []
 
         # Проверяем есть ли у агента машинка
@@ -988,7 +988,7 @@ class TransactionSetRPGState(TransactionEvent):
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
         now_date = datetime.now()
-        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
