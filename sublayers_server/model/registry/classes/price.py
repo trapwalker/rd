@@ -22,7 +22,7 @@ class PriceOption(Subdoc):
     doc = StringField(caption=u'Описание товара от торговца', tags='client')
 
     def __repr__(self):
-        return '{self.__class__.__name__}({self.uri!r}, {self.buy!r}, {self.sale!r}{doctail})'.format(
+        return '{self.__class__.__name__}({self.item}, {self.buy!r}, {self.sale!r}{doctail})'.format(
             self=self,
             doctail=', {!r}'.format(self.doc) if self.doc else '',
         )
