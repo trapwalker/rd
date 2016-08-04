@@ -909,8 +909,6 @@ class UserExampleSelfShortMessage(Message):
                 owner_id=agent.uid
             )
 
-            aaa = d['car_inventory']['items']
-
             car_npc_info = dict()
             # Информация для оружейника
             car_npc_info['armorer_slots'] = [
