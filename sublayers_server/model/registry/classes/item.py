@@ -43,8 +43,8 @@ class Item(Root):
     def activate(cls):
         pass
 
-    def __str__(self):
-        return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
+    # def __str__(self):
+    #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
 
 
 class ItemUsable(Item):
