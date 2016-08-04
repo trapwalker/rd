@@ -35,6 +35,12 @@ class RegistryNodeFormatError(RegistryError):
 
 
 class Doc(AbstractDocument):
+    def instantiate(self, **kw):
+        inst = self.__class__(**kw)
+        # todo: Сделать поиск ссылок в параметрах URI
+        return inst
+
+
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = {}
         for name, attr, getter in self.iter_attrs(tags='client'):
