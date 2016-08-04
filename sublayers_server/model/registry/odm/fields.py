@@ -82,6 +82,7 @@ class UniReferenceField(ReferenceField): # todo: replace to mixed
         return (
             value is None 
             or isinstance(value, ObjectId)
+            or isinstance(value, self.reference_type)
             or isinstance(value, six.string_types) and URI.try_or_default(value) and True
             or hasattr(value, 'uri') and value.uri is not None
             or hasattr(value, '_id') and value._id is not None
