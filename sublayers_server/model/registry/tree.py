@@ -127,6 +127,7 @@ class Node(Doc):
         path = None
         # todo: test to URI
         if isinstance(idx, basestring):
+            idx = idx.replace('\\', '/')
             path = idx.split('/')
         else:
             path = idx
