@@ -69,11 +69,14 @@ var LocationTunerNPC = (function (_super) {
 
     LocationTunerNPC.prototype.testItemForCar = function(item) {
         //console.log('TunerManager.prototype.testItemForCar', item);
-        if (! item.hasTag('tuner')) return false;
+        if (!item.hasTag('tuner')) return false;
         if (item.example.hasOwnProperty('images'))
-            if (item.example.images.hasOwnProperty(user.example_car.node_hash))
-                return true;
-        return false
+            for (var i = 0; i < item.example.images.length; i++) {
+                var elem = item.example.images[i];
+                if (elem.car.indexOf(user.example_car.node_hash) >= 0)
+                    return true;
+            }
+        return false;
     };
 
     LocationTunerNPC.prototype.clear_user_info = function() {
