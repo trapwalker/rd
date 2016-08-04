@@ -49,7 +49,7 @@ class TaskList(dict):
 
     def pop(self, id):
         tasks = self[id]
-        result = tasks.pop(-1)
+        result = tasks.pop(0)  # ВНИМАНИЕ! Порядок выборки важен!
         if not tasks:
             super(TaskList, self).pop(id)
         return result
