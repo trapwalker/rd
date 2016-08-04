@@ -200,8 +200,14 @@ class Node(Doc):
 
     def __str__(self):
         # todo: make correct representation
-        return '<{self.__class__.__name__}@{details}>'.format(
-            self=self, details=self.uri or self._id or id(self))
+        return '<{self.__class__.__name__}[{details}]>'.format(
+            self=self,
+            details=(
+                self.uri or
+                self.parent and self.parent.uri and '{}#{}'.format(self.parent.uri, self.uid) or
+                ('#' + self.uid)
+            ),
+        )
 
     def node_hash(self):  # todo: (!) rename to proto_uri
         u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
