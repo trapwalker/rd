@@ -32,7 +32,6 @@ class StringField           (MetaFieldMixin, motorengine.fields.StringField     
 class BooleanField          (MetaFieldMixin, motorengine.fields.BooleanField         ): pass
 class DateTimeField         (MetaFieldMixin, motorengine.fields.DateTimeField        ): pass
 class UUIDField             (MetaFieldMixin, motorengine.fields.UUIDField            ): pass
-class ListField             (MetaFieldMixin, motorengine.fields.ListField            ): pass  # base_field
 class ReferenceField        (MetaFieldMixin, motorengine.fields.ReferenceField       ): pass  # reference_document_type
 class URLField              (MetaFieldMixin, motorengine.fields.URLField             ): pass
 class EmailField            (MetaFieldMixin, motorengine.fields.EmailField           ): pass
@@ -41,6 +40,14 @@ class FloatField            (MetaFieldMixin, motorengine.fields.FloatField      
 class DecimalField          (MetaFieldMixin, motorengine.fields.DecimalField         ): pass
 class BinaryField           (MetaFieldMixin, motorengine.fields.BinaryField          ): pass
 class JsonField             (MetaFieldMixin, motorengine.fields.JsonField            ): pass
+
+class ListField             (MetaFieldMixin, motorengine.fields.ListField            ):  # base_field
+    def __init__(self, base_field=None, *args, **kw):
+        super(ListField, self).__init__(base_field=base_field, *args, **kw)
+
+        default = kw.pop('default', None)
+        if default is None:
+            self.default = None
 
 
 class EmbeddedDocumentField(MetaFieldMixin, motorengine.fields.EmbeddedDocumentField):

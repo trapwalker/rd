@@ -69,6 +69,8 @@ class AbstractDocument(Document):
             value = self.get_field_value(name)
             if field.sparse and field.is_empty(value):
                 continue
+            if self.is_list_field(field) and value is None:
+                continue
             data[field.db_field] = field.to_son(value)
 
         return data
@@ -281,7 +283,7 @@ class AbstractDocument(Document):
             self._reference_loaded_fields = {}
 
         for key, field in self._fields.items():
-            if hasattr(field, 'has_default') and field.has_default or self.is_list_field(field):
+            if hasattr(field, 'has_default') and field.has_default:
                 default = field.default() if callable(field.default) else field.default
                 self._values[field.name] = field.set_value(default) if hasattr(field, 'set_value') else default
 
