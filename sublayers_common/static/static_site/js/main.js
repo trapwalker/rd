@@ -609,8 +609,9 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             skill_name: skill_name,
             perk_node: perk_node
         },
-        success: function (data) {
+        success: function (data_str) {
             //console.log(data);
+            var data = JSON.parse(data_str)
             if (data.status == 'success') {
                 // Отобразить show_skills в вёрстку
                 for (var key in data.show_skills)
