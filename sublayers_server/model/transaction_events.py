@@ -9,6 +9,7 @@ import math
 
 from tornado.ioloop import IOLoop
 import tornado.gen
+from uuid import UUID
 
 from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
@@ -747,8 +748,8 @@ class TransactionTraderApply(TransactionEvent):
     def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.player_table = player_table  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
-        self.trader_table = trader_table  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.player_table = [UUID(uid) for uid in player_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.trader_table = [UUID(uid) for uid in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
         self.npc_node_hash = npc_node_hash
         self.position = 0
 
@@ -758,7 +759,7 @@ class TransactionTraderApply(TransactionEvent):
 
     @tornado.gen.coroutine
     def on_perform_async(self):
-        super(TransactionTraderApply, self).on_perform()
+        yield super(TransactionTraderApply, self).on_perform_async()
         agent = self.agent
         ex_car = agent.example.car
 
@@ -783,10 +784,7 @@ class TransactionTraderApply(TransactionEvent):
 
         # Обход столика игрока: формирование цены и проверка наличия
         price_player = 0
-        for item_ids in self.player_table:
-            item_uid = item_ids['uid']
-            item_node_hash = item_ids['node_hash']
-
+        for item_uid in self.player_table:
             if item_uid not in buffer_player:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
                 # todo: translate
@@ -794,26 +792,20 @@ class TransactionTraderApply(TransactionEvent):
                 return
 
             item = ex_car.inventory.get_item_by_uid(item_uid)
-            price_option = trader_price.get(item_node_hash)
-            # todo: пересмотреть механизм торговли с NPC
-            temp_price = (0.01 * item.base_price * price_option.buy) if price_option and price_option.buy else None  # * item.amount / item.stack_size
-
-            if temp_price is not None:
-                # todo: translate
-                tr_msg_list.append(date_str + u': Продажа ' + item.title + ', ' + str(int(temp_price)) + 'NC')
-                price_player += temp_price
-                # todo: Учитывать количество
-                buffer_player.remove(item_uid)
+            price_option = trader_price.get(item, None)
+            temp_price = (0.01 * item.base_price * price_option['buy']) if price_option and price_option['buy'] else item.base_price  # * item.amount / item.stack_size
+            temp_price *= item.amount / item.stack_size
+            # todo: translate
+            tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
+            price_player += temp_price
+            buffer_player.remove(item_uid)
 
         price_player = round(price_player)
 
         # Формирование цены итемов для продажи торговцем (обход столика торговца)
         bought_items = []
         price_trader = 0
-        for item_ids in self.trader_table:
-            item_uid = item_ids['uid']
-            item_node_hash = item_ids['node_hash']
-
+        for item_uid in self.trader_table:
             item = trader.inventory.get_item_by_uid(item_uid)
             if item is None:
                 # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
@@ -821,15 +813,14 @@ class TransactionTraderApply(TransactionEvent):
                 messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
                 return
 
-            price_option = trader_price[item_node_hash]
-            temp_price = (0.01 * item.base_price * price_option.sale) if price_option and price_option.sale else None
+            price_option = trader_price.get(item, None)
             # * item.amount / item.stack_size
-            if temp_price:
-                # todo: translate
-                tr_msg_list.append(date_str + u': Покупка ' + item.title + ', ' + str(int(temp_price)) + 'NC')
-                price_trader += temp_price
-                # todo: Учитывать количество
-                bought_items.append(item)
+            temp_price = (0.01 * item.base_price * price_option['sale']) if price_option and price_option['sale'] else item.base_price
+            # todo: translate
+            tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
+            price_trader += temp_price
+            # todo: Учитывать количество
+            bought_items.append(item)
 
         price_trader = round(price_trader)
 
@@ -852,7 +843,7 @@ class TransactionTraderApply(TransactionEvent):
 
         new_inventory = []
         # Списание итемов из инвентаря
-        for item in ex_car.inventory:
+        for item in ex_car.inventory.items:
             if item.uid not in self.player_table:
                 item.position = self._get_position()
                 new_inventory.append(item)
@@ -860,10 +851,11 @@ class TransactionTraderApply(TransactionEvent):
         # Добавление купленных итемов в инвентарь
         for item in bought_items:
             # todo: Брать количество правильно
-            item_ex = item.instantiate(position=self._get_position(), amount=item.stack_size)
+            # todo : (!) parent instantiate fix
+            item_ex = item.parent.instantiate(position=self._get_position(), amount=item.stack_size)
             yield item_ex.load_references()
             new_inventory.append(item_ex)
-        ex_car.inventory = new_inventory
+        ex_car.inventory.items = new_inventory
 
         for msg in tr_msg_list:
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),

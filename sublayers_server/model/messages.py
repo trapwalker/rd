@@ -1065,7 +1065,6 @@ class TraderInfoMessage(NPCInfoMessage):
         server = self.agent.server
         npc = self.npc
         if npc is None:
-            print self.npc_node_hash
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
 
@@ -1090,10 +1089,10 @@ class TraderInfoMessage(NPCInfoMessage):
             )
 
         # Отправка цен
-        car_inventory = ()
+        car_inventory = []
         if self.agent.example.car:
-            car_inventory = self.agent.example.car.inventory
-        # d['price'] = npc.as_client_dict(items=car_inventory)
+            car_inventory = self.agent.example.car.inventory.items
+        d['price'] = npc.as_client_dict(items=car_inventory)
         return d
 
 
@@ -1102,7 +1101,6 @@ class TrainerInfoMessage(NPCInfoMessage):
     def as_dict(self):
         d = super(TrainerInfoMessage, self).as_dict()
         if self.npc is None:
-            print self.npc_node_hash
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
         d.update(drop_price=self.npc.drop_price)
