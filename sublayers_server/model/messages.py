@@ -741,18 +741,6 @@ class SetupTraderReplica(Message):
         return d
 
 
-class AddExperienceMessage(Message):
-    def as_dict(self):
-        d = super(AddExperienceMessage, self).as_dict()
-        d.update(
-            exp_agent=self.agent.stat_log.get_metric('exp'),
-            exp_car=self.agent.car.stat_log.get_metric('exp'),
-            frag_agent=self.agent.stat_log.get_metric('frag'),
-            frag_car=self.agent.car.stat_log.get_metric('frag'),
-        )
-        return d
-
-
 class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
@@ -815,23 +803,19 @@ class NPCTransactionMessage(Message):
         return d
 
 
-# Вызывается тогда, когда не меняется машинка.
-class UserExampleSelfShortMessage(Message):
+# Вызывается тогда, когда нужна только RPG сотставляющая
+class UserExampleSelfRPGMessage(Message):
     def as_dict(self):
-        d = super(UserExampleSelfShortMessage, self).as_dict()
+        d = super(UserExampleSelfRPGMessage, self).as_dict()
         agent = self.agent
-        user = agent.user
-        ex_car = agent.example.car
+        cur_exp = agent.stat_log.get_metric('exp')
+        lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=cur_exp)
+        rpg_info = dict(
+            cur_lvl=math.floor(lvl / 10),
+            cur_exp=cur_exp,
+            cur_lvl_exp=agent.example.exp_table.user_exp_by_lvl(lvl=lvl),
+            next_lvl_exp=next_lvl_exp,
 
-        # RPGInfo
-        rpg_info = dict()
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
-            exp=agent.stat_log.get_metric('exp'))
-        # todo: registry fix it
-        lvl = 0
-        rpg_info.update(
-            current_level=math.floor(lvl / 10),
-            all_perks_points=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
             all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
             driving=agent.example.driving.as_client_dict(),
             shooting=agent.example.shooting.as_client_dict(),
@@ -839,7 +823,6 @@ class UserExampleSelfShortMessage(Message):
             leading=agent.example.leading.as_client_dict(),
             trading=agent.example.trading.as_client_dict(),
             engineering=agent.example.engineering.as_client_dict(),
-
             buy_driving=agent.example.buy_driving.as_client_dict(),
             buy_shooting=agent.example.buy_shooting.as_client_dict(),
             buy_masking=agent.example.buy_masking.as_client_dict(),
@@ -847,29 +830,31 @@ class UserExampleSelfShortMessage(Message):
             buy_trading=agent.example.buy_trading.as_client_dict(),
             buy_engineering=agent.example.buy_engineering.as_client_dict(),
 
-            current_exp=self.agent.stat_log.get_metric('exp'),
-            next_level=nxt_lvl,
-            next_level_exp=nxt_lvl_exp,
-
+            all_perks_points=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
             perks=[
                 dict(
                     perk=perk.as_client_dict(),
-                    active=perk in self.agent.example.perks,
+                    active=perk in agent.example.perks,
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
-                ) for perk in self.agent.server.reg['rpg_settings/perks'].deep_iter()
+                ) for perk in agent.server.reg['rpg_settings/perks'].deep_iter()
             ],
         )
         d['rpg_info'] = rpg_info
+        return d
+
+
+# Вызывается тогда, когда не меняется машинка.
+class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
+    def as_dict(self):
+        d = super(UserExampleSelfShortMessage, self).as_dict()
+        agent = self.agent
+        user = agent.user
+        ex_car = agent.example.car
 
         d['user_name'] = user.name
         d['avatar_link'] = user.avatar_link
         d['example_agent'] = agent.example.as_client_dict()
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
-        if agent.example.role_class:
-            d['free_point_skills'] = agent.skill_points + agent.example.role_class.start_free_point_skills - \
-                                     agent.example.skill_point_summ()
-            d['free_point_perks'] = agent.lvl + agent.example.role_class.start_free_point_perks - len(agent.example.perks)
-
         if ex_car:
             # Шаблоны машинки
             templates = dict()

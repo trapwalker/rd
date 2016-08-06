@@ -71,7 +71,7 @@
 .character-window-up-block {
     position: relative;
     width: 100%;
-    height: 156px;
+    height: 185px;
     border-width: 0 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, #0e4b00, #0e4b00, transparent);
@@ -82,13 +82,15 @@
 #townMenuLocation .character-window-up-block {
     border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
     border-image-slice: 1;
+    height: 180px;
 }
 
 .character-window-down-block {
     position: relative;
     width: 100%;
-    height: calc(100% - 156px);
+    height: calc(100% - 185px);
 }
+#townMenuLocation .character-window-down-block { height: calc(100% - 180px); }
 
 .character-window-avatar-block {
     position: relative;
@@ -117,6 +119,36 @@
     background-color: #000000;
     height: 100%;
     padding: 2px 5px 1px 5px;
+}
+
+.character-window-exp-block {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    margin: 5px auto;
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03), linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.character-window-exp {
+    position: absolute;
+    width: 30%;
+    height: 100%;
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #31c811 25%, transparent 25%, transparent 74%, #31c811 75%, #31c811), linear-gradient(45deg, #31c811 25%, transparent 25%, transparent 74%, #31c811 75%, #31c811);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.character-window-exp-label {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 22px;
+    color: #2ffa00;
 }
 
 .character-window-about-block {
@@ -226,6 +258,7 @@
     display: none;
     box-sizing: border-box;
 }
+#townMenuLocation .character-window-page { padding: 3px 5px; }
 
 .character-window-perks-block {
     position: relative;
@@ -266,26 +299,33 @@
     overflow-y: auto;
     box-sizing: border-box;
 }
+#townMenuLocation .character-window-ttx-center { padding: 4px; }
 
 .character-window-ttx-footer {
     position: relative;
     width: 100%;
     height: 20px;
     border-top: 1px solid #0E4b00;
+    padding: 0 5px;
     box-sizing: border-box;
 }
+#townMenuLocation .character-window-ttx-footer { padding: 0 4px; }
 
 .character-window-ttx-footer-text {
     position: relative;
     float: left;
-    width: 140px;
+    width: calc(100% - 10px - 55px);
+    margin-right: 10px;
     box-sizing: border-box;
-    padding: 0 10px;
+    padding-left: 5px;
     line-height: 21px
 }
 .character-window-ttx-footer-text.right{
-    width: calc(100% - 140px);
-    text-align: right;
+    width: 55px;
+    height: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
 .character-window-ttx-item {

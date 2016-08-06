@@ -20,7 +20,7 @@
                 <div class="person-window-pers-info">
                     <div class="person-window-pers-info-line person-window-dark-back">
                         <div class="person-window-pers-info-label">Уровень:</div>
-                        <div class="person-window-pers-info-value person-window-lvl"></div>
+                        <div class="person-window-pers-info-value person-window-lvl">{{ lvl }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-light-back">
                         <div class="person-window-pers-info-label">Класс:</div>
@@ -32,27 +32,27 @@
                     </div>
                     <div class="person-window-pers-info-line person-window-light-back">
                         <div class="person-window-pers-info-label">Вождение:</div>
-                        <div class="person-window-pers-info-value person-window-driving">{{ agent.example.driving.value }}</div>
+                        <div class="person-window-pers-info-value person-window-driving">{{ agent.example.driving.calc_value() }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-dark-back">
                         <div class="person-window-pers-info-label">Стрельба:</div>
-                        <div class="person-window-pers-info-value person-window-shooting">{{ agent.example.shooting.value }}</div>
+                        <div class="person-window-pers-info-value person-window-shooting">{{ agent.example.shooting.calc_value() }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-light-back">
                         <div class="person-window-pers-info-label">Скрытность:</div>
-                        <div class="person-window-pers-info-value person-window-masking">{{ agent.example.masking.value }}</div>
+                        <div class="person-window-pers-info-value person-window-masking">{{ agent.example.masking.calc_value() }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-dark-back">
                         <div class="person-window-pers-info-label">Механика:</div>
-                        <div class="person-window-pers-info-value person-window-engineering">{{ agent.example.engineering.value }}</div>
+                        <div class="person-window-pers-info-value person-window-engineering">{{ agent.example.engineering.calc_value() }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-light-back">
                         <div class="person-window-pers-info-label">Торговля:</div>
-                        <div class="person-window-pers-info-value person-window-trading">{{ agent.example.trading.value }}</div>
+                        <div class="person-window-pers-info-value person-window-trading">{{ agent.example.trading.calc_value() }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-dark-back">
                         <div class="person-window-pers-info-label">Лидерство:</div>
-                        <div class="person-window-pers-info-value person-window-leading">{{ agent.example.leading.value }}</div>
+                        <div class="person-window-pers-info-value person-window-leading">{{ agent.example.leading.calc_value() }}</div>
                     </div>
                 </div>
             </div>
@@ -63,11 +63,6 @@
         </div>
     </div>
 </div>
-
-<script>
-
-</script>
-
 
 
 

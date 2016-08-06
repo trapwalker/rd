@@ -906,12 +906,6 @@ var ClientManager = (function () {
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
     };
 
-    // Фраг
-
-    ClientManager.prototype.AddExperienceMessage = function (event) {
-        console.log('ClientManager.prototype.AddExperienceMessage', event);
-    };
-
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
@@ -945,8 +939,13 @@ var ClientManager = (function () {
             inventoryList.addInventory(inv);
         }
 
-        characterManager.redraw();
+        this.UserExampleSelfRPGMessage(event);
+    };
 
+    ClientManager.prototype.UserExampleSelfRPGMessage = function(event) {
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        user.example_agent.rpg_info = event.rpg_info;
+        characterManager.redraw();
         locationManager.update();
     };
 

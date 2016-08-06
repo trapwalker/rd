@@ -11,7 +11,7 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out,
+from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
                                              SetObserverForClient, Die, QuickGameDie)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
@@ -413,7 +413,7 @@ class Agent(Object):
         self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
 
         # Отправить сообщение на клиент о начисленной экспе
-        AddExperienceMessage(agent=self, time=time,).post()
+        UserExampleSelfRPGMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
     def on_inv_change(self, time, incomings, outgoings):
