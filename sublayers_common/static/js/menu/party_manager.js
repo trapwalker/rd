@@ -107,7 +107,7 @@ var PartyManager = (function () {
         this._clear_user_info(jq_target_div);
         jq_target_div.find('.party-window-person-photo-wrap').css('display', 'block');
         jq_target_div.find('.party-window-pers-info').css('display', 'block');
-        jq_target_div.find('.party-window-person-photo').attr("src", user_info.avatar);
+        jq_target_div.find('.party-window-person-photo').css("background-image", 'url("' + user_info.avatar + '"');
         jq_target_div.find('.party-page-car-block').append(user_info.html_car_img);
         //this.jq_main_div.find('.chat-interaction-car-photo-name').text(user_data.car_name);
         for (var i = 0; i < this.field_name_list.length; i++) {
