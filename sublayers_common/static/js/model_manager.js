@@ -311,7 +311,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InitCar = function (event) {
-        console.log('ClientManager.prototype.InitCar', event);
+        //console.log('ClientManager.prototype.InitCar', event);
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
@@ -502,7 +502,7 @@ var ClientManager = (function () {
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
             if (! car) {
-                console.error('Out Error: Машины с данным id [' + uid + '] не существует на клиенте. Ошибка!', event);
+                //console.error('Out Error: Машины с данным id [' + uid + '] не существует на клиенте. Ошибка!', event);
                 return;
             }
 
@@ -927,8 +927,10 @@ var ClientManager = (function () {
         user.example_agent = event.example_agent;
         user.example_agent.rpg_info = event.rpg_info;
         user.avatar_link = event.avatar_link;
-        if (event.example_car && event.templates)
+        if (event.example_car && event.templates) {
             user.templates.html_car_img = event.templates.html_car_img;
+            user.templates.html_car_table = event.templates.html_car_table;
+        }
 
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
@@ -938,6 +940,9 @@ var ClientManager = (function () {
                 inventoryList.delInventory(inv.owner_id);
             inventoryList.addInventory(inv);
         }
+
+        // Проверить не надо ли запустить окно информации об автомобиле
+        if (carManager.is_active) carManager.open_window();
 
         this.UserExampleSelfRPGMessage(event);
     };
@@ -1783,6 +1788,18 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    ClientManager.prototype.sendGetAboutSelf = function () {
+        //console.log('ClientManager.prototype.sendSetAboutSelf', str);
+        var mes = {
+            call: "get_about_self",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     // Окно взаимодействия с другими игроками (в городе)
     ClientManager.prototype.sendGetInteractionInfo = function () {

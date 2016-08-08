@@ -164,6 +164,23 @@
     color: #1e9604;
 }
 
+.car-info-block-body-right-exp-block {
+    position: relative;
+    margin: 0 auto;
+    width: 220px;
+    height: 40px;
+}
+
+.car-info-block-body-right-exp-icon {
+    position: relative;
+    float: left;
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+    background-color: red;
+}
+.car-info-block-body-right-exp-icon.last { margin-right: 0px; }
+.car-info-block-body-right-exp-icon.active { background-color: blue; }
 
 /* Ammo */
 .car-info-block-item-wrap {

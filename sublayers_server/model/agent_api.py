@@ -733,6 +733,10 @@ class AgentAPI(API):
                                skills=skills, buy_skills=buy_skills, perks=perks).post()
 
     @public_method
+    def get_about_self(self):
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
     def set_about_self(self, text):
         self.agent.example.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
