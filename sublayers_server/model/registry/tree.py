@@ -12,6 +12,7 @@ from fnmatch import fnmatch
 from collections import deque, Counter
 from pprint import pformat
 from functools import partial
+from copy import copy
 import time
 import yaml
 import yaml.scanner
@@ -20,8 +21,7 @@ import os
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm import AbstractDocument
 from sublayers_server.model.registry.odm.fields import (
-    StringField, ListField, BooleanField, UUIDField,
-    UniReferenceField,
+    StringField, BooleanField, UUIDField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
 from sublayers_server.model.registry.odm.doc import _call_stat
 
@@ -35,11 +35,34 @@ class RegistryNodeFormatError(RegistryError):
 
 
 class Doc(AbstractDocument):
-    def instantiate(self, **kw):
-        inst = self.__class__(**kw)
-        # todo: Сделать поиск ссылок в параметрах URI
-        return inst
 
+    def _reinst_list(self, field, lst):
+        lst = copy(lst)
+        subfield = field._base_field
+        for i, item in enumerate(lst):
+            if item is not None:
+                if isinstance(subfield, ListField):
+                    lst[i] = self._reinst_list(subfield, copy(item))
+                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Doc):
+                    lst[i] = item.instantiate()
+                else:
+                    lst[i] = copy(item)
+        return lst
+
+    def instantiate(self, **kw):
+        # todo: Сделать поиск ссылок в параметрах URI
+        inst = self.__class__(**kw)
+
+        for name, field in self._fields.items():
+            if field.reinst:
+                value = getattr(self, name)
+                if value is not None:
+                    if isinstance(field, EmbeddedDocumentField):
+                        setattr(inst, name, value.instantiate())  # todo: Поддержка шаблонного формирования по ссылке
+                    elif isinstance(field, ListField):
+                        setattr(inst, name, self._reinst_list(field, value))
+
+        return inst
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = {}
@@ -66,7 +89,11 @@ class Doc(AbstractDocument):
 
 
 class Subdoc(Doc):
-    pass
+    def instantiate(self, **kw):
+        # values = self._values.copy()
+        values = self._values
+        values.update(kw)
+        return super(Subdoc, self).instantiate(**values)
 
 
 class Node(Doc):
@@ -172,8 +199,8 @@ class Node(Doc):
             if not is_value_exists and name not in {'parent', 'owner', 'uri'}:
                 try:
                     parent = self.parent
-                except:
-                    assert False, "oops! where are you, mom!?"
+                except Exception as e:
+                    assert False, "oops! where are you, mom!? %s" % e
                 value = getattr(parent, name, None)  # todo: may be exception need?
 
             if field.required and value is None:
@@ -233,10 +260,19 @@ class Node(Doc):
 
     def instantiate(self, name=None, by_uri=None, **kw):
         assert self.abstract, "Can't instantiate abstract object: {}".format(self)
+        params = {}
+        if self.uri:
+            parent = self
+        else:
+            parent = self.parent
+            params.update(self._values)
+
         if by_uri:
-            kw.update(by_uri.params)
-        kw.setdefault('uid', self.__class__.uid.default())
-        inst = self.__class__(name=name, parent=self, abstract=False, **kw)
+            params.update(by_uri.params)
+
+        params.update(kw)
+        params.setdefault('uid', self.__class__.uid.default())
+        inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
 

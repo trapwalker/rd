@@ -42,8 +42,9 @@ class BinaryField           (MetaFieldMixin, motorengine.fields.BinaryField     
 class JsonField             (MetaFieldMixin, motorengine.fields.JsonField            ): pass
 
 class ListField             (MetaFieldMixin, motorengine.fields.ListField            ):  # base_field
-    def __init__(self, base_field=None, *args, **kw):
+    def __init__(self, base_field=None, reinst=False, *args, **kw):
         super(ListField, self).__init__(base_field=base_field, *args, **kw)
+        self.reinst = reinst
 
         default = kw.pop('default', None)
         if default is None:
@@ -52,6 +53,10 @@ class ListField             (MetaFieldMixin, motorengine.fields.ListField       
 
 class EmbeddedDocumentField(MetaFieldMixin, motorengine.fields.EmbeddedDocumentField):
     # embedded_document_type
+    def __init__(self, embedded_document_type=None, reinst=False, *args, **kw):
+        super(EmbeddedDocumentField, self).__init__(embedded_document_type=embedded_document_type, *args, **kw)
+        self.reinst = reinst
+
     def from_son(self, value):
         if value is None:
             return None

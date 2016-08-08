@@ -55,7 +55,8 @@ def test_registry():
     )))
     r = Root.objects.get_cached('reg:///registry')
     x = r['mobiles/cars/middle/sports/delorean_dmc12']
-    print('r_cc_dirt' in x._values)
+    x1 = x.instantiate()
+    x2 = x.instantiate()
     globals().update(**locals())
     print('THE END')
     tornado.ioloop.IOLoop.instance().add_callback(lambda: io_loop.stop())
