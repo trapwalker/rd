@@ -34,9 +34,11 @@ class Mobile(Root):
     )
 
     # Статистика
-    _exp = IntField(default=0, caption=u"Количество опыта")
+    _exp = FloatField(default=0, caption=u"Количество опыта")
     _frag = IntField(default=0, caption=u"Количество убийств")
     _way = FloatField(default=0, caption=u"Пройденный путь")
+
+    k_way_exp = FloatField(caption=u"Коэффициент экпы от пройдённого пути")
 
     # атрибуты от ObserverObjects
     p_observing_range = FloatField(caption=u"Радиус обзора", tags="parameter")

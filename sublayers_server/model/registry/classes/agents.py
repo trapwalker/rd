@@ -17,7 +17,7 @@ class Agent(Root):
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
 
     # Поля статистики агента
-    _exp = IntField(default=0, caption=u"Количество опыта")
+    _exp = FloatField(default=0, caption=u"Количество опыта")
     _frag = IntField(default=0, caption=u"Количество убийств")
 
     car = UniReferenceField(
