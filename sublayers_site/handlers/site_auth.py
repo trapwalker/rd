@@ -86,6 +86,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 #storage=self.application.reg_agents,
                 profile_id=str(user._id),
                 name=str(user._id),
+                fixtured=False,
             )
             yield agent_example.load_references()
             yield agent_example.save(upsert=True)

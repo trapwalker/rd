@@ -74,7 +74,11 @@ class POIContainer(Observer):
 
         assert (example is not None) or ((inventory_size is not None) and (position is not None))
         if example is None:
-            example = server.reg['poi/stash'].instantiate(position=position, inventory_size=inventory_size)
+            example = server.reg['poi/stash'].instantiate(
+                position=position, 
+                inventory_size=inventory_size,
+                fixtured=False,
+            )
             example.load_references(callback=callback())
 
 

@@ -279,10 +279,11 @@ class Node(Doc):
         if by_uri:
             params.update(by_uri.params)
 
+        fixtured = kw.pop('fixtured', self.fixtured)
         uid = kw.pop('uid', self.__class__.uid.default())
         params.update(kw)
         #inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
-        params.update(parent=parent, name=name, uid=uid)
+        params.update(parent=parent, name=name, uid=uid, fixtured=fixtured)
         inst = super(Node, self).instantiate(**params)  # abstract=False,
         # todo: Разобраться с abstract при реинстанцированиях
         # todo: Сделать поиск ссылок в параметрах URI

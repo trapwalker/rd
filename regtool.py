@@ -24,7 +24,7 @@ from pprint import pprint as pp
 
 @tornado.gen.coroutine
 def test_registry():    
-    log.debug('Delete all registry objects: %s', (yield Root.objects.delete()))  # todo: make deletion fixtures only
+    log.debug('Delete all registry objects: %s', (yield Root.objects.filter({'fixtured': False}).delete()))  # todo: make deletion fixtures only
 
     log.debug('Loading registry fixtures to DB...')
     reg = yield Root.load(path=os.path.join(project_root, u'sublayers_world', u'registry'))

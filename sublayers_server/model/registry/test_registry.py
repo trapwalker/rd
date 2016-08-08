@@ -31,7 +31,7 @@ def test_registry():
     nodes = yield Root.objects.filter(uri={'$ne': None}).find_all()
     reg = Root.objects.get_cached('reg:///registry')
     a = reg['agents/user']
-    u = a.instantiate(profile_id='123456')
+    u = a.instantiate(profile_id='123456', fixtured=False,)
     yield u.load_references()
     yield u.save(upsert=True)
     log.debug('### Registry test end')
@@ -42,8 +42,8 @@ def test_registry():
     )))
     r = Root.objects.get_cached('reg:///registry')
     x = r['mobiles/cars/middle/sports/delorean_dmc12']
-    x1 = x.instantiate()
-    x2 = x.instantiate()
+    x1 = x.instantiate(fixtured=False,)
+    x2 = x.instantiate(fixtured=False,)
     globals().update(**locals())
     print('THE END')
     tornado.ioloop.IOLoop.instance().add_callback(lambda: io_loop.stop())

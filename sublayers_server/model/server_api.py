@@ -28,7 +28,7 @@ class ServerAPI(API):
             if agent_exemplar is None:
                 # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
                 agent_exemplar = self.server.reg['agents/user'].instantiate(
-                    name=str(user._id), login=user.name,
+                    name=str(user._id), login=user.name, fixtured=False,
                 )
                 # todo: временный костыль - убрать потом!
                 yield agent_exemplar.load_references()
@@ -69,6 +69,7 @@ class ServerAPI(API):
                     login=user.name,
                     profile_id=str(user._id),
                     name=str(user._id),
+                    fixtured=False,
                 )
                 yield agent_exemplar.load_references()
                 role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
@@ -100,7 +101,7 @@ class ServerAPI(API):
                 user.car_index = 0
             else:
                 user.car_index = int(user.car_index)
-            agent.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate()
+            agent.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
             yield agent.example.car.load_references()
 
             agent.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)

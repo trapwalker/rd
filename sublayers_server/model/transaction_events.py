@@ -300,7 +300,7 @@ class TransactionHangarBuy(TransactionEvent):
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
-            car_example = car_proto.instantiate()
+            car_example = car_proto.instantiate(fixtured=False,)
             yield car_example.load_references()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
