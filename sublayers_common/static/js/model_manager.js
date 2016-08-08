@@ -908,7 +908,6 @@ var ClientManager = (function () {
     };
 
     // Фраг
-
     ClientManager.prototype.AddExperienceMessage = function (event) {
         console.log('ClientManager.prototype.AddExperienceMessage', event);
     };
@@ -1231,6 +1230,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendInvitePartyFromTemplate = function (name) {
+        //console.log('ClientManager.prototype.sendInvitePartyFromTemplate');
+        modalWindow.modalDialogInfoShow({
+            caption: 'Invite',
+            header: 'Приглашение отправлено!',
+            body_text: 'Вы пригласили в пати игрока с ником - ' + name + '.',
+            callback_ok: function () {}
+        });
         var mes = {
             call: "send_invite",
             rpc_call_id: rpcCallList.getID(),
