@@ -12,6 +12,7 @@ from collections import Counter
 class Inventory(Subdoc):
     items = ListField(base_field=EmbeddedDocumentField(
         embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+        reinst=True,
     ))
     
     def placing(self):
@@ -39,5 +40,5 @@ class Inventory(Subdoc):
 
 
 class InventoryField(EmbeddedDocumentField):
-    def __init__(self, embedded_document_type=Inventory, *av, **kw):
-        super(InventoryField, self).__init__(embedded_document_type=Inventory, *av, **kw)
+    def __init__(self, embedded_document_type=Inventory, reinst=True, *av, **kw):
+        super(InventoryField, self).__init__(embedded_document_type=Inventory, reinst=reinst, *av, **kw)

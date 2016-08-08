@@ -40,7 +40,7 @@ class PriceOption(Subdoc):
 
 
 class Price(Subdoc):
-    items = ListField(base_field=EmbeddedDocumentField(embedded_document_type=PriceOption))
+    items = ListField(base_field=EmbeddedDocumentField(embedded_document_type=PriceOption), reinst=True)
 
     def get_item_price(self, item):
         for option in self.items:

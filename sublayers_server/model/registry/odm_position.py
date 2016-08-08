@@ -9,8 +9,8 @@ from sublayers_server.model.vectors import Point
 
 
 class PositionField(EmbeddedDocumentField):
-    def __init__(self, *args, **kw):
-        super(PositionField, self).__init__(embedded_document_type=Position, *args, **kw)
+    def __init__(self, reinst=True, *args, **kw):
+        super(PositionField, self).__init__(embedded_document_type=Position, reinst=reinst, *args, **kw)
 
     def set_value(self, value):
         if value is None or isinstance(value, Position):

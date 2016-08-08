@@ -23,9 +23,10 @@ class Agent(Root):
     car_list = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type='sublayers_server.model.registry.classes.mobiles.Car'),
         default=list, caption=u"Список всех машин, кроме активной",
+        reinst=True,
     )
 
-    position = PositionField(caption=u"Последние координаты агента")
+    position = PositionField(caption=u"Последние координаты агента", reinst=True)
     balance = FloatField(caption=u"Количество литров на счете агента", tags='client')  # todo: обсудить #release
 
     last_town = UniReferenceField(
@@ -44,6 +45,7 @@ class Agent(Root):
     perks = ListField(
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.perks.Perk'),
         caption=u'Список прокачанных перков',
+        reinst=True,
     )
 
     # Механизм скилов
@@ -63,62 +65,74 @@ class Agent(Root):
         caption=u"Купленные очки навыка вождения",
         default='reg:///registry/rpg_settings/buy_skill/driving',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        reinst=True,
     )
     buy_shooting = EmbeddedDocumentField(
         caption=u"Купленные очки навыка стрельбы",
         default='reg:///registry/rpg_settings/buy_skill/shooting',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        reinst=True,
     )
     buy_masking = EmbeddedDocumentField(
         caption=u"Купленные очки навыка маскировки",
         default='reg:///registry/rpg_settings/buy_skill/masking',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        reinst=True,
     )
     buy_leading = EmbeddedDocumentField(
         caption=u"Купленные очки навыка лидерства",
         default='reg:///registry/rpg_settings/buy_skill/leading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        reinst=True,
     )
     buy_trading = EmbeddedDocumentField(
         caption=u"Купленные очки навыка торговли",
         default='reg:///registry/rpg_settings/buy_skill/trading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        reinst=True,
     )
     buy_engineering = EmbeddedDocumentField(
         caption=u"Купленные очки навыка инженеринга",
         default='reg:///registry/rpg_settings/buy_skill/engineering',
         embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        reinst=True,
     )
 
     driving = EmbeddedDocumentField(
         caption=u"Навык вождения", tags='skill',
         default='reg:///registry/rpg_settings/skill/driving',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        reinst=True,
     )
     shooting = EmbeddedDocumentField(
         caption=u"Навык стрельбы", tags='skill',
         default='reg:///registry/rpg_settings/skill/shooting',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        reinst=True,
     )
     masking = EmbeddedDocumentField(
         caption=u"Навык маскировки", tags='skill',
         default='reg:///registry/rpg_settings/skill/masking',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        reinst=True,
     )
     leading = EmbeddedDocumentField(
         caption=u"Навык лидерства", tags='skill',
         default='reg:///registry/rpg_settings/skill/leading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        reinst=True,
     )
     trading = EmbeddedDocumentField(
         caption=u"Навык торговли", tags='skill',
         default='reg:///registry/rpg_settings/skill/trading',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        reinst=True,
     )
     engineering = EmbeddedDocumentField(
         caption=u"Навык инженеринга", tags='skill',
         default='reg:///registry/rpg_settings/skill/engineering',
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        reinst=True,
     )
 
     def iter_skills(self):  # todo: need review
