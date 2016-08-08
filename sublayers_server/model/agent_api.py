@@ -402,6 +402,9 @@ class AgentAPI(API):
         messages.InitAgent(agent=self.agent, time=time).post()
         messages.UserExampleSelfMessage(agent=self.agent, time=time).post()
 
+        # Отослать все пати инвайты
+        PartyGetAllInvitesEvent(agent=self.agent, time=self.agent.server.get_time()).post()
+
         # Отправка сообщений для журнала
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
 
@@ -447,10 +450,6 @@ class AgentAPI(API):
         # todo: review
         SetPartyEvent(agent=self.agent, name=unicode(name), description=unicode(description),
                       time=self.agent.server.get_time()).post()
-
-    @public_method
-    def get_all_invites(self):
-        PartyGetAllInvitesEvent(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def get_party_info(self, name):
