@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField,
+    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
 
 
@@ -15,6 +15,10 @@ class Agent(Root):
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
+
+    # Поля статистики агента
+    _exp = FloatField(default=0, caption=u"Количество опыта")
+    _frag = IntField(default=0, caption=u"Количество убийств")
 
     car = UniReferenceField(
         reference_document_type='sublayers_server.model.registry.classes.mobiles.Car',
@@ -171,3 +175,25 @@ class Agent(Root):
             if car.last_parking_npc == npc.node_hash():
                 res.append(car)
         return res
+
+
+    # Для того, чтобы "закрыть" поле
+    @property
+    def exp(self):
+        return self._exp
+
+    def set_exp(self, value=None, dvalue=None):
+        if value is not None:
+            self._exp = value
+        if dvalue is not None:
+            self._exp += dvalue
+
+    @property
+    def frag(self):
+        return self._frag
+
+    def set_frag(self, value=None, dvalue=None):
+        if value is not None:
+            self._frag = value
+        if dvalue is not None:
+            self._frag += dvalue

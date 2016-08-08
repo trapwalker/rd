@@ -52,7 +52,7 @@ class Price(Subdoc):
         for item in items:
             option = self.get_item_price(item)
             if option:
-                price[item] = option
+                price[item] = option.as_client_dict()
         return price
 
     # def __contains__  # todo: extended filtering

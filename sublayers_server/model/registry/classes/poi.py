@@ -109,11 +109,11 @@ class Trader(Institution):
     def as_client_dict(self, items=None):
         d = super(Trader, self).as_client_dict()
         # todo: registry fix it
-        # d['price'] = {item.node_hash(): option for item, option in self.get_prices(items).items()}
+        d['price'] = {item.node_hash(): option for item, option in self.get_prices(items).items()}
         return d
 
     def get_prices(self, items=None):
-        return self.price.get_pricelist(chain(items or (), self.inventory))
+        return self.price.get_pricelist(chain(items or (), self.inventory.items))
 
 
 class Hangar(Institution):

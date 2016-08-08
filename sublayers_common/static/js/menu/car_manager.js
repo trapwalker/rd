@@ -1,15 +1,25 @@
 var CarManager = (function () {
 
     function CarManager() {
+        this.is_active = false;
         this.jq_main_div = $();
     }
+
+    CarManager.prototype.get_info = function () {
+        this.is_active = true;
+        clientManager.sendGetAboutSelf();
+    };
+
+    CarManager.prototype.open_window = function () {
+        this.is_active = false;
+        windowTemplateManager.openUniqueWindow('car_info', '/menu_car', null, this.redraw);
+    };
 
     CarManager.prototype.redraw = function (jq_main_div) {
         //console.log('SelfInfoManager.prototype.redraw', $(jq_main_div));
         var self = carManager;
-        if (jq_main_div)        
+        if (jq_main_div)
             self.jq_main_div = $(jq_main_div).first();
-
         var jq_car_block_pic = self.jq_main_div.find('.car-window-picture').first();
         var jq_car_block_table = self.jq_main_div.find('.car-window-table').first();
         jq_car_block_pic.empty();

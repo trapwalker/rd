@@ -50,6 +50,12 @@ class ExpTable(Root):
         """
         return self.table_slice(self.user_exp_table or [], exp)
 
+    def user_exp_by_lvl(self, lvl):
+        for pair in self.user_exp_table:
+            if pair.k == lvl:
+                return pair.v
+        return 0
+
     def car_lvl_by_exp(self, exp):
         return self.table_slice(self.car_exp_table or [], exp)[0]
 

@@ -354,9 +354,9 @@ class Unit(Observer):
 
     def on_kill(self, time, obj):
         # Начисление опыта и фрага машинке
-        self.stat_log.frag(time=time, delta=1)  # начисляем фраг машинке
-        d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp'))
-        self.stat_log.exp(time=time, delta=d_car_exp)   # начисляем опыт машинке
+        self.example.set_frag(dvalue=1)  # начисляем фраг машинке
+        d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
+        self.example.set_exp(dvalue=d_car_exp) # начисляем опыт машинке
 
 
 class Mobile(Unit):
@@ -518,7 +518,6 @@ class Bot(Mobile):
     def on_kill(self, time, obj):
         # Начисление опыта и фрага агенту
         self.main_agent.on_kill(time=time, obj=obj)
-
         super(Bot, self).on_kill(time=time, obj=obj)
 
     def on_die(self, event):
