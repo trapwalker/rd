@@ -7,7 +7,6 @@ log = logging.getLogger(__name__)
 from sublayers_server.model import messages
 from sublayers_server.model.events import Init, Delete, Save
 from sublayers_server.model.parameters import Parameter
-from sublayers_server.model.stat_log import StatLogger
 
 import sys
 from abc import ABCMeta
@@ -33,7 +32,6 @@ class Object(object):
         self.events = []  # all events about this object
         self.is_alive = True
         self.limbo = False
-        self.stat_log = StatLogger()
 
     def __hash__(self):
         return self.uid

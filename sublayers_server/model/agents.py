@@ -407,10 +407,12 @@ class Agent(Object):
 
         # todo: party
         # todo: registry fix?
-        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp')) * \
-                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.stat_log.get_metric('exp'))
-        self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
+        self.example.set_frag(dvalue=1)  # начисляем фраг агенту
+
+
+        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
+                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
+        self.example.set_exp(dvalue=d_user_exp)   # начисляем опыт агенту
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=time,).post()
@@ -472,16 +474,6 @@ class Agent(Object):
             canceled=canceled, buy=buy, sale=sale, cost=cost,
             time=time, is_init=is_init)
 
-    @property
-    def skill_points(self):
-        # todo: registry fix it?
-        #return self.example.exp_table.agent_skill_points_by_exp(0)
-        return self.example.exp_table.agent_skill_points_by_exp(self.stat_log.get_metric('exp'))
-
-    @property
-    def lvl(self):
-        # todo: должно вычисляться не так
-        return self.skill_points
 
 # todo: Переименовать в UserAgent
 class User(Agent):

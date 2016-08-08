@@ -42,5 +42,5 @@ class PersonInfoHandler(BaseHandler):
         if mode == 'city':
             self.render("person_info_chat.html", agent=person)
         elif mode == 'map':
-            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=agent.stat_log.get_metric('exp'))
+            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=agent.example.exp)
             self.render("menu/person_window.html", agent=person, lvl=lvl)

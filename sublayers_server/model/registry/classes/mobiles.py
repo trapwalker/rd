@@ -33,6 +33,11 @@ class Mobile(Root):
         reference_document_type="sublayers_server.model.registry.classes.poi.MapLocation",
     )
 
+    # Статистика
+    _exp = IntField(default=0, caption=u"Количество опыта")
+    _frag = IntField(default=0, caption=u"Количество убийств")
+    _way = FloatField(default=0, caption=u"Пройденный путь")
+
     # атрибуты от ObserverObjects
     p_observing_range = FloatField(caption=u"Радиус обзора", tags="parameter")
 
@@ -197,6 +202,37 @@ class Mobile(Root):
         # todo: проверить допустимость значения
         assert original_value is not None, '{} is not allowed {}'.format(param_name, original_value)
         return original_value + mechanic_slots_effect + agent_effect
+
+    # Для того, чтобы "закрыть" поле
+    @property
+    def exp(self):
+        return self._exp
+
+    def set_exp(self, value=None, dvalue=None):
+        if value is not None:
+            self._exp = value
+        if dvalue is not None:
+            self._exp += dvalue
+
+    @property
+    def frag(self):
+        return self._frag
+
+    def set_frag(self, value=None, dvalue=None):
+        if value is not None:
+            self._frag = value
+        if dvalue is not None:
+            self._frag += dvalue
+
+    @property
+    def way(self):
+        return self._way
+
+    def set_way(self, value=None, dvalue=None):
+        if value is not None:
+            self._way = value
+        if dvalue is not None:
+            self._way += dvalue
 
 
 class Car(Mobile):

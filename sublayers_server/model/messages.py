@@ -808,7 +808,7 @@ class UserExampleSelfRPGMessage(Message):
     def as_dict(self):
         d = super(UserExampleSelfRPGMessage, self).as_dict()
         agent = self.agent
-        cur_exp = agent.stat_log.get_metric('exp')
+        cur_exp = agent.example.exp
         lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=cur_exp)
         rpg_info = dict(
             cur_lvl=math.floor(lvl / 10),
@@ -1101,7 +1101,7 @@ class InteractionInfoMessage(Message):
     def as_dict(self):
         d = super(InteractionInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.example.exp)
         if player:
             d.update(
                 avatar=player.user.avatar_link,
@@ -1143,7 +1143,7 @@ class PartyUserInfoMessage(Message):
     def as_dict(self):
         d = super(PartyUserInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.example.exp)
         if player:
             d.update(
                 name=self.player_nick,

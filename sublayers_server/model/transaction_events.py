@@ -910,7 +910,7 @@ class TransactionSetRPGState(TransactionEvent):
             return  # todo: warning
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.stat_log.get_metric('exp'))
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.example.exp)
         self.lvl = lvl
 
         max_sp = lvl + agent.example.role_class.start_free_point_skills
