@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.odm import AbstractDocument
 from sublayers_server.model.registry.odm.fields import FloatField, EmbeddedDocumentField
 from sublayers_server.model.vectors import Point
+from sublayers_server.model.registry.tree import Subdoc
 
 
 class PositionField(EmbeddedDocumentField):
@@ -18,7 +19,7 @@ class PositionField(EmbeddedDocumentField):
         return Position(value)
 
 
-class Position(AbstractDocument):
+class Position(Subdoc):
     x = FloatField()
     y = FloatField()
     # todo: generate qrts index by on_save

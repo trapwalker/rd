@@ -49,18 +49,21 @@ class Doc(AbstractDocument):
                     lst[i] = copy(item)
         return lst
 
+    def _instantiaite_field(self, new_instance, field, name):
+        if hasattr(field, 'reinst') and field.reinst:
+            value = getattr(self, name)
+            if value is not None:
+                if isinstance(field, EmbeddedDocumentField):
+                    setattr(new_instance, name, value.instantiate())  # todo: Поддержка шаблонного формирования по ссылке
+                elif isinstance(field, ListField):
+                    setattr(new_instance, name, self._reinst_list(field, value))
+
     def instantiate(self, **kw):
         # todo: Сделать поиск ссылок в параметрах URI
         inst = self.__class__(**kw)
 
         for name, field in self._fields.items():
-            if field.reinst:
-                value = getattr(self, name)
-                if value is not None:
-                    if isinstance(field, EmbeddedDocumentField):
-                        setattr(inst, name, value.instantiate())  # todo: Поддержка шаблонного формирования по ссылке
-                    elif isinstance(field, ListField):
-                        setattr(inst, name, self._reinst_list(field, value))
+            self._instantiaite_field(inst, field, name)
 
         return inst
 
@@ -91,7 +94,7 @@ class Doc(AbstractDocument):
 class Subdoc(Doc):
     def instantiate(self, **kw):
         # values = self._values.copy()
-        values = self._values
+        values = self._values  # todo: ВОзможно нужно копировать параметры по-другому (_instantiate_field override)
         values.update(kw)
         return super(Subdoc, self).instantiate(**values)
 
@@ -258,8 +261,14 @@ class Node(Doc):
         )
         return d
 
+    # def _instantiaite_field(self, new_instance, field, name):
+    #     if name == 'uid':
+    #         pass
+    #     else:
+    #         super(Node, self)._instantiaite_field(new_instance, field, name)
+
     def instantiate(self, name=None, by_uri=None, **kw):
-        assert self.abstract, "Can't instantiate abstract object: {}".format(self)
+        # assert self.abstract, "Can't instantiate abstract object: {}".format(self)
         params = {}
         if self.uri:
             parent = self
@@ -270,9 +279,12 @@ class Node(Doc):
         if by_uri:
             params.update(by_uri.params)
 
+        uid = kw.pop('uid', self.__class__.uid.default())
         params.update(kw)
-        params.setdefault('uid', self.__class__.uid.default())
-        inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
+        #inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
+        params.update(parent=parent, name=name, uid=uid)
+        inst = super(Node, self).instantiate(**params)  # abstract=False,
+        # todo: Разобраться с abstract при реинстанцированиях
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
 

@@ -10,9 +10,8 @@ from sublayers_server.model.registry.odm.fields import ListField, EmbeddedDocume
 from collections import Counter
 
 class Inventory(Subdoc):
-    items = ListField(base_field=EmbeddedDocumentField(
+    items = ListField(reinst=True, base_field=EmbeddedDocumentField(
         embedded_document_type='sublayers_server.model.registry.classes.item.Item',
-        reinst=True,
     ))
     
     def placing(self):

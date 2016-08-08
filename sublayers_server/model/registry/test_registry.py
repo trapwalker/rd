@@ -34,19 +34,6 @@ def test_registry():
     u = a.instantiate(profile_id='123456')
     yield u.load_references()
     yield u.save(upsert=True)
-
-    #car = yield Root.objects.get('reg:///registry/mobiles/cars/middle/sports/delorean_dmc12')
-    # log.debug('object by parents: %s', id(car.parent.parent.parent))
-    # cars = yield Root.objects.get('reg:///registry/mobiles/cars')
-    # log.debug('cars by uri: %s', id(cars))
-    # c = yield Root.objects.get('reg:///registry/a/b/c')
-    #cc = yield Root.objects.get('reg:///registry/a/b/cc')
-    # log.debug('A by parents of C: %s', id(c.parent.parent))
-    # a = yield Root.objects.get('reg:///registry/a')
-    # log.debug('A by uri: %s', id(a))
-
-    # cc = yield Root.objects.get('reg:///registry/a/b/cc')
-    # cc2 = Root.objects.get_cached('reg:///registry/a/b/cc')
     log.debug('### Registry test end')
     print('\n'.join((
         '{v:6} - {k}'.format(v=v, k=k)
