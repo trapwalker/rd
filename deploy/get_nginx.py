@@ -129,7 +129,7 @@ def setup():
     app_root_abs_path = os.path.abspath(APP_ROOT)
     log.debug('Making application root path inclusion: %r', app_root_abs_path)
     with open(PROJECT_ROOT_CONF_FN, 'w') as f:
-        f.write('set $rd_main_folder {};\n'.format(app_root_abs_path))
+        f.write('set $rd_main_folder {};\n'.format(app_root_abs_path)).replace("\\", "/")
 
     log.debug('Linking configurations...')
     for fn in os.listdir(CONF_FOLDER):
