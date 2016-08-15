@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
     os.system(r'easy_install.bat greenlet')
     os.system(r'easy_install.bat Pillow')
+    os.system(r'easy_install.bat --upgrade pip')
 
     ve.install_requirements(requirements)
 
