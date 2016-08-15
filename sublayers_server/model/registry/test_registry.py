@@ -44,6 +44,13 @@ def test_registry():
     x = r['mobiles/cars/middle/sports/delorean_dmc12']
     x1 = x.instantiate(fixtured=False,)
     x2 = x.instantiate(fixtured=False,)
+
+    a2 = yield a.objects.get(id='57ac5c7b7ee5fe1c303a8159')
+    print('a2.position =', a2.position)
+    #a2.position = [123, 456]
+    #print('a2.position =', a2.position)
+    #yield a2.save()
+
     globals().update(**locals())
     print('THE END')
     tornado.ioloop.IOLoop.instance().add_callback(lambda: io_loop.stop())
