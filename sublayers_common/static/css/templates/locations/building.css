@@ -178,6 +178,7 @@
 
 .building-npc-photo {
     position: relative;
+    pointer-events: none;
     margin: auto;
 }
 

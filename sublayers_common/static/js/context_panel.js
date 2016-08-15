@@ -173,7 +173,7 @@ var EnterToLocationObserver = (function(_super){
     };
 
     EnterToLocationObserver.prototype.activate_window = function(location_id) {
-        console.log('EnterToLocationObserver.prototype.activate_window', location_id);
+        //console.log('EnterToLocationObserver.prototype.activate_window', location_id);
         for (var i = 0; i < this.observing_list.length; i++) {
             var mobj_id = this.observing_list[i].ID;
             if (mobj_id == location_id) {

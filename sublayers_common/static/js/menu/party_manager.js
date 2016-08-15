@@ -46,22 +46,25 @@ var PartyManager = (function () {
         this._redraw_party();
     };
 
+    PartyManager.prototype.search_invite = function (invite_id) {
+        for (var i = 0; i < this.invites.length; i++)
+            if (this.invites[i].invite_id == invite_id)
+                return i;
+        return -1;
+    };
+
     PartyManager.prototype.add_invite = function (invite_id, party, sender, recipient) {
+        //console.log('PartyManager.prototype.add_invite ');
         if (user.ID != recipient.uid) return;
-        var invite = {
-            invite_id: invite_id, party: party, sender: sender, recipient: recipient
-        };
-        this.invites.push(invite);
-        this._redraw_invites();
+        var invite = { invite_id: invite_id, party: party, sender: sender, recipient: recipient };
+        if (this.search_invite(invite.invite_id) < 0) {
+            this.invites.push(invite);
+            this._redraw_invites();
+        }
     };
 
     PartyManager.prototype.del_invite = function (invite_id) {
-        var index = -1;
-        for (var i = 0; i < this.invites.length; i++)
-            if (this.invites[i].invite_id == invite_id) {
-                index = i;
-                break;
-            }
+        var index = this.search_invite(invite_id);
         if (index >= 0) {
             this.invites.splice(index, 1);
             this._redraw_invites();
@@ -107,7 +110,7 @@ var PartyManager = (function () {
         this._clear_user_info(jq_target_div);
         jq_target_div.find('.party-window-person-photo-wrap').css('display', 'block');
         jq_target_div.find('.party-window-pers-info').css('display', 'block');
-        jq_target_div.find('.party-window-person-photo').attr("src", user_info.avatar);
+        jq_target_div.find('.party-window-person-photo').css("background-image", 'url("' + user_info.avatar + '"');
         jq_target_div.find('.party-page-car-block').append(user_info.html_car_img);
         //this.jq_main_div.find('.chat-interaction-car-photo-name').text(user_data.car_name);
         for (var i = 0; i < this.field_name_list.length; i++) {

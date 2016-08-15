@@ -670,7 +670,7 @@ var OwnerList = (function () {
         for (var i = 0; i < this.owners.length; i++) {
             var curr_owner = this.owners[i];
             //if (party_id == curr_owner.party.id) {
-                for (var car_index = 0; i < curr_owner.cars.length; i++) {
+                for (var car_index = 0; car_index < curr_owner.cars.length; car_index++) {
                     var widget_marker = visualManager.getVobjByType(curr_owner.cars[car_index], WCanvasCarMarker);
                     if (widget_marker) widget_marker.updateIcon();
                 //}

@@ -57,6 +57,7 @@ var InteractionManager = (function (_super) {
                 clientManager.sendInvitePartyFromTemplate(this.player_nick);
                 break;
             case '3':
+                this.clear();
                 locationManager.location_chat.activate();
                 break;
             default:
@@ -69,7 +70,7 @@ var InteractionManager = (function (_super) {
     };
 
     InteractionManager.prototype.activate = function (person) {
-        if (person && (this.player_nick != person)) {
+        if (person) {
             this.player_nick = person;
             this.get_self_info();
         }

@@ -305,7 +305,6 @@ var ClientManager = (function () {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 this.sendGetPartyInfo(event.agent.party.name);
             }
-            this.sendGetAllInvites();
             timeManager.timerStart();
         }
     };
@@ -1198,17 +1197,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendGetAllInvites = function () {
-        //console.log('ClientManager.prototype.sendGetAllInvites');
-        var mes = {
-            call: "get_all_invites",
-            rpc_call_id: rpcCallList.getID(),
-            params: {}
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
     ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description) {
         var mes = {
             call: "send_create_party_from_template",
@@ -1235,6 +1223,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendInvitePartyFromTemplate = function (name) {
+        //console.log('ClientManager.prototype.sendInvitePartyFromTemplate');
+        modalWindow.modalDialogInfoShow({
+            caption: 'Invite',
+            header: 'Приглашение отправлено!',
+            body_text: 'Вы пригласили в пати игрока с ником - ' + name + '.',
+            callback_ok: function () {}
+        });
         var mes = {
             call: "send_invite",
             rpc_call_id: rpcCallList.getID(),
