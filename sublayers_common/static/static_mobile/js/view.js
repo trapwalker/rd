@@ -1,5 +1,6 @@
 function client_ready() {
     mapManager.init();
+    iconsLeaflet = new LeafletIconManager();
     timeManager.timerStart();
     $(window).resize(function() { mapManager.resize_window();});
     mapCanvasManager = new MapCanvasManager();
@@ -7,7 +8,7 @@ function client_ready() {
 
     // todo: считать URL с сервера или откуда нужно!
 
-    ws_connector = new WSConnector({url: 'ws:'+ $('#settings_host_name').text() + ':'+ $('#settings_ws_port').text() + '/ws'});
+    ws_connector = new WSConnector({url: 'ws://'+ $('#settings_host_name').text() + ':'+ $('#settings_ws_port').text() + '/ws'});
 
     clientManager = new ClientManager();
 
@@ -20,8 +21,56 @@ function client_ready() {
     user = new User(1, 1000);
     ownerList = new OwnerList();
     setTimeout(function() {
-        createFakeBot({x: 40371667, y: 22592826}, 0.001, 30);
+        createFakeBot({x: 40371667, y: 22592826}, 0.001, 1.0);
     }, 500);
+
+
+
+
+    // Ну прям совсем костылищи!!!
+    var last_pos = new Point(0, 0);
+
+    function onSuccess(position) {
+        //alert(position);
+        var pos = map.project([position.coords.latitude, position.coords.longitude], 18);
+        //alert(pos);
+        console.log(pos);
+        if (user.userCar) {
+            user.userCar._motion_state.p0 = pos;
+            user.userCar._motion_state.t0 = clock.getCurrentTime();
+            user.userCar._motion_state.fi0 = angleVectorRadCCW(subVector(pos, last_pos));
+            last_pos = pos;
+        }
+    }
+
+    function getPosition() {
+        var options = {
+            enableHighAccuracy: true,
+            maximumAge: 3600000
+        };
+        var watchID = navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+        function onError(error) {
+            alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+        }
+    }
+
+    function watchPosition() {
+        var options = {
+            maximumAge: 3600000,
+            timeout: 1000,
+            enableHighAccuracy: true,
+        };
+
+        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, options);
+        function onError(error) {
+            alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+        }
+
+    }
+
+
+    watchPosition();
+    setInterval(function(){getPosition()}, 10000);
 
 }
 
@@ -33,12 +82,6 @@ function returnFocusToMap() {
 var user;
 var clientManager;
 var ownerList;
-
-
-
-
-
-
 
 
 

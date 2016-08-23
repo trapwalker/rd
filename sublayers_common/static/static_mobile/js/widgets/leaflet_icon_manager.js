@@ -29,6 +29,7 @@ var LeafletIconManager = (function(){
     };
 
     LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor){
+        console.log('LeafletIconManager.prototype.load_new_icon', icon_name, icon_url);
         var img = new Image();
         this.count_loading_img++;
         img.onload = function() {
@@ -62,4 +63,4 @@ var LeafletIconManager = (function(){
 
 
 // Массив иконок
-var iconsLeaflet = new LeafletIconManager();
+var iconsLeaflet;

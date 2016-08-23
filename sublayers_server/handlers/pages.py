@@ -68,4 +68,4 @@ class MobilePlayHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         yield self._quick_registration()
-        self.render("mobile/play.html", ws_port=options.ws_port, map_link=options.map_link)
+        self.render("mobile/play.html", ws_port=options.ws_port, map_link=options.map_link, host_name=options.mobile_host)
