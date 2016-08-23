@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <!--<link rel="stylesheet" type="text/css" href="css/index.css">-->
+        <script src="http://192.168.1.104/static/js/third_party/jquery.min.js"></script>
+
+    </head>
+<body onload="body_on_load()"></body>
+
+<script>
+	function body_on_load() {
+        var count = 0;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                // $('head').append($(xhttp.responseText));
+                // todo: Попробовать сплитнуть по '/n' или по '><' и добавлять по одной строчке вида link или script
+                var l = xhttp.responseText.split('\n');
+                for(var i = 0; i < l.length; i++) {
+                    if(l[i].includes('script') || l[i].includes('link'))
+                    $('head').append(l[i]);
+                }
+                count++;
+                if (count == 2) {
+                    setTimeout(function(){client_ready();}, 500);
+                }
+            }
+        };
+        xhttp.open("GET", "http://192.168.1.104/play/mobile/header", true);
+        xhttp.send();
+
+        var xhttp2 = new XMLHttpRequest();
+        xhttp2.onreadystatechange = function () {
+            if (xhttp2.readyState == 4 && xhttp2.status == 200) {
+                $('body').append($(xhttp2.responseText));
+                count++;
+                if (count == 2) {
+                    setTimeout(function(){client_ready();}, 500);
+                }
+            }
+        };
+        xhttp2.open("GET", "http://192.168.1.104/play/mobile/content", true);
+        xhttp2.send();
+
+    }
+
+
+</script>
+
+
+</html>
