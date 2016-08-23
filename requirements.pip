@@ -5,6 +5,7 @@ jsonpickle
 cachetools
 PyYAML
 cmd2
+click
 
 git+https://github.com/py-bson/bson
 git+https://github.com/sergyp/motorengine
