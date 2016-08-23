@@ -34,7 +34,9 @@ from sublayers_common.base_application import BaseApplication
 
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
-from sublayers_server.handlers.pages import PlayHandler
+from sublayers_server.handlers.pages import PlayHandler, MobilePlayHandler
+from sublayers_server.handlers.mobile import MobileHeaderHandler, MobileContentHandler
+
 
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler, MenuCarHandler
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
@@ -100,7 +102,9 @@ class Application(BaseApplication):
             (r"/ws", AgentSocketHandler),
             #(r"/static/(.*)", StaticFileHandlerPub),
             (r"/play", PlayHandler),
-
+            (r"/play/mobile", MobilePlayHandler),
+            (r"/play/mobile/header", MobileHeaderHandler),
+            (r"/play/mobile/content", MobileContentHandler),
             (r"/login", SiteLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/login/standard", StandardLoginHandler),
