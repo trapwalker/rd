@@ -25,77 +25,36 @@ from pprint import pprint as pp
 @click.option('--fixtures', '-x', is_flag=True, default=False, help='Fixtures reload')
 @click.option('--reset', '-r', is_flag=True, default=False, help='Reset game data')
 def cli(clean, fixtures, reset):
-    if clean:
-        io_loop.add_callback(full_clean)
-
-    if fixtures:
-        io_loop.add_callback(reload_fixtures)
-
-    if reset:
-        io_loop.add_callback(reset_data)
-
-    if not (clean or fixtures or reset):
+    if clean or fixtures or reset:
+        io_loop.add_callback(do, clean, fixtures, reset)
+        start()
+    else:
         click.echo('Nothing to do')
         return
-
-    start()
 
 
 @tornado.gen.coroutine
 def do(clean, fixtures, reset):
     if clean:
-        io_loop.add_callback(full_clean)
+        click.echo('Full registry cleaning...')
+        count = yield Root.objects.delete()
+        click.echo('Clean registry: %s' % count)
 
     if fixtures:
-        io_loop.add_callback(reload_fixtures)
+        click.echo('Cleaning of fixtures...')
+        count = yield Root.objects.filter({'fixtured': True}).delete()
+        click.echo('Deleted fixture objects: %s' % count)
+
+        click.echo('Loading registry fixtures to DB...')
+        reg = yield Root.load(path=os.path.join(project_root, u'sublayers_world', u'registry'))
+        click.echo('Loading registry fixtures DONE')  # todo: show timing and counts
 
     if reset:
-        io_loop.add_callback(reset_data)
+        click.echo('Saved registry objects cleaning...')
+        count = yield Root.objects.filter({'fixtured': False}).delete()
+        click.echo('Deleted objects: %s' % count)
 
-    if not (clean or fixtures or reset):
-        click.echo('Nothing to do')
-        return
-
-
-@tornado.gen.coroutine
-def full_clean():
-    click.echo('Full registry cleaning...')
-    count = yield Root.objects.delete()
-    click.echo('Clean registry: %s' % count)
-
-
-@tornado.gen.coroutine
-def reload_fixtures():
-    click.echo('Cleaning of fixtures...')
-    count = yield Root.objects.filter({'fixtured': True}).delete()
-    click.echo('Deleted fixture objects: %s' % count)
-
-    click.echo('Loading registry fixtures to DB...')
-    reg = yield Root.load(path=os.path.join(project_root, u'sublayers_world', u'registry'))
-    click.echo('Loading registry fixtures DONE')  # todo: show timing and counts
-    globals().update(**locals())
-
-
-@tornado.gen.coroutine
-def reset_data():
-    click.echo('Saved registry objects cleaning...')
-    count = yield Root.objects.filter({'fixtured': False}).delete()
-    click.echo('Deleted objects: %s' % count)
-
-
-
-# @tornado.gen.coroutine
-# def test_registry():
-#     click.echo('Delete all fixtures: %s', (yield Root.objects.filter({'fixtured': True}).delete()))
-#     # click.echo('Delete all saved objects: %s', (yield Root.objects.filter({'fixtured': False}).delete()))
-#
-#     click.echo('Loading registry fixtures to DB...')
-#     reg = yield Root.load(path=os.path.join(project_root, u'sublayers_world', u'registry'))
-#     click.echo('Loading registry fixtures DONE')  # todo: show timing and counts
-#
-#     globals().update(**locals())
-#     click.echo('THE END')
-#     tornado.ioloop.IOLoop.instance().add_callback(lambda: io_loop.stop())
+    io_loop.add_callback(lambda: io_loop.stop())
 
 
 if __name__ == '__main__':
