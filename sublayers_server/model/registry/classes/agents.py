@@ -20,8 +20,8 @@ class Agent(Root):
     _exp = FloatField(default=0, caption=u"Количество опыта")
     _frag = IntField(default=0, caption=u"Количество убийств")
 
-    car = UniReferenceField(
-        reference_document_type='sublayers_server.model.registry.classes.mobiles.Car',
+    car = EmbeddedDocumentField(
+        embedded_document_type='sublayers_server.model.registry.classes.mobiles.Car',
         caption=u"Активный автомобиль",
     )  # todo: test to prefix path like: /mobile/cars/*
     car_list = ListField(
