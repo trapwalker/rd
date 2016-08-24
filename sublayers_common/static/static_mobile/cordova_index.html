@@ -1,50 +1,104 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <!--<link rel="stylesheet" type="text/css" href="css/index.css">-->
-        <script src="http://192.168.1.104/static/js/third_party/jquery.min.js"></script>
+<head>
+    <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <!--<link rel="stylesheet" type="text/css" href="css/index.css">-->
+    <script src="http://192.168.1.104/static/js/third_party/jquery.min.js"></script>
 
-    </head>
+</head>
 <body onload="body_on_load()"></body>
 
 <script>
 	function body_on_load() {
-        var count = 0;
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (xhttp.readyState == 4 && xhttp.status == 200) {
-                // $('head').append($(xhttp.responseText));
-                // todo: Попробовать сплитнуть по '/n' или по '><' и добавлять по одной строчке вида link или script
-                var l = xhttp.responseText.split('\n');
-                for(var i = 0; i < l.length; i++) {
-                    if(l[i].includes('script') || l[i].includes('link'))
-                    $('head').append(l[i]);
-                }
-                count++;
-                if (count == 2) {
-                    setTimeout(function(){client_ready();}, 500);
-                }
-            }
-        };
-        xhttp.open("GET", "http://192.168.1.104/play/mobile/header", true);
-        xhttp.send();
+        var header_ready = false;
+        var content_ready = false;
 
-        var xhttp2 = new XMLHttpRequest();
-        xhttp2.onreadystatechange = function () {
-            if (xhttp2.readyState == 4 && xhttp2.status == 200) {
-                $('body').append($(xhttp2.responseText));
-                count++;
-                if (count == 2) {
-                    setTimeout(function(){client_ready();}, 500);
-                }
+        var links_for_header = [
+            'http://192.168.1.105/play/mobile/header',
+            'http://192.168.1.104/play/mobile/header',
+            'http://roaddogs.ru/play/mobile/header'
+        ];
+
+        var links_for_content = [
+            'http://192.168.1.105/play/mobile/content',
+            'http://192.168.1.104/play/mobile/content',
+            'http://roaddogs.ru/play/mobile/content'
+        ];
+
+        function client_ready_call() {setTimeout(function () { client_ready(); }, 500); }
+
+        function headerGeted(data) {
+            var l = data.split('\n');
+            var time_out = 35;
+            var ii = 0;
+            for (var i = 0; i < l.length; i++) {
+                setTimeout(function () {
+                    if (l[ii].includes('script') || l[ii].includes('link'))
+                        $('head').append(l[ii]);
+                    ii++;
+                }, i * time_out);
             }
-        };
-        xhttp2.open("GET", "http://192.168.1.104/play/mobile/content", true);
-        xhttp2.send();
+            setTimeout(function () {
+                header_ready = true;
+                if (content_ready && header_ready) {
+                    client_ready_call();
+                }
+            }, (l.length + 1) * time_out);
+        }
+
+        function contentGeted(data) {
+            $('body').append($(data));
+            content_ready = true;
+            if (content_ready && header_ready) {
+                client_ready_call();
+            }
+        }
+
+        function getHeader(link) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState != 4 ) return;
+                if (xhttp.status == 200) {
+                    headerGeted(xhttp.responseText);
+                }
+                else {
+                    links_for_header.shift();
+                    if (links_for_header.length)
+                        getHeader(links_for_header[0]);
+                    else
+                        alert('Get Header Error. All servers not available.')
+                }
+            };
+            xhttp.open("GET", link, true);
+            xhttp.send();
+        }
+
+        function getContent(link) {
+            var xhttp2 = new XMLHttpRequest();
+            xhttp2.onreadystatechange = function () {
+                if (xhttp2.readyState != 4) return;
+                if (xhttp2.status == 200) {
+                    contentGeted(xhttp2.responseText)
+                }
+                else {
+                    links_for_content.shift();
+                    if (links_for_content.length) {
+                        getContent(links_for_content[0]);
+                    }
+                    else {
+                        alert('Get Content Error. All servers not available.');
+                    }
+                }
+            };
+            xhttp2.open("GET", link, true);
+            xhttp2.send();
+        }
+
+        getHeader(links_for_header[0]);
+        getContent(links_for_content[0]);
 
     }
 
