@@ -6,33 +6,100 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
     <!--<link rel="stylesheet" type="text/css" href="css/index.css">-->
-    <script src="http://192.168.1.104/static/js/third_party/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 
 </head>
-<body onload="body_on_load()"></body>
+<body>
+<div id="for_delete">
+    <ul>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.105/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.104/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.6/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://roaddogs.ru/</li>
+    </ul>
+</div>
+</body>
 
 <script>
-	function body_on_load() {
+
+    function li_click_handler(elem) {
+        var link = $(elem).text();
         var header_ready = false;
         var content_ready = false;
+        console.log(link, elem);
+        $('#for_delete').css({
+            'pointer-events': 'none',
+            'opacity': '0.3'
+        });
 
-        var links_for_header = [
-            'http://192.168.1.105/play/mobile/header',
-            'http://192.168.1.104/play/mobile/header',
-            'http://roaddogs.ru/play/mobile/header'
-        ];
+        function client_ready_call() {
+            $('#for_delete').remove();
+            setTimeout(function () {
+                client_ready();
+            }, 500);
+        }
 
-        var links_for_content = [
-            'http://192.168.1.105/play/mobile/content',
-            'http://192.168.1.104/play/mobile/content',
-            'http://roaddogs.ru/play/mobile/content'
-        ];
+        function fail_connect() {
+            $('#for_delete').css({
+                'pointer-events': 'auto',
+                'opacity': '1.0'
+            });
+            alert('Error. Server not available.')
+        }
 
-        function client_ready_call() {setTimeout(function () { client_ready(); }, 500); }
+        function get_header_and_content(link) {
+            var data_header = null;
+            var data_content = null;
+            var count = 0;
+
+            function ready() {
+                headerGeted(data_header);
+                contentGeted(data_content);
+            }
+
+            function getHeader(link_header) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState != 4) return;
+                    count++;
+                    if (xhttp.status == 200) {
+                        data_header = xhttp.responseText;
+                        if (data_header && data_content) ready();
+                    }
+                    else {
+                        if (count == 2) fail_connect();
+                    }
+                };
+                xhttp.open("GET", link_header, true);
+                xhttp.send();
+            }
+
+            function getContent(link_content) {
+                var xhttp2 = new XMLHttpRequest();
+                xhttp2.onreadystatechange = function () {
+                    if (xhttp2.readyState != 4) return;
+                    count++;
+                    if (xhttp2.status == 200) {
+                        data_content = xhttp2.responseText;
+                        if (data_header && data_content) ready();
+                    }
+                    else {
+                        if (count == 2) fail_connect();
+                    }
+                };
+                xhttp2.open("GET", link_content, true);
+                xhttp2.send();
+            }
+
+            getHeader(link + 'play/mobile/header');
+            getContent(link + 'play/mobile/content');
+
+        }
+
 
         function headerGeted(data) {
             var l = data.split('\n');
-            var time_out = 35;
+            var time_out = 100;
             var ii = 0;
             for (var i = 0; i < l.length; i++) {
                 setTimeout(function () {
@@ -57,51 +124,8 @@
             }
         }
 
-        function getHeader(link) {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (xhttp.readyState != 4 ) return;
-                if (xhttp.status == 200) {
-                    headerGeted(xhttp.responseText);
-                }
-                else {
-                    links_for_header.shift();
-                    if (links_for_header.length)
-                        getHeader(links_for_header[0]);
-                    else
-                        alert('Get Header Error. All servers not available.')
-                }
-            };
-            xhttp.open("GET", link, true);
-            xhttp.send();
-        }
-
-        function getContent(link) {
-            var xhttp2 = new XMLHttpRequest();
-            xhttp2.onreadystatechange = function () {
-                if (xhttp2.readyState != 4) return;
-                if (xhttp2.status == 200) {
-                    contentGeted(xhttp2.responseText)
-                }
-                else {
-                    links_for_content.shift();
-                    if (links_for_content.length) {
-                        getContent(links_for_content[0]);
-                    }
-                    else {
-                        alert('Get Content Error. All servers not available.');
-                    }
-                }
-            };
-            xhttp2.open("GET", link, true);
-            xhttp2.send();
-        }
-
-        getHeader(links_for_header[0]);
-        getContent(links_for_content[0]);
-
+        get_header_and_content(link);
     }
-
 
 </script>
 

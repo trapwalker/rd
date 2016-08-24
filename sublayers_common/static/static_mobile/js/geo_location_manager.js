@@ -24,8 +24,7 @@ var GeoLocationManager = (function(_super){
     GeoLocationManager.prototype._watch_success = function(position) {
         var pos = map.project([position.coords.latitude, position.coords.longitude], 18);
 
-        clientManager.sendGeoCoord(position, pos);
-
+        clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
         // todo: стереть это потом!
         console.log(pos);
         if (user.userCar) {
@@ -38,6 +37,19 @@ var GeoLocationManager = (function(_super){
 
     GeoLocationManager.prototype._watch_error = function(error) {
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+    };
+
+    GeoLocationManager.prototype.geo_position_to_dict = function (position) {
+        return {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            altitude: position.coords.altitude,
+            accuracy: position.coords.accuracy,
+            altitude_accuracy: position.coords.altitudeAccuracy,
+            heading: position.coords.heading,
+            speed: position.coords.speed,
+            timestamp: position.timestamp
+        };
     };
 
 
