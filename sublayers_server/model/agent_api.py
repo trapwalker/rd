@@ -512,11 +512,12 @@ class AgentAPI(API):
         self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment, time=self.agent.server.get_time())
 
     @public_method
-    def set_position(self, xy, geo=None, comment=None):
+    def set_position(self, projection, position=None, comment=None):
         if self.car.limbo or not self.car.is_alive:
             return
-        p = Point(*xy) if xy else None
-        self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
+        p = Point(*projection) if projection else None
+        log.debug('set_position %r: %r, %r', self.agent, projection, position)
+        #self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
 
     @public_method
     def delete_car(self):
