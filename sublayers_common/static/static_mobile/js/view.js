@@ -2,11 +2,15 @@ function client_ready() {
     mapManager.init();
     iconsLeaflet = new LeafletIconManager();
     timeManager.timerStart();
-    $(window).resize(function() { mapManager.resize_window();});
+    $(window).resize(function() { mapManager.resize_window(); });
     mapCanvasManager = new MapCanvasManager();
     mapCanvasManager.init_canvas();
     geoLocationManager = new GeoLocationManager();
     geoLocationManager.start_watch();
+
+    effectPNGLoader = new EffectPNGLoader();
+    fireEffectManager = new FireEffectManager();
+
 
     // todo: считать URL с сервера или откуда нужно!
 

@@ -1,4 +1,4 @@
-var ConstCountTracerPerSecond = 5;      // Количество трасеров в секунду;
+var ConstCountTracerPerSecond = 5;       // Количество трасеров в секунду;
 var ConstTracerSpeed = 120;              // Скорость полета трасера (px / s);
 var ConstTracerLength = 8;               // Длина трасера (px);
 var ConstCountFlashlightPerSecond = 10;  // Количество трасеров в секунду;
@@ -13,21 +13,22 @@ var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки вз
 // Список Иконок для всех видов маркеров леафлета
 
 var EffectPNGLoader = (function(){
-    function EffectPNGLoader(){
+    function EffectPNGLoader() {
         this.effects = {};
         this.count_loading_img = 0;
         resourceLoadManager.add(this);
 
-        this.load_new_image('effect-fire-discharge-png-1', '/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png', [40, 40], 5);
-        this.load_new_image('effect-fire-discharge-png-2', '/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png', [57, 75], 12);
-        this.load_new_image('effect-fire-auto-png', '/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png', [32, 20], 2);
-        this.load_new_image('effect-heavy-bang-png-1', '/static/img/fire_effects/bangs/heavy_damage_1000_2_res_stripe.png', [115, 115], 12);
-        this.load_new_image('effect-heavy-bang-png-2', '/static/img/fire_effects/bangs/heavy_damage_wave_1000_2_res_stripe.png', [115, 115], 12);
-        this.load_new_image('effect-light-bang-png-1', '/static/img/fire_effects/bangs/light_damage_ground_stripe_3frames.png', [22, 22], 3);
-        this.load_new_image('effect-light-bang-png-2', '/static/img/fire_effects/bangs/light_damage_right_stripe_3frames.png', [22, 22], 3);
-        this.load_new_image('effect-heavy-bang-oriented-png-1', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png', [107, 107], 12);
-        this.load_new_image('effect-heavy-bang-oriented-png-2', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png', [107, 107], 12);
-        this.load_new_image('effect-tracer-png', '/static/img/fire_effects/shoots/light_tracer.png', [7, 14], 1);
+        this.host_addr = 'http://' + $('#settings_host_name').text();
+        this.load_new_image('effect-fire-discharge-png-1', this.host_addr + '/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png', [40, 40], 5);
+        this.load_new_image('effect-fire-discharge-png-2', this.host_addr + '/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png', [57, 75], 12);
+        this.load_new_image('effect-fire-auto-png', this.host_addr + '/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png', [32, 20], 2);
+        this.load_new_image('effect-heavy-bang-png-1', this.host_addr + '/static/img/fire_effects/bangs/heavy_damage_1000_2_res_stripe.png', [115, 115], 12);
+        this.load_new_image('effect-heavy-bang-png-2', this.host_addr + '/static/img/fire_effects/bangs/heavy_damage_wave_1000_2_res_stripe.png', [115, 115], 12);
+        this.load_new_image('effect-light-bang-png-1', this.host_addr + '/static/img/fire_effects/bangs/light_damage_ground_stripe_3frames.png', [22, 22], 3);
+        this.load_new_image('effect-light-bang-png-2', this.host_addr + '/static/img/fire_effects/bangs/light_damage_right_stripe_3frames.png', [22, 22], 3);
+        this.load_new_image('effect-heavy-bang-oriented-png-1', this.host_addr + '/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png', [107, 107], 12);
+        this.load_new_image('effect-heavy-bang-oriented-png-2', this.host_addr + '/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png', [107, 107], 12);
+        this.load_new_image('effect-tracer-png', this.host_addr + '/static/img/fire_effects/shoots/light_tracer.png', [7, 14], 1);
     }
 
     EffectPNGLoader.prototype.getImage = function(name){
@@ -35,9 +36,8 @@ var EffectPNGLoader = (function(){
     };
 
     EffectPNGLoader.prototype.load_complete = function () {
-        if (this.count_loading_img == 0) {
+        if (this.count_loading_img == 0)
             resourceLoadManager.del(this);
-        }
     };
 
     EffectPNGLoader.prototype.load_new_image = function(name, url, size, frames){
@@ -74,8 +74,8 @@ var FireEffectManager = (function () {
     FireEffectManager.prototype._findController = function (options) {
         var i = 0;
         while ((i < this.controllers_list.length) &&
-              ((this.controllers_list[i].ctrl.subj != options.subj) ||
-               (this.controllers_list[i].ctrl.obj != options.obj)))  i++;
+            ((this.controllers_list[i].ctrl.subj != options.subj) ||
+                (this.controllers_list[i].ctrl.obj != options.obj)))  i++;
         if (i == this.controllers_list.length)
             return null;
         else
@@ -100,7 +100,6 @@ var FireEffectManager = (function () {
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
-
     };
 
     FireEffectManager.prototype.delController = function (options) {
@@ -162,21 +161,13 @@ var FireAutoEffectController = (function () {
         this.last_time = 0;
         this.d_time_t = 1. / ConstCountTracerPerSecond;
         this.d_time_fl = 1. / ConstCountFlashlightPerSecond;
-        this.muzzle_flash = null;
     }
 
     FireAutoEffectController.prototype.change = function () {
         var time = clock.getCurrentTime();
         var subj = visualManager.getModelObject(this.subj);
         var obj = visualManager.getModelObject(this.obj);
-/*
-        if (subj) {
-            if (!this.muzzle_flash && this.side)
-                this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
-        }
-        else if (this.muzzle_flash)
-            this.muzzle_flash.finish();
-*/
+
         if (subj && obj)
             if ((time - this.last_time) > this.d_time_t) {
                 this.last_time = time;
@@ -210,8 +201,6 @@ var FireAutoEffectController = (function () {
     };
 
     FireAutoEffectController.prototype.finish = function (options) {
-        if (this.muzzle_flash)
-            this.muzzle_flash.finish();
     };
 
     return FireAutoEffectController;
@@ -250,5 +239,5 @@ var FireAutoMuzzleFlashController = (function () {
 })();
 
 
-var effectPNGLoader = new EffectPNGLoader();
-var fireEffectManager = new FireEffectManager();
+var effectPNGLoader;
+var fireEffectManager;

@@ -38,7 +38,7 @@ var WMapPosition = (function (_super) {
             });
         }
 
-        // todo: вызвать здесь поворот карты через mapManager.setRotate()
+        // поворот карты через mapManager.setRotate()
         var car_direction_real = this.car.getCurrentDirection(time) - Math.PI / 2.;
         mapManager.setRotate(null, radToGrad(car_direction_real));
     };

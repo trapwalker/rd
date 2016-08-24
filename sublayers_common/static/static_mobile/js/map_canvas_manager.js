@@ -140,7 +140,6 @@ var MapCanvasManager = (function(_super){
         this.cur_map_size = new Point(0, 0);
     };
 
-
     return MapCanvasManager;
 })(ParentCanvasManager);
 

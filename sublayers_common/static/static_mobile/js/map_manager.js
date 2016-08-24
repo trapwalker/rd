@@ -3,8 +3,6 @@
 * В данный модуль писать все методы и функции для работы с картой
 */
 
-console.log('m_m');
-
 //Максимальный и минимальный зумы карты
 var ConstStartZoom = 17;
 var ConstMaxMapZoom = 18;
@@ -103,7 +101,6 @@ var MapManager = (function(_super){
         $('canvas').css('transform', 'rotateZ(' + this.map_angleZ + 'deg) rotate3d(' + cos + ', ' + sin + ', 0, ' + this.map_angleX + 'deg)');
         this.jq_map.css('transform', 'rotateZ(' + this.map_angleZ + 'deg) rotate3d(' + cos + ', ' + sin + ', 0, ' + this.map_angleX + 'deg)');
     };
-
 
     MapManager.prototype.resize_window = function () {
         var current_width = $(window).width();
