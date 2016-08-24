@@ -9,7 +9,7 @@ from motorengine.errors import LoadReferencesRequiredError
 from uuid import uuid1 as get_uuid
 from weakref import WeakSet
 from fnmatch import fnmatch
-from collections import deque, Counter
+from collections import deque, Callable
 from pprint import pformat
 from functools import partial
 from copy import copy
@@ -279,7 +279,8 @@ class Node(Doc):
         if by_uri:
             params.update(by_uri.params)
 
-        fixtured = kw.pop('fixtured', self.fixtured)
+        fixture_default = self.__class__.fixtured.default
+        fixtured = kw.pop('fixtured', fixture_default() if isinstance(fixture_default, Callable) else fixture_default)
         uid = kw.pop('uid', self.__class__.uid.default())
         params.update(kw)
         #inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
@@ -330,6 +331,7 @@ class Node(Doc):
         )
         if 'parent' not in attrs:
             attrs.update(parent=owner)
+        attrs.setdefault('fixtured', True)
 
         node = cls.from_son(attrs)
         if owner:

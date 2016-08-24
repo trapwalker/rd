@@ -84,7 +84,7 @@ def link(src, dest, replace=False):
     log.debug('Try to linking by command: %r', cmd)
     if os.system(cmd):
         raise IOError("Can't link {} {!r} to {!r}".format(src_type, src, dest))
-    log.debug("Link %s %r to %r DONE", src_type, src, dest)
+    log.debug("DONE: Link %s %r to %r", src_type, src, dest)
 
 
 def setup():
@@ -104,9 +104,9 @@ def setup():
     if os.path.isfile(nginx_bin_fn):
         log.debug('Try to quit Nginx (nginx -s quit)')
         if os.system(nginx_bin_fn + ' -s quit'):
-            log.debug('Nginx quit FAIL')
+            log.debug('FAIL: Nginx quit')
         else:
-            log.debug('Nginx quit DONE')
+            log.debug('DONE: Nginx quit')
 
     log.debug('Try to clean nginx foldser: %r...', INSTALLATION_FOLDER)
     if os.system('rd /S /Q "{}"'.format(INSTALLATION_FOLDER)):
@@ -126,10 +126,10 @@ def setup():
     for fn in glob(os.path.join(CONF_FOLDER, 'sites-available', '*.conf')):
         link(fn, os.path.join(CONF_FOLDER, 'sites-enabled', ''), replace=True)
 
-    app_root_abs_path = os.path.abspath(APP_ROOT)
+    app_root_abs_path = os.path.abspath(APP_ROOT).replace("\\", "/")
     log.debug('Making application root path inclusion: %r', app_root_abs_path)
     with open(PROJECT_ROOT_CONF_FN, 'w') as f:
-        f.write('set $rd_main_folder {};\n'.format(app_root_abs_path)).replace("\\", "/")
+        f.write('set $rd_main_folder {};\n'.format(app_root_abs_path))
 
     log.debug('Linking configurations...')
     for fn in os.listdir(CONF_FOLDER):

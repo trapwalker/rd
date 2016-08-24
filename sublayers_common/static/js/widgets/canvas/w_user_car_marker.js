@@ -137,10 +137,10 @@ var WCanvasCarMarker = (function (_super) {
             ctx.fillText(label_str, 0, -15);
         }
 
-        if (focused) {
-            ctx.fillStyle = "red";
-            ctx.fillRect(-10, -10, 20, 20);
-        }
+        //if (focused) {
+        //    ctx.fillStyle = "red";
+        //    ctx.fillRect(-10, -10, 20, 20);
+        //}
 
         ctx.restore();  // Возврат транслейта
     };
