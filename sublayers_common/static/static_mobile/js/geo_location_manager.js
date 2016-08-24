@@ -23,7 +23,17 @@ var GeoLocationManager = (function(_super){
 
     GeoLocationManager.prototype._watch_success = function(position) {
         var pos = map.project([position.coords.latitude, position.coords.longitude], 18);
+
+        clientManager.sendGeoCoord(position, pos);
+
+        // todo: стереть это потом!
         console.log(pos);
+        if (user.userCar) {
+            user.userCar._motion_state.p0 = pos;
+            user.userCar._motion_state.t0 = clock.getCurrentTime();
+            user.userCar._motion_state.fi0 = position.coords.heading || user.userCar._motion_state.fi0;
+
+        }
     };
 
     GeoLocationManager.prototype._watch_error = function(error) {

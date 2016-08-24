@@ -1886,6 +1886,21 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Send Geo Coords
+    ClientManager.prototype.sendGeoCoord = function(position, projection) {
+        //console.log('ClientManager.prototype.sendTeleportCoord');
+        var mes = {
+            call: "send_geo_position",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                position: position,
+                projection: projection
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();
 
