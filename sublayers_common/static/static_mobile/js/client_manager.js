@@ -1888,7 +1888,7 @@ var ClientManager = (function () {
 
     // Send Geo Coords
     ClientManager.prototype.sendGeoCoord = function(position, projection) {
-        //console.log('ClientManager.prototype.sendTeleportCoord');
+        //console.log('ClientManager.prototype.sendTeleportCoord', JSON.stringify(position));
         var mes = {
             call: "set_position",
             rpc_call_id: rpcCallList.getID(),
