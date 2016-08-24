@@ -446,6 +446,9 @@ class Mobile(Unit):
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
+    def set_position(self, time, point=None, comment=None):
+        pass  # todo: realization
+
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
