@@ -5,6 +5,8 @@ function client_ready() {
     $(window).resize(function() { mapManager.resize_window();});
     mapCanvasManager = new MapCanvasManager();
     mapCanvasManager.init_canvas();
+    geoLocationManager = new GeoLocationManager();
+    geoLocationManager.start_watch();
 
     // todo: считать URL с сервера или откуда нужно!
 
@@ -23,54 +25,6 @@ function client_ready() {
     setTimeout(function() {
         createFakeBot({x: 40371667, y: 22592826}, 0.001, 1.0);
     }, 500);
-
-
-
-
-    // Ну прям совсем костылищи!!!
-    var last_pos = new Point(0, 0);
-
-    function onSuccess(position) {
-        //alert(position);
-        var pos = map.project([position.coords.latitude, position.coords.longitude], 18);
-        //alert(pos);
-        console.log(pos);
-        if (user.userCar) {
-            user.userCar._motion_state.p0 = pos;
-            user.userCar._motion_state.t0 = clock.getCurrentTime();
-            user.userCar._motion_state.fi0 = angleVectorRadCCW(subVector(pos, last_pos));
-            last_pos = pos;
-        }
-    }
-
-    function getPosition() {
-        var options = {
-            enableHighAccuracy: true,
-            maximumAge: 3600000
-        };
-        var watchID = navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
-        function onError(error) {
-            alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
-        }
-    }
-
-    function watchPosition() {
-        var options = {
-            maximumAge: 3600000,
-            timeout: 1000,
-            enableHighAccuracy: true,
-        };
-
-        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, options);
-        function onError(error) {
-            alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
-        }
-
-    }
-
-
-    watchPosition();
-    setInterval(function(){getPosition()}, 10000);
 
 }
 
