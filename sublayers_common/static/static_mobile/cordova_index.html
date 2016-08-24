@@ -9,29 +9,42 @@
     <script src="http://192.168.1.104/static/js/third_party/jquery.min.js"></script>
 
 </head>
-<body onload="body_on_load()"></body>
+<body>
+<div id="for_delete">
+    <ul>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.105/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.104/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.6/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://roaddogs.ru/</li>
+    </ul>
+</div>
+</body>
 
 <script>
-	function body_on_load() {
+
+    function li_click_handler(elem) {
+        var link = $(elem).text();
         var header_ready = false;
         var content_ready = false;
+        console.log(link, elem);
+        $('#for_delete').css({
+            'pointer-events': 'none',
+            'opacity': '0.3'
+        });
 
-        var host_links = [
-            'http://192.168.1.105/',
-            'http://192.168.1.104/',
-            'http://192.168.1.6/',
-            'http://roaddogs.ru/'
-        ];
+        function client_ready_call() {
+            $('#for_delete').remove();
+            setTimeout(function () {
+                client_ready();
+            }, 500);
+        }
 
-        function client_ready_call() {setTimeout(function () { client_ready(); }, 500); }
-
-        function next_link() {
-            host_links.shift();
-            if (host_links.length)
-                get_header_and_content(host_links[0]);
-            else {
-                alert('Error. All servers not available.')
-            }
+        function fail_connect() {
+            $('#for_delete').css({
+                'pointer-events': 'auto',
+                'opacity': '1.0'
+            });
+            alert('Error. Server not available.')
         }
 
         function get_header_and_content(link) {
@@ -54,7 +67,7 @@
                         if (data_header && data_content) ready();
                     }
                     else {
-                        if (count == 2) next_link();
+                        if (count == 2) fail_connect();
                     }
                 };
                 xhttp.open("GET", link_header, true);
@@ -71,7 +84,7 @@
                         if (data_header && data_content) ready();
                     }
                     else {
-                        if (count == 2) next_link();
+                        if (count == 2) fail_connect();
                     }
                 };
                 xhttp2.open("GET", link_content, true);
@@ -111,12 +124,8 @@
             }
         }
 
-
-        get_header_and_content(host_links[0]);
-
-
+        get_header_and_content(link);
     }
-
 
 </script>
 
