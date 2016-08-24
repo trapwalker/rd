@@ -1,4 +1,5 @@
 function client_ready() {
+    rpcCallList = new RPCCallList();
     mapManager.init();
     iconsLeaflet = new LeafletIconManager();
     timeManager.timerStart();
@@ -40,6 +41,7 @@ function returnFocusToMap() {
 var user;
 var clientManager;
 var ownerList;
+var rpcCallList;
 
 
 
