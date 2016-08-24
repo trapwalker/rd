@@ -27,11 +27,12 @@ var LocationTraderNPC = (function (_super) {
         this.playerInv = [];
         this.playerTable = [];
         if (this.playerInvDiv) {
-            this.playerInvDiv.empty();
+
+            this.playerInvDiv.find('.npcInventory-itemWrap').remove();
             this.playerInvDiv = null;
         }
         if (this.playerTableDiv) {
-            this.playerTableDiv.empty();
+            this.playerTableDiv.find('.npcInventory-itemWrap').remove();
             this.playerTableDiv = null;
         }
         this.calcPriceTables();
@@ -41,11 +42,11 @@ var LocationTraderNPC = (function (_super) {
         this.traderInv = [];
         this.traderTable = [];
         if (this.traderInvDiv) {
-            this.traderInvDiv.empty();
+            this.traderInvDiv.find('.npcInventory-itemWrap').remove();
             this.traderInvDiv = null;
         }
         if (this.traderTableDiv) {
-            this.traderTableDiv.empty();
+            this.traderTableDiv.find('.npcInventory-itemWrap').remove();
             this.traderTableDiv = null;
         }
         this.calcPriceTables();
@@ -160,8 +161,8 @@ var LocationTraderNPC = (function (_super) {
 
             var itemDiv = $(
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
-                    '<div class="npcInventory-item">' +
-                        '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
+                    '<div class="npcInventory-item" data-img_link="' + example.inv_icon_mid + '">' +
+                        '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
                         '<div class="npcInventory-text name">' + example.title + '</div>' +
                         '<div class="npcInventory-text count">' + example.count.toFixed(1) + '</div>' +
                     '</div>' +
@@ -169,7 +170,10 @@ var LocationTraderNPC = (function (_super) {
             );
 
             itemDiv.draggable({
-                helper: 'clone',
+                helper: function(event) {
+                    var img_link = $(event.target).parent().data('img_link');
+                    return $('<img width="130" height="70" src="' + img_link + '">')
+                },
                 opacity: 0.8,
                 revert: true,
                 revertDuration: 0,
@@ -210,8 +214,8 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype.changeItemPlayer = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
-        destDiv.empty();
-        srcDiv.empty();
+        destDiv.find('.npcInventory-itemWrap').remove();
+        srcDiv.find('.npcInventory-itemWrap').remove();
 
         destList.push(srcList[pos]);
         srcList.splice(pos, 1);
@@ -223,7 +227,7 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype.changeItemTrader = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
-        if (destDiv != srcDiv) this.traderTableDiv.empty();
+        if (destDiv != srcDiv) this.traderTableDiv.find('.npcInventory-itemWrap').remove();
 
         if (destDiv == this.traderTableDiv) destList.push(srcList[pos]);
         if (srcDiv == this.traderTableDiv) srcList.splice(pos, 1);
@@ -275,8 +279,8 @@ var LocationTraderNPC = (function (_super) {
         this.traderInv = new_inventory;
 
         // todo: так сделано в changeItem методах. Возможно стоит внести в _reDrawItemList
-        if (this.traderInvDiv) this.traderInvDiv.empty();
-        if (this.playerInvDiv) this.playerInvDiv.empty();
+        if (this.traderInvDiv) this.traderInvDiv.find('.npcInventory-itemWrap').remove();
+        if (this.playerInvDiv) this.playerInvDiv.find('.npcInventory-itemWrap').remove();
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
         this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
     };

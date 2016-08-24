@@ -79,7 +79,7 @@ var LocationGasStationNPC = (function (_super) {
         var itemDiv = $('<div class="npcInventory-item"></div>');
         var emptyItemDiv = $(
             '<div class="npcInventory-pictureWrap">' +
-                '<div class="npcInventory-picture"></div>' +
+                '<div class="npcInventory-picture town-interlacing"></div>' +
             '</div>' +
             '<div class="npcInventory-name">' + item.example.value_fuel + ' л</div>');
         itemDiv.append(emptyItemDiv);
@@ -102,7 +102,7 @@ var LocationGasStationNPC = (function (_super) {
         var itemDiv = $('<div class="npcInventory-item"></div>');
         var emptyItemDiv = $(
             '<div class="npcInventory-pictureWrap">' +
-                '<div class="npcInventory-picture"></div>' +
+                '<div class="npcInventory-picture town-interlacing"></div>' +
             '</div>' +
             '<div class="npcInventory-name">' + item.example.value_fuel + ' л</div>' +
             '<div class="gs-checkbox">[ ]</div>');

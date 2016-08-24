@@ -13,6 +13,10 @@ var LocationNucoilBuilding = (function (_super) {
 
     LocationNucoilBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
         _super.prototype.addExtraPages.call(this, jq_center_menu, jq_center_pages);
+
+        // Интерлэйсинг на автарки NPC
+        //$('#building_nucoil').find('')
+
         // Добавление дополнительных функций в здание
         jq_center_menu.empty();
         jq_center_pages.empty();
@@ -26,7 +30,7 @@ var LocationNucoilBuilding = (function (_super) {
         var ins_list = ['standart', 'premium', 'vip'];
         for (var i = 0; i < ins_list.length; i++){
             var ins_name = ins_list[i];
-            var jq_insurance = $('<div class="insurance-item-block" data-ins_name="' + ins_name + '"></div>');
+            var jq_insurance = $('<div class="insurance-item-block town-interlacing" data-ins_name="' + ins_name + '"></div>');
             jq_insurance.css('background', 'transparent url("/static/content/locations/institutions/nucoil/ins_' + ins_name + '.png") 100% 100% no-repeat');
             jq_insurance.append('<div class="insurance-item-price">15000</div>');
             this.jq_insurance_page.append(jq_insurance);

@@ -46,22 +46,25 @@ var PartyManager = (function () {
         this._redraw_party();
     };
 
+    PartyManager.prototype.search_invite = function (invite_id) {
+        for (var i = 0; i < this.invites.length; i++)
+            if (this.invites[i].invite_id == invite_id)
+                return i;
+        return -1;
+    };
+
     PartyManager.prototype.add_invite = function (invite_id, party, sender, recipient) {
+        //console.log('PartyManager.prototype.add_invite ');
         if (user.ID != recipient.uid) return;
-        var invite = {
-            invite_id: invite_id, party: party, sender: sender, recipient: recipient
-        };
-        this.invites.push(invite);
-        this._redraw_invites();
+        var invite = { invite_id: invite_id, party: party, sender: sender, recipient: recipient };
+        if (this.search_invite(invite.invite_id) < 0) {
+            this.invites.push(invite);
+            this._redraw_invites();
+        }
     };
 
     PartyManager.prototype.del_invite = function (invite_id) {
-        var index = -1;
-        for (var i = 0; i < this.invites.length; i++)
-            if (this.invites[i].invite_id == invite_id) {
-                index = i;
-                break;
-            }
+        var index = this.search_invite(invite_id);
         if (index >= 0) {
             this.invites.splice(index, 1);
             this._redraw_invites();
@@ -93,7 +96,7 @@ var PartyManager = (function () {
             clientManager.sendGetPartyUserInfo(agent_name);
         });
 
-        // Выделить того игрока что был выделен если он остался
+        // Р’С‹РґРµР»РёС‚СЊ С‚РѕРіРѕ РёРіСЂРѕРєР° С‡С‚Рѕ Р±С‹Р» РІС‹РґРµР»РµРЅ РµСЃР»Рё РѕРЅ РѕСЃС‚Р°Р»СЃСЏ
         for (i = 0; i < party.members.length; i++)
             if (party.members[i].agent_name == this.invite_user_name) {
                 jq_member_block.find('.party-page-invite-members-line').removeClass('active');
@@ -107,7 +110,7 @@ var PartyManager = (function () {
         this._clear_user_info(jq_target_div);
         jq_target_div.find('.party-window-person-photo-wrap').css('display', 'block');
         jq_target_div.find('.party-window-pers-info').css('display', 'block');
-        jq_target_div.find('.party-window-person-photo').attr("src", user_info.avatar);
+        jq_target_div.find('.party-window-person-photo').css("background-image", 'url("' + user_info.avatar + '"');
         jq_target_div.find('.party-page-car-block').append(user_info.html_car_img);
         //this.jq_main_div.find('.chat-interaction-car-photo-name').text(user_data.car_name);
         for (var i = 0; i < this.field_name_list.length; i++) {
@@ -129,7 +132,7 @@ var PartyManager = (function () {
         var self = partyManager;
         self.jq_main_div = $(jq_main_div).first();
 
-        // Вешаем клики на кнопки верхнего меню
+        // Р’РµС€Р°РµРј РєР»РёРєРё РЅР° РєРЅРѕРїРєРё РІРµСЂС…РЅРµРіРѕ РјРµРЅСЋ
         self.jq_main_div.find('.party-window-menu-item').click(function() {
             var data = $(this).data('page_class');
             if ((data == 'party_page_create') && (partyManager.party.id != -1)) return;
@@ -148,7 +151,7 @@ var PartyManager = (function () {
             $(self.jq_main_div.find('.party-window-menu-item')[1]).addClass('unactive');
         }
 
-        // Вешаем клик на кнопку создать
+        // Р’РµС€Р°РµРј РєР»РёРє РЅР° РєРЅРѕРїРєСѓ СЃРѕР·РґР°С‚СЊ
         self.jq_main_div.find('.party-page-create-btn').click(function() {
             var name = partyManager.jq_main_div.find('.party-page-create-name-input').first().val();
             var description = partyManager.jq_main_div.find('.party-page-create-target-textarea').first().val();
@@ -162,7 +165,7 @@ var PartyManager = (function () {
             partyManager.jq_main_div.find('.party-page-create-btn').click();
         });
 
-        //  Вешаем клик на отправку инвайта
+        //  Р’РµС€Р°РµРј РєР»РёРє РЅР° РѕС‚РїСЂР°РІРєСѓ РёРЅРІР°Р№С‚Р°
         self.jq_main_div.find('.party-page-management-invite-btn').click(function() {
             var name = partyManager.jq_main_div.find('.party-page-management-invite-input').first().val();
             if (name && (name != ''))
@@ -196,7 +199,7 @@ var PartyManager = (function () {
             jq_invite_block.append(jq_invite);
         }
 
-        // Клики на принять/отклонить и на сам инвайт
+        // РљР»РёРєРё РЅР° РїСЂРёРЅСЏС‚СЊ/РѕС‚РєР»РѕРЅРёС‚СЊ Рё РЅР° СЃР°Рј РёРЅРІР°Р№С‚
         jq_invite_block.find('.party-page-invite-invites-line').click(function() {
             var party_name = $(this).data('party_name');
             partyManager.jq_main_div.find('.party-page-invite-invites-line').removeClass('active');
@@ -206,16 +209,33 @@ var PartyManager = (function () {
         });
         jq_invite_block.find('.party-page-invite-invites-accept-btn').click(function(event) {
             var party_name = $(this).data('party_name');
-            clientManager.sendJoinPartyFromTemplate(party_name);
+            //clientManager.sendJoinPartyFromTemplate(party_name);
             stopEvent(event);
+
+            modalWindow.modalDialogAnswerShow({
+                caption: 'Party Operations',
+                header: 'РџСЂРёСЃРѕРµРґРёРЅРёС‚СЊСЃСЏ?',
+                body_text: 'Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ РїСЂРёСЃРѕРµРґРёРЅРёС‚СЊСЃСЏ Рє ' + party_name + '?',
+                callback_ok: function () {
+                   clientManager.sendJoinPartyFromTemplate(party_name);
+                }
+            });
         });
         jq_invite_block.find('.party-page-invite-invites-del-btn').click(function(event) {
             var invite_id = $(this).data('invite_id');
-            clientManager.sendPartyDeleteInvite(invite_id);
+            //clientManager.sendPartyDeleteInvite(invite_id);
             stopEvent(event);
+            modalWindow.modalDialogAnswerShow({
+                caption: 'Party Operations',
+                header: 'РћС‚РјРµРЅРёС‚СЊ?',
+                body_text: 'Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ РѕС‚РјРµРЅРёС‚СЊ РїСЂРёРіР»Р°С€РµРЅРёРµ?',
+                callback_ok: function () {
+                   clientManager.sendPartyDeleteInvite(invite_id);
+                }
+            });
         });
 
-        // Выделить тот инвайт что был выделен если он остался
+        // Р’С‹РґРµР»РёС‚СЊ С‚РѕС‚ РёРЅРІР°Р№С‚ С‡С‚Рѕ Р±С‹Р» РІС‹РґРµР»РµРЅ РµСЃР»Рё РѕРЅ РѕСЃС‚Р°Р»СЃСЏ
         for (i = 0; i < this.invites.length; i++)
             if (this.invites[i].party.name == this.selected_party_name) {
                 jq_invite_block.find('.party-page-invite-invites-line').removeClass('active');
@@ -256,7 +276,7 @@ var PartyManager = (function () {
                 jq_member_block.append(jq_member);
             }
 
-            // Выделить того игрока что был выделен если он остался
+            // Р’С‹РґРµР»РёС‚СЊ С‚РѕРіРѕ РёРіСЂРѕРєР° С‡С‚Рѕ Р±С‹Р» РІС‹РґРµР»РµРЅ РµСЃР»Рё РѕРЅ РѕСЃС‚Р°Р»СЃСЏ
             for (i = 0; i < this.party.members.length; i++)
                 if (this.party.members[i].agent_name == this.party_user_name) {
                     jq_member_block.find('.party-page-management-members-line').removeClass('active');
@@ -275,7 +295,17 @@ var PartyManager = (function () {
         });
         jq_member_block.find('.party-page-management-members-kick-btn').click(function(event) {
             var agent_name = $(this).parent().data('agent_name');
-            clientManager.sendKickPartyFromTemplate(agent_name);
+            //clientManager.sendKickPartyFromTemplate(agent_name);
+
+            modalWindow.modalDialogAnswerShow({
+                caption: 'Party Operations',
+                header: agent_name == user.login ? 'РџРѕРєРёРЅСѓС‚СЊ?' : 'РљРёРєРЅСѓС‚СЊ?',
+                body_text: agent_name == user.login ? 'Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ РїРѕРєРёРЅСѓС‚СЊ РїР°С‚Рё?' : 'Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ РєРёРєРЅСѓС‚СЊ ' + agent_name + '?',
+                callback_ok: function () {
+                   clientManager.sendKickPartyFromTemplate(agent_name);
+                }
+            });
+
             stopEvent(event);
         });
         jq_member_block.find('.party-page-management-members-category-btn').click(function(event) {

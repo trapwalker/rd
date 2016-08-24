@@ -213,10 +213,7 @@
     opacity: 0.95;
 }
 
-
 /* конец стилей настроек */
-
-
 
 
 /* css стили для окна смерти */
@@ -268,105 +265,6 @@
 /* конец стилей для окна смерти*/
 
 
-
-/* css стили для окна победы */
-#winPageDiv {
-    position: absolute;
-    background-color: black;
-    color: lime;
-    font: bold 12px Arial;
-    min-height: 75px;
-    min-width: 300px;
-}
-
-#winPageImageDeath {
-    position: absolute;
-    left: 0;
-    background: transparent url('/static/img/modal_window_image/mes_win_win_icon.png');
-    height: 70px;
-    width: 70px;
-}
-
-#winPageRight {
-    left: 25px;
-    margin-left: 75px;
-    height: 100%;
-    position: absolute;
-}
-
-#winPageRightText {
-    margin-top: 10px;
-
-}
-
-#winPageButtonResp {
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    opacity: 0.7;
-    position: absolute;
-    left: 50%;
-    margin-left: -20px;
-    border: solid lime 1px;
-    border-radius: 3px;
-    padding: 3px 5px 3px 5px;
-    font: bold 14px Arial;
-    bottom: 10px;
-}
-
-#winPageButtonResp:hover {
-    opacity: 0.95;
-}
-/* конец стилей для окна победы*/
-
-
-
-/* css стили для окна поражения */
-#losePageDiv {
-    position: absolute;
-    background-color: black;
-    color: lime;
-    font: bold 12px Arial;
-    min-height: 75px;
-    min-width: 300px;
-}
-
-#losePageImageDeath {
-    position: absolute;
-    left: 0;
-    background: transparent url('/static/img/modal_window_image/mes_win_warning_icon.png');
-    height: 70px;
-    width: 70px;
-}
-
-#losePageRight {
-    margin-left: 75px;
-    height: 100%;
-    position: absolute;
-}
-
-#losePageRightText {
-    margin-top: 10px;
-
-}
-
-#losePageButtonResp {
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
-    opacity: 0.7;
-    position: absolute;
-    left: 50%;
-    margin-left: -30px;
-    border: solid lime 1px;
-    border-radius: 3px;
-    padding: 3px 5px 3px 5px;
-    font: bold 14px Arial;
-    bottom: 10px;
-}
-
-#losePageButtonResp:hover {
-    opacity: 0.95;
-}
-/* конец стилей для окна поражения */
-
-
 /* css стили для окна дисконнекта */
 #restartPageDiv {
     position: absolute;
@@ -405,3 +303,110 @@
     opacity: 0.95;
 }
 /* конец стилей для окна дисконнекта */
+
+
+/* Новые стили окон Общие */
+
+.mainDivModalWindow {
+    position: absolute;
+    border: 2px solid #2ffa00;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #31c811;
+    font: 12pt Nouveau_IBM;
+}
+
+.modal-window-show {
+    display: block;
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    z-index: 21;
+
+}
+
+.modal-window-wrap {
+    position: relative;
+    width: calc(100% - 6px);
+    height: calc(100% - 26px - 40px - 6px);
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 3px auto;
+    text-align: center;
+}
+
+.modal-window-wrap .modal-header {
+    position: relative;
+    text-align: center;
+    margin: 5px auto 10px auto;
+    font-size: 20px;
+}
+
+.modal-window-footer {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding-top: 5px;
+}
+
+.modal-window-footer-btn {
+    position: relative;
+    text-align: center;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    border: 1px solid #0e4b00;
+    background-color: #082801;
+    box-sizing: border-box;
+}
+
+.modal-window-footer-btn:hover {
+    background-color: #0c4b00;
+    color: #2ffa00;
+    border-color: #31c811;
+}
+
+/* Окно просто любой информации */
+
+#modalInfoPage {
+    width: 360px;
+    height: 260px;
+    margin-left: -180px;
+}
+
+#dialogInfoPageBtnOK {
+    position: relative;
+    margin: 0 auto;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}
+
+/* Окно вопроса - да / нет */
+
+#modalAnswerPage {
+    width: 360px;
+    height: 260px;
+    margin-left: -180px;
+}
+
+#dialogAnswerPageBtnOK {
+    position: relative;
+    float: left;
+    margin-left: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}
+
+#dialogAnswerPageBtnCancel {
+    position: relative;
+    float: right;
+    margin-right: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}

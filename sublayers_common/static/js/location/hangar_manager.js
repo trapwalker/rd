@@ -29,9 +29,12 @@ var LocationHangarNPC = (function (_super) {
                 var jq_car = $('<div id="hangar-center-info-car-' + i + '" class="hangar-center-info-car-wrap"></div>');
                 var jq_car_content = $(
                     '<div class="car-info-block-main">' +
-                        '<div class="car-info-block-picture-hangar">' + car_rec.html_car_img + '</div>' +
+                        '<div class="car-info-block-picture-hangar town-interlacing">' + car_rec.html_car_img + '</div>' +
                         '<div class="car-info-block-car-name-hangar">' + car_rec.car.title + '</div>' +
-                        '<div class="car-info-block-info-hangar">' + car_rec.html_car_table + '</div>' +
+                        '<div class="car-info-block-info-hangar">' +
+                            '<div class="town-back-interlacing"></div>' +
+                            car_rec.html_car_table +
+                        '</div>' +
                     '</div>');
                 jq_car.append(jq_car_content);
                 jq_car_list.append(jq_car);
@@ -39,7 +42,7 @@ var LocationHangarNPC = (function (_super) {
                 var jq_inv_car = $(
                     '<div class="npcInventory-itemWrap" data-car_number="' + i + '" ' + 'data-car_price="' + car_rec.car.price + '">' +
                         '<div class="npcInventory-item">' +
-                            '<div class="npcInventory-pictureWrap" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
+                            '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
                             '<div class="npcInventory-name">' + car_rec.car.title + '</div>' +
                         '</div>' +
                     '</div>'

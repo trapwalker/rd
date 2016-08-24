@@ -47,7 +47,12 @@ $(document).ready(function () {
     document.getElementById('map').focus();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
-        windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw);
+        windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
+            function(jq_window_div) {
+                var new_text = jq_window_div.find('textarea').first().val();
+                if (user.example_agent.about_self != new_text)
+                    clientManager.sendSetAboutSelf(new_text); 
+            });
         returnFocusToMap();
     };
 

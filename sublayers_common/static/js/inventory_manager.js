@@ -176,7 +176,7 @@ var Inventory = (function () {
             Тут добавлена обертка для итема т.к. нельзя чтобы один элемент был и дропабл и драгбл одновременно (точнее
             можно, но он не будет ловить сам себя и итем будет проваливаться сквозь окно на карту)
         */
-        var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap inventory-wrap-' + this.owner_id +
+        var emptyItemDiv = '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap town-interlacing inventory-wrap-' + this.owner_id +
             '-pos-' + position + '" data-owner_id="' + this.owner_id + '" data-pos="' + position + '">' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
             '-pos-' + position + '" data-owner_id="' + this.owner_id + '" data-pos="' + position + '">' +

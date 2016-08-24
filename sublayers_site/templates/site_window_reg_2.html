@@ -160,7 +160,9 @@
     // Подсказки на клики по шапкам блоков
     $('.reg2-skill-table-label').click(function() {
         var skill_name = $(this).data('skill_name');
-        consoleWReg2.add_message('user', 'Загрузка навыка:', true);
+        console.log(skill_name);
+        if (skill_name)
+            consoleWReg2.add_message('user', 'Загрузка навыка:', true);
         switch (skill_name) {
             case 'driving':
                 consoleWReg2.add_message('system',

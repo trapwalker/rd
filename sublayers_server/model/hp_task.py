@@ -28,9 +28,9 @@ class HPTask(TaskSingleton):
         self.del_shooter = del_shooter
         self.shooter = shooter
 
-    def _update_state(self, event):
+    def _update_state(self, dhp, dps, is_die, event):
         owner = self.owner
-        if event.is_die:
+        if is_die:
             owner.hp_state.set_die(event.time)
             Die(time=event.time, obj=owner).post()
             if owner.is_frag:
@@ -40,12 +40,12 @@ class HPTask(TaskSingleton):
                     if owner.hp_state.shooters:
                         owner.hp_state.shooters[0].on_kill(time=event.time, obj=owner)
             return
-        owner.hp_state.update(t=event.time, dhp=event.dhp, dps=event.dps)
+        owner.hp_state.update(t=event.time, dhp=dhp, dps=dps)
         owner.on_update(event=event)
 
     def on_perform(self, event):
         super(HPTask, self).on_perform(event=event)
-        self._update_state(event)
+        self._update_state(dhp=event.dhp, dps=event.dps, is_die=event.is_die, event=event)
 
     def on_start(self, event):
         super(HPTask, self).on_start(event=event)
@@ -59,13 +59,17 @@ class HPTask(TaskSingleton):
             owner.hp_state.del_shooter(self.del_shooter)
             for agent in self.owner.subscribed_agents:
                 FireAutoEffect(agent=agent, subj=self.del_shooter, obj=self.owner, action=False, time=event.time).post()
-
+        # info Раньше вызывались эвенты, сейчас self._update_state вызывается сразу, так как если был вызван HPTask,
+        # то мы обязаны сделать апдейт hp_state, иначе списывание дамага может не прекратиться.
         time = event.time
         time_die = copy(owner.hp_state).update(t=time, dhp=self.dhp, dps=self.dps)
-        if time_die == time:  # если время дамага совпадает с временем смерти, то один евент
-            HPTaskEvent(time=time, task=self, dhp=self.dhp, dps=self.dps, is_die=True).post()
-        else:  # если времена разные, то добавить оба евента
-            HPTaskEvent(time=time, task=self, dhp=self.dhp, dps=self.dps).post()
+        if time_die == time:  # если время дамага совпадает с временем смерти, то просто сделать апдейт и вызвать "Die"
+            self._update_state(dhp=self.dhp, dps=self.dps, is_die=True, event=event)
+            self.done()
+        else:  # если времена разные, то сделать апдейт и добавить евента на смерть
             self.shooter = None
+            self._update_state(dhp=self.dhp, dps=self.dps, is_die=False, event=event)
             if time_die is not None:
                 HPTaskEvent(time=time_die, task=self, is_die=True).post()
+            else:
+                self.done()
