@@ -517,7 +517,13 @@ class AgentAPI(API):
         log.debug('set_position {self.agent}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals()))
         if self.car is None or self.car.limbo or not self.car.is_alive:
             return
-        #p = Point(projection['x'], projection['y']) if projection else None
+
+        try:
+            p = Point(projection['x'], projection['y']) if projection else None
+        except Exception as e:
+            log.warning('Wrong coordinates: %r // %r', projection, position)
+            return
+
         #self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
 
     @public_method
