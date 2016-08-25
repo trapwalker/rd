@@ -13,12 +13,12 @@
     {% end %}
     {% for k, v in car.iter_slots(tags='armorer') %}
         {% if v is not None %}
-            {% set scale_images = getattr(v, 'armorer_images', None) %}
+            {% set scale_images = v.armorer_images %}
             {% if scale_images is not None %}
-                {% set scale_images_links = scale_images[str(scale)] %}
+                {% set scale_images_links = getattr(scale_images, str(scale)) %}
                 <div class="armorer-slot for-journal side_{{ k }}_{{ car.node_html() }} shift-for-journal_{{ car.node_html() }}" style="z-index: 2">
                     <div class="armorer-car-slot-picture armorer_side_{{ v.direction }} journal-view-ammo_side_{{ v.direction }}"
-                         style="background: url({{ static_url(static_world_link_repr(scale_images_links['armorer_side_' + v.direction])) }} ) no-repeat center;"></div>
+                         style="background: url({{ static_url(static_world_link_repr(getattr(scale_images_links, 'armorer_side_' + v.direction))) }} ) no-repeat center;"></div>
                 </div>
             {% end %}
         {% end %}

@@ -87,24 +87,6 @@ class AgentConsoleNamespace(Namespace):
         for name in av:
             self.api.send_kick(username=name)
 
-    def metric(self, name='server'):
-        # todo: отправку метрик необходимо сделать через евент (потому что мессаджи должны проходить через евент!)
-        result = None
-        if name == 'server':
-            result = self.agent.server.get_server_stat()
-        elif hasattr(self.agent.car.stat_log, name):
-            if name == 'frag':
-                result = '{} / {}'.format(
-                    self.agent.car.stat_log.get_metric('frag'),
-                    self.agent.stat_log.get_metric('frag'),
-                )
-            else:
-                result = self.agent.car.stat_log.get_metric(name)
-
-        result = result or 'Unknown metric name'
-        messages.Message(time=self.agent.server.get_time(), agent=self.agent, comment=result).post()
-        # todo: self.write(result)
-
     def dropcar(self):
         self.api.delete_car()
 
@@ -127,7 +109,7 @@ class AgentConsoleNamespace(Namespace):
         return self.agent.example.balance
 
     def exp(self, value):
-        self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=int(value))
+        self.agent.example.set_exp(dvalue=int(value))
 
     def param(self, name=None):
         if name and self.agent.car:
@@ -530,6 +512,16 @@ class AgentAPI(API):
         self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment, time=self.agent.server.get_time())
 
     @public_method
+    def set_position(self, projection, position=None, comment=None):
+        log_string = 'set_position {self.agent!r}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals())
+        print(log_string)
+        log.debug(log_string)
+        if self.car is None or self.car.limbo or not self.car.is_alive:
+            return
+        #p = Point(projection['x'], projection['y']) if projection else None
+        #self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
+
+    @public_method
     def delete_car(self):
         if self.car.limbo or not self.car.is_alive:
             return
@@ -748,6 +740,10 @@ class AgentAPI(API):
         # log.debug('Agent %s try set rpg state', self.agent)
         TransactionSetRPGState(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash,
                                skills=skills, buy_skills=buy_skills, perks=perks).post()
+
+    @public_method
+    def get_about_self(self):
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_about_self(self, text):

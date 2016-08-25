@@ -741,18 +741,6 @@ class SetupTraderReplica(Message):
         return d
 
 
-class AddExperienceMessage(Message):
-    def as_dict(self):
-        d = super(AddExperienceMessage, self).as_dict()
-        d.update(
-            exp_agent=self.agent.stat_log.get_metric('exp'),
-            exp_car=self.agent.car.stat_log.get_metric('exp'),
-            frag_agent=self.agent.stat_log.get_metric('frag'),
-            frag_car=self.agent.car.stat_log.get_metric('frag'),
-        )
-        return d
-
-
 class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
@@ -815,62 +803,60 @@ class NPCTransactionMessage(Message):
         return d
 
 
+# Вызывается тогда, когда нужна только RPG сотставляющая
+class UserExampleSelfRPGMessage(Message):
+    def as_dict(self):
+        d = super(UserExampleSelfRPGMessage, self).as_dict()
+        agent = self.agent
+        cur_exp = agent.example.exp
+        lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=cur_exp)
+        rpg_info = dict(
+            cur_lvl=math.floor(lvl / 10),
+            cur_exp=cur_exp,
+            cur_lvl_exp=agent.example.exp_table.user_exp_by_lvl(lvl=lvl),
+            next_lvl_exp=next_lvl_exp,
+
+            all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
+            driving=agent.example.driving.as_client_dict(),
+            shooting=agent.example.shooting.as_client_dict(),
+            masking=agent.example.masking.as_client_dict(),
+            leading=agent.example.leading.as_client_dict(),
+            trading=agent.example.trading.as_client_dict(),
+            engineering=agent.example.engineering.as_client_dict(),
+            buy_driving=agent.example.buy_driving.as_client_dict(),
+            buy_shooting=agent.example.buy_shooting.as_client_dict(),
+            buy_masking=agent.example.buy_masking.as_client_dict(),
+            buy_leading=agent.example.buy_leading.as_client_dict(),
+            buy_trading=agent.example.buy_trading.as_client_dict(),
+            buy_engineering=agent.example.buy_engineering.as_client_dict(),
+
+            all_perks_points=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
+            perks=[
+                dict(
+                    perk=perk.as_client_dict(),
+                    active=perk in agent.example.perks,
+                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
+                ) for perk in agent.server.reg['rpg_settings/perks'].deep_iter()
+            ],
+        )
+        d['rpg_info'] = rpg_info
+        return d
+
+
 # Вызывается тогда, когда не меняется машинка.
-class UserExampleSelfShortMessage(Message):
+class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
     def as_dict(self):
         d = super(UserExampleSelfShortMessage, self).as_dict()
         agent = self.agent
         user = agent.user
         ex_car = agent.example.car
 
-        # RPGInfo
-        rpg_info = dict()
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = self.agent.example.exp_table.by_exp(
-            exp=agent.stat_log.get_metric('exp'))
-
-        rpg_info.update(
-            current_level=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
-            all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
-            driving=self.agent.example.driving.as_client_dict(),
-            shooting=self.agent.example.shooting.as_client_dict(),
-            masking=self.agent.example.masking.as_client_dict(),
-            leading=self.agent.example.leading.as_client_dict(),
-            trading=self.agent.example.trading.as_client_dict(),
-            engineering=self.agent.example.engineering.as_client_dict(),
-
-            buy_driving=self.agent.example.buy_driving.as_client_dict(),
-            buy_shooting=self.agent.example.buy_shooting.as_client_dict(),
-            buy_masking=self.agent.example.buy_masking.as_client_dict(),
-            buy_leading=self.agent.example.buy_leading.as_client_dict(),
-            buy_trading=self.agent.example.buy_trading.as_client_dict(),
-            buy_engineering=self.agent.example.buy_engineering.as_client_dict(),
-
-            # current_exp=self.agent.stat_log.get_metric('exp'),
-            # next_level=nxt_lvl,
-            # next_level_exp=nxt_lvl_exp,
-
-            perks=[
-                dict(
-                    perk=perk.as_client_dict(),
-                    active=perk in self.agent.example.perks,
-                    perk_req=[self.agent.server.reg[p_req].node_hash() for p_req in perk.perks_req],
-                ) for perk in self.agent.server.reg['/rpg_settings/perks'].deep_iter()
-            ],
-        )
-        d['rpg_info'] = rpg_info
-
         d['user_name'] = user.name
         d['avatar_link'] = user.avatar_link
         d['example_agent'] = agent.example.as_client_dict()
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
-
-        if agent.example.role_class:
-            d['free_point_skills'] = agent.skill_points + agent.example.role_class.start_free_point_skills - \
-                                     agent.example.skill_point_summ()
-            d['free_point_perks'] = agent.lvl + agent.example.role_class.start_free_point_perks - len(agent.example.perks)
-
         if ex_car:
-             # Шаблоны машинки
+            # Шаблоны машинки
             templates = dict()
             template_car_img = tornado.template.Loader(
                 "../sublayers_server/templates/location",
@@ -886,6 +872,8 @@ class UserExampleSelfShortMessage(Message):
             d['templates'] = templates
 
             # Инвентарь
+            # todo: сделать этот метод автоматическим
+            ex_car.inventory.placing()
             d['car_inventory'] = dict(
                 max_size=ex_car.inventory_size,
                 items=[
@@ -901,7 +889,7 @@ class UserExampleSelfShortMessage(Message):
                             dvs=0,
                         )
                     )
-                    for ex in ex_car.inventory
+                    for ex in ex_car.inventory.items
                 ],
                 owner_id=agent.uid
             )
@@ -913,8 +901,8 @@ class UserExampleSelfShortMessage(Message):
                 for k, v in self.agent.example.car.iter_slots(tags='armorer')
             ]
             car_npc_info['armorer_slots_flags'] = [
-                dict(name=attr.name, value=getter and getter())
-                for attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
+                dict(name=name, value=getter and getter())
+                for name, attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
             ]
             # Информация для механика
             car_npc_info['mechanic_slots'] = [
@@ -928,7 +916,6 @@ class UserExampleSelfShortMessage(Message):
             ]
 
             d['car_npc_info'] = car_npc_info
-
         return d
 
 
@@ -937,7 +924,6 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
     def as_dict(self):
         d = super(UserExampleSelfMessage, self).as_dict()
         ex_car = self.agent.example.car
-
         if ex_car:
             template_armorer_car = tornado.template.Loader(
                 "../sublayers_common/",
@@ -979,7 +965,6 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
             d['templates']['mechanic_brakes'] = mechanic_brakes
             d['templates']['mechanic_cooling'] = mechanic_cooling
             d['templates']['mechanic_suspension'] = mechanic_suspension
-
         return d
 
 
@@ -988,7 +973,7 @@ class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
         super(NPCInfoMessage, self).__init__(**kw)
         self.npc_node_hash = npc_node_hash
-        self.npc = self.agent.server.reg[self.npc_node_hash]
+        self.npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
     def as_dict(self):
         d = super(NPCInfoMessage, self).as_dict()
@@ -1014,13 +999,11 @@ class HangarInfoMessage(NPCInfoMessage):
                 namespace=self.agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
 
-            prototypes = [self.agent.server.reg[car] for car in npc.car_list]
-
             d.update(cars=[dict(
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
-            ) for car in prototypes])
+            ) for car in npc.car_list])
         return d
 
 
@@ -1066,6 +1049,9 @@ class TraderInfoMessage(NPCInfoMessage):
         # Получаем сервер и экземпляр торговца
         server = self.agent.server
         npc = self.npc
+        if npc is None:
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return d
 
         # Отправка инвентаря торговца
         d['inventory'] = dict(
@@ -1076,21 +1062,21 @@ class TraderInfoMessage(NPCInfoMessage):
                         item=dict(
                             cls='ItemState',
                             balance_cls=None,
-                            example=server.reg[ex].as_client_dict(),
-                            max_val=server.reg[ex].stack_size,
+                            example=ex.as_client_dict(),
+                            max_val=ex.stack_size,
                             t0=self.time,
-                            val0=server.reg[ex].stack_size,
+                            val0=ex.stack_size,
                             dvs=0,
                         )
-                    ) for ex in npc.inventory
+                    ) for ex in npc.inventory.items
                 ],
                 owner_id=npc.node_html()
             )
 
         # Отправка цен
-        car_inventory = ()
+        car_inventory = []
         if self.agent.example.car:
-            car_inventory = self.agent.example.car.inventory
+            car_inventory = self.agent.example.car.inventory.items
         d['price'] = npc.as_client_dict(items=car_inventory)
         return d
 
@@ -1099,6 +1085,9 @@ class TraderInfoMessage(NPCInfoMessage):
 class TrainerInfoMessage(NPCInfoMessage):
     def as_dict(self):
         d = super(TrainerInfoMessage, self).as_dict()
+        if self.npc is None:
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return d
         d.update(drop_price=self.npc.drop_price)
         return d
 
@@ -1112,7 +1101,7 @@ class InteractionInfoMessage(Message):
     def as_dict(self):
         d = super(InteractionInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.example.exp)
         if player:
             d.update(
                 avatar=player.user.avatar_link,
@@ -1154,7 +1143,7 @@ class PartyUserInfoMessage(Message):
     def as_dict(self):
         d = super(PartyUserInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.stat_log.get_metric('exp'))
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.example.exp)
         if player:
             d.update(
                 name=self.player_nick,

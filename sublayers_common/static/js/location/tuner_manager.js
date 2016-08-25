@@ -69,11 +69,14 @@ var LocationTunerNPC = (function (_super) {
 
     LocationTunerNPC.prototype.testItemForCar = function(item) {
         //console.log('TunerManager.prototype.testItemForCar', item);
-        if (! item.hasTag('tuner')) return false;
+        if (!item.hasTag('tuner')) return false;
         if (item.example.hasOwnProperty('images'))
-            if (item.example.images.hasOwnProperty(user.example_car.node_hash))
-                return true;
-        return false
+            for (var i = 0; i < item.example.images.length; i++) {
+                var elem = item.example.images[i];
+                if (elem.car.indexOf(user.example_car.node_hash) >= 0)
+                    return true;
+            }
+        return false;
     };
 
     LocationTunerNPC.prototype.clear_user_info = function() {
@@ -216,6 +219,13 @@ var LocationTunerNPC = (function (_super) {
         var jq_side_before = this.jq_main_div.find('#tunerCarSideBefore');
         var jq_side_after = this.jq_main_div.find('#tunerCarSideAfter');
 
+        function get_ex_car_images(images, car_node_hash){
+            for (var i = 0; i < images.length; i++)
+                if (images[i].car == car_node_hash)
+                    return images[i];
+            return null;
+        }
+
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
             var top_slot = $('#tuner_top_' + position);
@@ -236,7 +246,11 @@ var LocationTunerNPC = (function (_super) {
             if (item.example) {
                 //var itemImgTop = item.example['tuner_top'];
                 //var itemImgSide = item.example['tuner_side'];
-                var ex_car_images = item.example.images[user.example_car.node_hash];
+                var ex_car_images = get_ex_car_images(item.example.images, user.example_car.node_hash);
+                if (! ex_car_images) {
+                    console.warn('Images for car not found:', user.example_car.node_hash, item.example.images);
+                    return;
+                }
                 var itemImgTop = ex_car_images.top.link;
                 var itemImgSide = ex_car_images.side.link;
                 var itemImgIcon = item.example['inv_icon_small'];

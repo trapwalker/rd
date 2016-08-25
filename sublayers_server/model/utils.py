@@ -79,6 +79,10 @@ def special_type_serialize_prepare(obj):
         return dict(x=obj.real, y=obj.imag)
     elif isinstance(obj, UUID):
         return str(obj)
+    elif hasattr(obj, 'as_client_dict'):
+        return obj.as_client_dict()
+    elif hasattr(obj, 'as_dict'):
+        return obj.as_dict()
 
     return obj
 

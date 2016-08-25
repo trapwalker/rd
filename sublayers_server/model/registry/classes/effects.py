@@ -3,20 +3,19 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, TextAttribute
-
+from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.odm.fields import IntField, BooleanField, StringField
 from sublayers_server.model.events import Event
 
 
 class Effect(Root):
-    param_name  = TextAttribute(caption=u'Параметр')
-    m_name      = TextAttribute(caption=u'Модификатор')
-    r_name      = TextAttribute(caption=u'Резист')
-    upd_method  = TextAttribute(caption=u'Callback', default=None)
-    sign        = TextAttribute(caption=u'Знак', default=-1)
-    is_stack    = TextAttribute(caption=u'Стекается?', default=False)
-    absolute    = TextAttribute(caption=u'Абсолютное значение', default=False)
+    param_name  = StringField(caption=u'Параметр')
+    m_name      = StringField(caption=u'Модификатор')
+    r_name      = StringField(caption=u'Резист')
+    upd_method  = StringField(caption=u'Callback', default=None)
+    sign        = IntField(caption=u'Знак', default=-1)
+    is_stack    = BooleanField(caption=u'Стекается?', default=False)
+    absolute    = BooleanField(caption=u'Абсолютное значение', default=False)
 
     def __init__(self, *av, **kw):
         super(Effect, self).__init__(*av, **kw)
@@ -32,22 +31,20 @@ class Effect(Root):
         ))
 
     def start(self, owner, time):
-        if self.abstract:
-            for effect in self.deep_iter(reject_abstract=True):
-                effect.start(owner, time)
-        else:
+        for effect in self.deep_iter(reject_abstract=True):
+            effect.start(owner, time)
+
+        if not self.abstract:
             EffectStartEvent(effect=self, owner=owner, time=time).post()
 
     def done(self, owner, time):
-        # todo: refactoring
-        if self.abstract:
-            for effect in self.deep_iter(reject_abstract=True):
-                effect.done(owner, time)
-        else:
+        for effect in self.deep_iter(reject_abstract=True):
+            effect.done(owner, time)
+        if not self.abstract:
             EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
     def _modify(self, on, p, m_value, r_value):
-        assert not self.abstract
+        assert not self.abstract, 'Trying to _modify of abstract effect'
         sign = self.sign if on else -self.sign
         original = 1.0 if self.absolute else p.original
         p.current += sign * original * m_value * (1 - r_value)
@@ -64,7 +61,7 @@ class Effect(Root):
             self._modify(on=True, p=p, m_value=m.value, r_value=r.value)
 
     def on_start(self, owner, time):
-        assert not self.abstract
+        assert not self.abstract, 'on_start event with abstract object: {}'.format(self)
         if self.is_stack or not (self in owner.effects):
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)

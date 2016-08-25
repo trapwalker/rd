@@ -6,6 +6,9 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.uri import URI
 
+import tornado.ioloop
+import tornado.gen
+from tornado.concurrent import return_future
 from collections import deque
 from uuid import uuid4 as uid_func
 import pickle
@@ -13,6 +16,7 @@ import time
 import yaml
 import yaml.scanner  # todo: extract serialization layer
 import os
+from fnmatch import fnmatch
 
 
 URI_PROTOCOL = 'reg'
@@ -194,10 +198,6 @@ class Collection(AbstractStorage):
         doc = dict(name=key, data=self._serialize(node))
         self.dataset.update({'name': key}, doc, upsert=True)  # todo: db index
 
-    def reset(self, node):
-        key = self.make_key(node.uri.path)
-        self.dataset.remove({'name': key})
-
     def get_path_tuple(self, node):
         return [node.name]
 
@@ -207,21 +207,24 @@ class Collection(AbstractStorage):
 
 # noinspection PyProtectedMember
 class Registry(AbstractStorage):
-    def __init__(self, path=None, **kw):
+    def __init__(self, **kw):
         super(Registry, self).__init__(dispatcher=Node.DISPATCHER, **kw)
-        self.path = path
+        self._loading_duration = None
+        self._loading_start_time = None
         log.info('Registry loading...')
-        t = time.time()
-        self.root = Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
-        t = time.time() - t
-        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, t))
+        self.root = None # Root(name='root', storage=self, doc=u'Корневой узел реестра') if path is None else self.load(path)
 
     def get_local(self, path):
         path = list(path)
         node = self.root
         while path:
             name = path.pop(0)
-            next_node = node._subnodes.get(name)
+            next_node = None
+            for nn in node._subnodes:
+                if nn.name == name:
+                    next_node = nn
+                    break
+                    
             if next_node is None:
                 raise ObjectNotFound('Node {!r} is not found in the node {!r} by path: {!r}'.format(
                     name, node.name, path))
@@ -231,14 +234,14 @@ class Registry(AbstractStorage):
 
     def put(self, node):
         super(Registry, self).put(node)
-        if not hasattr(node, '_subnodes'):
-            node._subnodes = {}
-
+        node.storage = self
         owner = node.owner
         if owner:
             assert owner.storage is self
-            owner._subnodes[node.name] = node
+            owner._subnodes.add(node)
         else:
+            if self.root:
+                log.warning('Root of storage %r is changed from %r to %r.', self, self.root, node)
             self.root = node
 
     def _load_node(self, path, owner):
@@ -248,21 +251,14 @@ class Registry(AbstractStorage):
             assert isinstance(f, unicode)
             # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
-            if not f.startswith('_') and os.path.isfile(p):  # todo: filter yaml-files
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
                 with open(p) as attr_file:
                     try:
                         d = yaml.load(attr_file) or {}
                     except yaml.scanner.ScannerError as e:
                         raise RegistryNodeFormatError(e)
                     attrs.update(d)
-
-        cls = None
-        class_name = attrs.pop('__cls__', None)
-        if class_name:
-            cls = Root.classes.get(class_name)  # todo: get classes storage namespace with other way
-            if cls is None:
-                raise NodeClassError(
-                    'Unknown registry class ({}) found into the path: {!r}'.format(class_name, path))
 
         # todo: get parent
         parent = None
@@ -275,27 +271,55 @@ class Registry(AbstractStorage):
         if parent is None:  # todo: make option 'owner_is_parent_by_default'
             parent = owner
 
-        cls = cls or parent and parent.__class__
-        if cls is None:
-            raise NodeClassError('Node class unspecified on path: {!r}'.format(path))
+        #cls = cls or parent and parent.__class__
+        cls = parent and parent.__class__ or Root
         name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
         abstract = attrs.pop('abstract', True)  # todo: Вынести это умолчание на видное место
-        return cls(name=name, parent=parent, owner=owner, storage=self, abstract=abstract, values=attrs)
+        attrs.update(
+            name=name,
+            parent=parent,
+            owner=owner,
+            abstract=abstract,
+            # storage=self,
+        )
+        return cls.from_son(attrs)
 
-    def load(self, path):
+    @return_future
+    def load(self, path, callback=None):
+        # todo: async loading
+        def on_load(*av, **kw):
+            if all_nodes:
+                node = all_nodes.pop()
+                node.load_references(callback=on_load)
+            else:
+                log.info('References loaded DONE')
+                return callback(root)
+
+        all_nodes = []
+        self._loading_start_time = time.time()
         root = None
         stack = deque([(path, None)])
         while stack:
             pth, owner = stack.pop()
             node = self._load_node(pth, owner)
             if node:
+                all_nodes.append(node)
+                node.to_cache()
+                self.put(node)
+                #_node = yield node.save(upsert=True)
                 if owner is None:
                     root = node  # todo: optimize
                 for f in os.listdir(pth):
                     next_path = os.path.join(pth, f)
                     if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                         stack.append((next_path, node))
-        return root
+
+        self._loading_duration = time.time() - self._loading_start_time
+        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(self.nodes_count, self._loading_duration))
+
+        on_load()
+
+        #tornado.ioloop.IOLoop.instance().add_callback(callback, root)
 
     def get_path_tuple(self, node):
         # todo: cache

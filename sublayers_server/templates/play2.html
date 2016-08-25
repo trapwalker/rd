@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NUKE Navigator</title>
+
+    <style>
+        @font-face {
+            font-family: MICRADI;
+            src: url("http://192.168.1.104/static/fonts/micradi.ttf");
+        }
+
+        @font-face {
+            font-family: Molot;
+            src: url("http://192.168.1.104/static/fonts/molot.otf");
+        }
+
+        @font-face {
+            font-family: Gruppo-Regular;
+            src: url("http://192.168.1.104/static/fonts/gruppo-regular.ttf");
+        }
+
+        @font-face {
+            font-family: Nouveau_IBM;
+            src: url("http://192.168.1.104/static/fonts/Nouveau_IBM.ttf");
+        }
+
+        @font-face {
+            font-family: FreePixel;
+            src: url("http://192.168.1.104/static/fonts/FreePixel.ttf");
+        }
+    </style>
+
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/third_party/leaflet.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/third_party/jquery-ui.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/interlacing.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/view.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/view_messenger.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/controls/sliders.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/controls/fireControl.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/third_party/leadlet_label.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/controls/radialMenu.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/modal_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/w_radial.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/fire_effects.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/controls/cruise_control.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/controls/zoom_slider.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/view_messenger_glass.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/panel_info_common.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/pi_location.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/pi_building.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/pi_building_quest.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/pi_nukeoil.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/car_info.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/npc_transaction_info.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/panel_info/panel_description.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/npc_header.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/npc_inventory.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/building.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/armorer.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/mechanic.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/tuner.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/hangar.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/nucoil.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/town_main.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/trader.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/trainer.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/girl.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/npc_gas_station.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/nucoil_building.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/location_menu.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/location_chat.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/locations/chat_interaction.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/map-menu/car_info_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/map-menu/inventory.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/character_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/car_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/journal/journal_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/journal/journal_window_quests.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/journal/journal_window_parking.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/party_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/menu/person_window.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/car_info_block.css"/>
+    <link rel="stylesheet" href="http://192.168.1.104/static/css/templates/context_panel.css"/>
+
+    <script src="http://192.168.1.104/static/js/third_party/leaflet-src.js"></script>
+    <script src="http://192.168.1.104/static/js/third_party/jquery.min.js"></script>
+    <script src="http://192.168.1.104/static/js/third_party/jquery-ui.min.js"></script>
+    <script src="http://192.168.1.104/static/js/third_party/jquery.jrumble.1.3.js"></script>
+    <script src="http://192.168.1.104/static/js/third_party/svgjs/svg.js"></script>
+    <script src="http://192.168.1.104/static/js/geometric.js"></script>
+    <script src="http://192.168.1.104/static/js/generator_ID.js"></script>
+    <script src="http://192.168.1.104/static/js/resource_load_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/third_party/blur.js"></script>
+    <script src="http://192.168.1.104/static/js/message_stream.js"></script>
+    <script src="http://192.168.1.104/static/js/window.js"></script>
+    <script src="http://192.168.1.104/static/js/modelJS.js"></script>
+    <script src="http://192.168.1.104/static/js/time_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/visual_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/map_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/model_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/fire_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/inventory_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/item_balance_cls_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/map_canvas_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location_canvas_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/connector.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/visual_object.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/leaflet_icon_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_car_marker.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_inventory_item.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_rumble.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_map_position.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_zoom_slider.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_target_point_marker.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_fire_controller.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_dashboard/w_health_radial.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_dashboard/w_fuel_radial.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_dashboard/w_radiation_radial.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_dashboard/w_wind_radial.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_dashboard/w_altmetr_radial.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/w_dashboard/w_cruise_control.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/canvas/w_observing_range.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/canvas/w_fire_sectors_scaled.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/canvas/w_fire_radial_grid.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/canvas/w_user_car_marker.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/canvas/w_target_point.js"></script>
+    <script src="http://192.168.1.104/static/js/widgets/canvas/w_strategy_mode.js"></script>
+    <script src="http://192.168.1.104/static/js/context_panel.js"></script>
+    <script src="http://192.168.1.104/static/js/effects/rocket_bang.js"></script>
+    <script src="http://192.168.1.104/static/js/effects/e_points_tracer.js"></script>
+    <script src="http://192.168.1.104/static/js/effects/e_fire_effect_png_animation.js"></script>
+    <script src="http://192.168.1.104/static/js/rpc_list.js"></script>
+    <script src="http://192.168.1.104/static/js/leaflet_addon.js"></script>
+    <script src="http://192.168.1.104/static/js/view.js"></script>
+    <script src="http://192.168.1.104/static/js/view_messenger_glass.js"></script>
+    <script src="http://192.168.1.104/static/js/location/location_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/location_place_menu.js"></script>
+    <script src="http://192.168.1.104/static/js/location/location_place_chat.js"></script>
+    <script src="http://192.168.1.104/static/js/location/building_service_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/building_nucoil_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/armorer_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/hangar_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/mechanic_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/tuner_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/trader_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/trainer_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/girl_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/npc_gas_station.js"></script>
+    <script src="http://192.168.1.104/static/js/location/visitor_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/location/interaction_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/barter_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/menu/character_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/menu/car_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/menu/journal_managers.js"></script>
+    <script src="http://192.168.1.104/static/js/menu/party_manager.js"></script>
+    <script src="http://192.168.1.104/static/js/cache.js"></script>
+    <script src="http://192.168.1.104/static/js/third_party/leaflet_label.js"></script>
+    <script src="http://192.168.1.104/static/js/cookie.js"></script>
+    <script src="http://192.168.1.104/static/js/modal_window.js"></script>
+    <script src="http://192.168.1.104/static/js/effects/effect_location_laser_animation.js"></script>
+</head>
+<body>
+<div id="bodydiv">
+    <div id="map"></div>
+
+    <div style="position: absolute; width: 100%; height: 100%; pointer-events: none;">
+        <canvas id="ctest_1" width="100%" height="100%" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
+    </div>
+
+    <div style="position: absolute; right: 20px; top: 10px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
+    <div id="divMainMenu">
+         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Персонаж</div>
+        <div id="divMainMenuBtnCar" class="main-menu-btn-up sublayers-clickable">Автомобиль</div>
+        <div id="divMainMenuBtnInventory" class="main-menu-btn-up sublayers-clickable">Инвентарь</div>
+        <div id="divMainMenuBtnJournal" class="main-menu-btn-up sublayers-clickable">Журнал</div>
+        <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">Пати</div>
+        <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Сайт</div>
+        <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Сообщество</div>
+        <!--<div id="divMainMenuBtnLog" class="main-menu-btn-up sublayers-clickable">Log</div>-->
+        <!--<div id="divMainMenuBtnNucoil" class="main-menu-btn-up sublayers-clickable">Nucoil</div>-->
+        <!--<div id="divMainMenuBtnOptions" class="main-menu-btn-up sublayers-clickable">Options</div>-->
+        <!--<div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Forum</div>-->
+    </div>
+
+    <div id="divButtons">
+        <div id="buttonOptions" class="sublayers-clickable"></div>
+    </div>
+    <div id="cruiseControlMainDiv" class="cruise-control-main">
+        <div id="cruiseControlGlassDiv" class="cruise-control-glass">
+            <div id="divForRadAndWindRadials" class="anti-click-class"></div>
+            <div id="divForHpAndFuelRadials" class="anti-click-class"></div>
+            <div id="divForAltmetrRadial" class="anti-click-class"></div>
+            <div id="divForCruiseNotClick" class="anti-click-class"></div>
+        </div>
+        <div id="cruiseControlHardwareDiv" class="cruise-control-hardware">
+            <div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>
+        </div>
+    </div>
+    <div id="zoomSetDivForZoomSlider"></div>
+    <div id="contextPanelDiv">
+        <div id="cpEnterToContainer" class="cp_button_icon"></div>
+        <div id="cpBarterInfoInvite" class="cp_button_icon"></div>
+        <div id="cpBarterSendInvite" class="cp_button_icon"></div>
+        <div id="cpEnterToLocationIcon" class="cp_button_icon"></div>
+    </div>
+    <div id="chatAreaGlass"></div>
+    <div id="fireControlArea" class="fire-control-parent"></div>
+    <div id="modalDiv">
+        <div id="modalBack"></div>
+        <div id="modalWelcome"></div>
+        <div id="modalOptions"></div>
+        <div id="modalDeath"></div>
+        <div id="modalRestart"></div>
+        <div id="modalInfoPage"></div>
+        <div id="modalAnswerPage"></div>
+    </div>
+
+    <div id="activeTownDivBack">
+        <div id="activeTownDiv"></div>
+    </div>
+
+    <div style="display: none">
+        <span id="settings_ws_port">8000</span>
+{#        <span id="settings_map_link">http://185.58.206.115/map/{z}/{x}/{y}.jpg</span>#}
+        <span id="settings_map_link">http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</span>
+    </div>
+
+</div>
+</body>
+</html>

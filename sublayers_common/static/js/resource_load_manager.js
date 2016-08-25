@@ -2,8 +2,7 @@
 * В этот объект-синглтон будут добавляться другие объекты во время начала своей загрузки
 * Затем этот объект будет ждать окончания загрузки всех объектов (они по завершению должны сообщить)
 * И только после завершения загрузки всех объектов вызовется метод load_complete
-*
-* */
+*/
 
 
 var ResourceLoadManager = (function () {
@@ -30,7 +29,7 @@ var ResourceLoadManager = (function () {
     };
 
     ResourceLoadManager.prototype.load_complete = function () {
-        setTimeout(function(){ws_connector.connect();}, 2000); // todo: fix this f*cking bug !
+        setTimeout(function() {ws_connector.connect(); }, 2000); // todo: fix this f*cking bug !
     };
 
     return ResourceLoadManager;

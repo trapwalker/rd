@@ -575,6 +575,7 @@ function GetRPGInfo() {
         method: 'POST',
         data: {},
         success: function (data) {
+            //console.log(data);
             // Установка аватаров:
             var avatar_container = $('.reg1-path-avatar-list').first();
             avatar_container.empty();
@@ -608,8 +609,9 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             skill_name: skill_name,
             perk_node: perk_node
         },
-        success: function (data) {
+        success: function (data_str) {
             //console.log(data);
+            var data = JSON.parse(data_str)
             if (data.status == 'success') {
                 // Отобразить show_skills в вёрстку
                 for (var key in data.show_skills)
@@ -632,7 +634,8 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                 $('#reg2_free_skils').text(reg2_skill_point);
 
                 // Перки
-                $('#reg2_free_perks').text(data.free_point_perks);
+                reg2_perk_point = data.free_point_perks;
+                $('#reg2_free_perks').text(reg2_perk_point);
                 var jq_perk_table = $('#re2_perk_table');
                 var jq_perk_chip_perk_list = $('#RDSiteWReg3_PerkList');
                 jq_perk_table.empty();
@@ -642,12 +645,22 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                     for (var i = 0; i < data.perks.length; i++) {
                         var perk_rec = data.perks[i];
                         var jq_perk = $(
-                            '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '" onclick="Reg2PerkClick(`' + perk_rec.perk.node_hash + '`)">' +
-                            '<div class="reg2-perk-table-label">' + perk_rec.perk.title + '</div>' +
-                            '<div class="reg2-perk-table-checkbox-block">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
+                            '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '">' +
+                            '<div class="reg2-perk-table-label" data-title="' + perk_rec.perk.title + '" data-description="' + perk_rec.perk.description + '">' + perk_rec.perk.title + '</div>' +
+                            '<div class="reg2-perk-table-checkbox-block" onclick="Reg2PerkClick(`' + perk_rec.perk.uri + '`)">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
                             '</div>');
                         jq_perk_table.append(jq_perk);
-
+                        jq_perk.find('.reg2-perk-table-label').click(function() {
+                            var title = $(this).data('title');
+                            var description = $(this).data('description');
+                            consoleWReg2.add_message('user', 'Загрузка перка:', true);
+                            consoleWReg2.add_message('system',
+                                'Успешно.\n\n' +
+                                '--------------------------------------------------------------\n' +
+                                title + '.\n' +
+                                description + '.\n' +
+                                '--------------------------------------------------------------');
+                        });
                         if (perk_rec.active) {
                             var jq_perk_chip = $(
                                 '<div class="site-chip-content-line shift">' +
@@ -669,7 +682,6 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
         }
     });
 }
-
 
 function windowRegKeyDownEnter(event) {
     if (event.keyCode != 13) return;
@@ -717,7 +729,6 @@ function windowRegKeyDownEnter(event) {
         }
     }
 }
-
 
 /* Youtube Video Player Functions */
 

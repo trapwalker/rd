@@ -7,7 +7,6 @@ log = logging.getLogger(__name__)
 from sublayers_server.model import messages
 from sublayers_server.model.events import Init, Delete, Save
 from sublayers_server.model.parameters import Parameter
-from sublayers_server.model.stat_log import StatLogger
 
 import sys
 from abc import ABCMeta
@@ -33,7 +32,6 @@ class Object(object):
         self.events = []  # all events about this object
         self.is_alive = True
         self.limbo = False
-        self.stat_log = StatLogger()
 
     def __hash__(self):
         return self.uid
@@ -92,7 +90,7 @@ class PointObject(Object):
 
     def __init__(self, example, position=None, **kw):
         super(PointObject, self).__init__(**kw)
-        self._position = example.position or position
+        self._position = example.position and example.position.as_point() or position
         self.example = example
         if example is None:
             log.warning('Object %s has no example node', self)
@@ -183,17 +181,25 @@ class VisibleObject(PointObject):
         pass
 
     def set_default_params(self):
-        for name, value in self.example.iter_attrs(tags='parameter p_modifier'):
-            Parameter(original=self.example.get_modify_value(param_name=name.name,
-                                                             example_agent=getattr(self, 'owner_example', None)),
-                      name=name.name,
-                      owner=self)
-        for name, value in self.example.iter_attrs(tags='parameter p_resist'):
-            Parameter(original=self.example.get_modify_value(param_name=name.name,
-                                                             example_agent=getattr(self, 'owner_example', None)),
-                      name=name.name,
-                      max_value=1.0,
-                      owner=self)
+        for name, attr, getter in self.example.iter_attrs(tags='parameter p_modifier'):
+            Parameter(
+                original=self.example.get_modify_value(
+                    param_name=name,
+                    example_agent=getattr(self, 'owner_example', None),
+                ),
+                name=name,
+                owner=self,
+            )
+        for name, attr, getter in self.example.iter_attrs(tags='parameter p_resist'):
+            Parameter(
+                original=self.example.get_modify_value(
+                    param_name=name,
+                    example_agent=getattr(self, 'owner_example', None),
+                ),
+                name=name,
+                max_value=1.0,
+                owner=self,
+            )
 
     def add_to_chat(self, chat, time):
         pass

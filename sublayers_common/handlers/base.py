@@ -7,7 +7,12 @@ from sublayers_common.user_profile import User
 
 import tornado.web
 import tornado.gen
+from tornado.options import options
 from bson.objectid import ObjectId, InvalidId
+
+
+def static_mobile_link_repr(link):
+    return 'http://{}{}'.format(options.mobile_host, link)
 
 
 def static_world_link_repr(link):
@@ -40,6 +45,7 @@ class BaseHandler(AuthHandlerMixin):
             revision=self.application.revision,
             version=self.application.version,
             static_world_link_repr=static_world_link_repr,
+            static_mobile_link_repr=static_mobile_link_repr,
         )
         return namespace
 

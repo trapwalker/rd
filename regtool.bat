@@ -1,0 +1,2 @@
+
+python.bat regtool.py %*

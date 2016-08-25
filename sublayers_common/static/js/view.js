@@ -57,7 +57,7 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
-        windowTemplateManager.openUniqueWindow('car_info', '/menu_car', null, carManager.redraw);
+        carManager.get_info();
         returnFocusToMap();
     };
 

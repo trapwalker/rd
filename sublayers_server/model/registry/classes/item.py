@@ -4,66 +4,84 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute, FloatAttribute, TextAttribute, IntAttribute, DictAttribute
-from sublayers_server.model.registry.attr.link import RegistryLink
-from sublayers_server.model.transaction_events import (
-    TransactionActivateTank, TransactionActivateAmmoBullets,
-    TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
+from sublayers_server.model.registry.tree import Root, Subdoc
+from sublayers_server.model.registry.odm.fields import (
+    IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
+
+# from sublayers_server.model.transaction_events import (
+#     TransactionActivateTank, TransactionActivateAmmoBullets,
+#     TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
+# )
 
 
 class Item(Root):
-    icon = Attribute(caption=u'Пиктограмма предмета')
+    icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
-    amount = FloatAttribute(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
-    stack_size = FloatAttribute(default=1, caption=u'Максимальный размер стека этих предметов в инвентаре')
-    position = Attribute(caption=u'Позиция в инвентаре')
-    base_price = FloatAttribute(default=0, caption=u'Базовая цена за 1', tags='client')
+    amount = FloatField(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
+    stack_size = FloatField(caption=u'Максимальный размер стека этих предметов в инвентаре')
+    position = IntField(caption=u'Позиция в инвентаре')
+    base_price = FloatField(caption=u'Базовая цена за 1', tags='client')
 
-    description = TextAttribute(caption=u'Расширенное описание предмета', tags='client')
-    inv_icon_big = Attribute(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
-    inv_icon_mid = Attribute(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
-    inv_icon_small = Attribute(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
-    inv_icon_supersmall = Attribute(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
+    description = StringField(caption=u'Расширенное описание предмета', tags='client')
+    inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
+    inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
+    inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
+    inv_icon_supersmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
-    title = TextAttribute(caption=u'Название предмета для отображения в инвентаре', tags='client')
-    activate_type = Attribute(default='none', caption=u'Способ активации: none, self ...', tags='client')
+    activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
+
+    def ids(self):
+        return dict(uid=self.uid, node_hash=self.node_hash())
+
+    def as_client_dict(self):
+        d = super(Item, self).as_client_dict()
+        d.update(ids=self.ids())
+        return d
 
     @classmethod
     def activate(cls):
         pass
 
-    def __str__(self):
-        return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
+    # def __str__(self):
+    #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
 
 
-class Tank(Item):
-    value_fuel = FloatAttribute(caption=u'Объем канистры', tags='client')
+class ItemUsable(Item):
+    post_activate_item = UniReferenceField(caption=u'Итем, который будет положен в инвентарь после активации',
+                                           reference_document_type="sublayers_server.model.registry.classes.item.Item")
+
+
+class Tank(ItemUsable):
+    value_fuel = FloatField(caption=u'Объем канистры', tags='client')
 
 
 class TankFull(Tank):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateTank
         return TransactionActivateTank
 
 
-class BuildSet(Item):
-    build_points = FloatAttribute(caption=u'Объем восстановления здоровья в единицах')
+class TankEmpty(Tank):
+    full_tank = UniReferenceField(caption=u'Ссылка на полную канистру, получаемую заправкой этой пустой канистры',
+                                       reference_document_type="sublayers_server.model.registry.classes.item.TankFull")
+
+
+class BuildSet(ItemUsable):
+    build_points = FloatField(caption=u'Объем восстановления здоровья в единицах')
 
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateRebuildSet
         return TransactionActivateRebuildSet
 
 
-class AmmoBullets(Item):
+class AmmoBullets(ItemUsable):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateAmmoBullets
         return TransactionActivateAmmoBullets
-
-
-class TankEmpty(Tank):
-    pass
 
 
 class SlotItem(Item):
@@ -75,46 +93,93 @@ class SlotLock(SlotItem):
 
 
 class MapWeaponItem(Item):
-    generate_obj = RegistryLink(caption=u'Ссылка на объект генерации', need_to_instantiate=False)
+    generate_obj = UniReferenceField(
+        caption=u'Ссылка на объект генерации',
+        reference_document_type="sublayers_server.model.registry.classes.mobiles.Mobile",
+    )
 
 
 class MapWeaponMineItem(MapWeaponItem):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateMine
         return TransactionActivateMine
 
 
 class MapWeaponRocketItem(MapWeaponItem):
     @classmethod
     def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateRocket
         return TransactionActivateRocket
 
 
 class MechanicItem(SlotItem):
-    p_visibility_min = FloatAttribute(default=0, caption=u"Коэффициент минимальной заметности")
-    p_visibility_max = FloatAttribute(default=0, caption=u"Коэффициент максимальной заметности")
-    p_observing_range = FloatAttribute(default=0, caption=u"Радиус обзора")
-    max_hp = FloatAttribute(default=0, caption=u"Максимальное значение HP")
-    r_min = FloatAttribute(default=0, caption=u"Минимальный радиус разворота")
-    ac_max = FloatAttribute(default=0, caption=u"Максимальная перегрузка при развороте")
-    max_control_speed = FloatAttribute(default=0, caption=u"Абсолютная максимальная скорость движения")
-    v_forward = FloatAttribute(default=0, caption=u"Максимальная скорость движения вперед")
-    v_backward = FloatAttribute(default=0, caption=u"Максимальная скорость движения назад")
-    a_forward = FloatAttribute(default=0, caption=u"Ускорение разгона вперед")
-    a_backward = FloatAttribute(default=0, caption=u"Ускорение разгона назад")
-    a_braking = FloatAttribute(default=0, caption=u"Ускорение торможения")
-    max_fuel = FloatAttribute(default=0, caption=u"Максимальное количество топлива")
-    p_fuel_rate = FloatAttribute(default=0, caption=u"Расход топлива (л/с)")
+    p_visibility_min = FloatField(caption=u"Коэффициент минимальной заметности")
+    p_visibility_max = FloatField(caption=u"Коэффициент максимальной заметности")
+    p_observing_range = FloatField(caption=u"Радиус обзора")
+    max_hp = FloatField(caption=u"Максимальное значение HP")
+    r_min = FloatField(caption=u"Минимальный радиус разворота")
+    ac_max = FloatField(caption=u"Максимальная перегрузка при развороте")
+    max_control_speed = FloatField(caption=u"Абсолютная максимальная скорость движения")
+    v_forward = FloatField(caption=u"Максимальная скорость движения вперед")
+    v_backward = FloatField(caption=u"Максимальная скорость движения назад")
+    a_forward = FloatField(caption=u"Ускорение разгона вперед")
+    a_backward = FloatField(caption=u"Ускорение разгона назад")
+    a_braking = FloatField(caption=u"Ускорение торможения")
+    max_fuel = FloatField(caption=u"Максимальное количество топлива")
+    p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
+
+
 
 
 class TunerItem(SlotItem):
-    pont_points = FloatAttribute(default=0, caption=u"Очки крутости для итемов тюнера", tags='client')
-    images = DictAttribute(
-        default=dict, tags='client',
-        caption=u'Изображения у тюнера')
+    class TunerImage(Subdoc):
+        class TunerImageView(Subdoc):
+            link = StringField(caption=u"Ссылка на картинку", tags='client')
+            z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags='client')
+
+
+        car = UniReferenceField(
+            caption=u"Автомобиль, для которого указаны данные параметры",
+            reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'
+        )
+        top = EmbeddedDocumentField(embedded_document_type=TunerImageView, tags='client')
+        side = EmbeddedDocumentField(embedded_document_type=TunerImageView, tags='client')
+
+        def as_client_dict(self):
+            d = super(TunerItem.TunerImage, self).as_client_dict()
+            d['car'] = self.car and self.car.node_hash()
+            return d
+
+
+    pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags='client')
+    images = ListField(
+        caption=u'Изображения у тюнера', tags='client',
+        base_field=EmbeddedDocumentField(embedded_document_type=TunerImage),
+    )
 
 
 class ArmorerItem(SlotItem):
-    weight_class = IntAttribute(default=0, caption=u"Класс тяжести итема у оружейника", tags='client')
-    armorer_images = DictAttribute(default=dict,  tags='client', caption=u'Картинки оружейника',
-                                   doc=u'Ссылки на картинки у оружейника по масштабам.')
+    class ArmorerImages(Subdoc):
+        class ArmorerImagesSize(Subdoc):
+            armorer_side_F = StringField(tags='client')
+            armorer_side_B = StringField(tags='client')
+            armorer_side_R = StringField(tags='client')
+            armorer_side_L = StringField(tags='client')
+            armorer_top_F = StringField(tags='client')
+            armorer_top_B = StringField(tags='client')
+            armorer_top_R = StringField(tags='client')
+            armorer_top_L = StringField(tags='client')
+
+        small = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
+        middle = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
+        big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
+
+
+    weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags='client')
+    armorer_images = EmbeddedDocumentField(
+        embedded_document_type=ArmorerImages,
+        caption=u'Картинки оружейника',
+        doc=u'Ссылки на картинки у оружейника по масштабам.',
+        tags='client',
+    )

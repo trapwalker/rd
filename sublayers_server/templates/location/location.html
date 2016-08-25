@@ -75,8 +75,8 @@
 </div>
 
 <div id="location-content">
-    {% for building in location.example.buildings %}
-        {% set cur_build = location.example.buildings[building] %}
+    {% for cur_build in location.example.buildings %}
+        {% set building = cur_build.name %}
         <div id="building_{{ building }}" class="townPageWrap building-wrap" style="display: none">
             {% include building_window.html %}
         </div>

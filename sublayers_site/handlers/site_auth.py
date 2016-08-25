@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
+from sublayers_server.model.registry.classes.agents import Agent
 
 from tornado.web import HTTPError
 from tornado.httpclient import AsyncHTTPClient
@@ -79,12 +80,16 @@ class StandardLoginHandler(BaseSiteHandler):
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         result = yield user.save()
 
-        agent_example = self.application.reg_agents.get([str(user._id)])
+        agent_example = yield Agent.objects.get(profile_id=str(user._id))
         if agent_example is None:
-            agent_example = self.application.reg['/agents/user'].instantiate(
-                storage=self.application.reg_agents, name=str(user._id),
+            agent_example = self.application.reg['agents/user'].instantiate(
+                #storage=self.application.reg_agents,
+                profile_id=str(user._id),
+                name=str(user._id),
+                fixtured=False,
             )
-        self.application.reg_agents.save_node(agent_example)
+            yield agent_example.load_references()
+            yield agent_example.save(upsert=True)
 
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -112,12 +117,14 @@ class StandardLoginHandler(BaseSiteHandler):
             self.send_error(403)
             return
 
+        # todo: Проверять введенный username, а, если занят, предлагать рандомизированный пока не будет введен
+        # укниальный среди быстрых игроков.
         login_free = False
         email = ''
         password = str(randint(0,999999))
         username = nickname + str(randint(0,999999))
         while not login_free:
-            email = username + '@' + username
+            email = username + '@' + username  # todo: Предотвратить заполнение email заведомо ложной информацией
             login_free = ((yield User.get_by_email(email=email)) is None) and \
                          ((yield User.get_by_name(name=username)) is None)
             if not login_free:
@@ -203,8 +210,9 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
-            agent_ex = self.application.reg_agents.get([str(user._id)])
-            if agent_ex is None:
+            agent_ex = yield Agent.objects.get(profile_id=str(user._id))
+            if agent_ex is None:  # todo: Определить вероятность такой проблемы, реализовать пути решения
+                # todo: warning
                 self.send_error(status_code=404)
                 return
 
@@ -213,21 +221,23 @@ class StandardLoginHandler(BaseSiteHandler):
             role_class_ex = None
             try:
                 avatar_index = int(avatar_index)
-                avatar_link = self.application.reg['/world_settings'].values.get('avatar_list')[avatar_index]
-                role_class_ex = self.application.reg[class_node_hash]
+                avatar_link = self.application.reg['world_settings'].avatar_list[avatar_index]
+                role_class_ex = self.application.reg.objects.get_cached(class_node_hash)
             except:
+                # todo: Обработать исключение правильно
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
             agent_ex.role_class = role_class_ex
             # Установка классового навыка
-            empty_skill_mod = self.application.reg['reg://registry/rpg_settings/class_skill/empty_0']
+            empty_skill_mod = self.application.reg['rpg_settings/class_skill/empty_0']
+            # todo: Перебирать скиллы в реестре
             for skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
                 skill = getattr(agent_ex, skill_name)
                 skill.mod = empty_skill_mod
 
-            for class_skill_uri in role_class_ex.class_skills:
-                class_skill = self.application.reg[class_skill_uri]
+            for class_skill in role_class_ex.class_skills:
+                # todo: Перебирать объекты реестра
                 if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
                     skill = getattr(agent_ex, class_skill.target)
                     skill.mod = class_skill
@@ -235,7 +245,7 @@ class StandardLoginHandler(BaseSiteHandler):
             user.avatar_link = avatar_link
             user.name = username
             user.registration_status = 'settings'
-            self.application.reg_agents.save_node(agent_ex)
+            yield agent_ex.save()
             yield user.save()
             self.finish({'status': 'success'})
 
