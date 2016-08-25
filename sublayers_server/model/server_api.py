@@ -35,7 +35,7 @@ class ServerAPI(API):
                 role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
                 agent_exemplar.role_class = role_class_ex
                 yield agent_exemplar.save(upsert=True)
-                log.debug('Use agent exemplar: %r', agent_exemplar)
+                log.debug('Use agent exemplar: %s', agent_exemplar)
 
             # todo: Создавать агента на основе экземпляра
             # todo: rename User to UserAgent
@@ -47,7 +47,7 @@ class ServerAPI(API):
                 time=self.server.get_time(),
                 example=agent_exemplar,
             )
-            log.info('Server API: New Agent is created: %r', agent)  # todo: fix text
+            log.info('Server API: New Agent is created: %s', agent)  # todo: fix text
         else:
             if agent and do_disconnect:
                 if agent.connection:
@@ -76,7 +76,7 @@ class ServerAPI(API):
                 agent_exemplar.role_class = role_class_ex
                 yield agent_exemplar.save(upsert=True)
 
-            log.debug('QuickUser agent exemplar: %r', agent_exemplar)
+            log.debug('QuickUser agent exemplar: %s', agent_exemplar)
             agent = QuickUser(
                 server=self.server,
                 user=user,
@@ -108,7 +108,7 @@ class ServerAPI(API):
             agent.example.current_location = None
             agent.current_location = None
             # todo: Не забыть на быструю машинку повесить пулемёты !
-            log.info('Server API: New QuickGameAgent is connected and New Car is Ready !!!!!!: %r', agent)  # todo: fix text
+            log.info('Server API: New QuickGameAgent is connected and New Car is Ready !!!!!!: %s', agent)  # todo: fix text
         else:
             if agent and do_disconnect:
                 if agent.connection:
