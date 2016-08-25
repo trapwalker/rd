@@ -27,7 +27,7 @@ var GeoLocationManager = (function(_super){
         clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
         // todo: стереть это потом!
         console.log(pos);
-        if (user.userCar) {
+        if (user && user.userCar) {
             user.userCar._motion_state.p0 = pos;
             user.userCar._motion_state.t0 = clock.getCurrentTime();
             user.userCar._motion_state.fi0 = position.coords.heading || user.userCar._motion_state.fi0;
