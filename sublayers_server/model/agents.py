@@ -151,7 +151,6 @@ class Agent(Object):
         agent = self
         def save_end(*av, **kw):
             log.debug('Agent %s saved', agent)
-            print 'agent saved', agent
         self.example.save(upsert=True, callback=save_end)
 
 

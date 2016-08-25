@@ -514,9 +514,7 @@ class AgentAPI(API):
 
     @public_method
     def set_position(self, projection, position=None, comment=None):
-        log_string = 'set_position {self.agent!r}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals())
-        print(log_string)
-        log.debug(log_string)
+        log.debug('set_position {self.agent}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals()))
         if self.car is None or self.car.limbo or not self.car.is_alive:
             return
         #p = Point(projection['x'], projection['y']) if projection else None
