@@ -14,13 +14,13 @@ function client_ready() {
     fireEffectManager = new FireEffectManager();
 
 
-    // todo: считать URL с сервера или откуда нужно!
+    // todo: СЃС‡РёС‚Р°С‚СЊ URL СЃ СЃРµСЂРІРµСЂР° РёР»Рё РѕС‚РєСѓРґР° РЅСѓР¶РЅРѕ!
 
     ws_connector = new WSConnector({url: 'ws://'+ $('#settings_host_name').text() + ':'+ $('#settings_ws_port').text() + '/ws'});
 
     clientManager = new ClientManager();
 
-    // Тестовая хрень - удалить потом
+    // РўРµСЃС‚РѕРІР°СЏ С…СЂРµРЅСЊ - СѓРґР°Р»РёС‚СЊ РїРѕС‚РѕРј
     $('.zoomator').click(function(){
         mapManager.setZoom($(this).data('zoom'))
     });
@@ -42,7 +42,17 @@ function client_ready() {
         $('#consoleWrap').css('display', 'none');
     });
 
-    // Инициализация.
+    $('#sendPosition').click(function(){
+        if (geoLocationManager._last_position) {
+            var pos = map.project([geoLocationManager._last_position.coords.latitude, geoLocationManager._last_position.coords.longitude], 18);
+            clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
+        }
+        else {
+            alert('РќРµС‚ РґР°РЅРЅС‹С… Рѕ РїРѕСЃР»РµРґРЅРµР№ РїРѕР·РёС†РёРё.');
+        }
+    });
+
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ.
     ownerList = new OwnerList();
 
 }
