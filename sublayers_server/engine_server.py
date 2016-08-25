@@ -12,7 +12,6 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging
 import logging.config
 
 logging.config.fileConfig("logging.conf")
