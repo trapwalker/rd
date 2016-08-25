@@ -9,12 +9,11 @@ var WMapPosition = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
         this.old_position = {x: 0, y: 0};
-        //this.change(clock.getCurrentTime());
+        this.change(clock.getCurrentTime());
     }
 
     WMapPosition.prototype.change = function(t){
         //console.log('WMapPosition.prototype.change', this);
-        //return;
 
         if (mapManager.inZoomChange) return;
         // если разрешено движение карты, то ничего не делать
@@ -39,8 +38,8 @@ var WMapPosition = (function (_super) {
         }
 
         // поворот карты через mapManager.setRotate()
-        var car_direction_real = this.car.getCurrentDirection(time) - Math.PI / 2.;
-        mapManager.setRotate(null, radToGrad(car_direction_real));
+        var car_direction_real = this.car.getCurrentDirection(time) + Math.PI / 2.;
+        mapManager.setRotate(null, radToGrad(-car_direction_real));
     };
 
     WMapPosition.prototype.delFromVisualManager = function () {

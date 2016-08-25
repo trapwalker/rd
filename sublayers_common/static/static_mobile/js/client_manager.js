@@ -298,24 +298,14 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
         if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
+            user = new User(event.agent.uid);
             user.login = event.agent.login;
-            user.ID = event.agent.uid;
             user.balance = event.agent.balance;
-            if (event.agent.party) {
-                user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
-                this.sendGetPartyInfo(event.agent.party.name);
-            }
-            //this.sendGetAllInvites();
-            //timeManager.timerStart();
         }
     };
 
-    ClientManager.prototype.InitCar = function(event) {
-        //console.log('ClientManager.prototype.InitCar', event);
-    };
-
-    ClientManager.prototype.InitCarFake = function (event) {
-        //console.log('ClientManager.prototype.InitCar', event);
+    ClientManager.prototype.InitCar = function (event) {
+        console.log('ClientManager.prototype.InitCar', event);
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
@@ -329,7 +319,7 @@ var ClientManager = (function () {
         var fuel_state = this._getFuelState(event.car.fuel_state);
         var fireSectors = this._getSectors(event.car.fire_sectors);
 
-        //clock.setDt((new Date().getTime() - servtime) / 1000.);
+        clock.setDt((new Date().getTime() - servtime) / 1000.);
 
         if (!user.userCar) {
             // создать машинку
@@ -352,16 +342,24 @@ var ClientManager = (function () {
             mapCanvasManager.on_new_map_size();
 
             // Виджеты:
-            //new WCarMarker(mcar);    // виджет маркера
             new WCanvasCarMarker(mcar);
             new WMapPosition(mcar);  // виджет позиционирования карты
+
+            if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
+                //mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
+                //mapManager.widget_fire_radial_grid = new WFCanvasireRadialGrid(mcar);
+                new WCanvasFireSectorsScaled(mcar);
+                new WFCanvasireRadialGrid(mcar);
+            }
+
+            mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
 
         }
     };
 
     ClientManager.prototype.Update = function (event) {
         //console.log('ClientManager.prototype.Update', event);
-        return;
+        //return;
         var motion_state = this._getState(event.object.state);
         var hp_state = this._getHPState(event.object.hp_state);
         var fuel_state = this._getFuelState(event.object.fuel_state);
@@ -374,56 +372,9 @@ var ClientManager = (function () {
             return;
         }
 
-        //if (car == user.userCar && hp_state.dps != car._hp_state.dps) {
-        //    console.log('Смена DPS: old - ', car._hp_state.dps, '    new - ', hp_state.dps);
-        //}
-
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
-        if (car == user.userCar) car.setFuelState(fuel_state);
-
-        // Если своя машинка
-        if (car == user.userCar) {
-            // Считать таргет поинт и включить/выключить виджет таргет_поинта
-            var tp = event.object.target_point;
-            if (mapManager.widget_target_point) {
-                if (tp != undefined && tp != null)
-                    mapManager.widget_target_point.activate(tp);
-                else
-                    mapManager.widget_target_point.deactivate();
-            }
-
-            // При попадании залповым орудием включить эффект тряски
-            if (hp_state.dhp)
-                mapManager.widget_rumble.startDischargeRumble();
-
-            // Установка cc для круизконтроля
-            wCruiseControl.setSpeedRange(event.object.params.p_cc);
-        }
-
-        // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerUpdate()) {
-            debugMapList.push(
-                L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
-                    .setRadius(3)
-                    .bindPopup(
-                        'Тип сообщения: ' + event.cls + '</br>' +
-                        'uid объекта: ' + event.object.uid + '</br>' +
-                        'comment: ' + event.comment + '</br>'
-                )
-                    .addTo(myMap)
-            );
-
-            if (event.object.state.c)
-                debugMapList.push(
-                    L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
-                        .setRadius(20)
-                        .addTo(myMap)
-                );
-
-        }
-
     };
 
     ClientManager.prototype.See = function (event) {
@@ -560,13 +511,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.SetObserverForClient = function(event) {
-        //console.log('ClientManager.prototype.SetObserverForClient ', event.enable, event.obj_id, mobj);
-        var mobj = this._getMObj(event.obj_id);
-        if (! mobj) return;
-        if (event.enable)
-            wObservingRange.addModelObject(mobj);
-        else
-            wObservingRange.delModelObject(mobj);
+        console.log('ClientManager.prototype.SetObserverForClient ', event.enable, event.obj_id);
+        //var mobj = this._getMObj(event.obj_id);
+        //if (! mobj) return;
+        //if (event.enable)
+        //    wObservingRange.addModelObject(mobj);
+        //else
+        //    wObservingRange.delModelObject(mobj);
     };
 
     ClientManager.prototype.FireDischarge = function (event) {
