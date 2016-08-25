@@ -2,7 +2,6 @@
 
 import logging
 log = logging.getLogger(__name__)
-log.info('\n\n\n')
 
 from sublayers_server.model.utils import time_log_format
 from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage
