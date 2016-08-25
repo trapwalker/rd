@@ -513,10 +513,12 @@ class AgentAPI(API):
 
     @public_method
     def set_position(self, projection, position=None, comment=None):
-        if self.car.limbo or not self.car.is_alive:
+        log_string = 'set_position {self.agent!r}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals())
+        print(log_string)
+        log.debug(log_string)
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
-        p = Point(*projection) if projection else None
-        log.debug('set_position %r: %r, %r', self.agent, projection, position)
+        #p = Point(projection['x'], projection['y']) if projection else None
         #self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
 
     @public_method
