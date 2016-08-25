@@ -54,6 +54,12 @@ class Doc(AbstractDocument):
             value = getattr(self, name)
             if value is not None:
                 if isinstance(field, EmbeddedDocumentField):
+                    assert not isinstance(value, basestring), (
+                        'Embeded fields, described by string ({value!r}) is not supported yet'.format(value=value)
+                    )
+                    if isinstance(value, basestring):
+                        value = URI(value)  # todo: handle exceptions
+
                     setattr(new_instance, name, value.instantiate())  # todo: Поддержка шаблонного формирования по ссылке
                 elif isinstance(field, ListField):
                     setattr(new_instance, name, self._reinst_list(field, value))
