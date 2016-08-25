@@ -126,6 +126,7 @@ class AgentConsoleNamespace(Namespace):
         self.write('Server saved.')
 
     def reset(self, *names):
+        agents_by_name = self.agent.server.agents_by_name
         names = names or [self.agent.user.name]
         if '*' in names:
             names = agents_by_name.keys()
@@ -513,12 +514,16 @@ class AgentAPI(API):
 
     @public_method
     def set_position(self, projection, position=None, comment=None):
-        log_string = 'set_position {self.agent!r}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals())
-        print(log_string)
-        log.debug(log_string)
+        log.debug('set_position {self.agent}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals()))
         if self.car is None or self.car.limbo or not self.car.is_alive:
             return
-        #p = Point(projection['x'], projection['y']) if projection else None
+
+        try:
+            p = Point(projection['x'], projection['y']) if projection else None
+        except Exception as e:
+            log.warning('Wrong coordinates: %r // %r', projection, position)
+            return
+
         #self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
 
     @public_method

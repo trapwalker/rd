@@ -10,6 +10,8 @@ var GeoLocationManager = (function(_super){
             timeout: 2000,
             enableHighAccuracy: true
         };
+
+        this._last_position = null;
     }
 
     GeoLocationManager.prototype.start_watch = function() {
@@ -31,8 +33,10 @@ var GeoLocationManager = (function(_super){
             user.userCar._motion_state.p0 = pos;
             user.userCar._motion_state.t0 = clock.getCurrentTime();
             user.userCar._motion_state.fi0 = position.coords.heading || user.userCar._motion_state.fi0;
-
+            user.userCar.change();
         }
+
+        this._last_position = pos;
     };
 
     GeoLocationManager.prototype._watch_error = function(error) {
