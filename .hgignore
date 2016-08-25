@@ -52,3 +52,4 @@ nginx_conf/sites-enabled/
 nginx_conf/rd_project_path.conf
 env_*
 *.whl
+_apk/*.apk
