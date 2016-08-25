@@ -45,7 +45,7 @@ function client_ready() {
     $('#sendPosition').click(function(){
         if (geoLocationManager._last_position) {
             var pos = map.project([geoLocationManager._last_position.coords.latitude, geoLocationManager._last_position.coords.longitude], 18);
-            clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
+            clientManager.sendGeoCoord(geoLocationManager.geo_position_to_dict(position), pos);
         }
         else {
             alert('Нет данных о последней позиции.');
