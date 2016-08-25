@@ -9,7 +9,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 
 </head>
-<body>
+<body onload="on_body_load()">
 <div id="for_delete">
     <ul>
         <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.105/</li>
@@ -21,6 +21,42 @@
 </body>
 
 <script>
+
+    function on_body_load() {
+        console.log('on_body_load');
+        if (typeof console != "undefined") {
+            var console_commands = ['error', 'debug', 'info', 'log'];
+
+            for (var i = 0; i < console_commands.length; i++) {
+                var command_name = console_commands[i];
+                if (typeof console[command_name] != 'undefined')
+                    console['old' + command_name] = console[command_name];
+            }
+
+            console.jq_console = $('#console');
+            console.jq_console.empty();
+
+            console.error = function (message) {
+                console['olderror'](message);
+                console.jq_console.append('<p style="color: red;">' + 'error: ' + message + '</p>');
+            };
+
+            console.debug = function (message) {
+                console['olddebug'](message);
+                console.jq_console.append('<p>' + 'debug: ' + message + '</p>');
+            };
+
+            console.info = function (message) {
+                console['oldinfo'](message);
+                console.jq_console.append('<p style="color: blue;">' + 'info: ' + message + '</p>');
+            };
+
+            console.log = function (message) {
+                console['oldlog'](message);
+                console.jq_console.append('<p>' + 'log: ' + message + '</p>');
+            };
+        }
+    }
 
     function li_click_handler(elem) {
         var link = $(elem).text();
@@ -35,6 +71,9 @@
         function client_ready_call() {
             $('#for_delete').remove();
             setTimeout(function () {
+                console.jq_console = $('#console');
+                console.jq_console.empty();
+                $('#consoleBtn').css('display', 'block');
                 client_ready();
             }, 500);
         }

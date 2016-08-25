@@ -30,14 +30,14 @@ body {
 }
 
 
-/* Тестовая ерунда! Удалить потом */
+/* РўРµСЃС‚РѕРІР°СЏ РµСЂСѓРЅРґР°! РЈРґР°Р»РёС‚СЊ РїРѕС‚РѕРј */
 #zoomators {
     position: absolute;
     top: 5px;
     left: 5px;
 }
 
-.zoomator {
+.mobile-btn {
     position: relative;
     float: left;
     margin-right: 10px;
@@ -50,18 +50,35 @@ body {
     cursor: default;
 }
 
-.fire-btn {
-    position: relative;
-    float: right;
-    border: 1px solid black;
-    border-radius: 2px;
-    background-color: #f1abb0;
-    font-size: 1.3em;
-    pointer-events: auto;
-    cursor: default;
-    padding: 1px 3px;
+.zoomator {}
+
+.fire-btn {background-color: #f1abb0;}
+
+.fire-btn.active { background-color: #a0f19f;}
+
+
+#consoleBtn {display: none;}
+
+#consoleWrap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    overflow: hidden;
+    display: none;
 }
 
-.fire-btn.active {
-    background-color: #a0f19f;
+#console {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    pointer-events: auto;
 }
+
+#consoleClose {
+    position: absolute;
+    right: 20px;
+    top: 20px
+}
+

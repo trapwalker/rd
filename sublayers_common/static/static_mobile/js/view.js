@@ -35,14 +35,21 @@ function client_ready() {
         $(this).toggleClass('active');
     });
 
+    $('#consoleBtn').click(function(){
+        $('#consoleWrap').css('display', 'block');
+    });
+    $('#consoleClose').click(function(){
+        $('#consoleWrap').css('display', 'none');
+    });
+
     // Инициализация.
     ownerList = new OwnerList();
+
 }
 
 function returnFocusToMap() {
     document.getElementById('map').focus();
 }
-
 
 var user;
 var clientManager;

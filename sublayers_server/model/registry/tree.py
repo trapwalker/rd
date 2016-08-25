@@ -137,7 +137,7 @@ class Node(Doc):
             path=path,
         )
 
-    def __init__(self, embedded=False, **kw):
+    def __init__(self, **kw):  # embedded=False,
         """
         @param str name: Name of node
         @param Node parent: Parent of node
@@ -148,7 +148,7 @@ class Node(Doc):
         super(Node, self).__init__(**kw)
         self._subnodes = WeakSet()
 
-        if self.uri is None and not embedded:
+        if self.uri is None:
             owner = self._values.get('owner')
             if owner:  # todo: Сделать меньше вариантов назначения имени. Хочется определенности.
                 self_name = self.name or self.uid or self.profile_id and 'profile={}'.format(self.profile_id)
@@ -205,7 +205,7 @@ class Node(Doc):
             is_value_exists = name in self._values
             value = field.get_value(self._values.get(name, None))
 
-            if not is_value_exists and name not in {'parent', 'owner', 'uri'}:
+            if not is_value_exists and name not in {'parent', 'owner', 'uri', 'name'}:
                 try:
                     parent = self.parent
                 except Exception as e:
