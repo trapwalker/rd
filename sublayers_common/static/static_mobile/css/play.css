@@ -49,3 +49,19 @@ body {
     pointer-events: auto;
     cursor: default;
 }
+
+.fire-btn {
+    position: relative;
+    float: right;
+    border: 1px solid black;
+    border-radius: 2px;
+    background-color: #f1abb0;
+    font-size: 1.3em;
+    pointer-events: auto;
+    cursor: default;
+    padding: 1px 3px;
+}
+
+.fire-btn.active {
+    background-color: #a0f19f;
+}

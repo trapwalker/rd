@@ -196,13 +196,14 @@ var ClientManager = (function () {
             // Создание/инициализация виджетов
             //new WCarMarker(car);                 // виджет маркера
             new WCanvasCarMarker(car);
-            if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
-            if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
+            //if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
+            //if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
     };
 
     ClientManager.prototype._contactStaticObject = function (event) {
         //console.log('ClientManager.prototype._contactStaticObject', event);
+        return;
         if (event.is_first) {
             var uid = event.object.uid;
             var p_observing_range = event.object.p_observing_range;
@@ -305,7 +306,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InitCar = function (event) {
-        console.log('ClientManager.prototype.InitCar', event);
+        //console.log('ClientManager.prototype.InitCar', event);
         var servtime = event.time;
         var v_forward = event.car.v_forward;
         var v_backward = event.car.v_backward;
@@ -352,6 +353,12 @@ var ClientManager = (function () {
                 new WFCanvasireRadialGrid(mcar);
             }
 
+             if (!wObservingRange) {
+                wObservingRange = new WObservingRange();
+                wObservingRange.addModelObject(mcar);
+            } else
+                wObservingRange.addModelObject(mcar);
+
             mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
 
         }
@@ -378,7 +385,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        return;
+        //return;
         //console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
             //console.warn('Контакт ивент до инициализации своей машинки!');
@@ -407,19 +414,6 @@ var ClientManager = (function () {
             default:
             console.warn('Контакт с неизвестным объектом ', event.object);
         }
-
-        // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerContact())
-            debugMapList.push(
-                L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FFBA12'})
-                    .setRadius(8)
-                    .bindPopup(
-                        'Тип сообщения: ' + event.cls + '</br>' +
-                        'uid объекта: ' + event.object.uid + '</br>' +
-                        'subject_id: ' + event.subject_id + '</br>'
-                )
-                    .addTo(myMap)
-            );
     };
 
     ClientManager.prototype.Out = function (event) {
@@ -461,15 +455,15 @@ var ClientManager = (function () {
     ClientManager.prototype.QuickGameDie = function (event) {
         // console.log('ClientManager.prototype.QuickGameDie');
         //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
-        modalWindow.modalDialogInfoShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы можете зарегистрироваться на сайте и играть полноценно.',
-            callback_ok: function () {
-                window.location.reload();
-            }
-        });
-        window.location = '/#quick';
+        //modalWindow.modalDialogInfoShow({
+        //    caption: 'Car Crash',
+        //    header: 'Крушение!',
+        //    body_text: 'Ваш автомобиль потерпел крушение. Вы можете зарегистрироваться на сайте и играть полноценно.',
+        //    callback_ok: function () {
+        //        window.location.reload();
+        //    }
+        //});
+        //window.location = '/#quick';
     };
 
     ClientManager.prototype.Chat = function (event){
@@ -511,13 +505,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.SetObserverForClient = function(event) {
-        console.log('ClientManager.prototype.SetObserverForClient ', event.enable, event.obj_id);
-        //var mobj = this._getMObj(event.obj_id);
-        //if (! mobj) return;
-        //if (event.enable)
-        //    wObservingRange.addModelObject(mobj);
-        //else
-        //    wObservingRange.delModelObject(mobj);
+        //console.log('ClientManager.prototype.SetObserverForClient ', event.enable, event.obj_id);
+        var mobj = this._getMObj(event.obj_id);
+        if (! mobj) return;
+        if (event.enable)
+            wObservingRange.addModelObject(mobj);
+        else
+            wObservingRange.delModelObject(mobj);
     };
 
     ClientManager.prototype.FireDischarge = function (event) {
@@ -682,7 +676,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ChatRoomExcludeMessage = function(event){
         //console.log('ClientManager.prototype.ChatRoomExcludeMessage', event);
-        chat.removeChat(event.room_name);
+        //chat.removeChat(event.room_name);
     };
 
     ClientManager.prototype.ChatPartyRoomIncludeMessage = function(event){

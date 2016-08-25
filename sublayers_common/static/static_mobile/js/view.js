@@ -8,6 +8,7 @@ function client_ready() {
     mapCanvasManager.init_canvas();
     geoLocationManager = new GeoLocationManager();
     geoLocationManager.start_watch();
+    wStrategyModeManager = new WStrategyModeManager();
 
     effectPNGLoader = new EffectPNGLoader();
     fireEffectManager = new FireEffectManager();
@@ -24,9 +25,18 @@ function client_ready() {
         mapManager.setZoom($(this).data('zoom'))
     });
 
+    $('.fire-btn').click(function(event){
+        if ($(this).hasClass('active')) {
+            clientManager.sendFireAutoEnable(false);
+        }
+        else {
+            clientManager.sendFireAutoEnable(true);
+        }
+        $(this).toggleClass('active');
+    });
+
     // Инициализация.
     ownerList = new OwnerList();
-
 }
 
 function returnFocusToMap() {
