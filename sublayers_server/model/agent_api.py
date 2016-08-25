@@ -126,6 +126,7 @@ class AgentConsoleNamespace(Namespace):
         self.write('Server saved.')
 
     def reset(self, *names):
+        agents_by_name = self.agent.server.agents_by_name
         names = names or [self.agent.user.name]
         if '*' in names:
             names = agents_by_name.keys()
