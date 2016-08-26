@@ -31,6 +31,26 @@ def assert_time_in_state(f):
 
 class BaseMotionState(object):
 
+    def set(self, t, p, fi=None, v=None):
+        old_point = self.p0
+        old_time = self.t0
+        assert old_time and old_point
+        last_step = p - old_point
+        dt = t - old_time
+
+        if fi is None:
+            fi = last_step.angle
+
+        if v is None:
+            v = abs(last_step) / dt if dt and abs(dt) > EPS else Point(0)
+
+        self.t0 = t
+        self.p0 = p
+        self.fi0 = fi
+        self.v0 = 0.0 #v
+
+        #self.track.append(TrackPoint(t=t, p=p, fi=fi, v=v))
+
     def __init__(self, t, p, fi=0.0, r_min=10.0, ac_max=10.0):
         self.t0 = t
         self.p0 = p
