@@ -14,7 +14,7 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import (
-    FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent,
+    FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
 )
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
@@ -446,8 +446,10 @@ class Mobile(Unit):
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
-    def set_position(self, time, point=None, comment=None):
-        pass  # todo: realization
+    @event_deco
+    def set_position(self, event, point, comment=None):
+        self.state.set(t=event.time, p=point)
+        self.on_update(event)
 
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)

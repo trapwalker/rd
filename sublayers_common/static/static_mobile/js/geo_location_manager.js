@@ -29,14 +29,13 @@ var GeoLocationManager = (function(_super){
         clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
         // todo: стереть это потом!
         console.log(pos);
-        if (user && user.userCar) {
+        /*if (user && user.userCar) {
             user.userCar._motion_state.p0 = pos;
             user.userCar._motion_state.t0 = clock.getCurrentTime();
             user.userCar._motion_state.fi0 = position.coords.heading || user.userCar._motion_state.fi0;
             user.userCar.change();
-        }
-
-        this._last_position = pos;
+        }/**/
+        this._last_position = position;
     };
 
     GeoLocationManager.prototype._watch_error = function(error) {

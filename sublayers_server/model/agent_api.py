@@ -524,7 +524,7 @@ class AgentAPI(API):
             log.warning('Wrong coordinates: %r // %r', projection, position)
             return
 
-        #self.car.set_motion(target_point=p, comment=comment, time=self.agent.server.get_time())
+        self.car.set_position(time=self.agent.server.get_time(), point=p, comment=comment)
 
     @public_method
     def delete_car(self):
