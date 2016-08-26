@@ -125,7 +125,7 @@ var MapCanvasManager = (function(_super){
 
         var map_size = mapManager.getMapSize();
         if (user && user.userCar)
-            if (subVector(map_size, this.cur_map_size).abs() > 0.2 || map.dragging._enabled) {
+            if (subVector(map_size, this.cur_map_size).abs() > 0.2) {
                 var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
                 var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
                 this.cur_map_size = map_size;

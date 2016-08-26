@@ -1,9 +1,12 @@
-<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/third_party/leaflet.css')) }}"/>
 <link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('static_mobile/css/play.css')) }}"/>
 
 <script src="{{ static_mobile_link_repr(static_url('js/third_party/leaflet-src.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/third_party/jquery.min.js')) }}"></script>
+<!--<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/third_party/leaflet.css')) }}"/>-->
 
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.css' rel='stylesheet' />
+
+<script src="{{ static_mobile_link_repr(static_url('js/third_party/jquery.min.js')) }}"></script>
 <script src="{{ static_mobile_link_repr(static_url('js/geometric.js')) }}"></script>
 <script src="{{ static_mobile_link_repr(static_url('js/generator_ID.js')) }}"></script>
 <script src="{{ static_mobile_link_repr(static_url('js/rpc_list.js')) }}"></script>

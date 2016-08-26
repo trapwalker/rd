@@ -119,7 +119,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._sendMessage', msg);
         // добавление координат центра карты в сообщение
         var center_map_coords;
-        center_map_coords = map.project(map.getCenter(), map.getMaxZoom());
+        center_map_coords = mapManager.project(map.getCenter(), mapManager.getMaxZoom());
         msg.map_coords_center = center_map_coords;
         msg.map_coords_zoom = map.getZoom();
 
