@@ -547,7 +547,6 @@ class AgentAPI(API):
             except:
                 pass
 
-
         self.car.set_position(time=self.agent.server.get_time(), point=p_filtered or p, comment=comment)
 
     @public_method
