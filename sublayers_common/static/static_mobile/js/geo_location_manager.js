@@ -45,9 +45,6 @@ var GeoLocationManager = (function(_super){
                 var direction_vector = subVector(pos, last_pos);
                 if (direction_vector.abs() > 0.1)
                     direction = angleVectorRadCCW2(direction_vector);
-                else{
-                    console.log('direction not changed:');
-                }
             }
 
             user.userCar._motion_state.p0 = pos;
@@ -104,7 +101,6 @@ var SimpleKalmanFilter = (function(){
 
     SimpleKalmanFilter.prototype.get_lat_lng = function () {
         return this.lat && this.lng ? {lat: this.lat, lng: this.lng} : null;
-;
     };
 
     SimpleKalmanFilter.prototype.get_accuracy = function () {
@@ -139,8 +135,8 @@ var SimpleKalmanFilter = (function(){
             // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lng
             var K = this.variance / (this.variance + accuracy * accuracy);
             // apply K
-            this.lat += K * (lat_measurement - lat);
-            this.lng += K * (lng_measurement - lng);
+            this.lat += K * (lat_measurement - this.lat);
+            this.lng += K * (lng_measurement - this.lng);
             // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance
             this.variance = (1 - K) * this.variance;
         }
