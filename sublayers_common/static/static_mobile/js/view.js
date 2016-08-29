@@ -22,16 +22,11 @@ function client_ready() {
 
     // Тестовая хрень - удалить потом
     $('.zoomator').click(function(){
-        mapManager.setZoom($(this).data('zoom'))
+        mapManager.setZoom(mapManager.getZoom() + $(this).data('zoom'))
     });
 
     $('.fire-btn').click(function(event){
-        if ($(this).hasClass('active')) {
-            clientManager.sendFireAutoEnable(false);
-        }
-        else {
-            clientManager.sendFireAutoEnable(true);
-        }
+        clientManager.sendFireAutoEnable(!$(this).hasClass('active'));
         $(this).toggleClass('active');
     });
 
@@ -50,6 +45,11 @@ function client_ready() {
         else {
             alert('Нет данных о последней позиции.');
         }
+    });
+
+    $('#KalmanSet').click(function(event){
+        geoLocationManager.kalman_set = !$(this).hasClass('active');
+        $(this).toggleClass('active');
     });
 
     // Инициализация.

@@ -474,7 +474,7 @@ var MapManagerMB = (function(_super){
 
 
 var map;
-var mapManager = new MapManagerMB();
+var mapManager = new MapManager();
 
 
 

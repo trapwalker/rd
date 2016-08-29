@@ -82,3 +82,6 @@ body {
     top: 20px
 }
 
+#KalmanSet {background-color: #f1abb0;}
+
+#KalmanSet.active { background-color: #a0f19f;}
