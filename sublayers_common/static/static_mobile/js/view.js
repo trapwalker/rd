@@ -22,16 +22,11 @@ function client_ready() {
 
     // Тестовая хрень - удалить потом
     $('.zoomator').click(function(){
-        mapManager.setZoom($(this).data('zoom'))
+        mapManager.setZoom(mapManager.getZoom() + $(this).data('zoom'))
     });
 
     $('.fire-btn').click(function(event){
-        if ($(this).hasClass('active')) {
-            clientManager.sendFireAutoEnable(false);
-        }
-        else {
-            clientManager.sendFireAutoEnable(true);
-        }
+        clientManager.sendFireAutoEnable(!$(this).hasClass('active'));
         $(this).toggleClass('active');
     });
 
@@ -44,12 +39,17 @@ function client_ready() {
 
     $('#sendPosition').click(function(){
         if (geoLocationManager._last_position) {
-            var pos = map.project([geoLocationManager._last_position.coords.latitude, geoLocationManager._last_position.coords.longitude], 18);
+            var pos = mapManager.project([geoLocationManager._last_position.coords.latitude, geoLocationManager._last_position.coords.longitude], 18);
             clientManager.sendGeoCoord(geoLocationManager.geo_position_to_dict(geoLocationManager._last_position), pos);
         }
         else {
             alert('Нет данных о последней позиции.');
         }
+    });
+
+    $('#KalmanSet').click(function(event){
+        geoLocationManager.kalman_set = !$(this).hasClass('active');
+        $(this).toggleClass('active');
     });
 
     // Инициализация.

@@ -119,7 +119,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._sendMessage', msg);
         // добавление координат центра карты в сообщение
         var center_map_coords;
-        center_map_coords = map.project(map.getCenter(), map.getMaxZoom());
+        center_map_coords = mapManager.project(map.getCenter(), mapManager.getMaxZoom());
         msg.map_coords_center = center_map_coords;
         msg.map_coords_zoom = map.getZoom();
 
@@ -380,7 +380,12 @@ var ClientManager = (function () {
         }
 
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
-        car.setState(motion_state);
+        if (car == user.userCar) {
+            if (!geoLocationManager.kalman_set) car.setState(motion_state);
+        }
+        else {
+            car.setState(motion_state);
+        }
         car.setHPState(hp_state);
     };
 

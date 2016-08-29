@@ -12,6 +12,9 @@ var GeoLocationManager = (function(_super){
         };
 
         this._last_position = null;
+
+        this.kalman_set = false;
+        this.kalman_filter = new SimpleKalmanFilter(15);
     }
 
     GeoLocationManager.prototype.start_watch = function() {
@@ -24,18 +27,41 @@ var GeoLocationManager = (function(_super){
     };
 
     GeoLocationManager.prototype._watch_success = function(position) {
-        var pos = map.project([position.coords.latitude, position.coords.longitude], 18);
+        var pos = mapManager.project({lat: position.coords.latitude, lng: position.coords.longitude}, 18);
 
         clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
         // todo: стереть это потом!
-        console.log(pos);
-        /*if (user && user.userCar) {
+
+        if (user && user.userCar && this.kalman_set) {
+            var last_kalman_pos = this.kalman_filter.get_lat_lng();
+            this.kalman_filter.process(position.coords.latitude, position.coords.longitude, position.coords.accuracy, position.timestamp);
+            var current_kalman_pos = this.kalman_filter.get_lat_lng();
+            pos = mapManager.project(current_kalman_pos, 18);
+            console.log('Kalman:' + pos);
+            // Определение направления, если это возможно
+            var direction = null;
+            if (last_kalman_pos) {
+                var last_pos = mapManager.project(last_kalman_pos, 18);
+                var direction_vector = subVector(pos, last_pos);
+                if (direction_vector.abs() > 0.1)
+                    direction = angleVectorRadCCW2(direction_vector);
+                else{
+                    console.log('direction not changed:');
+                }
+            }
+
             user.userCar._motion_state.p0 = pos;
             user.userCar._motion_state.t0 = clock.getCurrentTime();
-            user.userCar._motion_state.fi0 = position.coords.heading || user.userCar._motion_state.fi0;
+            user.userCar._motion_state.fi0 = direction || user.userCar._motion_state.fi0;
             user.userCar.change();
-        }/**/
+        }
+        else {
+            console.log('GPS:' + pos);
+        }
+
         this._last_position = position;
+
+
     };
 
     GeoLocationManager.prototype._watch_error = function(error) {
@@ -59,5 +85,66 @@ var GeoLocationManager = (function(_super){
     return GeoLocationManager;
 })(ClientObject);
 
-
 var geoLocationManager;
+
+
+var SimpleKalmanFilter = (function(){
+    function SimpleKalmanFilter(Q_metres_per_second){
+        this.MinAccuracy = 1;
+        this.Q_metres_per_second = Q_metres_per_second;    // float
+        this.TimeStamp_milliseconds = null;
+        this.lat = null;
+        this.lng = null;
+        this.variance = -1;
+    }
+
+    SimpleKalmanFilter.prototype.get_TimeStamp = function () {
+        return this.TimeStamp_milliseconds;
+    };
+
+    SimpleKalmanFilter.prototype.get_lat_lng = function () {
+        return this.lat && this.lng ? {lat: this.lat, lng: this.lng} : null;
+;
+    };
+
+    SimpleKalmanFilter.prototype.get_accuracy = function () {
+        return Math.sqrt(this.variance)
+    };
+
+    SimpleKalmanFilter.prototype.SetState = function(lat, lng, accuracy, TimeStamp_milliseconds) {
+        this.lat=lat;
+        this.lng=lng;
+        this.variance = accuracy * accuracy;
+        this.TimeStamp_milliseconds=TimeStamp_milliseconds;
+    };
+
+    SimpleKalmanFilter.prototype.process = function (lat_measurement, lng_measurement, accuracy, TimeStamp_milliseconds) {
+        if (accuracy < this.MinAccuracy) accuracy = this.MinAccuracy;
+        if (this.variance < 0) {
+            // if variance < 0, object is unitialised, so initialise with current values
+            this.TimeStamp_milliseconds = TimeStamp_milliseconds;
+            this.lat = lat_measurement;
+            this.lng = lng_measurement;
+            this.variance = accuracy * accuracy;
+        } else {
+            // else apply Kalman filter methodology
+            var TimeInc_milliseconds = TimeStamp_milliseconds - this.TimeStamp_milliseconds;
+            if (TimeInc_milliseconds > 0) {
+                // time has moved on, so the uncertainty in the current position increases
+                this.variance += TimeInc_milliseconds * this.Q_metres_per_second * this.Q_metres_per_second / 1000;
+                this.TimeStamp_milliseconds = TimeStamp_milliseconds;
+                // TO DO: USE VELOCITY INFORMATION HERE TO GET A BETTER ESTIMATE OF CURRENT POSITION
+            }
+            // Kalman gain matrix K = Covarariance * Inverse(Covariance + MeasurementVariance)
+            // NB: because K is dimensionless, it doesn't matter that variance has different units to lat and lng
+            var K = this.variance / (this.variance + accuracy * accuracy);
+            // apply K
+            this.lat += K * (lat_measurement - lat);
+            this.lng += K * (lng_measurement - lng);
+            // new Covarariance  matrix is (IdentityMatrix - K) * Covarariance
+            this.variance = (1 - K) * this.variance;
+        }
+    };
+
+    return SimpleKalmanFilter;
+})();
