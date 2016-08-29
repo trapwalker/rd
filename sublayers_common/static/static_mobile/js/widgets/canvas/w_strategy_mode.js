@@ -29,7 +29,7 @@ var WStrategyModeManager = (function () {
         //console.log('WStrategyModeManager.prototype.redraw');
         if (mapCanvasManager.real_zoom > 15) return;
 
-        if (! user.userCar) return;
+        if ((!user) || (! user.userCar)) return;
 
         ctx.save();
 

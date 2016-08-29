@@ -42,7 +42,7 @@ var WCarMarker = (function (_super) {
         var need_rotate = false;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
-        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+        var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
         var tempAngle = this.car.getCurrentDirection(time);
         if (Math.abs(this._lastRotateAngle - tempAngle) > 0.01) {
             this.marker.options.angle = tempAngle;

@@ -24,7 +24,7 @@ var GeoLocationManager = (function(_super){
     };
 
     GeoLocationManager.prototype._watch_success = function(position) {
-        var pos = map.project([position.coords.latitude, position.coords.longitude], 18);
+        var pos = mapManager.project({lat: position.coords.latitude, lng: position.coords.longitude}, 18);
 
         clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
         // todo: стереть это потом!
