@@ -524,7 +524,31 @@ class AgentAPI(API):
             log.warning('Wrong coordinates: %r // %r', projection, position)
             return
 
-        self.car.set_position(time=self.agent.server.get_time(), point=p, comment=comment)
+        p_filtered = None
+        kalman = getattr(self.agent, 'kalman')
+        if position and kalman:
+            kalman.process(p.y, p.x, position['accuracy'], position['timestamp'])
+            p_filtered = Point(kalman.get_lng(), kalman.get_lat())
+            dbg = (
+                'KALMAN({username}): p={p}; pf={p_filtered}; dp={dp}; '
+                'src_accur={position[accuracy]}; flt_accur={kaccur}'
+            ).format(
+                username=self.agent.user and self.agent.user.name,
+                dp = p - p_filtered,
+                kaccur=kalman.get_accuracy(),
+                **locals()
+            )
+            log.debug(dbg)
+            comment = dbg
+            try:
+                fn = '{username}.track'.format(username=self.agent.user.name)
+                with open(fn, 'a') as tracklog:
+                    tracklog.write('{position} # {dbg}\n'.format(**locals()))
+            except:
+                pass
+
+
+        self.car.set_position(time=self.agent.server.get_time(), point=p_filtered or p, comment=comment)
 
     @public_method
     def delete_car(self):
