@@ -380,7 +380,12 @@ var ClientManager = (function () {
         }
 
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
-        car.setState(motion_state);
+        if (car == user.userCar) {
+            if (!geoLocationManager.kalman_set) car.setState(motion_state);
+        }
+        else {
+            car.setState(motion_state);
+        }
         car.setHPState(hp_state);
     };
 
