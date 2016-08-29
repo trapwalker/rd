@@ -11,9 +11,28 @@ EPS = 1e-9
 class Point(complex):
 
     __slots__ = ()
-
     x = complex.real
     y = complex.imag
+
+    def __new__(cls, x, y, sigma=None):
+        """
+        @param x: float
+        @param y: float
+        @param sigma: Point | float | list | tuple
+        @rtype: Point
+        """
+        if sigma:
+            if isinstance(sigma, (tuple, list)):
+                sx, sy = sigma
+            elif isinstance(sigma, Point):
+                sx, sy = sigma.as_tuple()
+            else:
+                sx, sy = sigma, sigma
+
+            x = gauss(x, sx)
+            y = gauss(y, sy)
+
+        return complex.__new__(cls, x, y)
 
     def __getinitargs__(self):
         return self.x, self.y
@@ -54,9 +73,7 @@ class Point(complex):
         @param sigma: Point | float
         @rtype: Point
         """
-        if not isinstance(sigma, Point):
-            sigma = Point(sigma, sigma)
-        return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
+        return cls(mu.x, mu.y, sigma)
 
     @classmethod
     def scalar_mul(cls, p1, p2):
