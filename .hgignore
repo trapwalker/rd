@@ -53,3 +53,4 @@ nginx_conf/rd_project_path.conf
 env_*
 *.whl
 _apk/*.apk
+*.track
