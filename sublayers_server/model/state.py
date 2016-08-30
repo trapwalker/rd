@@ -37,8 +37,10 @@ class BaseMotionState(object):
         assert old_time and old_point
         last_step = p - old_point
         dt = t - old_time
+        v = dt and (abs(last_step) / dt) or None
+        MIN_V = 5
 
-        if fi is None:
+        if fi is None and v and v > MIN_V:
             fi = last_step.angle
 
         if v is None:
@@ -46,7 +48,8 @@ class BaseMotionState(object):
 
         self.t0 = t
         self.p0 = p
-        self.fi0 = fi
+        if fi is not None:
+            self.fi0 = fi
         self.v0 = 0.0 #v
 
         #self.track.append(TrackPoint(t=t, p=p, fi=fi, v=v))
