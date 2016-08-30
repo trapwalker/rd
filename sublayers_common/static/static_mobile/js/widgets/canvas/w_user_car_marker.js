@@ -61,7 +61,7 @@ var WCanvasCarMarker = (function (_super) {
             this._last_car_ctx_pos = ctx_car_pos;
         }
 
-        var car_direction_real = this.car.getCurrentDirection(time) - Math.PI / 2.;
+        var car_direction_real = this.car.getCurrentDirection(time) + Math.PI / 2.;
         var car_direction = car_direction_real;
         //var diff_angle_direction = car_direction_real - this.last_direction;
         //if (Math.abs(diff_angle_direction) > ConstMaxAngleToMoveMarker && Math.abs(diff_angle_direction_arrow) < Math.PI / 2.) {

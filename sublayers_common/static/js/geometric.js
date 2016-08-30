@@ -5,6 +5,11 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 
+
+
+var DEG_TO_RAD = Math.PI / 180.;
+var RAD_TO_DEG = 180. / Math.PI;
+
 function SetImageOnLoad(img, onLoadHandler) {
     if (img.complete) {
         onLoadHandler(img);
@@ -41,8 +46,9 @@ function rotateVector(aPoint, aAngle) {
 }
 
 // Нормализация вектора
-function normVector(aPoint) {
-    return mulScalVector(aPoint, 1 / aPoint.abs());
+function normVector(aPoint, length) {
+    length = length || 1.0;
+    return mulScalVector(aPoint, length / aPoint.abs());
 }
 
 // Сумма векторов
@@ -138,12 +144,12 @@ function getDiffAngle2(angle1, angle2) {
 
 // Радианы в градусы
 function radToGrad(rad) {
-    return rad * 180 / Math.PI;
+    return rad * RAD_TO_DEG;
 }
 
 // Градусы в радианы
 function gradToRad(grad) {
-    return grad * Math.PI / 180.;
+    return grad * DEG_TO_RAD;
 }
 
 // Расстояние между двумя точками
