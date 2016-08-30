@@ -7,7 +7,7 @@
 var ConstStartZoom = 17;
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 14;
-var ConstDurationAnimation = 500;
+var ConstDurationAnimation = 250;
 var ConstZoomCameraShift = {
     18: {angleX: 45, centerShift: -35},
     17: {angleX: 30, centerShift: -20},
@@ -55,6 +55,7 @@ var MapManager = (function(_super){
             zoomControl: false,
             attributionControl: false,
             scrollWheelZoom: "center",
+            touchZoom: "center",
             dragging: false,
             zoomAnimationThreshold: (ConstMaxMapZoom - ConstMinMapZoom),
             doubleClickZoom: false
@@ -200,7 +201,7 @@ var MapManager = (function(_super){
     MapManager.prototype.setZoom = function(zoom) {
         //console.log('MapManager.prototype.setZoom');
         if (zoom == map.getZoom()) return;
-        map.setZoom(zoom);
+        map.setZoom(zoom, {duration: ConstDurationAnimation / 1000., easeLinearity: ConstDurationAnimation / 1000.});
     };
 
     MapManager.prototype.onZoomAnimation = function(event) {
