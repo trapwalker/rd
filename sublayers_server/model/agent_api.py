@@ -541,11 +541,11 @@ class AgentAPI(API):
             log.debug(dbg)
             comment = dbg
             try:
-                fn = '{username}.track'.format(username=self.agent.user.name)
+                fn = 'log/tracks/{username}.track'.format(username=self.agent.user.name)
                 with open(fn, 'a') as tracklog:
                     tracklog.write('{position} # {dbg}\n'.format(**locals()))
-            except:
-                pass
+            except Exception as e:
+                log.exception("Can't store track point")
 
         self.car.set_position(time=self.agent.server.get_time(), point=p_filtered or p, comment=comment)
 
