@@ -25,6 +25,11 @@ var WFCanvasireRadialGrid = (function (_super) {
             sides.right.sideRadius);
 
         mapCanvasManager.add_vobj(this, 9);
+
+
+        this.bright_circle_index = 1;
+        this.bright_circle_time = 0.2;
+        this.bright_circle_time_start = 0;
     }
 
     WCanvasFireRadialGrid.prototype.setVisible = function (visible) {
@@ -76,11 +81,40 @@ var WFCanvasireRadialGrid = (function (_super) {
 
         ctx.strokeStyle = "rgba(85, 255, 85, 0.4)";
 
+
+        // Блок мигания кругов
+        if (time - this.bright_circle_time_start > this.bright_circle_time) {
+            this.bright_circle_time_start = time;
+            this.bright_circle_index++;
+            if (this.bright_circle_index > max_circles) this.bright_circle_index = 1;
+        }
+
+
         // Отрисовка кругов
         for (var i = 1; i <= max_circles; i++) {
-            ctx.beginPath();
-            ctx.arc(0, 0, max_radius * i / max_circles, 2 * Math.PI, 0, false);
-            ctx.stroke();
+            switch (i) {
+                case this.bright_circle_index:
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.strokeStyle = "rgba(85, 255, 85, 0.8)";
+                    ctx.arc(0, 0, max_radius * i / max_circles, 2 * Math.PI, 0, false);
+                    ctx.stroke();
+                    ctx.restore();
+                    break;
+                case this.bright_circle_index - 1:
+                case this.bright_circle_index + 1:
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.strokeStyle = "rgba(85, 255, 85, 0.6)";
+                    ctx.arc(0, 0, max_radius * i / max_circles, 2 * Math.PI, 0, false);
+                    ctx.stroke();
+                    ctx.restore();
+                    break;
+                default:
+                    ctx.beginPath();
+                    ctx.arc(0, 0, max_radius * i / max_circles, 2 * Math.PI, 0, false);
+                    ctx.stroke();
+            }
         }
 
         // добавление 45 градусных линий-отметок (их длинна сейчас по 10 градусов...изменяема)
