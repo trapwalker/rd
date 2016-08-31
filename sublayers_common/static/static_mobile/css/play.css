@@ -85,3 +85,50 @@ body {
 #KalmanSet {background-color: #f1abb0;}
 
 #KalmanSet.active { background-color: #a0f19f;}
+
+
+#menuWrap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    overflow: hidden;
+    display: none;
+}
+
+#menu {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    pointer-events: auto;
+}
+
+#menuClose {
+    position: absolute;
+    right: 20px;
+    top: 20px
+}
+
+
+.menu-btn {
+    position: relative;
+    max-width: 300px;
+    margin: 10px 20px;
+    padding: 2px 5px;
+    border: 1px solid black;
+    border-radius: 2px;
+    background-color: #f1f1f1;
+    font-size: 1.3em;
+    pointer-events: auto;
+    cursor: default;
+}
+
+
+
+#CameraPositionAnimation {background-color: #f1abb0;}
+#CameraPositionAnimation.active { background-color: #a0f19f;}
+#CameraRotateAnimation{background-color: #f1abb0;}
+#CameraRotateAnimation.active { background-color: #a0f19f;}
+#BotsPositionAnimation{background-color: #f1abb0;}
+#BotsPositionAnimation.active { background-color: #a0f19f;}

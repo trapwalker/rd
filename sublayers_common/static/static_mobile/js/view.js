@@ -47,10 +47,44 @@ function client_ready() {
         }
     });
 
-    $('#KalmanSet').click(function(event){
+    $('#menuBtn').click(function () {
+        $('#menuWrap').css('display', 'block');
+    });
+    $('#menuClose').click(function(){
+        $('#menuWrap').css('display', 'none');
+    });
+
+
+
+    $('#KalmanSet').click(function (event) {
         geoLocationManager.kalman_set = !$(this).hasClass('active');
         $(this).toggleClass('active');
     });
+
+    $('#CameraPositionAnimation').click(function (event) {
+        if (!user.userCar) return;
+        var w = visualManager.getVobjByType(user.userCar, WMapPosition);
+        if (!w) {console.log('Error! WMapPosition widget not found.')}
+        w._camera_position_animation = !$(this).hasClass('active');
+        $(this).toggleClass('active');
+    });
+
+    $('#CameraRotateAnimation').click(function (event) {
+        if (!user.userCar) return;
+        var w = visualManager.getVobjByType(user.userCar, WMapPosition);
+        if (!w) {console.log('Error! WMapPosition widget not found.')}
+        w._camera_rotate_animation = !$(this).hasClass('active');
+        $(this).toggleClass('active');
+    });
+
+    $('#BotsPositionAnimation').click(function (event) {
+        var ws = visualManager.getAllVobjsByType(WMapPosition);
+        var state = !$(this).hasClass('active');
+        for (var i = 0; i < ws.length; i++)
+            ws[i]._bots_position_animation = state;
+        $(this).toggleClass('active');
+    });
+
 
     // Инициализация.
     ownerList = new OwnerList();

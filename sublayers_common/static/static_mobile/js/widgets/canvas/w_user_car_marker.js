@@ -14,6 +14,8 @@ var WCanvasCarMarker = (function (_super) {
 
         this.updateIcon();
 
+        this._bots_position_animation = $('#BotsPositionAnimation').hasClass('active');
+
         mapCanvasManager.add_vobj(this, 11);
 
         var time = clock.getCurrentTime();
@@ -49,7 +51,7 @@ var WCanvasCarMarker = (function (_super) {
 
             var diff_vec = subVector(car_pos_real, this.last_position);
             var diff_vec_abs = diff_vec.abs();
-            if (diff_vec_abs > ConstMaxLengthToMoveMarker) {  // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
+            if (diff_vec_abs > ConstMaxLengthToMoveMarker && this._bots_position_animation) {  // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
                 car_pos = summVector(this.last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs))
             }
             else {

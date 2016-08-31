@@ -19,6 +19,9 @@ var WMapPosition = (function (_super) {
         this.car = car;
         this.old_position = {x: 0, y: 0};
 
+        this._camera_position_animation = true;
+        this._camera_rotate_animation = true;
+
         this.change(clock.getCurrentTime());
     }
 
@@ -32,7 +35,7 @@ var WMapPosition = (function (_super) {
         var carPoint = this.car.getCurrentCoord(time);
         var mapPointCurrent = mapManager.getMapCenter();
         var diff_pos = distancePoints2(carPoint, mapPointCurrent);
-        if (diff_pos > ConstThresholdShiftPosition * ConstThresholdShiftPosition) {
+        if (diff_pos > ConstThresholdShiftPosition * ConstThresholdShiftPosition || !this._camera_position_animation) {
             // Мгновенно установить карту в новую позицию
             mapManager.setCenter(carPoint);
         }
@@ -51,15 +54,20 @@ var WMapPosition = (function (_super) {
 
         // поворот карты
         var car_direction_real = -this.car.getCurrentDirection(time) - Math.PI / 2.;
-        var map_angle_z = gradToRad(mapManager.map_angleZ);
-        var diff_angle = getDiffAngle2(car_direction_real, map_angle_z);
-        var target_angle = 0;
-        if (Math.abs(diff_angle) > ConstMinShiftAngle) {
-            if (Math.abs(diff_angle) <= ConstMaxShiftAngle)
-                target_angle = map_angle_z + diff_angle;
-            else
-                target_angle = map_angle_z + ConstMaxShiftAngle * Math.sign(diff_angle);
-            mapManager.setRotate(null, radToGrad(target_angle));
+        if (this._camera_rotate_animation) { // Если разрешён доворот карты
+            var map_angle_z = gradToRad(mapManager.map_angleZ);
+            var diff_angle = getDiffAngle2(car_direction_real, map_angle_z);
+            var target_angle = 0;
+            if (Math.abs(diff_angle) > ConstMinShiftAngle) {
+                if (Math.abs(diff_angle) <= ConstMaxShiftAngle)
+                    target_angle = map_angle_z + diff_angle;
+                else
+                    target_angle = map_angle_z + ConstMaxShiftAngle * Math.sign(diff_angle);
+                mapManager.setRotate(null, radToGrad(target_angle));
+            }
+        }
+        else { // Если доворот запрещён, то сразу повернуть по направлению машинки
+            mapManager.setRotate(null, radToGrad(car_direction_real));
         }
 
     };
