@@ -30,6 +30,8 @@ var GeoLocationManager = (function(_super){
         var pos = mapManager.project({lat: position.coords.latitude, lng: position.coords.longitude}, 18);
 
         clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
+
+        $('.v-indicator').text(position.coords.speed + ' km/h');
         // todo: стереть это потом!
 
         if (user && user.userCar && this.kalman_set) {
@@ -53,12 +55,10 @@ var GeoLocationManager = (function(_super){
             user.userCar.change();
         }
         else {
-            console.log('GPS:' + pos);
+            //console.log('GPS:' + pos);
         }
 
         this._last_position = position;
-
-
     };
 
     GeoLocationManager.prototype._watch_error = function(error) {

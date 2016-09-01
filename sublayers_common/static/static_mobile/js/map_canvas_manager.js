@@ -124,13 +124,12 @@ var MapCanvasManager = (function(_super){
         this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
 
         var map_size = mapManager.getMapSize();
-        if (user && user.userCar)
-            if (subVector(map_size, this.cur_map_size).abs() > 0.2) {
-                var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
-                var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
-                this.cur_map_size = map_size;
-                this.cur_ctx_car_pos = car_ctx_pos;
-            }
+        if (user && user.userCar) {
+            var car_pos = user.userCar.getCurrentCoord(time);
+            var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
+            this.cur_map_size = map_size;
+            this.cur_ctx_car_pos = car_ctx_pos;
+        }
 
         //console.log(this.map_tl, mapManager.getMapSize(), this.cur_ctx_car_pos);
 

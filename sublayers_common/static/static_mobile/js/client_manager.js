@@ -345,6 +345,7 @@ var ClientManager = (function () {
             // Виджеты:
             new WCanvasCarMarker(mcar);
             new WMapPosition(mcar);  // виджет позиционирования карты
+            new WHPIndicator(mcar);
 
             if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
                 //mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
@@ -1021,7 +1022,6 @@ var ClientManager = (function () {
     ClientManager.prototype.sendFireDischarge = function (side) {
         //console.log('ClientManager.prototype.sendFireDischarge');
         if (!user.userCar) return;
-        if(! wFireController.visible) return;
         var mes = {
             call: "fire_discharge",
             rpc_call_id: rpcCallList.getID(),
