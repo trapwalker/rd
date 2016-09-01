@@ -27,17 +27,17 @@ def test_registry():
 
     #log.debug('Delete all: %s', (yield Root.objects.delete()))
     #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
-    log.debug('Delete all saved objects: %s', (yield Root.objects.filter({'fixtured': False}).delete()))
+    #log.debug('Delete all saved objects: %s', (yield Root.objects.filter({'fixtured': False}).delete()))
 
     nodes = yield Root.objects.filter(fixtured=True).find_all()
     reg = Root.objects.get_cached('reg:///registry')
-    a = reg['agents/user']
+    a = reg['agents/user/quick']
     x = reg['mobiles/cars/middle/sports/delorean_dmc12']
     
-    u = a.instantiate(profile_id='123456')
+    u = a.instantiate(profile_id='111')
     yield u.load_references()
-    x1 = x.instantiate()
-    u.car = x1
+    #x1 = x.instantiate()
+    #u.car = x1
     yield u.save(upsert=True)
     log.debug('### Registry test end')
     print('\n'.join((
@@ -47,6 +47,11 @@ def test_registry():
     )))
     #"""
     #x2 = x.instantiate()
+
+    u2 = a.instantiate(profile_id='222')
+    yield u2.load_references()
+    yield u2.save(upsert=True)
+
 
     a2 = yield a.objects.get(profile_id='123456')
     print('a2.position =', a2 and a2.position)
