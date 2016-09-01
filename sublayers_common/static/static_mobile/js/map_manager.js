@@ -79,14 +79,14 @@ var MapManager = (function(_super){
     MapManager.prototype.createTileLayer = function() {
         //console.log('MapManager.prototype.createTileLayer', storage);
         this.tileLayer = L.tileLayer(
-            //this.tileLayerPath,
-            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw',
+            this.tileLayerPath,
+            //'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw',
             {
                 continuousWorld: true,
                 opacity: 1.0,
                 errorTileUrl: '/static/img/map_404.jpg',
-                maxZoom: ConstMaxMapZoom,
-                id: 'mapbox.streets' // не забыть убрать
+                maxZoom: ConstMaxMapZoom
+                //id: 'mapbox.streets' // не забыть убрать
             }).addTo(map);
     };
 
