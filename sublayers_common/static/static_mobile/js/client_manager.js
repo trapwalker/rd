@@ -1021,7 +1021,6 @@ var ClientManager = (function () {
     ClientManager.prototype.sendFireDischarge = function (side) {
         //console.log('ClientManager.prototype.sendFireDischarge');
         if (!user.userCar) return;
-        if(! wFireController.visible) return;
         var mes = {
             call: "fire_discharge",
             rpc_call_id: rpcCallList.getID(),

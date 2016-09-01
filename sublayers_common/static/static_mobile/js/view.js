@@ -25,9 +25,16 @@ function client_ready() {
         mapManager.setZoom(mapManager.getZoom() + $(this).data('zoom'))
     });
 
-    $('.fire-btn').click(function(event){
+    $('#AutoFireBtn').click(function(event){
         clientManager.sendFireAutoEnable(!$(this).hasClass('active'));
         $(this).toggleClass('active');
+    });
+
+    $('#DischargeFireBtn').click(function(event){
+        clientManager.sendFireDischarge('front');
+        clientManager.sendFireDischarge('right');
+        clientManager.sendFireDischarge('back');
+        clientManager.sendFireDischarge('left');
     });
 
     $('#consoleBtn').click(function(){

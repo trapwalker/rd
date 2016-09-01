@@ -6,10 +6,9 @@
     <div id="zoomators">
         <div class="zoomator mobile-btn" data-zoom="-1">minus</div>
         <div class="zoomator mobile-btn" data-zoom="1">plus</div>
-        <div class="fire-btn mobile-btn">fire</div>
         <div id="consoleBtn" class="mobile-btn">Debug</div>
         <div id="menuBtn" class="mobile-btn">Menu</div>
-        <div id="sendPosition" class="mobile-btn">PosToSrv</div>
+        <div id="sendPosition" class="mobile-btn" style="display: none;">PosToSrv</div>
     </div>
     <div id="consoleWrap">
         <div id="console">В данном режиме консоль не доступна. Воспользуйтесь браузерной консолью (F12 или Ctrl + C)</div>
@@ -24,6 +23,9 @@
         </div>
         <div id="menuClose" class="mobile-btn">Close</div>
     </div>
+
+    <div id="AutoFireBtn" class="fire-btn mobile-btn">A</div>
+    <div id="DischargeFireBtn" class="fire-btn mobile-btn">Z</div>
 </div>
 <div style="display: none">
     <span id="settings_host_name">{{ host_name }}</span>
