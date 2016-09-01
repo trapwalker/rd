@@ -345,6 +345,7 @@ var ClientManager = (function () {
             // Виджеты:
             new WCanvasCarMarker(mcar);
             new WMapPosition(mcar);  // виджет позиционирования карты
+            new WHPIndicator(mcar);
 
             if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
                 //mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);

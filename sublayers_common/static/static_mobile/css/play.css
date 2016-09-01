@@ -1,6 +1,7 @@
 body {
     margin: 0;
     overflow: hidden;
+    background-color: black;
 }
 
 #main {
@@ -21,14 +22,12 @@ body {
     z-index: 2;
 }
 
-
 #overlay {
     position: absolute;
     width: 100%;
     height: 100%;
     pointer-events: none;
 }
-
 
 /* Тестовая ерунда! Удалить потом */
 #zoomators {
@@ -109,7 +108,6 @@ body {
     top: 20px
 }
 
-
 .menu-btn {
     position: relative;
     max-width: 300px;
@@ -123,7 +121,35 @@ body {
     cursor: default;
 }
 
+#indicators {
+position: absolute;
+    top: 0;
+    right: 10px;
+    width: 150px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: Nouveau_IBM;
+    color: #29F200;
+    font-size: 15px;
+}
 
+.indicator-line {
+    position: relative;
+    width: 100%;
+}
+
+.indicator-label {
+    position: relative;
+    float: left;
+    width: 30%;
+}
+
+.indicator-value {
+    position: relative;
+    float: left;
+    text-align: right;
+    width: 70%;
+}
 
 #CameraPositionAnimation {background-color: #f1abb0;}
 #CameraPositionAnimation.active { background-color: #a0f19f;}

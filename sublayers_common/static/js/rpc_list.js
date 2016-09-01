@@ -24,7 +24,6 @@ var RPCCallList = ( function () {
     };
 
     RPCCallList.prototype.update_current_ping = function(text) {
-        console.log(text);
         $('.ping-indicator').text(text);
     };
 
