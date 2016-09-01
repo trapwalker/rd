@@ -48,6 +48,10 @@ body {
     font-size: 1.3em;
     pointer-events: auto;
     cursor: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .zoomator {}
