@@ -291,6 +291,15 @@ class Node(Doc):
         params.update(kw)
         #inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
         params.update(parent=parent, name=name, uid=uid, fixtured=fixtured)
+
+        # Инстанцирование вложенных документов
+        for field_name, field in self._fields.items():
+            if self.is_embedded_field(field):
+                field_value = getattr(self, field_name)
+                if field_value and isinstance(field_value, Node):
+                    field_value = field_value.instantiate()
+                    params[field_name] = field_value
+
         inst = super(Node, self).instantiate(**params)  # abstract=False,
         # todo: Разобраться с abstract при реинстанцированиях
         # todo: Сделать поиск ссылок в параметрах URI
