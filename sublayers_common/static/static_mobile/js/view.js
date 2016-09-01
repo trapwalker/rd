@@ -37,6 +37,10 @@ function client_ready() {
         clientManager.sendFireDischarge('left');
     });
 
+     $('#RocketFireBtn').click(function(event){
+         clientManager.sendRocket();
+    });
+
     $('#consoleBtn').click(function(){
         $('#consoleWrap').css('display', 'block');
     });
