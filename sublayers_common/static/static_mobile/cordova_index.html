@@ -14,9 +14,11 @@
     <ul>
         <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.105/</li>
         <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.104/</li>
-        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.6/</li>
+        <li style="cursor: pointer" onclick="li_click_handler(this)">http://192.168.1.7/</li>
         <li style="cursor: pointer" onclick="li_click_handler(this)">http://roaddogs.ru/</li>
     </ul>
+    <input id="adress_mobile_host" value="http://roaddogs.ru/">
+    <button onclick="connect_click_handler(this)">Connect</button>
 </div>
 </body>
 
@@ -58,8 +60,15 @@
         }
     }
 
-    function li_click_handler(elem) {
+    function li_click_handler(elem){
         var link = $(elem).text();
+        $('#adress_mobile_host').val(link);
+    }
+
+
+    function connect_click_handler(elem) {
+        //var link = $(elem).text();
+        var link = $('#adress_mobile_host').val();
         var header_ready = false;
         var content_ready = false;
         console.log(link, elem);
