@@ -27,7 +27,7 @@ class ServerAPI(API):
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
                 # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
-                agent_exemplar = self.server.reg['agents/user'].instantiate(
+                agent_exemplar = self.server.reg['agents/user/coordinator'].instantiate(
                     name=str(user._id), login=user.name, fixtured=False,
                 )
                 # todo: временный костыль - убрать потом!
@@ -64,7 +64,7 @@ class ServerAPI(API):
         if not agent:
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['agents/user'].instantiate(
+                agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     #storage=self.application.reg_agents,
                     login=user.name,
                     profile_id=str(user._id),
