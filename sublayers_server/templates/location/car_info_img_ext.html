@@ -1,12 +1,12 @@
 <div class="car-info-block-picture-main">
     {% import tornado as tornado %}
     {% raw tornado.template.Loader('../sublayers_common/').load(car.armorer_car).generate(car=car, need_css_only=True) %}
-    <div class="car-info-block-picture" style="background: url({{ static_url(static_world_link_repr(car.hangar_car)) }}) no-repeat center; z-index: 1"></div>
+    <div class="car-info-block-picture" style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(car.hangar_car))) }}) no-repeat center; z-index: 1"></div>
     {% set scale = getattr(car, 'image_scale') %}
     {% for k, v in car.iter_slots(tags='tuner') %}
         {% if v is not None %}
             {% if v.images[car.node_hash()]['side']['link'] is not None %}
-            <div class="car-info-block-picture" style="background: url({{ static_url(static_world_link_repr(v.images[car.node_hash()]['side']['link'])) }} ) no-repeat center;
+            <div class="car-info-block-picture" style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(v.images[car.node_hash()]['side']['link']))) }} ) no-repeat center;
                     z-index: {{ v.images[car.node_hash()]['side']['z_index'] }}"></div>
             {% end %}
         {% end %}
@@ -18,7 +18,7 @@
                 {% set scale_images_links = getattr(scale_images, str(scale)) %}
                 <div class="armorer-slot for-journal side_{{ k }}_{{ car.node_html() }} shift-for-journal_{{ car.node_html() }}" style="z-index: 2">
                     <div class="armorer-car-slot-picture armorer_side_{{ v.direction }} journal-view-ammo_side_{{ v.direction }}"
-                         style="background: url({{ static_url(static_world_link_repr(getattr(scale_images_links, 'armorer_side_' + v.direction))) }} ) no-repeat center;"></div>
+                         style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(getattr(scale_images_links, 'armorer_side_' + v.direction)))) }} ) no-repeat center;"></div>
                 </div>
             {% end %}
         {% end %}

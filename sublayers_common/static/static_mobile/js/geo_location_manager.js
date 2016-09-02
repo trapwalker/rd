@@ -28,12 +28,13 @@ var GeoLocationManager = (function(_super){
 
     GeoLocationManager.prototype._watch_success = function(position) {
         var pos = mapManager.project({lat: position.coords.latitude, lng: position.coords.longitude}, 18);
-
         clientManager.sendGeoCoord(this.geo_position_to_dict(position), pos);
+        if (position.coords.speed)
+            $('.v-indicator').text(((position.coords.speed * 3600) / 1000).toFixed(2) + ' km/h');
+        else
+            $('.v-indicator').text('-');
 
-        $('.v-indicator').text(position.coords.speed + ' km/h');
         // todo: стереть это потом!
-
         if (user && user.userCar && this.kalman_set) {
             var last_kalman_pos = this.kalman_filter.get_lat_lng();
             this.kalman_filter.process(position.coords.latitude, position.coords.longitude, position.coords.accuracy, position.timestamp);

@@ -37,7 +37,7 @@
                  onmouseover="CarInfoBlockAmmoInfoView('{{ v.description }}')" onmouseout="CarInfoBlockAmmoInfoHide()">
                 <div class="npcInventory-pictureWrap town-interlacing">
                     <div class="car-info-block-itemy-picture"
-                         style="background: url({{ static_url(static_world_link_repr(v.inv_icon_big)) }} ) no-repeat center;"></div>
+                         style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(v.inv_icon_big))) }} ) no-repeat center;"></div>
                 </div>
                 <div class="npcInventory-name">{{ v.title }}</div>
             </div>

@@ -34,4 +34,36 @@ var CarManager = (function () {
     return CarManager;
 })();
 
+
+function CarTableInfoMenuClick(target) {
+    var jq_target = $(target);
+    var jq_parent = jq_target.parent();
+    var jq_grand_parent = jq_target.parent().parent();
+    jq_parent.children().removeClass('active');
+    jq_target.addClass('active');
+    var page = jq_target.data('page');
+
+    var bodys = jq_grand_parent.find('.car-info-block-body-right-list');
+    bodys.removeClass('active');
+    for (var  i = 0; i < bodys.length; i++){
+        var jq_elem = $(bodys[i]);
+        if (jq_elem.hasClass(page)){
+            jq_elem.addClass('active');
+        }
+    }
+}
+
+function CarInfoBlockAmmoInfoView(description) {
+    if (locationManager && locationManager.in_location_flag) {
+        locationManager.panel_right.show({text: description}, 'description');
+    }
+}
+
+function CarInfoBlockAmmoInfoHide(descripion) {
+    if (locationManager && locationManager.in_location_flag) {
+        locationManager.panel_right.show({text: ''}, 'description');
+    }
+}
+
+
 var carManager = new CarManager();

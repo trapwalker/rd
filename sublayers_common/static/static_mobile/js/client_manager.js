@@ -835,7 +835,6 @@ var ClientManager = (function () {
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
-        return;
         // Эта функция заполняет только шаблоны
         user.templates = {};
         if (event.example_car) {
@@ -849,7 +848,6 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
-        return;
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
         user.example_agent = event.example_agent;
@@ -862,12 +860,12 @@ var ClientManager = (function () {
 
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
-        if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
-            var inv = this._getInventory(event.car_inventory);
-            if (inventoryList.getInventory(inv.owner_id))
-                inventoryList.delInventory(inv.owner_id);
-            inventoryList.addInventory(inv);
-        }
+        //if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
+        //    var inv = this._getInventory(event.car_inventory);
+        //    if (inventoryList.getInventory(inv.owner_id))
+        //        inventoryList.delInventory(inv.owner_id);
+        //    inventoryList.addInventory(inv);
+        //}
 
         // Проверить не надо ли запустить окно информации об автомобиле
         if (carManager.is_active) carManager.open_window();
@@ -876,11 +874,10 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfRPGMessage = function(event) {
-        return;
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_agent.rpg_info = event.rpg_info;
-        characterManager.redraw();
-        locationManager.update();
+        //characterManager.redraw();
+        //locationManager.update();
     };
 
     ClientManager.prototype.HangarInfoMessage = function (event) {

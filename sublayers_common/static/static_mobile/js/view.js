@@ -26,6 +26,7 @@ function client_ready() {
     });
 
     $('#AutoFireBtn').click(function(event){
+        //carManager.get_info();
         clientManager.sendFireAutoEnable(!$(this).hasClass('active'));
         $(this).toggleClass('active');
     });
@@ -110,3 +111,4 @@ var user;
 var clientManager;
 var ownerList;
 var rpcCallList;
+var locationManager = null;

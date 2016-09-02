@@ -29,6 +29,19 @@ body {
     pointer-events: none;
 }
 
+.mainDivWindow {
+    pointer-events: auto;
+    transform: scale(0.75, 0.75);
+}
+
+#bodydiv{
+    position: absolute;
+    pointer-events: none;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
 /* Тестовая ерунда! Удалить потом */
 #zoomators {
     position: absolute;
