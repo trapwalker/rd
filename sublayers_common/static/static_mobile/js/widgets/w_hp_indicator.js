@@ -14,7 +14,7 @@ var WHPIndicator = (function (_super) {
 
     WHPIndicator.prototype.change = function (time) {
         var hp = this.car.getCurrentHP(time);
-        this.jq_main_div.text(hp.toFixed(4));
+        this.jq_main_div.text(hp.toFixed(2));
     };
 
     WHPIndicator.prototype.delFromVisualManager = function () {
