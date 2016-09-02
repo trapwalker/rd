@@ -25,15 +25,15 @@ function client_ready() {
         mapManager.setZoom(mapManager.getZoom() + $(this).data('zoom'))
     });
 
-    $('#carInfoBtn').click(function(event){
+    $('#carInfoBtn').click(function(event) {
         carManager.get_info();
     });
 
-    $('#inventoryInfoBtn').click(function(event){
-        carManager.get_info();
+    $('#inventoryInfoBtn').click(function(event) {
+        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null, null, null);
     });
 
-    $('#AutoFireBtn').click(function(event){
+    $('#AutoFireBtn').click(function(event) {
         clientManager.sendFireAutoEnable(!$(this).hasClass('active'));
         $(this).toggleClass('active');
     });

@@ -860,12 +860,12 @@ var ClientManager = (function () {
 
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
-        //if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
-        //    var inv = this._getInventory(event.car_inventory);
-        //    if (inventoryList.getInventory(inv.owner_id))
-        //        inventoryList.delInventory(inv.owner_id);
-        //    inventoryList.addInventory(inv);
-        //}
+        if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
+            var inv = this._getInventory(event.car_inventory);
+            if (inventoryList.getInventory(inv.owner_id))
+                inventoryList.delInventory(inv.owner_id);
+            inventoryList.addInventory(inv);
+        }
 
         // Проверить не надо ли запустить окно информации об автомобиле
         if (carManager.is_active) carManager.open_window();
