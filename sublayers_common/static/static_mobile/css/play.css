@@ -64,7 +64,33 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    box-sizing: border-box;
 }
+
+.mobile-btn-menu {
+    position: relative;
+    float: left;
+    margin: 10px 10px;
+    padding: 5px 5px;
+    pointer-events: auto;
+    cursor: default;
+    font: 10pt MICRADI;
+    color: #2ffa00;
+    letter-spacing: 1px;
+}
+
+.zoom-btn {
+    pointer-events: auto;
+    width: 40px;
+    height: 40px;
+    left: 20px;
+    font-family: Arial;
+    line-height: 40px;
+    color: #2ffa00;
+    font-size: 40px;
+}
+.zoom-btn.plus { bottom: 80px; }
+.zoom-btn.minus { bottom: 20px; font-size: 60px; line-height: 34px; }
 
 .zoomator {}
 
@@ -172,7 +198,6 @@ position: absolute;
 #BotsPositionAnimation.active { background-color: #a0f19f;}
 
 
-
 #AutoFireBtn {
     width: 40px;
     height: 40px;
@@ -197,7 +222,7 @@ position: absolute;
     line-height: 40px;
 }
 
-#AutoFireBtn, #DischargeFireBtn, #RocketFireBtn {
+#AutoFireBtn, #DischargeFireBtn, #RocketFireBtn, .zoom-btn {
     background-color: #0e4b00;
     border: 2px solid #2ffa00;
     text-align: center;

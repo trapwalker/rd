@@ -25,8 +25,15 @@ function client_ready() {
         mapManager.setZoom(mapManager.getZoom() + $(this).data('zoom'))
     });
 
+    $('#carInfoBtn').click(function(event){
+        carManager.get_info();
+    });
+
+    $('#inventoryInfoBtn').click(function(event){
+        carManager.get_info();
+    });
+
     $('#AutoFireBtn').click(function(event){
-        //carManager.get_info();
         clientManager.sendFireAutoEnable(!$(this).hasClass('active'));
         $(this).toggleClass('active');
     });

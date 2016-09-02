@@ -5,6 +5,11 @@
     }
 
     @font-face {
+        font-family: MICRADI;
+        src: url('http://{{ host_name }}/static/fonts/micradi.ttf');
+    }
+
+    @font-face {
         font-family: FreePixel;
         src: url('http://{{ host_name }}/static/fonts/FreePixel.ttf');
     }
@@ -23,12 +28,14 @@
 </div>
 <div id="overlay">
     <div id="zoomators">
-        <div class="zoomator mobile-btn" data-zoom="-1">minus</div>
-        <div class="zoomator mobile-btn" data-zoom="1">plus</div>
-        <div id="consoleBtn" class="mobile-btn">Debug</div>
-        <div id="menuBtn" class="mobile-btn">Menu</div>
+        <div id="carInfoBtn" class="mobile-btn-menu" data-zoom="-1">Car</div>
+        <div id="inventoryInfoBtn" class="mobile-btn-menu" data-zoom="-1">Bag</div>
+{#        <div id="consoleBtn" class="mobile-btn" style="display: none">Debug</div>#}
+        <div id="menuBtn" class="mobile-btn" style="display: none">Menu</div>
         <div id="sendPosition" class="mobile-btn" style="display: none;">PosToSrv</div>
     </div>
+    <div class="zoomator zoom-btn plus" data-zoom="1">+</div>
+    <div class="zoomator zoom-btn minus" data-zoom="-1">-</div>
     <div id="consoleWrap" style="z-index: 999;">
         <div id="console">В данном режиме консоль не доступна. Воспользуйтесь браузерной консолью (F12 или Ctrl + C)</div>
         <div id="consoleClose" class="mobile-btn">Close</div>
