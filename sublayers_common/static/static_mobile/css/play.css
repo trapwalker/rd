@@ -232,3 +232,14 @@ position: absolute;
 
 #AutoFireBtn.fire-btn.active, #DischargeFireBtn:active, #RocketFireBtn:active { background-color: #31c811;}
 
+#dieWindow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #082801;
+    overflow: hidden;
+    display: none;
+    color: #31c811;
+    text-align: center;
+    padding-top: 30px;
+}

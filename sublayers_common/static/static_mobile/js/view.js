@@ -43,10 +43,12 @@ function client_ready() {
         clientManager.sendFireDischarge('right');
         clientManager.sendFireDischarge('back');
         clientManager.sendFireDischarge('left');
+        navigator.vibrate(250);
     });
 
      $('#RocketFireBtn').click(function(event){
          clientManager.sendRocket();
+         navigator.vibrate(500);
     });
 
     $('#consoleBtn').click(function(){

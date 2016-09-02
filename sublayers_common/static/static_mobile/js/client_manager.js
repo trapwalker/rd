@@ -456,6 +456,7 @@ var ClientManager = (function () {
                 window.location.reload();
             }
         });
+
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
@@ -470,6 +471,9 @@ var ClientManager = (function () {
         //    }
         //});
         //window.location = '/#quick';
+         navigator.vibrate([300, 400, 400, 500, 1500]);
+        geoLocationManager.stop_watch();
+        $('#dieWindow').css('display', 'block');
     };
 
     ClientManager.prototype.Chat = function (event){
