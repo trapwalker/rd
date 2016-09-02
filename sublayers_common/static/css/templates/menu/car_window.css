@@ -43,7 +43,7 @@
     box-sizing: border-box;
     overflow: hidden;
 }
-.car-window-picture .car-info-block-picture-main { top: 120px; }
+.car-window-picture .car-info-block-picture-main { position: absolute; top: 120px; }
 #townMenuLocation .car-window-picture .car-info-block-picture-main { top: 110px; }
 
 .car-window-name {

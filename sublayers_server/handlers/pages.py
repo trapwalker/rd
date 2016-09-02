@@ -19,10 +19,10 @@ class PlayHandler(BaseHandler):
     def get(self):
         user = self.current_user
         if user:
-            if user.is_quick_user and user.car_die:
-                self.redirect('/#quick')
-            else:
-                self.render("play.html", ws_port=options.ws_port, map_link=options.map_link)
+            #if user.is_quick_user and user.car_die:
+            #    self.redirect('/#quick')
+            #else:
+                self.render("play.html", ws_port=options.ws_port, map_link=options.map_link, host_name=options.mobile_host)
         else:
             self.redirect(self.get_login_url())
 

@@ -1,13 +1,24 @@
 <style>
     @font-face {
         font-family: Nouveau_IBM;
-        src: url('http://'{{host_name}}'/static/fonts/Nouveau_IBM.ttf'));
+        src: url('http://{{ host_name }}/static/fonts/Nouveau_IBM.ttf');
     }
-    body {font-family: Nouveau_IBM, sans-serif;}
 
+    @font-face {
+        font-family: MICRADI;
+        src: url('http://{{ host_name }}/static/fonts/micradi.ttf');
+    }
+
+    @font-face {
+        font-family: FreePixel;
+        src: url('http://{{ host_name }}/static/fonts/FreePixel.ttf');
+    }
+
+    body {font-family: Nouveau_IBM, sans-serif;}
     #AutoFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/a.png') center center no-repeat;}
     #DischargeFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/z.png') center center no-repeat;}
     #RocketFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/map_icon_rocket.png') center center no-repeat;}
+    .windowDragCloseHeader-close { background: transparent url('http://{{ host_name }}/static/img/windows/close_cross/cross.png') 50% 50% no-repeat !important; }
 </style>
 
 
@@ -17,12 +28,14 @@
 </div>
 <div id="overlay">
     <div id="zoomators">
-        <div class="zoomator mobile-btn" data-zoom="-1">minus</div>
-        <div class="zoomator mobile-btn" data-zoom="1">plus</div>
-        <div id="consoleBtn" class="mobile-btn">Debug</div>
-        <div id="menuBtn" class="mobile-btn">Menu</div>
+        <div id="carInfoBtn" class="mobile-btn-menu" data-zoom="-1">Car</div>
+        <div id="inventoryInfoBtn" class="mobile-btn-menu" data-zoom="-1">Bag</div>
+{#        <div id="consoleBtn" class="mobile-btn" style="display: none">Debug</div>#}
+        <div id="menuBtn" class="mobile-btn" style="display: none">Menu</div>
         <div id="sendPosition" class="mobile-btn" style="display: none;">PosToSrv</div>
     </div>
+    <div class="zoomator zoom-btn plus" data-zoom="1">+</div>
+    <div class="zoomator zoom-btn minus" data-zoom="-1">-</div>
     <div id="consoleWrap" style="z-index: 999;">
         <div id="console">В данном режиме консоль не доступна. Воспользуйтесь браузерной консолью (F12 или Ctrl + C)</div>
         <div id="consoleClose" class="mobile-btn">Close</div>
@@ -59,6 +72,8 @@
     <span id="settings_ws_port">{{ ws_port }}</span>
     <span id="settings_map_link">{{ map_link }}</span>
 </div>
+<div id="bodydiv"></div>
+
 
 {% if is_mobile %}
 {% include 'js_list_temp.html' %}

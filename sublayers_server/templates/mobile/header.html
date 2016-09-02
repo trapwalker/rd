@@ -2,11 +2,20 @@
 
 <link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/third_party/leaflet.css')) }}"/>
 
+<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/window.css')) }}"/>
+<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/templates/menu/car_window.css')) }}"/>
+<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/templates/car_info_block.css')) }}"/>
+<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/templates/locations/armorer.css')) }}"/>
+<link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/templates/locations/npc_inventory.css')) }}"/>
+
 <!--<script src='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.js'></script>-->
 <!--<link href='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.css' rel='stylesheet' />-->
 
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.14.1/ol.min.js" type="text/javascript"></script>-->
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.14.1/ol.min.css" type="text/css">-->
+
+<script src="{{ static_mobile_link_repr(static_url('js/third_party/jquery-ui.min.js')) }}"></script>
+<script src="{{ static_mobile_link_repr(static_url('js/window.js')) }}"></script>
 
 
 {% if not is_mobile %}
@@ -15,3 +24,7 @@
         <script src="{{ static_mobile_link_repr(static_url(link)) }}"></script>
     {% end %}
 {% end %}
+<script src="{{ static_mobile_link_repr(static_url('js/menu/car_manager.js')) }}"></script>
+
+<script src="{{ static_mobile_link_repr(static_url('js/widgets/w_inventory_item.js')) }}"></script>
+<script src="{{ static_mobile_link_repr(static_url('js/inventory_manager.js')) }}"></script>

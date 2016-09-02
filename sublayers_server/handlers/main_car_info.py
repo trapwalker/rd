@@ -10,6 +10,7 @@ from sublayers_common.handlers.base import BaseHandler
 
 class MenuCarHandler(BaseHandler):
     def get(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
         self.render("menu/car_window.html")
 
 
