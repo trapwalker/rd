@@ -62,7 +62,7 @@ var GeoLocationManager = (function(_super){
     };
 
     GeoLocationManager.prototype._watch_error = function(error) {
-        alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+        //alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
     };
 
     GeoLocationManager.prototype.geo_position_to_dict = function (position) {

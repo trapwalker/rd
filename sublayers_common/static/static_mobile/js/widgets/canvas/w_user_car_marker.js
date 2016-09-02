@@ -76,7 +76,7 @@ var WCanvasCarMarker = (function (_super) {
         this.last_direction = car_direction;
 
         ctx.save(); // для возврата от поворота
-        ctx.rotate(car_direction);
+        ctx.rotate(car_direction + this.icon_obj.icon_correct_angle);
         //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
         ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
         ctx.restore(); // Возврат после поворота
@@ -94,7 +94,11 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype.updateIcon = function() {
         if (this.car == user.userCar)
             this.icon_obj = iconsLeaflet.getIcon('icon_party_car', 'canvas_icon');
-        else
+
+        if (this.car.cls == 'Rocket')
+            this.icon_obj = iconsLeaflet.getIcon('map_icon_rocket', 'canvas_icon');
+
+        if (!this.icon_obj)
             this.icon_obj = iconsLeaflet.getIcon('icon_neutral_car', 'canvas_icon');
     };
 

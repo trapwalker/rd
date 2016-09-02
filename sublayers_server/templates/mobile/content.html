@@ -1,3 +1,16 @@
+<style>
+    @font-face {
+        font-family: Nouveau_IBM;
+        src: url('http://'{{host_name}}'/static/fonts/Nouveau_IBM.ttf'));
+    }
+    body {font-family: Nouveau_IBM, sans-serif;}
+
+    #AutoFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/a.png') center center no-repeat;}
+    #DischargeFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/z.png') center center no-repeat;}
+    #RocketFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/map_icon_rocket.png') center center no-repeat;}
+</style>
+
+
 <div id="main">
     <div id="map" class="global-shift global-size"></div>
     <canvas id="canvas" class="global-shift global-size"></canvas>
@@ -10,11 +23,11 @@
         <div id="menuBtn" class="mobile-btn">Menu</div>
         <div id="sendPosition" class="mobile-btn" style="display: none;">PosToSrv</div>
     </div>
-    <div id="consoleWrap">
+    <div id="consoleWrap" style="z-index: 999;">
         <div id="console">В данном режиме консоль не доступна. Воспользуйтесь браузерной консолью (F12 или Ctrl + C)</div>
         <div id="consoleClose" class="mobile-btn">Close</div>
     </div>
-    <div id="menuWrap">
+    <div id="menuWrap" style="z-index: 999;">
         <div id="menu">
             <div id="KalmanSet" class="menu-btn">Client Kalman</div>
             <div id="CameraPositionAnimation" class="menu-btn active">CameraPositionAnimation</div>
@@ -23,8 +36,9 @@
         </div>
         <div id="menuClose" class="mobile-btn">Close</div>
     </div>
-    <div id="AutoFireBtn" class="fire-btn mobile-btn">A</div>
-    <div id="DischargeFireBtn" class="fire-btn mobile-btn">Z</div>    
+    <div id="AutoFireBtn" class="fire-btn mobile-btn"></div>
+    <div id="DischargeFireBtn" class="fire-btn mobile-btn"></div>
+    <div id="RocketFireBtn" class="fire-btn mobile-btn"></div>
     <div id="indicators">
         <div class="indicator-line">
             <div class="indicator-label">Ping:</div>

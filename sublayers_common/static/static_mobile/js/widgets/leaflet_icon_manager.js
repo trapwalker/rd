@@ -14,6 +14,9 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_party_car', host_name + '/static/img/char_icons/party/car.png', [53, 53], this.max_id++);
         this.load_new_icon('icon_neutral_car', host_name + '/static/img/char_icons/neutral/car.png', [53, 53], this.max_id++);
         this.load_new_icon('icon_dead_car', host_name + '/static/img/char_icons/dead/car.png', [53, 53], this.max_id++);
+        this.load_new_icon('map_icon_rocket', host_name + '/static/img/map_icons/transport/motorcycle_002.png', [14, 7], this.max_id++, null, -Math.PI / 2.);
+
+
     }
     // icon_name - имя иконки, type - canvas_icon | icon (для леафлета)
     LeafletIconManager.prototype.getIcon = function(icon_name, type){
@@ -28,9 +31,10 @@ var LeafletIconManager = (function(){
         }
     };
 
-    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor){
+    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor, icon_correct_angle){
         //console.log('LeafletIconManager.prototype.load_new_icon', icon_name, icon_url);
         var img = new Image();
+        icon_correct_angle = icon_correct_angle || 0.0;
         this.count_loading_img++;
         img.onload = function() {
             iconsLeaflet.icons[icon_name] = {
@@ -41,7 +45,8 @@ var LeafletIconManager = (function(){
                 }),
                 canvas_icon: {
                     img: img,
-                    iconSize: [this.width, this.height]
+                    iconSize: [this.width, this.height],
+                    icon_correct_angle: icon_correct_angle
                 },
                 id: icon_id
             };

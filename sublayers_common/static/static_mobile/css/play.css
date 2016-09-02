@@ -161,33 +161,36 @@ position: absolute;
 
 
 #AutoFireBtn {
-    position: absolute;
     width: 40px;
     height: 40px;
     bottom: 30px;
     right: 135px;
     line-height: 40px;
-    text-align: center;
-    border-radius: 50%;
-    background-color: #f1abb0;
-    border: 2px solid limegreen;
 }
-#AutoFireBtn.fire-btn.active { background-color: #a0f19f;}
-
 
 #DischargeFireBtn {
-    position: absolute;
     width: 70px;
     height: 70px;
     bottom: 40px;
     right: 30px;
-    border-radius: 50%;
     line-height: 70px;
-    text-align: center;
-    background-color: #f1abb0;
-    border: 2px solid limegreen;
 }
 
-#DischargeFireBtn:active {
-    background-color: #a0f19f;
+#RocketFireBtn {
+    width: 40px;
+    height: 40px;
+    bottom: 135px;
+    right: 20px;
+    line-height: 40px;
 }
+
+#AutoFireBtn, #DischargeFireBtn, #RocketFireBtn {
+    background-color: #0e4b00;
+    border: 2px solid #2ffa00;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+}
+
+#AutoFireBtn.fire-btn.active, #DischargeFireBtn:active, #RocketFireBtn:active { background-color: #31c811;}
+
