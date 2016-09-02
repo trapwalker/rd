@@ -1,6 +1,5 @@
 <link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('static_mobile/css/play.css')) }}"/>
 
-<script src="{{ static_mobile_link_repr(static_url('js/third_party/leaflet-src.js')) }}"></script>
 <link rel="stylesheet" href="{{ static_mobile_link_repr(static_url('css/third_party/leaflet.css')) }}"/>
 
 <!--<script src='https://api.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.js'></script>-->
@@ -9,34 +8,10 @@
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.14.1/ol.min.js" type="text/javascript"></script>-->
 <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.14.1/ol.min.css" type="text/css">-->
 
-<script src="{{ static_mobile_link_repr(static_url('js/third_party/jquery.min.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/geometric.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/generator_ID.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/rpc_list.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/resource_load_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/message_stream.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/visual_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/time_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/modelJS.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/connector.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/map_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/client_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/map_canvas_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/geo_location_manager.js')) }}"></script>
 
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/visual_object.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/leaflet_icon_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/w_map_position.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/canvas/w_user_car_marker.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/canvas/w_fire_sectors_scaled.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/canvas/w_fire_radial_grid.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/canvas/w_observing_range.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/canvas/w_strategy_mode.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/widgets/w_hp_indicator.js')) }}"></script>
-
-
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/fire_manager.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/effects/e_points_tracer.js')) }}"></script>
-<script src="{{ static_mobile_link_repr(static_url('js/effects/e_fire_effect_png_animation.js')) }}"></script>
-
-<script src="{{ static_mobile_link_repr(static_url('static_mobile/js/view.js')) }}"></script>
+{% if not is_mobile %}
+    {% include 'js_list_temp.html' %}
+    {% for link in js_list %}
+        <script src="{{ static_mobile_link_repr(static_url(link)) }}"></script>
+    {% end %}
+{% end %}

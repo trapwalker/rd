@@ -14,12 +14,12 @@ class MobileHeaderHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.render("mobile/header.html")
+        self.render("mobile/header.html", is_mobile=True)
 
 
 class MobileContentHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.render("mobile/content.html", ws_port=options.ws_port, map_link=options.map_link, host_name=options.mobile_host)
+        self.render("mobile/content.html", ws_port=options.ws_port, map_link=options.map_link, host_name=options.mobile_host, is_mobile=True)
 

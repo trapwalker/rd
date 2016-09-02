@@ -59,3 +59,19 @@
     <span id="settings_ws_port">{{ ws_port }}</span>
     <span id="settings_map_link">{{ map_link }}</span>
 </div>
+
+{% if is_mobile %}
+{% include 'js_list_temp.html' %}
+{% import os as os %}
+{% import os.path as path %}
+{% set srv_path = os.getcwd() %}
+{% import tornado as tornado %}
+<script>
+    {% for link in js_list %}
+        {% set file_link =  path.join(srv_path, path.join('../sublayers_common/static/', link)) %}
+        {% raw open(file_link).read() %}
+{#        {% set file_link =  path.join(srv_path, path.join('../sublayers_common/static/', link)) %}#}
+{#        {% raw tornado.template.Loader('/../../').load(file_link).generate() %}#}
+    {% end %}
+</script>
+{% end %}
