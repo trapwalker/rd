@@ -185,7 +185,6 @@ position: absolute;
 }
 
 #AutoFireBtn, #DischargeFireBtn, #RocketFireBtn {
-    color: #2ffa00;
     background-color: #0e4b00;
     border: 2px solid #2ffa00;
     text-align: center;
@@ -193,5 +192,5 @@ position: absolute;
     position: absolute;
 }
 
-#AutoFireBtn.fire-btn.active, #DischargeFireBtn:active, #RocketFireBtn:active { background-color: #31c811; color: #082801;}
+#AutoFireBtn.fire-btn.active, #DischargeFireBtn:active, #RocketFireBtn:active { background-color: #31c811;}
 
