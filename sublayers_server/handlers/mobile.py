@@ -21,5 +21,6 @@ class MobileContentHandler(BaseHandler):
     @tornado.gen.coroutine
     def get(self):
         self.set_header("Access-Control-Allow-Origin", "*")
+        yield self._quick_registration()
         self.render("mobile/content.html", ws_port=options.ws_port, map_link=options.map_link, host_name=options.mobile_host, is_mobile=True)
 
