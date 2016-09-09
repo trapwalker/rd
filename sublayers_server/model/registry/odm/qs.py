@@ -30,7 +30,7 @@ class CachebleQuerySet(QuerySet):
         return result
 
     @return_future
-    def get(self, id=None, callback=None, alias=None, **kwargs):
+    def get(self, id=None, callback=None, alias=None, reload=False, **kwargs):
         if URI.try_or_default(id):  # В качестве идентификатора может быть подан URI и тогда поиск будет вестись по нему
             # todo: (!) clean uri params
             kwargs['uri'] = id
@@ -39,7 +39,11 @@ class CachebleQuerySet(QuerySet):
         if id:
             kwargs['id'] = id
 
-        obj = self.__klass__.search_in_cache(**kwargs)
+        if reload:
+            self.__klass__.clean_from_cache(**kwargs)
+            obj = None
+        else:
+            obj = self.__klass__.search_in_cache(**kwargs)
         # log.debug('qs.get({id}, {kwargs}):  # id(obj) from cache = {oid}'.format(oid=None if obj is None else __builtins__['id'](obj), **locals()))
         if obj is None:
             super(CachebleQuerySet, self).get(callback=callback, alias=alias, **kwargs)
