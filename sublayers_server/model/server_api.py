@@ -28,34 +28,23 @@ class ServerAPI(API):
             if agent_exemplar is None:
                 # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
                 agent_exemplar = self.server.reg['agents/user'].instantiate(
-                    name=str(user._id), login=user.name, fixtured=False,
+                    name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id)
                 )
-                # todo: временный костыль - убрать потом!
                 yield agent_exemplar.load_references()
+                yield agent_exemplar.save(upsert=True)
                 role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
                 agent_exemplar.role_class = role_class_ex
 
-                # Установка классового навыка
-                empty_skill_mod = self.server.reg['rpg_settings/class_skill/empty_0']
-                # # todo: Перебирать скиллы в реестре
-                # for skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                #     skill = getattr(agent_exemplar, skill_name)
-                #     skill.mod = empty_skill_mod
-                #
-                # for class_skill in role_class_ex.class_skills:
-                #     # todo: Перебирать объекты реестра
-                #     if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                #         skill = getattr(agent_exemplar, class_skill.target)
-                #         skill.mod = class_skill
-
+                for class_skill in role_class_ex.class_skills:
+                    # todo: Перебирать объекты реестра
+                    if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                        skill = getattr(agent_exemplar, class_skill.target)
+                        skill.mod = class_skill
 
                 yield agent_exemplar.save(upsert=True)
                 log.debug('Use agent exemplar: %s', agent_exemplar)
 
-            # todo: Создавать агента на основе экземпляра
             # todo: rename User to UserAgent
-            # todo: Это неправильно, некрасиво, переделать как-то !
-
             agent = User(
                 server=self.server,
                 user=user,
