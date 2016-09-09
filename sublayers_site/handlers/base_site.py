@@ -23,7 +23,7 @@ class BaseSiteHandler(BaseHandler):
         name_car = None
         html_agent = None
 
-        agent_example = yield Agent.objects.get(profile_id=str(user._id))
+        agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
         ex_car = None
         if agent_example:
             user_info['driving'] = agent_example.driving.value
