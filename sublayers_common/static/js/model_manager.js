@@ -737,7 +737,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        console.log('ClientManager.prototype.EnterToLocation', event);
+        //console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
         mapCanvasManager.is_canvas_render = false;
     };
@@ -968,7 +968,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
-        console.log('ClientManager.prototype.TraderInfoMessage', event);
+        //console.log('ClientManager.prototype.TraderInfoMessage', event);
         // todo: чуть-чуть ниже расскоментировать прайс, когда оно будет починено
         var inv = this._getInventory(event.inventory);
         if (inventoryList.getInventory(inv.owner_id))
@@ -1011,7 +1011,7 @@ var ClientManager = (function () {
 
     // Стратегический режим
     ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
-        console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
+        //console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
     };
 
@@ -1536,7 +1536,7 @@ var ClientManager = (function () {
     // Торговец
 
     ClientManager.prototype.sendGetTraderInfo = function (npc) {
-        console.log('ClientManager.prototype.sendGetParkingInfo', npc);
+        //console.log('ClientManager.prototype.sendGetParkingInfo', npc);
         var mes = {
             call: "get_trader_info",
             rpc_call_id: rpcCallList.getID(),
@@ -1878,7 +1878,7 @@ var ClientManager = (function () {
 
     // Запросы стратегического режима
     ClientManager.prototype.sendGetStrategyModeObjects = function() {
-        console.log('ClientManager.prototype.sendGetStrategyModeObjects');
+        //console.log('ClientManager.prototype.sendGetStrategyModeObjects');
         var mes = {
             call: "get_strategy_mode_info_objects",
             rpc_call_id: rpcCallList.getID(),

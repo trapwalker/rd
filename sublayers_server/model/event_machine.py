@@ -73,6 +73,7 @@ class Server(object):
         self.quick_game_cars_proto = []
         self.quick_game_start_pos = Point(12468002, 26989281)
 
+
         #self.ioloop.add_callback(callback=self.load_registry)
 
     @async_call_deco

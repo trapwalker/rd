@@ -195,7 +195,7 @@ var LocationTrainerNPC = (function (_super) {
     };
 
     LocationTrainerNPC.prototype.update = function() {
-        console.log('LocationTrainerNPC.prototype.update');
+        //console.log('LocationTrainerNPC.prototype.update');
         this.clear();
         this.cur_level = user.example_agent.rpg_info.cur_lvl;
         var self = this;

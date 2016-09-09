@@ -27,13 +27,28 @@ class ServerAPI(API):
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
                 # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
-                agent_exemplar = self.server.reg['agents/user/coordinator'].instantiate(
+                agent_exemplar = self.server.reg['agents/user'].instantiate(
                     name=str(user._id), login=user.name, fixtured=False,
                 )
                 # todo: временный костыль - убрать потом!
                 yield agent_exemplar.load_references()
                 role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
                 agent_exemplar.role_class = role_class_ex
+
+                # Установка классового навыка
+                empty_skill_mod = self.server.reg['rpg_settings/class_skill/empty_0']
+                # # todo: Перебирать скиллы в реестре
+                # for skill_name in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                #     skill = getattr(agent_exemplar, skill_name)
+                #     skill.mod = empty_skill_mod
+                #
+                # for class_skill in role_class_ex.class_skills:
+                #     # todo: Перебирать объекты реестра
+                #     if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                #         skill = getattr(agent_exemplar, class_skill.target)
+                #         skill.mod = class_skill
+
+
                 yield agent_exemplar.save(upsert=True)
                 log.debug('Use agent exemplar: %s', agent_exemplar)
 

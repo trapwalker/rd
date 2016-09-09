@@ -284,15 +284,16 @@ var WCanvasStaticObjectMarker = (function (_super) {
     };
 
     WCanvasStaticObjectMarker.prototype.updateIcon = function() {
+        //console.log('WCanvasStaticObjectMarker.prototype.updateIcon');
         var mobj = this.mobj;
         var icon_name = 'car';
         switch (mobj.cls) {
             case 'Town':
-                switch (mobj.example.id) {
-                    case 'reg://registry/poi/locations/towns/prior':
+                switch (mobj.example.node_hash) {
+                    case 'reg:///registry/poi/locations/towns/prior':
                         icon_name = 'city_prior';
                         break;
-                    case 'reg://registry/poi/locations/towns/whitehill':
+                    case 'reg:///registry/poi/locations/towns/whitehill':
                         icon_name = 'city_whitehill';
                         break;
                     default:
