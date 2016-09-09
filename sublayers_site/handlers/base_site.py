@@ -50,7 +50,7 @@ class BaseSiteHandler(BaseHandler):
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent_example.car
             if ex_car:
-                user_info['position'] = ex_car.position.as_tuple()
+                user_info['position'] = ex_car.position.as_point().as_tuple()
 
             template_img = tornado.template.Loader(
                 "../sublayers_server/templates/site",
