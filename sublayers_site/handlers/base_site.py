@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
+from sublayers_server.model.registry.classes.agents import Agent
 
 import tornado.web
 import tornado.gen
@@ -14,16 +15,15 @@ from bson.objectid import ObjectId, InvalidId
 import json
 
 
-
-
 class BaseSiteHandler(BaseHandler):
+    @tornado.gen.coroutine
     def _get_car(self, user):
         user_info = dict(name=user.name)
         html_car_img = None
         name_car = None
         html_agent = None
 
-        agent_example = self.application.reg_agents.get([str(user._id)])
+        agent_example = yield Agent.objects.get(profile_id=str(user._id))
         ex_car = None
         if agent_example:
             user_info['driving'] = agent_example.driving.value
@@ -50,7 +50,7 @@ class BaseSiteHandler(BaseHandler):
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent_example.car
             if ex_car:
-                user_info['position'] = ex_car.position.as_tuple()
+                user_info['position'] = ex_car.position.as_point().as_tuple()
 
             template_img = tornado.template.Loader(
                 "../sublayers_server/templates/site",
@@ -58,15 +58,14 @@ class BaseSiteHandler(BaseHandler):
             ).load("car_info_ext_wrap.html")
             html_car_img = template_img.generate(car=ex_car)
 
-        return dict(
+        raise tornado.gen.Return(dict(
             user_info=user_info,
             html_car_img=html_car_img,
             name_car=None if ex_car is None else ex_car.name_car,
             html_agent=html_agent
-        )
+        ))
 
     def _get_quick_game(self):
-        car_examples = self.application.quick_game_cars_examples
         car_templates_list = []
 
         template_car = tornado.template.Loader(
@@ -74,7 +73,7 @@ class BaseSiteHandler(BaseHandler):
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")
 
-        for car_ex in car_examples:
-            html_car_img = template_car.generate(car=car_ex)
+        for car_proto in self.application.reg['world_settings'].quick_game_car:
+            html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)

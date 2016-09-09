@@ -3,14 +3,17 @@
 import logging
 log = logging.getLogger(__name__)
 
+import tornado.gen
+
 from sublayers_common.handlers.base import BaseHandler
-from sublayers_server.model.units import POIContainer
+from sublayers_server.model.poi_loot_objects import POIContainer
 from sublayers_server.model.barter import Barter
 
 
 class MainInventoryHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
@@ -19,8 +22,9 @@ class MainInventoryHandler(BaseHandler):
 
 
 class ContainerInventoryHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
@@ -34,8 +38,9 @@ class ContainerInventoryHandler(BaseHandler):
 
 
 class BarterInventoryHandler(BaseHandler):
+    @tornado.gen.coroutine
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)

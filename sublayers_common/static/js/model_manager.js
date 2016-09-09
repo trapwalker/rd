@@ -131,7 +131,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype.receiveMessage = function (params) {
         //console.log('ClientManager.prototype.receiveMessage', params);
-
         if (params.message_type == "push") {
             if(params.events){
                 var e = params.events[0];
@@ -502,7 +501,7 @@ var ClientManager = (function () {
             var uid = event.object_id;
             var car = visualManager.getModelObject(uid);
             if (! car) {
-                console.error('Out Error: Машины с данным id [' + uid + '] не существует на клиенте. Ошибка!', event);
+                //console.error('Out Error: Машины с данным id [' + uid + '] не существует на клиенте. Ошибка!', event);
                 return;
             }
 
@@ -906,11 +905,6 @@ var ClientManager = (function () {
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
     };
 
-    // Фраг
-    ClientManager.prototype.AddExperienceMessage = function (event) {
-        console.log('ClientManager.prototype.AddExperienceMessage', event);
-    };
-
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
@@ -932,8 +926,10 @@ var ClientManager = (function () {
         user.example_agent = event.example_agent;
         user.example_agent.rpg_info = event.rpg_info;
         user.avatar_link = event.avatar_link;
-        if (event.example_car && event.templates)
+        if (event.example_car && event.templates) {
             user.templates.html_car_img = event.templates.html_car_img;
+            user.templates.html_car_table = event.templates.html_car_table;
+        }
 
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
@@ -944,8 +940,16 @@ var ClientManager = (function () {
             inventoryList.addInventory(inv);
         }
 
-        characterManager.redraw();
+        // Проверить не надо ли запустить окно информации об автомобиле
+        if (carManager.is_active) carManager.open_window();
 
+        this.UserExampleSelfRPGMessage(event);
+    };
+
+    ClientManager.prototype.UserExampleSelfRPGMessage = function(event) {
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        user.example_agent.rpg_info = event.rpg_info;
+        characterManager.redraw();
         locationManager.update();
     };
 
@@ -965,13 +969,14 @@ var ClientManager = (function () {
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
         //console.log('ClientManager.prototype.TraderInfoMessage', event);
+        // todo: чуть-чуть ниже расскоментировать прайс, когда оно будет починено
         var inv = this._getInventory(event.inventory);
         if (inventoryList.getInventory(inv.owner_id))
             inventoryList.delInventory(inv.owner_id);
         inventoryList.addInventory(inv);
         if (locationManager.npc.hasOwnProperty(inv.owner_id)) {
             locationManager.npc[inv.owner_id].updateTraderInv();
-            locationManager.npc[inv.owner_id].updatePrice(event.price.price);
+            //locationManager.npc[inv.owner_id].updatePrice(event.price.price);
         }
     };
 
@@ -1006,7 +1011,7 @@ var ClientManager = (function () {
 
     // Стратегический режим
     ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
-        console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
+        //console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
     };
 
@@ -1779,6 +1784,18 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendGetAboutSelf = function () {
+        //console.log('ClientManager.prototype.sendSetAboutSelf', str);
+        var mes = {
+            call: "get_about_self",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
     // Окно взаимодействия с другими игроками (в городе)
     ClientManager.prototype.sendGetInteractionInfo = function () {
         //console.log('ClientManager.prototype.sendGetInteractionInfo');
@@ -1861,7 +1878,7 @@ var ClientManager = (function () {
 
     // Запросы стратегического режима
     ClientManager.prototype.sendGetStrategyModeObjects = function() {
-        console.log('ClientManager.prototype.sendGetStrategyModeObjects');
+        //console.log('ClientManager.prototype.sendGetStrategyModeObjects');
         var mes = {
             call: "get_strategy_mode_info_objects",
             rpc_call_id: rpcCallList.getID(),

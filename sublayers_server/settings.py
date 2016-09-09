@@ -33,10 +33,13 @@ def _rel(*folders):
 # Options definintion block:
 
 define("debug", default=False, help="Debug mode flag", type=bool)
+define("logging_calls", default=False, help="Logging calss marked with `call_log` decorator", type=bool)
+
 define("service_name", default="sl", help="Game server service name", type=str)
 
 define("cookie_secret", help="cookie secret key", type=str)
 define("static_path", default=_rel("../sublayers_common/static"), help="path to static files", type=str)
+define("mobile_host", default="roaddogs.ru", help="mobile host adress", type=str)
 define("template_path", default=_rel("templates"), help="path to static files", type=str)
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)

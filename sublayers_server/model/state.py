@@ -3,8 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.vectors import Point, normalize_angle
+from sublayers_server.model.vectors import Point, normalize_angle, EPS
+
 from math import pi, sqrt, log as ln, acos
+from collections import deque, namedtuple
 
 
 EPS = 1e-5
@@ -28,6 +30,29 @@ def assert_time_in_state(f):
 
 
 class BaseMotionState(object):
+
+    def set(self, t, p, fi=None, v=None):
+        old_point = self.p0
+        old_time = self.t0
+        assert old_time and old_point
+        last_step = p - old_point
+        dt = t - old_time
+        v = dt and (abs(last_step) / dt) or None
+        MIN_V = 5
+
+        if fi is None and v and v > MIN_V:
+            fi = last_step.angle
+
+        if v is None:
+            v = abs(last_step) / dt if dt and abs(dt) > EPS else Point(0)
+
+        self.t0 = t
+        self.p0 = p
+        if fi is not None:
+            self.fi0 = fi
+        self.v0 = 0.0 #v
+
+        #self.track.append(TrackPoint(t=t, p=p, fi=fi, v=v))
 
     def __init__(self, t, p, fi=0.0, r_min=10.0, ac_max=10.0):
         self.t0 = t
@@ -112,6 +137,35 @@ class BaseMotionState(object):
     @property
     def is_moving(self):
         return (abs(self.v0) > 0.0) or (abs(self.a) > 0.0)
+
+
+TrackPoint = namedtuple('TrackPoint', 't p fi v')
+
+
+class GeoState(BaseMotionState):
+    def __init__(self, *av, **kw):
+        super(GeoState, self).__init__(*av, **kw)
+        self.track = deque([TrackPoint(self.p0, self.fi0, self.v0)])
+
+    def set(self, t, p, fi=None, v=None):
+        old_point = self.p0
+        old_time = self.t0
+        assert old_time and old_point
+        last_step = p - old_point
+        dt = t - old_time
+
+        if fi is None:
+            fi = last_step.angle
+
+        if v is None:
+            v = abs(last_step) / dt if dt and abs(dt) > EPS else Point(0)
+
+        self.t0 = t
+        self.p0 = p
+        self.fi0 = fi
+        self.v0 = v
+
+        self.track.append(TrackPoint(t=t, p=p, fi=fi, v=v))
 
 
 class MotionState(BaseMotionState):

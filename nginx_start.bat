@@ -1,3 +1,2 @@
 
-cd nginx
-nginx %*
+start /d nginx nginx.exe %*

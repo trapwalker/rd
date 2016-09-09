@@ -88,6 +88,7 @@
 <script>
     // Механизм настройки скилов
     var reg2_skill_point = 0;
+    var reg2_perk_point = 0;
 
     // GetUserRPGInfo();
 
@@ -111,7 +112,7 @@
 
     // Кнопки Вперед/Назад
     function Reg2NextBtnClick() {
-        if (reg2_skill_point != 0) {
+        if ((reg2_skill_point != 0) || (reg2_perk_point != 0)) {
             consoleWReg2.add_message('user', 'Создание образа карточки Нукойл.');
             consoleWReg2.add_message('system',
                     '> Ошибка. Обнаружены нераспределенные очки.\n\n' +

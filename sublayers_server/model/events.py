@@ -2,7 +2,6 @@
 
 import logging
 log = logging.getLogger(__name__)
-log.info('\n\n\n')
 
 from sublayers_server.model.utils import time_log_format
 from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage
@@ -59,7 +58,7 @@ class Event(object):
 
     def post(self):
         self.server.post_event(self)  # todo: test to atomic construction
-        log.info('POST   %s', self)
+        log.debug('POST   %s', self)
         self.server.stat_log.s_events_all(time=self.time, delta=1.0)
         self.server.stat_log.s_events_on(time=self.time, delta=1.0)
 
@@ -67,7 +66,7 @@ class Event(object):
         if self.actual:
             self.on_cancel()
             self.actual = False
-            log.info('CANCEL %s', self)
+            log.debug('CANCEL %s', self)
         else:
             log.warning('Double cancelling event: %s', self)
 
@@ -110,7 +109,7 @@ class Event(object):
         Performing event logic.
         """
         assert self.actual
-        log.info('RUN    %s', self)
+        log.debug('RUN    %s', self)
         if self.callback_before is not None:
             self.callback_before(event=self)
         self.on_perform()

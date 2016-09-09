@@ -38,7 +38,8 @@ from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
 
 import sublayers_server.model.registry.classes  #autoregistry classes
-from sublayers_server.model.registry.storage import Registry, Collection
+from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.storage import Collection
 from sublayers_site.news import NewsManager
 
 
@@ -52,8 +53,6 @@ class Application(BaseApplication):
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
         self.reg = None
-        self.reg_agents = None
-        self.quick_game_cars_examples = []
         self.news_manager = NewsManager()
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
@@ -72,17 +71,13 @@ class Application(BaseApplication):
         tornado.ioloop.IOLoop.instance().add_callback(self.on_init_site_structure)
 
     def on_init_site_structure(self):
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
-        self.reg_agents = Collection(name='agents', db=self.db)
+        def load_registry_done_callback(all_registry_items):
+            self.reg = Root.objects.get_cached('reg:///registry')
+            log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
+            print 'Road Dogs Site load !'
+            log.info('Site server READY')
 
-        # Создание экземпляров машинок для быстрой игры
-        quick_game_cars_proto = []
-        for car_proto in self.reg['/world_settings'].values.get('quick_game_car'):
-            # todo: Здесь не должны инстанцироваться машинки
-            car_example = self.reg[car_proto].instantiate()
-            self.quick_game_cars_examples.append(car_example)
-
-        print 'Road Dogs Site load !'
+        Root.objects.filter(uri={'$ne': None}).find_all(callback=load_registry_done_callback)
 
 
 def main():

@@ -311,7 +311,7 @@ var LocationTraderNPC = (function (_super) {
 //        console.log('LocationTraderNPC.prototype.getPlayerTable');
         var res = [];
         for (var i = 0; i < this.playerTable.length; i++)
-            res.push(this.playerTable[i].id);
+            res.push(this.playerTable[i].uid);
         return res;
     };
 
@@ -319,7 +319,7 @@ var LocationTraderNPC = (function (_super) {
 //        console.log('LocationTraderNPC.prototype.getTraderTable');
         var res = [];
         for (var i = 0; i < this.traderTable.length; i++)
-            res.push(this.traderTable[i].id);
+            res.push(this.traderTable[i].uid);
         return res;
     };
 

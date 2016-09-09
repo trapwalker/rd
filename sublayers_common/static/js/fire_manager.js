@@ -10,10 +10,6 @@ var ConstCountFireDischargeFlashlight = 3;   // Количество вспыш�
 var ConstDelayFireDischargeFlashlight = 300; // Задержка между дульным пламенем и вспышкой взрыва при залповой стрельбе (ms);
 var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки взрыва при залповой стрельбе (px);
 
-
-
-
-
 // Список Иконок для всех видов маркеров леафлета
 
 var EffectPNGLoader = (function(){
@@ -78,8 +74,8 @@ var FireEffectManager = (function () {
     FireEffectManager.prototype._findController = function (options) {
         var i = 0;
         while ((i < this.controllers_list.length) &&
-            ((this.controllers_list[i].ctrl.subj != options.subj) ||
-                (this.controllers_list[i].ctrl.obj != options.obj)))  i++;
+              ((this.controllers_list[i].ctrl.subj != options.subj) ||
+               (this.controllers_list[i].ctrl.obj != options.obj)))  i++;
         if (i == this.controllers_list.length)
             return null;
         else
@@ -121,7 +117,7 @@ var FireEffectManager = (function () {
         if (options.side && options.subj) {
             if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
                 this.muzzle_flashs[options.subj + options.side].update(-1);
-            else  console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
+            else console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
         }
     };
 

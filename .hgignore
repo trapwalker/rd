@@ -50,4 +50,7 @@ nginx/
 audio_static/audio
 nginx_conf/sites-enabled/
 nginx_conf/rd_project_path.conf
-env__*/
+env_*
+*.whl
+_apk/*.apk
+*.track

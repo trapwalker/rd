@@ -7,10 +7,6 @@ import metrics
 
 
 class StatLogger(dict):
-    way = metrics.IncMetric(name='way', doc=u"Совокупное пройденное расстояние")
-    frag = metrics.IncMetric(name='frag', doc=u"Кол-во убийств")
-    exp = metrics.IncMetric(name='exp', doc=u"Кол-во опыта")
-
     s_agents_all = metrics.IncMetric(name='s_agents_all', doc=u"Кол-во созданных агентов на сервере")
     s_agents_on = metrics.IncMetric(name='s_agents_on', doc=u"Кол-во агентов онлайн на сервере")
     s_units_all = metrics.IncMetric(name='s_units_all', doc=u"Кол-во объектов-юнитов (на карте), созданных на сервере")

@@ -6,23 +6,23 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.state import MotionState
 from sublayers_server.model.hp_state import HPState
 from sublayers_server.model.fuel_state import FuelState
-from sublayers_server.model.base import Observer, VisibleObject
+from sublayers_server.model.base import Observer
 from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.hp_task import HPTask
 from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
-from sublayers_server.model.events import FireDischargeEvent, FireAutoEnableEvent, FireDischargeEffectEvent, \
-    SearchZones, FireAutoTestEvent
+from sublayers_server.model.events import (
+    FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
+)
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
-from sublayers_server.model.inventory import Inventory, ItemState
-from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer, POILoot, POICorpse
-
-from sublayers_server.model.registry.attr.inv import Inventory as RegistryInventory
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot, POICorpse
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
+from sublayers_server.model.inventory import Inventory, ItemState
+from sublayers_server.model.registry.classes.inventory import Inventory as RegistryInventory
 
 from math import radians
 
@@ -41,10 +41,10 @@ class Unit(Observer):
         self.owner_example = None if self.owner is None else self.owner.example
         super(Unit, self).__init__(time=time, **kw)
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
-        self.hp_state = HPState(t=time,
-                                max_hp=self.example.get_modify_value(param_name='max_hp', 
-                                                                     example_agent=self.owner_example),
-                                hp=self.example.hp)
+        self.hp_state = HPState(
+            t=time, hp=self.example.hp,
+            max_hp=self.example.get_modify_value(param_name='max_hp', example_agent=self.owner_example),
+        )
         self._direction = direction or self.example.direction
         self.altitude = 0.0
         self.check_zone_interval = None
@@ -81,24 +81,26 @@ class Unit(Observer):
         return self.hp_state.hp(t=time)
 
     def load_inventory(self, time):
-        for item_example in self.example.inventory:
-            ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
-                .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
+        for item_example in self.example.inventory.items:
+            ItemState(
+                server=self.server, time=time, example=item_example, count=item_example.amount,
+            ).set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
     def save_inventory(self, time):
-        self.example.inventory = RegistryInventory()
+        self.example.inventory.items = []
         for item_rec in self.inventory.get_all_items():
             item_rec['item'].example.position = item_rec['position']
             item_rec['item'].example.amount = item_rec['item'].val(t=time)
-            self.example.inventory.append(item_rec['item'].example)
+            self.example.inventory.items.append(item_rec['item'].example)
 
     @property
     def max_hp(self):
         return self.hp_state.max_hp
 
     def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None):
-        HPTask(owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter)\
-            .start(time=time)
+        HPTask(
+            owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter,
+        ).start(time=time)
 
     def setup_weapons(self, time):
         def direction_by_symbol(symbol):
@@ -119,15 +121,34 @@ class Unit(Observer):
         radius_rate = self.example.get_modify_value(param_name='radius_rate', example_agent=example_agent)
 
         for w_ex in self.example.iter_weapons():
-            sector = FireSector(owner=self, radius=w_ex.radius * radius_rate, width=radians(w_ex.width),
-                                fi=direction_by_symbol(w_ex.direction))
+            sector = FireSector(
+                owner=self,
+                radius=w_ex.radius * radius_rate,
+                width=radians(w_ex.width),
+                fi=direction_by_symbol(w_ex.direction),
+            )
             if w_ex.is_auto:
-                WeaponAuto(owner=self, sector=sector, dps=w_ex.dps * dps_rate, items_cls_list=[w_ex.ammo],
-                           dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second, example=w_ex)
+                WeaponAuto(
+                    owner=self,
+                    sector=sector,
+                    dps=w_ex.dps * dps_rate,
+                    items_cls_list=[w_ex.ammo],
+                    dv=w_ex.ammo_per_shot,
+                    ddvs=w_ex.ammo_per_second,
+                    example=w_ex,
+                )
             else:
-                WeaponDischarge(owner=self, sector=sector, dmg=w_ex.dmg * damage_rate, area_dmg=w_ex.area_dmg * damage_rate,
-                                items_cls_list=[w_ex.ammo], dv=w_ex.ammo_per_shot, ddvs=w_ex.ammo_per_second,
-                                time_recharge=w_ex.time_recharge * time_recharge_rate, example=w_ex)
+                WeaponDischarge(
+                    owner=self,
+                    sector=sector,
+                    dmg=w_ex.dmg * damage_rate,
+                    area_dmg=w_ex.area_dmg * damage_rate,
+                    items_cls_list=[w_ex.ammo],
+                    dv=w_ex.ammo_per_shot,
+                    ddvs=w_ex.ammo_per_second,
+                    time_recharge=w_ex.time_recharge * time_recharge_rate,
+                    example=w_ex,
+                )
 
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
@@ -191,7 +212,7 @@ class Unit(Observer):
             zone.test_in_zone(obj=self, time=event.time)
 
     def on_auto_fire_test(self, target_list, time):
-        #log.debug('on_auto_fire_test bot = %s', self.uid)
+        # log.debug('on_auto_fire_test bot = %s', self.uid)
         for sector in self.fire_sectors:
             if sector.is_auto():
                 sector.fire_auto(target_list=target_list, time=time)
@@ -203,8 +224,9 @@ class Unit(Observer):
             for weapon in sector.weapon_list:
                 if isinstance(weapon, WeaponAuto):
                     for target in weapon.targets:
-                        messages.FireAutoEffect(agent=agent, subj=self, obj=target,
-                                                action=action, side=sector.side, time=time).post()
+                        messages.FireAutoEffect(
+                            agent=agent, subj=self, obj=target, action=action, side=sector.side, time=time,
+                        ).post()
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
@@ -222,16 +244,30 @@ class Unit(Observer):
 
         # todo: Сделать другой эвенет, передавать в него не список итемов, а inventory
         if not self.inventory.is_empty():
-            CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POICorpse, example=None,
-                               inventory_size=self.example.inventory_size, position=self.position(event.time),
-                               life_time=600.0, items=self.inventory.get_items(),
-                               sub_class_car=self.example.sub_class_car, car_direction=self.direction(event.time)).post()
+            CreatePOILootEvent(
+                server=self.server,
+                time=event.time,
+                poi_cls=POICorpse,
+                example=None,
+                inventory_size=self.example.inventory_size,
+                position=self.position(event.time),
+                life_time=600.0,
+                items=self.inventory.get_items(),
+                sub_class_car=self.example.sub_class_car,
+                car_direction=self.direction(event.time),
+            ).post()
 
     def drop_item_to_map(self, item, time):
-        CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,
-                           inventory_size=1,
-                           position=Point.random_gauss(self.position(time), 10),
-                           life_time=600.0, items=[item]).post()
+        CreatePOILootEvent(
+            server=self.server,
+            time=time,
+            poi_cls=POILoot,
+            example=None,
+            inventory_size=1,
+            position=Point.random_gauss(self.position(time), 10),
+            life_time=600.0,
+            items=[item],
+        ).post()
 
     def as_dict(self, time):
         d = super(Unit, self).as_dict(time=time)
@@ -269,15 +305,15 @@ class Unit(Observer):
         # необходимо ради правильных out этой машинки.
         self.owner = None
 
-    def zone_changed(self, zone_effect, in_zone):
-        #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
-        for agent in self.watched_agents:
-            messages.ZoneEffectMessage(
-                agent=agent,
-                subj=self,
-                in_zone=in_zone,
-                zone_effect=zone_effect.as_dict(),
-            ).post()
+    # def zone_changed(self, zone_effect, in_zone):
+    #     #log.debug('Zone Changed !!!!!!!!!!!!!!!!!!1111111 1111111111111111111111111111111111111')
+    #     for agent in self.watched_agents:
+    #         messages.ZoneEffectMessage(
+    #             agent=agent,
+    #             subj=self,
+    #             in_zone=in_zone,
+    #             zone_effect=zone_effect.as_dict(),
+    #         ).post()
 
     def is_auto_fire_enable(self):
         for sector in self.fire_sectors:
@@ -318,9 +354,9 @@ class Unit(Observer):
 
     def on_kill(self, time, obj):
         # Начисление опыта и фрага машинке
-        self.stat_log.frag(time=time, delta=1)  # начисляем фраг машинке
-        d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp'))
-        self.stat_log.exp(time=time, delta=d_car_exp)   # начисляем опыт машинке
+        self.example.set_frag(dvalue=1)  # начисляем фраг машинке
+        d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
+        self.example.set_exp(dvalue=d_car_exp) # начисляем опыт машинке
 
 
 class Mobile(Unit):
@@ -336,22 +372,25 @@ class Mobile(Unit):
         self.cur_motion_task = None
 
         v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
-        self.max_control_speed = self.example.get_modify_value(param_name='max_control_speed',
-                                                          example_agent=self.owner_example)
+        self.max_control_speed = self.example.get_modify_value(
+            param_name='max_control_speed',
+            example_agent=self.owner_example,
+        )
         assert v_forward <= self.max_control_speed
         Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
 
-        Parameter(original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
-                  owner=self,
-                  name='p_fuel_rate')
-
-        Parameter(original=self.example.get_modify_value(param_name='p_obs_range_rate_max', example_agent=self.owner_example),
-                  owner=self,
-                  name='p_obs_range_rate_max')
-
-        Parameter(original=self.example.get_modify_value(param_name='p_obs_range_rate_min', example_agent=self.owner_example),
-                  owner=self,
-                  name='p_obs_range_rate_min')
+        Parameter(
+            original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
+            owner=self, name='p_fuel_rate',
+        )
+        Parameter(
+            original=self.example.get_modify_value(param_name='p_obs_range_rate_max', example_agent=self.owner_example),
+            owner=self, name='p_obs_range_rate_max',
+        )
+        Parameter(
+            original=self.example.get_modify_value(param_name='p_obs_range_rate_min', example_agent=self.owner_example),
+            owner=self, name='p_obs_range_rate_min',
+        )
 
     def get_visibility(self, time):
         cur_v = abs(self.v(time=time))
@@ -365,7 +404,9 @@ class Mobile(Unit):
         cur_v = abs(self.v(time=time))
         p_obs_range_rate_min = self.params.get('p_obs_range_rate_min').value
         p_obs_range_rate_max = self.params.get('p_obs_range_rate_max').value
-        value = p_obs_range_rate_min + ((p_obs_range_rate_max - p_obs_range_rate_min) * (1 - cur_v / self.max_control_speed))
+        value = p_obs_range_rate_min + (
+            (p_obs_range_rate_max - p_obs_range_rate_min) * (1 - cur_v / self.max_control_speed)
+        )
         assert 0 <= value <= 1, 'value={}'.format(value)
         return self.params.get('p_observing_range').value * value
 
@@ -405,10 +446,15 @@ class Mobile(Unit):
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
+    @event_deco
+    def set_position(self, event, point, comment=None):
+        self.state.set(t=event.time, p=point)
+        self.on_update(event)
+
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
-            ef = self.server.reg.get('/effects/fuel/empty')
+            ef = self.server.reg['effects/fuel/empty']
             if ef:
                 ef.done(owner=self, time=time)  # снять эффект
 
@@ -422,7 +468,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        ef = self.server.reg.get('/effects/fuel/empty')
+        ef = self.server.reg['effects/fuel/empty']
         if ef:
             ef.start(owner=self, time=event.time)
 
@@ -477,7 +523,6 @@ class Bot(Mobile):
     def on_kill(self, time, obj):
         # Начисление опыта и фрага агенту
         self.main_agent.on_kill(time=time, obj=obj)
-
         super(Bot, self).on_kill(time=time, obj=obj)
 
     def on_die(self, event):

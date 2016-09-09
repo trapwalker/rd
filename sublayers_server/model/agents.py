@@ -11,10 +11,11 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, AddExperienceMessage, See, Out,
+from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
                                              SetObserverForClient, Die, QuickGameDie)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
+from sublayers_server.kalman import KalmanLatLong
 
 from tornado.options import options
 import tornado.gen
@@ -147,8 +148,12 @@ class Agent(Object):
         # elif self.current_location is None:  # todo: wtf ?!
         #     self.example.car = None
         # todo: save chats, party...
-        self.example.save()
-        log.debug('Agent %s saved', self)
+        # self.example.save()
+        agent = self
+        def save_end(*av, **kw):
+            log.debug('Agent %s saved', agent)
+        self.example.save(upsert=True, callback=save_end)
+
 
     @property
     def is_online(self):
@@ -401,13 +406,16 @@ class Agent(Object):
         log.debug('%s:: on_kill(%s)', self, obj)
 
         # todo: party
-        self.stat_log.frag(time=time, delta=1.0)  # начисляем фраг агенту
-        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.stat_log.get_metric('exp')) * \
-                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.stat_log.get_metric('exp'))
-        self.stat_log.exp(time=time, delta=d_user_exp)   # начисляем опыт агенту
+        # todo: registry fix?
+        self.example.set_frag(dvalue=1)  # начисляем фраг агенту
+
+
+        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
+                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
+        self.example.set_exp(dvalue=d_user_exp)   # начисляем опыт агенту
 
         # Отправить сообщение на клиент о начисленной экспе
-        AddExperienceMessage(agent=self, time=time,).post()
+        UserExampleSelfRPGMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
     def on_inv_change(self, time, incomings, outgoings):
@@ -466,18 +474,13 @@ class Agent(Object):
             canceled=canceled, buy=buy, sale=sale, cost=cost,
             time=time, is_init=is_init)
 
-    @property
-    def skill_points(self):
-        return self.example.exp_table.agent_skill_points_by_exp(self.stat_log.get_metric('exp'))
-
-    @property
-    def lvl(self):
-        # todo: должно вычисляться не так
-        return self.skill_points
 
 # todo: Переименовать в UserAgent
 class User(Agent):
     # todo: realize
+    def __init__(self, **kw):
+        super(User, self).__init__(**kw)
+        self.kalman = KalmanLatLong(15)  # todo: use adaptive speed
 
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)

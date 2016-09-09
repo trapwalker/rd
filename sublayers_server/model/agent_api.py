@@ -27,6 +27,7 @@ from sublayers_server.model.chat_room import (
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
+from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -87,24 +88,6 @@ class AgentConsoleNamespace(Namespace):
         for name in av:
             self.api.send_kick(username=name)
 
-    def metric(self, name='server'):
-        # todo: отправку метрик необходимо сделать через евент (потому что мессаджи должны проходить через евент!)
-        result = None
-        if name == 'server':
-            result = self.agent.server.get_server_stat()
-        elif hasattr(self.agent.car.stat_log, name):
-            if name == 'frag':
-                result = '{} / {}'.format(
-                    self.agent.car.stat_log.get_metric('frag'),
-                    self.agent.stat_log.get_metric('frag'),
-                )
-            else:
-                result = self.agent.car.stat_log.get_metric(name)
-
-        result = result or 'Unknown metric name'
-        messages.Message(time=self.agent.server.get_time(), agent=self.agent, comment=result).post()
-        # todo: self.write(result)
-
     def dropcar(self):
         self.api.delete_car()
 
@@ -127,7 +110,7 @@ class AgentConsoleNamespace(Namespace):
         return self.agent.example.balance
 
     def exp(self, value):
-        self.agent.stat_log.exp(time=self.agent.server.get_time(), delta=int(value))
+        self.agent.example.set_exp(dvalue=int(value))
 
     def param(self, name=None):
         if name and self.agent.car:
@@ -144,6 +127,7 @@ class AgentConsoleNamespace(Namespace):
         self.write('Server saved.')
 
     def reset(self, *names):
+        agents_by_name = self.agent.server.agents_by_name
         names = names or [self.agent.user.name]
         if '*' in names:
             names = agents_by_name.keys()
@@ -497,7 +481,13 @@ class AgentAPI(API):
     def send_rocket(self):
         if self.car.limbo or not self.car.is_alive:
             return
-            # RocketStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
+        position = None
+        for item_dict in self.car.inventory.get_all_items():
+            if isinstance(item_dict['item'].example, MapWeaponRocketItem):
+                position = item_dict['position']
+        if position is not None:
+            ItemActivationEvent(agent=self.agent, owner_id=self.car.uid, position=position, target_id=self.car.uid,
+                                time=self.agent.server.get_time()).post()
 
     @public_method
     def send_slow_mine(self):
@@ -528,6 +518,43 @@ class AgentAPI(API):
         if x and y:
             p = Point(x, y)
         self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment, time=self.agent.server.get_time())
+
+    @public_method
+    def set_position(self, projection, position=None, comment=None):
+        log.debug('set_position {self.agent}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals()))
+        if self.car is None or self.car.limbo or not self.car.is_alive:
+            return
+
+        try:
+            p = Point(projection['x'], projection['y']) if projection else None
+        except Exception as e:
+            log.warning('Wrong coordinates: %r // %r', projection, position)
+            return
+
+        p_filtered = None
+        kalman = getattr(self.agent, 'kalman')
+        if position and kalman:
+            kalman.process(p.y, p.x, position['accuracy'], position['timestamp'])
+            p_filtered = Point(kalman.get_lng(), kalman.get_lat())
+            dbg = (
+                'KALMAN({username}): p={p}; pf={p_filtered}; dp={dp}; '
+                'src_accur={position[accuracy]}; flt_accur={kaccur}'
+            ).format(
+                username=self.agent.user and self.agent.user.name,
+                dp = p - p_filtered,
+                kaccur=kalman.get_accuracy(),
+                **locals()
+            )
+            log.debug(dbg)
+            comment = dbg
+            try:
+                fn = 'log/tracks/{username}.track'.format(username=self.agent.user.name)
+                with open(fn, 'a') as tracklog:
+                    tracklog.write('{position} # {dbg}\n'.format(**locals()))
+            except Exception as e:
+                log.exception("Can't store track point")
+
+        self.car.set_position(time=self.agent.server.get_time(), point=p_filtered or p, comment=comment)
 
     @public_method
     def delete_car(self):
@@ -748,6 +775,10 @@ class AgentAPI(API):
         # log.debug('Agent %s try set rpg state', self.agent)
         TransactionSetRPGState(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash,
                                skills=skills, buy_skills=buy_skills, perks=perks).post()
+
+    @public_method
+    def get_about_self(self):
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_about_self(self, text):

@@ -22,7 +22,6 @@ import tornado.escape
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
-import tornado.options
 from tornado.options import options
 from urlparse import urlparse
 from pymongo import MongoClient

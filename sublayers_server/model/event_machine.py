@@ -10,21 +10,35 @@ from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
-from sublayers_server.model.events import LoadWorldEvent
-from sublayers_server.model.registry.storage import Registry, Collection
+from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
 
+from sublayers_server.model.registry.storage import Collection
+from sublayers_server.model.registry.tree import Root
+
 import os
 import sys
+import tornado.ioloop
 from time import sleep
 from threading import Thread
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
+from functools import partial, wraps
 
 
 MAX_SERVER_SLEEP_TIME = 0.1
+
+
+def async_call_deco(f):
+    wraps(f)
+    def closure(*av, **kw):
+        #callback = kw.pop('callback', None)  # todo: make result returning by callback
+        ff = partial(f, *av, **kw)
+        tornado.ioloop.IOLoop.instance().add_callback(ff)
+
+    return closure
 
 
 class Server(object):
@@ -33,6 +47,7 @@ class Server(object):
         """
         @param uuid.UUID uid: Unique id of server
         """
+        self.ioloop = tornado.ioloop.IOLoop.instance()
         self.uid = uid or get_uid()
         # todo: GEO-indexing collections
         self.objects = {}  # Total GEO-objects in game by uid
@@ -46,32 +61,42 @@ class Server(object):
         self.start_time = None
         # todo: blocking of init of servers with same uid
 
-        self.reg = Registry(name='registry', path=os.path.join(options.world_path, u'registry'))
+        self.reg = None  # Registry(name='registry')
+        # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
+
         self.zones = []
 
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
 
         # todo: QuickGame settings fix it
-        self.quick_game_cars_examples = []
         self.quick_game_cars_proto = []
-        self.quick_game_start_pos = Point(12517168, 27028861)
+        self.quick_game_start_pos = Point(12468002, 26989281)
+
+
+        #self.ioloop.add_callback(callback=self.load_registry)
+
+    @async_call_deco
+    def load_registry(self):
+        def load_registry_done_callback(all_registry_items):
+            self.reg = Root.objects.get_cached('reg:///registry')
+            log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
+            self.load_world()
+
+        #Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
+        Root.objects.find_all(callback=load_registry_done_callback)
 
     def __getstate__(self):
         d = self.__dict__.copy()
-        del d['reg_agents']
         return d
 
     @staticmethod
     def get_time():
         return get_time()
 
-    def load_world(self):
-        LoadWorldEvent(server=self, time=self.get_time()).post()
-
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        for zone in sorted(self.reg.get('/zones', ()), key=lambda a_zone: a_zone.order_key):
+        for zone in sorted(list(self.reg['zones']) or [], key=lambda a_zone: a_zone.order_key):
             try:
                 if not zone.is_active:
                     log.debug('Zone %s activation start', zone)
@@ -86,38 +111,35 @@ class Server(object):
             except Exception as e:
                 log.exception('Loading zone %s error: %s', zone, e)
 
+    def load_world(self):
+        LoadWorldEvent(server=self, time=self.get_time()).post()  # todo: remove deprecated event
+
     def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
-        self.init_zones(time=event.time)
+        #self.init_zones(time=event.time)
 
         # загрузка радиоточек
-        towers_root = self.reg['/poi/radio_towers']
+        towers_root = self.reg['poi/radio_towers']
         for rt_exm in towers_root:
             RadioPoint(time=event.time, example=rt_exm, server=self)
 
         # загрузка городов
-        towns_root = self.reg['/poi/locations/towns']
+        towns_root = self.reg['poi/locations/towns']
         for t_exm in towns_root:
             Town(time=event.time, server=self, example=t_exm)
 
         # загрузка заправочных станций
-        gs_root = self.reg['/poi/locations/gas_stations']
+        gs_root = self.reg['poi/locations/gas_stations']
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
         # Создание экземпляров машинок для быстрой игры
-        self.quick_game_cars_proto = []
-        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/middle/sports/delorean_dmc12'])
-        self.quick_game_cars_proto.append(self.reg['/mobiles/cars/heavy/btrs/m113a1'])
-        for car_proto in self.quick_game_cars_proto:
-            # todo: Здесь не должны инстанцироваться машинки
-            car_example = car_proto.instantiate()
-            # car_example.position = None
-            # car_example.last_location = None
-            self.quick_game_cars_examples.append(car_example)
+        for car_proto in self.reg['world_settings'].quick_game_car:
+            self.quick_game_cars_proto.append(car_proto)
 
+        print 'Load world complete !'
 
     def post_message(self, message):
         """
@@ -177,8 +199,6 @@ class LocalServer(Server):
         self.thread = None
         self.is_terminated = False
         self.app = app
-        self.reg_agents = Collection(name='agents', db=app.db)
-        self.ioloop = None
         self.periodic = None
 
     def __getstate__(self):
@@ -229,8 +249,6 @@ class LocalServer(Server):
         self.ioloop.add_callback(callback=self.event_loop)
 
     def start(self):
-        import tornado.ioloop
-        self.ioloop = tornado.ioloop.IOLoop.instance()
         # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
         # self.periodic.start()
         self.ioloop.add_callback(callback=self.event_loop)

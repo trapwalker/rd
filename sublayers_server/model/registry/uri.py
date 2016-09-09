@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class URI(tuple):
 
     _RE_URI = re.compile(ur'''
         ^
-        (?:(?P<scheme>\w+)://)?
+        (?:(?P<scheme>\w+)://)  #? scheme is necessary
         (?P<storage>[^/]+)?
         (?P<path>(?:/[^\?#]+)*)
         (?P<tail_slash>/)?
@@ -42,6 +42,14 @@ class URI(tuple):
         (?:\#(?P<anchor>.*))?
         $
     ''', re.X)
+
+    @classmethod
+    def try_or_default(cls, *av, **kw):
+        default = kw.pop('default', None)
+        try:
+            return cls(*av, **kw)
+        except URIFormatError:
+            return default
 
     @classmethod
     def parse_uri(cls, uri):
@@ -67,7 +75,7 @@ class URI(tuple):
 
         path = d.get('path', '')
         path = tuple([unquote(s).decode(URI_ENCODING) for s in path.split('/')])  # todo: add tailslash
-        assert path[0] == ''
+        assert path[0] == '', 'URI with non absolute path'
         path = path[1:]
         params = d.get('params', '') or ''
         params = tuple([(unquote(k).decode(URI_ENCODING), unquote(v).decode(URI_ENCODING)) for k, v in splitparams(params)])
@@ -159,6 +167,7 @@ class URI(tuple):
         pass
 
     def match(self, node):
+        assert False, "URI.match(%r, %r) # that's wrong. Need review!".format(self, node)
         original = node
         while node and (node.storage is None or node.storage.name != 'registry'):
             node = node.parent
@@ -211,7 +220,7 @@ class URI(tuple):
         params = params.copy() if params else {}
         params.update(kw)
         proto = self.resolve()
-        assert proto.abstract
+        assert proto.abstract, 'URI.instantiate: the try to instantiate of non abstract object: {}'.format(self)
         return proto.instantiate(storage=storage, name=name, **params)
 
 
@@ -231,7 +240,7 @@ class Selector(URI):
 if __name__ == '__main__':
     from pprint import pprint as pp
     try:
-        uri = URI(u'scheme://path/to/the/some/object?x=3&y=4&x=#my anchor')
+        uri = URI(u'scheme:///path/to/the/some/object?x=3&y=4&x=#my anchor')
     except URIFormatError as e:
         print 'fail', e
     else:

@@ -1,0 +1,96 @@
+<style>
+    @font-face {
+        font-family: Nouveau_IBM;
+        src: url('http://{{ host_name }}/static/fonts/Nouveau_IBM.ttf');
+    }
+
+    @font-face {
+        font-family: MICRADI;
+        src: url('http://{{ host_name }}/static/fonts/micradi.ttf');
+    }
+
+    @font-face {
+        font-family: FreePixel;
+        src: url('http://{{ host_name }}/static/fonts/FreePixel.ttf');
+    }
+
+    body {font-family: Nouveau_IBM, sans-serif;}
+    #AutoFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/a.png') center center no-repeat;}
+    #DischargeFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/z.png') center center no-repeat;}
+    #RocketFireBtn {background: #0e4b00 url('http://{{ host_name }}/static/img/mobile_temp/map_icon_rocket.png') center center no-repeat;}
+    .windowDragCloseHeader-close { background: transparent url('http://{{ host_name }}/static/img/windows/close_cross/cross.png') 50% 50% no-repeat !important; }
+</style>
+
+
+<div id="main">
+    <div id="map" class="global-shift global-size"></div>
+    <canvas id="canvas" class="global-shift global-size"></canvas>
+</div>
+<div id="overlay">
+    <div id="zoomators">
+        <div id="carInfoBtn" class="mobile-btn-menu">Car</div>
+        <div id="inventoryInfoBtn" class="mobile-btn-menu">Bag</div>
+{#        <div id="consoleBtn" class="mobile-btn" style="display: none">Debug</div>#}
+        <div id="menuBtn" class="mobile-btn" style="display: none">Menu</div>
+        <div id="sendPosition" class="mobile-btn" style="display: none;">PosToSrv</div>
+    </div>
+    <div class="zoomator zoom-btn plus" data-zoom="1">+</div>
+    <div class="zoomator zoom-btn minus" data-zoom="-1">-</div>
+    <div id="consoleWrap" style="z-index: 999;">
+        <div id="console">В данном режиме консоль не доступна. Воспользуйтесь браузерной консолью (F12 или Ctrl + C)</div>
+        <div id="consoleClose" class="mobile-btn">Close</div>
+    </div>
+    <div id="menuWrap" style="z-index: 999;">
+        <div id="menu">
+            <div id="KalmanSet" class="menu-btn">Client Kalman</div>
+            <div id="CameraPositionAnimation" class="menu-btn active">CameraPositionAnimation</div>
+            <div id="CameraRotateAnimation" class="menu-btn active">CameraRotateAnimation</div>
+            <div id="BotsPositionAnimation" class="menu-btn">BotsPositionAnimation</div>
+        </div>
+        <div id="menuClose" class="mobile-btn">Close</div>
+    </div>
+    <div id="AutoFireBtn" class="fire-btn mobile-btn"></div>
+    <div id="DischargeFireBtn" class="fire-btn mobile-btn"></div>
+    <div id="RocketFireBtn" class="fire-btn mobile-btn"></div>
+    <div id="indicators">
+        <div class="indicator-line">
+            <div class="indicator-label">Ping:</div>
+            <div class="indicator-value ping-indicator">0</div>
+        </div>
+        <div class="indicator-line">
+            <div class="indicator-label">HP:</div>
+            <div class="indicator-value hp-indicator">0</div>
+        </div>
+        <div class="indicator-line">
+            <div class="indicator-label">Speed:</div>
+            <div class="indicator-value v-indicator">0</div>
+        </div>
+    </div>
+    <div id="dieWindow" style="z-index: 999;">
+        <h1>Машинка потерпела крушение!</h1>
+        <p>Перезапустите приложение.</p>
+    </div>
+</div>
+<div style="display: none">
+    <span id="settings_host_name">{{ host_name }}</span>
+    <span id="settings_ws_port">{{ ws_port }}</span>
+    <span id="settings_map_link">{{ map_link }}</span>
+</div>
+<div id="bodydiv"></div>
+
+
+{% if is_mobile %}
+{% include 'js_list_temp.html' %}
+{% import os as os %}
+{% import os.path as path %}
+{% set srv_path = os.getcwd() %}
+{% import tornado as tornado %}
+<script>
+    {% for link in js_list %}
+        {% set file_link =  path.join(srv_path, path.join('../sublayers_common/static/', link)) %}
+        {% raw open(file_link).read() %}
+{#        {% set file_link =  path.join(srv_path, path.join('../sublayers_common/static/', link)) %}#}
+{#        {% raw tornado.template.Loader('/../../').load(file_link).generate() %}#}
+    {% end %}
+</script>
+{% end %}

@@ -64,14 +64,23 @@ class CheckPOILootEmptyEvent(Event):
 
 class POIContainer(Observer):
     def __init__(self, server, time, life_time=None, example=None, inventory_size=None, position=None, **kw):
+
+        def callback():
+            super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
+            self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+            self.load_inventory(time=time)
+            if life_time:
+                self.delete(time=time + life_time)
+
         assert (example is not None) or ((inventory_size is not None) and (position is not None))
         if example is None:
-            example = server.reg['/poi/stash'].instantiate(position=position, inventory_size=inventory_size)
-        super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
-        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
-        self.load_inventory(time=time)
-        if life_time:
-            self.delete(time=time + life_time)
+            example = server.reg['poi/stash'].instantiate(
+                position=position, 
+                inventory_size=inventory_size,
+                fixtured=False,
+            )
+            example.load_references(callback=callback())
+
 
     def is_available(self, agent):
         return agent.car in self.visible_objects
@@ -88,7 +97,7 @@ class POIContainer(Observer):
             self.inventory.del_manager(agent=obj.owner)
 
     def load_inventory(self, time):
-        for item_example in self.example.inventory:
+        for item_example in self.example.inventory.items:
             ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
                 .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 
@@ -108,7 +117,8 @@ class POILoot(POIContainer):
 
     def change_inventory(self, inventory, time):
         if inventory.get_item_count() == 0:
-            CheckPOILootEmptyEvent(server=self.server, time=time + 0.1, poi_loot=self).post()
+            # todo: с этим эвентом иногда бывают проблемы. Возможно сделать не эвентом
+            CheckPOILootEmptyEvent(server=self.server, time=time, poi_loot=self).post()
 
     def on_before_delete(self, event):
         self.inventory.del_change_call_back(method=self.change_inventory)

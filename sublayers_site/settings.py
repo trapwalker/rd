@@ -33,6 +33,7 @@ def _rel(*folders):
 # Options definintion block:
 
 define("debug", default=False, help="Debug mode flag", type=bool)
+define("logging_calls", default=False, help="Logging calss marked with `call_log` decorator", type=bool)
 define("cookie_secret", help="cookie secret key", type=str)
 define("forum_cookie_secret", help="cookie secret key", type=str)
 define("static_path", default=_rel("../sublayers_common/static"), help="path to static files", type=str)

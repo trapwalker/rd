@@ -1,127 +1,83 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.attr import Attribute, DocAttribute
-from sublayers_server.model.registry.attr.tag import TagsAttribute
-from sublayers_server.model.registry.attr.link import RegistryLink
-from sublayers_server.model.registry.uri import URI
-
+from tornado.concurrent import return_future
+from motorengine.errors import LoadReferencesRequiredError
+from uuid import uuid1 as get_uuid
+from weakref import WeakSet
+from fnmatch import fnmatch
+from collections import deque, Callable
+from pprint import pformat
+from functools import partial
+from copy import copy
+import time
 import yaml
+import yaml.scanner
+import os
+
+from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry.odm import AbstractDocument
+from sublayers_server.model.registry.odm.fields import (
+    StringField, BooleanField, UUIDField, UniReferenceField, EmbeddedDocumentField, ListField,
+)
+from sublayers_server.model.registry.odm.doc import _call_stat
 
 
-class StorageUnspecified(Exception):
-    # todo: refactor declaration of exception
+class RegistryError(Exception):
     pass
 
 
-class AttrUpdaterMeta(type):
-    def __init__(cls, name, bases, attrs):
-        super(AttrUpdaterMeta, cls).__init__(name, bases, attrs)
-        for k, v in cls.__dict__.items():
-            cls.prepare_attr(k, v)
-
-        for k, v in cls.__dict__.items():
-            cls.update_attr(k, v)
-
-    def prepare_attr(self, name, value):
-        pass
-
-    def update_attr(self, name, value):
-        pass
+class RegistryNodeFormatError(RegistryError):
+    pass
 
 
-class NodeMeta(AttrUpdaterMeta):
+class Doc(AbstractDocument):
 
-    classes = {}
+    def _reinst_list(self, field, lst):
+        lst = copy(lst)
+        subfield = field._base_field
+        for i, item in enumerate(lst):
+            if item is not None:
+                if isinstance(subfield, ListField):
+                    lst[i] = self._reinst_list(subfield, copy(item))
+                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Doc):
+                    lst[i] = item.instantiate()
+                else:
+                    lst[i] = copy(item)
+        return lst
 
-    def __init__(cls, name, bases, attrs):
-        super(NodeMeta, cls).__init__(name, bases, attrs)
-        cls.classes[name] = cls
+    def _instantiaite_field(self, new_instance, field, name):
+        if hasattr(field, 'reinst') and field.reinst:
+            value = getattr(self, name)
+            if value is not None:
+                if isinstance(field, EmbeddedDocumentField):
+                    assert not isinstance(value, basestring), (
+                        'Embeded fields, described by string ({value!r}) is not supported yet'.format(value=value)
+                    )
+                    if isinstance(value, basestring):
+                        value = URI(value)  # todo: handle exceptions
 
-    def update_attr(self, name, value):
-        super(NodeMeta, self).update_attr(name, value)
-        if isinstance(value, Attribute):
-            value.attach(name=name, cls=self)
+                    setattr(new_instance, name, value.instantiate())  # todo: Поддержка шаблонного формирования по ссылке
+                elif isinstance(field, ListField):
+                    setattr(new_instance, name, self._reinst_list(field, value))
 
-    def __call__(cls, *av, **kw):
-        node = super(NodeMeta, cls).__call__(*av, **kw)
-        node.prepare()
-        return node
+    def instantiate(self, **kw):
+        # todo: Сделать поиск ссылок в параметрах URI
+        inst = self.__class__(**kw)
 
+        for name, field in self._fields.items():
+            self._instantiaite_field(inst, field, name)
 
-class Node(object):
-    __metaclass__ = NodeMeta
+        return inst
 
-    # todo: override attributes in subclasses
-    #abstract = Attribute(default=True, caption=u'Абстракция', doc=u'Признак абстрактности узла')
-    can_instantiate = Attribute(default=True, caption=u'Инстанцируемый', doc=u'Признак возможности инстанцирования')
-    doc = DocAttribute()
-    tags = TagsAttribute(caption=u'Теги', tags="client")
-
-    def __init__(self, name=None, parent=None, values=None, storage=None, owner=None, abstract=False, **kw):
-        """
-        @param str name: Name of node
-        @param Node parent: Parent of node
-        @param dict values: Override attributes values dict
-        @param sublayers_server.model.registry.storage.AbstractStorage storage: Storage o this node
-        @param Node owner: Owner of node in dhe tree
-        """
-        super(Node, self).__init__()
-        self.storage = None
-        self.abstract = abstract
-        self._prepared_attrs = set()  # todo: optimize
-        self._cache = {}
-        self._subnodes = {}  # todo: проверить при переподчинении нода
-        self.name = name or storage and storage.gen_uid().get_hex()
-        self.owner = owner
-        self.parent = parent
-
-        self.values = values and values.copy() or {}
-        for p in kw.keys():
-            if not hasattr(self, p):
-                log.warning("Object {!r} has no attribute like {}".format(self, p))
-        self.values.update(kw)
-        self.storage = storage
-
-        if storage:
-            storage.put(self)
-
-    @property
-    def id(self):
-        # todo: Решить проблему изменения идентификатора при помещении в хранилище
-        return self.uri and str(self.uri) or '{}#{}'.format(self.__class__.__name__, id(self))
-
-    def node_hash(self):
-        if self.uri:
-            return str(self.uri)
-        elif self.parent:
-            return self.parent.node_hash()
-        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
-
-    def node_html(self):
-        return self.node_hash().replace('://', '-').replace('/', '-')
-
-    def as_client_dict(self):
-        # return {attr.name: getter() for attr, getter in self.iter_attrs(tags='client')}
-        d = dict(
-            id=self.id,
-            node_hash=self.node_hash(),
-            html_hash=self.node_html(),
-        )
-        for attr, getter in self.iter_attrs(tags='client'):
-            v = getter()
-            if isinstance(attr, TagsAttribute):
-                v = list(v)  # todo: Перенести это в расширение сериализатора
-            d[attr.name] = v
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = {}
+        for name, attr, getter in self.iter_attrs(tags='client'):
+            d[name] = getter()
         return d
-
-    def prepare(self):
-        for attr, getter in self.iter_attrs():
-            assert isinstance(attr, Attribute)
-            if attr.name not in self._prepared_attrs:
-                attr.prepare(obj=self)
 
     def iter_attrs(self, tags=None, classes=None):
         if isinstance(tags, basestring):
@@ -129,82 +85,225 @@ class Node(object):
         elif tags is not None:
             tags = set(tags)
 
-        cls = self.__class__
-        for k in dir(cls):
-            attr = getattr(cls, k)
-            """@type: Attribute"""
-            if (
-                isinstance(attr, Attribute)
-                and (not tags or attr.tags & tags)
-                and (not classes or isinstance(attr, classes))
-            ):
-                getter = lambda: attr.__get__(self, cls)
-                yield attr, getter
+        for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
+            if hasattr(attr, 'tags'):
+                if (
+                    (not tags or attr.tags & tags) and
+                    (not classes or isinstance(attr, classes))
+                ):
+                    getter = lambda: getattr(self, name)
+                    yield name, attr, getter
+            else:
+                log.warning('Doc.iter_attrs: dynamic field! %s in %r', name, self)
 
-    def instantiate(self, storage=None, name=None, **kw):
-        assert self.abstract
-        inst = self.__class__(name=name, storage=storage, parent=self, abstract=False, **kw)
-        # log.debug('Maked new instance %s', inst.uri)
-        return inst
 
-    def __getstate__(self):
-        #do_not_store = ('storage', '_subnodes', '_cache', 'owner',)
-        #log.debug('%s.__getstate__', self)
-        #d = OrderedDict(sorted((kv for kv in self.__dict__.items() if kv[0] not in do_not_store)))
-        values = self.values
-        d = dict(
-            name=self.name,
-            abstract=self.abstract,
-            parent=self.parent.uri if self.parent.storage else self.parent,
-        )
-        for attr, getter in self.iter_attrs():
-            if attr.name in values:  # todo: refactor it
-                v = getter()
-                if isinstance(attr, RegistryLink) and v and v.storage and v.storage.name == 'registry':  # todo: fixit
-                    v = v.uri  # todo: (!!!)
-                elif isinstance(attr, TagsAttribute):
-                    v = str(v)
-                d[attr.name] = v
-        return d
+class Subdoc(Doc):
+    def instantiate(self, **kw):
+        # values = self._values.copy()
+        values = self._values  # todo: ВОзможно нужно копировать параметры по-другому (_instantiate_field override)
+        values.update(kw)
+        return super(Subdoc, self).instantiate(**values)
 
-    def __setstate__(self, state):
-        self._cache = {}
-        self._subnodes = {}  # todo: проверить при переподчинении нода
-        self._prepared_attrs = set()
-        self.name = None
-        self.owner = None
-        self.values = {}
-        self.storage = None
-        parent = state.pop('parent')
-        if isinstance(parent, URI):
-            parent = parent.resolve()
-        self.parent = parent
 
-        for k, v in state.items():
-            setattr(self, k, v)
+class Node(Doc):
+    # todo: make sparse indexes
+    # todo: override attributes in subclasses
+    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
+    title = StringField(caption=u"Название", tags='client')
+    fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
+    uri = StringField(sparse=True, identify=True)
+    abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
+    parent = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
+    owner = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
+    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
+    name = StringField()
+    doc = StringField()
+    tags = ListField(base_field=StringField(tags="client"), caption=u"Теги", doc=u"Набор тегов объекта")
 
     @property
-    def uri(self):
-        if self.storage is None:
-            return
-        return self.storage.get_uri(self)
+    def tag_set(self):
+        tags = set(self.tags or [])
+        if self.parent:
+            tags.update(self.parent.tag_set)
+        return tags
 
-    # noinspection PyUnusedLocal
-    def attach(self, name, cls):
-        assert self.name is None
-        self.name = name
-        # todo: tags apply
+    def make_uri(self):
+        owner = self.owner
+        assert not owner or owner.uri, '{}.make_uri without owner.uri'.format(self)
+        path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self._id),)
+        return URI(
+            scheme='reg',
+            #storage=self.__class__.__collection__,
+            path=path,
+        )
 
-    def save(self, storage=None):
-        storage = storage or self.storage
-        if storage is None:
-            raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
-        storage.save_node(node=self)
+    def __init__(self, **kw):  # embedded=False,
+        """
+        @param str name: Name of node
+        @param Node parent: Parent of node
+        @param Node owner: Owner of node in dhe tree
+        @param bool abstract: Abstract sign of node
+        """
+        #_id=kw.pop('_id', ObjectId()),
+        super(Node, self).__init__(**kw)
+        self._subnodes = WeakSet()
 
-    def reset(self):
-        if self.storage is None:
-            raise StorageUnspecified('Storage to save node ({!r}) is unspecified'.format(self))
-        self.storage.reset(node=self)
+        if self.uri is None:
+            owner = self._values.get('owner')
+            if owner:  # todo: Сделать меньше вариантов назначения имени. Хочется определенности.
+                self_name = self.name or self.uid or self.profile_id and 'profile={}'.format(self.profile_id)
+                owner_uri = owner if isinstance(owner, basestring) else owner.uri
+                owner_uri = URI(owner_uri)
+                self_uri = owner_uri.replace(path=owner_uri.path + (self_name,))
+                self.uri = str(self_uri)
+            elif self.abstract and self.name:
+                self.uri = str(URI(scheme='reg', path=(self.name,)))
+
+    def __getitem__(self, idx):
+        path = None
+        # todo: test to URI
+        if isinstance(idx, basestring):
+            idx = idx.replace('\\', '/')
+            path = idx.split('/')
+        else:
+            path = idx
+
+        if path:
+            child_name = path[0]
+            for node in self._subnodes:
+                if node.name == child_name:
+                    return node[path[1:]]
+        else:
+            return self
+
+    def __setattr__(self, name, value):
+        if name in ['_subnodes']:
+            return object.__setattr__(self, name, value)
+
+        return super(Node, self).__setattr__(name, value)
+
+    def __getattribute__(self, name):
+        # required for the next test
+        if (
+            name in (  # todo: Убрать из этого списка все, кроме _fields
+                '_fields', '_subnodes',
+                'is_reference_field', 'find_list_field', 'find_reference_field', 'is_embedded_field', 'is_list_field',
+                'find_embed_field', '_values', '__class__', '_get_load_function', 'fill_values_collection',
+                'handle_load_reference', 'find_references', '_reference_loaded_fields', '_bypass_load_function',
+                'get_global_class_name', 'make_uri',
+                'load_references', 'instantiate', 'to_cache',
+            )
+        ):
+            return object.__getattribute__(self, name)
+
+        # if __debug__:
+        #     _call_stat[(Node.__getattr__', name)] += 1
+
+        if name in self._fields:
+            field = self._fields[name]
+            is_reference_field = self.is_reference_field(field)
+            is_value_exists = name in self._values
+            value = field.get_value(self._values.get(name, None))
+
+            if not is_value_exists and name not in {'parent', 'owner', 'uri', 'name'}:
+                try:
+                    parent = self.parent
+                except Exception as e:
+                    assert False, "oops! where are you, mom!? %s" % e
+                value = getattr(parent, name, None)  # todo: may be exception need?
+
+            if field.required and value is None:
+                log.warning(
+                    'Required value %s of %s is not defined in property owner class %s',
+                    name, self, self.__class__,
+                )
+
+            if is_reference_field and value is not None and not isinstance(value, field.reference_type):
+                message = "The property '%s' can't be accessed before calling 'load_references'" + \
+                    " on its instance first (%s) or setting __lazy__ to False in the %s class."
+
+                raise LoadReferencesRequiredError(
+                    message % (name, self.__class__.__name__, self.__class__.__name__)
+                )
+
+            return value
+
+        return object.__getattribute__(self, name)
+
+    @property
+    def id(self):
+        return str(self._id)
+
+    def __str__(self):
+        # todo: make correct representation
+        return '<{self.__class__.__name__}[{details}]>'.format(
+            self=self,
+            details=(
+                self.uri or
+                self.parent and self.parent.uri and '{}#{}'.format(self.parent.uri, self.uid) or
+                ('#' + self.uid)
+            ),
+        )
+
+    def node_hash(self):  # todo: (!) rename to proto_uri
+        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        if self.uri:
+            return self.uri
+        elif self.parent:
+            return self.parent.node_hash()
+
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
+
+    def node_html(self):  # todo: rename
+        return self.node_hash().replace('://', '-').replace('/', '-')
+
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = super(Node, self).as_client_dict()
+        d.update(
+            id=self.id,
+            node_hash=self.node_hash(),
+            html_hash=self.node_html(),
+            tags=list(self.tag_set),
+        )
+        return d
+
+    # def _instantiaite_field(self, new_instance, field, name):
+    #     if name == 'uid':
+    #         pass
+    #     else:
+    #         super(Node, self)._instantiaite_field(new_instance, field, name)
+
+    def instantiate(self, name=None, by_uri=None, **kw):
+        # assert self.abstract, "Can't instantiate abstract object: {}".format(self)
+        params = {}
+        if self.uri:
+            parent = self
+        else:
+            parent = self.parent
+            params.update(self._values)
+
+        if by_uri:
+            params.update(by_uri.params)
+
+        fixture_default = self.__class__.fixtured.default
+        fixtured = kw.pop('fixtured', fixture_default() if isinstance(fixture_default, Callable) else fixture_default)
+        uid = kw.pop('uid', self.__class__.uid.default())
+        params.update(kw)
+        #inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
+        params.update(parent=parent, name=name, uid=uid, fixtured=fixtured)
+
+        # Инстанцирование вложенных документов
+        for field_name, field in self._fields.items():
+            if self.is_embedded_field(field):
+                field_value = getattr(self, field_name)
+                if field_value and isinstance(field_value, Node):
+                    field_value = field_value.instantiate()
+                    params[field_name] = field_value
+
+        inst = super(Node, self).instantiate(**params)  # abstract=False,
+        # todo: Разобраться с abstract при реинстанцированиях
+        # todo: Сделать поиск ссылок в параметрах URI
+        return inst
 
     def deep_iter(self, reject_abstract=True):
         queue = [self]
@@ -215,51 +314,99 @@ class Node(object):
                 yield item
 
     def __iter__(self):
-        return iter(self._subnodes.values())
+        return iter(self._subnodes)
 
     def __hash__(self):
-        return hash((self.storage, self.name))
+        return hash(self.uid)  # todo: test just created objects
 
-    def __repr__(self):
-        # todo: make correct representation
-        return '<{self.__class__.__name__}@{details}>'.format(
-            self=self, details=self.uri if self.storage else id(self))
+    # todo: rename to "_load_node_from_fs"
+    @classmethod
+    def _load_node(cls, path, owner=None):
+        assert isinstance(path, unicode), '{}._load_node: path is not unicode, but: {!r}'.format(cls, path)
+        attrs = {}
+        for f in os.listdir(path):
+            assert isinstance(f, unicode), '{}._load_node: listdir returns non unicode value'.format(cls)
+            # f = f.decode(sys.getfilesystemencoding())
+            p = os.path.join(path, f)
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
+                with open(p) as attr_file:
+                    try:
+                        d = yaml.load(attr_file) or {}
+                    except yaml.scanner.ScannerError as e:
+                        raise RegistryNodeFormatError(e)
+                    attrs.update(d)
 
-    def dump(self):
-        return yaml.dump(self, default_flow_style=False, allow_unicode=True)
-
-    def resume_dict(self):
-        d = dict(
-            __cls__=self.__class__.__name__,
-            name=self.name,
+        name = attrs.pop('name', os.path.basename(path.strip('\/')))  # todo: check it
+        abstract = attrs.pop('abstract', True)  # todo: Вынести это умолчание на видное место
+        attrs.update(
+            name=name,
+            owner=owner,
+            abstract=abstract,
         )
-        for attr, getter in self.iter_attrs():
-            v = getter()
-            if isinstance(attr, TagsAttribute):
-                v = str(v)
-            elif isinstance(v, Node):
-                if v.storage and v.storage.name == 'registry':
-                    v = str(v.uri)  # todo: (!!)
-                else:
-                    v = v.resume_dict()
-            elif isinstance(v, URI):
-                v = str(v)
-            d[attr.name] = v
-        return d
+        if 'parent' not in attrs:
+            attrs.update(parent=owner)
+        attrs.setdefault('fixtured', True)
 
-    def resume(self):
-        d = self.resume_dict()
-        return yaml.dump(d, default_flow_style=False, allow_unicode=True)
+        node = cls.from_son(attrs)
+        if owner:
+            owner._subnodes.add(node)
+        return node
 
-    def _del_attr_value(self, name):
-        del(self.values[name])
+    @classmethod
+    @return_future
+    def load(cls, path, callback=None, mongo_store=True):
+        def on_save(stat, saving_node):
+            saving_node.save(upsert=True, callback=partial(on_load, stat))
 
-    def _has_attr_value(self, name):
-        return name in self.values
+        def on_load(*av, **kw):
+            if all_nodes:
+                node = all_nodes.pop()
+                f = partial(on_save, saving_node=node) if mongo_store else on_load
+                node.load_references(callback=f)
+            else:
+                _loading_duration = time.time() - _loading_start_time
+                log.info('References loaded DONE ({:.0f}s)'.format(_loading_duration,))
+                callback(root)
+                return
+
+        all_nodes = []
+        _loading_start_time = time.time()
+        root = None
+        stack = deque([(path, None)])
+        while stack:
+            pth, owner = stack.pop()
+            node = cls._load_node(pth, owner)
+            if node:
+                all_nodes.append(node)
+                node.to_cache()
+                if owner is None:
+                    root = node  # todo: optimize
+                for f in os.listdir(pth):
+                    next_path = os.path.join(pth, f)
+                    if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
+                        stack.append((next_path, node))
+
+        _loading_duration = time.time() - _loading_start_time
+        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), _loading_duration))
+
+        _loading_start_time = time.time()
+        on_load()
+
+        #tornado.ioloop.IOLoop.instance().add_callback(callback, root)
+
+    @return_future
+    def load_references(self, fields=None, callback=None, alias=None):
+        def on_load(*args):
+            owner = self.owner
+            if owner:
+                owner._subnodes.add(self)
+
+            callback(*args)
+
+        # log.debug('load_references({self})'.format(self=self))
+        super(Node, self).load_references(fields=fields, callback=on_load, alias=alias)
 
 
-if __name__ == '__main__':
-    #from pprint import pprint as pp
-    # from pickle import dumps, loads
-    # import jsonpickle as jp
+class Root(Node):
     pass

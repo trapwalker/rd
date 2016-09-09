@@ -7,7 +7,7 @@
     <div class="car-info-block-body-right-list active model">
         <div class="car-info-block-body-right-list-text name uneven">&nbspКласс:</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.class_car }}</div>
-         <div class="car-info-block-body-right-list-text name even">&nbspПрочность:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspПрочность:</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.max_hp }}</div>
         <div class="car-info-block-body-right-list-text name uneven">&nbspСлотов кузова:</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.get_count_slots(tags='armorer') }}</div>
@@ -37,12 +37,24 @@
                  onmouseover="CarInfoBlockAmmoInfoView('{{ v.description }}')" onmouseout="CarInfoBlockAmmoInfoHide()">
                 <div class="npcInventory-pictureWrap town-interlacing">
                     <div class="car-info-block-itemy-picture"
-                         style="background: url({{ static_url(static_world_link_repr(v.inv_icon_big)) }} ) no-repeat center;"></div>
+                         style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(v.inv_icon_big))) }} ) no-repeat center;"></div>
                 </div>
                 <div class="npcInventory-name">{{ v.title }}</div>
             </div>
             {% end %}
         {% end %}
     </div>
-    <div class="car-info-block-body-right-list history">Оригинальная ПТС, 1 хозяин, не битая, царапина на заднем бампере.</div>
+    <div class="car-info-block-body-right-list history">
+        <div class="car-info-block-body-right-list-text name uneven">&nbspПробег:</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ '{:.1f}'.format(car.way/1000) }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspУбийств:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ car.frag }}</div>
+        <div class="car-info-block-body-right-list-bonuses">Опыт:</div>
+        <div class="car-info-block-body-right-exp-block">
+            {% set lvl = car.exp_table.car_lvl_by_exp(car.exp) %}
+            {% for temp_lvl in range(1, 6) %}
+                <div class="car-info-block-body-right-exp-icon {{ 'active' if lvl >= temp_lvl else '' }} {{ 'last' if temp_lvl == 5 else '' }}"></div>
+            {% end %}
+        </div>
+    </div>
 </div>

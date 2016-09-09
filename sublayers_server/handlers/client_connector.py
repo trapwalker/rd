@@ -7,8 +7,14 @@ log = logging.getLogger(__name__)
 import json
 import tornado.ioloop
 import tornado.websocket
+import tornado.web
+import tornado.gen
 
 from sublayers_common.handlers.base import BaseHandler
+
+from random import randint
+
+from sublayers_common.user_profile import User
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
@@ -22,8 +28,10 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         # todo: reject connections from wrong servers
         return True
 
+    @tornado.gen.coroutine
     def open(self):
         # todo: make agent_init event
+        print 'new connect open !!!'
         self._ping_timeout_handle = None
         self.ping_number = 0
         self.agent = None
@@ -35,14 +43,13 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         srv = self.application.srv
 
         if user.quick:
-            agent = srv.api.get_agent_quick_game(user, do_disconnect=True)  # todo: Change to make=False
+            agent = yield srv.api.get_agent_quick_game(user, do_disconnect=True)  # todo: Change to make=False
         else:
-            agent = srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+            agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
 
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit
             return
-
         self.agent = agent
         agent.on_connect(connection=self)
         self._do_ping()
@@ -59,7 +66,6 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         else:
             log.warning('Socket Closed. Socket %r has not agent', self)
         self.application.clients.remove(self)
-
 
     def on_message(self, message):
         # log.debug("Got message from %s: %r", self.agent, message)

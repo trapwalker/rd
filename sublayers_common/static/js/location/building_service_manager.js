@@ -20,7 +20,7 @@ var LocationServiceBuilding = (function (_super) {
     LocationServiceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
         _super.prototype.addExtraPages.call(this, jq_center_menu, jq_center_pages);
         // Добавление дополнительных функций в здание
-        var page_id = 'buildingPageRepair_' + this.building_rec.key;
+        var page_id = 'buildingPageRepair_' + this.building_rec.name;
         jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Ремонт</br>автомобиля</div>');
         this.jq_repair_page = $('<div id="' + page_id + '" class="building-center-page">');
         jq_center_pages.append(this.jq_repair_page);
@@ -150,12 +150,12 @@ var LocationServiceBuilding = (function (_super) {
                 var hp = this._get_hp_by_prc(this.current_prc_hp);
                 if (hp > user.example_car.max_hp) hp = user.example_car.max_hp;
                 hp = hp - user.example_car.hp;
-                clientManager.sendMechanicRepairApply(this.building_rec.build.head.node_hash, hp);
+                clientManager.sendMechanicRepairApply(this.building_rec.head.node_hash, hp);
                 return;
             }
             if (btnIndex == '2') {
                 console.log('Попытка отремонтировать машину на 100%');
-                clientManager.sendMechanicRepairApply(this.building_rec.build.head.node_hash,
+                clientManager.sendMechanicRepairApply(this.building_rec.head.node_hash,
                     user.example_car.max_hp - user.example_car.hp);
                 return;
             }

@@ -3,59 +3,72 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.storage import Root
-from sublayers_server.model.registry.attr import Attribute
+from sublayers_server.model.registry.tree import Root, Subdoc
+from sublayers_server.model.registry.odm.fields import IntField, FloatField, ListField, EmbeddedDocumentField
+
+
+class Pair(Subdoc):
+    k = IntField()
+    v = FloatField()
 
 
 class ExpTable(Root):
-    user_exp_table = Attribute(caption=u'Таблица опыта пользователя')
-    car_exp_table = Attribute(caption=u'Таблица опыта машинки')
-    car_exp_price = Attribute(caption=u'Таблица ценности машинки')
-    car_m_exp = Attribute(caption=u'Таблица модификатора опыта получаемого на машинке')
+    user_exp_table = ListField(
+        caption=u'Таблица опыта пользователя',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+    car_exp_table = ListField(
+        caption=u'Таблица опыта машинки',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+    car_exp_price = ListField(
+        caption=u'Таблица ценности машинки',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+    car_m_exp = ListField(
+        caption=u'Таблица модификатора опыта получаемого на машинке',
+        base_field=EmbeddedDocumentField(embedded_document_type=Pair),
+    )
+
+    @classmethod
+    def table_slice(cls, table, value):
+        """
+        Returns: (current_k, (next_k, next_v), rest_v)
+        """
+        pairs = sorted(table, key=lambda(pair): pair.v)
+        intervals = zip(
+            [Pair(k=None, v=None)] + pairs,
+            pairs + [Pair(k=None, v=None)]
+        )
+        for a, b in intervals:
+            if value >= a.v and (value < b.v or b.v is None):
+                return a.k, (b.k, b.v), (b.v - value) if b.v is not None else None
 
     def by_exp(self, exp):
         """
         Returns: (current_level, (next_level, next_level_exp), rest_exp)
         """
-        table = self.user_exp_table or {}
-        pairs = sorted(table.items(), key=lambda (k, v): v)
-        intervals = zip(
-            [(None, None)] + pairs,
-            pairs + [(None, None)]
-        )
-        for a, b in intervals:
-            if exp >= a[1] and (exp < b[1] or b[1] is None):
-                return a[0], b, (b[1] - exp) if b[1] is not None else None
+        return self.table_slice(self.user_exp_table or [], exp)
+
+    def user_exp_by_lvl(self, lvl):
+        for pair in self.user_exp_table:
+            if pair.k == lvl:
+                return pair.v
+        return 0
 
     def car_lvl_by_exp(self, exp):
-        table = self.car_exp_table or {}
-        sorted_list = sorted(table.items(), key=lambda (k, v): v)
-        for index in range(0, len(sorted_list)):
-            rec = sorted_list[index]
-            if exp < rec[1]:
-                return sorted_list[index - 1 if index > 0 else 0][0]
-
-        # Если мы вылезли за пределы таблицы
-        return sorted_list[len(sorted_list) - 1][0]
+        return self.table_slice(self.car_exp_table or [], exp)[0]
 
     def agent_skill_points_by_exp(self, exp):
-        table = self.user_exp_table or {}
-        sorted_list = sorted(table.items(), key=lambda (k, v): v)
-        for index in range(0, len(sorted_list)):
-            rec = sorted_list[index]
-            if exp < rec[1]:
-                return sorted_list[index - 1 if index > 0 else 0][0]
-
-        # Если мы вылезли за пределы таблицы
-        return sorted_list[len(sorted_list) - 1][0]
-
+        # Пока что здесь используется user_exp_table. Потом, наверно, будет другая таблица.
+        return self.table_slice(self.user_exp_table or [], exp)[0]
 
     def car_exp_price_by_exp(self, exp):
-        table = self.car_exp_price or {}
+        table = {pair.k: pair.v for pair in self.car_exp_price or []}
         lvl = self.car_lvl_by_exp(exp=exp)
-        return table[lvl]
+        return table[lvl]  # todo: проверять на пустоту и на исключения
 
     def car_m_exp_by_exp(self, exp):
-        table = self.car_m_exp or {}
+        table = {pair.k: pair.v for pair in self.car_m_exp or []}
         lvl = self.car_lvl_by_exp(exp=exp)
-        return table[lvl]
+        return table[lvl]  # todo: проверять на пустоту и на исключения
