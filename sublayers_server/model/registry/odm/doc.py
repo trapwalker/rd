@@ -245,6 +245,19 @@ class AbstractDocument(Document):
             if value is not None:
                 self.__class__.objects_cache[(key, value)] = self
 
+    def un_cache(self):
+        for key in self.__class__.key_fields | {'_id'}:
+            value = self._values.get(key, None)
+            if value is not None:
+                self.__class__.objects_cache.pop((key, value), None)
+
+    @classmethod
+    def clean_from_cache(cls, **kw):
+        for key_name in set(kw.keys()) & cls.key_fields:
+            key = kw[key_name]
+            if key:
+                cls.objects_cache.pop((key_name, key), None)
+
     @classmethod
     def search_in_cache(cls, **kw):
         for key_name in set(kw.keys()) & cls.key_fields:
