@@ -22,8 +22,11 @@ class BaseSiteHandler(BaseHandler):
         html_car_img = None
         name_car = None
         html_agent = None
-
+         # todo: убрать un_cache, когда заработает reload
         agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
+        if agent_example:
+            agent_example.un_cache()
+            agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
         ex_car = None
         if agent_example:
             user_info['driving'] = agent_example.driving.value
