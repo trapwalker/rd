@@ -118,7 +118,7 @@ class Server(object):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
-        #self.init_zones(time=event.time)
+        self.init_zones(time=event.time)
 
         # загрузка радиоточек
         towers_root = self.reg['poi/radio_towers']

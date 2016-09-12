@@ -19,7 +19,6 @@ class Effect(Root):
 
     def __init__(self, *av, **kw):
         super(Effect, self).__init__(*av, **kw)
-        self.dependence_list = [self.m_name, self.r_name]
 
     def __str__(self):
         return ('<{self.uri} {details}>'.format(
@@ -31,15 +30,16 @@ class Effect(Root):
         ))
 
     def start(self, owner, time):
-        for effect in self.deep_iter(reject_abstract=True):
-            effect.start(owner, time)
+        for subeffect in self:
+            subeffect.start(owner, time)
 
         if not self.abstract:
             EffectStartEvent(effect=self, owner=owner, time=time).post()
 
     def done(self, owner, time):
-        for effect in self.deep_iter(reject_abstract=True):
+        for effect in self:
             effect.done(owner, time)
+
         if not self.abstract:
             EffectDoneEvent(effect=self, owner=owner, time=time).post()
 
@@ -51,7 +51,7 @@ class Effect(Root):
 
     def on_update(self, owner, param_name, old_p_value):
         assert not self.abstract
-        if param_name in self.dependence_list:
+        if param_name in [self.m_name, self.r_name]:
             p = owner.params.get(self.param_name)
             m = owner.params.get(self.m_name)
             r = owner.params.get(self.r_name)

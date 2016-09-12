@@ -282,7 +282,7 @@ class TransactionHangarBuy(TransactionEvent):
            npc not in self.agent.current_location.example.get_npc_list() or \
            len(npc.car_list) <= self.car_number:
             return
-        car_proto = npc.car_list[self.car_number]
+        car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
         agent_balance = self.agent.example.balance
         agent_balance += 0 if self.agent.example.car is None else self.agent.example.car.price

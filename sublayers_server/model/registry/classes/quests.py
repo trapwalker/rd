@@ -4,9 +4,12 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.classes.item import Item
-from sublayers_server.model.registry.attr import TextAttribute, Attribute
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import Message
+from sublayers_server.model.registry.tree import Subdoc
+from sublayers_server.model.registry.odm.fields import (
+    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
+)
 
 from functools import update_wrapper
 
