@@ -1,5 +1,6 @@
 var LocalCookieStorage = (function(){
     function LocalCookieStorage(){
+        // Список параметров и их значений по умолчанию
         var defOptions = {
             flagDebug: false,
             chatVisible: true,
@@ -22,7 +23,6 @@ var LocalCookieStorage = (function(){
             optionsFriendlyFireEnabled: true,
             radarVisible: false
         };
-
 
         this.flagDebug = defOptions.flagDebug;
         this.chatVisible = defOptions.chatVisible;
@@ -51,15 +51,41 @@ var LocalCookieStorage = (function(){
         this.optionsDraggingMap = false;
 
 
+        //this.param_def_list = {
+        //    flagDebug: false,
+        //    chatVisible: true,
+        //    chatActiveID: 0,
+        //    zoom: 18,
+        //    // Новые опции
+        //    historyArray: [],
+        //    optionsChatPush: true,
+        //    optionsChatRPC: true,
+        //    optionsChatAnswer: true,
+        //    optionsChatSystemLog: true,
+        //    optionsMarkerContact: true,
+        //    optionsMarkerUpdate: true,
+        //    optionsMapTileVisible: true,
+        //    optionsFCRotate: true,
+        //    optionsRMVisible: true,
+        //    optionsSelectAnybody: false,
+        //    levelZoomForVisibleLabel: 17,
+        //    optionsShowID: false,
+        //    optionsShowDebugLine: true,
+        //    optionsFriendlyFireEnabled: true,
+        //    radarVisible: false
+        //};
+        //this.param_value_list = defOptions;
+
+
         this.load();
     }
 
     // Сохранение всех параметров в Cookie
-    LocalCookieStorage.prototype.save = function(){
+    LocalCookieStorage.prototype.save = function() {
         this.setCookie('flagDebug', (this.flagDebug ? 1 : 0));
         this.setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
         this.setCookie('chatActiveID', chat._activeChatID);
-        this.setCookie('zoom', myMap.getZoom());
+        this.setCookie('zoom', map.getZoom());
         this.setCookie('chatHistory', JSON.stringify(chat._history));
 
         // Новые куки
@@ -78,6 +104,16 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsFriendlyFireEnabled', (this.optionsFriendlyFireEnabled ? 1 : 0));
         this.setCookie('optionsShowDebugLine', (this.optionsShowDebugLine ? 1 : 0));
         this.setCookie('radarVisible', (controllers.fireControl.getVisible() ? 1 : 0));
+
+
+        //for (var key in this.param_value_list)
+        //    if (this.param_def_list.hasOwnProperty(key) && this.param_value_list.hasOwnProperty(key))
+        //        if (this.param_def_list[key] == this.param_value_list[key])
+        //            this.deleteCookie(key);
+        //        else
+        //            this.setCookie(key, this.param_value_list[key]);
+        //    else
+        //        console.warn('Ошибка имени параметра локального хранилища настроек!');
     };
 
 
@@ -180,19 +216,26 @@ var LocalCookieStorage = (function(){
         var radarVisible = this.getCookie('radarVisible');
         if (radarVisible !== undefined)
             this.radarVisible = (radarVisible == 1);
+
+
+        //for (var key in this.param_value_list)
+        //    if (this.param_value_list.hasOwnProperty(key)) {
+        //        var value = this.getCookie(key);
+        //        if (value !== undefined)
+        //            this.param_value_list = value;
+        //    }
     };
 
-// Функции для работы с cookie
-// возвращает cookie с именем name, если есть, если нет, то undefined
+    // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)
     LocalCookieStorage.prototype.getCookie = function (name) {
         var matches = document.cookie.match(new RegExp(
                 "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
         ));
         return matches ? decodeURIComponent(matches[1]) : undefined;
-    }
+    };
 
     // устанавливает cookie c именем name и значением value
-// options - объект с свойствами cookie (expires, path, domain, secure)
+    // options - объект с свойствами cookie (expires, path, domain, secure)
     LocalCookieStorage.prototype.setCookie = function (name, value, options) {
         options = options || {};
 
@@ -220,14 +263,12 @@ var LocalCookieStorage = (function(){
         }
 
         document.cookie = updatedCookie;
-    }
-
+    };
 
     // удаляет cookie с именем name
     LocalCookieStorage.prototype.deleteCookie = function (name) {
         this.setCookie(name, "", { expires: -1 })
-    }
-
+    };
 
     // Функции геттеры для считывания состояния
     // flagDebug
@@ -282,7 +323,7 @@ var LocalCookieStorage = (function(){
 
     // levelZoomForVisibleLabel
     LocalCookieStorage.prototype.visibleLabel = function(){
-        return (myMap.getZoom() > this.levelZoomForVisibleLabel);
+        return (map.getZoom() > this.levelZoomForVisibleLabel);
     };
 
     // optionsShowDebugLine

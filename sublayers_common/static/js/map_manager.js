@@ -21,17 +21,17 @@ function onMouseUpMap(mouseEventObject) {
         mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject.originalEvent);
     }
     else {
-        clientManager.sendGoto(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
+        clientManager.sendGoto(mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom()));
     }
 }
 
 function onMouseDblClick(mouseEventObject) {
-    clientManager.sendScoutDroid(map.project(mouseEventObject.latlng, myMap.getMaxZoom()));
-    //console.log(map.project(mouseEventObject.latlng, myMap.getMaxZoom()))
+    clientManager.sendScoutDroid(mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom()));
+    //console.log(mapManager.project(mouseEventObject.latlng, map.getMaxZoom()))
 }
 
 function onMouseRightClick(mouseEventObject) {
-    var p = map.project(mouseEventObject.latlng, myMap.getMaxZoom());
+    var p = mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom());
     last_right_click_on_map = p;
     chat.addMessageToSys(p);
     console.log(p);
@@ -202,13 +202,14 @@ function onKeyUpMap(event) {
 function TileLaterSet() {
     if (cookieStorage.optionsMapTileVisible) {  // Если нужно отображать
         if (!map.hasLayer(mapManager.tileLayer))
-            mapManager.tileLayer.addTo(myMap);
+            mapManager.tileLayer.addTo(map);
     }
     else if (map.hasLayer(mapManager.tileLayer))
         map.removeLayer(mapManager.tileLayer);
 }
 
-var MapManager = (function(_super){
+
+var MapManager = (function(_super) {
     __extends(MapManager, _super);
 
     function MapManager(){
@@ -234,9 +235,7 @@ var MapManager = (function(_super){
     }
 
     MapManager.prototype._init = function () {
-
         this.tileLayerPath = $('#settings_map_link').text();
-
         map = L.map('map',
             {
                 minZoom: ConstMinMapZoom,
@@ -245,19 +244,19 @@ var MapManager = (function(_super){
                 attributionControl: false,
                 scrollWheelZoom: "center",
                 dragging: false,
-                zoomAnimationThreshold: 8,
+                zoomAnimationThreshold: (ConstMaxMapZoom - ConstMinMapZoom),
                 doubleClickZoom: false
             }).setView([32.93523932687671, -113.0391401052475], cookieStorage.zoom);
 
-        myMap = map;
         this.anim_zoom = map.getZoom();
 
         //var storage = getWebSqlStorage('createTileLayer', this)
         //     || getIndexedDBStorage('createTileLayer', this);
         //if (!storage) {
         //    alert('Storage not loading!');
-            this.createTileLayer(null);
+        //    this.createTileLayer(null);
         //}
+        this.createTileLayer(null);
 
         // Обработчики событий карты
         pressedKey = false;
@@ -296,7 +295,8 @@ var MapManager = (function(_super){
         //    ctx.strokeRect(0, 0, 255, 0);
         //    ctx.strokeRect(255, 0, 255, 255);
         //};
-        //canvasTiles.addTo(myMap);
+        //canvasTiles.addTo(map);
+
 
         /*
             Карта является глобальным droppabl'ом в качестве мусорки
@@ -305,8 +305,7 @@ var MapManager = (function(_super){
             ветках дом-дерева и запрет делегирования дропа не отрабатывает корректно (одновременно отрабатывает и дроп
             на карту и дроп в ячейку инвентаря)
         */
-        var mapDiv = $('#bodydiv');
-        mapDiv.droppable({
+        $('#bodydiv').droppable({
             greedy: true,
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
@@ -355,16 +354,23 @@ var MapManager = (function(_super){
                 errorTileUrl: '/static/img/map_404.jpg',
                 maxZoom: ConstMaxMapZoom});
         }
-        if(cookieStorage.optionsMapTileVisible)
+        if (cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);
         return true;
     };
 
+    MapManager.prototype.project = function(latlng, zoom) {
+        return map.project(latlng, zoom);
+    };
+
+    MapManager.prototype.unproject = function(point, zoom) {
+        return map.unproject(point, zoom);
+    };
 
     // =============================== Map Coords
 
     MapManager.prototype.getMapCenter = function () {
-        var c = map.project(map.getCenter(), map.getMaxZoom());
+        var c = this.project(map.getCenter(), mapManager.getMaxZoom());
         return new Point(c.x, c.y);
     };
 
@@ -382,6 +388,13 @@ var MapManager = (function(_super){
 
     // =============================== Zoom
 
+    MapManager.prototype.getMaxZoom = function() {
+        return ConstMaxMapZoom;
+    };
+
+    MapManager.prototype.getMinZoom = function() {
+        return ConstMinMapZoom;
+    };
 
     MapManager.prototype.getRealZoom = function (time) {
         if ((this.inZoomChange) && (time >= this.startZoomChangeTime)) {
@@ -397,7 +410,7 @@ var MapManager = (function(_super){
     };
 
     MapManager.prototype.getZoom = function() {
-            return map.getZoom();
+        return map.getZoom();
     };
 
     MapManager.prototype.setZoom = function(zoom) {

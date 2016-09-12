@@ -14,7 +14,7 @@ var WTargetPointMarker = (function (_super) {
         this.ltln_tp = null;
         this.active = false;
         var temp_coord = car.getCurrentCoord(clock.getCurrentTime());
-        var carLatLng = map.unproject([temp_coord.x, temp_coord.y], map.getMaxZoom());
+        var carLatLng = mapManager.unproject([temp_coord.x, temp_coord.y], mapManager.getMaxZoom());
         this.line = L.polyline([carLatLng, carLatLng], {
             color: '#00ff54',
             weight: 2,
@@ -35,7 +35,7 @@ var WTargetPointMarker = (function (_super) {
 
         if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
             this.old_position = tempPoint;
-            var carLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            var carLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
             this.line.setLatLngs([this.ltln_tp, carLatLng]);
         }
     };
@@ -51,7 +51,7 @@ var WTargetPointMarker = (function (_super) {
         if (this.equals_target_points(target_point))
             return;
         this.target_point = target_point;
-        this.ltln_tp = map.unproject([target_point.x, target_point.y], map.getMaxZoom());
+        this.ltln_tp = mapManager.unproject([target_point.x, target_point.y], mapManager.getMaxZoom());
         if (! this.active) {
             this.line.addTo(map);
             this.active = true;

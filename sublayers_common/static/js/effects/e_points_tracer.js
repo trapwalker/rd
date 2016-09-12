@@ -37,7 +37,7 @@ var EPointsTracer = (function(){
             iconAnchor: [length / 2., length / 2.],
             html: '<div id="' + this.div_id + '"></div>'
         });
-        this.marker = L.marker(myMap.unproject([p11.x, p11.y], map.getMaxZoom()),
+        this.marker = L.marker(mapManager.unproject([p11.x, p11.y], mapManager.getMaxZoom()),
             {
                 icon: myIcon,
                 zIndexOffset: 10,
@@ -65,7 +65,7 @@ var EPointsTracer = (function(){
 
     EPointsTracer.prototype.change = function (time) {
         var pos = this.get_position(time);
-        var tempLatLng = map.unproject([pos.x, pos.y], map.getMaxZoom());
+        var tempLatLng = mapManager.unproject([pos.x, pos.y], mapManager.getMaxZoom());
         this.marker.setLatLng(tempLatLng);
     };
 
@@ -137,7 +137,7 @@ var EPointsTracerPNG = (function(){
             iconAnchor: [14 / 2., 7 / 2.],
             html: '<div id="' + this.div_id + '" class="effect-tracer-png"></div>'
         });
-        this.marker = L.rotatedMarker(myMap.unproject([p11.x, p11.y], map.getMaxZoom()),
+        this.marker = L.rotatedMarker(mapManager.unproject([p11.x, p11.y], mapManager.getMaxZoom()),
             {
                 icon: myIcon,
                 zIndexOffset: -999,
@@ -170,7 +170,7 @@ var EPointsTracerPNG = (function(){
         var tempPoint = this.get_position(time);
         if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
             this.old_position = tempPoint;
-            var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
             this.marker.setLatLng(tempLatLng);
         }
     };
