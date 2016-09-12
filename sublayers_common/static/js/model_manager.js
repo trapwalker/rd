@@ -119,7 +119,7 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._sendMessage', msg);
         // добавление координат центра карты в сообщение
         var center_map_coords;
-        center_map_coords = map.project(map.getCenter(), map.getMaxZoom());
+        center_map_coords = mapManager.project(map.getCenter(), mapManager.getMaxZoom());
         msg.map_coords_center = center_map_coords;
         msg.map_coords_zoom = map.getZoom();
 
@@ -430,21 +430,21 @@ var ClientManager = (function () {
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerUpdate()) {
             debugMapList.push(
-                L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FF0000'})
+                L.circleMarker(mapManager.unproject([event.object.state.p0.x, event.object.state.p0.y], mapManager.getMaxZoom()), {color: '#FF0000'})
                     .setRadius(3)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'comment: ' + event.comment + '</br>'
                 )
-                    .addTo(myMap)
+                    .addTo(map)
             );
 
             if (event.object.state.c)
                 debugMapList.push(
-                    L.circleMarker(myMap.unproject([event.object.state.c.x, event.object.state.c.y], myMap.getMaxZoom()), {color: '#FFFF00'})
+                    L.circleMarker(mapManager.unproject([event.object.state.c.x, event.object.state.c.y], mapManager.getMaxZoom()), {color: '#FFFF00'})
                         .setRadius(20)
-                        .addTo(myMap)
+                        .addTo(map)
                 );
 
         }
@@ -484,14 +484,14 @@ var ClientManager = (function () {
         // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerContact())
             debugMapList.push(
-                L.circleMarker(myMap.unproject([event.object.state.p0.x, event.object.state.p0.y], myMap.getMaxZoom()), {color: '#FFBA12'})
+                L.circleMarker(mapManager.unproject([event.object.state.p0.x, event.object.state.p0.y], mapManager.getMaxZoom()), {color: '#FFBA12'})
                     .setRadius(8)
                     .bindPopup(
                         'Тип сообщения: ' + event.cls + '</br>' +
                         'uid объекта: ' + event.object.uid + '</br>' +
                         'subject_id: ' + event.subject_id + '</br>'
                 )
-                    .addTo(myMap)
+                    .addTo(map)
             );
     };
 

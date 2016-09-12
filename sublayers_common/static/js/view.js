@@ -1,6 +1,5 @@
 $(document).ready(function () {
 
-
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 
@@ -169,10 +168,6 @@ function ifBrowser () {
         if (ua.search(/SeaMonkey/) > -1) return "seamonkey";
     }();
 }
-
-// todo: снести myMap
-var myMap;
-var map = myMap;
 
 var chat;
 var userCarMarker;

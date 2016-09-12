@@ -24,7 +24,7 @@ var WMapPosition = (function (_super) {
         var tempPoint = this.car.getCurrentCoord(time);
         if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
             this.old_position = tempPoint;
-            var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+            var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
             map.setView(tempLatLng, map.getZoom(), {
                 reset: false,
                 animate: false,

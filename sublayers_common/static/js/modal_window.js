@@ -125,7 +125,7 @@ var ModalWindow = (function () {
             cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
             if (!cookieStorage.flagDebug)
                 for (; debugMapList.length;) // Очистиить debugMapList и удалить всё с карты
-                    myMap.removeLayer(debugMapList.pop());
+                    map.removeLayer(debugMapList.pop());
 
             // TODO Развыделить все машинки и снова выделить только партийные
             cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;

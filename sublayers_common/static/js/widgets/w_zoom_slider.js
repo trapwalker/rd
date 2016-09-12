@@ -8,15 +8,15 @@ var ConstZoomHeightOfScale = 170; // в пикселах, высота шкал�
 var WZoomSlider = (function () {
     function WZoomSlider() {
         this.mapMng = mapManager;
-        this.count_zoom = map.getMaxZoom() - map.getMinZoom();
+        this.count_zoom = mapManager.getMaxZoom() - mapManager.getMinZoom();
         this.px_on_zoom = ConstZoomHeightOfScale / (this.count_zoom);
         this.points_in_step = ConstZoomHeightOfScale / (this.count_zoom);
         this.zoom_visible = true;
 
         this.options = {
             parentDiv: "zoomSetDivForZoomSlider",
-            max: map.getMaxZoom(),
-            min: map.getMinZoom(),
+            max: mapManager.getMaxZoom(),
+            min: mapManager.getMinZoom(),
             step: 1,
             height: 100, // px
             width: 5,    // px

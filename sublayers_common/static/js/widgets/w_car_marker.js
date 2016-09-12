@@ -76,7 +76,7 @@ var WCarMarker = (function (_super) {
         var need_rotate = false;
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
-        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+        var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
         var tempAngle = this.car.getCurrentDirection(time);
         if (Math.abs(this._lastRotateAngle - tempAngle) > 0.01) {
             this.marker.options.angle = tempAngle;
@@ -269,7 +269,7 @@ var WStaticObjectMarker = (function (_super) {
         _super.call(this, car);
 
         var tempPoint = this.car.getCurrentCoord();
-        var tempLatLng = map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom());
+        var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
         this.marker.setLatLng(tempLatLng);
 
         this.addModelObject(mapManager);
@@ -303,11 +303,11 @@ var WStaticObjectMarker = (function (_super) {
             this.current_opacity = new_opacity;
             this.marker.setOpacity(new_opacity);
             if (new_opacity == 0) {
-                this.marker.setLatLng(map.unproject([0, 0], map.getMaxZoom()));
+                this.marker.setLatLng(mapManager.unproject([0, 0], mapManager.getMaxZoom()));
             }
             else {
                 var tempPoint = this.car.getCurrentCoord();
-                this.marker.setLatLng(map.unproject([tempPoint.x, tempPoint.y], map.getMaxZoom()));
+                this.marker.setLatLng(mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom()));
             }
         }
     };
