@@ -15,5 +15,6 @@ import inventory
 import price
 import skills
 import world
+import trader
 
 import _test

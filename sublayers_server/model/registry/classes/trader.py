@@ -3,20 +3,25 @@
 import logging
 log = logging.getLogger(__name__)
 
-import random, math
+import random
 from sublayers_server.model.registry.classes.poi import Institution
-from sublayers_server.model.registry.odm.fields import (
-    IntField, FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField,
-)
-from sublayers_server.model.registry.classes.price import PriceField
-from sublayers_server.model.registry.classes.inventory import InventoryField
-from itertools import chain
-
-
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm.fields import (
-    FloatField, ListField, EmbeddedDocumentField, UniReferenceField, StringField,
+    IntField, FloatField, ListField, EmbeddedDocumentField, UniReferenceField,
 )
+from sublayers_server.model.events import Event
+from sublayers_server.model.messages import TraderInfoMessage
+
+class TraderRefreshEvent(Event):
+    def __init__(self, trader, location, **kw):
+        super(TraderRefreshEvent, self).__init__(server=location.server, **kw)
+        self.trader = trader
+        self.location = location
+
+    def on_perform(self):
+        super(TraderRefreshEvent, self).on_perform()
+        self.trader.on_refresh(event=self)
+        TraderRefreshEvent(trader=self.trader, location=self.location, time=self.time + self.trader.refresh_time).post()
 
 
 class PriceOption(Subdoc):
@@ -47,22 +52,21 @@ class PriceOption(Subdoc):
 
 
 class Price(object):
-    def __init__(self, trader, price_options, price, count, is_infinity, is_lot):
+    def __init__(self, trader, item, price, count, is_infinity, is_lot):
         self.trader = trader
         self.is_infinity = is_infinity  # флаг бесконечности итема
         self.is_lot = is_lot  # флаг наличия итема
         self.price = price
         self.count = count
-        self.price_options = price_options
+        self.item = item
 
     def is_match(self, item):
         # todo: расширить функцию для возможности работать с ветками
-        return item and (self.price_options.item.node_hash() == item.node_hash())
+        return item and (self.item.node_hash() == item.node_hash())
 
-    def as_client_dict(self, item):
+    def get_price(self, item, agent):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         # todo: добавить влияние навыка торговинга
         return dict(
-            item=item.as_client_dict(),
             buy=self.price * item.base_price * (1 - self.trader.margin),
             sale=self.price * item.base_price * (1 + self.trader.margin),
         )
@@ -107,11 +111,11 @@ class Trader(Institution):
                 if random.random() <= price_option.chance:
                     is_lot = True
                     if price_option.count_max > 0:
-                        count = round(price_option.count_min + random.random() * (price_option.count_min - price_option.count_max))
+                        count = round(price_option.count_min + random.random() * (price_option.count_max - price_option.count_min))
             self.current_list.append(
                 Price(
                     trader=self,
-                    price_options=price_option,
+                    item=price_option.item,
                     price=price,
                     count=count,
                     is_infinity=is_infinity,
@@ -121,7 +125,35 @@ class Trader(Institution):
         self.send_prices(event=event)
 
     def send_prices(self, event):
-        pass
+        for visitor in event.location.visitors:
+            TraderInfoMessage(agent=visitor, time=event.time, npc_node_hash=self.node_hash()).post()
+
+    def get_trader_assortment(self, agent):
+        res = []
+        for price in self.current_list:
+            if price.is_lot and (price.count > 0 or price.is_infinity):
+                res.append(
+                    dict(
+                        item=price.item.as_client_dict(),
+                        count=price.count,
+                        infinity=price.is_infinity,
+                        price=price.get_price(price.item, agent)
+                    ))
+        return res
+
+    def get_agent_assortment(self, agent, car_items):
+        res = []
+        for item in car_items:
+            price = self.get_item_price(item)
+            if price:
+                res.append(
+                    dict(
+                        item=item.as_client_dict(),
+                        price=price.get_price(item, agent)
+                    ))
+        return res
+
+
 
     def get_item_price(self, item):
         # todo: расширить функцию для возможности работать с ветками (подходят несколько правил)

@@ -1053,31 +1053,36 @@ class TraderInfoMessage(NPCInfoMessage):
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
 
-        # Отправка инвентаря торговца
-        d['inventory'] = dict(
-                max_size=npc.inventory_size,
-                items=[
-                    dict(
-                        position=self._get_position(),
-                        item=dict(
-                            cls='ItemState',
-                            balance_cls=None,
-                            example=ex.as_client_dict(),
-                            max_val=ex.stack_size,
-                            t0=self.time,
-                            val0=ex.stack_size,
-                            dvs=0,
-                        )
-                    ) for ex in npc.inventory.items
-                ],
-                owner_id=npc.node_html()
-            )
+        d['trader_assortment'] = npc.get_trader_assortment(agent=self.agent)
+
+        if self.agent.example.car:
+            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.car.inventory.items)
+
+        # # Отправка инвентаря торговца
+        # d['inventory'] = dict(
+        #         max_size=len(npc.current_list),
+        #         items=[
+        #             dict(
+        #                 position=self._get_position(),
+        #                 item=dict(
+        #                     cls='ItemState',
+        #                     balance_cls=None,
+        #                     example=ex.as_client_dict(),
+        #                     max_val=ex.stack_size,
+        #                     t0=self.time,
+        #                     val0=ex.stack_size,
+        #                     dvs=0,
+        #                 )
+        #             ) for ex in npc.inventory.items
+        #         ],
+        #         owner_id=npc.node_html()
+        #     )
 
         # Отправка цен
-        car_inventory = []
-        if self.agent.example.car:
-            car_inventory = self.agent.example.car.inventory.items
-        d['price'] = npc.as_client_dict(items=car_inventory)
+        # car_inventory = []
+        # if self.agent.example.car:
+        #     car_inventory = self.agent.example.car.inventory.items
+        # d['price'] = npc.as_client_dict(items=car_inventory)
         return d
 
 

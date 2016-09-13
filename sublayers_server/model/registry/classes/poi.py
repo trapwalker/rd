@@ -13,10 +13,6 @@ from sublayers_server.model.registry.classes.inventory import InventoryField
 from sublayers_server.model.registry.odm.fields import (
     IntField, FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField,
 )
-from sublayers_server.model.registry.classes.price import PriceField
-
-from itertools import chain
-
 
 class POI(Root):
     position = PositionField(caption=u"Координаты")
@@ -99,21 +95,6 @@ class Institution(Root):
 
 class Trainer(Institution):
     drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags='client')
-
-
-class Trader(Institution):
-    inventory_size = IntField(caption=u"Размер инвентаря")
-    inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре торговца')
-    price = PriceField(caption=u"Прайс-лист")
-
-    def as_client_dict(self, items=None):
-        d = super(Trader, self).as_client_dict()
-        # todo: registry fix it
-        d['price'] = {item.node_hash(): option for item, option in self.get_prices(items).items()}
-        return d
-
-    def get_prices(self, items=None):
-        return self.price.get_pricelist(chain(items or (), self.inventory.items))
 
 
 class Hangar(Institution):
