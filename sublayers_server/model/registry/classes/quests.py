@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.classes.item import Item
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import Message
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm.fields import (
-    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
+    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField,
 )
 
 from functools import update_wrapper
@@ -238,25 +238,24 @@ class QuestLogMessage(Message):
         return d
 
 
-class Quest(Item):
-    # todo: Сделать квесты не итемами
-    first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
+class Quest(Root):
+    first_state = StringField(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
 
-    caption = TextAttribute(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text = TextAttribute(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short = TextAttribute(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
-    typename = TextAttribute(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
-    list_icon = Attribute(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')
-    level = Attribute(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
-    deadline = Attribute(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    caption = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
+    text = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
+    text_short = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    typename = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
+    list_icon = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    level = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
+    deadline = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
-    hirer = Attribute(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
-    town = Attribute(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
+    hirer = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
+    town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
+    agent = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
 
-    def __init__(self, agents=None, npc=None, **kw):
+    def __init__(self, npc=None, **kw):
         super(Quest, self).__init__(**kw)
         self._state = None
-        self.agents = agents or []  # todo: weakset
         self.npc = npc  # todo: weakset
         self._log = []
         self.key = None
@@ -266,7 +265,7 @@ class Quest(Item):
         inst.key = inst.gen_key(**kw)
         return inst
 
-    def gen_key(self, agents=None, npc=None, **kw):
+    def gen_key(self, agent=None, npc=None, **kw):
         u"""Генерирует ключ уникальности квеста для агента.
         Этот ключ определяет может ли агент получить этот квест у данного персонажа.
         Перекрывая этот метод в квестах можно добиться запрета повторной выдачи квеста как в глобальном,
@@ -274,12 +273,12 @@ class Quest(Item):
         доставке фуфаек и больше не должны иметь возможности взять этот квест по фуфайкам, зато можно взять по доставке
         медикаментов, то нужно включить в кортеж ключа uri прототипа доставляемого товара.
         """
-        if agents is None:
-            agents = self.agents
+        if agent is None:
+            agent = self.agent
         if npc is None:
             npc = getattr(self, 'npc', None)
 
-        return self.id, tuple([agent.user.name for agent in agents]), npc.id
+        return self.uid, agent.uid, npc.uid
 
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()
@@ -316,15 +315,13 @@ class Quest(Item):
         if self.description_template:
             self.description = self._template_render(self.description_template, dict(quest=self, time=time))
 
-        for agent in self.agents:
-            QuestUpdateMessage(agent=agent, time=time, quest=self).post()
+        QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def start(self, time, agents=None, **kw):
+    def start(self, time, agent=None, **kw):
         assert not self.abstract
-        if agents:
-            self.agents.append(agents)
-        for agent in self.agents:
-            agent.quests.append(self)
+        if agent:
+            self.agent = agent
+
         self.set_state(self.first_state, time=time)
 
     @property
@@ -420,8 +417,7 @@ class QMortalCurse(Quest):
             if agent is self.quest.agent:
                 self.kills_count += 1
                 if (self.kills_count % self.magic_count) == 0:
-                    for a in self.quest.agents:
-                        a.die()
+                    self.agent.die()
 
         def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
             State.on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init)
