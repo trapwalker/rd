@@ -782,12 +782,15 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
-        //console.log('ClientManager.prototype.InventoryShowMessage', event);
-        inventoryList.addInventory(this._getInventory(event.inventory));
+        console.log('ClientManager.prototype.InventoryShowMessage', event);
+        var inventory = this._getInventory(event.inventory);
+        inventoryList.addInventory(inventory);
+        if (inventory.owner_id == user.ID)
+            locationManager.update();
     };
 
     ClientManager.prototype.InventoryHideMessage = function (event) {
-        //console.log('ClientManager.prototype.InventoryHideMessage', event);
+        console.log('ClientManager.prototype.InventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
     };
 
@@ -908,6 +911,7 @@ var ClientManager = (function () {
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
+
         // Эта функция заполняет только шаблоны
         user.templates = {};
         if (event.example_car) {
@@ -930,15 +934,7 @@ var ClientManager = (function () {
             user.templates.html_car_img = event.templates.html_car_img;
             user.templates.html_car_table = event.templates.html_car_table;
         }
-
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
-
-        if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
-            var inv = this._getInventory(event.car_inventory);
-            if (inventoryList.getInventory(inv.owner_id))
-                inventoryList.delInventory(inv.owner_id);
-            inventoryList.addInventory(inv);
-        }
 
         // Проверить не надо ли запустить окно информации об автомобиле
         if (carManager.is_active) carManager.open_window();
@@ -968,8 +964,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
-        console.log('ClientManager.prototype.TraderInfoMessage', event);
-        // todo: чуть-чуть ниже расскоментировать прайс, когда оно будет починено
+        //console.log('ClientManager.prototype.TraderInfoMessage', event);
+
+
+
+
+
         //var inv = this._getInventory(event.inventory);
         //if (inventoryList.getInventory(inv.owner_id))
         //    inventoryList.delInventory(inv.owner_id);

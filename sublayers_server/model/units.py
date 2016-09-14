@@ -22,7 +22,6 @@ from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot,
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
 from sublayers_server.model.inventory import Inventory, ItemState
-from sublayers_server.model.registry.classes.inventory import Inventory as RegistryInventory
 
 from math import radians
 
@@ -58,11 +57,9 @@ class Unit(Observer):
         """@type: list[sublayers_server.model.sectors.FireSector]"""
 
         # загрузка инвенторя
-        self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+        self.inventory = self.example.inventory.create_model(server=self.server, time=time, owner=self)
         if owner:
             self.inventory.add_manager(agent=owner)
-
-        self.load_inventory(time=time)
 
         self.setup_weapons(time=time)
 
@@ -79,19 +76,6 @@ class Unit(Observer):
 
     def hp(self, time):
         return self.hp_state.hp(t=time)
-
-    def load_inventory(self, time):
-        for item_example in self.example.inventory.items:
-            ItemState(
-                server=self.server, time=time, example=item_example, count=item_example.amount,
-            ).set_inventory(time=time, inventory=self.inventory, position=item_example.position)
-
-    def save_inventory(self, time):
-        self.example.inventory.items = []
-        for item_rec in self.inventory.get_all_items():
-            item_rec['item'].example.position = item_rec['position']
-            item_rec['item'].example.amount = item_rec['item'].val(t=time)
-            self.example.inventory.items.append(item_rec['item'].example)
 
     @property
     def max_hp(self):
@@ -344,7 +328,7 @@ class Unit(Observer):
     def on_save(self, time):
         self.example.hp = self.hp(time=time)
         self.example.direction = self.direction(time=time)
-        self.save_inventory(time)
+        self.inventory.save_to_example(time=time)
         super(Unit, self).on_save(time=time)
 
     def weapon_list(self):

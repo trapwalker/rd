@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, InventoryHideMessage, UserExampleSelfMessage
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage
 )
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats, Event
@@ -109,7 +109,6 @@ class MapLocation(Observer):
         agent.api.update_agent_api(time=time)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=time).post()
-        InventoryHideMessage(agent=agent, time=time, inventory_id=agent.uid).post()
 
     def add_to_chat(self, chat, time):
         super(MapLocation, self).add_to_chat(chat=chat, time=time)

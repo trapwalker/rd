@@ -159,7 +159,7 @@ class CancelBarterMessage(Message):
 class BarterTable(Object):
     def __init__(self, barter, time, max_size, **kw):
         super(BarterTable, self).__init__(time=time, **kw)
-        self.inventory = Inventory(owner=self, max_size=max_size, time=time)
+        self.inventory = Inventory(owner=self, max_size=max_size)
         self.barter = barter
 
     def is_available(self, agent):

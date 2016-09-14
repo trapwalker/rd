@@ -67,7 +67,7 @@ class POIContainer(Observer):
 
         def callback():
             super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
-            self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+            self.inventory = Inventory(max_size=self.example.inventory_size, owner=self)
             self.load_inventory(time=time)
             if life_time:
                 self.delete(time=time + life_time)

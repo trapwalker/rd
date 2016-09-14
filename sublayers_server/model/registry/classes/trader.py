@@ -57,7 +57,7 @@ class Price(object):
         self.is_infinity = is_infinity  # флаг бесконечности итема
         self.is_lot = is_lot  # флаг наличия итема
         self.price = price
-        self.count = count
+        self.count = count  # количество в штуках (не стеки)
         self.item = item
 
     def is_match(self, item):

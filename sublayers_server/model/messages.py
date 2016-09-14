@@ -871,29 +871,6 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
             templates['html_car_table'] = template_table.generate(car=ex_car)
             d['templates'] = templates
 
-            # Инвентарь
-            # todo: сделать этот метод автоматическим
-            ex_car.inventory.placing()
-            d['car_inventory'] = dict(
-                max_size=ex_car.inventory_size,
-                items=[
-                    dict(
-                        position=ex.position,
-                        item=dict(
-                            cls='ItemState',
-                            balance_cls=ex.parent.node_hash(),
-                            example=ex.as_client_dict(),
-                            max_val=ex.stack_size,
-                            t0=self.time,
-                            val0=ex.amount,
-                            dvs=0,
-                        )
-                    )
-                    for ex in ex_car.inventory.items
-                ],
-                owner_id=agent.uid
-            )
-
             car_npc_info = dict()
             # Информация для оружейника
             car_npc_info['armorer_slots'] = [
@@ -1058,31 +1035,6 @@ class TraderInfoMessage(NPCInfoMessage):
         if self.agent.example.car:
             d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.car.inventory.items)
 
-        # # Отправка инвентаря торговца
-        # d['inventory'] = dict(
-        #         max_size=len(npc.current_list),
-        #         items=[
-        #             dict(
-        #                 position=self._get_position(),
-        #                 item=dict(
-        #                     cls='ItemState',
-        #                     balance_cls=None,
-        #                     example=ex.as_client_dict(),
-        #                     max_val=ex.stack_size,
-        #                     t0=self.time,
-        #                     val0=ex.stack_size,
-        #                     dvs=0,
-        #                 )
-        #             ) for ex in npc.inventory.items
-        #         ],
-        #         owner_id=npc.node_html()
-        #     )
-
-        # Отправка цен
-        # car_inventory = []
-        # if self.agent.example.car:
-        #     car_inventory = self.agent.example.car.inventory.items
-        # d['price'] = npc.as_client_dict(items=car_inventory)
         return d
 
 

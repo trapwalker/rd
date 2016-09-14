@@ -22,13 +22,14 @@ def assert_time_in_items(f):
 
 
 class Inventory(object):
-    def __init__(self, owner, max_size, time):
+    def __init__(self, owner, max_size, example=None):
         self.max_size = max_size
         self._items = dict()
         self.owner = owner
         self.visitors = []
         self.managers = []
         self.on_change_list = []  # функции вызываемые на измениние в инвентаре
+        self.example = example
 
     def add_inventory(self, inventory, time):
 
@@ -267,6 +268,15 @@ class Inventory(object):
 
     def is_empty(self):
         return len(self._items.values()) == 0
+
+    def save_to_example(self, time):
+        if self.example is None:
+            return
+        self.example.items = []
+        for item_rec in self.get_all_items():
+            item_rec['item'].example.position = item_rec['position']
+            item_rec['item'].example.amount = item_rec['item'].val(t=time)
+            self.example.items.append(item_rec['item'].example)
 
 
 class ItemTask(TaskSingleton):

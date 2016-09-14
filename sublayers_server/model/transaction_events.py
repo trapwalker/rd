@@ -18,7 +18,7 @@ from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
-from sublayers_server.model.registry.classes.inventory import InventoryField
+
 
 # todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
 
@@ -181,6 +181,7 @@ class TransactionGasStation(TransactionEvent):
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'npc_gas_station') or (ex_car is None):
@@ -192,6 +193,11 @@ class TransactionGasStation(TransactionEvent):
             self.fuel = 0
         if ex_car.max_fuel < self.fuel + ex_car.fuel:
             return  # todo: warning
+
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
 
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
@@ -219,6 +225,7 @@ class TransactionGasStation(TransactionEvent):
         # ex_car.inventory.placing()
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -259,6 +266,8 @@ class TransactionHangarSell(TransactionEvent):
 
         self.agent.example.balance += self.agent.example.car.price
         self.agent.example.car = None
+        self.agent.reload_inventory(time=self.time)
+
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
 
@@ -305,6 +314,7 @@ class TransactionHangarBuy(TransactionEvent):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
+            self.agent.reload_inventory(time=self.time)
             self.agent.example.balance = agent_balance - car_proto.price
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
@@ -360,6 +370,7 @@ class TransactionParkingSelect(TransactionEvent):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
+            self.agent.reload_inventorey(time=time)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -407,6 +418,7 @@ class TransactionParkingLeave(TransactionEvent):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
+        self.agent.reload_inventorey(time=time)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -436,6 +448,11 @@ class TransactionArmorerApply(TransactionEvent):
         # Проверяем есть ли у агента машинка
         if not agent.example.car:
             return
+
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
 
         # Заполняем буфер итемов
         ex_car = agent.example.car
@@ -497,6 +514,7 @@ class TransactionArmorerApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -518,6 +536,7 @@ class TransactionMechanicApply(TransactionEvent):
     def on_perform(self):
         super(TransactionMechanicApply, self).on_perform()
         agent = self.agent
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'mechanic'):
@@ -529,6 +548,11 @@ class TransactionMechanicApply(TransactionEvent):
         # Проверяем есть ли у агента машинка
         if not agent.example.car:
             return
+
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
 
         # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
         for slot_name in self.mechanic_slots.keys():
@@ -590,6 +614,7 @@ class TransactionMechanicApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -672,6 +697,11 @@ class TransactionTunerApply(TransactionEvent):
         if not agent.example.car:
             return
 
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
+
         # todo: здесь можно сделать проход по self.tuner_slots для проверки по тегам.
         for slot_name in self.tuner_slots.keys():
             new_item_in_slot = self.tuner_slots[slot_name]['example']
@@ -733,6 +763,8 @@ class TransactionTunerApply(TransactionEvent):
             position += 1
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
+
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
