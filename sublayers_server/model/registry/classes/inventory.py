@@ -25,7 +25,7 @@ class LoadInventoryEvent(Event):
 
 
 class Inventory(Subdoc):
-    size = IntField(caption=u'Размер инвентаря', default=10)
+    size = IntField(caption=u'Размер инвентаря', default=1)
     items = ListField(reinst=True, base_field=EmbeddedDocumentField(
         embedded_document_type='sublayers_server.model.registry.classes.item.Item',
     ))

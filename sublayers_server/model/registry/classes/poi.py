@@ -30,7 +30,7 @@ class POIObserver(POI):
 
 class PoiStash(POIObserver):
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')
-    inventory_size = IntField(caption=u"размер инвентаря")
+    # inventory_size = IntField(caption=u"размер инвентаря")
 
 
 class RadioTower(POIObserver):

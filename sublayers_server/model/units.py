@@ -233,7 +233,7 @@ class Unit(Observer):
                 time=event.time,
                 poi_cls=POICorpse,
                 example=None,
-                inventory_size=self.example.inventory_size,
+                inventory_size=self.example.inventory.size,
                 position=self.position(event.time),
                 life_time=600.0,
                 items=self.inventory.get_items(),

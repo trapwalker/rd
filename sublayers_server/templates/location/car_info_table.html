@@ -12,7 +12,7 @@
         <div class="car-info-block-body-right-list-text name uneven">&nbspСлотов кузова:</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.get_count_slots(tags='armorer') }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspСлотов багажника:</div>
-        <div class="car-info-block-body-right-list-text value even">{{ car.inventory_size }}</div>
+        <div class="car-info-block-body-right-list-text value even">{{ car.inventory.size }}</div>
         <div class="car-info-block-body-right-list-text name uneven">&nbspОбъём бака:</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.max_fuel }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspРасход топлива:</div>

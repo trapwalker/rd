@@ -131,7 +131,7 @@ class Mobile(Root):
     slot_BR_f = StringField(caption=u'Флаги заднего правого слота [FBLR]', tags='client slot_limit')
 
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
-    inventory_size = IntField(caption=u"Размер инвентаря")
+    # inventory_size = IntField(caption=u"Размер инвентаря")
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
     price = FloatField(caption=u"Цена", tags='client')

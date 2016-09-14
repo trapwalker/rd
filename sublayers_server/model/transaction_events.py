@@ -864,7 +864,7 @@ class TransactionTraderApply(TransactionEvent):
             return
 
         # Проверка по слотам инвентаря
-        if (ex_car.inventory_size - len(ex_car.inventory.items) + len(self.player_table)) < len(self.trader_table):
+        if (ex_car.inventory.size - len(ex_car.inventory.items) + len(self.player_table)) < len(self.trader_table):
             # todo: вариативные реплики
             # todo: translate
             messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
