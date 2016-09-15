@@ -9,6 +9,9 @@ var LocationTraderNPC = (function (_super) {
         this.traderInvCls = "trader-inventory-droppable-item";
         this.traderTableCls = "trader-table-droppable-item";
 
+        this.trader_assortment = [];
+        this.agent_assortment = [];
+
         this.playerInv = [];
         this.playerTable = [];
         this.playerInvDiv = null;
@@ -39,8 +42,8 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype._clearTraderInv = function() {
-        this.traderInv = [];
-        this.traderTable = [];
+        //this.traderInv = [];
+        //this.traderTable = [];
         if (this.traderInvDiv) {
             this.traderInvDiv.find('.npcInventory-itemWrap').remove();
             this.traderInvDiv = null;
@@ -105,25 +108,40 @@ var LocationTraderNPC = (function (_super) {
         this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
     };
 
+    LocationTraderNPC.prototype._search_in_assertment_trader = function(assertment, item) {
+        for (var i = 0; i < assertment.length; i++)
+            if (item.node_hash == assertment[i].item.node_hash)
+                return i;
+        return -1;
+    };
+
     LocationTraderNPC.prototype.updateTraderInv = function() {
         //console.log('LocationTraderNPC.prototype.updateTraderInv');
         this._clearTraderInv();
         var self = this;
         var item;
 
-        // Добавить итемы инвентаря своего агента
-        var inventory = inventoryList.getInventory(this.npc_rec.html_hash);
-        if (! inventory) {
-            //console.warn('Ивентарь торговца не найден');
-            return
-        }
-        for (var i = 0; i < inventory.max_size; i++) {
-            item = inventory.getItem(i);
-            if (item) {
-                item.example.count = item.getCurrentVal(clock.getCurrentTime());
-                item.example.max_count = item.getMaxVal();
-                this.traderInv.push(item.example);
+        // Обновить столик торговца
+        var temp_trader_table = [];
+        for (var i = 0; i < this.traderTable.length; i++) {
+            item = this.traderTable[i];
+            var assertment_index = this._search_in_assertment_trader(this.trader_assortment, item);
+            if ((assertment_index != -1) && (item.count <= this.trader_assortment[assertment_index].count)) {
+                temp_trader_table.push(item);
+                this.trader_assortment[assertment_index].__start_table_count = item.count;
             }
+        }
+        this.traderTable = temp_trader_table;
+
+        // Формирование инвентаря торговца
+        this.traderInv = [];
+        for (var i = 0; i < this.trader_assortment.length; i++) {
+            //this.trader_assortment[i].count;
+            item = this.trader_assortment[i].item;
+            item.count = this.trader_assortment[i].count -
+                (this.trader_assortment[i].__start_table_count ? this.trader_assortment[i].__start_table_count : 0);
+            if (item.count > 0)
+                this.traderInv.push(item);
         }
 
         // Установить дивы инвентарей
@@ -136,8 +154,8 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderTableCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemTrader(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
-                                      self.traderInvDiv , self.traderTableCls, self.traderInvCls);//
+                self.changeItemDropable(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                                      self.traderInvDiv , self.traderTableCls, self.traderInvCls);
             }
         });
 
@@ -146,13 +164,14 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderInvCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemTrader(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                self.changeItemDropable(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
                                       self.traderTableDiv, self.traderInvCls, self.traderTableCls);
             }
         });
 
         // Отрисовать верстку
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
+        this._reDrawItemList(this.traderTableDiv, this.traderTable, this.traderTableCls);
     };
 
     LocationTraderNPC.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
@@ -237,52 +256,85 @@ var LocationTraderNPC = (function (_super) {
         this.calcPriceTables();
     };
 
+    LocationTraderNPC.prototype.changeItemDropable = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
+        var item = srcList[pos];
+        if (! item) return;
+
+        destDiv.find('.npcInventory-itemWrap').remove();
+        srcDiv.find('.npcInventory-itemWrap').remove();
+
+        // Отнять единицу товара из исходного итема
+        item.count--;
+        if (item.count == 0)
+            srcList.splice(pos, 1);
+
+        var item_index = -1;
+        for (var i = 0; i < destList.length && item_index == -1; i++)
+            if (item.node_hash == destList[i].node_hash)
+                item_index = i;
+
+        if (item_index == -1) {
+            item = cloneObject(item);
+            item.count = 1;
+            destList.push(item);
+        }
+        else
+            destList[item_index].count++;
+
+
+        this._reDrawItemList(destDiv, destList, destCls);
+        this._reDrawItemList(srcDiv, srcList, srcCls);
+
+        this.calcPriceTables();
+    };
+
+
     // state: 0 - продажа торговцу, 1 - покупка у торговца
     LocationTraderNPC.prototype._getPrice = function (item, state) {
         var price_modify = this.price_list.hasOwnProperty(item.id) ? this.price_list[item.id][state] : 100;
         return Math.round(item.base_price * price_modify / 100.0);
     };
 
-    LocationTraderNPC.prototype.updatePrice = function(price_list) {
-        //console.log('TraderManager.prototype.updatePrice', price_list);
-        if (price_list)
-            this.price_list = price_list;
-        else
-            price_list = this.price_list;
+    LocationTraderNPC.prototype.updatePrice = function(event) {
+        console.log('TraderManager.prototype.updatePrice', event.trader_assortment);
 
-        if (! price_list) { console.warn('Отсутствует список цен торговца.'); return }
+        this.trader_assortment = event.trader_assortment;
+        this.agent_assortment = event.agent_assortment;
 
+        this.updateTraderInv(event);
 
-        // Данный метод просто добавит в текущие списки итемов правильные цены этого торговца.
-        var new_inventory = [];
-        // проходим по списку итемов пользователя и ставим правильные цены продажи
-        for (var i = 0 ; i < this.playerInv.length; i++) {
-            var item = this.playerInv[i];
-            if (price_list.hasOwnProperty(item.id)) {  // если данный предмет покупается торговцем
-                new_inventory.push(item);
-            } else {  // если предмета нет в этом списке, значит торговец его не покупает
-                //console.warn('Данный предмет не покупается этим торговцем:', item)
-            }
-        }
-        this.playerInv = new_inventory;
-
-        new_inventory = [];
-        // проходим по списку итемов торговца и ставим правильные цены продажи
-        for (var i = 0 ; i < this.traderInv.length; i++) {
-            var item = this.traderInv[i];
-            if (price_list.hasOwnProperty(item.id)) {  // если данный предмет продаётся торговцем
-                new_inventory.push(item);
-            } else {  // если предмета нет в этом списке, значит торговец его не продаёт
-                console.warn('Данный предмет не продаётмя этим торговцем:', item)
-            }
-        }
-        this.traderInv = new_inventory;
-
-        // todo: так сделано в changeItem методах. Возможно стоит внести в _reDrawItemList
-        if (this.traderInvDiv) this.traderInvDiv.find('.npcInventory-itemWrap').remove();
-        if (this.playerInvDiv) this.playerInvDiv.find('.npcInventory-itemWrap').remove();
-        this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
-        this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
+        //
+        //
+        //// Данный метод просто добавит в текущие списки итемов правильные цены этого торговца.
+        //var new_inventory = [];
+        //// проходим по списку итемов пользователя и ставим правильные цены продажи
+        //for (var i = 0 ; i < this.playerInv.length; i++) {
+        //    var item = this.playerInv[i];
+        //    if (price_list.hasOwnProperty(item.id)) {  // если данный предмет покупается торговцем
+        //        new_inventory.push(item);
+        //    } else {  // если предмета нет в этом списке, значит торговец его не покупает
+        //        //console.warn('Данный предмет не покупается этим торговцем:', item)
+        //    }
+        //}
+        //this.playerInv = new_inventory;
+        //
+        //new_inventory = [];
+        //// проходим по списку итемов торговца и ставим правильные цены продажи
+        //for (var i = 0 ; i < this.traderInv.length; i++) {
+        //    var item = this.traderInv[i];
+        //    if (price_list.hasOwnProperty(item.id)) {  // если данный предмет продаётся торговцем
+        //        new_inventory.push(item);
+        //    } else {  // если предмета нет в этом списке, значит торговец его не продаёт
+        //        console.warn('Данный предмет не продаётмя этим торговцем:', item)
+        //    }
+        //}
+        //this.traderInv = new_inventory;
+        //
+        //// todo: так сделано в changeItem методах. Возможно стоит внести в _reDrawItemList
+        //if (this.traderInvDiv) this.traderInvDiv.find('.npcInventory-itemWrap').remove();
+        //if (this.playerInvDiv) this.playerInvDiv.find('.npcInventory-itemWrap').remove();
+        //this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
+        //this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
     };
 
     LocationTraderNPC.prototype.clear = function() {
@@ -302,7 +354,7 @@ var LocationTraderNPC = (function (_super) {
 
     LocationTraderNPC.prototype.update = function(data) {
         //console.log('LocationTraderNPC.prototype.update');
-        this.updatePlayerInv();
+        //this.updatePlayerInv();
         this.updateTraderInv();
         _super.prototype.update.call(this, data);
     };

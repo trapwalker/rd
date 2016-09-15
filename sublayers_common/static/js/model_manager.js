@@ -782,7 +782,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryShowMessage', event);
+        //console.log('ClientManager.prototype.InventoryShowMessage', event);
         var inventory = this._getInventory(event.inventory);
         inventoryList.addInventory(inventory);
         if (inventory.owner_id == user.ID)
@@ -965,9 +965,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
         //console.log('ClientManager.prototype.TraderInfoMessage', event);
-
-
-
+        var trader = locationManager.npc[event.npc_html_hash];
+        if (trader) {
+            trader.updatePrice(event)
+        }
 
 
         //var inv = this._getInventory(event.inventory);
