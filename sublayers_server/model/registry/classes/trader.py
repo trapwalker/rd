@@ -149,11 +149,10 @@ class Trader(Institution):
                 res.append(
                     dict(
                         item=item.as_client_dict(),
-                        price=price.get_price(item, agent)
+                        price=price.get_price(item, agent),
+                        count=item.amount,
                     ))
         return res
-
-
 
     def get_item_price(self, item):
         # todo: расширить функцию для возможности работать с ветками (подходят несколько правил)

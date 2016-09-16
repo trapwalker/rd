@@ -5,6 +5,8 @@ from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
     InventoryDelItemMessage, InventoryHideMessage, InventoryIncSizeMessage
 
+from math import floor
+
 EPS = 1e-5
 
 
@@ -275,8 +277,10 @@ class Inventory(object):
         self.example.items = []
         for item_rec in self.get_all_items():
             item_rec['item'].example.position = item_rec['position']
-            item_rec['item'].example.amount = item_rec['item'].val(t=time)
-            self.example.items.append(item_rec['item'].example)
+            amount = floor(item_rec['item'].val(t=time))  # Округление в меньшую сторону всех итемов инвентаря
+            if amount > 0:
+                item_rec['item'].example.amount = amount
+                self.example.items.append(item_rec['item'].example)
 
 
 class ItemTask(TaskSingleton):

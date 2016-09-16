@@ -964,21 +964,11 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
-        //console.log('ClientManager.prototype.TraderInfoMessage', event);
+        console.log('ClientManager.prototype.TraderInfoMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
         if (trader) {
             trader.updatePrice(event)
         }
-
-
-        //var inv = this._getInventory(event.inventory);
-        //if (inventoryList.getInventory(inv.owner_id))
-        //    inventoryList.delInventory(inv.owner_id);
-        //inventoryList.addInventory(inv);
-        //if (locationManager.npc.hasOwnProperty(inv.owner_id)) {
-        //    locationManager.npc[inv.owner_id].updateTraderInv();
-        //    //locationManager.npc[inv.owner_id].updatePrice(event.price.price);
-        //}
     };
 
     ClientManager.prototype.TrainerInfoMessage = function (event) {
