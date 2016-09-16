@@ -242,6 +242,12 @@ class Inventory(object):
             return self._items[position]
         return None
 
+    def get_item_by_uid(self, uid):
+        for item in self._items.values():
+            if item.example.uid == uid:
+                return item
+        return None
+
     def get_free_position(self):
         for i in xrange(self.max_size):
             if self.get_item(position=i) is None:

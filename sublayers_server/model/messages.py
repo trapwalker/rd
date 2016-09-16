@@ -1010,7 +1010,6 @@ class ParkingInfoMessage(NPCInfoMessage):
 
 
 # Сообщение-ответ для клиента - информация об нпц-торговце
-# todo: переделать этот кошмар
 class TraderInfoMessage(NPCInfoMessage):
     def __init__(self, **kw):
         super(TraderInfoMessage, self).__init__(**kw)
@@ -1036,6 +1035,10 @@ class TraderInfoMessage(NPCInfoMessage):
         else:
             d['agent_assortment'] = []
         return d
+
+
+class TraderClearMessage(NPCInfoMessage):
+    pass
 
 
 # Сообщение-ответ для клиента - информация об нпц-тренере

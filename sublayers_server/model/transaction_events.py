@@ -775,19 +775,22 @@ class TransactionTunerApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-# todo: переделать ценообразование
 class TransactionTraderApply(TransactionEvent):
     def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.player_table = [UUID(uid) for uid in player_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
-        self.trader_table = [UUID(uid) for uid in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.player_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in player_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.trader_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
         self.npc_node_hash = npc_node_hash
         self.position = 0
 
     def _get_position(self):
         self.position += 1
         return self.position - 1
+
+    def cancel_transaction(self):
+        # Откатываемся к модельному инвентарю
+        self.agent.inventory.save_to_example(time=self.time)
 
     @tornado.gen.coroutine
     def on_perform_async(self):
@@ -809,94 +812,152 @@ class TransactionTraderApply(TransactionEvent):
         if not (isinstance(agent.current_location, Town) and (trader in agent.current_location.example.get_npc_list())):
             return  # todo: а как может быть иначе? Может быть здесь должно быть исключение?
 
-        trader_price = trader.get_prices(items=ex_car.inventory.items)
+        # Сохраняем инвентарь в екзампл
+        agent.inventory.save_to_example(time=self.time)
 
-        # Заполняем буфер итемов игрока
-        buffer_player = [item.uid for item in ex_car.inventory.items]
+        # Обход столика игрока ,списывание итемов и расчет навара
+        sale_price = 0  # цена того что игрок продает
+        for table_rec in self.player_table:
+            item_ex = ex_car.inventory.get_item_by_uid(uid=table_rec['uid'])
 
-        # Обход столика игрока: формирование цены и проверка наличия
-        price_player = 0
-        for item_uid in self.player_table:
-            if item_uid not in buffer_player:
-                # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
-                # todo: translate
-                messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
+            # Проверяем есть ли итем в нужном количестве
+            if (item_ex is None) or (item_ex.amount < table_rec['count']):
+                self.cancel_transaction()
                 return
 
-            item = ex_car.inventory.get_item_by_uid(item_uid)
-            price_option = trader_price.get(item, None)
-            temp_price = (0.01 * item.base_price * price_option['buy']) if price_option and price_option['buy'] else item.base_price  # * item.amount / item.stack_size
-            temp_price *= item.amount / item.stack_size
-            # todo: translate
-            tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
-            price_player += temp_price
-            buffer_player.remove(item_uid)
+            # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
+            price = trader.get_item_price(item=item_ex)
+            if price is None:
+                self.cancel_transaction()
+                return
+            sale_price += price.get_price(item=item_ex, agent=agent)['buy'] * \
+                          (table_rec['count'] / item_ex.stack_size)
 
-        price_player = round(price_player)
+            item_ex.amount -= table_rec['count']
+            if item_ex.amount == 0:
+                ex_car.inventory.items.remove(item_ex)
+        sale_price = math.floor(sale_price)  # Навар игрока округляется до меньшего
 
-        # Формирование цены итемов для продажи торговцем (обход столика торговца)
-        bought_items = []
-        price_trader = 0
-        for item_uid in self.trader_table:
-            item = trader.inventory.get_item_by_uid(item_uid)
-            if item is None:
-                # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
-                # todo: translate
-                messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
+        # Обход столика торговца, зачисление итемов и расчет стоимости
+        buy_price = 0  # цена того что игрок покупает
+        for table_rec in self.trader_table:
+            price = trader.get_item_by_uid(uid=table_rec['uid'])
+
+            # Проверяем есть ли итем в нужном количестве
+            if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
+                self.cancel_transaction()
                 return
 
-            price_option = trader_price.get(item, None)
-            # * item.amount / item.stack_size
-            temp_price = (0.01 * item.base_price * price_option['sale']) if price_option and price_option['sale'] else item.base_price
-            # todo: translate
-            tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
-            price_trader += temp_price
-            # todo: Учитывать количество
-            bought_items.append(item)
+            # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
+            buy_price += price.get_price(item=price.item, agent=agent)['sale'] * \
+                         (table_rec['count'] / price.item.stack_size)
 
-        price_trader = round(price_trader)
+            # Добавляем итемы в инвентарь игрока
+            ex_car.inventory.add(item=price.item, count=table_rec['count'])
+        buy_price = math.ceil(buy_price)
 
-        # Проверка по цене
-        if (agent.example.balance + price_player) < price_trader:
-            # todo: вариативные реплики
-            # todo: translate
-            messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'Куда хватаешь? У тебя нет столько денег').post()
+        # Проверяем не переполнился ли инвентарь игрока (если надо, то пробуем уплотнить)
+        if len(ex_car.inventory.items) > ex_car.inventory.size:
+            ex_car.inventory.packing()
+        if len(ex_car.inventory.items) > ex_car.inventory.size:
+            self.cancel_transaction()
             return
 
-        # Проверка по слотам инвентаря
-        if (ex_car.inventory.size - len(ex_car.inventory.items) + len(self.player_table)) < len(self.trader_table):
-            # todo: вариативные реплики
-            # todo: translate
-            messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
+        # Проверяем хватает ли денег на все про все
+        if (agent.example.balance + sale_price - buy_price) < 0:
+            self.cancel_transaction()
             return
+        agent.example.balance = agent.example.balance + sale_price - buy_price
 
-        # Зачисление денег на счёт
-        agent.example.balance += price_player - price_trader
+        # Перезагружаем модельный инвентарь
+        agent.reload_inventory(time=self.time, save=False)
 
-        new_inventory = []
-        # Списание итемов из инвентаря
-        for item in ex_car.inventory.items:
-            if item.uid not in self.player_table:
-                item.position = self._get_position()
-                new_inventory.append(item)
 
-        # Добавление купленных итемов в инвентарь
-        for item in bought_items:
-            # todo: Брать количество правильно
-            # todo : (!) parent instantiate fix
-            item_ex = item.parent.instantiate(position=self._get_position(), amount=item.stack_size)
-            yield item_ex.load_references()
-            new_inventory.append(item_ex)
-        ex_car.inventory.items = new_inventory
-
-        for msg in tr_msg_list:
-            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),
-                                           info_string=msg).post()
-
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        # todo: вариативные реплики
-        # todo: translate
-        messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
+        # # trader_price = trader.get_prices(items=ex_car.inventory.items)
+        #
+        # # Заполняем буфер итемов игрока
+        # buffer_player = [item.uid for item in ex_car.inventory.items]
+        #
+        # # Обход столика игрока: формирование цены и проверка наличия
+        # price_player = 0
+        # for item_uid in self.player_table:
+        #     if item_uid not in buffer_player:
+        #         # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
+        #         # todo: translate
+        #         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
+        #         return
+        #
+        #     item = ex_car.inventory.get_item_by_uid(item_uid)
+        #     price_option = trader_price.get(item, None)
+        #     temp_price = (0.01 * item.base_price * price_option['buy']) if price_option and price_option['buy'] else item.base_price  # * item.amount / item.stack_size
+        #     temp_price *= item.amount / item.stack_size
+        #     # todo: translate
+        #     tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
+        #     price_player += temp_price
+        #     buffer_player.remove(item_uid)
+        #
+        # price_player = round(price_player)
+        #
+        # # Формирование цены итемов для продажи торговцем (обход столика торговца)
+        # bought_items = []
+        # price_trader = 0
+        # for item_uid in self.trader_table:
+        #     item = trader.inventory.get_item_by_uid(item_uid)
+        #     if item is None:
+        #         # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
+        #         # todo: translate
+        #         messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
+        #         return
+        #
+        #     price_option = trader_price.get(item, None)
+        #     # * item.amount / item.stack_size
+        #     temp_price = (0.01 * item.base_price * price_option['sale']) if price_option and price_option['sale'] else item.base_price
+        #     # todo: translate
+        #     tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
+        #     price_trader += temp_price
+        #     # todo: Учитывать количество
+        #     bought_items.append(item)
+        #
+        # price_trader = round(price_trader)
+        #
+        # # Проверка по цене
+        # if (agent.example.balance + price_player) < price_trader:
+        #     # todo: вариативные реплики
+        #     # todo: translate
+        #     messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'Куда хватаешь? У тебя нет столько денег').post()
+        #     return
+        #
+        # # Проверка по слотам инвентаря
+        # if (ex_car.inventory.size - len(ex_car.inventory.items) + len(self.player_table)) < len(self.trader_table):
+        #     # todo: вариативные реплики
+        #     # todo: translate
+        #     messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
+        #     return
+        #
+        # # Зачисление денег на счёт
+        # agent.example.balance += price_player - price_trader
+        #
+        # new_inventory = []
+        # # Списание итемов из инвентаря
+        # for item in ex_car.inventory.items:
+        #     if item.uid not in self.player_table:
+        #         item.position = self._get_position()
+        #         new_inventory.append(item)
+        #
+        # # Добавление купленных итемов в инвентарь
+        # for item in bought_items:
+        #     # todo: Брать количество правильно
+        #     # todo : (!) parent instantiate fix
+        #     item_ex = item.parent.instantiate(position=self._get_position(), amount=item.stack_size)
+        #     yield item_ex.load_references()
+        #     new_inventory.append(item_ex)
+        # ex_car.inventory.items = new_inventory
+        #
+        # for msg in tr_msg_list:
+        #     messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),
+        #                                    info_string=msg).post()
+        messages.TraderInfoMessage(agent=agent, time=self.time, npc_node_hash=trader.node_hash()).post()
+        messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=trader.node_hash()).post()
 
 
 class TransactionSetRPGState(TransactionEvent):

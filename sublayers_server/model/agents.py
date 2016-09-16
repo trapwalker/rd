@@ -425,9 +425,10 @@ class Agent(Object):
         # todo: csll it ##quest
         self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
 
-    def reload_inventory(self, time):
+    def reload_inventory(self, time, save=True):
         if self.inventory:
-            self.inventory.save_to_example(time=time)
+            if save:
+                self.inventory.save_to_example(time=time)
             self.inventory.del_all_visitors(time=time)
             self.inventory = None
         if self.example.car:

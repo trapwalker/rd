@@ -99,6 +99,12 @@ class Trader(Institution):
     def current_list(self, value):
         self.__dict__['_current_list'] = value
 
+    def get_item_by_uid(self, uid):
+        for price in self.current_list:
+            if price.item.uid == uid:
+                return price
+        return None
+
     def on_refresh(self, event):
         self.current_list = []
         for price_option in self.price_list:

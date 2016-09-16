@@ -59,7 +59,7 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype.updatePlayerInv = function() {
-        //console.log('LocationTraderNPC.prototype.updatePlayerInv', this.agent_assortment);
+        console.log('LocationTraderNPC.prototype.updatePlayerInv', this.agent_assortment);
         this._clearPlayerInv();
         var self = this;
         var item;
@@ -324,18 +324,34 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype.clear = function() {
-        this._clearPlayerInv();
-        this._clearTraderInv();
+        this.playerTable = [];
+        this.traderTable = [];
+        this.update();
     };
 
     LocationTraderNPC.prototype.apply = function() {
         //console.log('TraderManager.prototype.apply');
-        clientManager.sendTraderApply(this);
+        var res = {
+            npc_node_hash: this.npc_rec.node_hash
+        };
+        res.player_table = [];
+        for (var i = 0; i < this.playerTable.length; i++)
+            res.player_table.push({
+                uid: this.playerTable[i].uid,
+                count: this.playerTable[i].count
+            });
+        res.trader_table = [];
+        for (var i = 0; i < this.traderTable.length; i++)
+            res.trader_table.push({
+                uid: this.traderTable[i].uid,
+                count: this.traderTable[i].count
+            });
+        clientManager.sendTraderApply(res);
     };
 
     LocationTraderNPC.prototype.cancel = function() {
         //console.log('TraderManager.prototype.cancel');
-        this.update();
+        this.clear();
     };
 
     LocationTraderNPC.prototype.update = function(data) {
@@ -343,22 +359,6 @@ var LocationTraderNPC = (function (_super) {
         this.updatePlayerInv();
         this.updateTraderInv();
         _super.prototype.update.call(this, data);
-    };
-
-    LocationTraderNPC.prototype.getPlayerTable = function() {
-//        console.log('LocationTraderNPC.prototype.getPlayerTable');
-        var res = [];
-        for (var i = 0; i < this.playerTable.length; i++)
-            res.push(this.playerTable[i].uid);
-        return res;
-    };
-
-    LocationTraderNPC.prototype.getTraderTable = function() {
-//        console.log('LocationTraderNPC.prototype.getTraderTable');
-        var res = [];
-        for (var i = 0; i < this.traderTable.length; i++)
-            res.push(this.traderTable[i].uid);
-        return res;
     };
 
     LocationTraderNPC.prototype.get_self_info = function () {

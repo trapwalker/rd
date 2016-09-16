@@ -964,11 +964,15 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
-        console.log('ClientManager.prototype.TraderInfoMessage', event);
+        //console.log('ClientManager.prototype.TraderInfoMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
-        if (trader) {
-            trader.updatePrice(event)
-        }
+        if (trader) trader.updatePrice(event)
+    };
+
+    ClientManager.prototype.TraderClearMessage = function (event) {
+        //console.log('ClientManager.prototype.TraderClearMessage', event);
+        var trader = locationManager.npc[event.npc_html_hash];
+        if (trader) trader.clear();
     };
 
     ClientManager.prototype.TrainerInfoMessage = function (event) {
@@ -1537,16 +1541,12 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendTraderApply = function (npc) {
+    ClientManager.prototype.sendTraderApply = function (param) {
         //console.log('ClientManager.prototype.sendTraderApply');
         var mes = {
             call: "trader_apply",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                player_table: npc.getPlayerTable(),
-                trader_table: npc.getTraderTable(),
-                npc_node_hash: npc.npc_rec.node_hash,
-            }
+            params: param
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
