@@ -52,13 +52,14 @@ class PriceOption(Subdoc):
 
 
 class Price(object):
-    def __init__(self, trader, item, price, count, is_infinity, is_lot):
+    def __init__(self, trader, price_option, price, count, is_infinity, is_lot):
         self.trader = trader
         self.is_infinity = is_infinity  # флаг бесконечности итема
         self.is_lot = is_lot  # флаг наличия итема
         self.price = price
         self.count = count  # количество в штуках (не стеки)
-        self.item = item
+        self.item = price_option.item
+        self.price_option = price_option
 
     def is_match(self, item):
         # todo: расширить функцию для возможности работать с ветками
@@ -78,6 +79,13 @@ class Price(object):
             buy=self.price * item.base_price * (1 - self.trader.margin),
             sale=self.price * item.base_price * (1 + self.trader.margin),
         )
+
+    def change(self, count):  # Когда было куплено или продавно несколько итемов
+        self.price -= self.price_option.influence * count
+        if count < 0 and self.price > self.price_option.price_max:  # значит у торговца купили итемы
+            self.price = self.price_option.price_max
+        if count > 0 and self.price < self.price_option.price_min:  # значит торговцe продали итемы
+            self.price = self.price_option.price_min
 
 
 class Trader(Institution):
@@ -130,18 +138,18 @@ class Trader(Institution):
             self.current_list.append(
                 Price(
                     trader=self,
-                    item=price_option.item,
                     price=price,
                     count=count,
                     is_infinity=is_infinity,
-                    is_lot=is_lot
+                    is_lot=is_lot,
+                    price_option=price_option
                 )
             )
-        self.send_prices(event=event)
+        self.send_prices(location=event.location, time=event.time)
 
-    def send_prices(self, event):
-        for visitor in event.location.visitors:
-            TraderInfoMessage(agent=visitor, time=event.time, npc_node_hash=self.node_hash()).post()
+    def send_prices(self, location, time):
+        for visitor in location.visitors:
+            TraderInfoMessage(agent=visitor, time=time, npc_node_hash=self.node_hash()).post()
 
     def get_trader_assortment(self, agent):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
@@ -199,6 +207,11 @@ class Trader(Institution):
             if option:
                 price[item] = option.as_client_dict()
         return price
+
+    def change_price(self, item, count):
+        price = self.get_item_price(item)
+        if price:
+            price.change(count)
 
 
 

@@ -1029,6 +1029,7 @@ class TraderInfoMessage(NPCInfoMessage):
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
 
+        d['agent_balance'] = self.agent.example.balance
         d['trader_assortment'] = npc.get_trader_assortment(agent=self.agent)
         if self.agent.example.car:
             d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.car.inventory.items)

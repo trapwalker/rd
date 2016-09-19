@@ -966,6 +966,7 @@ var ClientManager = (function () {
     ClientManager.prototype.TraderInfoMessage = function (event) {
         //console.log('ClientManager.prototype.TraderInfoMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
+        user.example_agent.balance = event.agent_balance;
         if (trader) trader.updatePrice(event)
     };
 
