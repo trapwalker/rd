@@ -62,7 +62,14 @@ class Price(object):
 
     def is_match(self, item):
         # todo: расширить функцию для возможности работать с ветками
-        return item and (self.item.node_hash() == item.node_hash())
+        # if not item:
+        #     return
+        # if self.item.node_hash() == item.node_hash():
+        #     return True
+        # if item.is_ancestor(self.item):
+        #     return True
+        # return False
+        return item and (self.item.node_hash() == item.node_hash() or item.is_ancestor(self.item))
 
     def get_price(self, item, agent):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         # todo: добавить влияние навыка торговинга
@@ -84,7 +91,7 @@ class Trader(Institution):
 
     ignore_list = ListField(
         caption=u"Список запрещенных товаров",
-        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.items.Item')
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
     )
     price_list = ListField(
         caption=u"Набор правил формирования ассортимента",
@@ -147,25 +154,47 @@ class Trader(Institution):
                     ))
         return res
 
+    def item_in_ignore_list(self, item):
+        for ignore_item in self.ignore_list:
+            if item.is_ancestor_by_lvl(ignore_item) >= 0:
+                return True
+        return None
+
     def get_agent_assortment(self, agent, car_items):
         res = []
         for item in car_items:
-            price = self.get_item_price(item)
-            if price:
-                res.append(
-                    dict(
-                        item=item.as_client_dict(),
-                        price=price.get_price(item, agent),
-                        count=item.amount,
-                    ))
+            if not self.item_in_ignore_list(item):
+                price = self.get_item_price(item)
+                if price:
+                    res.append(
+                        dict(
+                            item=item.as_client_dict(),
+                            price=price.get_price(item, agent),
+                            count=item.amount,
+                        ))
         return res
 
-    def get_item_price(self, item):
-        # todo: расширить функцию для возможности работать с ветками (подходят несколько правил)
+    def get_item_price_old(self, item):
+        # info: функция расширена для работы с несколькими правилами. Берёт последнее правило.
+        prices = []
         for price in self.current_list:
             if price.is_match(item):
-                return price
-        return None
+                prices.append(price)
+        return None if len(prices) == 0 else prices.pop()
+
+    def get_item_price(self, item):
+        # info: функция расширена для работы с несколькими правилами. Берёт самое близкое по родителям
+        if self.item_in_ignore_list(item):
+            return None
+        current_price = None
+        current_ancestor_lvl = None
+        for price in self.current_list:
+            if price.is_match(item):
+                ancestor_lvl = item.is_ancestor_by_lvl(price.item)
+                if ancestor_lvl is not None and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
+                    current_price = price
+                    current_ancestor_lvl = ancestor_lvl
+        return current_price
 
     def get_price_list(self, items):
         price = {}
