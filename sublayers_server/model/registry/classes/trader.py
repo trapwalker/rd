@@ -69,7 +69,8 @@ class Price(object):
         # if item.is_ancestor(self.item):
         #     return True
         # return False
-        return item and (self.item.node_hash() == item.node_hash() or item.is_ancestor(self.item))
+        #return item and (self.item.node_hash() == item.node_hash() or item.is_ancestor(self.item))
+        return item and item.is_ancestor_by_lvl(self.item) >= 0
 
     def get_price(self, item, agent):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         # todo: добавить влияние навыка торговинга
@@ -113,6 +114,7 @@ class Trader(Institution):
         return None
 
     def on_refresh(self, event):
+        # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         self.current_list = []
         for price_option in self.price_list:
             price = price_option.price_min + random.random() * (price_option.price_max - price_option.price_min)
@@ -142,9 +144,10 @@ class Trader(Institution):
             TraderInfoMessage(agent=visitor, time=event.time, npc_node_hash=self.node_hash()).post()
 
     def get_trader_assortment(self, agent):
+        # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
         for price in self.current_list:
-            if price.is_lot and (price.count > 0 or price.is_infinity):
+            if price.is_lot and (price.count > 0 or price.is_infinity) and not self.item_in_ignore_list(price.item):
                 res.append(
                     dict(
                         item=price.item.as_client_dict(),
@@ -174,14 +177,6 @@ class Trader(Institution):
                         ))
         return res
 
-    def get_item_price_old(self, item):
-        # info: функция расширена для работы с несколькими правилами. Берёт последнее правило.
-        prices = []
-        for price in self.current_list:
-            if price.is_match(item):
-                prices.append(price)
-        return None if len(prices) == 0 else prices.pop()
-
     def get_item_price(self, item):
         # info: функция расширена для работы с несколькими правилами. Берёт самое близкое по родителям
         if self.item_in_ignore_list(item):
@@ -196,6 +191,7 @@ class Trader(Institution):
                     current_ancestor_lvl = ancestor_lvl
         return current_price
 
+    # todo: данная функция не должна использоваться - удалить её
     def get_price_list(self, items):
         price = {}
         for item in items:
