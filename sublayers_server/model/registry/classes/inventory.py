@@ -23,6 +23,7 @@ class LoadInventoryEvent(Event):
         self.agent.inventory = self.inventory.create_model(self.server, self.time, owner=self.agent)
         self.agent.inventory.add_visitor(agent=self.agent, time=self.time)
         self.agent.inventory.add_manager(agent=self.agent)
+        self.agent.inventory.add_change_call_back(self.agent.on_change_inventory)
 
 
 class Inventory(Subdoc):

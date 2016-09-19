@@ -4,6 +4,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
     InventoryDelItemMessage, InventoryHideMessage, InventoryIncSizeMessage
+from sublayers_server.model.events import Event
 
 from math import floor
 
@@ -485,6 +486,13 @@ class ItemState(object):
             d_value = self.max_val - self_val
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
+
+        # todo: Обсудить! так как это делается без инвентарей при одинаковых итемах, то вставляем сюда изменения инвентарей
+        def change_inventories(event):
+            self.inventory.on_change(event.time)
+            if self.inventory != item.inventory:
+                item.inventory.on_change(event.time)
+        Event(server=self.server, time=time + 0.001, callback_after=change_inventories).post()
 
     def change_position(self, position, time):
         assert not self.limbo

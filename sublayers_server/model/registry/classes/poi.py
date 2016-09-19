@@ -69,6 +69,11 @@ class Town(MapLocation):
             res.extend(building.instances)
         return res
 
+    def get_npc_by_type(self, type):
+        for npc in self.get_npc_list():
+            if isinstance(npc, type):
+                return npc
+
     def as_client_dict(self):
         # todo: Убрать, когда реализуется в корневом классе
         d = super(Town, self).as_client_dict()

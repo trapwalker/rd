@@ -11,10 +11,11 @@ from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
+from sublayers_server.model.registry.classes.trader import Trader
 
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-                                             SetObserverForClient, Die, QuickGameDie)
+                                             SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.kalman import KalmanLatLong
@@ -421,6 +422,17 @@ class Agent(Object):
         UserExampleSelfRPGMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
+    def on_change_inventory(self, inventory, time):
+        # todo: можно сделать diff между модельным и экзампловым инвентарями и вызвать on_inv_change (который для квестов)
+        # todo: возможно сохранять инвентарь в реестровый нужно здесь, при любом чендже
+        if inventory is self.inventory:  # todo: возможно стереть!
+            if self.current_location:
+                trader = self.current_location.example.get_npc_by_type(Trader)
+                if trader:
+                    self.inventory.save_to_example(time=time)  # todo: потому что в мессадже ниже идёт работа с экзампловым инвентарём
+                    TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
+
+    # todo: Этот метод не может так работать! Вызвать этот метод из метода on_change_inventory
     def on_inv_change(self, time, incomings, outgoings):
         # todo: csll it ##quest
         self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
