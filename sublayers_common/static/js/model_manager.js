@@ -790,7 +790,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.InventoryHideMessage = function (event) {
-        console.log('ClientManager.prototype.InventoryHideMessage', event);
+        //console.log('ClientManager.prototype.InventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
     };
 

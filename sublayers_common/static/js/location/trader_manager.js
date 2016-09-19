@@ -59,7 +59,7 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype.updatePlayerInv = function() {
-        console.log('LocationTraderNPC.prototype.updatePlayerInv', this.agent_assortment);
+        //console.log('LocationTraderNPC.prototype.updatePlayerInv', this.agent_assortment);
         this._clearPlayerInv();
         var self = this;
         var item;
