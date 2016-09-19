@@ -43,7 +43,9 @@ class NodeMeta(DocumentMetaClass):
 
     @classmethod
     def _registry(cls, name, new_class):
-        assert name not in cls._classes, 'Registry class {} already registered.'.format(name)
+        assert name not in cls._classes, 'Registry class named {} already registered: {}. 2nd clsss: {}.'.format(
+            name, cls._classes[name], new_class,
+        )
         cls._classes[name] = new_class
 
     def __new__(cls, name, bases, attrs):

@@ -327,8 +327,8 @@ class AbstractDocument(Document):
             return doc
 
         klass_name = dic.get('__cls__')
-        if not klass_name:
-            log.warning('ODM object class is not declared while %s loading of %r', cls, dic)
+        # if not klass_name:
+        #     log.warning('ODM object class is not declared while %s loading of %r', cls, dic)
         klass = cls.get_class(klass_name) if klass_name else cls
         # todo: Падать при инициализации, игнорировать с предупреждениями в процессе
         assert klass, 'Registry class {!r} is not found.'.format(klass_name)
