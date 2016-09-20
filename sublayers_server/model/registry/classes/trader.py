@@ -81,17 +81,23 @@ class Price(object):
             sale=self.price * item.base_price * (1 + self.trader.margin),
         )
 
-    def change(self, count, item):  # Когда было куплено или продавно несколько итемов
+    def change(self, count, item):  # Вызывается в случае изменения количества итемов
         self.price -= self.price_option.influence * count
         if count < 0 and self.price > self.price_option.price_max:  # значит у торговца купили итемы
             self.price = self.price_option.price_max
-        if count > 0 and self.price < self.price_option.price_min:  # значит торговцe продали итемы
+        if count > 0 and self.price < self.price_option.price_min:  # значит торговцу продали итемы
             self.price = self.price_option.price_min
+
+        # если итем бесконечный и он не продаётся сейчас (is_lot=False), то сделать его конечным
+        if count > 0 and self.is_infinity and not self.is_lot:
+            self.count = 0
+            self.is_infinity = False
         # Обновление количества итемов
         if not self.is_infinity:
             self.count += count
+        # Определение необходимости создания нового правила
         if self.count > 0 and not self.is_lot:
-            if self.item.abstract:
+            if self.item.abstract:  # Это значит, что данная ценовая политика создана для абстрактного итема и нужно создать новую
                 self.trader.add_price_option(self, count, item)
             else:
                 self.is_lot = True
