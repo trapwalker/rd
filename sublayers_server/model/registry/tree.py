@@ -20,6 +20,7 @@ import os
 
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm import AbstractDocument
+from sublayers_server.model.registry.odm.meta import SubclassMeta
 from sublayers_server.model.registry.odm.fields import (
     StringField, BooleanField, UUIDField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
@@ -103,6 +104,10 @@ class Subdoc(Doc):
         values = self._values  # todo: ВОзможно нужно копировать параметры по-другому (_instantiate_field override)
         values.update(kw)
         return super(Subdoc, self).instantiate(**values)
+
+
+class Subclassdoc(Subdoc):
+    __metaclass__ = SubclassMeta
 
 
 class Node(Doc):

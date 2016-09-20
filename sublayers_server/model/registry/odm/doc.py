@@ -8,6 +8,7 @@ from sublayers_server.model.registry.odm.meta import NodeMeta
 from sublayers_server.model.registry.odm.fields import StringField, ListField, ReferenceField, EmbeddedDocumentField
 
 from motorengine import Document
+from motorengine.errors import InvalidDocumentError
 from tornado.concurrent import return_future
 from bson import ObjectId
 from collections import Counter
@@ -59,6 +60,13 @@ class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
     __cls__ = StringField()
+
+    def validate(self):
+        try:
+            return self.validate_fields()
+        except InvalidDocumentError as e:
+            e.message = 'Document {self!r} error: {e.message}'.format(self=self, e=e)
+            raise e
 
     def to_son(self):
         data = dict()
@@ -310,7 +318,9 @@ class AbstractDocument(Document):
             self._values[key] = value
 
     def __setattr__(self, name, value):
-        if name in self._fields:
+        if name in self.__not_a_fields__:
+            object.__setattr__(self, name, value)
+        elif name in self._fields:
             field = self._fields[name]
             self._values[name] = field.set_value(value) if hasattr(field, 'set_value') else value
         else:
@@ -325,7 +335,9 @@ class AbstractDocument(Document):
             return doc
 
         klass_name = dic.get('__cls__')
-        klass = cls.get_class(klass_name) if klass_name else cls  # tpdp: add warning if class not found
+        # if not klass_name:
+        #     log.warning('ODM object class is not declared while %s loading of %r', cls, dic)
+        klass = cls.get_class(klass_name) if klass_name else cls
         # todo: Падать при инициализации, игнорировать с предупреждениями в процессе
         assert klass, 'Registry class {!r} is not found.'.format(klass_name)
         if cls is klass:
