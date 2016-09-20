@@ -424,12 +424,11 @@ class Agent(Object):
 
     def on_change_inventory(self, inventory, time):
         # todo: можно сделать diff между модельным и экзампловым инвентарями и вызвать on_inv_change (который для квестов)
-        # todo: возможно сохранять инвентарь в реестровый нужно здесь, при любом чендже
         if inventory is self.inventory:  # todo: возможно стереть!
+            self.inventory.save_to_example(time=time)
             if self.current_location:
                 trader = self.current_location.example.get_npc_by_type(Trader)
                 if trader:
-                    self.inventory.save_to_example(time=time)  # todo: потому что в мессадже ниже идёт работа с экзампловым инвентарём
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
 
     # todo: Этот метод не может так работать! Вызвать этот метод из метода on_change_inventory

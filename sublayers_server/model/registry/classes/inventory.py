@@ -24,6 +24,7 @@ class LoadInventoryEvent(Event):
         self.agent.inventory.add_visitor(agent=self.agent, time=self.time)
         self.agent.inventory.add_manager(agent=self.agent)
         self.agent.inventory.add_change_call_back(self.agent.on_change_inventory)
+        self.agent.on_change_inventory(self.agent.inventory, self.time)
 
 
 class Inventory(Subdoc):

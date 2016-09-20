@@ -12,6 +12,7 @@ from sublayers_server.model.registry.odm.fields import (
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import TraderInfoMessage
 
+
 class TraderRefreshEvent(Event):
     def __init__(self, trader, location, **kw):
         super(TraderRefreshEvent, self).__init__(server=location.server, **kw)

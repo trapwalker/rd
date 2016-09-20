@@ -784,10 +784,6 @@ class TransactionTraderApply(TransactionEvent):
         self.npc_node_hash = npc_node_hash
         self.position = 0
 
-    def _get_position(self):
-        self.position += 1
-        return self.position - 1
-
     def cancel_transaction(self):
         # Откатываемся к модельному инвентарю
         self.agent.inventory.save_to_example(time=self.time)
