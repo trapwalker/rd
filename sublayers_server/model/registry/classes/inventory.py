@@ -37,7 +37,7 @@ class Inventory(Subdoc):
     def packing(self):
         new_items = []
         for add_item in self.items:
-            if item.amount < item.stack_size:
+            if add_item.amount < add_item.stack_size:
                 for item in new_items:
                     if (item.amount < item.stack_size) and (item.node_hash() == add_item.node_hash()):
                         d_amount = min((item.stack_size - item.amount), add_item.amount)

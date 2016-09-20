@@ -53,13 +53,13 @@ class PriceOption(Subdoc):
 
 
 class Price(object):
-    def __init__(self, trader, price_option, price, count, is_infinity, is_lot):
+    def __init__(self, trader, price_option, price, count, is_infinity, is_lot, item=None):
         self.trader = trader
         self.is_infinity = is_infinity  # флаг бесконечности итема
         self.is_lot = is_lot  # флаг наличия итема
         self.price = price
         self.count = count  # количество в штуках (не стеки)
-        self.item = price_option.item
+        self.item = item or price_option.item
         self.price_option = price_option
 
     def is_match(self, item):
@@ -81,12 +81,21 @@ class Price(object):
             sale=self.price * item.base_price * (1 + self.trader.margin),
         )
 
-    def change(self, count):  # Когда было куплено или продавно несколько итемов
+    def change(self, count, item):  # Когда было куплено или продавно несколько итемов
         self.price -= self.price_option.influence * count
         if count < 0 and self.price > self.price_option.price_max:  # значит у торговца купили итемы
             self.price = self.price_option.price_max
         if count > 0 and self.price < self.price_option.price_min:  # значит торговцe продали итемы
             self.price = self.price_option.price_min
+        # Обновление количества итемов
+        if not self.is_infinity:
+            self.count += count
+        if self.count > 0 and not self.is_lot:
+            if self.item.abstract:
+                self.trader.add_price_option(self, count, item)
+            else:
+                self.is_lot = True
+
 
 
 class Trader(Institution):
@@ -212,31 +221,17 @@ class Trader(Institution):
     def change_price(self, item, count):
         price = self.get_item_price(item)
         if price:
-            price.change(count)
+            price.change(count, item)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def add_price_option(self, base_price_object, count, item):
+        self.current_list.append(
+            Price(
+                trader=self,
+                price=base_price_object.price,
+                count=count,
+                is_infinity=False,
+                is_lot=True,
+                price_option=base_price_object.price_option,
+                item=item
+            )
+        )

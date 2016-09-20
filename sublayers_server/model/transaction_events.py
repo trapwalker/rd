@@ -836,7 +836,7 @@ class TransactionTraderApply(TransactionEvent):
             if item_ex.amount == 0:
                 ex_car.inventory.items.remove(item_ex)
 
-            total_items_buy_sale.append((price.item, table_rec['count']))
+            total_items_buy_sale.append((item_ex, table_rec['count']))
         sale_price = math.floor(sale_price)  # Навар игрока округляется до меньшего
 
         # Обход столика торговца, зачисление итемов и расчет стоимости
@@ -886,8 +886,7 @@ class TransactionTraderApply(TransactionEvent):
         for msg in tr_msg_list:
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),
                                            info_string=msg).post()
-
-        # messages.TraderInfoMessage(agent=agent, time=self.time, npc_node_hash=trader.node_hash()).post()
+        # Мессадж завершения транзакции
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=trader.node_hash()).post()
 
 

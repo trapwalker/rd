@@ -334,6 +334,8 @@ var LocationTraderNPC = (function (_super) {
         var res = {
             npc_node_hash: this.npc_rec.node_hash
         };
+        if (this.traderTable.length == 0 && this.playerTable.length == 0)
+            return;
         res.player_table = [];
         for (var i = 0; i < this.playerTable.length; i++)
             res.player_table.push({
