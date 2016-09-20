@@ -8,6 +8,7 @@ from sublayers_server.model.registry.odm.meta import NodeMeta
 from sublayers_server.model.registry.odm.fields import StringField, ListField, ReferenceField, EmbeddedDocumentField
 
 from motorengine import Document
+from motorengine.errors import InvalidDocumentError
 from tornado.concurrent import return_future
 from bson import ObjectId
 from collections import Counter
@@ -59,6 +60,13 @@ class AbstractDocument(Document):
     __metaclass__ = NodeMeta
     __classes__ = {}
     __cls__ = StringField()
+
+    def validate(self):
+        try:
+            return self.validate_fields()
+        except InvalidDocumentError as e:
+            e.message = 'Document {self!r} error: {e.message}'.format(self=self, e=e)
+            raise e
 
     def to_son(self):
         data = dict()
