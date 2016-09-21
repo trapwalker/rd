@@ -67,7 +67,8 @@ class POIContainer(Observer):
 
         def callback():
             super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
-            self.inventory = Inventory(max_size=self.example.inventory_size, owner=self, time=time)
+            self.example.inventory.size = self.inventory_size
+            self.inventory = Inventory(max_size=self.example.inventory.size, owner=self)
             self.load_inventory(time=time)
             if life_time:
                 self.delete(time=time + life_time)
@@ -76,9 +77,9 @@ class POIContainer(Observer):
         if example is None:
             example = server.reg['poi/stash'].instantiate(
                 position=position, 
-                inventory_size=inventory_size,
                 fixtured=False,
             )
+            self.inventory_size = inventory_size
             example.load_references(callback=callback())
 
 
