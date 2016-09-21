@@ -293,7 +293,8 @@ var LocationPanelInfo = (function () {
         //console.log('LocationPanelInfo.prototype.show', options, window_name);
 
         // Выключить все панели в этом блоке
-        this.jq_main_div.find('.panel-info-item').css('display', 'none');
+        if (this.jq_main_div)
+            this.jq_main_div.find('.panel-info-item').css('display', 'none');
 
         // Попытаться включить нужную
         var window_method = 'show_' + window_name;

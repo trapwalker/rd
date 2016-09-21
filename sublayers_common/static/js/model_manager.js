@@ -783,7 +783,10 @@ var ClientManager = (function () {
 
     ClientManager.prototype.InventoryShowMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryShowMessage', event);
-        inventoryList.addInventory(this._getInventory(event.inventory));
+        var inventory = this._getInventory(event.inventory);
+        inventoryList.addInventory(inventory);
+        if (inventory.owner_id == user.ID)
+            locationManager.update();
     };
 
     ClientManager.prototype.InventoryHideMessage = function (event) {
@@ -908,6 +911,7 @@ var ClientManager = (function () {
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
+
         // Эта функция заполняет только шаблоны
         user.templates = {};
         if (event.example_car) {
@@ -930,15 +934,7 @@ var ClientManager = (function () {
             user.templates.html_car_img = event.templates.html_car_img;
             user.templates.html_car_table = event.templates.html_car_table;
         }
-
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
-
-        if (event.hasOwnProperty('car_inventory')) {  // инвентарь может оказаться пустым, так как нет машинки
-            var inv = this._getInventory(event.car_inventory);
-            if (inventoryList.getInventory(inv.owner_id))
-                inventoryList.delInventory(inv.owner_id);
-            inventoryList.addInventory(inv);
-        }
 
         // Проверить не надо ли запустить окно информации об автомобиле
         if (carManager.is_active) carManager.open_window();
@@ -969,15 +965,15 @@ var ClientManager = (function () {
 
     ClientManager.prototype.TraderInfoMessage = function (event) {
         //console.log('ClientManager.prototype.TraderInfoMessage', event);
-        // todo: чуть-чуть ниже расскоментировать прайс, когда оно будет починено
-        var inv = this._getInventory(event.inventory);
-        if (inventoryList.getInventory(inv.owner_id))
-            inventoryList.delInventory(inv.owner_id);
-        inventoryList.addInventory(inv);
-        if (locationManager.npc.hasOwnProperty(inv.owner_id)) {
-            locationManager.npc[inv.owner_id].updateTraderInv();
-            //locationManager.npc[inv.owner_id].updatePrice(event.price.price);
-        }
+        var trader = locationManager.npc[event.npc_html_hash];
+        user.example_agent.balance = event.agent_balance;
+        if (trader) trader.updatePrice(event)
+    };
+
+    ClientManager.prototype.TraderClearMessage = function (event) {
+        //console.log('ClientManager.prototype.TraderClearMessage', event);
+        var trader = locationManager.npc[event.npc_html_hash];
+        if (trader) trader.clear();
     };
 
     ClientManager.prototype.TrainerInfoMessage = function (event) {
@@ -1546,16 +1542,12 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendTraderApply = function (npc) {
+    ClientManager.prototype.sendTraderApply = function (param) {
         //console.log('ClientManager.prototype.sendTraderApply');
         var mes = {
             call: "trader_apply",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                player_table: npc.getPlayerTable(),
-                trader_table: npc.getTraderTable(),
-                npc_node_hash: npc.npc_rec.node_hash,
-            }
+            params: param
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

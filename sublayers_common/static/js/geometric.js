@@ -6,6 +6,15 @@ var __extends = this.__extends || function (d, b) {
 };
 
 
+function cloneObject(obj) {
+    if (obj === null || typeof obj !== 'object')
+        return obj;
+    var temp = obj.constructor(); // give temp the original obj's constructor
+    for (var key in obj)
+        temp[key] = cloneObject(obj[key]);
+    return temp;
+}
+
 
 var DEG_TO_RAD = Math.PI / 180.;
 var RAD_TO_DEG = 180. / Math.PI;

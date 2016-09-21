@@ -10,9 +10,12 @@ from counterset import CounterSet
 from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
+from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
+from sublayers_server.model.registry.classes.trader import Trader
+
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-                                             SetObserverForClient, Die, QuickGameDie)
+                                             SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.kalman import KalmanLatLong
@@ -66,6 +69,8 @@ class Agent(Object):
         self.current_location = example.current_location
 
         self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
+
+        self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
 
     def add_quest(self, quest, time):
         self.quests[quest.key] = quest
@@ -153,7 +158,6 @@ class Agent(Object):
         def save_end(*av, **kw):
             log.debug('Agent %s saved', agent)
         self.example.save(upsert=True, callback=save_end)
-
 
     @property
     def is_online(self):
@@ -418,9 +422,28 @@ class Agent(Object):
         UserExampleSelfRPGMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
+    def on_change_inventory(self, inventory, time):
+        # todo: можно сделать diff между модельным и экзампловым инвентарями и вызвать on_inv_change (который для квестов)
+        if inventory is self.inventory:  # todo: возможно стереть!
+            self.inventory.save_to_example(time=time)
+            if self.current_location:
+                trader = self.current_location.example.get_npc_by_type(Trader)
+                if trader:
+                    TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
+
+    # todo: Этот метод не может так работать! Вызвать этот метод из метода on_change_inventory
     def on_inv_change(self, time, incomings, outgoings):
         # todo: csll it ##quest
         self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
+
+    def reload_inventory(self, time, save=True):
+        if self.inventory:
+            if save:
+                self.inventory.save_to_example(time=time)
+            self.inventory.del_all_visitors(time=time)
+            self.inventory = None
+        if self.example.car:
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time).post()
 
     def on_enter_location(self, time, location):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
@@ -429,14 +452,23 @@ class Agent(Object):
             barter.cancel(time=time-0.01)
 
         # Раздеплоить машинку агента
-        if self.car:
+        if self.car:  # Вход в город и раздеплой машинки
             self.car.example.last_location = location.example
             self.car.displace(time=time)
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
+        elif self.example.car and self.inventory:  # Обновление клиента (re-enter)
+            self.inventory.send_inventory(agent=self, time=time)
+        elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
 
         self.subscriptions.on_enter_location(agent=self, time=time, location=location)
 
     def on_exit_location(self, time, location):
         log.debug('%s:: on_exit_location(%s)', self, location)
+        if self.inventory:
+            self.inventory.save_to_example(time=time)
+            self.inventory.del_all_visitors(time=time)
+            self.inventory = None
         self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
     def on_enter_npc(self, npc):

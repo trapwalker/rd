@@ -18,10 +18,10 @@ from sublayers_server.model.registry.odm.fields import (
 class Item(Root):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
-    amount = FloatField(default=1, caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
-    stack_size = FloatField(caption=u'Максимальный размер стека этих предметов в инвентаре')
+    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
+    stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags='client')
     position = IntField(caption=u'Позиция в инвентаре')
-    base_price = FloatField(caption=u'Базовая цена за 1', tags='client')
+    base_price = FloatField(caption=u'Базовая цена за 1 стек', tags='client')
 
     description = StringField(caption=u'Расширенное описание предмета', tags='client')
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
@@ -157,6 +157,13 @@ class TunerItem(SlotItem):
         caption=u'Изображения у тюнера', tags='client',
         base_field=EmbeddedDocumentField(embedded_document_type=TunerImage),
     )
+
+    def get_view(self, car_node_hash):
+        for tuner_image in self.images:
+            if tuner_image.car.node_hash() == car_node_hash:
+                return tuner_image
+        log.warning('{} not found in item: {}'.format(car_node_hash, self))
+        return None
 
 
 class ArmorerItem(SlotItem):

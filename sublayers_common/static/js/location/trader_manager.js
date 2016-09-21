@@ -9,6 +9,9 @@ var LocationTraderNPC = (function (_super) {
         this.traderInvCls = "trader-inventory-droppable-item";
         this.traderTableCls = "trader-table-droppable-item";
 
+        this.trader_assortment = [];
+        this.agent_assortment = [];
+
         this.playerInv = [];
         this.playerTable = [];
         this.playerInvDiv = null;
@@ -24,10 +27,8 @@ var LocationTraderNPC = (function (_super) {
     }
 
     LocationTraderNPC.prototype._clearPlayerInv = function() {
-        this.playerInv = [];
-        this.playerTable = [];
+        //console.log('LocationTraderNPC.prototype._clearPlayerInv');
         if (this.playerInvDiv) {
-
             this.playerInvDiv.find('.npcInventory-itemWrap').remove();
             this.playerInvDiv = null;
         }
@@ -39,8 +40,6 @@ var LocationTraderNPC = (function (_super) {
     };
 
     LocationTraderNPC.prototype._clearTraderInv = function() {
-        this.traderInv = [];
-        this.traderTable = [];
         if (this.traderInvDiv) {
             this.traderInvDiv.find('.npcInventory-itemWrap').remove();
             this.traderInvDiv = null;
@@ -52,8 +51,15 @@ var LocationTraderNPC = (function (_super) {
         this.calcPriceTables();
     };
 
+    LocationTraderNPC.prototype._search_in_assertment = function(assertment, item) {
+        for (var i = 0; i < assertment.length; i++)
+            if (item.uid == assertment[i].item.uid)
+                return i;
+        return -1;
+    };
+
     LocationTraderNPC.prototype.updatePlayerInv = function() {
-        //console.log('LocationTraderNPC.prototype.updatePlayerInv');
+        //console.assert(false, 'LocationTraderNPC.prototype.updatePlayerInv', this.agent_assortment);
         this._clearPlayerInv();
         var self = this;
         var item;
@@ -61,18 +67,28 @@ var LocationTraderNPC = (function (_super) {
         // Отрисовать собственный счет
         this.jq_main_div.find('.trader-player-total').text(user.example_agent.balance + 'NC');
 
-        // Добавить итемы инвентаря своего агента
-        var inventory = inventoryList.getInventory(user.ID);
-        if (! inventory) {
-            console.warn('Ивентарь агента (' + user.ID + ') не найден');
-            return
+        // Обновить столик игрока
+        var temp_player_table = [];
+        for (var i = 0; i < this.playerTable.length; i++) {
+            item = this.playerTable[i];
+            var assertment_index = this._search_in_assertment(this.agent_assortment, item);
+            if ((assertment_index != -1) && (item.count <= this.agent_assortment[assertment_index].count)) {
+                temp_player_table.push(item);
+                item.price = this.agent_assortment[assertment_index].price;
+                this.agent_assortment[assertment_index].__start_table_count = item.count;
+            }
         }
-        for (var i = 0; i < inventory.max_size; i++) {
-            item = inventory.getItem(i);
-            if (item) {
-                item.example.count = item.getCurrentVal(clock.getCurrentTime());
-                item.example.max_count = item.getMaxVal();
-                this.playerInv.push(item.example);
+        this.playerTable = temp_player_table;
+
+        // Формирование инвентаря игрока
+        this.playerInv = [];
+        for (var i = 0; i < this.agent_assortment.length; i++) {
+            item = this.agent_assortment[i].item;
+            item.count = this.agent_assortment[i].count -
+                (this.agent_assortment[i].__start_table_count ? this.agent_assortment[i].__start_table_count : 0);
+            if (item.count > 0) {
+                this.playerInv.push(item);
+                item.price = this.agent_assortment[i].price;
             }
         }
 
@@ -86,7 +102,7 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.playerTableCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemPlayer(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
+                self.changeItemDropable(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
                                       self.playerInvDiv , self.playerTableCls, self.playerInvCls);
             }
         });
@@ -96,13 +112,14 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.playerInvCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemPlayer(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
+                self.changeItemDropable(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
                                       self.playerTableDiv, self.playerInvCls, self.playerTableCls);
             }
         });
 
         // Отрисовать верстку
         this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
+        this._reDrawItemList(this.playerTableDiv, this.playerTable, this.playerTableCls);
     };
 
     LocationTraderNPC.prototype.updateTraderInv = function() {
@@ -111,18 +128,31 @@ var LocationTraderNPC = (function (_super) {
         var self = this;
         var item;
 
-        // Добавить итемы инвентаря своего агента
-        var inventory = inventoryList.getInventory(this.npc_rec.html_hash);
-        if (! inventory) {
-            //console.warn('Ивентарь торговца не найден');
-            return
+        // Обновить столик торговца
+        var temp_trader_table = [];
+        for (var i = 0; i < this.traderTable.length; i++) {
+            item = this.traderTable[i];
+            var assertment_index = this._search_in_assertment(this.trader_assortment, item);
+            if ((assertment_index != -1) && ((item.count <= this.trader_assortment[assertment_index].count) ||
+                this.trader_assortment[assertment_index].infinity)) {
+                temp_trader_table.push(item);
+                item.price = this.trader_assortment[assertment_index].price;
+                this.trader_assortment[assertment_index].__start_table_count = item.count;
+            }
         }
-        for (var i = 0; i < inventory.max_size; i++) {
-            item = inventory.getItem(i);
-            if (item) {
-                item.example.count = item.getCurrentVal(clock.getCurrentTime());
-                item.example.max_count = item.getMaxVal();
-                this.traderInv.push(item.example);
+        this.traderTable = temp_trader_table;
+
+        // Формирование инвентаря торговца
+        this.traderInv = [];
+        for (var i = 0; i < this.trader_assortment.length; i++) {
+            //this.trader_assortment[i].count;
+            item = this.trader_assortment[i].item;
+            item.count = this.trader_assortment[i].count -
+                (this.trader_assortment[i].__start_table_count ? this.trader_assortment[i].__start_table_count : 0);
+            if ((item.count > 0) || this.trader_assortment[i].infinity) {
+                item._trader_infinity = this.trader_assortment[i].infinity;
+                item.price = this.trader_assortment[i].price;
+                this.traderInv.push(item);
             }
         }
 
@@ -136,8 +166,8 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderTableCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemTrader(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
-                                      self.traderInvDiv , self.traderTableCls, self.traderInvCls);//
+                self.changeItemDropable(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                                      self.traderInvDiv , self.traderTableCls, self.traderInvCls);
             }
         });
 
@@ -146,25 +176,27 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderInvCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemTrader(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                self.changeItemDropable(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
                                       self.traderTableDiv, self.traderInvCls, self.traderTableCls);
             }
         });
 
         // Отрисовать верстку
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
+        this._reDrawItemList(this.traderTableDiv, this.traderTable, this.traderTableCls);
     };
 
     LocationTraderNPC.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
+        var self = this;
         for(var i = 0; i < itemList.length; i++) {
             var example = itemList[i];
-
+            var count_str = example._trader_infinity ? '---' : example.count.toFixed(0);  // '&infin;'
             var itemDiv = $(
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
                     '<div class="npcInventory-item" data-img_link="' + example.inv_icon_mid + '">' +
                         '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
                         '<div class="npcInventory-text name">' + example.title + '</div>' +
-                        '<div class="npcInventory-text count">' + example.count.toFixed(1) + '</div>' +
+                        '<div class="npcInventory-text count">' + count_str + '</div>' +
                     '</div>' +
                 '</div>'
             );
@@ -188,6 +220,22 @@ var LocationTraderNPC = (function (_super) {
             });
             itemDiv.mouseleave({}, function(event) { locationManager.panel_right.show({text: '' }, 'description'); });
 
+            itemDiv.click({}, function(event) {
+                var item_pos = $(this).data('pos');
+                if (dropCls == self.playerInvCls)
+                    self.changeItemDropable(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
+                        self.playerTableDiv, self.playerInvCls, self.playerTableCls);
+                if (dropCls == self.playerTableCls)
+                    self.changeItemDropable(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
+                        self.playerInvDiv, self.playerTableCls, self.playerInvCls);
+                if (dropCls == self.traderInvCls)
+                    self.changeItemDropable(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                        self.traderTableDiv, self.traderInvCls, self.traderTableCls);
+                if (dropCls == self.traderTableCls)
+                    self.changeItemDropable(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                        self.traderInvDiv, self.traderTableCls, self.traderInvCls);
+            });
+            
             parentDiv.append(itemDiv);
         }
     };
@@ -197,20 +245,16 @@ var LocationTraderNPC = (function (_super) {
         var price_player = 0;
         var price_trader = 0;
         for (i = 0; i < this.playerTable.length; i++)
-            price_player += Math.round((this.playerTable[i].count / this.playerTable[i].max_count) * this._getPrice(this.playerTable[i], 0));
-        for (i = 0; i < this.traderTable.length; i++)
-            price_trader += Math.round((this.traderTable[i].count / this.traderTable[i].max_count) * this._getPrice(this.traderTable[i], 1));
+            price_player += this.playerTable[i].count * this.playerTable[i].price.buy / this.playerTable[i].stack_size;
 
-        if (price_player > price_trader) {
-            price_trader = (price_player - price_trader).toFixed(0);
-            price_player = 0;
-        }
-        else {
-            price_player = (price_trader - price_player).toFixed(0);
-            price_trader = 0;
-        }
-        this.jq_main_div.find('.trader-player-exchange-total').text(price_player + 'NC');
-        this.jq_main_div.find('.trader-trader-exchange-total').text(price_trader + 'NC');
+        for (i = 0; i < this.traderTable.length; i++)
+            price_trader += this.traderTable[i].count * this.traderTable[i].price.sale / this.traderTable[i].stack_size;
+
+        price_player = Math.floor(price_player);
+        price_trader = Math.ceil(price_trader);
+
+        this.jq_main_div.find('.trader-player-exchange-total').text(price_trader + 'NC');
+        this.jq_main_div.find('.trader-trader-exchange-total').text(price_player + 'NC');
     };
 
     LocationTraderNPC.prototype.changeItemPlayer = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
@@ -237,67 +281,79 @@ var LocationTraderNPC = (function (_super) {
         this.calcPriceTables();
     };
 
-    // state: 0 - продажа торговцу, 1 - покупка у торговца
-    LocationTraderNPC.prototype._getPrice = function (item, state) {
-        var price_modify = this.price_list.hasOwnProperty(item.id) ? this.price_list[item.id][state] : 100;
-        return Math.round(item.base_price * price_modify / 100.0);
+    LocationTraderNPC.prototype.changeItemDropable = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
+        var item = srcList[pos];
+        if (! item) return;
+
+        destDiv.find('.npcInventory-itemWrap').remove();
+        srcDiv.find('.npcInventory-itemWrap').remove();
+
+        // Отнять единицу товара из исходного итема
+        item.count--;
+        if (item.count == 0)
+            srcList.splice(pos, 1);
+
+        var item_index = -1;
+        for (var i = 0; i < destList.length && item_index == -1; i++)
+            if (item.uid == destList[i].uid)
+                item_index = i;
+
+        if (item_index == -1) {
+            item = cloneObject(item);
+            item.count = 1;
+            item._trader_infinity = false;
+            destList.push(item);
+        }
+        else
+            destList[item_index].count++;
+
+
+        this._reDrawItemList(destDiv, destList, destCls);
+        this._reDrawItemList(srcDiv, srcList, srcCls);
+
+        this.calcPriceTables();
     };
 
-    LocationTraderNPC.prototype.updatePrice = function(price_list) {
-        //console.log('TraderManager.prototype.updatePrice', price_list);
-        if (price_list)
-            this.price_list = price_list;
-        else
-            price_list = this.price_list;
-
-        if (! price_list) { console.warn('Отсутствует список цен торговца.'); return }
-
-
-        // Данный метод просто добавит в текущие списки итемов правильные цены этого торговца.
-        var new_inventory = [];
-        // проходим по списку итемов пользователя и ставим правильные цены продажи
-        for (var i = 0 ; i < this.playerInv.length; i++) {
-            var item = this.playerInv[i];
-            if (price_list.hasOwnProperty(item.id)) {  // если данный предмет покупается торговцем
-                new_inventory.push(item);
-            } else {  // если предмета нет в этом списке, значит торговец его не покупает
-                //console.warn('Данный предмет не покупается этим торговцем:', item)
-            }
-        }
-        this.playerInv = new_inventory;
-
-        new_inventory = [];
-        // проходим по списку итемов торговца и ставим правильные цены продажи
-        for (var i = 0 ; i < this.traderInv.length; i++) {
-            var item = this.traderInv[i];
-            if (price_list.hasOwnProperty(item.id)) {  // если данный предмет продаётся торговцем
-                new_inventory.push(item);
-            } else {  // если предмета нет в этом списке, значит торговец его не продаёт
-                console.warn('Данный предмет не продаётмя этим торговцем:', item)
-            }
-        }
-        this.traderInv = new_inventory;
-
-        // todo: так сделано в changeItem методах. Возможно стоит внести в _reDrawItemList
-        if (this.traderInvDiv) this.traderInvDiv.find('.npcInventory-itemWrap').remove();
-        if (this.playerInvDiv) this.playerInvDiv.find('.npcInventory-itemWrap').remove();
-        this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
-        this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
+    LocationTraderNPC.prototype.updatePrice = function(event) {
+        //console.log('TraderManager.prototype.updatePrice', event.trader_assortment);
+        this.trader_assortment = event.trader_assortment;
+        this.agent_assortment = event.agent_assortment;
+        this.updateTraderInv();
+        this.updatePlayerInv();
+        this.calcPriceTables();
     };
 
     LocationTraderNPC.prototype.clear = function() {
-        this._clearPlayerInv();
-        this._clearTraderInv();
+        this.playerTable = [];
+        this.traderTable = [];
+        this.update();
     };
 
     LocationTraderNPC.prototype.apply = function() {
         //console.log('TraderManager.prototype.apply');
-        clientManager.sendTraderApply(this);
+        var res = {
+            npc_node_hash: this.npc_rec.node_hash
+        };
+        if (this.traderTable.length == 0 && this.playerTable.length == 0)
+            return;
+        res.player_table = [];
+        for (var i = 0; i < this.playerTable.length; i++)
+            res.player_table.push({
+                uid: this.playerTable[i].uid,
+                count: this.playerTable[i].count
+            });
+        res.trader_table = [];
+        for (var i = 0; i < this.traderTable.length; i++)
+            res.trader_table.push({
+                uid: this.traderTable[i].uid,
+                count: this.traderTable[i].count
+            });
+        clientManager.sendTraderApply(res);
     };
 
     LocationTraderNPC.prototype.cancel = function() {
         //console.log('TraderManager.prototype.cancel');
-        this.update();
+        this.clear();
     };
 
     LocationTraderNPC.prototype.update = function(data) {
@@ -305,22 +361,6 @@ var LocationTraderNPC = (function (_super) {
         this.updatePlayerInv();
         this.updateTraderInv();
         _super.prototype.update.call(this, data);
-    };
-
-    LocationTraderNPC.prototype.getPlayerTable = function() {
-//        console.log('LocationTraderNPC.prototype.getPlayerTable');
-        var res = [];
-        for (var i = 0; i < this.playerTable.length; i++)
-            res.push(this.playerTable[i].uid);
-        return res;
-    };
-
-    LocationTraderNPC.prototype.getTraderTable = function() {
-//        console.log('LocationTraderNPC.prototype.getTraderTable');
-        var res = [];
-        for (var i = 0; i < this.traderTable.length; i++)
-            res.push(this.traderTable[i].uid);
-        return res;
     };
 
     LocationTraderNPC.prototype.get_self_info = function () {
