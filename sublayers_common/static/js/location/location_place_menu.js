@@ -10,6 +10,8 @@ var LocationPlaceMenu = (function (_super) {
 
         this.selected_car_inv_item = null;
         this.jq_car_inventory = this.jq_main_div.find('.location-inventory-block').first();
+        this.jq_car_inventory.addClass('inventory-' + user.ID);
+        this.car_inventory = null;
 
         this.timer_auto_save_about_self = null;
 
@@ -30,7 +32,15 @@ var LocationPlaceMenu = (function (_super) {
         this.jq_main_div.find('.menu-header-item').first().click();
 
         // Инициализация кликов на фильтры инвентаря
-        this.jq_main_div.find('.location-inventory-filters-item').click({location: this}, LocationPlaceMenu.inv_filters_click);
+        this.jq_main_div.find('.location-inventory-filters-item').click({npc: this}, function (event) {
+            //console.log('.menu-header-item.click - reaction', $(this).data('page_id'), );
+            var jq_filter = $(event.currentTarget);
+            event.data.npc.jq_main_div.find('.location-inventory-filters-item').removeClass('active');
+            jq_filter.addClass('active');
+            if (!event.data.npc.car_inventory) return;
+            var filter =jq_filter.data('filter');
+            event.data.npc.car_inventory.showInvByFilter(event.data.npc.jq_car_inventory, filter)
+        });
 
         // Инициализация для журнала
         this.jq_main_div.find('.journal-page-button-block').click(function () {
@@ -55,7 +65,6 @@ var LocationPlaceMenu = (function (_super) {
                 location.save_pers_about_self();
             }, 3000);
         })
-
     };
 
     LocationPlaceMenu.prototype.on_exit = function () {
@@ -108,30 +117,24 @@ var LocationPlaceMenu = (function (_super) {
         this.clearRightPanel();
     };
 
-    LocationPlaceMenu.prototype._addToFullInventory = function (item) {
-        if (! item.hasOwnProperty('example')) return;
-        var count = item._item_state.val(clock.getCurrentTime());
-        var itemWrapDiv = $('<div class="npcInventory-itemWrap"></div>');
-        var itemDiv = $(
-            '<div class="npcInventory-item">' +
-                '<div class="npcInventory-pictureWrap">' +
-                    '<div class="npcInventory-picture town-interlacing"></div>' +
-                '</div>' +
-                '<div class="npcInventory-name">' + item.example.title + '</div>' +
-                '<div class="npcInventory-text count">' + count.toFixed(1) + '</div>' +
-            '</div>'
-        );
+    LocationPlaceMenu.prototype.updateInventory = function () {
+        this.jq_car_inventory.empty();
+        this.jq_main_div.find('.location-inventory-filters-item').removeClass('active');
+        this.jq_main_div.find('.location-inventory-filters-item').first().addClass('active');
 
-        itemDiv.find('.npcInventory-picture')
-            .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
+        this.car_inventory = inventoryList.getInventory(user.ID);
+        if (!this.car_inventory) return;
 
-        itemWrapDiv.append(itemDiv);
-
-        itemWrapDiv.mouseenter({item: item, npc: this}, LocationPlaceMenu.inventory_slot_event_mouseenter);
-        itemWrapDiv.mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
-        itemWrapDiv.click({item: item, npc: this}, LocationPlaceMenu.inventory_slot_event_click);
-
-        this.jq_car_inventory.append(itemWrapDiv);
+        this.car_inventory.showInventory(this.jq_car_inventory);
+        this.jq_car_inventory.find('.mainCarInfoWindow-body-trunk-body-right-item')
+            .mouseenter({npc: this}, function (event) {
+                //console.log('LocationPlaceMenu.inventory_slot_event_mouseenter', event.data.item);
+                if (!event.data.npc.car_inventory) return;
+                var pos = $(this).data('pos');
+                if (event.data.npc.car_inventory.items.hasOwnProperty(pos))
+                    event.data.npc.viewRightPanel(event.data.npc.car_inventory.items[pos].example.description);
+                })
+            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
     };
 
     LocationPlaceMenu.prototype.update = function (data) {
@@ -153,33 +156,12 @@ var LocationPlaceMenu = (function (_super) {
         journalManager.redraw(this.jq_main_div);
 
         // Отображение инвентаря
-        this.jq_main_div.find('.location-inventory-filters-item').first().click();
+        this.updateInventory();
 
         // Вкладка Пати
         partyManager.redraw(this.jq_main_div);
 
         _super.prototype.update.call(this, data);
-    };
-
-    LocationPlaceMenu.prototype.show_car_inventory_by_filter = function(filter) {
-        this.jq_car_inventory.empty();
-        var inventory = inventoryList.getInventory(user.ID);
-        if (inventory) {
-            var item;
-            for (var i = 0; i < inventory.max_size; i++) {
-                item = inventory.getItem(i);
-                if (item) {
-                    if (filter) {
-                        if (item.hasTag(filter)) {
-                            this._addToFullInventory(item);
-                        }
-                    }
-                    else {
-                        this._addToFullInventory(item);
-                    }
-                }
-            }
-        }
     };
 
     LocationPlaceMenu.prototype.viewRightPanel = function(description) {
@@ -205,18 +187,6 @@ var LocationPlaceMenu = (function (_super) {
         }
 
         this.set_buttons();
-    };
-
-    LocationPlaceMenu.prototype.inv_click_filter = function(jq_filter) {
-        var filter = jq_filter.data('filter');
-        this.show_car_inventory_by_filter(filter);
-        this.jq_main_div.find('.location-inventory-filters-item').removeClass('active');
-        jq_filter.addClass('active');
-    };
-
-    LocationPlaceMenu.inventory_slot_event_mouseenter = function (event) {
-        //console.log('LocationPlaceMenu.inventory_slot_event_mouseenter', event.data.item);
-        event.data.npc.viewRightPanel(event.data.item.example.description);
     };
 
     LocationPlaceMenu.event_mouseleave = function (event) {
@@ -252,12 +222,6 @@ var LocationPlaceMenu = (function (_super) {
         $(this).addClass('active');
         location.jq_main_div.find('#locationMenuItem_' + page_id).css('display', 'block');
         location.select_page(page_id);
-    };
-
-    LocationPlaceMenu.inv_filters_click = function (event) {
-        //console.log('.menu-header-item.click - reaction', $(this).data('page_id'), );
-        var location = event.data.location;
-        location.inv_click_filter($(event.currentTarget));
     };
 
     return LocationPlaceMenu;

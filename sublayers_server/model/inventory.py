@@ -4,6 +4,9 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
     InventoryDelItemMessage, InventoryHideMessage, InventoryIncSizeMessage
+from sublayers_server.model.events import Event
+
+from math import floor
 
 EPS = 1e-5
 
@@ -22,13 +25,14 @@ def assert_time_in_items(f):
 
 
 class Inventory(object):
-    def __init__(self, owner, max_size, time):
+    def __init__(self, owner, max_size, example=None):
         self.max_size = max_size
         self._items = dict()
         self.owner = owner
         self.visitors = []
         self.managers = []
         self.on_change_list = []  # функции вызываемые на измениние в инвентаре
+        self.example = example
 
     def add_inventory(self, inventory, time):
 
@@ -239,6 +243,12 @@ class Inventory(object):
             return self._items[position]
         return None
 
+    def get_item_by_uid(self, uid):
+        for item in self._items.values():
+            if item.example.uid == uid:
+                return item
+        return None
+
     def get_free_position(self):
         for i in xrange(self.max_size):
             if self.get_item(position=i) is None:
@@ -267,6 +277,17 @@ class Inventory(object):
 
     def is_empty(self):
         return len(self._items.values()) == 0
+
+    def save_to_example(self, time):
+        if self.example is None:
+            return
+        self.example.items = []
+        for item_rec in self.get_all_items():
+            item_rec['item'].example.position = item_rec['position']
+            amount = floor(item_rec['item'].val(t=time))  # Округление в меньшую сторону всех итемов инвентаря
+            if amount > 0:
+                item_rec['item'].example.amount = amount
+                self.example.items.append(item_rec['item'].example)
 
 
 class ItemTask(TaskSingleton):
@@ -465,6 +486,13 @@ class ItemState(object):
             d_value = self.max_val - self_val
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
+
+        # todo: Обсудить! так как это делается без инвентарей при одинаковых итемах, то вставляем сюда изменения инвентарей
+        def change_inventories(event):
+            self.inventory.on_change(event.time)
+            if self.inventory != item.inventory:
+                item.inventory.on_change(event.time)
+        Event(server=self.server, time=time + 0.001, callback_after=change_inventories).post()
 
     def change_position(self, position, time):
         assert not self.limbo

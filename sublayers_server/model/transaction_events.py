@@ -18,7 +18,7 @@ from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
-from sublayers_server.model.registry.classes.inventory import InventoryField
+
 
 # todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
 
@@ -181,6 +181,7 @@ class TransactionGasStation(TransactionEvent):
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'npc_gas_station') or (ex_car is None):
@@ -192,6 +193,11 @@ class TransactionGasStation(TransactionEvent):
             self.fuel = 0
         if ex_car.max_fuel < self.fuel + ex_car.fuel:
             return  # todo: warning
+
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
 
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
@@ -219,6 +225,7 @@ class TransactionGasStation(TransactionEvent):
         # ex_car.inventory.placing()
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -259,6 +266,8 @@ class TransactionHangarSell(TransactionEvent):
 
         self.agent.example.balance += self.agent.example.car.price
         self.agent.example.car = None
+        self.agent.reload_inventory(time=self.time)
+
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
 
@@ -305,6 +314,7 @@ class TransactionHangarBuy(TransactionEvent):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
+            self.agent.reload_inventory(time=self.time)
             self.agent.example.balance = agent_balance - car_proto.price
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
@@ -360,6 +370,7 @@ class TransactionParkingSelect(TransactionEvent):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
+            self.agent.reload_inventorey(time=time)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -407,6 +418,7 @@ class TransactionParkingLeave(TransactionEvent):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
+        self.agent.reload_inventory(time=self.time)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -436,6 +448,11 @@ class TransactionArmorerApply(TransactionEvent):
         # Проверяем есть ли у агента машинка
         if not agent.example.car:
             return
+
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
 
         # Заполняем буфер итемов
         ex_car = agent.example.car
@@ -497,6 +514,7 @@ class TransactionArmorerApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -518,6 +536,7 @@ class TransactionMechanicApply(TransactionEvent):
     def on_perform(self):
         super(TransactionMechanicApply, self).on_perform()
         agent = self.agent
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'mechanic'):
@@ -529,6 +548,11 @@ class TransactionMechanicApply(TransactionEvent):
         # Проверяем есть ли у агента машинка
         if not agent.example.car:
             return
+
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
 
         # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
         for slot_name in self.mechanic_slots.keys():
@@ -590,6 +614,7 @@ class TransactionMechanicApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -672,6 +697,11 @@ class TransactionTunerApply(TransactionEvent):
         if not agent.example.car:
             return
 
+        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        agent.inventory.save_to_example(time=self.time)
+        agent.inventory.del_all_visitors(time=self.time)
+        agent.inventory = None
+
         # todo: здесь можно сделать проход по self.tuner_slots для проверки по тегам.
         for slot_name in self.tuner_slots.keys():
             new_item_in_slot = self.tuner_slots[slot_name]['example']
@@ -733,6 +763,8 @@ class TransactionTunerApply(TransactionEvent):
             position += 1
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        agent.reload_inventory(time=self.time)
+
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
@@ -743,19 +775,18 @@ class TransactionTunerApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-# todo: переделать ценообразование
 class TransactionTraderApply(TransactionEvent):
     def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
         super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.player_table = [UUID(uid) for uid in player_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
-        self.trader_table = [UUID(uid) for uid in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.player_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in player_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
+        self.trader_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
         self.npc_node_hash = npc_node_hash
         self.position = 0
 
-    def _get_position(self):
-        self.position += 1
-        return self.position - 1
+    def cancel_transaction(self):
+        # Откатываемся к модельному инвентарю
+        self.agent.inventory.save_to_example(time=self.time)
 
     @tornado.gen.coroutine
     def on_perform_async(self):
@@ -777,94 +808,87 @@ class TransactionTraderApply(TransactionEvent):
         if not (isinstance(agent.current_location, Town) and (trader in agent.current_location.example.get_npc_list())):
             return  # todo: а как может быть иначе? Может быть здесь должно быть исключение?
 
-        trader_price = trader.get_prices(items=ex_car.inventory.items)
+        # Сохраняем инвентарь в екзампл
+        agent.inventory.save_to_example(time=self.time)
+        total_items_buy_sale = []
+        # Обход столика игрока ,списывание итемов и расчет навара
+        sale_price = 0  # цена того что игрок продает
+        for table_rec in self.player_table:
+            item_ex = ex_car.inventory.get_item_by_uid(uid=table_rec['uid'])
 
-        # Заполняем буфер итемов игрока
-        buffer_player = [item.uid for item in ex_car.inventory.items]
-
-        # Обход столика игрока: формирование цены и проверка наличия
-        price_player = 0
-        for item_uid in self.player_table:
-            if item_uid not in buffer_player:
-                # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы и пометить юзера читером. Не надо помогать хакерам
-                # todo: translate
-                messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
+            # Проверяем есть ли итем в нужном количестве
+            if (item_ex is None) or (item_ex.amount < table_rec['count']):
+                self.cancel_transaction()
                 return
 
-            item = ex_car.inventory.get_item_by_uid(item_uid)
-            price_option = trader_price.get(item, None)
-            temp_price = (0.01 * item.base_price * price_option['buy']) if price_option and price_option['buy'] else item.base_price  # * item.amount / item.stack_size
-            temp_price *= item.amount / item.stack_size
-            # todo: translate
-            tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
-            price_player += temp_price
-            buffer_player.remove(item_uid)
+            # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
+            price = trader.get_item_price(item=item_ex)
+            if price is None:
+                self.cancel_transaction()
+                return
+            item_sale_price = price.get_price(item=item_ex, agent=agent)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
+            sale_price += item_sale_price
 
-        price_player = round(price_player)
+            # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
+            tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item_ex.title, str(int(item_sale_price))))
 
-        # Формирование цены итемов для продажи торговцем (обход столика торговца)
-        bought_items = []
-        price_trader = 0
-        for item_uid in self.trader_table:
-            item = trader.inventory.get_item_by_uid(item_uid)
-            if item is None:
-                # todo: Нужно тихо записать warning в лог и отфильтровать контрафактные предметы. Не надо помогать хакерам
-                # todo: translate
-                messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И кого мы хотим обмануть?').post()
+            item_ex.amount -= table_rec['count']
+            if item_ex.amount == 0:
+                ex_car.inventory.items.remove(item_ex)
+
+            total_items_buy_sale.append((item_ex, table_rec['count']))
+        sale_price = math.floor(sale_price)  # Навар игрока округляется до меньшего
+
+        # Обход столика торговца, зачисление итемов и расчет стоимости
+        buy_price = 0  # цена того что игрок покупает
+        for table_rec in self.trader_table:
+            price = trader.get_item_by_uid(uid=table_rec['uid'])
+
+            # Проверяем есть ли итем в нужном количестве
+            if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
+                self.cancel_transaction()
                 return
 
-            price_option = trader_price.get(item, None)
-            # * item.amount / item.stack_size
-            temp_price = (0.01 * item.base_price * price_option['sale']) if price_option and price_option['sale'] else item.base_price
-            # todo: translate
-            tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, item.title, str(int(temp_price))))
-            price_trader += temp_price
-            # todo: Учитывать количество
-            bought_items.append(item)
+            # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
+            item_buy_price = price.get_price(item=price.item, agent=agent)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
+            buy_price += item_buy_price
+            # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
+            tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, price.item.title, str(int(item_buy_price))))
 
-        price_trader = round(price_trader)
+            # Добавляем итемы в инвентарь игрока
+            ex_car.inventory.add(item=price.item, count=table_rec['count'])
+            total_items_buy_sale.append((price.item, -table_rec['count']))
+        buy_price = math.ceil(buy_price)
 
-        # Проверка по цене
-        if (agent.example.balance + price_player) < price_trader:
-            # todo: вариативные реплики
-            # todo: translate
-            messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'Куда хватаешь? У тебя нет столько денег').post()
+        # Проверяем не переполнился ли инвентарь игрока (если надо, то пробуем уплотнить)
+        if len(ex_car.inventory.items) > ex_car.inventory.size:
+            ex_car.inventory.packing()
+        if len(ex_car.inventory.items) > ex_car.inventory.size:
+            self.cancel_transaction()
             return
 
-        # Проверка по слотам инвентаря
-        if (ex_car.inventory_size - len(ex_car.inventory.items) + len(self.player_table)) < len(self.trader_table):
-            # todo: вариативные реплики
-            # todo: translate
-            messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'И куда ты это положишь?').post()
+        # Проверяем хватает ли денег на все про все
+        if (agent.example.balance + sale_price - buy_price) < 0:
+            self.cancel_transaction()
             return
+        agent.example.balance += sale_price - buy_price
 
-        # Зачисление денег на счёт
-        agent.example.balance += price_player - price_trader
+        # Перезагружаем модельный инвентарь
+        agent.reload_inventory(time=self.time, save=False)
 
-        new_inventory = []
-        # Списание итемов из инвентаря
-        for item in ex_car.inventory.items:
-            if item.uid not in self.player_table:
-                item.position = self._get_position()
-                new_inventory.append(item)
+        # Изменение цен у торговца
+        for item_pair in total_items_buy_sale:
+            item, count = item_pair
+            trader.change_price(item, count)
 
-        # Добавление купленных итемов в инвентарь
-        for item in bought_items:
-            # todo: Брать количество правильно
-            # todo : (!) parent instantiate fix
-            item_ex = item.parent.instantiate(position=self._get_position(), amount=item.stack_size)
-            yield item_ex.load_references()
-            new_inventory.append(item_ex)
-        ex_car.inventory.items = new_inventory
+        # рассылка новых цен всем агентам
+        trader.send_prices(location=agent.current_location, time=self.time)
 
         for msg in tr_msg_list:
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),
                                            info_string=msg).post()
-
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        # todo: вариативные реплики
-        # todo: translate
-        messages.SetupTraderReplica(agent=agent, time=self.time, replica=u'О, да с тобой приятно иметь дело! Приходи ещё.').post()
+        # Мессадж завершения транзакции
+        messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=trader.node_hash()).post()
 
 
 class TransactionSetRPGState(TransactionEvent):

@@ -195,7 +195,7 @@ var WCarMarker = (function (_super) {
                 }
             }
         }
-        this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
+        //this.marker.bindLabel(label_str, {direction: 'right', opacity: 0.5}).setLabelNoHide(cookieStorage.visibleLabel());
     };
 
     WCarMarker._get_icon_by_sub_class = function(sub_class) {

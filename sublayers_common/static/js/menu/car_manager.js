@@ -65,5 +65,4 @@ function CarInfoBlockAmmoInfoHide(descripion) {
     }
 }
 
-
 var carManager = new CarManager();

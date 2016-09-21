@@ -159,7 +159,7 @@ class CancelBarterMessage(Message):
 class BarterTable(Object):
     def __init__(self, barter, time, max_size, **kw):
         super(BarterTable, self).__init__(time=time, **kw)
-        self.inventory = Inventory(owner=self, max_size=max_size, time=time)
+        self.inventory = Inventory(owner=self, max_size=max_size)
         self.barter = barter
 
     def is_available(self, agent):
@@ -224,13 +224,13 @@ class Barter(object):
         self.timeout_event.cancel()
 
         self.initiator_table_obj = BarterTable(server=self.initiator.server, time=event.time, barter=self,
-                                               max_size=self.initiator_car.example.inventory_size)
+                                               max_size=self.initiator_car.example.inventory.size)
         self.initiator_table = self.initiator_table_obj.inventory
         self.initiator_table.add_manager(agent=self.initiator)
         self.initiator_table.on_change_list.append(self._change_table)
 
         self.recipient_table_obj = BarterTable(server=self.recipient.server, time=event.time, barter=self,
-                                               max_size=self.recipient_car.example.inventory_size)
+                                               max_size=self.recipient_car.example.inventory.size)
         self.recipient_table = self.recipient_table_obj.inventory
         self.recipient_table.add_manager(agent=self.recipient)
         self.recipient_table.on_change_list.append(self._change_table)
