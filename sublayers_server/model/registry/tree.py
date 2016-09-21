@@ -329,7 +329,7 @@ class Node(Doc):
     def _load_node(cls, path, owner=None):
         assert isinstance(path, unicode), '{}._load_node: path is not unicode, but: {!r}'.format(cls, path)
         attrs = {}
-        for f in os.listdir(path):
+        for f in sorted(os.listdir(path)):
             assert isinstance(f, unicode), '{}._load_node: listdir returns non unicode value'.format(cls)
             # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
