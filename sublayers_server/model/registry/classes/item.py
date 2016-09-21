@@ -158,6 +158,13 @@ class TunerItem(SlotItem):
         base_field=EmbeddedDocumentField(embedded_document_type=TunerImage),
     )
 
+    def get_view(self, car_node_hash):
+        for tuner_image in self.images:
+            if tuner_image.car.node_hash() == car_node_hash:
+                return tuner_image
+        log.warning('{} not found in item: {}'.format(car_node_hash, self))
+        return None
+
 
 class ArmorerItem(SlotItem):
     class ArmorerImages(Subdoc):
