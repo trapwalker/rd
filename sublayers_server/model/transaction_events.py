@@ -418,7 +418,7 @@ class TransactionParkingLeave(TransactionEvent):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
-        self.agent.reload_inventorey(time=time)
+        self.agent.reload_inventory(time=self.time)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()

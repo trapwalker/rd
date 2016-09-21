@@ -58,6 +58,7 @@ class Price(object):
         self.is_infinity = is_infinity  # флаг бесконечности итема
         self.is_lot = is_lot  # флаг наличия итема
         self.price = price
+        self.start_price = price
         self.count = count  # количество в штуках (не стеки)
         self.item = item or price_option.item
         self.price_option = price_option
@@ -83,25 +84,30 @@ class Price(object):
 
     def change(self, count, item):  # Вызывается в случае изменения количества итемов
         self.price -= self.price_option.influence * count
-        if count < 0 and self.price > self.price_option.price_max:  # значит у торговца купили итемы
-            self.price = self.price_option.price_max
-        if count > 0 and self.price < self.price_option.price_min:  # значит торговцу продали итемы
-            self.price = self.price_option.price_min
+        if count < 0:  # значит у торговца купили итемы
+            self.price = min(self.price, self.price_option.price_max)
+            if self.start_price < 1.0:  # был профицит
+                self.price = min(1.0, self.price)
+        if count > 0:  # значит торговцу продали итемы
+            self.price = max(self.price, self.price_option.price_min)
+            if self.start_price >= 1.0:  # был дефицит
+                self.price = max(1.0, self.price)
 
         # если итем бесконечный и он не продаётся сейчас (is_lot=False), то сделать его конечным
         if count > 0 and self.is_infinity and not self.is_lot:
             self.count = 0
             self.is_infinity = False
+
         # Обновление количества итемов
         if not self.is_infinity:
             self.count += count
+
         # Определение необходимости создания нового правила
         if self.count > 0 and not self.is_lot:
             if self.item.abstract:  # Это значит, что данная ценовая политика создана для абстрактного итема и нужно создать новую
                 self.trader.add_price_option(self, count, item)
             else:
                 self.is_lot = True
-
 
 
 class Trader(Institution):
