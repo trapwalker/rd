@@ -65,8 +65,7 @@ class AbstractDocument(Document):
         try:
             return self.validate_fields()
         except InvalidDocumentError as e:
-            e.message = 'Document {self!r} error: {e.message}'.format(self=self, e=e)
-            raise e
+            raise InvalidDocumentError('Document {self!r} error: {e.message}'.format(self=self, e=e))
 
     def to_son(self):
         data = dict()
