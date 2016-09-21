@@ -872,6 +872,7 @@ class TransactionTraderApply(TransactionEvent):
             self.cancel_transaction()
             return
         agent.example.balance += sale_price - buy_price
+
         # Перезагружаем модельный инвентарь
         agent.reload_inventory(time=self.time, save=False)
 

@@ -71,7 +71,7 @@ class Inventory(Subdoc):
             if item:
                 while positions[i]:
                     i += 1
-                if item.position is None or positions[item.position] > 1:
+                if (item.position is None) or (positions[item.position] > 1):
                     if item.position is not None:
                         positions[item.position] -= 1
                     item.position = i
@@ -86,6 +86,7 @@ class Inventory(Subdoc):
                 return item
 
     def create_model(self, server, time, owner=None):
+        self.placing()
         inventory = ModelInventory(max_size=self.size, owner=owner, example=self)
         for item_example in self.items:
             ItemState(
