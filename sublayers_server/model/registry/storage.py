@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.tree import Node
+from sublayers_server.model.registry.tree import Node, Root
 from sublayers_server.model.registry.uri import URI
 
 import tornado.ioloop
@@ -51,10 +51,6 @@ class WrongStorageError(RegistryError):
 
 
 class StorageNotFound(RegistryError):
-    pass
-
-
-class Root(Node):
     pass
 
 
