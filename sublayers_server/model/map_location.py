@@ -6,11 +6,13 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, InventoryHideMessage, UserExampleSelfMessage
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage
 )
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats, Event
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
+from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
+
 
 
 class RadioPoint(Observer):
@@ -107,7 +109,6 @@ class MapLocation(Observer):
         agent.api.update_agent_api(time=time)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=time).post()
-        InventoryHideMessage(agent=agent, time=time, inventory_id=agent.uid).post()
 
     def add_to_chat(self, chat, time):
         super(MapLocation, self).add_to_chat(chat=chat, time=time)
@@ -132,9 +133,15 @@ class MapLocation(Observer):
 class Town(MapLocation):
     __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
 
-    def __init__(self, **kw):  # todo: Конструировать на основе example
-        super(Town, self).__init__(**kw)
+    def __init__(self, time, **kw):  # todo: Конструировать на основе example
+        super(Town, self).__init__(time=time, **kw)
         self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся name)
+
+        # Инициализация торговца
+        # найти торговца в городе
+        for npc in set(self.example.get_npc_list()):
+            if isinstance(npc, Trader):
+                TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
     def on_exit(self, agent, time):
         super(Town, self).on_exit(agent=agent, time=time)

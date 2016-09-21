@@ -871,29 +871,6 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
             templates['html_car_table'] = template_table.generate(car=ex_car)
             d['templates'] = templates
 
-            # Инвентарь
-            # todo: сделать этот метод автоматическим
-            ex_car.inventory.placing()
-            d['car_inventory'] = dict(
-                max_size=ex_car.inventory_size,
-                items=[
-                    dict(
-                        position=ex.position,
-                        item=dict(
-                            cls='ItemState',
-                            balance_cls=ex.parent.node_hash(),
-                            example=ex.as_client_dict(),
-                            max_val=ex.stack_size,
-                            t0=self.time,
-                            val0=ex.amount,
-                            dvs=0,
-                        )
-                    )
-                    for ex in ex_car.inventory.items
-                ],
-                owner_id=agent.uid
-            )
-
             car_npc_info = dict()
             # Информация для оружейника
             car_npc_info['armorer_slots'] = [
@@ -1033,7 +1010,6 @@ class ParkingInfoMessage(NPCInfoMessage):
 
 
 # Сообщение-ответ для клиента - информация об нпц-торговце
-# todo: переделать этот кошмар
 class TraderInfoMessage(NPCInfoMessage):
     def __init__(self, **kw):
         super(TraderInfoMessage, self).__init__(**kw)
@@ -1053,32 +1029,17 @@ class TraderInfoMessage(NPCInfoMessage):
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
 
-        # Отправка инвентаря торговца
-        d['inventory'] = dict(
-                max_size=npc.inventory_size,
-                items=[
-                    dict(
-                        position=self._get_position(),
-                        item=dict(
-                            cls='ItemState',
-                            balance_cls=None,
-                            example=ex.as_client_dict(),
-                            max_val=ex.stack_size,
-                            t0=self.time,
-                            val0=ex.stack_size,
-                            dvs=0,
-                        )
-                    ) for ex in npc.inventory.items
-                ],
-                owner_id=npc.node_html()
-            )
-
-        # Отправка цен
-        car_inventory = []
+        d['agent_balance'] = self.agent.example.balance
+        d['trader_assortment'] = npc.get_trader_assortment(agent=self.agent)
         if self.agent.example.car:
-            car_inventory = self.agent.example.car.inventory.items
-        d['price'] = npc.as_client_dict(items=car_inventory)
+            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.car.inventory.items)
+        else:
+            d['agent_assortment'] = []
         return d
+
+
+class TraderClearMessage(NPCInfoMessage):
+    pass
 
 
 # Сообщение-ответ для клиента - информация об нпц-тренере

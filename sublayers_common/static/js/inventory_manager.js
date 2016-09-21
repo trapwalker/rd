@@ -310,12 +310,13 @@ var InventoryList = (function () {
         return this.inventories[owner_id]
     };
 
-    InventoryList.prototype.showInventory = function (owner_id, inventory_div) {
+    InventoryList.prototype.showInventory = function (owner_id, inventory_div, not_request) {
         var inv = this.getInventory(owner_id);
         if (inv)
             inv.showInventory(inventory_div);
         else
-            clientManager.sendShowInventory(owner_id);
+            if (!not_request)
+                clientManager.sendShowInventory(owner_id);
     };
 
     InventoryList.prototype.showInvByFilter = function (owner_id, inventory_div, filter) {
@@ -323,7 +324,7 @@ var InventoryList = (function () {
         if (inv)
             inv.showInvByFilter(inventory_div, filter);
         else
-            console.error('showInvByFilter:: Инвентарь машинки <', owner_id ,'>  не найден');
+            console.error('showInvByFilter:: Инвентарь <', owner_id ,'>  не найден');
     };
 
     return InventoryList;
