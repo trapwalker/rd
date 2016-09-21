@@ -5,9 +5,10 @@
     {% set scale = getattr(car, 'image_scale') %}
     {% for k, v in car.iter_slots(tags='tuner') %}
         {% if v is not None %}
-            {% if v.images[car.node_hash()]['side']['link'] is not None %}
-            <div class="car-info-block-picture" style="background: url({{ static_url(static_world_link_repr(v.images[car.node_hash()]['side']['link'])) }} ) no-repeat center;
-                    z-index: {{ v.images[car.node_hash()]['side']['z_index'] }}"></div>
+            {% set view = v.get_view(car.node_hash()) %}
+            {% if view is not None %}
+            <div class="car-info-block-picture" style="background: url({{ static_url(static_world_link_repr(view.side.link)) }} ) no-repeat center;
+                    z-index: {{ view.side.z_index }}"></div>
             {% end %}
         {% end %}
     {% end %}
