@@ -54,12 +54,21 @@ class BarterInventoryHandler(BaseHandler):
             return
         my_table_id = None
         other_table_id = None
+        inv_id = None
         if agent is barter.initiator:
+            inv_id = barter.initiator_inv.owner.uid
             my_table_id = barter.initiator_table_obj.uid
             other_table_id = barter.recipient_table_obj.uid
         else:
+            inv_id = barter.recipient_inv.owner.uid
             my_table_id = barter.recipient_table_obj.uid
             other_table_id = barter.initiator_table_obj.uid
         barter_name = '{!r} <=> {!r}'.format(barter.initiator.user.name, barter.recipient.user.name)  # todo: use unicode
-        self.render("inventory_barter_window.html", agent=agent, car_id=agent.api.car.uid, barter=barter,
-                    my_table_id=my_table_id, other_table_id=other_table_id, barter_name=barter_name)
+
+        if agent.current_location is None:
+            self.render("inventory_barter_window.html", agent=agent, inv_id=inv_id, barter=barter,
+                        my_table_id=my_table_id, other_table_id=other_table_id, barter_name=barter_name, in_location=False)
+        else:
+            self.render("inventory_barter.html", agent=agent, inv_id=inv_id, barter=barter,
+                        my_table_id=my_table_id, other_table_id=other_table_id, barter_name=barter_name, in_location=True)
+
