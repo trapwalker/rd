@@ -751,8 +751,8 @@ class AgentAPI(API):
             barter.unlock(time=self.agent.server.get_time())
 
     @public_method
-    def cancel_barter(self, barter_id):
-        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+    def cancel_barter(self, barter_id, recipient_login):
+        barter = Barter.get_barter(agent=self.agent, barter_id=barter_id, recipient_login=recipient_login)
         if barter:
             barter.cancel(time=self.agent.server.get_time())
 

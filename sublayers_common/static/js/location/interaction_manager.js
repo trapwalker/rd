@@ -9,13 +9,17 @@ var InteractionManager = (function (_super) {
         this.field_name_list = ['lvl', 'role_class', 'karma', 'driving', 'shooting', 'masking', 'leading', 'trading', 'engineering'];
 
         // Клики на пункты меню
+        this.barter_id = null;
+        this.barter_lock = false;
+        this.cur_page = '';
         var self = this;
         this.jq_main_div.find('.chat-interaction-center-menu-item').click(function() {
-            var page_id = $(this).data('page_id');
+            self.cur_page = $(this).data('page_id');
             self.jq_main_div.find('.chat-interaction-center-menu-item').removeClass('active');
             $(this).addClass('active');
             self.jq_main_div.find('.chat-interaction-center-page').css('display', 'none');
-            self.jq_main_div.find('#' + page_id).css('display', 'block');
+            self.jq_main_div.find('#' + self.cur_page).css('display', 'block');
+            self.set_buttons();
         });
         this.jq_main_div.find('.chat-interaction-center-menu-item').first().click();
 
@@ -38,14 +42,58 @@ var InteractionManager = (function (_super) {
         jq_input.focus();
     };
 
+    InteractionManager.prototype.start_barter = function (html, barter_id) {
+        this.jq_main_div.find('#chatInteractionTrading').empty();
+        this.jq_main_div.find('#chatInteractionTrading').append(html);
+        this.barter_id = barter_id;
+        this.barter_lock = false;
+        this.set_buttons();
+    };
+
+    InteractionManager.prototype.cancel_barter = function (barter_id) {
+        if (this.barter_id != barter_id) return;
+        this.jq_main_div.find('#chatInteractionTrading').empty();
+        this.barter_id = null;
+        this.set_buttons();
+    };
+
+    InteractionManager.prototype.lock_barter = function (barter_id) {
+        if (this.barter_id != barter_id) return;
+        this.barter_lock = true;
+        this.set_buttons();
+    };
+
+    InteractionManager.prototype.unlock_barter = function (barter_id) {
+        if (this.barter_id != barter_id) return;
+        this.barter_lock = false;
+        this.set_buttons();
+    };
+
     InteractionManager.prototype.set_buttons = function () {
         //console.log('InteractionManager.prototype.set_buttons');
         if (!locationManager.isActivePlace(this)) return;
-        if (user.party)
-            locationManager.setBtnState(1, 'Пригласить</br>в пати', true);
-        else
-            locationManager.setBtnState(1, 'Пригласить</br>в пати', false);
-        locationManager.setBtnState(2, '', false);
+        switch (this.cur_page) {
+            case 'chatInteractionInfo':
+                locationManager.setBtnState(1, 'Пригласить</br>в пати', true);
+                locationManager.setBtnState(2, '', false);
+                break;
+            case 'chatInteractionTrading':
+                if (this.barter_id) {
+                    locationManager.setBtnState(1, '</br>Применить', true);
+                    if (this.barter_lock)
+                        locationManager.setBtnState(2, '</br>Отменить', true);
+                    else
+                        locationManager.setBtnState(2, 'Закрыть</br>бартер', true);
+                }
+                else {
+                    locationManager.setBtnState(1, '</br>Торговать', true);
+                    locationManager.setBtnState(2, '', false);
+                }
+                break;
+            default:
+                locationManager.setBtnState(1, '', false);
+                locationManager.setBtnState(2, '', false);
+        }
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
@@ -54,10 +102,34 @@ var InteractionManager = (function (_super) {
         //console.log('LocationTrainerNPC.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
             case '1':
-                clientManager.sendInvitePartyFromTemplate(this.player_nick);
+                switch (this.cur_page) {
+                    case 'chatInteractionInfo':
+                        clientManager.sendInvitePartyFromTemplate(this.player_nick);
+                        break;
+                    case 'chatInteractionTrading':
+                        if (this.barter_id)
+                            clientManager.sendLockBarter(this.barter_id);
+                        else {
+                            clientManager.sendInitBarter(this.player_nick);
+                            this.jq_main_div.find('.chat-interaction-private-chat-input').val('!!! Приглашение в бартер !!!');
+                            this._send_message();
+
+                        }
+
+                        break;
+                }
+                break;
+            case '2':
+                if ((this.cur_page == 'chatInteractionTrading') && this.barter_id)
+                    if (this.barter_lock)
+                        clientManager.sendUnlockBarter(this.barter_id);
+                    else
+                        clientManager.sendCancelBarter(this.barter_id);
+
                 break;
             case '3':
                 this.clear();
+                clientManager.sendCancelBarter(null, this.player_nick);
                 locationManager.location_chat.activate();
                 break;
             default:

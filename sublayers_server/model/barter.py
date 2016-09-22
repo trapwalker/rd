@@ -179,8 +179,14 @@ class Barter(object):
         self.initiator_lock = False
         recipient.barters.append(self)
         initiator.barters.append(self)
-        self.initiator_car = initiator.car
-        self.recipient_car = recipient.car
+
+        if self.initiator.current_location is None:
+            self.initiator_inv = initiator.car.inventory
+            self.recipient_inv = recipient.car.inventory
+        else:
+            self.initiator_inv = initiator.inventory
+            self.recipient_inv = recipient.inventory
+
         self.initiator_table = None
         self.recipient_table = None
         self.initiator_table_obj = None
@@ -198,17 +204,28 @@ class Barter(object):
 
     @classmethod
     def can_make_barter(cls, agent1, agent2, time):
-        car1 = agent1.car
-        car2 = agent2.car
-        if (car1 is None) or (car2 is None):
+        if not (agent1.current_location is agent1.current_location) or (agent1 is agent2):
             return False
-        return car1.position(time=time).distance(target=car2.position(time=time)) <= cls.barter_distance
+        if agent1.current_location is None:
+            car1 = agent1.car
+            car2 = agent2.car
+            if (car1 is None) or (car2 is None):
+                return False
+            return car1.position(time=time).distance(target=car2.position(time=time)) <= cls.barter_distance
+        else:
+            return True
 
     @classmethod
-    def get_barter(cls, barter_id, agent):
-        for barter in agent.barters:
-            if barter.id == barter_id:
-                return barter
+    def get_barter(cls, agent, barter_id=None, recipient_login=None):
+        if barter_id is not None:
+            for barter in agent.barters:
+                if barter.id == barter_id:
+                    return barter
+        elif recipient_login is not None:
+            for barter in agent.barters:
+                if barter.recipient.user.name == recipient_login:
+                    return barter
+
         return None
 
     def _change_table(self, inventory, time):
@@ -224,13 +241,13 @@ class Barter(object):
         self.timeout_event.cancel()
 
         self.initiator_table_obj = BarterTable(server=self.initiator.server, time=event.time, barter=self,
-                                               max_size=self.initiator_car.example.inventory.size)
+                                               max_size=self.initiator_inv.example.size)
         self.initiator_table = self.initiator_table_obj.inventory
         self.initiator_table.add_manager(agent=self.initiator)
         self.initiator_table.on_change_list.append(self._change_table)
 
         self.recipient_table_obj = BarterTable(server=self.recipient.server, time=event.time, barter=self,
-                                               max_size=self.recipient_car.example.inventory.size)
+                                               max_size=self.recipient_inv.example.size)
         self.recipient_table = self.recipient_table_obj.inventory
         self.recipient_table.add_manager(agent=self.recipient)
         self.recipient_table.on_change_list.append(self._change_table)
@@ -306,8 +323,8 @@ class Barter(object):
             self.cancel.sync(self=self, event=event)
             return
 
-        self.initiator.car.inventory.add_inventory(inventory=self.recipient_table, time=event.time)
-        self.recipient.car.inventory.add_inventory(inventory=self.initiator_table, time=event.time)
+        self.initiator_inv.add_inventory(inventory=self.recipient_table, time=event.time)
+        self.recipient_inv.add_inventory(inventory=self.initiator_table, time=event.time)
 
         # Обмен деньгами
         self.initiator.example.balance += self.recipient_money - self.initiator_money
@@ -328,8 +345,8 @@ class Barter(object):
         self.is_cancel = True
 
         if (self.state == 'active') or (self.state == 'lock'):
-            self.initiator.car.inventory.add_inventory(inventory=self.initiator_table, time=event.time)
-            self.recipient.car.inventory.add_inventory(inventory=self.recipient_table, time=event.time)
+            self.initiator_inv.add_inventory(inventory=self.initiator_table, time=event.time)
+            self.recipient_inv.add_inventory(inventory=self.recipient_table, time=event.time)
 
             # Отправить сообщения о закрытии окон
             CancelBarterMessage(agent=self.initiator, barter=self, time=event.time).post()
@@ -347,22 +364,25 @@ class Barter(object):
             self.initiator.barters.remove(self)
         if ((self.initiator_table is not None) and (self.recipient_table is not None) and
             (self.initiator_table_obj is not None) and (self.recipient_table_obj is not None)):
-            pos_initiator = self.initiator.car.position(event.time)
-            pos_recipient = self.recipient.car.position(event.time)
-            if self.state == 'success':
-                temp_pos = pos_initiator
-                pos_initiator = pos_recipient
-                pos_recipient = temp_pos
 
-            # Создание контейнеров с невлезшими итемами
-            if not self.initiator_table.is_empty():
-                CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
-                                   inventory_size=self.initiator_table.max_size, position=pos_initiator,
-                                   life_time=60.0, items=self.initiator_table.get_items()).post()
-            if not self.recipient_table.is_empty():
-                CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
-                                   inventory_size=self.recipient_table.max_size, position=pos_recipient,
-                                   life_time=60.0, items=self.recipient_table.get_items()).post()
+            # todo: решить вопрос с переполнением инвентаря в городе
+            if self.initiator.car and self.recipient.car:
+                pos_initiator = self.initiator.car.position(event.time)
+                pos_recipient = self.recipient.car.position(event.time)
+                if self.state == 'success':
+                    temp_pos = pos_initiator
+                    pos_initiator = pos_recipient
+                    pos_recipient = temp_pos
+
+                # Создание контейнеров с невлезшими итемами
+                if not self.initiator_table.is_empty():
+                    CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
+                                       inventory_size=self.initiator_table.max_size, position=pos_initiator,
+                                       life_time=60.0, items=self.initiator_table.get_items()).post()
+                if not self.recipient_table.is_empty():
+                    CreatePOILootEvent(server=self.server, time=event.time, poi_cls=POIContainer, example=None,
+                                       inventory_size=self.recipient_table.max_size, position=pos_recipient,
+                                       life_time=60.0, items=self.recipient_table.get_items()).post()
 
             # Удаление объектов-owner'ов для столов
             self.initiator_table_obj.delete(time=event.time)

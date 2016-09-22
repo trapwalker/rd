@@ -15,9 +15,15 @@ var BarterManager = (function () {
 
     BarterManager.prototype.ActivateBarter = function (barter_id) {
         //console.log('BarterManager.prototype.ActivateBarter', barter_id);
-
         // Запрос на открытие окна
-        windowTemplateManager.openUniqueWindow('barter' + barter_id, '/barter', {barter_id: barter_id});
+        if (locationManager.in_location_flag)
+            $.ajax({
+                url: "http://" + $('#settings_host_name').text() + '/api/barter',
+                data: {barter_id: barter_id},
+                success: function(data) { locationManager.location_chat.interaction_manager.start_barter(data, barter_id); }
+            });
+        else
+            windowTemplateManager.openUniqueWindow('barter' + barter_id, '/barter', {barter_id: barter_id});
     };
 
     BarterManager.prototype.LockBarter = function (barter_id) {
@@ -31,7 +37,11 @@ var BarterManager = (function () {
         $('#barterInventoryWindow-cancel-button-' + barter_id).css('display', 'block');
 
         // Включить блокировку инвентарей
-        $('#barterInventoryWindow-' + barter_id).find('.barterInventoryWindow-lock-div').css('display', 'block');
+        $('#barterInventoryWindow-inside-' + barter_id).find('.barterInventoryWindow-lock-div').css('display', 'block');
+
+        // Закрытие торговли в городе
+        if (locationManager.in_location_flag)
+            locationManager.location_chat.interaction_manager.lock_barter(barter_id);
     };
 
     BarterManager.prototype.UnlockBarter = function (barter_id) {
@@ -45,7 +55,11 @@ var BarterManager = (function () {
         $('#barterInventoryWindow-cancel-button-' + barter_id).css('display', 'none');
 
         // Выключить блокировку инвентарей
-        $('#barterInventoryWindow-' + barter_id).find('.barterInventoryWindow-lock-div').css('display', 'none');
+        $('#barterInventoryWindow-inside-' + barter_id).find('.barterInventoryWindow-lock-div').css('display', 'none');
+
+        // Закрытие торговли в городе
+        if (locationManager.in_location_flag)
+            locationManager.location_chat.interaction_manager.unlock_barter(barter_id);
     };
 
     BarterManager.prototype.ChangeMoneyBarter = function (barter_id, my_money, other_money) {
@@ -85,6 +99,10 @@ var BarterManager = (function () {
 
         // Закрытие окна
         windowTemplateManager.closeUniqueWindow('barter' + barter_id);
+
+        // Закрытие торговли в городе
+        if (locationManager.in_location_flag)
+            locationManager.location_chat.interaction_manager.cancel_barter(barter_id);
     };
 
     BarterManager.prototype.CancelBarter = function (barter_id) {
@@ -95,6 +113,10 @@ var BarterManager = (function () {
 
         // Закрытие окна
         windowTemplateManager.closeUniqueWindow('barter' + barter_id);
+
+        // Закрытие торговли в городе
+        if (locationManager.in_location_flag)
+            locationManager.location_chat.interaction_manager.cancel_barter(barter_id);
     };
 
     return BarterManager;
