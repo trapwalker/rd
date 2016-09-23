@@ -851,13 +851,13 @@ var ClientManager = (function () {
     // Бартер
 
     ClientManager.prototype.AddInviteBarterMessage = function (event) {
-        //console.log('ClientManager.prototype.InviteBarterMessage', event);
+        //console.log('ClientManager.prototype.AddInviteBarterMessage', event);
         if (contextPanel)
             contextPanel.activate_barter_manager.add_barter(event.barter_id, event.initiator);
     };
 
     ClientManager.prototype.DelInviteBarterMessage = function (event) {
-        //console.log('ClientManager.prototype.InviteBarterMessage', event);
+        //console.log('ClientManager.prototype.DelInviteBarterMessage', event);
         if (contextPanel)
             contextPanel.activate_barter_manager.del_barter(event.barter_id);
     };
@@ -868,7 +868,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.CancelBarterMessage = function (event) {
-        //console.log('ClientManager.prototype.CancelBarterMessage', event);
+        console.log('ClientManager.prototype.CancelBarterMessage', event);
         barterManager.CancelBarter(event.barter_id);
     };
 
@@ -1644,9 +1644,7 @@ var ClientManager = (function () {
         var mes = {
             call: "init_barter",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                recipient_login: recipient_login.toString()
-            }
+            params: { recipient_login: recipient_login.toString() }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1678,13 +1676,14 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendCancelBarter = function (barter_id) {
-        //console.log('ClientManager.prototype.sendCancelBarter', barter_id);
+    ClientManager.prototype.sendCancelBarter = function (barter_id, recipient_login) {
+        console.log('ClientManager.prototype.sendCancelBarter', barter_id, recipient_login);
         var mes = {
             call: "cancel_barter",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                barter_id: barter_id
+                barter_id: barter_id ? barter_id : null,
+                recipient_login: recipient_login ? recipient_login : null
             }
         };
         rpcCallList.add(mes);

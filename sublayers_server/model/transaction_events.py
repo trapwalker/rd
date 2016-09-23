@@ -26,7 +26,6 @@ import sublayers_server.model.messages as messages
 class TransactionEvent(Event):
     def on_perform(self):
         super(TransactionEvent, self).on_perform()
-        # todo: возможно IOLoop.instance().add_callback(callback=self.on_perform_async())
         IOLoop.instance().add_future(future=self.on_perform_async(), callback=self.on_done_perform_async)
 
     @tornado.gen.coroutine
@@ -51,6 +50,10 @@ class TransactionActivateTank(TransactionActivateItem):
     @tornado.gen.coroutine
     def on_perform_async(self):
         yield super(TransactionActivateTank, self).on_perform_async()
+
+        # todo: Сделать возможным запуск в городе
+        if self.agent.current_location is not None:
+            return
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -84,6 +87,11 @@ class TransactionActivateTank(TransactionActivateItem):
 class TransactionActivateRebuildSet(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateRebuildSet, self).on_perform()
+
+        # todo: Сделать возможным запуск в городе
+        if self.agent.current_location is not None:
+            return
+
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
         inventory = self.inventory
@@ -104,6 +112,9 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
 class TransactionActivateMine(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateMine, self).on_perform()
+
+        if self.agent.current_location is not None:
+            return
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -127,6 +138,9 @@ class TransactionActivateRocket(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateRocket, self).on_perform()
 
+        if self.agent.current_location is not None:
+            return
+
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
         inventory = self.inventory
@@ -149,6 +163,9 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
     # Активация патронов - пройти по всем орудиям и зарядиться в подходящие
     def on_perform(self):
         super(TransactionActivateAmmoBullets, self).on_perform()
+
+        if self.agent.current_location is not None:
+            return
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -178,6 +195,10 @@ class TransactionGasStation(TransactionEvent):
     def on_perform_async(self):
         # todo: Сделать единый механизм проверки консистентности и валидности состояния агента для всех транзакций
         yield super(TransactionGasStation, self).on_perform_async()
+
+        if self.agent.has_active_barter():
+            return
+
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
@@ -215,14 +236,13 @@ class TransactionGasStation(TransactionEvent):
         old_inventory = ex_car.inventory.items[:]
         ex_car.inventory.items = []
         for item in old_inventory:
-            if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tag_set) and item.full_tank:
+            if (item.position is not None) and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tag_set) and item.full_tank:
                 new_tank = item.full_tank.instantiate()
                 yield new_tank.load_references()
                 new_tank.position = item.position
                 ex_car.inventory.items.append(new_tank)
             else:
                 ex_car.inventory.items.append(item)
-        # ex_car.inventory.placing()
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
         agent.reload_inventory(time=self.time)
@@ -245,6 +265,9 @@ class TransactionHangarSell(TransactionEvent):
 
     def on_perform(self):
         super(TransactionHangarSell, self).on_perform()
+
+        if self.agent.has_active_barter():
+            return
 
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
@@ -281,6 +304,9 @@ class TransactionHangarBuy(TransactionEvent):
     @tornado.gen.coroutine
     def on_perform_async(self):
         yield super(TransactionHangarBuy, self).on_perform_async()
+
+        if self.agent.has_active_barter():
+            return
 
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
@@ -332,6 +358,10 @@ class TransactionParkingSelect(TransactionEvent):
 
     def on_perform(self):
         super(TransactionParkingSelect, self).on_perform()
+
+        if self.agent.has_active_barter():
+            return
+
         agent_ex = self.agent.example
 
         # Получение NPC и проверка валидности совершения транзакции
@@ -394,6 +424,9 @@ class TransactionParkingLeave(TransactionEvent):
         super(TransactionParkingLeave, self).on_perform()
         agent_ex = self.agent.example
 
+        if self.agent.has_active_barter():
+            return
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'parking') or (self.agent.example.car is None):
@@ -436,8 +469,11 @@ class TransactionArmorerApply(TransactionEvent):
         super(TransactionArmorerApply, self).on_perform()
         get_flags = '{}_f'.format
         agent = self.agent
-        # Получение NPC и проверка валидности совершения транзакции
 
+        if self.agent.has_active_barter():
+            return
+
+        # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'armorer'):
             log.warning('NPC not found: %s', self.npc_node_hash)
@@ -536,6 +572,9 @@ class TransactionMechanicApply(TransactionEvent):
     def on_perform(self):
         super(TransactionMechanicApply, self).on_perform()
         agent = self.agent
+
+        if agent.has_active_barter():
+            return
 
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
@@ -636,6 +675,10 @@ class TransactionMechanicRepairApply(TransactionEvent):
     def on_perform(self):
         super(TransactionMechanicRepairApply, self).on_perform()
         agent = self.agent
+
+        if agent.has_active_barter():
+            return
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if npc is None:
@@ -685,6 +728,10 @@ class TransactionTunerApply(TransactionEvent):
     def on_perform(self):
         super(TransactionTunerApply, self).on_perform()
         agent = self.agent
+
+        if agent.has_active_barter():
+            return
+
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'tuner'):
@@ -793,6 +840,9 @@ class TransactionTraderApply(TransactionEvent):
         yield super(TransactionTraderApply, self).on_perform_async()
         agent = self.agent
         ex_car = agent.example.car
+
+        if self.agent.has_active_barter():
+            return
 
         trader = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
@@ -923,6 +973,9 @@ class TransactionSetRPGState(TransactionEvent):
         # todo: (!!!) REVIEW
         super(TransactionSetRPGState, self).on_perform()
         agent = self.agent
+
+        if self.agent.has_active_barter():
+            return
 
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)

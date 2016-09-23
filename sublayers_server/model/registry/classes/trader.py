@@ -64,16 +64,10 @@ class Price(object):
         self.price_option = price_option
 
     def is_match(self, item):
-        # todo: расширить функцию для возможности работать с ветками
-        # if not item:
-        #     return
-        # if self.item.node_hash() == item.node_hash():
-        #     return True
-        # if item.is_ancestor(self.item):
-        #     return True
-        # return False
-        #return item and (self.item.node_hash() == item.node_hash() or item.is_ancestor(self.item))
         return item and item.is_ancestor_by_lvl(self.item) >= 0
+
+    def __str__(self):
+        return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
 
     def get_price(self, item, agent):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         # todo: добавить влияние навыка торговинга
@@ -104,7 +98,7 @@ class Price(object):
 
         # Определение необходимости создания нового правила
         if self.count > 0 and not self.is_lot:
-            if self.item.abstract:  # Это значит, что данная ценовая политика создана для абстрактного итема и нужно создать новую
+            if self.item.node_hash() != item.node_hash():  # Это значит, что данная ценовая политика создана для абстрактного итема и нужно создать новую
                 self.trader.add_price_option(self, count, item)
             else:
                 self.is_lot = True
@@ -128,6 +122,10 @@ class Trader(Institution):
         caption=u"Набор правил формирования ассортимента",
         base_field=EmbeddedDocumentField(embedded_document_type=PriceOption),
     )
+    items = ListField(
+        caption=u"Список товаров",
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
+    )
 
     @property
     def current_list(self):
@@ -144,29 +142,52 @@ class Trader(Institution):
         return None
 
     def on_refresh(self, event):
-        # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         self.current_list = []
         for price_option in self.price_list:
-            price = price_option.price_min + random.random() * (price_option.price_max - price_option.price_min)
-            count = 0
-            is_infinity = price_option.count_max == 0
-            is_lot = False
-            if not price_option.item.abstract:
-                # Вычисляем шанс генерации итемов данного лота
-                if random.random() <= price_option.chance:
-                    is_lot = True
-                    if price_option.count_max > 0:
-                        count = round(price_option.count_min + random.random() * (price_option.count_max - price_option.count_min))
             self.current_list.append(
                 Price(
                     trader=self,
-                    price=price,
-                    count=count,
-                    is_infinity=is_infinity,
-                    is_lot=is_lot,
+                    price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
+                    count=0,
+                    is_infinity=price_option.count_max == 0,
+                    is_lot=False,
                     price_option=price_option
                 )
             )
+
+        for item in self.items:
+            if item.abstract or self.item_in_ignore_list(item):
+                continue
+            price = self.get_item_price(item)
+            if not price:
+                continue
+            price_option = price.price_option
+            # Вычисляем шанс генерации итемов данного лота
+            count = 0
+            if random.random() <= price_option.chance:
+                if price_option.count_max > 0:
+                    count = round(price_option.count_min + random.random() * (price_option.count_max - price_option.count_min))
+            else:
+                continue
+            is_infinity = price_option.count_max == 0
+            if price.item.node_hash() == item.node_hash():
+                price.is_lot = True
+                if not is_infinity:
+                    price.count += count
+            else:
+                # Формирование нового правила
+                self.current_list.append(
+                    Price(
+                        trader=self,
+                        price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
+                        count=count,
+                        is_infinity=is_infinity,
+                        is_lot=True,
+                        price_option=price_option,
+                        item=item
+                    )
+                )
+
         self.send_prices(location=event.location, time=event.time)
 
     def send_prices(self, location, time):
@@ -221,29 +242,22 @@ class Trader(Institution):
                     current_ancestor_lvl = ancestor_lvl
         return current_price
 
-    # todo: данная функция не должна использоваться - удалить её
-    def get_price_list(self, items):
-        price = {}
-        for item in items:
-            option = self.get_item_price(item)
-            if option:
-                price[item] = option.as_client_dict()
-        return price
-
     def change_price(self, item, count):
         price = self.get_item_price(item)
         if price:
             price.change(count, item)
 
-    def add_price_option(self, base_price_object, count, item):
+    def add_price_option(self, base_price_object, count, item, new_price=False):
+        price_option = base_price_object.price_option
+        price = base_price_object.price if not new_price else (price_option.price_min + random.random() * (price_option.price_max - price_option.price_min))
         self.current_list.append(
             Price(
                 trader=self,
-                price=base_price_object.price,
+                price=price,
                 count=count,
                 is_infinity=False,
                 is_lot=True,
-                price_option=base_price_object.price_option,
+                price_option=price_option,
                 item=item
             )
         )

@@ -127,6 +127,8 @@ class AbstractDocument(Document):
 
     def handle_load_tasks(self, uri, tasks, references, reference_count, callback):
         def handle(value):
+            if value is None:
+                log.warning('Registry object is not found by link: %r', uri)
             references.pop(uri).do(value)
 
             if not references:
