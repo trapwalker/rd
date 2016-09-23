@@ -436,6 +436,12 @@ class Agent(Object):
         # todo: csll it ##quest
         self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
 
+    def has_active_barter(self):
+        for barter in self.barters:
+            if barter.is_active():
+                return True
+        return False
+
     def reload_inventory(self, time, save=True):
         if self.inventory:
             if save:
