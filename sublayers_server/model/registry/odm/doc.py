@@ -314,16 +314,23 @@ class AbstractDocument(Document):
             if field:
                 if hasattr(field, 'set_value'):
                     value = field.set_value(value)
-            else:
+                self._values[key] = value
+            elif key not in self.__not_a_fields__:
                 self._fields[key] = DynamicField(db_field="_%s" % key.lstrip('_'))
-            self._values[key] = value
+                log.warning(
+                    'Dynamic field %r in %s(%s)',
+                    key, self.__class__, repr(kw.get('uri')) or repr(kw.get('uid')) or '',
+                )
+                self._values[key] = value
+            else:
+                setattr(self, key, value)
 
     def __setattr__(self, name, value):
-        if name in self.__not_a_fields__:
-            object.__setattr__(self, name, value)
-        elif name in self._fields:
+        if name in self._fields:
             field = self._fields[name]
             self._values[name] = field.set_value(value) if hasattr(field, 'set_value') else value
+        elif name in self.__not_a_fields__ or hasattr(self, name):  # todo: CHECKIT!
+            object.__setattr__(self, name, value)
         else:
             super(AbstractDocument, self).__setattr__(name, value)
 

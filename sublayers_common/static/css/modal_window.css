@@ -151,6 +151,27 @@
 #welcomePageCloseButton:hover {
     opacity: 0.95;
 }
+
+
+
+.dialogBtnOK {
+    position: relative;
+    float: left;
+    margin-left: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}
+
+.dialogBtnCancel {
+    position: relative;
+    float: right;
+    margin-right: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}
+
 /* конец css стили для окна приветствия*/
 
 
@@ -410,3 +431,116 @@
     height: 26px;
     line-height: 26px;
 }
+
+
+/* Окно разделения итемов */
+#modalItemDivisionPage {
+    width: 340px;
+    height: 205px;
+    margin-left: -170px;
+}
+
+#modalItemDivisionPage .modal-window-wrap {
+    padding: 0;
+    border: 0;
+}
+
+.division-item-info {
+    /*Тут должен быть тот самый градиент*/
+    background-color: rgba(139, 0, 0, 0.49);
+
+}
+
+.division-item-info-wrap {
+    /*Тут должен быть тот самый градиент*/
+    position: relative;
+    width: 100%;
+    height: 80px;
+    border: 1px solid #0E4b00;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    background: linear-gradient( 90deg, transparent, #0e4b00 50%, transparent);
+}
+
+.division-item-info-caption {
+    position: absolute;
+    width: calc(50% - 65px);
+    height: 100%;
+    padding: 5px 0 0 5px;
+    text-align: center;
+    font-size: 12pt;
+}
+
+.division-item-info-image {
+    position: relative;
+    width: 130px;
+    height: 70px;
+    margin: 2px auto 0 auto;
+    background: transparent url(/static/content/items/usable/tanks/tank_empty/tank_20l/mid.png) no-repeat center;
+}
+
+.division-item-info-input-wrap {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    width: 90px;
+    height: 25px;
+    border: 1px solid #31c811;
+}
+
+.division-item-info-input-wrap > input {
+    text-align: center;
+    line-height: 1.4;
+    border: 0px solid #000000;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    font: 11pt Nouveau_IBM;
+    color: #2ffa00;
+}
+
+.division-item-progress-wrap {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00), linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+        text-align: center;
+    line-height: 40px;
+    color: #2ffa00;
+}
+
+.division-item-progress {
+    position: absolute;
+    width: 45%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: transparent;
+    background-image: linear-gradient(45deg, #249909 25%, transparent 25%, transparent 74%, #249909 75%, #249909), linear-gradient(45deg, #249909 25%, transparent 25%, transparent 74%, #249909 75%, #249909);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+
+.division-item-progress-btn {
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+    box-sizing: border-box;
+    font: 24pt Arial;
+    line-height: 42px;
+    text-align: center;
+    color: #030f00;
+}
+
+.division-item-progress-btn:hover {color: #2ffa00;}
+
+#divisionItemBtnMinus {left: 0;}
+#divisionItemBtnPlus {right: 0;}
+
+
