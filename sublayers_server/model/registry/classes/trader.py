@@ -64,16 +64,10 @@ class Price(object):
         self.price_option = price_option
 
     def is_match(self, item):
-        # todo: расширить функцию для возможности работать с ветками
-        # if not item:
-        #     return
-        # if self.item.node_hash() == item.node_hash():
-        #     return True
-        # if item.is_ancestor(self.item):
-        #     return True
-        # return False
-        #return item and (self.item.node_hash() == item.node_hash() or item.is_ancestor(self.item))
         return item and item.is_ancestor_by_lvl(self.item) >= 0
+
+    def __str__(self):
+        return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
 
     def get_price(self, item, agent):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         # todo: добавить влияние навыка торговинга
