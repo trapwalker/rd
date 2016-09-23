@@ -61,17 +61,15 @@ class QuestState(Root):
         pass
 
     def on_state_enter(self, quest, old_state):
-        for agent in quest.agent:
-            self.subscribe(agent)
+        self.subscribe(quest.agent)  # todo: fixit
 
         if self.enter_state_message_template:
-            self.quest.log_fmt(template=self.enter_state_message_template, time=self.start_time)  # todo: send targets
+            quest.log_fmt(template=self.enter_state_message_template, time=self.start_time)  # todo: send targets
         elif self.enter_state_message:
-            self.quest.log(text=self.enter_state_message, time=self.start_time)  # todo: send targets, position
+            quest.log(text=self.enter_state_message, time=self.start_time)  # todo: send targets, position
 
-    def on_state_exit(self, next_state):
-        for agent in self.quest.agents:
-            self.unsubscribe(agent)
+    def on_state_exit(self, quest, next_state):
+        self.unsubscribe(quest.agent)
         # todo: may be need to send state_exit_message?
 
 
@@ -97,41 +95,6 @@ class QuestState(Root):
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
-
-class LogRecord(Subdoc):
-    quest_uid   = StringField  (tags="client", doc=u"UID of quest")
-    time        = DateTimeField(tags="client", doc=u"Время создания записи")
-    text        = StringField  (tags="client", doc=u"Текст записи")
-    position    = PositionField(tags="client", doc=u"Привязанная к записи позиция на карте")
-    # target  # todo: target of log record
-
-
-class QuestUpdateMessage(Message):
-    def __init__(self, quest, **kw):
-        super(QuestUpdateMessage, self).__init__(**kw)
-        self.quest = quest  # todo: weakref #refactor
-
-    def as_dict(self):
-        d = super(QuestUpdateMessage, self).as_dict()
-        d.update(
-            quest=self.quest.as_client_dict(),
-        )
-        return d
-
-
-class QuestLogMessage(Message):
-    def __init__(self, event_record, **kw):
-        super(QuestLogMessage, self).__init__(**kw)
-        self.event_record = event_record  # todo: weakref #refactor
-
-    def as_dict(self):
-        d = super(QuestLogMessage, self).as_dict()
-        d.update(
-            quest_event=self.event_record.as_dict(),
-        )
-        return d
-
-
 class Quest(Root):
     first_state = StringField(caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
     current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
@@ -143,18 +106,21 @@ class Quest(Root):
     typename = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
     level = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
+    starttime = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
     deadline = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
     hirer = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
     town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
     agent = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
 
+    def get_states_dict(self):
+        return {state.name: state for state in self.states}  # todo: optimize
+
     @property
     def state(self):
-        if self.current_state:  # todo: optimize
-            states_dict = {state.name: state for state in self.states}
+        if self.current_state:
             try:
-                return states_dict[self.current_state]
+                return self.get_states_dict()[self.current_state]
             except KeyError:
                 raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
 
@@ -231,63 +197,30 @@ class Quest(Root):
 
         self.set_state(self.first_state, time=time)
 
-    @property
-    def state(self):
-        return self._state
-
     def set_state(self, value, time):
         assert value
         assert not self.abstract
 
-        if isinstance(value, State):
+        if isinstance(value, QuestState):
             new_state = value
+        elif isinstance(value, str):
+            new_state = self.get_states_dict()[value]
         else:
-            if isinstance(value, str):
-                new_state_cls = getattr(self, value)
-                new_state_name = value
-            elif isinstance(value, type):
-                new_state_cls = value
-                new_state_name = new_state_cls.__name__
-            else:
-                raise TypeError('Try to set state by {!r}'.format(value))
+            raise TypeError('Try to set state by {!r}'.format(value))
 
-            new_state = new_state_cls(quest=self, name=new_state_name, time=time)
-
-        old_state = self._state
+        old_state = self.state
 
         if old_state is not None:
-            old_state.on_state_exit(next_state=new_state)
+            old_state.on_state_exit(quest=self, next_state=new_state)
 
         self._state = new_state
-        new_state.on_state_enter(old_state=old_state)
+        new_state.on_state_enter(quest=self, old_state=old_state)
 
     def __getstate__(self):
         d = super(Quest, self).__getstate__()
         d.update(state=self.state.as_dict())
         return d
 
-    def __setstate__(self, state):
-        st = state.pop('state', None)
-        if st:
-            self.set_state(getattr(self, st['name'])(quest=self, **st))
-        super(Quest, self).__setstate__(state)
-
-    class Begin(State):
-        u"""Стартовое состояние квеста"""
-        caption = u'Начало'
-
-    class Win(StandartWin):
-        u"""Состояние успешного прохождения квеста"""
-        caption = u'Успех'
-
-    class Fail(StandartFail):
-        u"""Состояния провала квеста"""
-        caption = u'Провал'
-
-
-class UserQuest(Quest):
-    class Begin(Quest.Begin):
-        pass
 
 
 class QNKills(Quest):
@@ -332,3 +265,37 @@ class QMortalCurse(Quest):
                 self.tramps.add(contragent.user.name)
                 if len(self.tramps) >= self.magic_count:
                     self.quest.set_state(self.quest.Win, time=time)
+
+
+class LogRecord(Subdoc):
+    quest_uid   = StringField  (tags="client", doc=u"UID of quest")
+    time        = DateTimeField(tags="client", doc=u"Время создания записи")
+    text        = StringField  (tags="client", doc=u"Текст записи")
+    position    = PositionField(tags="client", doc=u"Привязанная к записи позиция на карте")
+    # target  # todo: target of log record
+
+
+class QuestUpdateMessage(Message):
+    def __init__(self, quest, **kw):
+        super(QuestUpdateMessage, self).__init__(**kw)
+        self.quest = quest  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestUpdateMessage, self).as_dict()
+        d.update(
+            quest=self.quest.as_client_dict(),
+        )
+        return d
+
+
+class QuestLogMessage(Message):
+    def __init__(self, event_record, **kw):
+        super(QuestLogMessage, self).__init__(**kw)
+        self.event_record = event_record  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestLogMessage, self).as_dict()
+        d.update(
+            quest_event=self.event_record.as_dict(),
+        )
+        return d
