@@ -19,6 +19,7 @@ import os
 
 
 class Zone(Root):
+    __not_a_fields__ = ['is_active']
     effects = ListField(
         caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне',
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.effects.Effect'),
@@ -83,6 +84,7 @@ class FileZone(Zone):
 
 
 class TilesetZone(FileZone):
+    __not_a_fields__ = ['ts']
 
     def __init__(self, **kw):
         super(TilesetZone, self).__init__(**kw)
@@ -110,6 +112,7 @@ class TilesetZone(FileZone):
 
 
 class RasterZone(FileZone):
+    __not_a_fields__ = ['_picker']
     pixel_depth = IntField(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
     extension = StringField(default='.jpg', caption=u'Расширение тайлов')
     channel = IntField(
