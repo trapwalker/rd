@@ -400,7 +400,7 @@ class TransactionParkingSelect(TransactionEvent):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventorey(time=time)
+            self.agent.reload_inventory(time=time)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
