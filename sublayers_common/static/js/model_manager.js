@@ -851,13 +851,13 @@ var ClientManager = (function () {
     // Бартер
 
     ClientManager.prototype.AddInviteBarterMessage = function (event) {
-        console.log('ClientManager.prototype.AddInviteBarterMessage', event);
+        //console.log('ClientManager.prototype.AddInviteBarterMessage', event);
         if (contextPanel)
             contextPanel.activate_barter_manager.add_barter(event.barter_id, event.initiator);
     };
 
     ClientManager.prototype.DelInviteBarterMessage = function (event) {
-        console.log('ClientManager.prototype.DelInviteBarterMessage', event);
+        //console.log('ClientManager.prototype.DelInviteBarterMessage', event);
         if (contextPanel)
             contextPanel.activate_barter_manager.del_barter(event.barter_id);
     };

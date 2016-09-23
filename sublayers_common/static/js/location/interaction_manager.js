@@ -129,7 +129,7 @@ var InteractionManager = (function (_super) {
                 break;
             case '3':
                 this.clear();
-                clientManager.sendCancelBarter(null, this.player_nick);
+                clientManager.sendCancelBarter(this.barter_id, this.player_nick);
                 locationManager.location_chat.activate();
                 break;
             default:

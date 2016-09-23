@@ -213,7 +213,7 @@ class Barter(object):
                 return False
             return car1.position(time=time).distance(target=car2.position(time=time)) <= cls.barter_distance
         else:
-            return True
+            return (agent1.inventory is not None) and (agent2.inventory is not None)
 
     @classmethod
     def get_barter(cls, agent, barter_id=None, recipient_login=None):
@@ -221,16 +221,18 @@ class Barter(object):
             for barter in agent.barters:
                 if barter.id == barter_id:
                     return barter
-        elif recipient_login is not None:
+        if recipient_login is not None:
             for barter in agent.barters:
                 if barter.recipient.user.name == recipient_login:
                     return barter
-
         return None
 
     def _change_table(self, inventory, time):
         if (inventory is self.initiator_table) or (inventory is self.recipient_table):
             self.unlock(time=time)
+
+    def is_active(self):
+        return self.state in ['active', 'lock']
 
     @event_deco
     def activate(self, event, recipient):
