@@ -102,8 +102,21 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.playerTableCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemDropable(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
-                                      self.playerInvDiv , self.playerTableCls, self.playerInvCls);
+                var item = self.playerTable[item_pos];
+                if (!item) return;
+                if (event.shiftKey)
+                    modalWindow.modalItemDivisionShow({
+                        item: item,
+                        max_count: item.count,
+                        callback_ok:
+                            function(count) {
+                                self.changeItemDropable(item_pos, count, self.playerTable, self.playerInv, self.playerTableDiv,
+                                                        self.playerInvDiv , self.playerTableCls, self.playerInvCls);
+                            }
+                    });
+                else
+                    self.changeItemDropable(item_pos, item.count, self.playerTable, self.playerInv, self.playerTableDiv,
+                                            self.playerInvDiv , self.playerTableCls, self.playerInvCls);
             }
         });
 
@@ -112,8 +125,21 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.playerInvCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemDropable(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
-                                      self.playerTableDiv, self.playerInvCls, self.playerTableCls);
+                var item = self.playerInv[item_pos];
+                if (!item) return;
+                if (event.shiftKey)
+                    modalWindow.modalItemDivisionShow({
+                        item: item,
+                        max_count: item.count,
+                        callback_ok:
+                            function(count) {
+                                self.changeItemDropable(item_pos, count, self.playerInv, self.playerTable, self.playerInvDiv,
+                                                        self.playerTableDiv, self.playerInvCls, self.playerTableCls);
+                            }
+                    });
+                else
+                    self.changeItemDropable(item_pos, item.count, self.playerInv, self.playerTable, self.playerInvDiv,
+                                        self.playerTableDiv, self.playerInvCls, self.playerTableCls);
             }
         });
 
@@ -166,7 +192,7 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderTableCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemDropable(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                self.changeItemDropable(item_pos, 1, self.traderTable, self.traderInv, self.traderTableDiv,
                                       self.traderInvDiv , self.traderTableCls, self.traderInvCls);
             }
         });
@@ -176,7 +202,7 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderInvCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemDropable(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                self.changeItemDropable(item_pos, 1, self.traderInv, self.traderTable, self.traderInvDiv,
                                       self.traderTableDiv, self.traderInvCls, self.traderTableCls);
             }
         });
@@ -223,16 +249,16 @@ var LocationTraderNPC = (function (_super) {
             itemDiv.click({}, function(event) {
                 var item_pos = $(this).data('pos');
                 if (dropCls == self.playerInvCls)
-                    self.changeItemDropable(item_pos, self.playerInv, self.playerTable, self.playerInvDiv,
+                    self.changeItemDropable(item_pos, 1, self.playerInv, self.playerTable, self.playerInvDiv,
                         self.playerTableDiv, self.playerInvCls, self.playerTableCls);
                 if (dropCls == self.playerTableCls)
-                    self.changeItemDropable(item_pos, self.playerTable, self.playerInv, self.playerTableDiv,
+                    self.changeItemDropable(item_pos, 1, self.playerTable, self.playerInv, self.playerTableDiv,
                         self.playerInvDiv, self.playerTableCls, self.playerInvCls);
                 if (dropCls == self.traderInvCls)
-                    self.changeItemDropable(item_pos, self.traderInv, self.traderTable, self.traderInvDiv,
+                    self.changeItemDropable(item_pos, 1, self.traderInv, self.traderTable, self.traderInvDiv,
                         self.traderTableDiv, self.traderInvCls, self.traderTableCls);
                 if (dropCls == self.traderTableCls)
-                    self.changeItemDropable(item_pos, self.traderTable, self.traderInv, self.traderTableDiv,
+                    self.changeItemDropable(item_pos, 1, self.traderTable, self.traderInv, self.traderTableDiv,
                         self.traderInvDiv, self.traderTableCls, self.traderInvCls);
             });
             
@@ -281,15 +307,14 @@ var LocationTraderNPC = (function (_super) {
         this.calcPriceTables();
     };
 
-    LocationTraderNPC.prototype.changeItemDropable = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
+    LocationTraderNPC.prototype.changeItemDropable = function(pos, count, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
         var item = srcList[pos];
-        if (! item) return;
+        if (!item || ((item.count < count) && !item._trader_infinity)) return;
 
         destDiv.find('.npcInventory-itemWrap').remove();
         srcDiv.find('.npcInventory-itemWrap').remove();
 
-        // Отнять единицу товара из исходного итема
-        item.count--;
+        item.count -= count;
         if (item.count == 0)
             srcList.splice(pos, 1);
 
@@ -300,13 +325,12 @@ var LocationTraderNPC = (function (_super) {
 
         if (item_index == -1) {
             item = cloneObject(item);
-            item.count = 1;
+            item.count = count;
             item._trader_infinity = false;
             destList.push(item);
         }
         else
-            destList[item_index].count++;
-
+            destList[item_index].count += count;
 
         this._reDrawItemList(destDiv, destList, destCls);
         this._reDrawItemList(srcDiv, srcList, srcCls);

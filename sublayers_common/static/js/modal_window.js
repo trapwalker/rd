@@ -15,6 +15,7 @@ var ModalWindow = (function () {
         this.modalRestart = $('#' + divs.modalRestart);
         this.modalDialogInfo = $('#modalInfoPage');
         this.modalAnswerInfo = $('#modalAnswerPage');
+        this.modalItemDivision = $('#modalItemDivisionPage');
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -25,6 +26,7 @@ var ModalWindow = (function () {
         this.modalRestart.addClass('modal-window-hide');
         this.modalDialogInfo.addClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-hide');
+        this.modalItemDivision.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
@@ -33,6 +35,7 @@ var ModalWindow = (function () {
         this.modalRestartLoad();
         this.modalDialogInfoLoad();
         this.modalDialogAnswerLoad();
+        this.modalItemDivisionLoad();
     }
 
     ModalWindow.prototype._modalBackShow = function () {
@@ -78,8 +81,6 @@ var ModalWindow = (function () {
         });
 
     };
-
-
 
 
     ModalWindow.prototype.modalOptionsShow = function () {
@@ -173,7 +174,6 @@ var ModalWindow = (function () {
     };
 
 
-
     ModalWindow.prototype.modalDeathShow = function () {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
         this._modalBackShow();
@@ -244,7 +244,6 @@ var ModalWindow = (function () {
     };
 
 
-
     ModalWindow.prototype.modalDialogInfoShow = function (options) {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
         var self = this;
@@ -292,7 +291,6 @@ var ModalWindow = (function () {
     };
 
 
-
     ModalWindow.prototype.modalDialogAnswerShow = function (options) {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
         var self = this;
@@ -329,8 +327,6 @@ var ModalWindow = (function () {
             if (typeof(cb_cancel) === 'function')
                 cb_cancel(event);
         });
-
-
     };
 
     ModalWindow.prototype.modalDialogAnswerHide = function(){
@@ -347,6 +343,48 @@ var ModalWindow = (function () {
         this.modalAnswerInfo.load('/static/modal_window/dialogAnswerPage.html', function(){});
     };
 
+
+    ModalWindow.prototype.modalItemDivisionShow = function (options) {
+        var self = this;
+        this._modalBackShow();
+        options = options || {};
+
+        this.modalItemDivision.removeClass('modal-window-hide');
+        this.modalItemDivision.addClass('modal-window-show');
+
+        var caption = this.modalAnswerInfo.find('.windowDragCloseHeader-caption span').first();
+        if (options.item) caption.text(options.item.title);
+        else caption.text('');
+
+        var btn_ok = this.modalItemDivision.find('#divisionItemBtnOK');
+        btn_ok.off('click');
+        btn_ok.on('click', function(event) {
+            self.modalDialogAnswerHide();
+            var cb_ok = options.callback_ok;
+            if (typeof(cb_ok) === 'function')
+                cb_ok(event);
+        });
+
+        var btn_cancel = this.modalItemDivision.find('#divisionItemBtnCancel');
+        btn_cancel.off('click');
+        btn_cancel.on('click', function(event) {
+            self.modalItemDivisionHide();
+            var cb_cancel = options.callback_cancel;
+            if (typeof(cb_cancel) === 'function')
+                cb_cancel(event);
+        });
+    };
+
+    ModalWindow.prototype.modalItemDivisionHide = function(){
+        this._modalBackHide();
+        this.modalItemDivision.removeClass('modal-window-show');
+        this.modalItemDivision.addClass('modal-window-hide');
+
+    };
+
+    ModalWindow.prototype.modalItemDivisionLoad = function () {
+        this.modalItemDivision.load('/static/modal_window/itemDivision.html', function(){});
+    };
 
     return ModalWindow;
 })();
