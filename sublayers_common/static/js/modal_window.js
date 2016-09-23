@@ -345,55 +345,44 @@ var ModalWindow = (function () {
 
 
     ModalWindow.prototype.modalItemDivisionShow = function (options) {
-        // включить фон
         var self = this;
         this._modalBackShow();
         options = options || {};
 
-        // включить модальное окно modalOptions
         this.modalItemDivision.removeClass('modal-window-hide');
         this.modalItemDivision.addClass('modal-window-show');
 
-        // Повесить новый текст
-        //var caption = this.modalAnswerInfo.find('.windowDragCloseHeader-caption span').first();
-        //var header = this.modalAnswerInfo.find('.modal-window-wrap .modal-header').first();
-        //var body_text = this.modalAnswerInfo.find('.modal-window-wrap span').first();
+        var caption = this.modalAnswerInfo.find('.windowDragCloseHeader-caption span').first();
+        if (options.item) caption.text(options.item.title);
+        else caption.text('');
 
-        //if (options.caption) caption.text(options.caption);
-        //if (options.header) header.text(options.header); else header.text('');
-        //if (options.body_text) body_text.text(options.body_text); else body_text.text('');
-        //
-        //// Повесить новый эвент
-        //var btn_ok = this.modalAnswerInfo.find('#dialogAnswerPageBtnOK');
-        //var btn_cancel = this.modalAnswerInfo.find('#dialogAnswerPageBtnCancel');
-        //btn_ok.off('click');
-        //btn_cancel.off('click');
-        //btn_ok.on('click', function(event) {
-        //    self.modalDialogAnswerHide();
-        //    var cb_ok = options.callback_ok;
-        //    if (typeof(cb_ok) === 'function')
-        //        cb_ok(event);
-        //});
-        //
-        //btn_cancel.on('click', function(event) {
-        //    self.modalDialogAnswerHide();
-        //    var cb_cancel = options.callback_cancel;
-        //    if (typeof(cb_cancel) === 'function')
-        //        cb_cancel(event);
-        //});
+        var btn_ok = this.modalItemDivision.find('#divisionItemBtnOK');
+        btn_ok.off('click');
+        btn_ok.on('click', function(event) {
+            self.modalDialogAnswerHide();
+            var cb_ok = options.callback_ok;
+            if (typeof(cb_ok) === 'function')
+                cb_ok(event);
+        });
+
+        var btn_cancel = this.modalItemDivision.find('#divisionItemBtnCancel');
+        btn_cancel.off('click');
+        btn_cancel.on('click', function(event) {
+            self.modalItemDivisionHide();
+            var cb_cancel = options.callback_cancel;
+            if (typeof(cb_cancel) === 'function')
+                cb_cancel(event);
+        });
     };
 
     ModalWindow.prototype.modalItemDivisionHide = function(){
-        //// выключить фон
-        //this._modalBackHide();
-        //// выключить модальное окно Death
-        //this.modalAnswerInfo.removeClass('modal-window-show');
-        //this.modalAnswerInfo.addClass('modal-window-hide');
+        this._modalBackHide();
+        this.modalItemDivision.removeClass('modal-window-show');
+        this.modalItemDivision.addClass('modal-window-hide');
 
     };
 
     ModalWindow.prototype.modalItemDivisionLoad = function () {
-        // Загрузить информацию из документа в див
         this.modalItemDivision.load('/static/modal_window/itemDivision.html', function(){});
     };
 
