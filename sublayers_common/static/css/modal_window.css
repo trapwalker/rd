@@ -435,9 +435,14 @@
 
 /* Окно разделения итемов */
 #modalItemDivisionPage {
-    width: 360px;
-    height: 260px;
-    margin-left: -180px;
+    width: 340px;
+    height: 205px;
+    margin-left: -170px;
+}
+
+#modalItemDivisionPage .modal-window-wrap {
+    padding: 0;
+    border: 0;
 }
 
 .division-item-info {
@@ -448,10 +453,47 @@
 
 .division-item-info-wrap {
     /*Тут должен быть тот самый градиент*/
-    background-color: rgba(139, 0, 0, 0.49);
     position: relative;
     width: 100%;
     height: 80px;
+    border: 1px solid #0E4b00;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    background: linear-gradient( 90deg, transparent, #0e4b00 50%, transparent);
+}
+
+.division-item-info-caption {
+    position: absolute;
+    width: calc(50% - 65px);
+    height: 100%;
+}
+
+.division-item-info-image {
+    position: relative;
+    width: 130px;
+    height: 70px;
+    margin: 2px auto 0 auto;
+    background: transparent url(/static/content/items/usable/tanks/tank_empty/tank_20l/mid.png) no-repeat center;
+}
+
+.division-item-info-input-wrap {
+    position: absolute;
+    top: 45px;
+    right: 10px;
+    width: 100px;
+    height: 25px;
+    border: 1px solid #31c811;
+}
+
+.division-item-info-input-wrap > input {
+    text-align: center;
+    line-height: 1.4;
+    border: 0px solid #000000;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    font: 11pt Nouveau_IBM;
+    color: #2ffa00;
 }
 
 .division-item-progress-wrap {
