@@ -201,10 +201,20 @@ var Inventory = (function () {
                 var dragPos = ui.draggable.data('pos');
                 var dropOwnerID = $(event.target).data('owner_id');
                 var dropPos = $(event.target).data('pos');
-
+                var item = inventoryList.getInventory(dragOwnerID).getItem(dragPos);
                 // Проверим не сами ли в себя мы перемещаемся
                 if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
-                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
+                    if (event.shiftKey)
+                        modalWindow.modalItemDivisionShow({
+                            item: item.example,
+                            max_count: item._item_state.val(clock.getCurrentTime()),
+                            callback_ok:
+                                function(count) {
+                                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos, count);
+                                }
+                        });
+                    else
+                       clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos, -1);
             }
         });
 

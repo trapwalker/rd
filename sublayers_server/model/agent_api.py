@@ -614,9 +614,10 @@ class AgentAPI(API):
         HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None):
+    def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None, count=-1):
         ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
-                                 end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time()).post()
+                                 end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time(),
+                                 count=count).post()
 
     @public_method
     def get_balance_cls(self, balance_cls_name):

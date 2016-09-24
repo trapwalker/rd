@@ -192,8 +192,18 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderTableCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemDropable(item_pos, 1, self.traderTable, self.traderInv, self.traderTableDiv,
-                                      self.traderInvDiv , self.traderTableCls, self.traderInvCls);
+                var item = self.traderTable[item_pos];
+                if (!item) return;
+
+                modalWindow.modalItemDivisionShow({
+                    item: item,
+                    max_count: item.count,
+                    callback_ok:
+                        function(count) {
+                            self.changeItemDropable(item_pos, count, self.traderTable, self.traderInv, self.traderTableDiv,
+                                                    self.traderInvDiv , self.traderTableCls, self.traderInvCls);
+                        }
+                });
             }
         });
 
@@ -202,8 +212,24 @@ var LocationTraderNPC = (function (_super) {
             accept: function(target) { return target.hasClass(self.traderInvCls); },
             drop: function(event, ui) {
                 var item_pos = ui.draggable.data('pos');
-                self.changeItemDropable(item_pos, 1, self.traderInv, self.traderTable, self.traderInvDiv,
-                                      self.traderTableDiv, self.traderInvCls, self.traderTableCls);
+                var item = self.traderInv[item_pos];
+                if (!item) return;
+
+                var max_count = 0;
+                if (item._trader_infinity)
+                    max_count = Math.ceil(user.example_agent.balance / item.price.sale) * item.stack_size;
+                else
+                    max_count = item.count;
+
+                modalWindow.modalItemDivisionShow({
+                    item: item,
+                    max_count: max_count,
+                    callback_ok:
+                        function(count) {
+                            self.changeItemDropable(item_pos, count, self.traderInv, self.traderTable, self.traderInvDiv,
+                                                    self.traderTableDiv, self.traderInvCls, self.traderTableCls);
+                        }
+                });
             }
         });
 
@@ -281,30 +307,6 @@ var LocationTraderNPC = (function (_super) {
 
         this.jq_main_div.find('.trader-player-exchange-total').text(price_trader + 'NC');
         this.jq_main_div.find('.trader-trader-exchange-total').text(price_player + 'NC');
-    };
-
-    LocationTraderNPC.prototype.changeItemPlayer = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
-        destDiv.find('.npcInventory-itemWrap').remove();
-        srcDiv.find('.npcInventory-itemWrap').remove();
-
-        destList.push(srcList[pos]);
-        srcList.splice(pos, 1);
-
-        this._reDrawItemList(destDiv, destList, destCls);
-        this._reDrawItemList(srcDiv, srcList, srcCls);
-
-        this.calcPriceTables();
-    };
-
-    LocationTraderNPC.prototype.changeItemTrader = function(pos, srcList, destList, srcDiv, destDiv, srcCls, destCls) {
-        if (destDiv != srcDiv) this.traderTableDiv.find('.npcInventory-itemWrap').remove();
-
-        if (destDiv == this.traderTableDiv) destList.push(srcList[pos]);
-        if (srcDiv == this.traderTableDiv) srcList.splice(pos, 1);
-
-        this._reDrawItemList(this.traderTableDiv, this.traderTable, this.traderTableCls);
-
-        this.calcPriceTables();
     };
 
     LocationTraderNPC.prototype.changeItemDropable = function(pos, count, srcList, destList, srcDiv, destDiv, srcCls, destCls) {

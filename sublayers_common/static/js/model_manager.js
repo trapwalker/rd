@@ -1376,8 +1376,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos) {
-        //console.log('ClientManager.prototype.sendItemActionInventory');
+    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos, count) {
         var mes = {
             call: "item_action_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -1385,7 +1384,8 @@ var ClientManager = (function () {
                 start_owner_id: start_owner_id,
                 start_pos: start_pos,
                 end_owner_id: end_owner_id,
-                end_pos: end_pos
+                end_pos: end_pos,
+                count: count
             }
         };
         rpcCallList.add(mes);

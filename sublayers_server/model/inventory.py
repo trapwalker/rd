@@ -451,7 +451,7 @@ class ItemState(object):
     def div_item(self, count, time, inventory, position):
         assert not self.limbo
         assert (position is None) or ((position is not None) and (inventory is not None))
-        if (position is not None) and (inventory.getItem(position=position) is not None):
+        if (position is not None) and (inventory.get_item(position=position) is not None):
             return
         if (position is None) and (inventory is not None):
             position = inventory.get_free_position()
@@ -461,23 +461,24 @@ class ItemState(object):
         if item is not None:
             item.set_inventory(time=time, inventory=inventory, position=position)
 
-    def add_another_item(self, item, time):
+    def add_another_item(self, item, time, count):
         assert not self.limbo and not item.limbo
-        if self.example.parent != item.example.parent:
-            if self.inventory is item.inventory:
-                self.change_position(position=self.inventory.get_position(item=item), time=time)
-            else:
-                item1_inventory = self.inventory
-                item1_position = item1_inventory.get_position(item=self)
-                item2_inventory = item.inventory
-                item2_position = item2_inventory.get_position(item=item)
-                self.set_inventory(time=time, inventory=None)
-                item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
-                self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
+        if self.example.parent != item.example.parent:  # досыпание не возможно, т.к. итемы разные
+            if count >= item.val(t=time):  # если досыпается всё из источника, то итемы надо поменять местами
+                if self.inventory is item.inventory:
+                    self.change_position(position=self.inventory.get_position(item=item), time=time)
+                else:
+                    item1_inventory = self.inventory
+                    item1_position = item1_inventory.get_position(item=self)
+                    item2_inventory = item.inventory
+                    item2_position = item2_inventory.get_position(item=item)
+                    self.set_inventory(time=time, inventory=None)
+                    item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
+                    self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
             return
 
         self_val = self.val(t=time)
-        item_val = item.val(t=time)
+        item_val = min(item.val(t=time), count)
         d_value = 0.0
 
         if (self_val + item_val) <= self.max_val:
