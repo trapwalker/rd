@@ -457,11 +457,12 @@ class ItemActionInventoryEvent(Event):
             return
 
         if end_item is not None:  # досыпание
+            # todo: сделать смену стеков (когда полный на неполный и наоборот)
             self.count = start_item.val(t=self.time) if self.count < 0 else self.count
             end_item.add_another_item(item=start_item, time=self.time, count=self.count)
         else:  # деление
             if end_inventory is not None:  # положить в инвентарь
-                if self.count < 0:
+                if self.count < 0 or start_item.val(t=self.time) <= self.count:
                     start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
                 else:
                     start_item.div_item(count=self.count, time=self.time, inventory=end_inventory, position=self.end_pos)

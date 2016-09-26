@@ -43,6 +43,13 @@ class Item(Root):
     def activate(cls):
         pass
 
+    def split(self, count):
+        # count - Сколько отнять от текущего и сколько будет в новом
+        self.amount -= count
+        assert self.amount > 0, 'Item dont split. new amount on splited item = {}'.format(self.amount)
+        assert not self.uri, 'Item has URI {!r} and cannot splited'.format(self.uri)
+        return self.instantiate(amount=count)
+
     # def __str__(self):
     #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
 

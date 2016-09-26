@@ -222,6 +222,15 @@ var Inventory = (function () {
             disabled: true,
             cursorAt: {left: 70, top: 50},
             helper: 'clone',
+            //helper: function (event) {
+            //    var inventory = inventoryList.getInventory($(event.target).data('owner_id'));
+            //    if (!inventory) return;
+            //    var item = inventory.getItem($(event.target).data('pos'));
+            //    if (!item) return;
+            //    var img_link = 'http://192.168.1.104/' + item.example.inv_icon_mid;
+            //    console.log(img_link);
+            //    return $('<div width="130" height="70"><img src="' + img_link + '" style="z-index: 9999;"></div>');
+            //},
             opacity: 0.8,
             revert: true,
             revertDuration: 0,

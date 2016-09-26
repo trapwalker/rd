@@ -425,7 +425,9 @@ class ItemState(object):
         if self.val(t=time) < count:
             return None
         ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
-        return ItemState(server=self.server, time=time, example=self.example, count=count)
+        item_example = self.example.split(count=count)
+        model_item = ItemState(server=self.server, time=time, example=item_example, count=count)
+        return model_item
 
     # Интерфейс работы с итемом со стороны окна клиента
     def set_inventory(self, time, inventory, position=None):
@@ -485,6 +487,7 @@ class ItemState(object):
             d_value = item_val
         else:
             d_value = self.max_val - self_val
+
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
 
