@@ -20,7 +20,7 @@ from sublayers_server.model.events import (
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
-    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply)
+    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply, BagExchangeStartEvent)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, PrivateChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -674,6 +674,12 @@ class AgentAPI(API):
     @public_method
     def get_parking_info(self, npc_node_hash):
         messages.ParkingInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def get_parking_bag_exchange(self, car_uid, npc_node_hash):
+        print 'get_parking_bag_exchange with {}'.format(car_uid)
+        BagExchangeStartEvent
+        pass
 
     # Оружейник
 

@@ -1637,6 +1637,20 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendParkingBagExchange = function (car_uid, npc_node_hash) {
+        console.log('ClientManager.prototype.sendParkingBagExchange', car_uid, npc_node_hash);
+        var mes = {
+            call: "get_parking_bag_exchange",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_uid: car_uid,
+                npc_node_hash: npc_node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Бартер
 
     ClientManager.prototype.sendInitBarter = function (recipient_login) {

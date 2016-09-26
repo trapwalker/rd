@@ -137,7 +137,28 @@ var LocationParkingNPC = (function (_super) {
     function LocationParkingNPC(npc_rec, jq_town_div, building_name) {
         //console.log('LocationPlaceNPC', npc_rec);
         _super.call(this, npc_rec, jq_town_div, building_name);
+
+        // Создать паркинг-bag
+        this.bag_place = new LocationParkingBag(jq_town_div, this);
     }
+
+    LocationParkingNPC.prototype.update = function (data) {
+        _super.prototype.update.call(this, data);
+        var self = this;
+        for (var i = 0; i < this.cars_list.length; i++) {
+            var car_rec = this.cars_list[i];
+            var jq_car = this.jq_main_div.find('#hangar-center-info-car-' + i);
+            jq_car.append('<div class="hangar-center-info-car-bag" data-uid="' + car_rec.car.uid +
+                '">Зайти в багажник: ' + car_rec.car_parking_price + 'NC</div>');
+        }
+
+        this.jq_main_div.find('.hangar-center-info-car-bag').click(function (event) {
+            var car_uid = $(this).data('uid');
+            console.log(car_uid);
+            self.bag_place.activate();
+        });
+
+    };
 
     LocationParkingNPC.prototype.get_self_info = function () {
         clientManager.sendGetParkingInfo(this);
@@ -202,3 +223,60 @@ var LocationParkingNPC = (function (_super) {
 
     return LocationParkingNPC;
 })(LocationHangarNPC);
+
+
+
+
+var LocationParkingBag = (function (_super) {
+    __extends(LocationParkingBag, _super);
+
+    function LocationParkingBag(jq_town_div, parking_npc) {
+        //console.log('LocationPlaceNPC', npc_rec);
+        _super.call(this, jq_town_div.find('#townParkingBagExchange'), 'location_screen');
+        this.parking_npc = parking_npc;
+        this.current_car_uid = null;
+    }
+
+    LocationParkingBag.prototype.update = function (data) {
+        console.log('LocationParkingBag.prototype.update', data);
+        _super.prototype.update.call(this, data);
+    };
+
+    LocationParkingBag.prototype.clickBtn = function (btnIndex) {
+        console.log('LocationParkingBag.prototype.clickBtn', btnIndex);
+        switch (btnIndex) {
+            case '3':
+                this.clear();
+                this.parking_npc.activate();
+                break;
+            default:
+                _super.prototype.clickBtn.call(this, btnIndex);
+        }
+    };
+
+    LocationParkingBag.prototype.activate = function (car_uid) {
+        console.log('LocationParkingBag.prototype.activate');
+        _super.prototype.activate.call(this);
+        this.current_car_uid = car_uid;
+        model_manager.sendParkingBagExchange(car_uid, this.parking_npc.npc_rec.node_hash);
+    };
+
+    //LocationParkingBag.prototype.get_self_info = function () {
+    //    clientManager.sendParkingBagExchange();
+    //};
+
+
+    LocationParkingBag.prototype.set_buttons = function () {
+        if (!locationManager.isActivePlace(this)) return;
+        locationManager.setBtnState(3, '</br>Назад', true);
+        locationManager.setBtnState(4, '</br>Выход', true);
+    };
+
+    LocationParkingBag.prototype.clear = function () {
+        console.log('LocationParkingBag.prototype.clear');
+        // Нельзя вызывать супер, так как очистится jq_main_div, а нам этого не нужно сейчас
+        this.current_car_uid = null;
+    };
+
+    return LocationParkingBag;
+})(LocationPlace);

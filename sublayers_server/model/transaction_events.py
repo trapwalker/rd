@@ -19,6 +19,8 @@ from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
 
+from sublayers_server.model.registry.classes.poi import Parking
+
 
 # todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
 
@@ -1085,3 +1087,38 @@ class TransactionSetRPGState(TransactionEvent):
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+
+
+class BagExchangeStartEvent(TransactionEvent):
+    def __init__(self, agent, car_uid, npc_node_hash, **kw):
+        super(BagExchangeStartEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.car_uid = UUID(car_uid)
+        self.npc_node_hash = npc_node_hash
+
+    def on_perform(self):
+        super(BagExchangeStartEvent, self).on_perform()
+        agent = self.agent
+        if not agent.current_location:
+            return
+        # todo: по идее можно такой обмен во время бартера. ничего страшного не будет
+        if agent.has_active_barter():
+            return
+
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
+        if (npc is None) or (npc.type != 'parking'):
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return
+
+        car_list = [car for car in agent.example.get_car_list_by_npc(npc)]
+
+        target_car_ex = None
+        for car in car_list:
+            if car.uid == self.car_uid:
+                target_car_ex = car
+        if not target_car_ex:
+            return
+
+        # todo: создать второй инвентарь, сообщить о нём агенту.
+        # Списать деньги за стоянку, обновить время установки машинки на стоянку
+        # Отправить месадж для подготовки вёрстки (создание дива) инвентаря

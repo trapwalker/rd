@@ -115,7 +115,7 @@ class Parking(Institution):
     def get_car_price(self, car):
         # todo: сделать иначе работу с датой
         # Установка цены и может ли пользователь забрать машинка
-        delta = car.date_setup_parking - time.mktime(datetime.now().timetuple())
+        delta = time.mktime(datetime.now().timetuple()) - car.date_setup_parking
         if delta < 0:
             log.warning('Car %r was paring %fs (<0, set to zero)!', car, delta)
             delta = 0
