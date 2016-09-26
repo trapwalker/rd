@@ -235,7 +235,7 @@ var Inventory = (function () {
             revert: true,
             revertDuration: 0,
             zIndex: 100,
-            appendTo: '#map'
+            appendTo: '#bodydiv'
         });
     };
 
