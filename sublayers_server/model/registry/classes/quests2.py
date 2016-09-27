@@ -13,12 +13,48 @@ from sublayers_server.model.registry.odm.fields import (
 )
 
 
+class EventHandler(Subdoc):
+    event = StringField(doc=u"Сигнатура события: onDie, onEnterLocation, onQuest")
+    id = StringField(doc=u"Идентификатор события. Локальное имя события внутри квеста.")
+
+
+
+
 class QuestState(Root):
     name = StringField()
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
     exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
     status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
     result = StringField(doc=u"Результат квеста данном текущем состоянии (None/win/fail)")
+
+    on_event = StringField(
+        caption=u"Выражение, вычисляемое по факту любого события",
+        doc=u"""
+            В контекст получает:
+                - объекты: [agent, quest, state, event]
+                - функции-условия: ???
+                - функции-действия:
+                    - go("new_state_name") - переход в состояние с именем new_state_name
+                    - say(state.exit_state_message) - произнести от имени NPC фразу по указанному шаблону
+                    - add_event(id="SomeTimerName", delay=60*60*3) - запустить именованный таймер на 3 часа
+                    - add_event(id="SomeActionName", caption=u"Сделай это!", action='reg://.../trader3') - создать
+                        для игрока кнопку действия с заданной надписью у указанного NPC
+                    - quest.log("some message about {quest.name}") - добавить запись в журнал квеста
+
+
+            Пример:
+                event.name is 'onDie'
+                and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
+                and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
+                and say(u"Boom!")
+                and bang(position=agent.car.position, power=1000)
+                and go("win")
+
+                or event.id is 'quest_fail_timer'
+                and say("I'm so sorry")
+                and go("fail")
+        """,
+    )
 
     def on_see(self, agent, time, subj, obj):
         pass
@@ -162,11 +198,11 @@ class Quest(Root):
         )
         return d
 
-    def log_fmt(self, template, position=None, target=None, context=None):
+    def log_fmt(self, time, template, position=None, target=None, context=None):
         context = context.copy() if context else {}
-        context.update(position=position, target=target, quest=self)
+        context.update(position=position, target=target, quest=self, time=time)
         text = self._template_render(template, context)
-        self.log(text, position=position, target=target)
+        self.log(time, text, position=position, target=target)
 
     def log(self, time, text, position=None, target=None):
         log_record = LogRecord(quest=self, time=time, text=text, position=position, target=target)
@@ -206,7 +242,7 @@ class Quest(Root):
         elif isinstance(value, str):
             new_state = self.get_states_dict()[value]
         else:
-            raise TypeError('Try to set state by {!r}'.format(value))
+            raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(new_state=value, self=self))
 
         old_state = self.state
 
@@ -215,56 +251,6 @@ class Quest(Root):
 
         self._state = new_state
         new_state.on_state_enter(quest=self, old_state=old_state)
-
-    def __getstate__(self):
-        d = super(Quest, self).__getstate__()
-        d.update(state=self.state.as_dict())
-        return d
-
-
-
-class QNKills(Quest):
-
-    class Begin(State):
-        def on_state_init(self):
-            State.on_state_init(self)
-            self.kills_count = 0
-
-        def on_kill(self, agent, time, obj):
-            super(QNKills.Begin, self).on_kill(agent, time, obj)
-            self.kills_count += 1
-            if self.kills_count >= 5:
-                self.quest.set_state(self.quest.Win, time=time)
-
-
-class QMortalCurse(Quest):
-    u"""Смертное прокльятье.
-    Каждое 13 убийство влечет смерть самого игрока.
-    Избавиться можно только пожертвовав 13 разным проходимцам какие-нибудь вещи бесплатно.
-    """
-
-    class Begin(State):
-        caption = u'Начало'
-
-        def on_state_init(self):
-            State.on_state_init(self)
-            self.kills_count = 0
-            self.tramps = set()
-            self.magic_count = 13
-
-        def on_kill(self, agent, time, obj):
-            State.on_kill(self, agent, time, obj)
-            if agent is self.quest.agent:
-                self.kills_count += 1
-                if (self.kills_count % self.magic_count) == 0:
-                    self.agent.die()
-
-        def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
-            State.on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init)
-            if agent in self.quest.agents and contragent not in self.quest.agents and sale and not buy and cost == 0:
-                self.tramps.add(contragent.user.name)
-                if len(self.tramps) >= self.magic_count:
-                    self.quest.set_state(self.quest.Win, time=time)
 
 
 class LogRecord(Subdoc):
