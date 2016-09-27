@@ -154,8 +154,7 @@ var LocationParkingNPC = (function (_super) {
 
         this.jq_main_div.find('.hangar-center-info-car-bag').click(function (event) {
             var car_uid = $(this).data('uid');
-            console.log(car_uid);
-            self.bag_place.activate();
+            self.bag_place.activate(car_uid);
         });
 
     };
@@ -235,15 +234,46 @@ var LocationParkingBag = (function (_super) {
         _super.call(this, jq_town_div.find('#townParkingBagExchange'), 'location_screen');
         this.parking_npc = parking_npc;
         this.current_car_uid = null;
+
+        this.jq_inv_div = this.jq_main_div.find('#townParkingBagExchangeInventory');
+        this.jq_bag_div = this.jq_main_div.find('#townParkingBagExchangeBag');
+
     }
 
     LocationParkingBag.prototype.update = function (data) {
         console.log('LocationParkingBag.prototype.update', data);
         _super.prototype.update.call(this, data);
+
+        // Отобразить свой инвентарь
+        this.jq_inv_div.empty();
+        var car_inventory = inventoryList.getInventory(user.ID);
+        if (car_inventory) {
+            this.jq_inv_div.append('<div class="hangar-nag-inventory-block inventory-' + user.ID + '"></div>');
+            car_inventory.showInventory(this.jq_inv_div.find('.hangar-nag-inventory-block'));
+        }
+
+        // Отобразить инвентарь
+        this.jq_bag_div.empty();
+        if (data.parking_bag_id) {
+            this.jq_bag_div.append('<div class="hangar-nag-inventory-block inventory-' + data.parking_bag_id + '"></div>');
+            inventoryList.showInventory(data.parking_bag_id, this.jq_bag_div.find('.hangar-nag-inventory-block'), false);
+        }
+
+        this.jq_main_div.find('.mainCarInfoWindow-body-trunk-body-right-item')
+            .mouseenter(function (event) {
+                //console.log('LocationParkingBag.inventory_slot_event_mouseenter');
+                var pos = $(this).data('pos');
+                var owner_id = $(this).data('owner_id');
+                var inventory = inventoryList.getInventory(owner_id);
+                if (! inventory) {console.log('Inventory not found: ', owner_id); return;}
+                if (inventory.items.hasOwnProperty(pos))
+                    locationManager.panel_right.show({text: inventory.items[pos].example.description }, 'description');
+                })
+            .mouseleave(function(event) { locationManager.panel_right.show({text: ''}, 'description');});
     };
 
     LocationParkingBag.prototype.clickBtn = function (btnIndex) {
-        console.log('LocationParkingBag.prototype.clickBtn', btnIndex);
+        //console.log('LocationParkingBag.prototype.clickBtn', btnIndex);
         switch (btnIndex) {
             case '3':
                 this.clear();
@@ -255,10 +285,11 @@ var LocationParkingBag = (function (_super) {
     };
 
     LocationParkingBag.prototype.activate = function (car_uid) {
-        console.log('LocationParkingBag.prototype.activate');
+        console.log('LocationParkingBag.prototype.activate', car_uid);
         _super.prototype.activate.call(this);
+        if (car_uid === undefined) return; // Это просто переключение из другого скрина, не нужно ничего делать!
         this.current_car_uid = car_uid;
-        model_manager.sendParkingBagExchange(car_uid, this.parking_npc.npc_rec.node_hash);
+        clientManager.sendParkingBagExchange(car_uid, this.parking_npc.npc_rec.node_hash);
     };
 
     //LocationParkingBag.prototype.get_self_info = function () {
@@ -273,7 +304,7 @@ var LocationParkingBag = (function (_super) {
     };
 
     LocationParkingBag.prototype.clear = function () {
-        console.log('LocationParkingBag.prototype.clear');
+        //console.log('LocationParkingBag.prototype.clear');
         // Нельзя вызывать супер, так как очистится jq_main_div, а нам этого не нужно сейчас
         this.current_car_uid = null;
     };

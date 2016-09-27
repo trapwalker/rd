@@ -119,5 +119,7 @@ class Parking(Institution):
         if delta < 0:
             log.warning('Car %r was paring %fs (<0, set to zero)!', car, delta)
             delta = 0
+        if delta < 60 * 60: # Если прошло менее часа, то цена будет равна 0
+            return 0
         delta_days = math.floor(delta / (60 * 60 * 24)) + 1
         return delta_days * self.cost_for_day_parking

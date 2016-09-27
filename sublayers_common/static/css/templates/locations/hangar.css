@@ -69,3 +69,19 @@
     background-color: #0c4b00;
     color: #2ffa00;
 }
+
+
+#townParkingBagExchangeInventory, #townParkingBagExchangeBag {
+    position: relative;
+    float: left;
+    width: 340px;
+    height: 400px;
+    overflow: hidden;
+}
+
+.hangar-nag-inventory-block {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}

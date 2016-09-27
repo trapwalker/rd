@@ -18,6 +18,7 @@ from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
+from sublayers_server.model.parking_bag import ParkingBagMessage
 
 from sublayers_server.model.registry.classes.poi import Parking
 
@@ -1093,7 +1094,7 @@ class BagExchangeStartEvent(TransactionEvent):
     def __init__(self, agent, car_uid, npc_node_hash, **kw):
         super(BagExchangeStartEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.car_uid = UUID(car_uid)
+        self.car_uid = None if car_uid is None else UUID(car_uid)
         self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
@@ -1101,8 +1102,12 @@ class BagExchangeStartEvent(TransactionEvent):
         agent = self.agent
         if not agent.current_location:
             return
-        # todo: по идее можно такой обмен во время бартера. ничего страшного не будет
-        if agent.has_active_barter():
+        # info: по идее можно такой обмен во время бартера. ничего страшного не будет
+        # if agent.has_active_barter():
+        #     return
+
+        if self.car_uid is None:
+            agent.reload_parking_bag(new_example_inventory=None, time=self.time)
             return
 
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
@@ -1119,6 +1124,19 @@ class BagExchangeStartEvent(TransactionEvent):
         if not target_car_ex:
             return
 
-        # todo: создать второй инвентарь, сообщить о нём агенту.
         # Списать деньги за стоянку, обновить время установки машинки на стоянку
+        car_price = npc.get_car_price(target_car_ex)
+        if agent.example.balance < car_price:
+            return
+        agent.example.balance -= car_price
+        target_car_ex.date_setup_parking = time.mktime(datetime.now().timetuple())
+
+        # Создать инвентарь
+        agent.reload_parking_bag(new_example_inventory=target_car_ex.inventory, time=self.time)
+
         # Отправить месадж для подготовки вёрстки (создание дива) инвентаря
+        ParkingBagMessage(agent=agent, parking_bag=agent.parking_bag, parking_npc=npc, time=self.time).post()
+        # Отправить сообщения об обноволении
+        # todo: Сделать сообщение-обновление цен машинок у парковщика
+        messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()

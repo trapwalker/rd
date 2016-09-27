@@ -677,9 +677,8 @@ class AgentAPI(API):
 
     @public_method
     def get_parking_bag_exchange(self, car_uid, npc_node_hash):
-        print 'get_parking_bag_exchange with {}'.format(car_uid)
-        BagExchangeStartEvent
-        pass
+        BagExchangeStartEvent(time=self.agent.server.get_time(), agent=self.agent, car_uid=car_uid,
+                              npc_node_hash=npc_node_hash).post()
 
     # Оружейник
 

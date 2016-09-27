@@ -17,6 +17,7 @@ from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
                                              SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
 from sublayers_server.model.events import event_deco
+from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.kalman import KalmanLatLong
 
@@ -71,6 +72,7 @@ class Agent(Object):
         self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
+        self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
 
     def add_quest(self, quest, time):
         self.quests[quest.key] = quest
@@ -475,6 +477,8 @@ class Agent(Object):
             self.inventory.save_to_example(time=time)
             self.inventory.del_all_visitors(time=time)
             self.inventory = None
+
+        self.reload_parking_bag(new_example_inventory=None, time=time)
         self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
     def on_enter_npc(self, npc):
@@ -511,6 +515,15 @@ class Agent(Object):
             agent=self, contragent=contragent, 
             canceled=canceled, buy=buy, sale=sale, cost=cost,
             time=time, is_init=is_init)
+
+    def reload_parking_bag(self, new_example_inventory, time):
+        # Сохранение старого
+        if self.parking_bag:
+            self.parking_bag.displace(time)
+            self.parking_bag = None
+        # Создание нового
+        if new_example_inventory:
+            self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
 
 
 # todo: Переименовать в UserAgent
