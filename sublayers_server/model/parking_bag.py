@@ -20,16 +20,18 @@ from sublayers_server.model.base import Object
 
 
 class ParkingBagMessage(Message):
-    def __init__(self, parking_bag, parking_npc, **kw):
+    def __init__(self, parking_bag, parking_npc, car_title, **kw):
         super(ParkingBagMessage, self).__init__(**kw)
         self.parking_bag = parking_bag
         self.parking_npc = parking_npc
+        self.car_title = car_title
 
     def as_dict(self):
         d = super(ParkingBagMessage, self).as_dict()
         d.update(
             parking_bag_id=self.parking_bag.id,
-            npc_html_hash=self.parking_npc.node_html()
+            npc_html_hash=self.parking_npc.node_html(),
+            car_title=self.car_title
         )
         return d
 

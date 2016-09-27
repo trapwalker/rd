@@ -403,7 +403,7 @@ class TransactionParkingSelect(TransactionEvent):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventory(time=time)
+            self.agent.reload_inventory(time=self.time)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -1135,7 +1135,8 @@ class BagExchangeStartEvent(TransactionEvent):
         agent.reload_parking_bag(new_example_inventory=target_car_ex.inventory, time=self.time)
 
         # Отправить месадж для подготовки вёрстки (создание дива) инвентаря
-        ParkingBagMessage(agent=agent, parking_bag=agent.parking_bag, parking_npc=npc, time=self.time).post()
+        ParkingBagMessage(agent=agent, parking_bag=agent.parking_bag, parking_npc=npc, car_title=target_car_ex.title,
+                          time=self.time).post()
         # Отправить сообщения об обноволении
         # todo: Сделать сообщение-обновление цен машинок у парковщика
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()

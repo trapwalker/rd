@@ -964,7 +964,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ParkingBagMessage = function (event) {
-        console.log('ClientManager.prototype.ParkingBagMessage', event);
+        //console.log('ClientManager.prototype.ParkingBagMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash) && locationManager.npc[event.npc_html_hash].bag_place) {
             locationManager.npc[event.npc_html_hash].bag_place.update(event);
         }
@@ -1358,7 +1358,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendShowInventory = function (owner_id) {
-        console.log('ClientManager.prototype.sendShowInventory', owner_id);
+        //console.log('ClientManager.prototype.sendShowInventory', owner_id);
         var mes = {
             call: "show_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -1645,7 +1645,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendParkingBagExchange = function (car_uid, npc_node_hash) {
-        console.log('ClientManager.prototype.sendParkingBagExchange', car_uid, npc_node_hash);
+        //console.log('ClientManager.prototype.sendParkingBagExchange', car_uid, npc_node_hash);
         var mes = {
             call: "get_parking_bag_exchange",
             rpc_call_id: rpcCallList.getID(),

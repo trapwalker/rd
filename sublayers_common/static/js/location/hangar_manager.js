@@ -220,10 +220,17 @@ var LocationParkingNPC = (function (_super) {
         jq_header_text.append(jq_text_div);
     };
 
+    LocationParkingNPC.prototype.select_car_by_number = function(number) {
+        //console.log('LocationParkingNPC.prototype.select_car_by_number', number);
+        number = (number == null) || (number === undefined) ? 0 : number;
+        var car_list = this.jq_main_div.find('.npcInventory-itemWrap');
+        if (car_list.length > number) {
+            car_list[number].click();
+        }
+    };
+
     return LocationParkingNPC;
 })(LocationHangarNPC);
-
-
 
 
 var LocationParkingBag = (function (_super) {
@@ -234,6 +241,7 @@ var LocationParkingBag = (function (_super) {
         _super.call(this, jq_town_div.find('#townParkingBagExchange'), 'location_screen');
         this.parking_npc = parking_npc;
         this.current_car_uid = null;
+        this.hangar_last_choice_car_number = 0;
 
         this.jq_inv_div = this.jq_main_div.find('#townParkingBagExchangeInventory');
         this.jq_bag_div = this.jq_main_div.find('#townParkingBagExchangeBag');
@@ -241,7 +249,7 @@ var LocationParkingBag = (function (_super) {
     }
 
     LocationParkingBag.prototype.update = function (data) {
-        console.log('LocationParkingBag.prototype.update', data);
+        //console.log('LocationParkingBag.prototype.update', data);
         _super.prototype.update.call(this, data);
 
         // Отобразить свой инвентарь
@@ -270,6 +278,9 @@ var LocationParkingBag = (function (_super) {
                     locationManager.panel_right.show({text: inventory.items[pos].example.description }, 'description');
                 })
             .mouseleave(function(event) { locationManager.panel_right.show({text: ''}, 'description');});
+
+        // Обновление имени машинки
+        this.jq_main_div.find('#townParkingBagExchangeBagText').text(data.car_title)
     };
 
     LocationParkingBag.prototype.clickBtn = function (btnIndex) {
@@ -278,6 +289,8 @@ var LocationParkingBag = (function (_super) {
             case '3':
                 this.clear();
                 this.parking_npc.activate();
+                this.parking_npc.select_car_by_number(this.hangar_last_choice_car_number);
+                clientManager.sendParkingBagExchange(null, this.parking_npc.npc_rec.node_hash);
                 break;
             default:
                 _super.prototype.clickBtn.call(this, btnIndex);
@@ -285,17 +298,14 @@ var LocationParkingBag = (function (_super) {
     };
 
     LocationParkingBag.prototype.activate = function (car_uid) {
-        console.log('LocationParkingBag.prototype.activate', car_uid);
+        //console.log('LocationParkingBag.prototype.activate', car_uid);
         _super.prototype.activate.call(this);
+        $('#landscape').css('display', 'block');
         if (car_uid === undefined) return; // Это просто переключение из другого скрина, не нужно ничего делать!
         this.current_car_uid = car_uid;
+        this.hangar_last_choice_car_number = this.parking_npc.current_car;
         clientManager.sendParkingBagExchange(car_uid, this.parking_npc.npc_rec.node_hash);
     };
-
-    //LocationParkingBag.prototype.get_self_info = function () {
-    //    clientManager.sendParkingBagExchange();
-    //};
-
 
     LocationParkingBag.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
