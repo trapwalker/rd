@@ -52,7 +52,7 @@
 .hangar-center-info-car-bag {
     position: absolute;
     top: 10px;
-    right: 250px;
+    right: 254px;
     color: #31c811;
     font: 11pt Nouveau_IBM;
     width: 200px;
@@ -60,24 +60,27 @@
     line-height: 25px;
     height: 25px;
     box-sizing: border-box;
+    background-color: #082801;
     border: 1px solid #0e4b00;
-    border-radius: 2px;
     cursor: url(/static/img/cursors/hyper.png), pointer;
 }
-
 .hangar-center-info-car-bag:hover {
-    background-color: #0c4b00;
+    border-color: #31c811;
+    background-color: #0e4b00;
     color: #2ffa00;
 }
 
-
 /* Окно багажника */
+
+#townParkingBagExchange {
+    padding-top: 135px;
+    box-sizing: border-box;
+}
 
 .town-parking-bag-body-header {
     position: relative;
     width: 100%;
     height: 30px;
-    margin-top: 135px;
 }
 
 .town-parking-bag-body-header-text {
@@ -92,7 +95,6 @@
     padding-top: 8px;
 }
 
-
 .town-parking-bag-body {
     position: relative;
     width: 100%;
@@ -105,8 +107,6 @@
     box-sizing: border-box;
     padding: 6px;
 }
-
-
 
 .town-parking-bag-universal-wrap {
     position: relative;

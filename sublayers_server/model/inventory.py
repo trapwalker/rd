@@ -491,7 +491,7 @@ class ItemState(object):
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
 
-        # todo: Обсудить! так как это делается без инвентарей при одинаковых итемах, то вставляем сюда изменения инвентарей
+        # Так как это делается без инвентарей при одинаковых итемах, то вставляем сюда изменения инвентарей
         def change_inventories(event):
             self.inventory.on_change(event.time)
             if self.inventory != item.inventory:

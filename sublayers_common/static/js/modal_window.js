@@ -364,6 +364,7 @@ var ModalWindow = (function () {
 
         this.modalItemDivision.removeClass('modal-window-hide');
         this.modalItemDivision.addClass('modal-window-show');
+        document.getElementById('itemDivision-edit').focus();
 
         if (options.max_count)
             this.division_max_count = options.max_count;

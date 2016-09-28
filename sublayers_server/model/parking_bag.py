@@ -1,22 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 log = logging.getLogger(__name__)
-from sublayers_server.model.events import Event
 from sublayers_server.model.messages import Message
 from sublayers_server.model.base import Object
-
-
-# class InitBarterEvent(Event):
-#     def __init__(self, initiator, recipient_login, **kw):
-#         super(InitBarterEvent, self).__init__(server=initiator.server, **kw)
-#         self.initiator = initiator
-#         self.recipient_login = recipient_login
-#
-#     def on_perform(self):
-#         super(InitBarterEvent, self).on_perform()
-#         recipient = self.server.agents_by_name.get(str(self.recipient_login), None)
-#         if not recipient:
-#             return
 
 
 class ParkingBagMessage(Message):
