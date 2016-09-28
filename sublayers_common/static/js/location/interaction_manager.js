@@ -98,6 +98,12 @@ var InteractionManager = (function (_super) {
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
+    InteractionManager.prototype.set_panels = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        _super.prototype.set_panels.call(this);
+        locationManager.panel_right.show({text: ''}, 'description');
+    };
+
     InteractionManager.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationTrainerNPC.prototype.clickBtn', btnIndex);
         switch (btnIndex) {

@@ -868,7 +868,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.CancelBarterMessage = function (event) {
-        console.log('ClientManager.prototype.CancelBarterMessage', event);
+        //console.log('ClientManager.prototype.CancelBarterMessage', event);
         barterManager.CancelBarter(event.barter_id);
     };
 
@@ -1698,7 +1698,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendCancelBarter = function (barter_id, recipient_login) {
-        console.log('ClientManager.prototype.sendCancelBarter', barter_id, recipient_login);
+        //console.log('ClientManager.prototype.sendCancelBarter', barter_id, recipient_login);
         var mes = {
             call: "cancel_barter",
             rpc_call_id: rpcCallList.getID(),

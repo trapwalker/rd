@@ -267,18 +267,6 @@ var LocationParkingBag = (function (_super) {
             inventoryList.showInventory(data.parking_bag_id, this.jq_bag_div.find('.hangar-nag-inventory-block'), false);
         }
 
-        this.jq_main_div.find('.mainCarInfoWindow-body-trunk-body-right-item')
-            .mouseenter(function (event) {
-                //console.log('LocationParkingBag.inventory_slot_event_mouseenter');
-                var pos = $(this).data('pos');
-                var owner_id = $(this).data('owner_id');
-                var inventory = inventoryList.getInventory(owner_id);
-                if (! inventory) {console.log('Inventory not found: ', owner_id); return;}
-                if (inventory.items.hasOwnProperty(pos))
-                    locationManager.panel_right.show({text: inventory.items[pos].example.description }, 'description');
-                })
-            .mouseleave(function(event) { locationManager.panel_right.show({text: ''}, 'description');});
-
         // Обновление имени машинки
         this.jq_main_div.find('#townParkingBagExchangeBagText').text(data.car_title)
     };
@@ -311,6 +299,12 @@ var LocationParkingBag = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
+    };
+
+    LocationParkingBag.prototype.set_panels = function() {
+        if (!locationManager.isActivePlace(this)) return;
+        _super.prototype.set_panels.call(this);
+        locationManager.panel_right.show({text: ''}, 'description');
     };
 
     LocationParkingBag.prototype.clear = function () {

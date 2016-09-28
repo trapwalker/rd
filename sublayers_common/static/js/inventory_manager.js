@@ -183,7 +183,27 @@ var Inventory = (function () {
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
+
+
+        $(inventoryDiv).find('.mainCarInfoWindow-body-trunk-body-right-item')
+            .mouseenter(function (event) {
+                //console.log('LocationParkingBag.inventory_slot_event_mouseenter');
+                if (!locationManager.in_location_flag) return;
+                var pos = $(this).data('pos');
+                var owner_id = $(this).data('owner_id');
+                var inventory = inventoryList.getInventory(owner_id);
+                if (! inventory) {console.log('Inventory not found: ', owner_id); return;}
+                if (inventory.items.hasOwnProperty(pos))
+                    locationManager.panel_right.show({text: inventory.items[pos].example.description }, 'description');
+                })
+            .mouseleave(function(event) {
+                if (!locationManager.in_location_flag) return;
+                locationManager.panel_right.show({text: ''}, 'description');
+            });
+
         $(inventoryDiv).append(emptyItemDiv);
+
+
 
         $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + position + '').droppable({
             greedy: true,
