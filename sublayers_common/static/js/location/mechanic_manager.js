@@ -9,6 +9,7 @@ var LocationMechanicNPC = (function (_super) {
         this.mechanic_slots = [];
         this.inv_show_div = null;
         this.inventory_tag = null;
+        this._some_in_draggable = null; // Имя слота, который сейчас таскается (slot_m12 или 0...N от размера инвентаря)
 
         this.mechanic_systems_names = ["engine", "transmission", "suspension", "brakes", "cooling"];
         this.mechanic_systems_names_rus = ["Двигатель", "Трансмиссия", "Подвеска", "Тормоза", "Охлаждение"];
@@ -263,8 +264,9 @@ var LocationMechanicNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationPlace.start_drag_handler,
-                    drag: LocationPlace.drag_handler
+                    start: this.start_drag_handler.bind(this),
+                    drag: LocationPlace.drag_handler,
+                    stop: this.stop_drag_handler.bind(this)
                 });
                 img_div.append(itemDiv);
             }
@@ -292,8 +294,9 @@ var LocationMechanicNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationPlace.start_drag_handler,
-                    drag: LocationPlace.drag_handler
+                    start: this.start_drag_handler.bind(this),
+                    drag: LocationPlace.drag_handler,
+                    stop: this.stop_drag_handler.bind(this)
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -416,28 +419,46 @@ var LocationMechanicNPC = (function (_super) {
         _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
+
+    LocationMechanicNPC.prototype.start_drag_handler = function (event, ui) {
+        LocationPlace.start_drag_handler(event, ui);
+        this._some_in_draggable = $(event.target).data('pos');
+    };
+
+    LocationMechanicNPC.prototype.stop_drag_handler = function (event, ui) {
+        this.viewSubsystemByItem(this._some_in_draggable, false);
+        this._some_in_draggable = null;
+    };
+
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
 
     // Обработка слотовых событий
     LocationMechanicNPC.slot_event_mouseenter = function (event) {
-        event.data.mechanic.viewSubsystem($(this).data('subsystem'), true);
+        if (event.data.mechanic._some_in_draggable != null) return;
+        //event.data.mechanic.viewSubsystem($(this).data('subsystem'), true);
+        event.data.mechanic.viewSubsystemByItem($(this).data('pos'), true);
         event.data.mechanic.viewRightPanel($(this).data('pos'));
     };
 
     LocationMechanicNPC.slot_event_mouseleave = function (event) {
-        event.data.mechanic.viewSubsystem($(this).data('subsystem'), false);
+        if (event.data.mechanic._some_in_draggable != null) return;
+        //event.data.mechanic.viewSubsystem($(this).data('subsystem'), false);
+        event.data.mechanic.viewSubsystemByItem($(this).data('pos'), false);
         event.data.mechanic.clearRightPanel();
     };
 
     LocationMechanicNPC.inventory_slot_event_mouseenter = function (event) {
         //console.log('LocationMechanicNPC.inventory_slot_event_mouseenter', $(this).data('pos'));
+        if (event.data.mechanic._some_in_draggable != null) return;
         event.data.mechanic.viewRightPanel($(this).data('pos'));
         event.data.mechanic.viewSubsystemByItem($(this).data('pos'), true);
     };
 
     LocationMechanicNPC.inventory_slot_event_mouseleave = function (event) {
+        if (event.data.mechanic._some_in_draggable != null) return;
         event.data.mechanic.clearRightPanel();
         event.data.mechanic.viewSubsystemByItem($(this).data('pos'), false);
+
     };
 
     LocationMechanicNPC.system_event_click = function (event) {

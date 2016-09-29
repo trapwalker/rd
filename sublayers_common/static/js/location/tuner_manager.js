@@ -9,6 +9,7 @@ var LocationTunerNPC = (function (_super) {
         this.inv_show_div = null;
         this.tuner_slots = [];
         this.active_slot = null;
+        this._some_in_draggable = null; // Имя слота, который сейчас таскается (slot_t12 или 0...N от размера инвентаря)
 
         this.jq_car_view = this.jq_main_div.find('.armorer-car').first(); // в шаблоне почему-то этот же класс
         this.jq_ppv = this.jq_main_div.find('#tunerPontPointsValue');  // Pont Points Value
@@ -218,6 +219,7 @@ var LocationTunerNPC = (function (_super) {
         var jq_top_after = this.jq_main_div.find('#tunerCarTopAfter');
         var jq_side_before = this.jq_main_div.find('#tunerCarSideBefore');
         var jq_side_after = this.jq_main_div.find('#tunerCarSideAfter');
+        var self = this;
 
         function get_ex_car_images(images, car_node_hash){
             for (var i = 0; i < images.length; i++)
@@ -291,12 +293,12 @@ var LocationTunerNPC = (function (_super) {
                         ui.helper.children().css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgTop').css('display', 'none');
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'none');
-
-                        LocationPlace.start_drag_handler(event, ui);
+                        self.start_drag_handler(event, ui);
                     },
                     stop: function (event, ui) {
                         $('#' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                        self.stop_drag_handler(event, ui);
                     },
                     drag: LocationPlace.drag_handler
                 });
@@ -313,12 +315,12 @@ var LocationTunerNPC = (function (_super) {
                         ui.helper.children().css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgTop').css('display', 'none');
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'none');
-
-                        LocationPlace.start_drag_handler(event, ui);
+                        self.start_drag_handler(event, ui);
                     },
                     stop: function (event, ui) {
                         $('#' + $(this).data('pos') + 'ImgTop').css('display', 'block');
                         $('#' + $(this).data('pos') + 'ImgSide').css('display', 'block');
+                        self.stop_drag_handler(event, ui);
                     },
                     drag: LocationPlace.drag_handler
                 });
@@ -351,8 +353,9 @@ var LocationTunerNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationPlace.start_drag_handler,
-                    drag: LocationPlace.drag_handler
+                    start: this.start_drag_handler.bind(this),
+                    drag: LocationPlace.drag_handler,
+                    stop: this.stop_drag_handler.bind(this)
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -491,6 +494,15 @@ var LocationTunerNPC = (function (_super) {
         }
     };
 
+    LocationTunerNPC.prototype.start_drag_handler = function (event, ui) {
+        LocationPlace.start_drag_handler(event, ui);
+        this._some_in_draggable = $(event.target).data('pos');
+    };
+
+    LocationTunerNPC.prototype.stop_drag_handler = function (event, ui) {
+        LocationTunerNPC.hoverSlot(this._some_in_draggable, false);
+        this._some_in_draggable = null;
+    };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
 
@@ -513,21 +525,25 @@ var LocationTunerNPC = (function (_super) {
     };
 
     LocationTunerNPC.slot_event_mouseenter = function (event) {
+        if (event.data.tuner._some_in_draggable != null) return;
         LocationTunerNPC.hoverSlot(event.data.slot_name, true);
         event.data.tuner.viewRightPanel(event.data.slot_name);
     };
 
     LocationTunerNPC.slot_event_mouseleave = function (event) {
+        if (event.data.tuner._some_in_draggable != null) return;
         LocationTunerNPC.hoverSlot(event.data.slot_name, false);
         event.data.tuner.clearRightPanel();
     };
 
     LocationTunerNPC.inventory_slot_event_mouseenter = function (event) {
+        if (event.data.tuner._some_in_draggable != null) return;
         event.data.tuner.viewRightPanel(event.data.slot_name);
         event.data.tuner.hover_slots_by_item(event.data.slot_name, true);
     };
 
     LocationTunerNPC.inventory_slot_event_mouseleave = function (event) {
+        if (event.data.tuner._some_in_draggable != null) return;
         event.data.tuner.clearRightPanel();
         event.data.tuner.hover_slots_by_item(event.data.slot_name, false);
     };
