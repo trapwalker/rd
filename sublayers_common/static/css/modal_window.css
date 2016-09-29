@@ -1,4 +1,9 @@
-.modal-window-parent{
+.modal-window-parent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .modal-window-hide {
@@ -516,7 +521,6 @@
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
 }
-
 
 .division-item-progress-btn {
     position: absolute;

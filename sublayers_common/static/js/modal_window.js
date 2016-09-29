@@ -455,6 +455,10 @@ var ModalWindow = (function () {
                     new_count = 0;
                 self.modalItemDivisionSetCount(new_count);
             });
+            self.modalItemDivision.draggable({
+                handle: self.modalItemDivision.find('.windowDragCloseHeader-main').first(),
+                containment: "parent"
+            });
         });
     };
 
