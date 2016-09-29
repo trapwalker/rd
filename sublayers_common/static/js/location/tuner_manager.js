@@ -473,6 +473,25 @@ var LocationTunerNPC = (function (_super) {
         _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
+    LocationTunerNPC.prototype._get_slots_by_item = function (item_rec) {
+        var res = [];
+        for (var slot_index = 0; slot_index < this.tuner_slots.length; slot_index++) {
+            if (this._compare_tags(item_rec, this.tuner_slots[slot_index]))
+                res.push(this.tuner_slots[slot_index]);
+        }
+        return res;
+    };
+
+    LocationTunerNPC.prototype.hover_slots_by_item = function (slot_name, hover) {
+        if (!locationManager.isActivePlace(this)) return;
+        var item_rec = this.items[slot_name];
+        var slots = this._get_slots_by_item(item_rec);
+        for (var i = 0; i < slots.length; i++) {
+            LocationTunerNPC.hoverSlot(slots[i].name, hover);
+        }
+    };
+
+
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!
 
     // Обработка слотовых событий
@@ -505,10 +524,12 @@ var LocationTunerNPC = (function (_super) {
 
     LocationTunerNPC.inventory_slot_event_mouseenter = function (event) {
         event.data.tuner.viewRightPanel(event.data.slot_name);
+        event.data.tuner.hover_slots_by_item(event.data.slot_name, true);
     };
 
     LocationTunerNPC.inventory_slot_event_mouseleave = function (event) {
         event.data.tuner.clearRightPanel();
+        event.data.tuner.hover_slots_by_item(event.data.slot_name, false);
     };
 
     return LocationTunerNPC;
