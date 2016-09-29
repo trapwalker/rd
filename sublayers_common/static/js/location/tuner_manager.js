@@ -497,10 +497,16 @@ var LocationTunerNPC = (function (_super) {
     LocationTunerNPC.prototype.start_drag_handler = function (event, ui) {
         LocationPlace.start_drag_handler(event, ui);
         this._some_in_draggable = $(event.target).data('pos');
+        if (this._some_in_draggable.toString().indexOf('slot') < 0) {
+            this.jq_main_div.find('.tuner-itemWrap-' + this._some_in_draggable).children().first().css('display', 'none');
+        }
     };
 
     LocationTunerNPC.prototype.stop_drag_handler = function (event, ui) {
         LocationTunerNPC.hoverSlot(this._some_in_draggable, false);
+        if (this._some_in_draggable.toString().indexOf('slot') < 0) {
+            this.jq_main_div.find('.tuner-itemWrap-' + this._some_in_draggable).children().first().css('display', 'block');
+        }
         this._some_in_draggable = null;
     };
 

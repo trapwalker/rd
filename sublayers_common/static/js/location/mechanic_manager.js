@@ -419,14 +419,26 @@ var LocationMechanicNPC = (function (_super) {
         _super.prototype.set_header_text.call(this, jq_text_div);
     };
 
-
     LocationMechanicNPC.prototype.start_drag_handler = function (event, ui) {
         LocationPlace.start_drag_handler(event, ui);
         this._some_in_draggable = $(event.target).data('pos');
+        if (this._some_in_draggable.toString().indexOf('slot') < 0) {
+            this.jq_main_div.find('.mechanic-itemWrap-' + this._some_in_draggable).children().first().css('display', 'none');
+        }
+        else {
+            // скрыть то, что в реальном слоте
+            this.jq_main_div.find('#mechanic_' + this._some_in_draggable).find('img').css('display', 'none');
+        }
     };
 
     LocationMechanicNPC.prototype.stop_drag_handler = function (event, ui) {
         this.viewSubsystemByItem(this._some_in_draggable, false);
+        if (this._some_in_draggable.toString().indexOf('slot') < 0) {
+            this.jq_main_div.find('.mechanic-itemWrap-' + this._some_in_draggable).children().first().css('display', 'block');
+        }
+        else {
+            this.jq_main_div.find('#mechanic_' + this._some_in_draggable).find('img').css('display', 'block');
+        }
         this._some_in_draggable = null;
     };
 
