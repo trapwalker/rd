@@ -1,0 +1,60 @@
+#townDumpWrap {
+    padding-top: 135px;
+    box-sizing: border-box;
+}
+
+.town-dump-header {
+    position: relative;
+    width: 100%;
+    height: 30px;
+}
+
+.town-dump-header-text {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+    line-height: 30px;
+    color: #31c811;
+    font: 11pt Nouveau_IBM;
+    text-align: center;
+    padding-top: 8px;
+}
+
+.town-dump-body {
+    position: relative;
+    width: 100%;
+    height: 430px;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 1px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+    padding: 6px;
+}
+
+.town-dump-universal-wrap {
+    position: relative;
+    float: left;
+    width: 346px;
+    height: 100%;
+    overflow: hidden;
+}
+.town-dump-universal-wrap.left { margin: 0 20px 0 30px; }
+
+#townDumpSelfInventory, #townDumpInventory {
+    padding: 0 3px;
+    box-sizing: border-box;
+}
+
+#townDumpSelfInventory {
+    border-right: 1px solid #30fc00;
+}
+
+.town-dump-inventory-block {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}

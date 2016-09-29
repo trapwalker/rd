@@ -245,7 +245,6 @@ var LocationParkingBag = (function (_super) {
 
         this.jq_inv_div = this.jq_main_div.find('#townParkingBagExchangeInventory');
         this.jq_bag_div = this.jq_main_div.find('#townParkingBagExchangeBag');
-
     }
 
     LocationParkingBag.prototype.update = function (data) {

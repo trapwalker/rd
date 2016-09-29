@@ -9,6 +9,7 @@ var LocationManager = (function () {
             menu_screen: null
         };
 
+        this.uid = null;
         this.location_cls = '';
         this.in_location_flag = false;
 
@@ -32,6 +33,9 @@ var LocationManager = (function () {
 
         // Локация чат
         this.location_chat = null;
+
+        // Свалка
+        this.dump = null;
 
         // Для различных эффектов в городе
         this.location_canvas_manager = new LocationCanvasManager();
@@ -96,7 +100,9 @@ var LocationManager = (function () {
 
     LocationManager.prototype.onEnter = function (data) {
         //console.log('LocationManager.prototype.onEnter', data);
+
         this.onExit();
+        this.uid = data.location.uid;
         this.example = data.location.example;
 
         this.location_cls = data.location.cls;
@@ -107,6 +113,9 @@ var LocationManager = (function () {
         // Вставляем верстку города
         this.jq_town_div.append(data.location_html);
         $('#activeTownDivBack').css('display', 'block');
+
+        // Свалка
+        this.dump = new LocationDump(this.jq_town_div);
 
         // Установить дивы панелей
         this.panel_left.init(this.jq_town_div.find('#townLeftPanel'));
@@ -156,6 +165,10 @@ var LocationManager = (function () {
 
          // Вызов OnExit для локаций, неписей и тд... Делается ДО удаления вёрстки
         if (this.location_menu) this.location_menu.on_exit();
+
+        this.uid = null;
+
+        this.dump = null;
 
         chat.showChatInMap();
 
@@ -249,6 +262,7 @@ var LocationManager = (function () {
                 this.npc[key].update();
 
         if (this.location_menu) this.location_menu.update();
+        if (this.dump) this.dump.update();
     };
 
     LocationManager.prototype.isActivePlace = function (location_place) {
