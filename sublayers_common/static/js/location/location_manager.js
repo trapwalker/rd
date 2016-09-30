@@ -333,9 +333,7 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.panel-info-npc-transaction-info').first();
         jq_panel.css('display', 'block');
 
-        jq_panel.find('.npc-transaction-info-money').text('0 нукойнов');
-        if (user.example_agent)
-            jq_panel.find('.npc-transaction-info-money').text(user.example_agent.balance + ' нукойнов');
+        clientManager._viewAgentBalance(jq_panel);
 
         var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
         jq_transaction_list.empty();

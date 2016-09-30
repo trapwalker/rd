@@ -65,7 +65,7 @@ var LocationTraderNPC = (function (_super) {
         var item;
 
         // Отрисовать собственный счет
-        this.jq_main_div.find('.trader-player-total').text(user.example_agent.balance + 'NC');
+        clientManager._viewAgentBalance(this.jq_main_div);
 
         // Обновить столик игрока
         var temp_player_table = [];

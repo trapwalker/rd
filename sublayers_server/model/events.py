@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.utils import time_log_format
-from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage
+from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance
 
 from functools import total_ordering, wraps, partial
 
@@ -531,3 +531,24 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
+
+
+class ChangeAgentBalanceEvent(Event):
+    def __init__(self, agent_ex, server, **kw):
+        super(ChangeAgentBalanceEvent, self).__init__(server=server, **kw)
+        self.agent_ex = agent_ex
+
+    def on_perform(self):
+        super(ChangeAgentBalanceEvent, self).on_perform()
+        agent = None
+        agent_ex = self.agent_ex
+        # todo: по идее можно сделать так:
+        agent = self.server.agents.get(agent_ex.login, None)
+        if not agent:
+            # todo: Но если так не найдено, то пусть так ищет
+            for agent_model in self.server.agents.values():
+                if agent_model.example is agent_ex:
+                    agent = agent_model
+                    break
+        if agent:
+            ChangeAgentBalance(agent=agent, time=self.time).post()

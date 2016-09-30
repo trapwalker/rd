@@ -104,10 +104,10 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.example.balance += value
+            self.agent.change_balance(value, time=self.agent.server.get_time())
 
-        self.write('You have {} money.'.format(self.agent.example.balance))
-        return self.agent.example.balance
+        self.write('You have {} money.'.format(self.agent.balance))
+        return self.agent.balance
 
     def exp(self, value):
         self.agent.example.set_exp(dvalue=int(value))

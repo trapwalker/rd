@@ -292,6 +292,14 @@ var ClientManager = (function () {
         return inv;
     };
 
+    ClientManager.prototype._viewAgentBalance = function (jq_div) {
+        // Найти все места отображения баланса и заменить там баланс
+        if (jq_div)
+            jq_div.find('.self-balance-view').text(user.balance.toFixed(0).toString() + 'NC');
+        else
+            $('.self-balance-view').text(user.balance.toFixed(0).toString() + 'NC');
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
@@ -992,6 +1000,16 @@ var ClientManager = (function () {
     ClientManager.prototype.InteractionInfoMessage = function (event) {
         //console.log('ClientManager.prototype.InteractionInfoMessage', event);
         locationManager.location_chat.interaction_manager.update(event);
+    };
+
+    ClientManager.prototype.ChangeAgentBalance = function (event) {
+        //console.log('ClientManager.prototype.ChangeAgentBalance', event);
+        if (user.ID == event.uid) {
+            user.balance = event.agent_balance;
+            if (user.example_agent)
+                user.example_agent.balance = event.agent_balance;
+            this._viewAgentBalance(null);
+        }
     };
 
     // Журнал (стоянка)

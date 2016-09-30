@@ -229,9 +229,9 @@ class TransactionGasStation(TransactionEvent):
             if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tag_set):
                 sum_fuel += item.value_fuel
         sum_fuel = math.ceil(sum_fuel)
-        if sum_fuel > agent.example.balance:
+        if sum_fuel > agent.balance:
             return  # todo: Сообщение о недостатке средств
-        agent.example.balance -= sum_fuel
+        agent.change_balance(-sum_fuel, self.time)
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
 
@@ -290,7 +290,7 @@ class TransactionHangarSell(TransactionEvent):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
-        self.agent.example.balance += self.agent.example.car.price
+        self.agent.change_balance(self.agent.example.car.price, time=self.time)
         self.agent.example.car = None
         self.agent.reload_inventory(time=self.time)
 
@@ -322,7 +322,7 @@ class TransactionHangarBuy(TransactionEvent):
             return
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
-        agent_balance = self.agent.example.balance
+        agent_balance = self.agent.balance
         agent_balance += 0 if self.agent.example.car is None else self.agent.example.car.price
         # todo: refactoring (use inventory to choose car)
         if agent_balance >= car_proto.price:
@@ -344,7 +344,7 @@ class TransactionHangarBuy(TransactionEvent):
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
             self.agent.reload_inventory(time=self.time)
-            self.agent.example.balance = agent_balance - car_proto.price
+            self.agent.set_balance(agent_balance - car_proto.price, time=self.time)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
         else:
@@ -364,7 +364,7 @@ class TransactionParkingSelect(TransactionEvent):
 
         if self.agent.has_active_barter():
             return
-
+        agent = self.agent
         agent_ex = self.agent.example
 
         # Получение NPC и проверка валидности совершения транзакции
@@ -385,7 +385,7 @@ class TransactionParkingSelect(TransactionEvent):
         summ_for_paying = npc.get_car_price(car_list[self.car_number])
 
         # Процедура списывания денег и взятия машинки
-        if agent_ex.balance >= summ_for_paying:
+        if agent.balance >= summ_for_paying:
 
             # Отправка сообщения о транзакции
             now_date = datetime.now()
@@ -407,7 +407,7 @@ class TransactionParkingSelect(TransactionEvent):
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
-            agent_ex.balance -= summ_for_paying
+            agent.change_balance(-summ_for_paying, self.time)
 
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -700,13 +700,13 @@ class TransactionMechanicRepairApply(TransactionEvent):
         # todo: взять цену за ремонт одного HP откуда-то! Здание, NPC, или из самой машинки
         repair_cost = self.hp * 1
         repair_cost = math.ceil(repair_cost)
-        if agent.example.balance < repair_cost:
+        if agent.balance < repair_cost:
             return
         if repair_cost <= 0:
             log.warning('%s Try to repair with cost = 0 NC', agent)
             return
         ex_car.hp = ex_car.hp + self.hp
-        agent.example.balance -= repair_cost
+        agent.change_balance(-repair_cost, self.time)
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -921,10 +921,10 @@ class TransactionTraderApply(TransactionEvent):
             return
 
         # Проверяем хватает ли денег на все про все
-        if (agent.example.balance + sale_price - buy_price) < 0:
+        if (agent.balance + sale_price - buy_price) < 0:
             self.cancel_transaction()
             return
-        agent.example.balance += sale_price - buy_price
+        agent.change_balance(sale_price - buy_price, self.time)
 
         # Перезагружаем модельный инвентарь
         agent.reload_inventory(time=self.time, save=False)
@@ -1053,9 +1053,9 @@ class TransactionSetRPGState(TransactionEvent):
                 for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
                     price += buy_skill.price[val]
 
-        if price > agent.example.balance:
+        if price > agent.balance:
             return  # todo: message "нету денег"
-        agent.example.balance -= price
+        agent.change_balance(-price, self.time)
 
         # Устанавливаем состояние
         self.agent.example.driving.value = self.skills[u'driving']
@@ -1126,9 +1126,9 @@ class BagExchangeStartEvent(TransactionEvent):
 
         # Списать деньги за стоянку, обновить время установки машинки на стоянку
         car_price = npc.get_car_price(target_car_ex)
-        if agent.example.balance < car_price:
+        if agent.balance < car_price:
             return
-        agent.example.balance -= car_price
+        agent.change_balance(-car_price, self.time)
         target_car_ex.date_setup_parking = time.mktime(datetime.now().timetuple())
 
         # Создать инвентарь
