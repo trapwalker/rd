@@ -209,8 +209,16 @@
                         // Это необходимо сделать вне зависимости от активности кнопки
                         $('#' + id + '_hover').css('display', 'none');
 {#                        $('#' + id + '_pressed').css('display', 'none');#}
-                        $('#' + id + '_text').removeClass('hover');
-                        $('#' + id + '_text').removeClass('pressed');
+                        $('#' + id + '_text').removeClass('hover pressed');
+{#                        $('#' + id + '_text').removeClass('pressed');#}
+
+                        // Чтобы правильно гасли кнопки переключения скринов
+                        if (id.indexOf('screen')) {
+                            var loc_name = locationManager.active_screen_name.replace('_screen', '');
+                            if (loc_name != 'location') $('#btn_screen_location_pressed').css('display', 'none');
+                            if (loc_name != 'chat') $('#btn_screen_chat_pressed').css('display', 'none');
+                            if (loc_name != 'menu') $('#btn_screen_menu_pressed').css('display', 'none');
+                        }
 
                         // Проверка доступности кнопок
                         var noactive_status = $('#' + id + '_noactive').css('display');
