@@ -134,7 +134,7 @@ class Quest(Root):
     first_state = StringField(caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
     current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states = ListField(
-        base_field=EmbeddedDocumentField(embedded_document_type=QuestState),
+        base_field=EmbeddedDocumentField(embedded_document_type=QuestState, reinst=True),
         reinst=True,
         caption=u"Состояния квеста",
         doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
@@ -280,7 +280,7 @@ class Quest(Root):
 
         if isinstance(new_state, QuestState):
             new_state_name = new_state.name
-        elif isinstance(new_state, str):
+        elif isinstance(new_state, basestring):
             new_state_name = new_state
             new_state = self.states_map[new_state_name]
         else:
@@ -293,10 +293,10 @@ class Quest(Root):
             return
 
         if old_state:
-            self.do_state_exit(old_state)
+            self.do_state_exit(event, old_state)
 
         self.current_state = new_state_name
-        self.do_state_enter(new_state)
+        self.do_state_enter(event, new_state)
 
 
 class LogRecord(Subdoc):

@@ -61,7 +61,8 @@ def test_registry():
     a3 = yield a.objects.get(profile_id='123456')
     print('a3.car =', a3 and a3.car)
 
-    q = reg['quests/examples/mortal_course'].instantiate(abstract=False)
+    Q = reg['quests/examples/mortal_course']
+    q = Q.instantiate(abstract=False)
     
 
     
