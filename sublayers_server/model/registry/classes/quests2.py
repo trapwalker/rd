@@ -18,17 +18,31 @@ class EventHandler(Subdoc):
     id = StringField(doc=u"Идентификатор события. Локальное имя события внутри квеста.")
 
 
-
-
 class QuestState(Root):
-    name = StringField()
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
     exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
     status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
     result = StringField(doc=u"Результат квеста данном текущем состоянии (None/win/fail)")
-
+    on_enter = StringField(
+        caption=u"Python скрипт, выполняемый при входе в состояние",
+        doc=u"""
+        В контекст получает:
+            - объекты: [agent, quest, state, event]
+            - функции-условия: ???
+            - функции-действия: [say, add_event, del_event, ...]
+        """
+    )
+    on_exit = StringField(
+        caption=u"Python скрипт, выполняемый при выходе из состояния",
+        doc=u"""
+        В контекст получает:
+            - объекты: [agent, quest, state, event]
+            - функции-условия: ???
+            - функции-действия: [say, add_event, del_event, ...]
+        """
+    )
     on_event = StringField(
-        caption=u"Выражение, вычисляемое по факту любого события",
+        caption=u"Python скрипт, выполняемый по факту любого события",
         doc=u"""
             В контекст получает:
                 - объекты: [agent, quest, state, event]
@@ -39,10 +53,11 @@ class QuestState(Root):
                     - add_event(id="SomeTimerName", delay=60*60*3) - запустить именованный таймер на 3 часа
                     - add_event(id="SomeActionName", caption=u"Сделай это!", action='reg://.../trader3') - создать
                         для игрока кнопку действия с заданной надписью у указанного NPC
+                    - del_event(id="SomeActionName") - удалить запланированное событиеили экшн.
                     - quest.log("some message about {quest.name}") - добавить запись в журнал квеста
 
-
             Пример:
+                (
                 event.name is 'onDie'
                 and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
                 and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
@@ -53,61 +68,44 @@ class QuestState(Root):
                 or event.id is 'quest_fail_timer'
                 and say("I'm so sorry")
                 and go("fail")
+                )
+
+            Пример 2:
+                if (
+                    event.name is 'onDie'
+                    and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
+                    and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
+                ):
+                    say(u"Boom!")
+                    bang(position=agent.car.position, power=1000)
+                    go("win")
+
+                if (event.id is 'quest_fail_timer'):
+                    say("I'm so sorry")
+                    go("fail")
+
         """,
     )
 
-    def on_see(self, agent, time, subj, obj):
-        pass
+    def _exec_event_handler(self, quest, handler, local_ctx, **kw):
+        code_text = getattr(self, handler, None)
+        if not code_text:
+            return
 
-    def on_out(self, agent, time, subj, obj):
-        pass
+        # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
+        fn = '{uri}#states[{state.name}].on_extit'.format(uri=quest.node_hash(), state=self, attr=handler)
+        try:
+            code = compile(code_text, fn, 'exec')
+        except SyntaxError as e:
+            log.error('Syntax error in quest handler.')
+            raise e
 
-    def on_disconnect(self, agent, time):
-        # todo: call it
-        pass
-
-    def on_kill(self, agent, time, obj):
-        pass
-
-    def on_inv_change(self, agent, time, incomings, outgoings):
-        pass
-
-    def on_enter_location(self, agent, time, location):
-        pass
-
-    def on_exit_location(self, agent, time, location):
-        pass
-
-    def on_enter_npc(self, npc):
-        pass
-
-    def on_exit_npc(self, npc):
-        pass
-
-    def on_die(self):
-        pass
-
-    def on_trade_enter(self, agent, contragent, time, is_init):
-        pass
-
-    def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
-        pass
-
-    def on_state_init(self):
-        pass
-
-    def on_state_enter(self, quest, old_state):
-        self.subscribe(quest.agent)  # todo: fixit
-
-        if self.enter_state_message_template:
-            quest.log_fmt(template=self.enter_state_message_template, time=self.start_time)  # todo: send targets
-        elif self.enter_state_message:
-            quest.log(text=self.enter_state_message, time=self.start_time)  # todo: send targets, position
-
-    def on_state_exit(self, quest, next_state):
-        self.unsubscribe(quest.agent)
-        # todo: may be need to send state_exit_message?
-
+        global_ctx = quest._get_global_context(state=self, **kw)
+        try:
+            exec code in global_ctx, local_ctx
+        except Exception as e:
+            log.error('Runtime error in quest handler.')
+            raise e
 
 # Условия:
 # - has([items], who=None)  # money too
@@ -132,9 +130,15 @@ class QuestState(Root):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 class Quest(Root):
+    __not_a_fields__ = ['_context', '_states_map']
     first_state = StringField(caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
     current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
-    states = ListField(base_field=EmbeddedDocumentField(embedded_document_type=QuestState), caption=u"Состояния квеста")
+    states = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type=QuestState),
+        reinst=True,
+        caption=u"Состояния квеста",
+        doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
+    )
 
     caption = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
     text = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
@@ -149,16 +153,49 @@ class Quest(Root):
     town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
     agent = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
 
-    def get_states_dict(self):
-        return {state.name: state for state in self.states}  # todo: optimize
+    def _get_global_context(self, **kw):
+        return dict(
+            quest=self,
+            agent=self.agent,
+            log=log.debug,
+            **kw
+        )
+
+    @property
+    def context(self):
+        context = getattr(self, '_context', None)
+        if context is None:
+            context = dict()
+            self._context = context
+
+    def do_state_exit(self, event, state):
+        state._exec_event_handler(quest=self, handler='on_exit', local_ctx=self.context, event=event)
+
+    def do_state_enter(self, event, state):
+        state._exec_event_handler(quest=self, handler='on_enter', local_ctx=self.context, event=event)
+
+    def do_event(self, event):
+        state = self.state
+        assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
+        state._exec_event_handler(quest=self, handler='on_event', local_ctx=self.context, event=event)
+
+    @property
+    def states_map(self):
+        states_map = getattr(self, '_states_map', None)
+        if not states_map:
+            states_map = {state.name: state for state in self.states}  # todo: optimize
+            self._states_map = states_map
+
+        return states_map
 
     @property
     def state(self):
-        if self.current_state:
-            try:
-                return self.get_states_dict()[self.current_state]
-            except KeyError:
-                raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
+        if self.current_state is None:
+            return
+        try:
+            return self.states_map[self.current_state]
+        except KeyError:
+            raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
 
     @property
     def status(self):
@@ -226,31 +263,40 @@ class Quest(Root):
 
         QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def start(self, time, agent=None, **kw):
+    def start(self, event, agent=None, **kw):
         assert not self.abstract
         if agent:
             self.agent = agent
 
-        self.set_state(self.first_state, time=time)
+        self.set_state(event=event, new_state=self.first_state)
 
-    def set_state(self, value, time):
-        assert value
+    def _go(self, event, new_state):
+        self.set_state(event, new_state)
+        return True
+
+    def set_state(self, event, new_state):
+        assert new_state
         assert not self.abstract
 
-        if isinstance(value, QuestState):
-            new_state = value
-        elif isinstance(value, str):
-            new_state = self.get_states_dict()[value]
+        if isinstance(new_state, QuestState):
+            new_state_name = new_state.name
+        elif isinstance(new_state, str):
+            new_state_name = new_state
+            new_state = self.states_map[new_state_name]
         else:
-            raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(new_state=value, self=self))
+            raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(**locals()))
 
+        old_state_name = self.current_state
         old_state = self.state
 
-        if old_state is not None:
-            old_state.on_state_exit(quest=self, next_state=new_state)
+        if new_state_name == old_state_name:
+            return
 
-        self._state = new_state
-        new_state.on_state_enter(quest=self, old_state=old_state)
+        if old_state:
+            self.do_state_exit(old_state)
+
+        self.current_state = new_state_name
+        self.do_state_enter(new_state)
 
 
 class LogRecord(Subdoc):

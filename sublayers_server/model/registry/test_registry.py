@@ -61,6 +61,9 @@ def test_registry():
     a3 = yield a.objects.get(profile_id='123456')
     print('a3.car =', a3 and a3.car)
 
+    q = reg['quests/examples/mortal_course'].instantiate(abstract=False)
+    
+
     
     #a2.position = [123, 456]
     #print('a2.position =', a2.position)
