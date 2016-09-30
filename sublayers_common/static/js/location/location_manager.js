@@ -22,6 +22,44 @@ var LocationManager = (function () {
 
         this.jq_town_div = $('#activeTownDiv');
 
+        // Все что выкинется из инвентаря в городе упадет сюда
+        $('#activeTownDivBack').droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                if (!ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) return;
+                var owner_id = ui.draggable.data('owner_id');
+                var pos = ui.draggable.data('pos');
+                if (!owner_id || (!pos && (pos != 0))) return;
+
+                // Если это итем из мусорки то ниче не делать
+                if (owner_id == locationManager.uid) return;
+
+                // Эта проверка нужна так как таскание окон также порождает событие дропа
+                var item = null;
+                try {
+                    item = inventoryList.getInventory(owner_id).getItem(pos);
+                }
+                catch (e) {
+                    console.warn('Не найден инвентерь или итем в инвентаре:', ui.draggable);
+                    item = null;
+                }
+
+                modalWindow.modalDialogAnswerShow({
+                    caption: 'Inventory Operation',
+                    header: 'Выбросить?',
+                    body_text: 'Вы уверены, что хотите выбросить ' + item.example.title + ' на свалку?',
+                    callback_ok: function() {
+                        clientManager.sendItemActionInventory(owner_id, pos, locationManager.uid, null);
+                    }
+                });
+
+                stopEvent(event);
+            }
+        });
+
+
+
+
         // Дикт всех зданий
         this.buildings = {};
 
@@ -116,6 +154,9 @@ var LocationManager = (function () {
 
         // Свалка
         this.dump = new LocationDump(this.jq_town_div);
+        this.jq_town_div.find('#townDumpTempButton').click(function() {
+            if (locationManager.dump) locationManager.dump.activate();
+        });
 
         // Установить дивы панелей
         this.panel_left.init(this.jq_town_div.find('#townLeftPanel'));
@@ -406,6 +447,9 @@ var LocationPlace = (function () {
         $('.building-back').css('display', 'none');
         $('.townPageWrap').css('display', 'none');
 
+        // Спрятать кнопку Свалка
+        $('#townDumpTempButton').css('display', 'none');
+
         // Включить своё окно
         this.jq_main_div.css('display', 'block');
         if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
@@ -575,6 +619,9 @@ var LocationPlaceBuilding = (function (_super) {
                 locationManager.screens[this.screen_name] = null;
             else // если нет, то записаться в последний активный
                 locationManager.screens[locationManager.active_screen_name] = null;
+
+            // Показать кнопку Свалка
+            $('#townDumpTempButton').css('display', 'block');
 
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);

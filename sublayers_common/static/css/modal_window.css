@@ -1,5 +1,6 @@
 .modal-window-parent {
     position: absolute;
+    pointer-events: none;
     top: 0;
     left: 0;
     right: 0;
@@ -351,7 +352,7 @@
     top: 80px;
     left: 50%;
     z-index: 21;
-
+    pointer-events: auto;
 }
 
 .modal-window-wrap {

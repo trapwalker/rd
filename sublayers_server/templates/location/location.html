@@ -68,6 +68,28 @@
     #btn_2_text{ top: 780px; left: 313px; transform: rotateZ(-19deg) skew(-5deg); }
     #btn_3_text{ top: 581px; right: 272px; transform: rotateZ(23deg) skew(9deg); }
     #btn_4_text{ top: 776px; right: 323px; transform: rotateZ(19deg) skew(5deg); }
+
+    #townDumpTempButton {
+        position: absolute;
+        bottom: 10px;
+        left: 65px;
+        color: #31c811;
+        font: 11pt Nouveau_IBM;
+        width: 100px;
+        text-align: center;
+        line-height: 25px;
+        height: 25px;
+        box-sizing: border-box;
+        background-color: #082801;
+        border: 1px solid #0e4b00;
+        pointer-events: auto;
+        cursor: url(/static/img/cursors/hyper.png), pointer;
+    }
+    #townDumpTempButton:hover {
+        border-color: #31c811;
+        background-color: #0e4b00;
+        color: #2ffa00;
+    }
 </style>
 
 <div>
@@ -106,6 +128,7 @@
             <div id="townParkingBagExchangeBag" class="town-parking-bag-universal-wrap"></div>
         </div>
     </div>
+
     <div id="townDumpWrap" class="townPageWrap npc-wrap" style="display: none">
         <div class="town-dump-header">
             <div class="town-dump-header-text town-dump-universal-wrap left">Ваш багажник</div>
@@ -116,6 +139,7 @@
             <div id="townDumpInventory" class="town-dump-universal-wrap"></div>
         </div>
     </div>
+    <div id="townDumpTempButton">Свалка</div>
 </div>
 
 <div class="town-btn-area">

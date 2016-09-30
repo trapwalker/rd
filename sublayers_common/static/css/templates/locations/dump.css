@@ -7,6 +7,7 @@
     position: relative;
     width: 100%;
     height: 30px;
+    overflow: hidden;
 }
 
 .town-dump-header-text {
@@ -14,11 +15,10 @@
     float: left;
     width: 50%;
     height: 100%;
-    line-height: 30px;
     color: #31c811;
     font: 11pt Nouveau_IBM;
     text-align: center;
-    padding-top: 8px;
+    line-height: 30px;
 }
 
 .town-dump-body {
@@ -31,7 +31,7 @@
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
     border-image-slice: 1;
     box-sizing: border-box;
-    padding: 6px;
+    padding: 0 6px;
 }
 
 .town-dump-universal-wrap {
@@ -44,7 +44,7 @@
 .town-dump-universal-wrap.left { margin: 0 20px 0 30px; }
 
 #townDumpSelfInventory, #townDumpInventory {
-    padding: 0 3px;
+    padding: 6px 6px 6px 0;
     box-sizing: border-box;
 }
 

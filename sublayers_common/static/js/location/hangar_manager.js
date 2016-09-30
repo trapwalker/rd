@@ -156,7 +156,6 @@ var LocationParkingNPC = (function (_super) {
             var car_uid = $(this).data('uid');
             self.bag_place.activate(car_uid);
         });
-
     };
 
     LocationParkingNPC.prototype.get_self_info = function () {
@@ -242,6 +241,7 @@ var LocationParkingBag = (function (_super) {
         this.parking_npc = parking_npc;
         this.current_car_uid = null;
         this.hangar_last_choice_car_number = 0;
+        this.owner_name = parking_npc.owner_name;
 
         this.jq_inv_div = this.jq_main_div.find('#townParkingBagExchangeInventory');
         this.jq_bag_div = this.jq_main_div.find('#townParkingBagExchangeBag');
@@ -287,7 +287,8 @@ var LocationParkingBag = (function (_super) {
     LocationParkingBag.prototype.activate = function (car_uid) {
         //console.log('LocationParkingBag.prototype.activate', car_uid);
         _super.prototype.activate.call(this);
-        $('#landscape').css('display', 'block');
+        if (this.owner_name)
+            $('#' + this.owner_name + '-back').css('display', 'block');
         if (car_uid === undefined) return; // Это просто переключение из другого скрина, не нужно ничего делать!
         this.current_car_uid = car_uid;
         this.hangar_last_choice_car_number = this.parking_npc.current_car;
@@ -296,6 +297,8 @@ var LocationParkingBag = (function (_super) {
 
     LocationParkingBag.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
+        locationManager.setBtnState(1, '', false);
+        locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
