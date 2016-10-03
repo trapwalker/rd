@@ -171,10 +171,10 @@ class Quest(Root):
             context = dict()
             self._context = context
 
-    def do_state_exit(self, event, state):
+    def do_state_exit(self, state, event):
         state._exec_event_handler(quest=self, handler='on_exit', local_ctx=self.context, event=event)
 
-    def do_state_enter(self, event, state):
+    def do_state_enter(self, state, event):
         state._exec_event_handler(quest=self, handler='on_enter', local_ctx=self.context, event=event)
 
     def do_event(self, event):
@@ -269,18 +269,17 @@ class Quest(Root):
 
         QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def start(self, event, agent=None, **kw):
+    def start(self, agent, event, **kw):
         assert not self.abstract
-        if agent:
-            self.agent = agent
+        self.agent = agent
 
-        self.set_state(event=event, new_state=self.first_state)
+        self.set_state(new_state=self.first_state, event=event)
 
-    def _go(self, event, new_state):
-        self.set_state(event, new_state)
+    def _go(self, new_state, event):
+        self.set_state(new_state, event)
         return True
 
-    def set_state(self, event, new_state):
+    def set_state(self, new_state, event):
         assert new_state
         assert not self.abstract
 
@@ -299,10 +298,10 @@ class Quest(Root):
             return
 
         if old_state:
-            self.do_state_exit(event, old_state)
+            self.do_state_exit(old_state, event)
 
         self.current_state = new_state_id
-        self.do_state_enter(event, new_state)
+        self.do_state_enter(new_state, event)
 
 
 class LogRecord(Subdoc):
