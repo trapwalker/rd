@@ -12,6 +12,8 @@ from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField,
 )
 
+from functools import partial
+
 
 class EventHandler(Subdoc):
     event = StringField(doc=u"Сигнатура события: onDie, onEnterLocation, onQuest")
@@ -19,6 +21,7 @@ class EventHandler(Subdoc):
 
 
 class QuestState(Root):
+    id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
     exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
     status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
@@ -93,7 +96,7 @@ class QuestState(Root):
             return
 
         # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
-        fn = '{uri}#states[{state.name}].on_extit'.format(uri=quest.node_hash(), state=self, attr=handler)
+        fn = '{uri}#states[{state.id}].on_extit'.format(uri=quest.node_hash(), state=self, attr=handler)
         try:
             code = compile(code_text, fn, 'exec')
         except SyntaxError as e:
@@ -131,7 +134,7 @@ class QuestState(Root):
 
 class Quest(Root):
     __not_a_fields__ = ['_context', '_states_map']
-    first_state = StringField(caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
+    first_state = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=QuestState, reinst=True),
@@ -177,13 +180,16 @@ class Quest(Root):
     def do_event(self, event):
         state = self.state
         assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
-        state._exec_event_handler(quest=self, handler='on_event', local_ctx=self.context, event=event)
+        state._exec_event_handler(
+            quest=self, handler='on_event', local_ctx=self.context, event=event,
+            go=partial(self._go, event=event),
+        )
 
     @property
     def states_map(self):
         states_map = getattr(self, '_states_map', None)
         if not states_map:
-            states_map = {state.name: state for state in self.states}  # todo: optimize
+            states_map = {state.id: state for state in self.states}  # todo: optimize
             self._states_map = states_map
 
         return states_map
@@ -279,23 +285,23 @@ class Quest(Root):
         assert not self.abstract
 
         if isinstance(new_state, QuestState):
-            new_state_name = new_state.name
+            new_state_id = new_state.id
         elif isinstance(new_state, basestring):
-            new_state_name = new_state
-            new_state = self.states_map[new_state_name]
+            new_state_id = new_state
+            new_state = self.states_map[new_state_id]
         else:
             raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(**locals()))
 
-        old_state_name = self.current_state
+        old_state_id = self.current_state
         old_state = self.state
 
-        if new_state_name == old_state_name:
+        if new_state_id == old_state_id:
             return
 
         if old_state:
             self.do_state_exit(event, old_state)
 
-        self.current_state = new_state_name
+        self.current_state = new_state_id
         self.do_state_enter(event, new_state)
 
 
