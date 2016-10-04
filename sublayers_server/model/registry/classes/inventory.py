@@ -13,10 +13,11 @@ from collections import Counter
 
 
 class LoadInventoryEvent(Event):
-    def __init__(self, agent, inventory, **kw):
+    def __init__(self, agent, inventory, total_inventory=None, **kw):
         super(LoadInventoryEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.inventory = inventory
+        self.total_inventory = total_inventory
 
     def on_perform(self):
         super(LoadInventoryEvent, self).on_perform()
@@ -25,6 +26,10 @@ class LoadInventoryEvent(Event):
         self.agent.inventory.add_manager(agent=self.agent)
         self.agent.inventory.add_change_call_back(self.agent.on_change_inventory_cb)
         self.agent.on_change_inventory(inventory=self.agent.inventory, time=self.time)
+        if self.total_inventory is not None:
+            self.agent.on_inv_change(time=self.time, diff_inventories=self.agent.inventory.example.diff_total_inventories(total_info=self.total_inventory))
+        else:  #
+            self.agent.on_inv_change(time=self.time, diff_inventories=self.agent.inventory.example.diff_total_inventories(total_info=dict()))
 
 
 class Inventory(Subdoc):
@@ -109,10 +114,11 @@ class Inventory(Subdoc):
             now_value = now_total_info.get(key, None)
             if now_value is None:  # Если такого типа итема в текущем инвентаре нет
                 outgoings.append({key: old_value})
-            if old_value > now_value:  # Если сейчас меньше, чем раньше
-                outgoings.append({key: old_value - now_value})
-            if now_value > old_value:  # Если сейчас больше, чем раньше
-                incomings.append({key: now_value - old_value})
+            elif old_value != now_value:
+                if old_value > now_value:  # Если сейчас меньше, чем раньше
+                    outgoings.append({key: old_value - now_value})
+                else:  # Если сейчас больше, чем раньше
+                    incomings.append({key: now_value - old_value})
 
         for key, value in now_total_info.items():
             if total_info.get(key, None) is None:  # Значит итем есть только в текущем инвентаре

@@ -205,6 +205,7 @@ class TransactionGasStation(TransactionEvent):
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
@@ -248,7 +249,7 @@ class TransactionGasStation(TransactionEvent):
                 ex_car.inventory.items.append(item)
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -282,6 +283,8 @@ class TransactionHangarSell(TransactionEvent):
            npc not in self.agent.current_location.example.get_npc_list():
             return
 
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
+
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
@@ -292,7 +295,7 @@ class TransactionHangarSell(TransactionEvent):
 
         self.agent.change_balance(self.agent.example.car.price, time=self.time)
         self.agent.example.car = None
-        self.agent.reload_inventory(time=self.time)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
@@ -310,7 +313,7 @@ class TransactionHangarBuy(TransactionEvent):
 
         if self.agent.has_active_barter():
             return
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'hangar'):
@@ -343,7 +346,7 @@ class TransactionHangarBuy(TransactionEvent):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-            self.agent.reload_inventory(time=self.time)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
             self.agent.set_balance(agent_balance - car_proto.price, time=self.time)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
@@ -366,7 +369,7 @@ class TransactionParkingSelect(TransactionEvent):
             return
         agent = self.agent
         agent_ex = self.agent.example
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (self.car_number is None) or (npc is None) or (npc.type != 'parking'):
@@ -403,7 +406,7 @@ class TransactionParkingSelect(TransactionEvent):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventory(time=self.time)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -429,7 +432,7 @@ class TransactionParkingLeave(TransactionEvent):
 
         if self.agent.has_active_barter():
             return
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'parking') or (self.agent.example.car is None):
@@ -454,7 +457,7 @@ class TransactionParkingLeave(TransactionEvent):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
-        self.agent.reload_inventory(time=self.time)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -475,7 +478,7 @@ class TransactionArmorerApply(TransactionEvent):
 
         if self.agent.has_active_barter():
             return
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'armorer'):
@@ -553,7 +556,7 @@ class TransactionArmorerApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -578,7 +581,7 @@ class TransactionMechanicApply(TransactionEvent):
 
         if agent.has_active_barter():
             return
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'mechanic'):
@@ -656,7 +659,7 @@ class TransactionMechanicApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -734,7 +737,7 @@ class TransactionTunerApply(TransactionEvent):
 
         if agent.has_active_barter():
             return
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
         if (npc is None) or (npc.type != 'tuner'):
@@ -813,7 +816,7 @@ class TransactionTunerApply(TransactionEvent):
             position += 1
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -846,7 +849,7 @@ class TransactionTraderApply(TransactionEvent):
 
         if self.agent.has_active_barter():
             return
-
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         trader = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
 
         now_date = datetime.now()
@@ -927,7 +930,7 @@ class TransactionTraderApply(TransactionEvent):
         agent.change_balance(sale_price - buy_price, self.time)
 
         # Перезагружаем модельный инвентарь
-        agent.reload_inventory(time=self.time, save=False)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Изменение цен у торговца
         for item_pair in total_items_buy_sale:

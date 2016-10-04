@@ -13,12 +13,12 @@ def event_deco(func):
     @wraps(func)
     def closure(self, time, **kw):
         server = (
-            hasattr(self, 'server') and self.server or
-            hasattr(self, 'agent') and self.agent.server or
+            getattr(self, 'server', None) or
+            getattr(getattr(self, 'agent', None), 'server', None) or
             kw.get('server', None) or
-            kw.get('agent', None) and kw['agent'].server
+            getattr(kw.get('agent', None), 'server', None)
         )
-        assert server
+        assert server, 'event_deoc decorated method called without `server` source'
         #time = kw.pop('time', server.get_time())
         event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
         event.post()
@@ -27,6 +27,7 @@ def event_deco(func):
     closure.sync = func
 
     return closure
+
 
 @total_ordering
 class Event(object):
