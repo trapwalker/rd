@@ -292,6 +292,14 @@ var ClientManager = (function () {
         return inv;
     };
 
+    ClientManager.prototype._viewAgentBalance = function (jq_div) {
+        // Найти все места отображения баланса и заменить там баланс
+        if (jq_div)
+            jq_div.find('.self-balance-view').text(user.balance.toFixed(0).toString() + 'NC');
+        else
+            $('.self-balance-view').text(user.balance.toFixed(0).toString() + 'NC');
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
@@ -868,7 +876,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.CancelBarterMessage = function (event) {
-        console.log('ClientManager.prototype.CancelBarterMessage', event);
+        //console.log('ClientManager.prototype.CancelBarterMessage', event);
         barterManager.CancelBarter(event.barter_id);
     };
 
@@ -963,6 +971,13 @@ var ClientManager = (function () {
         }
     };
 
+    ClientManager.prototype.ParkingBagMessage = function (event) {
+        //console.log('ClientManager.prototype.ParkingBagMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash) && locationManager.npc[event.npc_html_hash].bag_place) {
+            locationManager.npc[event.npc_html_hash].bag_place.update(event);
+        }
+    };
+
     ClientManager.prototype.TraderInfoMessage = function (event) {
         //console.log('ClientManager.prototype.TraderInfoMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
@@ -985,6 +1000,16 @@ var ClientManager = (function () {
     ClientManager.prototype.InteractionInfoMessage = function (event) {
         //console.log('ClientManager.prototype.InteractionInfoMessage', event);
         locationManager.location_chat.interaction_manager.update(event);
+    };
+
+    ClientManager.prototype.ChangeAgentBalance = function (event) {
+        //console.log('ClientManager.prototype.ChangeAgentBalance', event);
+        if (user.ID == event.uid) {
+            user.balance = event.agent_balance;
+            if (user.example_agent)
+                user.example_agent.balance = event.agent_balance;
+            this._viewAgentBalance(null);
+        }
     };
 
     // Журнал (стоянка)
@@ -1351,7 +1376,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendShowInventory = function (owner_id) {
-        //console.log('ClientManager.prototype.sendShowInventory');
+        //console.log('ClientManager.prototype.sendShowInventory', owner_id);
         var mes = {
             call: "show_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -1376,8 +1401,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos) {
-        //console.log('ClientManager.prototype.sendItemActionInventory');
+    ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos, count) {
         var mes = {
             call: "item_action_inventory",
             rpc_call_id: rpcCallList.getID(),
@@ -1385,7 +1409,8 @@ var ClientManager = (function () {
                 start_owner_id: start_owner_id,
                 start_pos: start_pos,
                 end_owner_id: end_owner_id,
-                end_pos: end_pos
+                end_pos: end_pos,
+                count: count
             }
         };
         rpcCallList.add(mes);
@@ -1637,6 +1662,20 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendParkingBagExchange = function (car_uid, npc_node_hash) {
+        //console.log('ClientManager.prototype.sendParkingBagExchange', car_uid, npc_node_hash);
+        var mes = {
+            call: "get_parking_bag_exchange",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                car_uid: car_uid ? car_uid : null,
+                npc_node_hash: npc_node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Бартер
 
     ClientManager.prototype.sendInitBarter = function (recipient_login) {
@@ -1677,7 +1716,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendCancelBarter = function (barter_id, recipient_login) {
-        console.log('ClientManager.prototype.sendCancelBarter', barter_id, recipient_login);
+        //console.log('ClientManager.prototype.sendCancelBarter', barter_id, recipient_login);
         var mes = {
             call: "cancel_barter",
             rpc_call_id: rpcCallList.getID(),

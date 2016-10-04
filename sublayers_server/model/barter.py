@@ -301,8 +301,8 @@ class Barter(object):
     @event_deco
     def set_money(self, event, agent, money):
         self.unlock(time=event.time)
-        if agent.example.balance < money:
-            money = agent.example.balance
+        if agent.balance < money:
+            money = agent.balance
         if money < 0.0:
             money = 0                
         if agent is self.initiator:
@@ -319,8 +319,8 @@ class Barter(object):
         if self.is_cancel or self.state != 'lock':
             return
 
-        if ((self.initiator.example.balance < self.initiator_money) or
-            (self.recipient.example.balance < self.recipient_money) or
+        if ((self.initiator.balance < self.initiator_money) or
+            (self.recipient.balance < self.recipient_money) or
             (not Barter.can_make_barter(agent1=self.initiator, agent2=self.recipient, time=event.time))):
             self.cancel.sync(self=self, event=event)
             return
@@ -329,8 +329,8 @@ class Barter(object):
         self.recipient_inv.add_inventory(inventory=self.initiator_table, time=event.time)
 
         # Обмен деньгами
-        self.initiator.example.balance += self.recipient_money - self.initiator_money
-        self.recipient.example.balance += self.initiator_money - self.recipient_money
+        self.initiator.change_balance(self.recipient_money - self.initiator_money, event.time)
+        self.recipient.change_balance(self.initiator_money - self.recipient_money, event.time)
 
         # Отправить сообщения о закрытии окон
         SuccessBarterMessage(agent=self.initiator, barter=self, time=event.time).post()

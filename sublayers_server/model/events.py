@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.utils import time_log_format
-from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage
+from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance
 
 from functools import total_ordering, wraps, partial
 
@@ -14,9 +14,12 @@ def event_deco(func):
     def closure(self, time, **kw):
         server = (
             hasattr(self, 'server') and self.server or
-            hasattr(self, 'agent') and self.agent.server
+            hasattr(self, 'agent') and self.agent.server or
+            kw.get('server', None) or
+            kw.get('agent', None) and kw['agent'].server
         )
         assert server
+        #time = kw.pop('time', server.get_time())
         event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
         event.post()
         return event
@@ -422,13 +425,14 @@ class HideInventoryEvent(Event):
 
 
 class ItemActionInventoryEvent(Event):
-    def __init__(self, agent, start_owner_id, start_pos, end_owner_id, end_pos, **kw):
+    def __init__(self, agent, start_owner_id, start_pos, end_owner_id, end_pos, count, **kw):
         super(ItemActionInventoryEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.start_owner_id = start_owner_id
         self.start_pos = start_pos
         self.end_owner_id = end_owner_id
         self.end_pos = end_pos
+        self.count = count
 
     def on_perform(self):
         super(ItemActionInventoryEvent, self).on_perform()
@@ -455,16 +459,19 @@ class ItemActionInventoryEvent(Event):
         if (end_inventory is not None) and (self.agent not in end_inventory.managers):
             return
 
-        if end_item is not None:
-            end_item.add_another_item(item=start_item, time=self.time)
-        else:
-            # Если нет второ итема
-            if end_inventory is not None:
-                # Положить итем в конечный инвентарь
-                start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
-            else:
-                # Выкидываем лут на карту
-                start_obj.drop_item_to_map(item=start_item, time=self.time)
+        if end_item is not None:  # досыпание
+            # todo: сделать смену стеков (когда полный на неполный и наоборот)
+            self.count = start_item.val(t=self.time) if self.count < 0 else self.count
+            end_item.add_another_item(item=start_item, time=self.time, count=self.count)
+        else:  # деление
+            if end_inventory is not None:  # положить в инвентарь
+                if self.count < 0 or start_item.val(t=self.time) <= self.count:
+                    start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
+                else:
+                    start_item.div_item(count=self.count, time=self.time, inventory=end_inventory, position=self.end_pos)
+            else:  # выбрасывание на карту
+                drop_item = start_item if self.count < 0 else start_item._div_item(count=self.count, time=self.time)
+                start_obj.drop_item_to_map(item=drop_item, time=self.time)
 
 
 class LootPickEvent(Event):
@@ -527,3 +534,24 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
+
+
+class ChangeAgentBalanceEvent(Event):
+    def __init__(self, agent_ex, server, **kw):
+        super(ChangeAgentBalanceEvent, self).__init__(server=server, **kw)
+        self.agent_ex = agent_ex
+
+    def on_perform(self):
+        super(ChangeAgentBalanceEvent, self).on_perform()
+        agent = None
+        agent_ex = self.agent_ex
+        # todo: по идее можно сделать так:
+        agent = self.server.agents.get(agent_ex.login, None)
+        if not agent:
+            # todo: Но если так не найдено, то пусть так ищет
+            for agent_model in self.server.agents.values():
+                if agent_model.example is agent_ex:
+                    agent = agent_model
+                    break
+        if agent:
+            ChangeAgentBalance(agent=agent, time=self.time).post()

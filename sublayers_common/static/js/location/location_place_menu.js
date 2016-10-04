@@ -126,15 +126,6 @@ var LocationPlaceMenu = (function (_super) {
         if (!this.car_inventory) return;
 
         this.car_inventory.showInventory(this.jq_car_inventory);
-        this.jq_car_inventory.find('.mainCarInfoWindow-body-trunk-body-right-item')
-            .mouseenter({npc: this}, function (event) {
-                //console.log('LocationPlaceMenu.inventory_slot_event_mouseenter', event.data.item);
-                if (!event.data.npc.car_inventory) return;
-                var pos = $(this).data('pos');
-                if (event.data.npc.car_inventory.items.hasOwnProperty(pos))
-                    event.data.npc.viewRightPanel(event.data.npc.car_inventory.items[pos].example.description);
-                })
-            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
     };
 
     LocationPlaceMenu.prototype.update = function (data) {

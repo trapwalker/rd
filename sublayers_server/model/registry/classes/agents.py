@@ -10,6 +10,8 @@ from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
 
+from sublayers_server.model.events import ChangeAgentBalanceEvent
+
 
 class Agent(Root):
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
@@ -138,6 +140,11 @@ class Agent(Root):
         embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
+
+    def set_balance(self, balance, server, time):
+        self.balance = balance
+        ChangeAgentBalanceEvent(agent_ex=self, server=server, time=time).post()
+        return self.balance
 
     def iter_skills(self):  # todo: need review
         for name, attr, getter in self.iter_attrs(tags='skill'):

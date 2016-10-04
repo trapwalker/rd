@@ -17,6 +17,7 @@ from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
                                              SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
 from sublayers_server.model.events import event_deco
+from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.kalman import KalmanLatLong
 
@@ -71,6 +72,7 @@ class Agent(Object):
         self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
+        self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
 
     def add_quest(self, quest, time):
         self.quests[quest.key] = quest
@@ -144,6 +146,16 @@ class Agent(Object):
         self._current_location = location
         self.example.current_location = example_location
 
+    @property
+    def balance(self):
+        return self.example.balance
+
+    def set_balance(self, value, time):
+        self.example.set_balance(value, server=self.server, time=time)
+
+    def change_balance(self, dvalue, time):
+        self.example.set_balance(self.balance + dvalue, server=self.server, time=time)
+
     def on_save(self, time):
         self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
         if self.car:
@@ -191,7 +203,7 @@ class Agent(Object):
         d.update(
             login=self.user.name,  # todo: Переименовать login
             party=self.party.as_dict() if self.party else None,
-            balance=self.example.balance,
+            balance=self.balance,
         )
         return d
 
@@ -422,19 +434,28 @@ class Agent(Object):
         UserExampleSelfRPGMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
-    def on_change_inventory(self, inventory, time):
-        # todo: можно сделать diff между модельным и экзампловым инвентарями и вызвать on_inv_change (который для квестов)
+    def on_change_inventory_cb(self, inventory, time):
+        self.on_change_inventory(inventory=inventory, time=time)
+
+    @event_deco
+    def on_change_inventory(self, event, inventory):
+        time = event.time
         if inventory is self.inventory:  # todo: возможно стереть!
+            total_old = self.inventory.example.total_item_type_info()
             self.inventory.save_to_example(time=time)
             if self.current_location:
                 trader = self.current_location.example.get_npc_by_type(Trader)
                 if trader:
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
+            self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
     # todo: Этот метод не может так работать! Вызвать этот метод из метода on_change_inventory
-    def on_inv_change(self, time, incomings, outgoings):
+    def on_inv_change(self, time, diff_inventories):
+        # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
+        # пары node_hash и кол-во
         # todo: csll it ##quest
-        self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
+        self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
+        pass
 
     def has_active_barter(self):
         for barter in self.barters:
@@ -475,6 +496,8 @@ class Agent(Object):
             self.inventory.save_to_example(time=time)
             self.inventory.del_all_visitors(time=time)
             self.inventory = None
+
+        self.reload_parking_bag(new_example_inventory=None, time=time)
         self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
     def on_enter_npc(self, npc):
@@ -511,6 +534,15 @@ class Agent(Object):
             agent=self, contragent=contragent, 
             canceled=canceled, buy=buy, sale=sale, cost=cost,
             time=time, is_init=is_init)
+
+    def reload_parking_bag(self, new_example_inventory, time):
+        # Сохранение старого
+        if self.parking_bag:
+            self.parking_bag.displace(time)
+            self.parking_bag = None
+        # Создание нового
+        if new_example_inventory:
+            self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
 
 
 # todo: Переименовать в UserAgent

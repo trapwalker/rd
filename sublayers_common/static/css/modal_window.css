@@ -1,4 +1,10 @@
-.modal-window-parent{
+.modal-window-parent {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .modal-window-hide {
@@ -346,7 +352,7 @@
     top: 80px;
     left: 50%;
     z-index: 21;
-
+    pointer-events: auto;
 }
 
 .modal-window-wrap {
@@ -436,19 +442,13 @@
 /* Окно разделения итемов */
 #modalItemDivisionPage {
     width: 340px;
-    height: 205px;
+    height: 196px;
     margin-left: -170px;
 }
 
 #modalItemDivisionPage .modal-window-wrap {
     padding: 0;
     border: 0;
-}
-
-.division-item-info {
-    /*Тут должен быть тот самый градиент*/
-    background-color: rgba(139, 0, 0, 0.49);
-
 }
 
 .division-item-info-wrap {
@@ -458,7 +458,7 @@
     height: 80px;
     border: 1px solid #0E4b00;
     box-sizing: border-box;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     background: linear-gradient( 90deg, transparent, #0e4b00 50%, transparent);
 }
 
@@ -476,16 +476,15 @@
     width: 130px;
     height: 70px;
     margin: 2px auto 0 auto;
-    background: transparent url(/static/content/items/usable/tanks/tank_empty/tank_20l/mid.png) no-repeat center;
 }
 
 .division-item-info-input-wrap {
     position: absolute;
-    top: 40px;
-    right: 10px;
-    width: 90px;
+    bottom: 6px;
+    right: 6px;
+    width: 80px;
     height: 25px;
-    border: 1px solid #31c811;
+    border: 1px solid #0e4b00;
 }
 
 .division-item-info-input-wrap > input {
@@ -502,13 +501,13 @@
 .division-item-progress-wrap {
     position: relative;
     width: 100%;
-    height: 40px;
+    height: 35px;
     background-color: transparent;
     background-image: linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00), linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00);
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
         text-align: center;
-    line-height: 40px;
+    line-height: 35px;
     color: #2ffa00;
 }
 
@@ -524,16 +523,15 @@
     background-position: 0 0, 1px 1px;
 }
 
-
 .division-item-progress-btn {
     position: absolute;
     top: 0;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     cursor: url(/static/img/cursors/hyper.png), pointer;
     box-sizing: border-box;
     font: 24pt Arial;
-    line-height: 42px;
+    line-height: 36px;
     text-align: center;
     color: #030f00;
 }

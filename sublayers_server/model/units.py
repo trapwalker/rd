@@ -222,7 +222,7 @@ class Unit(Observer):
 
         # вернуть агенту стоимость машинки
         if self.owner:
-            self.owner.example.balance += self.example.price
+            self.owner.change_balance(self.example.price, event.time)
             # todo: возможно это нужно перенести
             self.owner.example.car = None
 

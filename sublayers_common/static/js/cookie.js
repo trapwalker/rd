@@ -103,7 +103,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('optionsShowID', (this.optionsShowID ? 1 : 0));
         this.setCookie('optionsFriendlyFireEnabled', (this.optionsFriendlyFireEnabled ? 1 : 0));
         this.setCookie('optionsShowDebugLine', (this.optionsShowDebugLine ? 1 : 0));
-        this.setCookie('radarVisible', (controllers.fireControl.getVisible() ? 1 : 0));
+        //this.setCookie('radarVisible', (controllers.fireControl.getVisible() ? 1 : 0));
 
 
         //for (var key in this.param_value_list)

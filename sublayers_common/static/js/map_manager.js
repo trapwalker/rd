@@ -334,7 +334,6 @@ var MapManager = (function(_super) {
                     clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
             }
         });
-
     };
 
     MapManager.prototype.createTileLayer = function(storage) {

@@ -238,6 +238,7 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.reDrawItem = function(position) {
         //console.log('LocationArmorerNPC.prototype.reDrawItem');
+        var self = this;
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
             var top_slot = $('#top_' + position);
@@ -330,8 +331,20 @@ var LocationArmorerNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationPlace.start_drag_handler,
-                    drag: LocationPlace.drag_handler
+                    start: function (event, ui) {
+                        LocationPlace.start_drag_handler(event, ui);
+                        var pos = $(event.target).data('pos');
+                        if (pos.toString().indexOf('slot') < 0) {
+                            self.jq_main_div.find('.armorer-itemWrap-' + pos).children().first().css('display', 'none');
+                        }
+                    },
+                    drag: LocationPlace.drag_handler,
+                    stop: function(event, ui) {
+                        var pos = $(event.target).data('pos');
+                        if (pos.toString().indexOf('slot') < 0) {
+                            self.jq_main_div.find('.armorer-itemWrap-' + pos).children().first().css('display', 'block');
+                        }
+                    }
                 });
             }
             itemWrapDiv.append(itemDiv);
