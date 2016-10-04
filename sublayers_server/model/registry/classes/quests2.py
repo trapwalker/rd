@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.utils import SubscriptionList
+from sublayers_server.model.events import event_deco
 from sublayers_server.model.messages import Message
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
@@ -86,7 +87,6 @@ class QuestState(Root):
                 if (event.id is 'quest_fail_timer'):
                     say("I'm so sorry")
                     go("fail")
-
         """,
     )
 
@@ -133,7 +133,7 @@ class QuestState(Root):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 class Quest(Root):
-    __not_a_fields__ = ['_context', '_states_map']
+    __not_a_fields__ = ['_context', '_states_map', '_go_state_name']
     first_state = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states = ListField(
@@ -155,35 +155,6 @@ class Quest(Root):
     hirer = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
     town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
     agent = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
-
-    def _get_global_context(self, **kw):
-        return dict(
-            quest=self,
-            agent=self.agent,
-            log=log.debug,
-            **kw
-        )
-
-    @property
-    def context(self):
-        context = getattr(self, '_context', None)
-        if context is None:
-            context = dict()
-            self._context = context
-
-    def do_state_exit(self, state, event):
-        state._exec_event_handler(quest=self, handler='on_exit', local_ctx=self.context, event=event)
-
-    def do_state_enter(self, state, event):
-        state._exec_event_handler(quest=self, handler='on_enter', local_ctx=self.context, event=event)
-
-    def do_event(self, event):
-        state = self.state
-        assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
-        state._exec_event_handler(
-            quest=self, handler='on_event', local_ctx=self.context, event=event,
-            go=partial(self._go, event=event),
-        )
 
     @property
     def states_map(self):
@@ -241,44 +212,21 @@ class Quest(Root):
         )
         return d
 
-    def log_fmt(self, time, template, position=None, target=None, context=None):
-        context = context.copy() if context else {}
-        context.update(position=position, target=target, quest=self, time=time)
-        text = self._template_render(template, context)
-        self.log(time, text, position=position, target=target)
+    # def _template_render(self, template, context):
+    #     try:
+    #         return template.format(**context)
+    #     except Exception as e:
+    #         log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
+    #         raise e
 
-    def log(self, time, text, position=None, target=None):
-        log_record = LogRecord(quest=self, time=time, text=text, position=position, target=target)
-        self._log.append(log_record)
-        self.update(time=time)  # todo: refactor (send quest event message)
-
-    def _template_render(self, template, context):
-        try:
-            return template.format(**context)
-        except Exception as e:
-            log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
-            raise e
-
-    def update(self, time):
-        # todo: #refactor
-        if self.title_template:
-            self.title = self._template_render(self.title_template, dict(quest=self, time=time))
-
-        if self.description_template:
-            self.description = self._template_render(self.description_template, dict(quest=self, time=time))
-
-        QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
+    # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
     def start(self, agent, event, **kw):
         assert not self.abstract
         self.agent = agent
-
         self.set_state(new_state=self.first_state, event=event)
 
-    def _go(self, new_state, event):
-        self.set_state(new_state, event)
-        return True
-
+    @event_deco
     def set_state(self, new_state, event):
         assert new_state
         assert not self.abstract
@@ -302,6 +250,55 @@ class Quest(Root):
 
         self.current_state = new_state_id
         self.do_state_enter(new_state, event)
+
+    def _get_global_context(self, **kw):
+        return dict(
+            quest=self,
+            agent=self.agent,
+            log=log.debug,
+            **kw
+        )
+
+    @property
+    def context(self):
+        context = getattr(self, '_context', None)
+        if context is None:
+            context = dict()
+            self._context = context
+
+    def do_state_exit(self, state, event):
+        state._exec_event_handler(quest=self, handler='on_exit', local_ctx=self.context, event=event)
+
+    def do_state_enter(self, state, event):
+        state._exec_event_handler(quest=self, handler='on_enter', local_ctx=self.context, event=event)
+
+    def do_event(self, event):
+        state = self.state
+        assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
+        self._go_state_name = None
+        state._exec_event_handler(
+            quest=self, handler='on_event', local_ctx=self.context, event=event,
+            go=partial(self._go, event=event),
+        )
+        new_state = getattr(self, '_go_state_name', None)
+        if new_state:
+            self.set_state(new_state, event)
+
+    ## функции для скриптов ##
+    # def log_fmt(self, time, template, position=None, target=None, context=None):
+    #     context = context.copy() if context else {}
+    #     context.update(position=position, target=target, quest=self, time=time)
+    #     text = self._template_render(template, context)
+    #     self.log(time, text, position=position, target=target)
+
+    def log(self, time, text, position=None, target=None):
+        log_record = LogRecord(quest=self, time=time, text=text, position=position, target=target)
+        self._log.append(log_record)
+        self.update(time=time)  # todo: refactor (send quest event message)
+
+    def _go(self, new_state, event):
+        self._go_state_name = new_state
+        return True
 
 
 class LogRecord(Subdoc):
