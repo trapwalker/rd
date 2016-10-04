@@ -14,9 +14,12 @@ def event_deco(func):
     def closure(self, time, **kw):
         server = (
             hasattr(self, 'server') and self.server or
-            hasattr(self, 'agent') and self.agent.server
+            hasattr(self, 'agent') and self.agent.server or
+            kw.get('server', None) or
+            kw.get('agent', None) and kw['agent'].server
         )
         assert server
+        #time = kw.pop('time', server.get_time())
         event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
         event.post()
         return event
