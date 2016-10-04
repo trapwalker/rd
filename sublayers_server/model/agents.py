@@ -449,11 +449,11 @@ class Agent(Object):
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
             self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
-    # todo: Этот метод не может так работать! Вызвать этот метод из метода on_change_inventory
     def on_inv_change(self, time, diff_inventories):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
         # todo: csll it ##quest
+        print diff_inventories
         self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 
@@ -463,14 +463,15 @@ class Agent(Object):
                 return True
         return False
 
-    def reload_inventory(self, time, save=True):
+    def reload_inventory(self, time, save=True, total_inventory=None):
         if self.inventory:
             if save:
                 self.inventory.save_to_example(time=time)
             self.inventory.del_all_visitors(time=time)
             self.inventory = None
         if self.example.car:
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, total_inventory=total_inventory,
+                               time=time).post()
 
     def on_enter_location(self, time, location):
         # Отключить все бартеры (делать нужно до раздеплоя машины)

@@ -29,7 +29,7 @@ class ParkingBag(Object):
         self.inventory.add_visitor(agent=agent, time=time)
         self.inventory.add_manager(agent=agent)
         self.inventory.add_change_call_back(agent.on_change_inventory_cb)
-        agent.on_change_inventory(inventory=self.inventory)
+        agent.on_change_inventory(inventory=self.inventory, time=time)
         self.agent = agent
 
     def displace(self, time):
