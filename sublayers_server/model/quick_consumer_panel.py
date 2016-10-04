@@ -42,7 +42,7 @@ class QuickItem(Consumer):
 
 
 class QuickConsumerPanel(object):
-    def __init__(self, owner):
+    def __init__(self, owner, time):
         super(QuickConsumerPanel, self).__init__()
         self.owner = owner
         self.server = self.owner.server
@@ -52,6 +52,44 @@ class QuickConsumerPanel(object):
             3: QuickItem(owner=self),
             4: QuickItem(owner=self),
         }
+
+        if owner.inventory:
+            quick_panel_example = owner.example.quick_panel
+            if quick_panel_example.qb_1 is not None:
+                item = owner.inventory.get_item_by_cls(balance_cls_list=[quick_panel_example.qb_1], time=time)
+                if item is not None:
+                    self.set_item(time=time, index=1, position=owner.inventory.get_position(item))
+            if quick_panel_example.qb_2 is not None:
+                item = owner.inventory.get_item_by_cls(balance_cls_list=[quick_panel_example.qb_2], time=time)
+                if item is not None:
+                    self.set_item(time=time, index=2, position=owner.inventory.get_position(item))
+            if quick_panel_example.qb_3 is not None:
+                item = owner.inventory.get_item_by_cls(balance_cls_list=[quick_panel_example.qb_3], time=time)
+                if item is not None:
+                    self.set_item(time=time, index=3, position=owner.inventory.get_position(item))
+            if quick_panel_example.qb_4 is not None:
+                item = owner.inventory.get_item_by_cls(balance_cls_list=[quick_panel_example.qb_4], time=time)
+                if item is not None:
+                    self.set_item(time=time, index=4, position=owner.inventory.get_position(item))
+
+    def save(self):
+        quick_panel_example = self.owner.example.quick_panel
+        if self.quick_items[1].item is not None:
+            quick_panel_example.qb_1 = self.quick_items[1].item.example.parent
+        else:
+            quick_panel_example.qb_1 = None
+        if self.quick_items[2].item is not None:
+            quick_panel_example.qb_2 = self.quick_items[2].item.example.parent
+        else:
+            quick_panel_example.qb_2 = None
+        if self.quick_items[3].item is not None:
+            quick_panel_example.qb_3 = self.quick_items[3].item.example.parent
+        else:
+            quick_panel_example.qb_3 = None
+        if self.quick_items[4].item is not None:
+            quick_panel_example.qb_4 = self.quick_items[4].item.example.parent
+        else:
+            quick_panel_example.qb_4 = None
 
     @event_deco
     def set_item(self, event, index, position):

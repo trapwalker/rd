@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
 from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry.classes.inventory import InventoryField
@@ -238,10 +238,14 @@ class Mobile(Root):
 
 
 class Car(Mobile):
-    # last_parking_npc = UniReferenceField(
-    #     reference_document_type='sublayers_server.model.registry.classes.poi.Parking',
-    #     default=None, caption=u'Парковщик машины.',
-    # )
+    class QuickPanel(Subdoc):
+        qb_1 = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
+        qb_2 = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
+        qb_3 = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
+        qb_4 = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
+
+    quick_panel = EmbeddedDocumentField(embedded_document_type=QuickPanel, reinst=True)
+
     last_parking_npc = StringField(default="", caption=u'Парковщик машины.')
 
     date_setup_parking = FloatField(default=0, caption=u'Дата оставления у парковщика')
