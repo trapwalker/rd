@@ -434,19 +434,28 @@ class Agent(Object):
         UserExampleSelfRPGMessage(agent=self, time=time,).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
-    def on_change_inventory(self, inventory, time):
-        # todo: можно сделать diff между модельным и экзампловым инвентарями и вызвать on_inv_change (который для квестов)
+    def on_change_inventory_cb(self, inventory, time):
+        self.on_change_inventory(inventory=inventory, time=time)
+
+    @event_deco
+    def on_change_inventory(self, event, inventory):
+        time = event.time
         if inventory is self.inventory:  # todo: возможно стереть!
+            total_old = self.inventory.example.total_item_type_info()
             self.inventory.save_to_example(time=time)
             if self.current_location:
                 trader = self.current_location.example.get_npc_by_type(Trader)
                 if trader:
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
+            self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
     # todo: Этот метод не может так работать! Вызвать этот метод из метода on_change_inventory
-    def on_inv_change(self, time, incomings, outgoings):
+    def on_inv_change(self, time, diff_inventories):
+        # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
+        # пары node_hash и кол-во
         # todo: csll it ##quest
-        self.subscriptions.on_inv_change(agent=self, time=time, incomings=incomings, outgoings=outgoings)
+        self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
+        pass
 
     def has_active_barter(self):
         for barter in self.barters:
