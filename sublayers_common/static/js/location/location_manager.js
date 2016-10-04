@@ -58,8 +58,6 @@ var LocationManager = (function () {
         });
 
 
-
-
         // Дикт всех зданий
         this.buildings = {};
 
@@ -112,6 +110,9 @@ var LocationManager = (function () {
                 $('.townPageWrap').css('display', 'none');
                 $('#layer2').css('display', 'block');
                 $('#landscape').css('display', 'block');
+
+                // Показать кнопку Свалка
+                $('#townDumpTempButton').css('display', 'block');
 
                 locationManager.setBtnState(1, '', false);
                 locationManager.setBtnState(2, '', false);
