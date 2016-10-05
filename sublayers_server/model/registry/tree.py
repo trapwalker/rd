@@ -151,7 +151,7 @@ class Node(Doc):
         """
         #_id=kw.pop('_id', ObjectId()),
         super(Node, self).__init__(**kw)
-        self._subnodes = WeakSet()
+        self._subnodes = WeakSet()  # todo: use __not_a_field__ notation to store this attribute
 
         if self.uri is None:
             owner = self._values.get('owner')
