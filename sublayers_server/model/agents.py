@@ -36,9 +36,11 @@ class Agent(Object):
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
+        self.example = example
+        if example:
+            example._agent_model = self
         self._disconnect_timeout_event = None
         self.subscriptions = SubscriptionList()
-        self.example = example
         self.observers = CounterSet()
         self.api = None
         self.connection = None

@@ -14,6 +14,7 @@ from sublayers_server.model.events import ChangeAgentBalanceEvent
 
 
 class Agent(Root):
+    __not_a_fields__ = ['_agent_model']
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
@@ -141,6 +142,10 @@ class Agent(Root):
         reinst=True,
     )
 
+    def __init__(self, **kw):
+        super(Agent, self).__init__(**kw)
+        self._agent_model = None
+
     def set_balance(self, balance, server, time):
         self.balance = balance
         ChangeAgentBalanceEvent(agent_ex=self, server=server, time=time).post()
@@ -182,7 +187,6 @@ class Agent(Root):
             if car.last_parking_npc == npc.node_hash():
                 res.append(car)
         return res
-
 
     # Для того, чтобы "закрыть" поле
     @property

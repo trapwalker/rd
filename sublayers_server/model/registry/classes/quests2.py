@@ -201,7 +201,7 @@ class Quest(Root):
         if agent is None:
             agent = self.agent
 
-        return self.uid, agent.uid, npc and npc.uid
+        return self.uid, agent and agent.uid, npc and npc.uid
 
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()
@@ -221,12 +221,16 @@ class Quest(Root):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
+    @event_deco
     def start(self, agent, event, **kw):
+        """
+        :param agent: sublayers_server.model.registry.classes.agents.Agent
+        :param event: sublayers_server.model.events.Event
+        """
         assert not self.abstract
         self.agent = agent
         self.set_state(new_state=self.first_state, event=event)
 
-    @event_deco
     def set_state(self, new_state, event):
         assert new_state
         assert not self.abstract
@@ -307,6 +311,10 @@ class LogRecord(Subdoc):
     text        = StringField  (tags="client", doc=u"Текст записи")
     position    = PositionField(tags="client", doc=u"Привязанная к записи позиция на карте")
     # target  # todo: target of log record
+
+    def __init__(self, quest=None, **kw):
+        quest_uid = kw.pop('quest_uid', None) or quest and quest.uid
+        super(LogRecord, self).__init__(quest_uid=quest_uid, **kw)
 
 
 class QuestUpdateMessage(Message):
