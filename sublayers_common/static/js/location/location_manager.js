@@ -110,6 +110,9 @@ var LocationManager = (function () {
                 $('#layer2').css('display', 'block');
                 $('#landscape').css('display', 'block');
 
+                // Показать кнопку Свалка
+                $('#townDumpTempButton').css('display', 'block');
+
                 locationManager.setBtnState(1, '', false);
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
