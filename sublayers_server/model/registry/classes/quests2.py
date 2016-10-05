@@ -155,6 +155,12 @@ class Quest(Root):
     hirer = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
     town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
     agent = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
+    history = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type=LogRecord, reinst=True),
+        reinst=True,
+        caption=u"Журнал квеста",
+        doc=u"Записи добавляются в журнал методом quest.log(...)",
+    )
 
     @property
     def states_map(self):
@@ -295,10 +301,10 @@ class Quest(Root):
     #     text = self._template_render(template, context)
     #     self.log(time, text, position=position, target=target)
 
-    def log(self, time, text, position=None, target=None):
-        log_record = LogRecord(quest=self, time=time, text=text, position=position, target=target)
-        self._log.append(log_record)
-        self.update(time=time)  # todo: refactor (send quest event message)
+    def log(self, text, event=None, position=None, **kw):
+        log_record = LogRecord(quest=self, time=event and event.time, text=text, position=position, **kw)
+        self.history.append(log_record)
+        return True
 
     def _go(self, new_state, event):
         self._go_state_name = new_state
