@@ -843,6 +843,20 @@ var ClientManager = (function () {
         initGasStation(event.balance, event.fuel);
     };
 
+    ClientManager.prototype.NPCReplicaMessage = function (event) {
+        console.log('ClientManager.prototype.NPCReplicaMessage', event);
+        if (! locationManager.in_location_flag) {
+            console.warning('Replica outside location: ', event);
+            return;
+        }
+        // todo: учесть, что нпс может быть главой здания и так же разговаривать
+        //var place = event.npc_node_hash == null ?
+        //    locationManager.get_current_active_place() : locationManager.get_npc_by_node_hash(event.npc_node_hash);
+        //if (place instanceof LocationPlaceNPC)
+        //        place.set_header_text(event.replica);
+
+    };
+
     //ClientManager.prototype.GetStashWindow = function (event) {
     //    console.log('ClientManager.prototype.GetStashWindow', event);
     //    // POST запрос на получение города и вывод его на экран.

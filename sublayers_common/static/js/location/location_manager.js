@@ -57,9 +57,6 @@ var LocationManager = (function () {
             }
         });
 
-
-
-
         // Дикт всех зданий
         this.buildings = {};
 
@@ -321,6 +318,17 @@ var LocationManager = (function () {
             default:
                 return (new LocationPlaceBuilding(building_rec, jq_town_div));
         }
+    };
+
+    LocationManager.prototype.get_current_active_place = function() {
+        return this.screens[this.active_screen_name];
+    };
+
+    LocationManager.prototype.get_npc_by_node_hash = function(npc_node_hash){
+        for(var key in this.npc)
+            if (this.npc.hasOwnProperty(key) && this.npc[key].npc_rec.node_hash == npc_node_hash)
+                return this.npc[key];
+        return null;
     };
 
     return LocationManager;
