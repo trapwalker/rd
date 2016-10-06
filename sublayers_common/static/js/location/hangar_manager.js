@@ -157,7 +157,7 @@ var LocationParkingNPC = (function (_super) {
 
         this.jq_main_div.find('.hangar-center-info-car-bag').click(function (event) {
             var car_uid = $(this).data('uid');
-            self.bag_place.activate(car_uid);
+            clientManager.sendParkingBagExchange(car_uid, self.npc_rec.node_hash);
         });
     };
 
@@ -204,22 +204,22 @@ var LocationParkingNPC = (function (_super) {
         }
     };
 
-    LocationParkingNPC.prototype.set_header_text = function() {
+    LocationParkingNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
-        var jq_text_div = $('<div></div>');
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
 
-        if (this.cars_list.length)
+            if (this.cars_list.length)
+                if (user.example_car)
+                    jq_text_div.append('<div>Обменять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+                else
+                    jq_text_div.append('<div>Взять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+
             if (user.example_car)
-                jq_text_div.append('<div>Обменять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
-            else
-                jq_text_div.append('<div>Взять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
-
-        if (user.example_car)
-            jq_text_div.append('<div>Поставить ТС: 0NC</div>');
-
-        var jq_header_text = this.jq_main_div.find('.npc-text');
-        jq_header_text.empty();
-        jq_header_text.append(jq_text_div);
+                jq_text_div.append('<div>Поставить ТС: 0NC</div>');
+            html_text = jq_text_div;
+        }
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationParkingNPC.prototype.select_car_by_number = function(number) {
@@ -242,7 +242,6 @@ var LocationParkingBag = (function (_super) {
         //console.log('LocationPlaceNPC', npc_rec);
         _super.call(this, jq_town_div.find('#townParkingBagExchange'), 'location_screen');
         this.parking_npc = parking_npc;
-        this.current_car_uid = null;
         this.hangar_last_choice_car_number = 0;
         this.owner_name = parking_npc.owner_name;
 
@@ -287,15 +286,12 @@ var LocationParkingBag = (function (_super) {
         }
     };
 
-    LocationParkingBag.prototype.activate = function (car_uid) {
+    LocationParkingBag.prototype.activate = function () {
         //console.log('LocationParkingBag.prototype.activate', car_uid);
         _super.prototype.activate.call(this);
         if (this.owner_name)
             $('#' + this.owner_name + '-back').css('display', 'block');
-        if (car_uid === undefined) return; // Это просто переключение из другого скрина, не нужно ничего делать!
-        this.current_car_uid = car_uid;
         this.hangar_last_choice_car_number = this.parking_npc.current_car;
-        clientManager.sendParkingBagExchange(car_uid, this.parking_npc.npc_rec.node_hash);
     };
 
     LocationParkingBag.prototype.set_buttons = function () {
@@ -314,8 +310,7 @@ var LocationParkingBag = (function (_super) {
 
     LocationParkingBag.prototype.clear = function () {
         //console.log('LocationParkingBag.prototype.clear');
-        // Нельзя вызывать супер, так как очистится jq_main_div, а нам этого не нужно сейчас
-        this.current_car_uid = null;
+        // Нельзя вызывать супер, так как очистится jq_main_div, а нам этого не нужно
     };
 
     return LocationParkingBag;

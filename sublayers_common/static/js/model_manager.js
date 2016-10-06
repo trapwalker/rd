@@ -800,6 +800,12 @@ var ClientManager = (function () {
     ClientManager.prototype.InventoryHideMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
+        if (event.inventory_owner_id == user.ID && locationManager.in_location_flag) {
+            //console.log('Очистить инвентарь агента у торговца');
+            var npc_list = locationManager.get_npc_by_type(LocationTraderNPC);
+            for (var i = 0; i < npc_list.length; i++)
+                npc_list[i].clear_agent_assortment();
+        }
     };
 
     ClientManager.prototype.InventoryIncSizeMessage = function (event) {
@@ -818,6 +824,8 @@ var ClientManager = (function () {
             inventory.getItem(event.position).setState(this._getItemState(event.item));
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+
+        if (locationManager.in_location_flag && event.owner_id == user.ID) locationManager.update();
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
@@ -827,6 +835,8 @@ var ClientManager = (function () {
             inventory.addItem(this._getItem(event));
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+
+        if (locationManager.in_location_flag && event.owner_id == user.ID) locationManager.update();
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
@@ -836,6 +846,8 @@ var ClientManager = (function () {
             inventory.delItem(event.position);
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+
+        if (locationManager.in_location_flag && event.owner_id == user.ID) locationManager.update();
     };
 
     ClientManager.prototype.GasStationUpdate = function (event) {
@@ -980,8 +992,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ParkingBagMessage = function (event) {
         //console.log('ClientManager.prototype.ParkingBagMessage', event);
-        if (locationManager.npc.hasOwnProperty(event.npc_html_hash) && locationManager.npc[event.npc_html_hash].bag_place) {
-            locationManager.npc[event.npc_html_hash].bag_place.update(event);
+        var curr_place = locationManager.get_current_active_place();
+        var npc = locationManager.get_npc_by_node_hash(event.npc_node_hash);
+        if (curr_place && npc && npc == curr_place && curr_place.bag_place) {
+            npc.bag_place.activate();
+            npc.bag_place.update(event);
         }
     };
 
