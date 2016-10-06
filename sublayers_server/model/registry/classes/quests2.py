@@ -109,9 +109,9 @@ class QuestState(Root):
 
         # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
         fn = '{uri}#states[{state.id}].on_extit'.format(uri=quest.node_hash(), state=self, attr=handler)
-        code_text = '\n'.join([u'from __future__ import unicode_literals', code_text])
-        try:            
-            code = compile(code_text, fn, 'exec')
+        import __future__
+        try:
+            code = compile(code_text, fn, 'exec', __future__.unicode_literals.compiler_flag)
         except SyntaxError as e:
             log.error('Syntax error in quest handler.')
             raise e
