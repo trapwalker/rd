@@ -729,15 +729,17 @@ class QuestUpdateMessage(Message):
         return d
 
 
-class SetupTraderReplica(Message):
-    def __init__(self, replica, **kw):
-        super(SetupTraderReplica, self).__init__(**kw)
+class NPCReplicaMessage(Message):
+    def __init__(self, replica, npc, **kw):
+        super(NPCReplicaMessage, self).__init__(**kw)
         self.replica = replica
+        self.npc = npc
 
     def as_dict(self):
-        d = super(SetupTraderReplica, self).as_dict()
+        d = super(NPCReplicaMessage, self).as_dict()
         d.update(
             replica=self.replica,
+            npc_node_hash=None if self.npc is None else self.npc.node_hash(),
         )
         return d
 
