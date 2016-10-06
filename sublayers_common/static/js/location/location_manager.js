@@ -334,6 +334,14 @@ var LocationManager = (function () {
         return null;
     };
 
+    LocationManager.prototype.get_npc_by_type = function(npc_type){
+        var res = [];
+        for(var key in this.npc)
+            if (this.npc.hasOwnProperty(key) && this.npc[key] instanceof npc_type)
+                res.push(this.npc[key]);
+        return res;
+    };
+
     return LocationManager;
 })();
 

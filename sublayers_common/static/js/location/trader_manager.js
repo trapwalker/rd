@@ -349,8 +349,13 @@ var LocationTraderNPC = (function (_super) {
         this.calcPriceTables();
     };
 
+    LocationTraderNPC.prototype.clear_agent_assortment = function() {
+        this.agent_assortment = [];
+        this.update();
+    };
+
     LocationTraderNPC.prototype.clear = function() {
-        var i
+        var i;
         this.playerTable = [];
         this.traderTable = [];
         for (i = 0; i < this.agent_assortment.length; i++)

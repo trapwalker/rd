@@ -800,6 +800,12 @@ var ClientManager = (function () {
     ClientManager.prototype.InventoryHideMessage = function (event) {
         //console.log('ClientManager.prototype.InventoryHideMessage', event);
         inventoryList.delInventory(event.inventory_owner_id);
+        if (event.inventory_owner_id == user.ID && locationManager.in_location_flag) {
+            //console.log('Очистить инвентарь агента у торговца');
+            var npc_list = locationManager.get_npc_by_type(LocationTraderNPC);
+            for (var i = 0; i < npc_list.length; i++)
+                npc_list[i].clear_agent_assortment();
+        }
     };
 
     ClientManager.prototype.InventoryIncSizeMessage = function (event) {
