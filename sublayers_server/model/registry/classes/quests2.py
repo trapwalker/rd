@@ -111,7 +111,14 @@ class QuestState(Root):
         fn = '{uri}#states[{state.id}].on_extit'.format(uri=quest.node_hash(), state=self, attr=handler)
         import __future__
         try:
-            code = compile(code_text, fn, 'exec', __future__.unicode_literals.compiler_flag)
+            code = compile(
+                code_text, fn, 'exec',
+                flags=(0
+                    | __future__.unicode_literals.compiler_flag
+                    | __future__.print_function.compiler_flag
+                    | __future__.division.compiler_flag
+                ),
+            )
         except SyntaxError as e:
             log.error('Syntax error in quest handler.')
             raise e
