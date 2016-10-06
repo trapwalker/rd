@@ -21,6 +21,18 @@ class EventHandler(Subdoc):
     id = StringField(doc=u"Идентификатор события. Локальное имя события внутри квеста.")
 
 
+class LogRecord(Subdoc):
+    quest_uid   = StringField  (tags="client", doc=u"UID of quest")
+    time        = DateTimeField(tags="client", doc=u"Время создания записи")
+    text        = StringField  (tags="client", doc=u"Текст записи")
+    position    = PositionField(tags="client", doc=u"Привязанная к записи позиция на карте")
+    # target  # todo: target of log record
+
+    def __init__(self, quest=None, **kw):
+        quest_uid = kw.pop('quest_uid', None) or quest and quest.uid
+        super(LogRecord, self).__init__(quest_uid=quest_uid, **kw)
+
+
 class QuestState(Root):
     id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
@@ -90,7 +102,7 @@ class QuestState(Root):
         """,
     )
 
-    def _exec_event_handler(self, quest, handler, local_ctx, **kw):
+    def _exec_event_handler(self, quest, handler, event):
         code_text = getattr(self, handler, None)
         if not code_text:
             return
@@ -103,12 +115,14 @@ class QuestState(Root):
             log.error('Syntax error in quest handler.')
             raise e
 
-        global_ctx = quest._get_global_context(state=self, **kw)
+        quest.local_context.update(state=self, event=event)
         try:
-            exec code in global_ctx, local_ctx
+            exec code in quest.global_context, quest.local_context
         except Exception as e:
             log.error('Runtime error in quest handler.')
             raise e
+        finally:
+            del quest.local_context
 
 # Условия:
 # - has([items], who=None)  # money too
@@ -133,7 +147,7 @@ class QuestState(Root):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 class Quest(Root):
-    __not_a_fields__ = ['_context', '_states_map', '_go_state_name']
+    __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context']
     first_state = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states = ListField(
@@ -218,13 +232,6 @@ class Quest(Root):
         )
         return d
 
-    # def _template_render(self, template, context):
-    #     try:
-    #         return template.format(**context)
-    #     except Exception as e:
-    #         log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
-    #         raise e
-
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
     @event_deco
@@ -261,66 +268,74 @@ class Quest(Root):
         self.current_state = new_state_id
         self.do_state_enter(new_state, event)
 
-    def _get_global_context(self, **kw):
+    def make_global_context(self):
         return dict(
             quest=self,
             agent=self.agent,
-            log=log.debug,
-            **kw
+            log=lambda template, **kw: log.debug(self._template_render(template, **kw) or True),
         )
 
+    def make_local_context(self):
+        return dict()
+
     @property
-    def context(self):
-        context = getattr(self, '_context', None)
-        if context is None:
-            context = dict()
-            self._context = context
+    def global_context(self):
+        ctx = getattr(self, '_global_context', None)
+        if ctx is None:
+            ctx = self.make_global_context()
+            self._global_context = ctx
+
+        return ctx
+
+    @property
+    def local_context(self):
+        ctx = getattr(self, '_local_context', None)
+        if ctx is None:
+            ctx = self.make_local_context()
+            self._local_context = ctx
+
+        return ctx
+
+    @local_context.deleter
+    def local_context(self):
+        self._local_context = None
+
+    def _template_render(self, template, **kw):
+        try:
+            context = dict(self.global_context, **self.local_context)
+            context.update(kw)
+            return template.format(**context)
+        except Exception as e:
+            log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
+            raise e
 
     def do_state_exit(self, state, event):
-        state._exec_event_handler(quest=self, handler='on_exit', local_ctx=self.context, event=event)
+        state._exec_event_handler(quest=self, handler='on_exit', event=event)
 
     def do_state_enter(self, state, event):
-        state._exec_event_handler(quest=self, handler='on_enter', local_ctx=self.context, event=event)
+        state._exec_event_handler(quest=self, handler='on_enter', event=event)
 
     def do_event(self, event):
         state = self.state
         assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
         self._go_state_name = None
-        state._exec_event_handler(
-            quest=self, handler='on_event', local_ctx=self.context, event=event,
+        self.local_context.update(
             go=partial(self._go, event=event),
         )
+        state._exec_event_handler(quest=self, handler='on_event', event=event)
         new_state = getattr(self, '_go_state_name', None)
         if new_state:
             self.set_state(new_state, event)
 
-    ## функции для скриптов ##
-    # def log_fmt(self, time, template, position=None, target=None, context=None):
-    #     context = context.copy() if context else {}
-    #     context.update(position=position, target=target, quest=self, time=time)
-    #     text = self._template_render(template, context)
-    #     self.log(time, text, position=position, target=target)
-
     def log(self, text, event=None, position=None, **kw):
-        log_record = LogRecord(quest=self, time=event and event.time, text=text, position=position, **kw)
+        rendered_text = self._template_render(text, position=position, **kw)
+        log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
         self.history.append(log_record)
         return True
 
     def _go(self, new_state, event):
         self._go_state_name = new_state
         return True
-
-
-class LogRecord(Subdoc):
-    quest_uid   = StringField  (tags="client", doc=u"UID of quest")
-    time        = DateTimeField(tags="client", doc=u"Время создания записи")
-    text        = StringField  (tags="client", doc=u"Текст записи")
-    position    = PositionField(tags="client", doc=u"Привязанная к записи позиция на карте")
-    # target  # todo: target of log record
-
-    def __init__(self, quest=None, **kw):
-        quest_uid = kw.pop('quest_uid', None) or quest and quest.uid
-        super(LogRecord, self).__init__(quest_uid=quest_uid, **kw)
 
 
 class QuestUpdateMessage(Message):
