@@ -14,7 +14,6 @@ from uuid import UUID
 from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
-from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
@@ -25,6 +24,10 @@ from sublayers_server.model.parking_bag import ParkingBagMessage
 
 
 class TransactionEvent(Event):
+    def __init__(self, agent, **kw):
+        super(TransactionEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
     def on_perform(self):
         super(TransactionEvent, self).on_perform()
         IOLoop.instance().add_future(future=self.on_perform_async(), callback=self.on_done_perform_async)
@@ -185,9 +188,8 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
 
 
 class TransactionTownNPC(TransactionEvent):
-    def __init__(self, agent, npc_node_hash, **kw):
-        super(TransactionTownNPC, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+    def __init__(self, npc_node_hash, **kw):
+        super(TransactionTownNPC, self).__init__(**kw)
         self.npc_node_hash = npc_node_hash
 
     def get_npc_available_transaction(self, npc_type):
@@ -287,7 +289,7 @@ class TransactionGasStation(TransactionTownNPC):
                 ex_car.inventory.items.append(item)
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -546,7 +548,7 @@ class TransactionArmorerApply(TransactionTownNPC):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -639,7 +641,7 @@ class TransactionMechanicApply(TransactionTownNPC):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -778,7 +780,7 @@ class TransactionTunerApply(TransactionTownNPC):
             position += 1
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
