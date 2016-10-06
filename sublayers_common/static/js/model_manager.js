@@ -818,6 +818,8 @@ var ClientManager = (function () {
             inventory.getItem(event.position).setState(this._getItemState(event.item));
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+
+        if (locationManager.in_location_flag && event.owner_id == user.ID) locationManager.update();
     };
 
     ClientManager.prototype.InventoryAddItemMessage = function (event) {
@@ -827,6 +829,8 @@ var ClientManager = (function () {
             inventory.addItem(this._getItem(event));
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+
+        if (locationManager.in_location_flag && event.owner_id == user.ID) locationManager.update();
     };
 
     ClientManager.prototype.InventoryDelItemMessage = function (event) {
@@ -836,6 +840,8 @@ var ClientManager = (function () {
             inventory.delItem(event.position);
         else
             console.warn('Неизвестный инвентарь (ownerID =', event.owner_id, ')');
+
+        if (locationManager.in_location_flag && event.owner_id == user.ID) locationManager.update();
     };
 
     ClientManager.prototype.GasStationUpdate = function (event) {
