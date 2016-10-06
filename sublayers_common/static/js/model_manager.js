@@ -986,8 +986,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ParkingBagMessage = function (event) {
         //console.log('ClientManager.prototype.ParkingBagMessage', event);
-        if (locationManager.npc.hasOwnProperty(event.npc_html_hash) && locationManager.npc[event.npc_html_hash].bag_place) {
-            locationManager.npc[event.npc_html_hash].bag_place.update(event);
+        var curr_place = locationManager.get_current_active_place();
+        var npc = locationManager.get_npc_by_node_hash(event.npc_node_hash);
+        if (curr_place && npc && npc == curr_place && curr_place.bag_place) {
+            npc.bag_place.activate();
+            npc.bag_place.update(event);
         }
     };
 
