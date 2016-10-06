@@ -458,12 +458,15 @@ var LocationTrainerNPC = (function (_super) {
         locationManager.panel_right.show({text: '' }, 'description');
     };
 
-    LocationTrainerNPC.prototype.set_header_text = function() {
+    LocationTrainerNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
-        var jq_text_div = $('<div></div>');
-        jq_text_div.append('<div>Применить: ' + this._getPrice() + 'NC</div>');
-        jq_text_div.append('<div>Отмена: 0NC</div>');
-        _super.prototype.set_header_text.call(this, jq_text_div);
+        if (! html_text) {
+            var jq_text_div = $('<div></div>');
+            jq_text_div.append('<div>Применить: ' + this._getPrice() + 'NC</div>');
+            jq_text_div.append('<div>Отмена: 0NC</div>');
+            html_text = jq_text_div
+        }
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationTrainerNPC.prototype.clickBtn = function (btnIndex) {

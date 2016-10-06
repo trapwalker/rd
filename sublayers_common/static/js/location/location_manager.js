@@ -492,6 +492,7 @@ var LocationPlace = (function () {
     };
 
     LocationPlace.prototype.set_header_text = function (html_text) {
+        //console.log('LocationPlace.prototype.set_header_text', this, html_text);
         if (!locationManager.isActivePlace(this)) return;
         var jq_header_text = this.jq_main_div.find('.npc-text');
         jq_header_text.empty();

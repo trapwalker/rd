@@ -844,31 +844,24 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.NPCReplicaMessage = function (event) {
-        console.log('ClientManager.prototype.NPCReplicaMessage', event);
+        //console.log('ClientManager.prototype.NPCReplicaMessage', event);
         if (! locationManager.in_location_flag) {
             console.warning('Replica outside location: ', event);
             return;
         }
-        // todo: учесть, что нпс может быть главой здания и так же разговаривать
-        //var place = event.npc_node_hash == null ?
-        //    locationManager.get_current_active_place() : locationManager.get_npc_by_node_hash(event.npc_node_hash);
-        //if (place instanceof LocationPlaceNPC)
-        //        place.set_header_text(event.replica);
+        var curr_place = locationManager.get_current_active_place();
+        var npc = event.npc_node_hash == null ? null : locationManager.get_npc_by_node_hash(event.npc_node_hash);
+        if (! curr_place) {
+            console.warning('Replica outside building or npc: ', event);
+            return;
+        }
+
+        if ((npc == null) || (curr_place == npc) || (curr_place instanceof LocationPlaceBuilding &&
+            curr_place.building_rec.head.node_hash == npc.npc_rec.node_hash)) {
+            curr_place.set_header_text($('<div>' + event.replica + '</div>'));
+        }
 
     };
-
-    //ClientManager.prototype.GetStashWindow = function (event) {
-    //    console.log('ClientManager.prototype.GetStashWindow', event);
-    //    // POST запрос на получение города и вывод его на экран.
-    //    $.ajax({
-    //        url: "http://" + location.host + '/api/stash',
-    //        data:  { stash_id: event.stash_id },
-    //        success: function(data) {
-    //            console.log('ClientManager.prototype.GetStashWindow Answer');
-    //            //
-    //        }
-    //    });
-    //};
 
     // Бартер
 

@@ -100,16 +100,19 @@ var LocationHangarNPC = (function (_super) {
         locationManager.panel_left.show({price: 0, transactions: this.transactions}, 'npc_transaction_info');
     };
 
-    LocationHangarNPC.prototype.set_header_text = function() {
+    LocationHangarNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
-        var jq_text_div = $('<div></div>');
-        if (user.example_car) {
-            jq_text_div.append('<div>Обменять ТС: ' + (user.example_car.price - this.cars_list[this.current_car].car.price) + 'NC</div>');
-            jq_text_div.append('<div>Продать ТС: ' + user.example_car.price + 'NC</div>');
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
+            if (user.example_car) {
+                jq_text_div.append('<div>Обменять ТС: ' + (user.example_car.price - this.cars_list[this.current_car].car.price) + 'NC</div>');
+                jq_text_div.append('<div>Продать ТС: ' + user.example_car.price + 'NC</div>');
+            }
+            else
+                jq_text_div.append('<div>Купить ТС: -' + this.cars_list[this.current_car].car.price + 'NC</div>');
+            html_text = jq_text_div;
         }
-        else
-            jq_text_div.append('<div>Купить ТС: -' + this.cars_list[this.current_car].car.price + 'NC</div>');
-        _super.prototype.set_header_text.call(this, jq_text_div);
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationHangarNPC.prototype.clickBtn = function (btnIndex) {

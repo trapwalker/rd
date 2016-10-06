@@ -146,7 +146,7 @@ var LocationServiceBuilding = (function (_super) {
         //console.log('LocationServiceBuilding.prototype.clickBtn', btnIndex);
         if (this.active_central_page == 'buildingPageRepair_autoservice') {
             if (btnIndex == '1') {
-                console.log('Попытка отремонтировать машину');
+                //console.log('Попытка отремонтировать машину');
                 var hp = this._get_hp_by_prc(this.current_prc_hp);
                 if (hp > user.example_car.max_hp) hp = user.example_car.max_hp;
                 hp = hp - user.example_car.hp;
@@ -154,7 +154,7 @@ var LocationServiceBuilding = (function (_super) {
                 return;
             }
             if (btnIndex == '2') {
-                console.log('Попытка отремонтировать машину на 100%');
+                //console.log('Попытка отремонтировать машину на 100%');
                 clientManager.sendMechanicRepairApply(this.building_rec.head.node_hash,
                     user.example_car.max_hp - user.example_car.hp);
                 return;
