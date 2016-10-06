@@ -136,7 +136,7 @@ var LocationTunerNPC = (function (_super) {
             // Добавить итемы инвентаря своего агента
             var inventory = inventoryList.getInventory(user.ID);
             if (!inventory) {
-                console.warn('Ивентарь агента (' + user.ID + ') не найден');
+                //console.warn('Ивентарь агента (' + user.ID + ') не найден');
                 return;
             }
 
