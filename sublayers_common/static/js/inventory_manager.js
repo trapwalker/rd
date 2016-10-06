@@ -183,7 +183,27 @@ var Inventory = (function () {
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
+
+
+        $(inventoryDiv).find('.mainCarInfoWindow-body-trunk-body-right-item')
+            .mouseenter(function (event) {
+                //console.log('LocationParkingBag.inventory_slot_event_mouseenter');
+                if (!locationManager.in_location_flag) return;
+                var pos = $(this).data('pos');
+                var owner_id = $(this).data('owner_id');
+                var inventory = inventoryList.getInventory(owner_id);
+                if (! inventory) {console.log('Inventory not found: ', owner_id); return;}
+                if (inventory.items.hasOwnProperty(pos))
+                    locationManager.panel_right.show({text: inventory.items[pos].example.description }, 'description');
+                })
+            .mouseleave(function(event) {
+                if (!locationManager.in_location_flag) return;
+                locationManager.panel_right.show({text: ''}, 'description');
+            });
+
         $(inventoryDiv).append(emptyItemDiv);
+
+
 
         $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + position + '').droppable({
             greedy: true,
@@ -201,10 +221,20 @@ var Inventory = (function () {
                 var dragPos = ui.draggable.data('pos');
                 var dropOwnerID = $(event.target).data('owner_id');
                 var dropPos = $(event.target).data('pos');
-
+                var item = inventoryList.getInventory(dragOwnerID).getItem(dragPos);
                 // Проверим не сами ли в себя мы перемещаемся
                 if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
-                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos);
+                    if (event.shiftKey)
+                        modalWindow.modalItemDivisionShow({
+                            item: item.example,
+                            max_count: item._item_state.val(clock.getCurrentTime()),
+                            callback_ok:
+                                function(count) {
+                                    clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos, count);
+                                }
+                        });
+                    else
+                       clientManager.sendItemActionInventory(dragOwnerID, dragPos, dropOwnerID, dropPos, -1);
             }
         });
 
@@ -212,11 +242,20 @@ var Inventory = (function () {
             disabled: true,
             cursorAt: {left: 70, top: 50},
             helper: 'clone',
+            //helper: function (event) {
+            //    var inventory = inventoryList.getInventory($(event.target).data('owner_id'));
+            //    if (!inventory) return;
+            //    var item = inventory.getItem($(event.target).data('pos'));
+            //    if (!item) return;
+            //    var img_link = 'http://192.168.1.104/' + item.example.inv_icon_mid;
+            //    console.log(img_link);
+            //    return $('<div width="130" height="70"><img src="' + img_link + '" style="z-index: 9999;"></div>');
+            //},
             opacity: 0.8,
             revert: true,
             revertDuration: 0,
             zIndex: 100,
-            appendTo: '#map'
+            appendTo: '#bodydiv'
         });
     };
 

@@ -4,7 +4,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.tasks import TaskSingleton, TaskPerformEvent
 from sublayers_server.model.messages import InventoryShowMessage, InventoryItemMessage, InventoryAddItemMessage, \
     InventoryDelItemMessage, InventoryHideMessage, InventoryIncSizeMessage
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import Event, event_deco
 
 from math import floor
 
@@ -425,16 +425,18 @@ class ItemState(object):
         if self.val(t=time) < count:
             return None
         ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
-        return ItemState(server=self.server, time=time, example=self.example, count=count)
+        item_example = self.example.split(count=count)
+        model_item = ItemState(server=self.server, time=time, example=item_example, count=count)
+        return model_item
 
     # Интерфейс работы с итемом со стороны окна клиента
-    def set_inventory(self, time, inventory, position=None):
+    def set_inventory(self, time, inventory, position=None, make_change=True):
         assert not self.limbo
         # log.debug('IteemState.set_inventory for %s ', self)
         old_inventory = self.inventory
         if inventory is old_inventory:
             return self.change_position(position=position, time=time)
-        if (inventory is None) or inventory.add_item(item=self, position=position, time=time):
+        if (inventory is None) or inventory.add_item(item=self, position=position, time=time, make_change=make_change):
             if old_inventory is not None:
                 old_inventory.del_item(item=self, time=time)
 
@@ -448,10 +450,14 @@ class ItemState(object):
         else:
             return False
 
+    @event_deco
+    def set_inventory_event(self, event, inventory, position=None, make_change=True):
+        self.set_inventory(time=event.time, inventory=inventory, position=position, make_change=make_change)
+
     def div_item(self, count, time, inventory, position):
         assert not self.limbo
         assert (position is None) or ((position is not None) and (inventory is not None))
-        if (position is not None) and (inventory.getItem(position=position) is not None):
+        if (position is not None) and (inventory.get_item(position=position) is not None):
             return
         if (position is None) and (inventory is not None):
             position = inventory.get_free_position()
@@ -459,35 +465,38 @@ class ItemState(object):
                 return
         item = self._div_item(count=count, time=time)
         if item is not None:
-            item.set_inventory(time=time, inventory=inventory, position=position)
+            # info: Добавит новый итем в инвентарь гарантированно после вычитания предыдущего
+            item.set_inventory_event(time=time, inventory=inventory, position=position, make_change=True)
 
-    def add_another_item(self, item, time):
+    def add_another_item(self, item, time, count):
         assert not self.limbo and not item.limbo
-        if self.example.parent != item.example.parent:
-            if self.inventory is item.inventory:
-                self.change_position(position=self.inventory.get_position(item=item), time=time)
-            else:
-                item1_inventory = self.inventory
-                item1_position = item1_inventory.get_position(item=self)
-                item2_inventory = item.inventory
-                item2_position = item2_inventory.get_position(item=item)
-                self.set_inventory(time=time, inventory=None)
-                item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
-                self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
+        if self.example.parent != item.example.parent:  # досыпание не возможно, т.к. итемы разные
+            if count >= item.val(t=time):  # если досыпается всё из источника, то итемы надо поменять местами
+                if self.inventory is item.inventory:
+                    self.change_position(position=self.inventory.get_position(item=item), time=time)
+                else:
+                    item1_inventory = self.inventory
+                    item1_position = item1_inventory.get_position(item=self)
+                    item2_inventory = item.inventory
+                    item2_position = item2_inventory.get_position(item=item)
+                    self.set_inventory(time=time, inventory=None)
+                    item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
+                    self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
             return
 
         self_val = self.val(t=time)
-        item_val = item.val(t=time)
+        item_val = min(item.val(t=time), count)
         d_value = 0.0
 
         if (self_val + item_val) <= self.max_val:
             d_value = item_val
         else:
             d_value = self.max_val - self_val
+
         ItemTask(consumer=None, owner=self, dv=d_value, ddvs=0.0, action=None).start(time=time)
         ItemTask(consumer=None, owner=item, dv=-d_value, ddvs=0.0, action=None).start(time=time)
 
-        # todo: Обсудить! так как это делается без инвентарей при одинаковых итемах, то вставляем сюда изменения инвентарей
+        # Так как это делается без инвентарей при одинаковых итемах, то вставляем сюда изменения инвентарей
         def change_inventories(event):
             self.inventory.on_change(event.time)
             if self.inventory != item.inventory:

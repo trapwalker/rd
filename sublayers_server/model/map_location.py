@@ -12,6 +12,7 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats, Event
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
+from sublayers_server.model.inventory import Inventory
 
 
 
@@ -44,6 +45,9 @@ class MapLocation(Observer):
         # log.debug('Map_location example %s', self.example.uri)
         self.locations.append(self)
 
+        # Свалка
+        self.inventory = Inventory(max_size=100, owner=self)
+
     def can_come(self, agent):
         if agent.api.car:
             return agent.api.car in self.visible_objects
@@ -72,7 +76,13 @@ class MapLocation(Observer):
         #                     agent.add_quest(quest=new_quest, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
+
+        # Добавить агента в список менеджеров мусорки
+        if self.inventory is not None:
+            self.inventory.add_visitor(agent=agent, time=time)
+            self.inventory.add_manager(agent=agent)
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
+
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=time).post()
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
@@ -105,6 +115,12 @@ class MapLocation(Observer):
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=time)
         PrivateChatRoom.close_privates(agent=agent, time=time)
+
+        # Удалить агента из списка менеджеров мусорки
+        if self.inventory is not None:
+            self.inventory.del_visitor(agent=agent, time=time)
+            self.inventory.del_manager(agent=agent)
+
         ExitFromLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
         agent.api.update_agent_api(time=time)
         for visitor in self.visitors:
@@ -118,6 +134,9 @@ class MapLocation(Observer):
         super(MapLocation, self).del_from_chat(chat=chat, time=time)
         # info: не нужно делать ездящие города, иначе могут быть проблемы
         self.radio_points.remove(chat)
+
+    def is_available(self, agent):
+        return agent in self.visitors
 
     @classmethod
     def get_location_by_uri(cls, uri):

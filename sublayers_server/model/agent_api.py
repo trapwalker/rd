@@ -20,7 +20,7 @@ from sublayers_server.model.events import (
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
-    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply)
+    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply, BagExchangeStartEvent)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, PrivateChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -104,10 +104,10 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.example.balance += value
+            self.agent.change_balance(value, time=self.agent.server.get_time())
 
-        self.write('You have {} money.'.format(self.agent.example.balance))
-        return self.agent.example.balance
+        self.write('You have {} money.'.format(self.agent.balance))
+        return self.agent.balance
 
     def exp(self, value):
         self.agent.example.set_exp(dvalue=int(value))
@@ -614,9 +614,10 @@ class AgentAPI(API):
         HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None):
+    def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None, count=-1):
         ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
-                                 end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time()).post()
+                                 end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time(),
+                                 count=count).post()
 
     @public_method
     def get_balance_cls(self, balance_cls_name):
@@ -673,6 +674,11 @@ class AgentAPI(API):
     @public_method
     def get_parking_info(self, npc_node_hash):
         messages.ParkingInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+
+    @public_method
+    def get_parking_bag_exchange(self, car_uid, npc_node_hash):
+        BagExchangeStartEvent(time=self.agent.server.get_time(), agent=self.agent, car_uid=car_uid,
+                              npc_node_hash=npc_node_hash).post()
 
     # Оружейник
 
@@ -751,8 +757,8 @@ class AgentAPI(API):
             barter.unlock(time=self.agent.server.get_time())
 
     @public_method
-    def cancel_barter(self, barter_id):
-        barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
+    def cancel_barter(self, barter_id, recipient_login):
+        barter = Barter.get_barter(agent=self.agent, barter_id=barter_id, recipient_login=recipient_login)
         if barter:
             barter.cancel(time=self.agent.server.get_time())
 

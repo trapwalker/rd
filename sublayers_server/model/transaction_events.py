@@ -14,19 +14,22 @@ from uuid import UUID
 from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
-from sublayers_server.model.map_location import Town
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
+from sublayers_server.model.parking_bag import ParkingBagMessage
 
 
 # todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
 
 
 class TransactionEvent(Event):
+    def __init__(self, agent, **kw):
+        super(TransactionEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
     def on_perform(self):
         super(TransactionEvent, self).on_perform()
-        # todo: возможно IOLoop.instance().add_callback(callback=self.on_perform_async())
         IOLoop.instance().add_future(future=self.on_perform_async(), callback=self.on_done_perform_async)
 
     @tornado.gen.coroutine
@@ -51,6 +54,10 @@ class TransactionActivateTank(TransactionActivateItem):
     @tornado.gen.coroutine
     def on_perform_async(self):
         yield super(TransactionActivateTank, self).on_perform_async()
+
+        # todo: Сделать возможным запуск в городе
+        if self.agent.current_location is not None:
+            return
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -84,6 +91,11 @@ class TransactionActivateTank(TransactionActivateItem):
 class TransactionActivateRebuildSet(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateRebuildSet, self).on_perform()
+
+        # todo: Сделать возможным запуск в городе
+        if self.agent.current_location is not None:
+            return
+
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
         inventory = self.inventory
@@ -104,6 +116,9 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
 class TransactionActivateMine(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateMine, self).on_perform()
+
+        if self.agent.current_location is not None:
+            return
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -126,6 +141,9 @@ class TransactionActivateMine(TransactionActivateItem):
 class TransactionActivateRocket(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateRocket, self).on_perform()
+
+        if self.agent.current_location is not None:
+            return
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
@@ -150,6 +168,9 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
     def on_perform(self):
         super(TransactionActivateAmmoBullets, self).on_perform()
 
+        if self.agent.current_location is not None:
+            return
+
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
         inventory = self.inventory
@@ -166,38 +187,79 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
                 weapon.set_item(item=item, time=self.time)
 
 
-class TransactionGasStation(TransactionEvent):
-    def __init__(self, agent, fuel, tank_list, npc_node_hash, **kw):
-        super(TransactionGasStation, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionTownNPC(TransactionEvent):
+    def __init__(self, npc_node_hash, **kw):
+        super(TransactionTownNPC, self).__init__(**kw)
+        self.npc_node_hash = npc_node_hash
+
+    def get_npc_available_transaction(self, npc_type):
+        # Получение NPC и проверка валидности совершения транзакции
+        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
+        error = False
+        if npc is None:
+            log.warning('%r NPC not found: %s', self, self.npc_node_hash)
+            error = True
+        if npc.type != npc_type:
+            log.warning('%r NPC not equal type: %s  ==>  %s', self, self.npc_node_hash, npc_type)
+            error = True
+        if self.agent.current_location is None:
+            log.warning('%r Agent not in location', self)
+            error = True
+        if npc not in self.agent.current_location.example.get_npc_list():
+            log.warning('%r Does not math npc (%s) and agent location (%r)', self, self.npc_node_hash, self.agent.current_location)
+            error = True
+        if error is True:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=None,
+                                       replica=u'У нас возникли трудности c поиском NPC в данной локации.').post()
+            return False
+        return npc
+
+    def is_agent_available_transaction(self, npc, with_car=True, with_barter=True):
+        if with_barter and self.agent.has_active_barter():
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Действие невозможно при активном бартере').post()
+            return False
+        if with_car and self.agent.example.car is None:
+             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Без автомобиля это невозможно!').post()
+             return False
+        return True
+
+    def repair_example_inventory(self):
+        # Откатываемся к модельному инвентарю
+        self.agent.inventory.save_to_example(time=self.time)
+
+
+class TransactionGasStation(TransactionTownNPC):
+    def __init__(self, fuel, tank_list, **kw):
+        super(TransactionGasStation, self).__init__(**kw)
         self.fuel = fuel
         self.tank_list = tank_list
-        self.npc_node_hash = npc_node_hash
 
     @tornado.gen.coroutine
     def on_perform_async(self):
         # todo: Сделать единый механизм проверки консистентности и валидности состояния агента для всех транзакций
         yield super(TransactionGasStation, self).on_perform_async()
+
+        npc = self.get_npc_available_transaction(npc_type='npc_gas_station')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+            return
+
         agent = self.agent
         tank_list = self.tank_list
         ex_car = agent.example.car
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'npc_gas_station') or (ex_car is None):
-            log.warning('NPC not found: %s', self.npc_node_hash)
-            return  # todo: warning
-        if agent.current_location is None or npc not in self.agent.current_location.example.get_npc_list():
-            return  # todo: warning
         if not self.fuel:
             self.fuel = 0
         if ex_car.max_fuel < self.fuel + ex_car.fuel:
-            return  # todo: warning
+            log.warning('%r try to use many fuel (%s), than can', self, self.fuel)
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Недопустимое кол-во топлива!').post()
+            return
 
-        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        # Сохраняем текущий инвентарь в экзампл
         agent.inventory.save_to_example(time=self.time)
-        agent.inventory.del_all_visitors(time=self.time)
-        agent.inventory = None
 
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
@@ -205,9 +267,12 @@ class TransactionGasStation(TransactionEvent):
             if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tag_set):
                 sum_fuel += item.value_fuel
         sum_fuel = math.ceil(sum_fuel)
-        if sum_fuel > agent.example.balance:
-            return  # todo: Сообщение о недостатке средств
-        agent.example.balance -= sum_fuel
+        if sum_fuel > agent.balance:
+            self.repair_example_inventory()
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
+            return
+        agent.change_balance(-sum_fuel, self.time)
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
 
@@ -215,17 +280,16 @@ class TransactionGasStation(TransactionEvent):
         old_inventory = ex_car.inventory.items[:]
         ex_car.inventory.items = []
         for item in old_inventory:
-            if item.position and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tag_set) and item.full_tank:
+            if (item.position is not None) and (item.position in self.tank_list) and ('empty_fuel_tank' in item.tag_set) and item.full_tank:
                 new_tank = item.full_tank.instantiate()
                 yield new_tank.load_references()
                 new_tank.position = item.position
                 ex_car.inventory.items.append(new_tank)
             else:
                 ex_car.inventory.items.append(item)
-        # ex_car.inventory.placing()
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -237,24 +301,15 @@ class TransactionGasStation(TransactionEvent):
                                        info_string=info_string).post()
 
 
-class TransactionHangarSell(TransactionEvent):
-    def __init__(self, agent, npc_node_hash, **kw):
-        super(TransactionHangarSell, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-        self.npc_node_hash = npc_node_hash
-
+class TransactionHangarSell(TransactionTownNPC):
     def on_perform(self):
         super(TransactionHangarSell, self).on_perform()
 
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'hangar') or (self.agent.example.car is None):
-            log.warning('NPC not found: %s', self.npc_node_hash)
+        npc = self.get_npc_available_transaction(npc_type='hangar')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
 
-        if self.agent.current_location is None or \
-           npc not in self.agent.current_location.example.get_npc_list():
-            return
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         # Отправка сообщения о транзакции
         now_date = datetime.now()
@@ -264,36 +319,37 @@ class TransactionHangarSell(TransactionEvent):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
-        self.agent.example.balance += self.agent.example.car.price
+        self.agent.change_balance(self.agent.example.car.price, time=self.time)
         self.agent.example.car = None
-        self.agent.reload_inventory(time=self.time)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
 
-class TransactionHangarBuy(TransactionEvent):
-    def __init__(self, agent, car_number, npc_node_hash, **kw):
-        super(TransactionHangarBuy, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionHangarBuy(TransactionTownNPC):
+    def __init__(self, car_number, **kw):
+        super(TransactionHangarBuy, self).__init__(**kw)
         self.car_number = car_number
-        self.npc_node_hash = npc_node_hash
 
     @tornado.gen.coroutine
     def on_perform_async(self):
         yield super(TransactionHangarBuy, self).on_perform_async()
 
+        npc = self.get_npc_available_transaction(npc_type='hangar')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
+            return
+
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
         npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'hangar'):
-            log.warning('NPC not found: %s', self.npc_node_hash)
-            return
-        if self.agent.current_location is None or \
-           npc not in self.agent.current_location.example.get_npc_list() or \
-           len(npc.car_list) <= self.car_number:
+        if len(npc.car_list) <= self.car_number:
+            log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Выбран недоступный автомобиль!').post()
             return
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
-        agent_balance = self.agent.example.balance
+        agent_balance = self.agent.balance
         agent_balance += 0 if self.agent.example.car is None else self.agent.example.car.price
         # todo: refactoring (use inventory to choose car)
         if agent_balance >= car_proto.price:
@@ -314,46 +370,44 @@ class TransactionHangarBuy(TransactionEvent):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-            self.agent.reload_inventory(time=self.time)
-            self.agent.example.balance = agent_balance - car_proto.price
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.set_balance(agent_balance - car_proto.price, time=self.time)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
         else:
-            # todo: message to client if not enough money
-            pass
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
 
 
-class TransactionParkingSelect(TransactionEvent):
-    def __init__(self, agent, car_number, npc_node_hash, **kw):
-        super(TransactionParkingSelect, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionParkingSelect(TransactionTownNPC):
+    def __init__(self, car_number, **kw):
+        super(TransactionParkingSelect, self).__init__(**kw)
         self.car_number = car_number
-        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionParkingSelect, self).on_perform()
-        agent_ex = self.agent.example
 
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (self.car_number is None) or (npc is None) or (npc.type != 'parking'):
-            log.warning('NPC not found: %s', self.npc_node_hash)
+        npc = self.get_npc_available_transaction(npc_type='parking')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
             return
+
+        agent = self.agent
+        agent_ex = self.agent.example
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         car_list = [car for car in agent_ex.get_car_list_by_npc(npc)]
 
-        if self.agent.current_location is None or \
-           npc not in self.agent.current_location.example.get_npc_list() or \
-           (len(car_list) == 0) or \
-           len(car_list) <= self.car_number:
+        if self.car_number is None or len(car_list) <= self.car_number or len(car_list) == 0:
+            log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Выбран недоступный автомобиль!').post()
             return
 
         # Установка цены и может ли пользователь забрать машинка
         summ_for_paying = npc.get_car_price(car_list[self.car_number])
 
         # Процедура списывания денег и взятия машинки
-        if agent_ex.balance >= summ_for_paying:
-
+        if agent.balance >= summ_for_paying:
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
@@ -370,39 +424,29 @@ class TransactionParkingSelect(TransactionEvent):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventorey(time=time)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
-            agent_ex.balance -= summ_for_paying
+            agent.change_balance(-summ_for_paying, self.time)
 
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         else:
-            # todo: отправить сообщение о том, что недостаточно денег для данного действия
-            pass
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
 
 
-class TransactionParkingLeave(TransactionEvent):
-    def __init__(self, agent, npc_node_hash, **kw):
-        super(TransactionParkingLeave, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-        self.npc_node_hash = npc_node_hash
-
+class TransactionParkingLeave(TransactionTownNPC):
     def on_perform(self):
         super(TransactionParkingLeave, self).on_perform()
+
+        npc = self.get_npc_available_transaction(npc_type='parking')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+            return
         agent_ex = self.agent.example
-
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'parking') or (self.agent.example.car is None):
-            log.warning('NPC not found: %s', self.npc_node_hash)
-            return
-
-        if self.agent.current_location is None or \
-           npc not in self.agent.current_location.example.get_npc_list():
-            return
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         # Отправка сообщения о транзакции
         now_date = datetime.now()
@@ -418,41 +462,31 @@ class TransactionParkingLeave(TransactionEvent):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
-        self.agent.reload_inventory(time=self.time)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
 
-class TransactionArmorerApply(TransactionEvent):
-    def __init__(self, agent, armorer_slots, npc_node_hash, **kw):
-        super(TransactionArmorerApply, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionArmorerApply(TransactionTownNPC):
+    def __init__(self, armorer_slots, **kw):
+        super(TransactionArmorerApply, self).__init__(**kw)
         self.armorer_slots = armorer_slots
-        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionArmorerApply, self).on_perform()
+
+        npc = self.get_npc_available_transaction(npc_type='armorer')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+            return
+
         get_flags = '{}_f'.format
         agent = self.agent
-        # Получение NPC и проверка валидности совершения транзакции
-
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'armorer'):
-            log.warning('NPC not found: %s', self.npc_node_hash)
-            return
-        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
-            return
-
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
-            return
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
         agent.inventory.save_to_example(time=self.time)
-        agent.inventory.del_all_visitors(time=self.time)
-        agent.inventory = None
 
         # Заполняем буфер итемов
         ex_car = agent.example.car
@@ -514,7 +548,7 @@ class TransactionArmorerApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -526,33 +560,23 @@ class TransactionArmorerApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-class TransactionMechanicApply(TransactionEvent):
-    def __init__(self, agent, mechanic_slots, npc_node_hash, **kw):
-        super(TransactionMechanicApply, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionMechanicApply(TransactionTownNPC):
+    def __init__(self, mechanic_slots, **kw):
+        super(TransactionMechanicApply, self).__init__(**kw)
         self.mechanic_slots = mechanic_slots
-        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionMechanicApply, self).on_perform()
+
+        npc = self.get_npc_available_transaction(npc_type='mechanic')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+            return
+
         agent = self.agent
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'mechanic'):
-            log.warning('NPC not found: %s', self.npc_node_hash)
-            return
-        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
-            return
-
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
-            return
-
-        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        # Сохраняем текущий инвентарь в экзампл
         agent.inventory.save_to_example(time=self.time)
-        agent.inventory.del_all_visitors(time=self.time)
-        agent.inventory = None
 
         # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
         for slot_name in self.mechanic_slots.keys():
@@ -568,6 +592,9 @@ class TransactionMechanicApply(TransactionEvent):
                     log.warning('Try to LIE !!!! Error Transaction!!!')
                     log.warning([el for el in slot.tags])
                     log.warning([el for el in proto_item.tag_set])
+                    self.repair_example_inventory()
+                    messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Что-то пошло не так!').post()
                     return
 
         # Заполняем буфер итемов
@@ -614,7 +641,7 @@ class TransactionMechanicApply(TransactionEvent):
             agent.example.car.inventory.items.append(item)
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -626,41 +653,38 @@ class TransactionMechanicApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-class TransactionMechanicRepairApply(TransactionEvent):
-    def __init__(self, agent, hp, npc_node_hash, **kw):
-        super(TransactionMechanicRepairApply, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionMechanicRepairApply(TransactionTownNPC):
+    def __init__(self, hp, **kw):
+        super(TransactionMechanicRepairApply, self).__init__(**kw)
         self.hp = hp
-        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionMechanicRepairApply, self).on_perform()
-        agent = self.agent
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if npc is None:
-            log.warning('NPC not found: %s', self.npc_node_hash)
+        npc = self.get_npc_available_transaction(npc_type='mechanic')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
-            return
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
-            return
-        ex_car = agent.example.car
 
+        agent = self.agent
+        ex_car = agent.example.car
         if ex_car.max_hp < ex_car.hp + self.hp:
             log.warning('%s Try to lie in repair transaction', agent)
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Недопустимое значение ремонта!').post()
             return
         # todo: взять цену за ремонт одного HP откуда-то! Здание, NPC, или из самой машинки
         repair_cost = self.hp * 1
         repair_cost = math.ceil(repair_cost)
-        if agent.example.balance < repair_cost:
+        if agent.balance < repair_cost:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
             return
         if repair_cost <= 0:
             log.warning('%s Try to repair with cost = 0 NC', agent)
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Недопустимое значение ремонта!').post()
             return
         ex_car.hp = ex_car.hp + self.hp
-        agent.example.balance -= repair_cost
+        agent.change_balance(-repair_cost, self.time)
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -675,32 +699,22 @@ class TransactionMechanicRepairApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-class TransactionTunerApply(TransactionEvent):
-    def __init__(self, agent, tuner_slots, npc_node_hash, **kw):
-        super(TransactionTunerApply, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionTunerApply(TransactionTownNPC):
+    def __init__(self, tuner_slots, **kw):
+        super(TransactionTunerApply, self).__init__(**kw)
         self.tuner_slots = tuner_slots
-        self.npc_node_hash = npc_node_hash
 
     def on_perform(self):
         super(TransactionTunerApply, self).on_perform()
+
+        npc = self.get_npc_available_transaction(npc_type='tuner')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+            return
         agent = self.agent
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'tuner'):
-            log.warning('NPC not found: %s', self.npc_node_hash)
-            return
-        if agent.current_location is None or npc not in agent.current_location.example.get_npc_list():
-            return
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
-        # Проверяем есть ли у агента машинка
-        if not agent.example.car:
-            return
-
-        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        # Сохраняем текущий инвентарь в экзампл
         agent.inventory.save_to_example(time=self.time)
-        agent.inventory.del_all_visitors(time=self.time)
-        agent.inventory = None
 
         # todo: здесь можно сделать проход по self.tuner_slots для проверки по тегам.
         for slot_name in self.tuner_slots.keys():
@@ -716,6 +730,9 @@ class TransactionTunerApply(TransactionEvent):
                     log.warning('Try to LIE !!!! Error Transaction!!!')
                     log.warning([el for el in slot.tags])
                     log.warning([el for el in proto_item.tag_set])
+                    self.repair_example_inventory()
+                    messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Что-то пошло не так!').post()
                     return
 
         # Заполняем буфер итемов
@@ -763,7 +780,7 @@ class TransactionTunerApply(TransactionEvent):
             position += 1
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
-        agent.reload_inventory(time=self.time)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -775,38 +792,28 @@ class TransactionTunerApply(TransactionEvent):
                                        info_string=info_string).post()
 
 
-class TransactionTraderApply(TransactionEvent):
-    def __init__(self, agent, player_table, trader_table, npc_node_hash, **kw):
-        super(TransactionTraderApply, self).__init__(server=agent.server, **kw)
-        self.agent = agent
+class TransactionTraderApply(TransactionTownNPC):
+    def __init__(self, player_table, trader_table, **kw):
+        super(TransactionTraderApply, self).__init__(**kw)
         self.player_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in player_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
         self.trader_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
-        self.npc_node_hash = npc_node_hash
         self.position = 0
-
-    def cancel_transaction(self):
-        # Откатываемся к модельному инвентарю
-        self.agent.inventory.save_to_example(time=self.time)
 
     @tornado.gen.coroutine
     def on_perform_async(self):
         yield super(TransactionTraderApply, self).on_perform_async()
+
+        npc = self.get_npc_available_transaction(npc_type='trader')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+            return
+
         agent = self.agent
         ex_car = agent.example.car
-
-        trader = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
+        total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
         tr_msg_list = []
-
-        # Проверяем есть ли у агента машинка
-        if (ex_car is None) or (trader is None):
-            return  # todo: Как такое может случиться? Может быть здесь должен быть assert?
-
-        # Проверяем находится ли агент в локации с торговцем
-        if not (isinstance(agent.current_location, Town) and (trader in agent.current_location.example.get_npc_list())):
-            return  # todo: а как может быть иначе? Может быть здесь должно быть исключение?
 
         # Сохраняем инвентарь в екзампл
         agent.inventory.save_to_example(time=self.time)
@@ -818,13 +825,17 @@ class TransactionTraderApply(TransactionEvent):
 
             # Проверяем есть ли итем в нужном количестве
             if (item_ex is None) or (item_ex.amount < table_rec['count']):
-                self.cancel_transaction()
+                self.repair_example_inventory()
+                messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'{} отсутствует в нужном количестве!'.format(item_ex.title)).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
-            price = trader.get_item_price(item=item_ex)
+            price = npc.get_item_price(item=item_ex)
             if price is None:
-                self.cancel_transaction()
+                self.repair_example_inventory()
+                messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'{} не продаётся и не покупается!'.format(item_ex.title)).post()
                 return
             item_sale_price = price.get_price(item=item_ex, agent=agent)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
@@ -842,11 +853,13 @@ class TransactionTraderApply(TransactionEvent):
         # Обход столика торговца, зачисление итемов и расчет стоимости
         buy_price = 0  # цена того что игрок покупает
         for table_rec in self.trader_table:
-            price = trader.get_item_by_uid(uid=table_rec['uid'])
+            price = npc.get_item_by_uid(uid=table_rec['uid'])
 
             # Проверяем есть ли итем в нужном количестве
             if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
-                self.cancel_transaction()
+                self.repair_example_inventory()
+                messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'{} отсутствует в нужном количестве!'.format(price.item.title)).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
@@ -864,38 +877,40 @@ class TransactionTraderApply(TransactionEvent):
         if len(ex_car.inventory.items) > ex_car.inventory.size:
             ex_car.inventory.packing()
         if len(ex_car.inventory.items) > ex_car.inventory.size:
-            self.cancel_transaction()
+            self.repair_example_inventory()
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Недостаточно свободных слотов!').post()
             return
 
         # Проверяем хватает ли денег на все про все
-        if (agent.example.balance + sale_price - buy_price) < 0:
-            self.cancel_transaction()
+        if (agent.balance + sale_price - buy_price) < 0:
+            self.repair_example_inventory()
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
             return
-        agent.example.balance += sale_price - buy_price
+        agent.change_balance(sale_price - buy_price, self.time)
 
         # Перезагружаем модельный инвентарь
-        agent.reload_inventory(time=self.time, save=False)
+        agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Изменение цен у торговца
         for item_pair in total_items_buy_sale:
             item, count = item_pair
-            trader.change_price(item, count)
+            npc.change_price(item, count)
 
         # рассылка новых цен всем агентам
-        trader.send_prices(location=agent.current_location, time=self.time)
+        npc.send_prices(location=agent.current_location, time=self.time)
 
         for msg in tr_msg_list:
-            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=trader.node_html(),
+            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=msg).post()
         # Мессадж завершения транзакции
-        messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=trader.node_hash()).post()
+        messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
 
 
-class TransactionSetRPGState(TransactionEvent):
-    def __init__(self, agent, npc_node_hash, skills, buy_skills, perks, **kw):
-        super(TransactionSetRPGState, self).__init__(server=agent.server, **kw)
-        self.agent = agent
-        self.npc_node_hash = npc_node_hash
+class TransactionSetRPGState(TransactionTownNPC):
+    def __init__(self, skills, buy_skills, perks, **kw):
+        super(TransactionSetRPGState, self).__init__(**kw)
         self.skills = skills
         self.buy_skills = buy_skills
         self.perks = perks
@@ -922,16 +937,11 @@ class TransactionSetRPGState(TransactionEvent):
     def on_perform(self):
         # todo: (!!!) REVIEW
         super(TransactionSetRPGState, self).on_perform()
-        agent = self.agent
 
-        # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
-        if (npc is None) or (npc.type != 'trainer'):
-            log.warning('NPC not found: %s', self.npc_node_hash)
+        npc = self.get_npc_available_transaction(npc_type='trainer')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
             return
-
-        if (agent.current_location is None) or (npc not in agent.current_location.example.get_npc_list()):
-            return  # todo: warning
+        agent = self.agent
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.example.exp)
@@ -946,6 +956,8 @@ class TransactionSetRPGState(TransactionEvent):
             cur_sp += skill
 
         if cur_sp > max_sp:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Текущее значение навыков недопустимо!').post()
             return  # todo: warning
 
         # Проверяем перки
@@ -955,6 +967,8 @@ class TransactionSetRPGState(TransactionEvent):
             if self.perks[perk_node_hash][u'state']:
                 cur_p += 1
         if cur_p > max_p:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Текущее значение перков недопустимо!').post()
             return  # todo: warning
 
         for perk in agent.server.reg['rpg_settings/perks'].deep_iter():
@@ -962,12 +976,16 @@ class TransactionSetRPGState(TransactionEvent):
 
         for perk_node_hash in self.perks:
             if self.perks[perk_node_hash][u'state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
+                messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Данный перк нельзя прокачать %s!'.format(perk_node_hash)).post()
                 return  # todo: warning
 
         for buy_skill_name in self.buy_skills:
             if hasattr(self.agent.example, buy_skill_name):
                 buy_skill = getattr(self.agent.example, buy_skill_name, None)
                 if self.buy_skills[buy_skill_name] < buy_skill.value:
+                    messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Недопустимое значение покупных навыков!').post()
                     return  # todo: warning
 
         # Считаем стоимость транзакции и проверяем хватает ли денег
@@ -997,9 +1015,11 @@ class TransactionSetRPGState(TransactionEvent):
                 for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
                     price += buy_skill.price[val]
 
-        if price > agent.example.balance:
-            return  # todo: message "нету денег"
-        agent.example.balance -= price
+        if price > agent.balance:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
+            return
+        agent.change_balance(-price, self.time)
 
         # Устанавливаем состояние
         self.agent.example.driving.value = self.skills[u'driving']
@@ -1032,3 +1052,55 @@ class TransactionSetRPGState(TransactionEvent):
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+
+
+class BagExchangeStartEvent(TransactionTownNPC):
+    def __init__(self, car_uid, **kw):
+        super(BagExchangeStartEvent, self).__init__(**kw)
+        self.car_uid = None if car_uid is None else UUID(car_uid)
+
+    def on_perform(self):
+        super(BagExchangeStartEvent, self).on_perform()
+
+        npc = self.get_npc_available_transaction(npc_type='parking')
+        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True, with_barter=False):
+            return
+
+        agent = self.agent
+
+        if self.car_uid is None:
+            agent.reload_parking_bag(new_example_inventory=None, time=self.time)
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Выбрана недоступная машинка!').post()
+            return
+
+        car_list = [car for car in agent.example.get_car_list_by_npc(npc)]
+
+        target_car_ex = None
+        for car in car_list:
+            if car.uid == self.car_uid:
+                target_car_ex = car
+        if not target_car_ex:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'Выбрана недоступная машинка!').post()
+            return
+
+        # Списать деньги за стоянку, обновить время установки машинки на стоянку
+        car_price = npc.get_car_price(target_car_ex)
+        if agent.balance < car_price:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                     replica=u'У вас недостаточно стредств!').post()
+            return
+        agent.change_balance(-car_price, self.time)
+        target_car_ex.date_setup_parking = time.mktime(datetime.now().timetuple())
+
+        # Создать инвентарь
+        agent.reload_parking_bag(new_example_inventory=target_car_ex.inventory, time=self.time)
+
+        # Отправить месадж для подготовки вёрстки (создание дива) инвентаря
+        ParkingBagMessage(agent=agent, parking_bag=agent.parking_bag, parking_npc=npc, car_title=target_car_ex.title,
+                          time=self.time).post()
+        # Отправить сообщения об обноволении
+        # todo: Сделать сообщение-обновление цен машинок у парковщика
+        messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()

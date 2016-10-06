@@ -84,6 +84,11 @@ $(document).ready(function () {
         window.open('https://vk.com/road_dogs', '_blank');
     };
 
+    document.getElementById('divMainMenuBtnRadio').onclick = function () {
+        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, null);
+        returnFocusToMap();
+    };
+
     $('.anti-click-class').click(function(){
         returnFocusToMap();
     });

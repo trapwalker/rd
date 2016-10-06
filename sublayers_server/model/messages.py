@@ -12,6 +12,7 @@ import os.path
 import tornado.template
 from tornado.options import options
 
+
 def make_push_package(events):
     serv_time = events[0].agent.server.get_time()
     events = [event.as_dict() for event in events]
@@ -728,15 +729,17 @@ class QuestUpdateMessage(Message):
         return d
 
 
-class SetupTraderReplica(Message):
-    def __init__(self, replica, **kw):
-        super(SetupTraderReplica, self).__init__(**kw)
+class NPCReplicaMessage(Message):
+    def __init__(self, replica, npc, **kw):
+        super(NPCReplicaMessage, self).__init__(**kw)
         self.replica = replica
+        self.npc = npc
 
     def as_dict(self):
-        d = super(SetupTraderReplica, self).as_dict()
+        d = super(NPCReplicaMessage, self).as_dict()
         d.update(
             replica=self.replica,
+            npc_node_hash=None if self.npc is None else self.npc.node_hash(),
         )
         return d
 
@@ -1029,7 +1032,7 @@ class TraderInfoMessage(NPCInfoMessage):
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
 
-        d['agent_balance'] = self.agent.example.balance
+        d['agent_balance'] = self.agent.balance
         d['trader_assortment'] = npc.get_trader_assortment(agent=self.agent)
         if self.agent.example.car:
             d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.car.inventory.items)
@@ -1130,4 +1133,14 @@ class PartyUserInfoMessage(Message):
                     car_name = player.example.car.title,
                     html_car_img=template_img.generate(car=player.example.car)
                 )
+        return d
+
+
+class ChangeAgentBalance(Message):
+    def as_dict(self):
+        d = super(ChangeAgentBalance, self).as_dict()
+        d.update(
+            agent_balance=self.agent.balance,
+            uid=self.agent.uid
+        )
         return d

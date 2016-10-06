@@ -15,6 +15,7 @@ var ModalWindow = (function () {
         this.modalRestart = $('#' + divs.modalRestart);
         this.modalDialogInfo = $('#modalInfoPage');
         this.modalAnswerInfo = $('#modalAnswerPage');
+        this.modalItemDivision = $('#modalItemDivisionPage');
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -25,6 +26,7 @@ var ModalWindow = (function () {
         this.modalRestart.addClass('modal-window-hide');
         this.modalDialogInfo.addClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-hide');
+        this.modalItemDivision.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
@@ -33,6 +35,7 @@ var ModalWindow = (function () {
         this.modalRestartLoad();
         this.modalDialogInfoLoad();
         this.modalDialogAnswerLoad();
+        this.modalItemDivisionLoad();
     }
 
     ModalWindow.prototype._modalBackShow = function () {
@@ -78,8 +81,6 @@ var ModalWindow = (function () {
         });
 
     };
-
-
 
 
     ModalWindow.prototype.modalOptionsShow = function () {
@@ -173,7 +174,6 @@ var ModalWindow = (function () {
     };
 
 
-
     ModalWindow.prototype.modalDeathShow = function () {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
         this._modalBackShow();
@@ -244,7 +244,6 @@ var ModalWindow = (function () {
     };
 
 
-
     ModalWindow.prototype.modalDialogInfoShow = function (options) {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
         var self = this;
@@ -272,8 +271,6 @@ var ModalWindow = (function () {
             if (typeof(cb_ok) === 'function')
                 cb_ok(event);
         });
-
-
     };
 
     ModalWindow.prototype.modalDialogInfoHide = function(){
@@ -290,7 +287,6 @@ var ModalWindow = (function () {
         var self = this;
         this.modalDialogInfo.load('/static/modal_window/dialogInfoPage.html', function(){});
     };
-
 
 
     ModalWindow.prototype.modalDialogAnswerShow = function (options) {
@@ -329,8 +325,6 @@ var ModalWindow = (function () {
             if (typeof(cb_cancel) === 'function')
                 cb_cancel(event);
         });
-
-
     };
 
     ModalWindow.prototype.modalDialogAnswerHide = function(){
@@ -347,6 +341,126 @@ var ModalWindow = (function () {
         this.modalAnswerInfo.load('/static/modal_window/dialogAnswerPage.html', function(){});
     };
 
+
+    ModalWindow.prototype.modalItemDivisionSetCount = function (count) {
+        this.stop_division_event = true;
+        if (count > this.division_max_count) count = this.division_max_count;
+        if (count < 0) count = 0;
+        this.division_count = count;
+
+        this.modalItemDivision.find('#divisionItemCountSpan').text(count);
+        this.modalItemDivision.find('#itemDivision-edit').val(count);
+
+        var prc = this.division_max_count ? Math.round(count / this.division_max_count * 100) : 0;
+        this.modalItemDivision.find('.division-item-progress').css('width', prc + '%');
+
+        this.stop_division_event = false;
+    };
+
+    ModalWindow.prototype.modalItemDivisionShow = function (options) {
+        var self = this;
+        this._modalBackShow();
+        options = options || {};
+
+        this.modalItemDivision.removeClass('modal-window-hide');
+        this.modalItemDivision.addClass('modal-window-show');
+        document.getElementById('itemDivision-edit').focus();
+
+        if (options.max_count)
+            this.division_max_count = options.max_count;
+        else
+            this.division_max_count = 0;
+        this.modalItemDivision.find('#divisionItemTotalSpan').text(this.division_max_count);
+        this.modalItemDivisionSetCount(0);
+
+        var caption = this.modalItemDivision.find('.division-item-info-caption').first();
+        var img = this.modalItemDivision.find('.division-item-info-image').first();
+
+        if (options.item) {
+            caption.text(options.item.title);
+            img.css('background', 'transparent url(' + options.item.inv_icon_mid + ') no-repeat center');
+        }
+        else {
+            caption.text('');
+            img.css('background', 'none');
+        }
+
+        var btn_ok = this.modalItemDivision.find('#divisionItemBtnOK');
+        btn_ok.off('click');
+        btn_ok.on('click', function(event) {
+            self.modalItemDivisionHide();
+            var cb_ok = options.callback_ok;
+            if ((typeof(cb_ok) === 'function') && self.division_count)
+                cb_ok(self.division_count);
+        });
+
+        var btn_cancel = this.modalItemDivision.find('#divisionItemBtnCancel');
+        btn_cancel.off('click');
+        btn_cancel.on('click', function(event) {
+            self.modalItemDivisionHide();
+            var cb_cancel = options.callback_cancel;
+            if (typeof(cb_cancel) === 'function')
+                cb_cancel(event);
+        });
+    };
+
+    ModalWindow.prototype.modalItemDivisionHide = function(){
+        this._modalBackHide();
+        this.modalItemDivision.removeClass('modal-window-show');
+        this.modalItemDivision.addClass('modal-window-hide');
+    };
+
+    ModalWindow.prototype.modalItemDivisionLoad = function () {
+        var self = this;
+        this.modalItemDivision.load('/static/modal_window/itemDivision.html', function() {
+            var btn_plus = self.modalItemDivision.find('#divisionItemBtnPlus');
+            btn_plus.mousedown(function(event) {
+                self.modalItemDivisionSetCount(self.division_count + 1);
+                stopEvent(event);
+            });
+            btn_plus.mousemove(function(event) {
+                if (!self.division_drag_start) stopEvent(event);
+            });
+
+            var btn_minus = self.modalItemDivision.find('#divisionItemBtnMinus');
+            btn_minus.mousedown(function(event) {
+                self.modalItemDivisionSetCount(self.division_count - 1);
+                stopEvent(event);
+            });
+            btn_minus.mousemove(function(event) {
+                if (!self.division_drag_start) stopEvent(event);
+            });
+
+            var progress_scale = self.modalItemDivision.find('.division-item-progress-wrap');
+            progress_scale.mousedown(function(event) {
+                var part = event.offsetX;
+                var total = $(this).width();
+                self.modalItemDivisionSetCount(Math.round(self.division_max_count * (part / total)));
+            });
+            progress_scale.mousemove(function(event) {
+                if (event.buttons != 1) return;
+                self.division_drag_start = true;
+                var total = progress_scale.width();
+                var part = event.pageX - progress_scale.offset().left;
+                part = Math.min(Math.max(part, 0), total);
+                self.modalItemDivisionSetCount(Math.round(self.division_max_count * (part / total)));
+            });
+            progress_scale.mouseleave(function(event) { self.division_drag_start = false; });
+            progress_scale.mouseup(function(event) { self.division_drag_start = false; });
+
+            self.modalItemDivision.find('#itemDivision-edit').change(function(event) {
+                if (self.stop_division_event) return;
+                var new_count = parseInt($(this).val());
+                if (!new_count)
+                    new_count = 0;
+                self.modalItemDivisionSetCount(new_count);
+            });
+            self.modalItemDivision.draggable({
+                handle: self.modalItemDivision.find('.windowDragCloseHeader-main').first(),
+                containment: "parent"
+            });
+        });
+    };
 
     return ModalWindow;
 })();

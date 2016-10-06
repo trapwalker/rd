@@ -9,6 +9,7 @@ var LocationManager = (function () {
             menu_screen: null
         };
 
+        this.uid = null;
         this.location_cls = '';
         this.in_location_flag = false;
 
@@ -21,6 +22,41 @@ var LocationManager = (function () {
 
         this.jq_town_div = $('#activeTownDiv');
 
+        // Все что выкинется из инвентаря в городе упадет сюда
+        $('#activeTownDivBack').droppable({
+            greedy: true,
+            drop: function(event, ui) {
+                if (!ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) return;
+                var owner_id = ui.draggable.data('owner_id');
+                var pos = ui.draggable.data('pos');
+                if (!owner_id || (!pos && (pos != 0))) return;
+
+                // Если это итем из мусорки то ниче не делать
+                if (owner_id == locationManager.uid) return;
+
+                // Эта проверка нужна так как таскание окон также порождает событие дропа
+                var item = null;
+                try {
+                    item = inventoryList.getInventory(owner_id).getItem(pos);
+                }
+                catch (e) {
+                    console.warn('Не найден инвентерь или итем в инвентаре:', ui.draggable);
+                    item = null;
+                }
+
+                modalWindow.modalDialogAnswerShow({
+                    caption: 'Inventory Operation',
+                    header: 'Выбросить?',
+                    body_text: 'Вы уверены, что хотите выбросить ' + item.example.title + ' на свалку?',
+                    callback_ok: function() {
+                        clientManager.sendItemActionInventory(owner_id, pos, locationManager.uid, null);
+                    }
+                });
+
+                stopEvent(event);
+            }
+        });
+
         // Дикт всех зданий
         this.buildings = {};
 
@@ -32,6 +68,9 @@ var LocationManager = (function () {
 
         // Локация чат
         this.location_chat = null;
+
+        // Свалка
+        this.dump = null;
 
         // Для различных эффектов в городе
         this.location_canvas_manager = new LocationCanvasManager();
@@ -71,6 +110,9 @@ var LocationManager = (function () {
                 $('#layer2').css('display', 'block');
                 $('#landscape').css('display', 'block');
 
+                // Показать кнопку Свалка
+                $('#townDumpTempButton').css('display', 'block');
+
                 locationManager.setBtnState(1, '', false);
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
@@ -96,7 +138,9 @@ var LocationManager = (function () {
 
     LocationManager.prototype.onEnter = function (data) {
         //console.log('LocationManager.prototype.onEnter', data);
+
         this.onExit();
+        this.uid = data.location.uid;
         this.example = data.location.example;
 
         this.location_cls = data.location.cls;
@@ -107,6 +151,12 @@ var LocationManager = (function () {
         // Вставляем верстку города
         this.jq_town_div.append(data.location_html);
         $('#activeTownDivBack').css('display', 'block');
+
+        // Свалка
+        this.dump = new LocationDump(this.jq_town_div);
+        this.jq_town_div.find('#townDumpTempButton').click(function() {
+            if (locationManager.dump) locationManager.dump.activate();
+        });
 
         // Установить дивы панелей
         this.panel_left.init(this.jq_town_div.find('#townLeftPanel'));
@@ -156,6 +206,10 @@ var LocationManager = (function () {
 
          // Вызов OnExit для локаций, неписей и тд... Делается ДО удаления вёрстки
         if (this.location_menu) this.location_menu.on_exit();
+
+        this.uid = null;
+
+        this.dump = null;
 
         chat.showChatInMap();
 
@@ -249,6 +303,7 @@ var LocationManager = (function () {
                 this.npc[key].update();
 
         if (this.location_menu) this.location_menu.update();
+        if (this.dump) this.dump.update();
     };
 
     LocationManager.prototype.isActivePlace = function (location_place) {
@@ -266,6 +321,17 @@ var LocationManager = (function () {
             default:
                 return (new LocationPlaceBuilding(building_rec, jq_town_div));
         }
+    };
+
+    LocationManager.prototype.get_current_active_place = function() {
+        return this.screens[this.active_screen_name];
+    };
+
+    LocationManager.prototype.get_npc_by_node_hash = function(npc_node_hash){
+        for(var key in this.npc)
+            if (this.npc.hasOwnProperty(key) && this.npc[key].npc_rec.node_hash == npc_node_hash)
+                return this.npc[key];
+        return null;
     };
 
     return LocationManager;
@@ -319,9 +385,7 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.panel-info-npc-transaction-info').first();
         jq_panel.css('display', 'block');
 
-        jq_panel.find('.npc-transaction-info-money').text('0 нукойнов');
-        if (user.example_agent)
-            jq_panel.find('.npc-transaction-info-money').text(user.example_agent.balance + ' нукойнов');
+        clientManager._viewAgentBalance(jq_panel);
 
         var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
         jq_transaction_list.empty();
@@ -394,6 +458,9 @@ var LocationPlace = (function () {
         $('.building-back').css('display', 'none');
         $('.townPageWrap').css('display', 'none');
 
+        // Спрятать кнопку Свалка
+        $('#townDumpTempButton').css('display', 'none');
+
         // Включить своё окно
         this.jq_main_div.css('display', 'block');
         if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
@@ -425,6 +492,7 @@ var LocationPlace = (function () {
     };
 
     LocationPlace.prototype.set_header_text = function (html_text) {
+        //console.log('LocationPlace.prototype.set_header_text', this, html_text);
         if (!locationManager.isActivePlace(this)) return;
         var jq_header_text = this.jq_main_div.find('.npc-text');
         jq_header_text.empty();
@@ -563,6 +631,9 @@ var LocationPlaceBuilding = (function (_super) {
                 locationManager.screens[this.screen_name] = null;
             else // если нет, то записаться в последний активный
                 locationManager.screens[locationManager.active_screen_name] = null;
+
+            // Показать кнопку Свалка
+            $('#townDumpTempButton').css('display', 'block');
 
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);

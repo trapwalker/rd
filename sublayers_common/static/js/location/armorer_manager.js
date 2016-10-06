@@ -238,6 +238,7 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.reDrawItem = function(position) {
         //console.log('LocationArmorerNPC.prototype.reDrawItem');
+        var self = this;
         if (position.toString().indexOf('slot') >= 0) {
             // Позиция в слотах
             var top_slot = $('#top_' + position);
@@ -330,8 +331,20 @@ var LocationArmorerNPC = (function (_super) {
                     revertDuration: 0,
                     zIndex: 1,
                     appendTo: '#location-content',
-                    start: LocationPlace.start_drag_handler,
-                    drag: LocationPlace.drag_handler
+                    start: function (event, ui) {
+                        LocationPlace.start_drag_handler(event, ui);
+                        var pos = $(event.target).data('pos');
+                        if (pos.toString().indexOf('slot') < 0) {
+                            self.jq_main_div.find('.armorer-itemWrap-' + pos).children().first().css('display', 'none');
+                        }
+                    },
+                    drag: LocationPlace.drag_handler,
+                    stop: function(event, ui) {
+                        var pos = $(event.target).data('pos');
+                        if (pos.toString().indexOf('slot') < 0) {
+                            self.jq_main_div.find('.armorer-itemWrap-' + pos).children().first().css('display', 'block');
+                        }
+                    }
                 });
             }
             itemWrapDiv.append(itemDiv);
@@ -474,16 +487,19 @@ var LocationArmorerNPC = (function (_super) {
         locationManager.panel_right.show({text: ''}, 'description');
     };
 
-    LocationArmorerNPC.prototype.set_header_text = function() {
+    LocationArmorerNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
         // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
-        var jq_text_div = $('<div></div>');
-        if (user.example_car) {
-            jq_text_div.append('<div>Давай повесим пушек на твоё корыто</div>');
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
+            if (user.example_car) {
+                jq_text_div.append('<div>Давай повесим пушек на твоё корыто</div>');
+            }
+            else
+                jq_text_div.append('<div>А машина где? Угнали?</div>');
+            html_text = jq_text_div;
         }
-        else
-            jq_text_div.append('<div>А машина где? Угнали?</div>');
-        _super.prototype.set_header_text.call(this, jq_text_div);
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!

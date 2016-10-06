@@ -73,10 +73,10 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/tuner.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/hangar.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/nucoil.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('css/templates/locations/town_main.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/trader.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/trainer.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/girl.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/locations/dump.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/npc_gas_station.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/nucoil_building.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/location_menu.css') }}"/>
@@ -93,6 +93,7 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/journal/journal_window_parking.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/party_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/person_window.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/menu/radio_window.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
@@ -179,6 +180,7 @@
     <script src="{{ static_url('js/location/npc_gas_station.js') }}"></script>
     <script src="{{ static_url('js/location/visitor_manager.js') }}"></script>
     <script src="{{ static_url('js/location/interaction_manager.js') }}"></script>
+    <script src="{{ static_url('js/location/dump_manager.js') }}"></script>
     <script src="{{ static_url('js/barter_manager.js') }}"></script>
     <script src="{{ static_url('js/menu/character_manager.js') }}"></script>
     <script src="{{ static_url('js/menu/car_manager.js') }}"></script>
@@ -208,7 +210,7 @@
         <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">Пати</div>
         <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Сайт</div>
         <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Сообщество</div>
-        <!--<div id="divMainMenuBtnLog" class="main-menu-btn-up sublayers-clickable">Log</div>-->
+        <div id="divMainMenuBtnRadio" class="main-menu-btn-up sublayers-clickable">Радио</div>
         <!--<div id="divMainMenuBtnNucoil" class="main-menu-btn-up sublayers-clickable">Nucoil</div>-->
         <!--<div id="divMainMenuBtnOptions" class="main-menu-btn-up sublayers-clickable">Options</div>-->
         <!--<div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Forum</div>-->
@@ -245,6 +247,7 @@
         <div id="modalRestart"></div>
         <div id="modalInfoPage"></div>
         <div id="modalAnswerPage"></div>
+        <div id="modalItemDivisionPage"></div>
     </div>
 
     <div id="activeTownDivBack">

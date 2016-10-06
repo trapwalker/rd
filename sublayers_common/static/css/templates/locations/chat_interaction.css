@@ -213,3 +213,11 @@
     cursor: url('/static/img/cursors/text.png'), text;
 }
 
+.chat-interaction-main .barterInventoryWindow-window-wrap {
+    border: 0px;
+    height: 100%;
+}
+
+.chat-interaction-main .barterInventoryWindow-inventory-wrap { height: 310px; }
+
+.chat-interaction-main .barterInventoryWindow-table-money-config { height: calc(100% - 24px); }

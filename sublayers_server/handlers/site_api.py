@@ -87,7 +87,7 @@ class APIGetUserInfoHandler(BaseHandler):
             user_info['trading'] = agent.example.trading.value
             user_info['leading'] = agent.example.leading.value
             user_info['about_self'] = agent.example.about_self  # Досье
-            user_info['balance'] = agent.example.balance
+            user_info['balance'] = agent.balance
             # todo: сделать пересылку правильных параметров
             user_info['lvl'] = '5'
 
