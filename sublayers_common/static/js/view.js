@@ -5,6 +5,39 @@ $(document).ready(function () {
 
     mapManager._init();
 
+
+    // Тест PreloaderImage Начало
+
+    // Чтобы всегда картинки заново грузулились
+    function random_str() { return (Math.random() * 10000).toFixed(0); }
+
+    function pi_test_1(load) {console.log('pi_test_1 =', preloaderImage.count_loading, load, preloaderImage.tasks); }
+    function pi_test_2(load) {console.log('pi_test_2 =', preloaderImage.count_loading, load, preloaderImage.tasks); }
+    function pi_test_3(load) {console.log('pi_test_3 =', preloaderImage.count_loading, load, preloaderImage.tasks); }
+
+
+    resourceLoadManager.add(preloaderImage);
+
+    function pi_test_4(load) {
+        console.log('pi_test_4 =', preloaderImage.count_loading, load, preloaderImage.tasks);
+        resourceLoadManager.del(preloaderImage);
+    }
+
+    //preloaderImage.add('/static/static_site/img/09-06-16/1080_main_bg.jpg?' + random_str(), pi_test_1);
+    //preloaderImage.add('/static/static_site/img/09-06-16/1080_car.png?' + random_str(), pi_test_2);
+    //preloaderImage.add('/static/static_site/img/09-06-16/1080_road.png?' + random_str(), pi_test_1, 10);
+    //preloaderImage.add('/static/static_site/img/09-06-16/1080_road+grid_002.png?' + random_str(), pi_test_1);
+
+    preloaderImage.add_list([
+        '/static/static_site/img/09-06-16/1080_main_bg.jpg?' + random_str(),
+        '/static/static_site/img/09-06-16/1080_car.png?' + random_str(),
+        '/static/static_site/img/09-06-16/1080_road.png?' + random_str(),
+        '/static/static_site/img/09-06-16/1080_road+grid_002.png?' + random_str()
+    ], pi_test_4, 10);
+
+
+    // Тест PreloaderImage Конец
+
     locationManager = new LocationManager();
     mapCanvasManager = new MapCanvasManager();
     wStrategyModeManager = new WStrategyModeManager();
