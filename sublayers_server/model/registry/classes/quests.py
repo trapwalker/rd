@@ -226,11 +226,6 @@ class Quest(Root):
         state = self.state
         return state and state.result
 
-    def instantiate(self, *av, **kw):
-        inst = super(Quest, self).instantiate(*av, **kw)
-        #inst.key = inst.gen_key(**kw)
-        return inst
-
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()
         d.update(
