@@ -9,8 +9,9 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
-
 from sublayers_server.model.events import ChangeAgentBalanceEvent
+
+from itertools import chain
 
 
 class Agent(Root):
@@ -166,6 +167,10 @@ class Agent(Root):
             reinst = True,
         ),
     )
+
+    @property
+    def quests(self):
+        return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
 
     def __init__(self, **kw):
         super(Agent, self).__init__(**kw)
