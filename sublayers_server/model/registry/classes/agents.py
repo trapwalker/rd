@@ -142,6 +142,31 @@ class Agent(Root):
         reinst=True,
     )
 
+    quests_unstarted = ListField(
+        caption=u"Список доступных (невзятых) квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+    quests_active = ListField(
+        caption=u"Список активных квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+    quests_ended = ListField(
+        caption=u"Список законченных квестов (пройденных или проваленных)",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+
     def __init__(self, **kw):
         super(Agent, self).__init__(**kw)
         self._agent_model = None

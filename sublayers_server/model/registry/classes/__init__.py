@@ -16,6 +16,6 @@ import skills
 import world
 import trader
 
-import quests2
+import quests
 
 #import _test
