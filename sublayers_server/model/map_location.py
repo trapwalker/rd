@@ -69,11 +69,11 @@ class MapLocation(Observer):
         #                 # todo: (!) Проверить quest на unicode
         #                 quest_uri = URI(quest)
         #                 quest = quest_uri.resolve()
-        #                 quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))
-        #                 if quest_key not in agent.quests:
+        #                 quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))  # todo: delete "gen_key"
+        #                 if quest_key not in agent.quests:  # todo: delete "agent.quests"
         #                     log.info('new quest %r', quest)
         #                     new_quest = quest.instantiate(agents=[agent], npc=head, **dict(quest_uri.params))
-        #                     agent.add_quest(quest=new_quest, time=time)
+        #                     delete :: agent.add_quest(quest=new_quest, time=time)
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
 

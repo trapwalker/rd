@@ -94,9 +94,6 @@ class Institution(Root):
     #     base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.quests.Quest'),
     # )
 
-    def as_dict4quest(self):  # todo: устранить
-        pass
-
 
 class Trainer(Institution):
     drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags='client')

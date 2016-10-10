@@ -156,8 +156,9 @@ class AgentConsoleNamespace(Namespace):
                 log.debug('Quest %s started', quest)
 
     def qi(self):
-        for k, q in self.agent.quests.items():
-            log.info('QUEST: {}:: {}'.format(k, q))
+        pass  # todo: make quests list iterator
+        # for k, q in self.agent.quests.items():
+        #     log.info('QUEST: {}:: {}'.format(k, q))
 
 
 class UpdateAgentAPIEvent(Event):

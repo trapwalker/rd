@@ -16,6 +16,26 @@ from sublayers_server.model.registry.odm.fields import (
 from functools import partial
 
 
+class QuestException(Exception):
+    pass
+
+
+class Cancel(QuestException):
+    pass
+
+
+def script_compile(code, fn):
+    import __future__
+    return compile(
+        code, fn, 'exec',
+        flags=(0
+           | __future__.unicode_literals.compiler_flag
+           | __future__.print_function.compiler_flag
+           | __future__.division.compiler_flag
+           ),
+    )
+
+
 class EventHandler(Subdoc):
     event = StringField(doc=u"Сигнатура события: onDie, onEnterLocation, onQuest")
     id = StringField(doc=u"Идентификатор события. Локальное имя события внутри квеста.")
@@ -108,17 +128,9 @@ class QuestState(Root):
             return
 
         # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
-        fn = '{uri}#states[{state.id}].on_extit'.format(uri=quest.node_hash(), state=self, attr=handler)
-        import __future__
+        fn = '{uri}#states[{state.id}].{attr}'.format(uri=quest.node_hash(), state=self, attr=handler)
         try:
-            code = compile(
-                code_text, fn, 'exec',
-                flags=(0
-                    | __future__.unicode_literals.compiler_flag
-                    | __future__.print_function.compiler_flag
-                    | __future__.division.compiler_flag
-                ),
-            )
+            code = script_compile(code_text, fn)
         except SyntaxError as e:
             log.error('Syntax error in quest handler.')
             raise e
@@ -165,6 +177,8 @@ class Quest(Root):
         doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
     )
 
+    on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
+        Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
     caption = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
     text = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
     text_short = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
@@ -217,20 +231,6 @@ class Quest(Root):
         #inst.key = inst.gen_key(**kw)
         return inst
 
-    # todo: make questkey system
-    def gen_key(self, agent=None, npc=None, **kw):
-        u"""Генерирует ключ уникальности квеста для агента.
-        Этот ключ определяет может ли агент получить этот квест у данного персонажа.
-        Перекрывая этот метод в квестах можно добиться запрета повторной выдачи квеста как в глобальном,
-        так и в локальном смысле. В ключ можно добавлять дополнительные обстоятельства, например если мы взяли квест по
-        доставке фуфаек и больше не должны иметь возможности взять этот квест по фуфайкам, зато можно взять по доставке
-        медикаментов, то нужно включить в кортеж ключа uri прототипа доставляемого товара.
-        """
-        if agent is None:
-            agent = self.agent
-
-        return self.uid, agent and agent.uid, npc and npc.uid
-
     def as_client_dict(self):
         d = super(Quest, self).as_client_dict()
         d.update(
@@ -242,8 +242,39 @@ class Quest(Root):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
+    def generate(self, agent, event, **kw):
+        """
+        :param agent: sublayers_server.model.registry.classes.agents.Agent
+        :param event: sublayers_server.model.events.Event
+        """
+        code_text = self.on_generate
+        if not code_text:
+            return
+
+        # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
+        fn = '{uri}#.{attr}'.format(uri=self.node_hash(), attr='on_generate')
+        try:
+            code = script_compile(code_text, fn)
+        except SyntaxError as e:
+            log.error('Syntax error in quest handler.')
+            raise e
+
+        self.local_context.update(event=event, agent=agent, **kw)
+        try:
+            exec code in self.global_context, self.local_context
+        except Cancel as e:
+            log.debug('Quest {uri} is cancelled.'.format(uri=fn))
+            return False
+        except Exception as e:
+            log.error('Runtime error in quest handler.')
+            raise e
+        else:
+            return True
+        finally:
+            del self.local_context
+
     @event_deco
-    def start(self, agent, event, **kw):
+    def start(self, agent, event):
         """
         :param agent: sublayers_server.model.registry.classes.agents.Agent
         :param event: sublayers_server.model.events.Event

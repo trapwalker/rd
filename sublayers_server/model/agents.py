@@ -14,8 +14,10 @@ from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
 from sublayers_server.model.registry.classes.trader import Trader
 
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-                                             SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
+from sublayers_server.model.messages import (
+    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
+)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
@@ -71,14 +73,8 @@ class Agent(Object):
         self._current_location = None
         self.current_location = example.current_location
 
-        self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
-
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
-
-    def add_quest(self, quest, time):
-        self.quests[quest.key] = quest
-        QuestUpdateMessage(agent=self, time=time, quest=quest).post()
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -110,12 +106,6 @@ class Agent(Object):
     def log(self, time, text, dest, position=None):
         # todo: ##realize ##quest
         pass
-
-    def update_quest_list(self, npc):
-        for quest in npc.quests or []:
-            # todo: Проверка на доступность этого квеста данному агенту
-            # todo: Проверка на наличие этого квеста у агента
-            pass
 
     def __getstate__(self):
         d = self.__dict__.copy()

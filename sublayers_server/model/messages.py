@@ -718,17 +718,6 @@ class BalanceClsInfo(Message):
         return d
 
 
-class QuestUpdateMessage(Message):
-    def __init__(self, quest, **kw):
-        super(QuestUpdateMessage, self).__init__(**kw)
-        self.quest = quest
-
-    def as_dict(self):
-        d = super(QuestUpdateMessage, self).as_dict()
-        d['quest'] = self.quest.as_client_dict()
-        return d
-
-
 class NPCReplicaMessage(Message):
     def __init__(self, replica, npc, **kw):
         super(NPCReplicaMessage, self).__init__(**kw)
