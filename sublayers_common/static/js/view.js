@@ -1,4 +1,9 @@
 $(document).ready(function () {
+    initConsoles();
+    if ($('#settings_first_enter').text() == 'True')
+        textConsoleManager.start('first_enter');
+    else
+        textConsoleManager.start('enter');
 
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
