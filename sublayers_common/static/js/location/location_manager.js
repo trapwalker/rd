@@ -334,6 +334,14 @@ var LocationManager = (function () {
         return null;
     };
 
+    LocationManager.prototype.get_npc_by_type = function(npc_type){
+        var res = [];
+        for(var key in this.npc)
+            if (this.npc.hasOwnProperty(key) && this.npc[key] instanceof npc_type)
+                res.push(this.npc[key]);
+        return res;
+    };
+
     return LocationManager;
 })();
 
@@ -492,6 +500,7 @@ var LocationPlace = (function () {
     };
 
     LocationPlace.prototype.set_header_text = function (html_text) {
+        //console.log('LocationPlace.prototype.set_header_text', this, html_text);
         if (!locationManager.isActivePlace(this)) return;
         var jq_header_text = this.jq_main_div.find('.npc-text');
         jq_header_text.empty();

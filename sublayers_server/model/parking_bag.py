@@ -16,7 +16,7 @@ class ParkingBagMessage(Message):
         d = super(ParkingBagMessage, self).as_dict()
         d.update(
             parking_bag_id=self.parking_bag.id,
-            npc_html_hash=self.parking_npc.node_html(),
+            npc_node_hash=self.parking_npc.node_hash(),
             car_title=self.car_title
         )
         return d

@@ -46,6 +46,7 @@ from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 from sublayers_server.handlers.main_menu_character import MenuCharacterHandler
 from sublayers_server.handlers.main_menu_journal import MenuJournalHandler
 from sublayers_server.handlers.party_handler import MenuPartyHandler
+from sublayers_server.handlers.main_menu_radio import MenuRadioHandler
 
 from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
@@ -125,6 +126,7 @@ class Application(BaseApplication):
             (r"/api/menu_car", MenuCarHandler),
             (r"/api/menu_journal", MenuJournalHandler),
             (r"/api/menu_party", MenuPartyHandler),
+            (r"/api/menu_radio", MenuRadioHandler),
 
 
             (r"/api/context_panel/locations", ContextPanelListHandler),

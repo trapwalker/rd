@@ -157,7 +157,7 @@ var LocationArmorerNPC = (function (_super) {
             // Добавить итемы инвентаря своего агента
             var inventory = inventoryList.getInventory(user.ID);
             if (!inventory) {
-                console.warn('Ивентарь агента (' + user.ID + ') не найден');
+                //console.warn('Ивентарь агента (' + user.ID + ') не найден');
                 return;
             }
 
@@ -487,16 +487,19 @@ var LocationArmorerNPC = (function (_super) {
         locationManager.panel_right.show({text: ''}, 'description');
     };
 
-    LocationArmorerNPC.prototype.set_header_text = function() {
+    LocationArmorerNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
         // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
-        var jq_text_div = $('<div></div>');
-        if (user.example_car) {
-            jq_text_div.append('<div>Давай повесим пушек на твоё корыто</div>');
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
+            if (user.example_car) {
+                jq_text_div.append('<div>Давай повесим пушек на твоё корыто</div>');
+            }
+            else
+                jq_text_div.append('<div>А машина где? Угнали?</div>');
+            html_text = jq_text_div;
         }
-        else
-            jq_text_div.append('<div>А машина где? Угнали?</div>');
-        _super.prototype.set_header_text.call(this, jq_text_div);
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!

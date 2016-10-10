@@ -136,7 +136,7 @@ var LocationTunerNPC = (function (_super) {
             // Добавить итемы инвентаря своего агента
             var inventory = inventoryList.getInventory(user.ID);
             if (!inventory) {
-                console.warn('Ивентарь агента (' + user.ID + ') не найден');
+                //console.warn('Ивентарь агента (' + user.ID + ') не найден');
                 return;
             }
 
@@ -464,16 +464,19 @@ var LocationTunerNPC = (function (_super) {
         locationManager.panel_right.show({text: ''}, 'description');
     };
 
-    LocationTunerNPC.prototype.set_header_text = function() {
+    LocationTunerNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
         // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
-        var jq_text_div = $('<div></div>');
-        if (user.example_car) {
-            jq_text_div.append('<div>Антикрыло хошь?</div>');
+        if (! html_text) {
+            var jq_text_div = $('<div></div>');
+            if (user.example_car) {
+                jq_text_div.append('<div>Антикрыло хошь?</div>');
+            }
+            else
+                jq_text_div.append('<div>Неее, без машины я ничего не буду делать!</div>');
+            html_text = jq_text_div;
         }
-        else
-            jq_text_div.append('<div>Неее, без машины я ничего не буду делать!</div>');
-        _super.prototype.set_header_text.call(this, jq_text_div);
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationTunerNPC.prototype._get_slots_by_item = function (item_rec) {

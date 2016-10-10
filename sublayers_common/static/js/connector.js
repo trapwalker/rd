@@ -40,8 +40,6 @@ var WSConnector = (function(_super){
         this.decode_time = 0;
         this.count = 0;
 
-        console.info('connector testing constructor');
-
         var self = this;
         setInterval(function () {
            // console.log('Максимальное время обработки сообщения от сервера: ', self.max_time, '   Всего получено сообщений за период: ', self.count);
