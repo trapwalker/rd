@@ -68,6 +68,12 @@ def test_registry():
     q.do_event(event=None)
     q.do_event(event=None)
 
+    print('\n# Test quest integration #')
+
+    v = reg['institutions/mayor/manny_askorti'].quests[0]
+    v1 = v.instantiate()
+    print('generate:', v1.generate(agent='Ag', event='Ev'))
+
     
     #a2.position = [123, 456]
     #print('a2.position =', a2.position)
