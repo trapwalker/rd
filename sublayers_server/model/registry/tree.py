@@ -284,7 +284,7 @@ class Node(Doc):
         if self.uri:
             parent = self
         else:
-            parent = self.parent
+            parent = self._values.get('parent', None)
             params.update(self._values)
 
         if by_uri:
