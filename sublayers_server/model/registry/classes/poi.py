@@ -56,6 +56,11 @@ class Building(Subdoc):
 
 
 class Town(MapLocation):
+    static_image_list = ListField(
+        base_field=StringField(),
+        caption=u'StaticImages', doc=u'Список статических файлов этого города'
+    )
+
     buildings = ListField(  # todo: (!) Обойти все упоминания и исправить интерфейс
         base_field=EmbeddedDocumentField(embedded_document_type=Building),
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.',

@@ -334,6 +334,8 @@ var ClientManager = (function () {
 
         clock.setDt((new Date().getTime() - servtime) / 1000.);
 
+        setTimeout(function() {textConsoleManager.stop();}, 10);
+
         if (!user.userCar) {
             // создать машинку
             var mcar = new UserCar(
@@ -744,6 +746,26 @@ var ClientManager = (function () {
         chat.party_info_message(event);
     };
 
+    ClientManager.prototype.PreEnterToLocation = function (event) {
+        console.log('ClientManager.prototype.PreEnterToLocation', event);
+
+        function complete(load) {
+            //console.log('All images fot city laod: ', load);
+            if (locationManager.in_location_flag)
+                textConsoleManager.stop();
+        }
+
+        if (event.static_image_list.length == 0)
+            textConsoleManager.stop();
+        else {
+            // todo: fix this
+            setTimeout(function () {
+                preloaderImage.add_list(event.static_image_list, complete, 10000);
+            }, 10);
+            textConsoleManager.start('enter_location');
+        }
+    };
+
     ClientManager.prototype.EnterToLocation = function (event) {
         //console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
@@ -752,8 +774,12 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
-        locationManager.onExit();
-        mapCanvasManager.is_canvas_render = true;
+        textConsoleManager.start('enter_map');
+        // todo: fix this
+        setTimeout(function () {
+            locationManager.onExit();
+            mapCanvasManager.is_canvas_render = true;
+        }, 10);
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){

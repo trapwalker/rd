@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage, PreEnterToLocation
 )
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats, Event
@@ -60,7 +60,7 @@ class MapLocation(Observer):
 
     def on_enter(self, agent, time):
         agent.on_enter_location(location=self, time=time)
-
+        PreEnterToLocation(agent=agent, location=self, time=time).post()
         # if hasattr(self.example, 'buildings'):
         #     for building in self.example.buildings:
         #         head = building.head
@@ -97,7 +97,7 @@ class MapLocation(Observer):
     def on_re_enter(self, agent, time):
         agent.save(time)  # todo: Уточнить можно ли сохранять здесь
         if agent in self.visitors:
-
+            PreEnterToLocation(agent=agent, location=self, time=time).post()
             # todo: review agent.on_enter_location call
             agent.on_enter_location(location=self, time=time)
 

@@ -497,8 +497,18 @@ var ConsoleFirstEnter = (function (_super) {
                         this._cur_message = null;
                         this.first_input = false;
                         this._wait_input = false;
+                        resourceLoadManager.del(this);  // todo: обсудить: начать коннект по вебсокету
+                        this.target_div.off("keydown");
                         break;
             }
+    };
+
+    ConsoleFirstEnter.prototype.start = function() {
+        console.log('ConsoleFirstEnter.prototype.start', this);
+        if (!this._is_started) {
+            resourceLoadManager.add(this);  // todo: обсудить
+            _super.prototype.start.call(this);
+        }
     };
 
     return ConsoleFirstEnter;
@@ -534,6 +544,46 @@ var ConsoleEnter = (function (_super) {
     }
 
     return ConsoleEnter;
+})(TextConsole);
+
+
+var ConsoleEnterToLocation = (function (_super) {
+    __extends(ConsoleEnterToLocation, _super);
+
+    function ConsoleEnterToLocation() {
+        _super.call(this);
+
+        this.target_div = textConsoleManager.jq_main_div;
+
+        this.add_message('user', 'Активация протокола входа в локацию.');
+        this.add_message('system', 'Проверка протоколов безопасности...');
+        this.add_message('system', 'Одобрено.');
+        this.add_message('system', 'Загрузка данных.');
+
+        textConsoleManager.add(this, 'enter_location');
+    }
+
+    return ConsoleEnterToLocation;
+})(TextConsole);
+
+
+var ConsoleEnterToMap = (function (_super) {
+    __extends(ConsoleEnterToMap, _super);
+
+    function ConsoleEnterToMap() {
+        _super.call(this);
+
+        this.target_div = textConsoleManager.jq_main_div;
+
+        this.add_message('user', 'Активация протокола выхода на карту.');
+        this.add_message('system', 'Проверка протоколов безопасности...');
+        this.add_message('system', 'Одобрено.');
+        this.add_message('system', 'Загрузка данных.');
+
+        textConsoleManager.add(this, 'enter_map');
+    }
+
+    return ConsoleEnterToMap;
 })(TextConsole);
 
 //var ConsoleWPI = (function (_super) {
@@ -643,6 +693,8 @@ function initConsoles() {
     textConsoleManager = new TextConsoleManager();
     new ConsoleFirstEnter();
     new ConsoleEnter();
+    new ConsoleEnterToLocation();
+    new ConsoleEnterToMap();
 }
 
 
