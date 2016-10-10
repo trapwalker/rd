@@ -479,9 +479,9 @@ class Mobile(Unit):
 
 
 class Bot(Mobile):
-    def __init__(self, **kw):
-        super(Bot, self).__init__(**kw)
-        self.quick_consumer_panel = QuickConsumerPanel(owner=self)
+    def __init__(self, time, **kw):
+        super(Bot, self).__init__(time=time, **kw)
+        self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
@@ -489,6 +489,10 @@ class Bot(Mobile):
         if self.example:
             d.update(class_car=self.example.class_car, sub_class_car=self.example.sub_class_car)
         return d
+
+    def on_save(self, time):
+        super(Bot, self).on_save(time=time)
+        self.quick_consumer_panel.save()
 
     @property
     def is_frag(self):

@@ -93,6 +93,7 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/journal/journal_window_parking.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/party_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/person_window.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/menu/radio_window.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
@@ -108,6 +109,7 @@
     <script src="{{ static_url('js/geometric.js') }}"></script>
     <script src="{{ static_url('js/generator_ID.js') }}"></script>
     <script src="{{ static_url('js/resource_load_manager.js') }}"></script>
+    <script src="{{ static_url('js/preloader_image.js') }}"></script>
 
     <script src="{{ static_url('js/third_party/blur.js') }}"></script>
 {#    <script src="{{ static_url('js/canvas_test.js') }}"></script>#}
@@ -189,6 +191,7 @@
     <script src="{{ static_url('js/third_party/leaflet_label.js') }}"></script>
     <script src="{{ static_url('js/cookie.js') }}"></script>
     <script src="{{ static_url('js/modal_window.js') }}"></script>
+    <script src="{{ static_url('js/text_console.js') }}"></script>
 
     <script src="{{ static_url('js/effects/effect_location_laser_animation.js') }}"></script>
 </head>
@@ -209,7 +212,7 @@
         <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">Пати</div>
         <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Сайт</div>
         <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Сообщество</div>
-        <!--<div id="divMainMenuBtnLog" class="main-menu-btn-up sublayers-clickable">Log</div>-->
+        <div id="divMainMenuBtnRadio" class="main-menu-btn-up sublayers-clickable">Радио</div>
         <!--<div id="divMainMenuBtnNucoil" class="main-menu-btn-up sublayers-clickable">Nucoil</div>-->
         <!--<div id="divMainMenuBtnOptions" class="main-menu-btn-up sublayers-clickable">Options</div>-->
         <!--<div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Forum</div>-->
@@ -252,13 +255,18 @@
     <div id="activeTownDivBack">
         <div id="activeTownDiv"></div>
     </div>
-
     <div style="display: none">
         <span id="settings_host_name">{{ host_name }}</span>
         <span id="settings_ws_port">{{ ws_port }}</span>
         <span id="settings_map_link">{{ map_link }}</span>
+        <span id="settings_app_version">{{ version }}</span>
+        <span id="settings_user_name">{{ user_name }}</span>
+        <span id="settings_first_enter">{{ first_enter }}</span>
     </div>
-
+    <div id="textConsoleDiv" tabindex="0">
+        <span class="console-old-text"></span>
+        <span class="console-new-text"></span>
+    </div>
 </div>
 </body>
 </html>

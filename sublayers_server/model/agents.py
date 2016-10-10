@@ -455,7 +455,6 @@ class Agent(Object):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
         # todo: csll it ##quest
-        print diff_inventories
         self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 

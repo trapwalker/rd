@@ -163,7 +163,7 @@ var LocationMechanicNPC = (function (_super) {
             // Добавить итемы инвентаря своего агента
             var inventory = inventoryList.getInventory(user.ID);
             if (!inventory) {
-                console.warn('Ивентарь агента (' + user.ID + ') не найден');
+                //console.warn('Ивентарь агента (' + user.ID + ') не найден');
                 return
             }
             for (var i = 0; i < inventory.max_size; i++) {
@@ -407,16 +407,19 @@ var LocationMechanicNPC = (function (_super) {
         }
     };
 
-    LocationMechanicNPC.prototype.set_header_text = function() {
+    LocationMechanicNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
         // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
-        var jq_text_div = $('<div></div>');
-        if (user.example_car) {
-            jq_text_div.append('<div>Выбирай, что ставить.</div>');
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
+            if (user.example_car) {
+                jq_text_div.append('<div>Выбирай, что ставить.</div>');
+            }
+            else
+                jq_text_div.append('<div>Иди отсюда! И без машины не возвращайся!</div>');
+            html_text = jq_text_div;
         }
-        else
-            jq_text_div.append('<div>Иди отсюда! И без машины не возвращайся!</div>');
-        _super.prototype.set_header_text.call(this, jq_text_div);
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationMechanicNPC.prototype.start_drag_handler = function (event, ui) {
