@@ -13,7 +13,39 @@ from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField,
 )
 
-from functools import partial
+from functools import partial, wraps
+
+
+def unicode_args_substitution(func, template_renderer, **kw_dict):
+    u"""Декоратор для вызывабельных объектов.
+    Перебирает все аргументы `func` и обрабатывает темплетным подстановщиком `template_renderer`,
+    передавая в него добавочный контекст `kw_dict`
+    """
+    @wraps(func)
+    def closure(*av, **kw):
+        av2 = []
+        for v in av:
+            v2 = v
+            if isinstance(v, unicode):
+                try:
+                    v2 = template_renderer(v, **kw_dict)
+                except Exception as e:
+                    log.error('Error while render template {v!r} by template attr decorator')
+            av2.append(v2)
+
+        kw2 = {}
+        for k, v in kw.items():
+            v2 = v
+            if isinstance(v, unicode):
+                try:
+                    v2 = template_renderer(v, **kw_dict)
+                except Exception as e:
+                    log.error('Error while render template {v!r} by template attr decorator')
+            kw2[k] = v2
+
+        return func(*av2, **kw2)
+
+    return closure
 
 
 class QuestException(Exception):
@@ -254,11 +286,16 @@ class Quest(Root):
             log.error('Syntax error in quest handler.')
             raise e
 
-        self.local_context.update(event=event, agent=agent, **kw)
+        self.local_context.update(
+            event=event,
+            agent=agent,
+            Cancel=unicode_args_substitution(Cancel, self._template_render),
+            **kw
+        )
         try:
             exec code in self.global_context, self.local_context
         except Cancel as e:
-            log.debug('Quest {uri} is cancelled.'.format(uri=fn))
+            log.debug('Quest {uri} is cancelled: {e.message}'.format(uri=fn, e=e))
             return False
         except Exception as e:
             log.error('Runtime error in quest handler.')
