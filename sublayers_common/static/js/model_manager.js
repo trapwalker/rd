@@ -747,8 +747,9 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PreEnterToLocation = function (event) {
-        console.log('ClientManager.prototype.PreEnterToLocation', event);
+        //console.log('ClientManager.prototype.PreEnterToLocation', event);
         locationManager.load_city_image = false;
+
         function complete(load) {
             locationManager.load_city_image = true;
             if (locationManager.in_location_flag)
@@ -759,7 +760,7 @@ var ClientManager = (function () {
             textConsoleManager.async_stop();
         else {
             preloaderImage.add_list(event.static_image_list, complete, 10000);
-            textConsoleManager.start('enter_location');
+            textConsoleManager.start('enter_location', 3000);
         }
     };
 
@@ -771,7 +772,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
-        textConsoleManager.start('enter_map');
+        textConsoleManager.start('enter_map', 2000);
         // todo: fix this
         setTimeout(function () {
             locationManager.onExit();
