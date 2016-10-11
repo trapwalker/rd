@@ -45,6 +45,11 @@ var TextConsoleManager = (function(){
         this.jq_main_div.removeClass('show');
     };
 
+    TextConsoleManager.prototype.async_stop = function() {
+        var self = this;
+        setTimeout(function(){self.stop();}, 10);
+    };
+
     return TextConsoleManager;
 })();
 

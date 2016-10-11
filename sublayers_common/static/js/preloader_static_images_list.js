@@ -1,5 +1,5 @@
 (function(){
-    console.log('start_preloader_static_image_list');
+    //console.log('start_preloader_static_image_list');
 
     function random_str() { return (Math.random() * 10000).toFixed(0); }
 
