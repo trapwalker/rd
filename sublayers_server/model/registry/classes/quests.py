@@ -3,173 +3,178 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.classes.item import Item
+from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.utils import SubscriptionList
+from sublayers_server.model.events import event_deco
 from sublayers_server.model.messages import Message
 from sublayers_server.model.registry.tree import Subdoc
+from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
+    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField,
 )
 
-from functools import update_wrapper
+from functools import partial, wraps
 
 
-class O(dict):
-    def __init__(self):
-        super(O, self).__init__()
-        self.__dict__ = self
-
-
-def state_event(func):
-    # return event_func
+def unicode_args_substitution(func, template_renderer, **kw_dict):
+    u"""Декоратор для вызывабельных объектов.
+    Перебирает все аргументы `func` и обрабатывает темплетным подстановщиком `template_renderer`,
+    передавая в него добавочный контекст `kw_dict`
+    """
+    @wraps(func)
     def closure(*av, **kw):
-        log.debug('{method}({args})'.format(
-            method=func.__name__,
-            args=', '.join([
-                '{}={!r}'.format(k, v)
-                for k, v in zip(func.func_code.co_varnames, av) + kw.items()
-            ]),
-        ))
-        res = func(*av, **kw)
-        return res
-    update_wrapper(closure, func)
+        av2 = []
+        for v in av:
+            v2 = v
+            if isinstance(v, unicode):
+                try:
+                    v2 = template_renderer(v, **kw_dict)
+                except Exception as e:
+                    log.error('Error while render template {v!r} by template attr decorator')
+            av2.append(v2)
+
+        kw2 = {}
+        for k, v in kw.items():
+            v2 = v
+            if isinstance(v, unicode):
+                try:
+                    v2 = template_renderer(v, **kw_dict)
+                except Exception as e:
+                    log.error('Error while render template {v!r} by template attr decorator')
+            kw2[k] = v2
+
+        return func(*av2, **kw2)
+
     return closure
 
 
-class State(O):
-    enter_state_message = None
-    enter_state_message_template = None
-    exit_state_message = None
-    exit_state_message_template = None
-    status = 'active'
-    result = None
-
-    def __init__(self, time, quest, name, **kw):
-        super(State, self).__init__()
-        self.name = name or self.__class__.__name__
-        self.quest = quest
-        self.start_time = time
-        self.__dict__.update(kw)
-        self.on_state_init()
-
-    # todo: __getstate__ ##realize
-    # todo: __setstate__ ##realize
-
-    def __hash__(self):
-        return id(self)  #todo: Так нельзя
-
-    def subscribe(self, target):
-        if isinstance(target, SubscriptionList):
-            target.add(self)
-        elif hasattr(target, 'subscriptions'):
-            target.subscriptions.add(self)
-        else:
-            raise TypeError(u"State {!r} of quest {!r} can not be subscribed to {!r}".format(self, self.quest, target))
-
-    def unsubscribe(self, target):
-        if isinstance(target, SubscriptionList):
-            target.remove(self)
-        elif hasattr(target, 'subscriptions'):
-            target.subscriptions.remove(self)
-        else:
-            raise TypeError(u"State {!r} of quest {!r} can not be unsubscribed from {!r}".format(
-                self, self.quest, target))
-
-    def as_dict(self):
-        d = self.__dict__.copy()
-        del d['quest']
-        return d
-
-    @state_event
-    def on_see(self, agent, time, subj, obj):
-        pass
-
-    @state_event
-    def on_out(self, agent, time, subj, obj):
-        pass
-
-    @state_event
-    def on_disconnect(self, agent, time):
-        # todo: call it
-        pass
-
-    @state_event
-    def on_kill(self, agent, time, obj):
-        pass
-
-    @state_event
-    def on_inv_change(self, agent, time, incomings, outgoings):
-        pass
-
-    @state_event
-    def on_enter_location(self, agent, time, location):
-        pass
-
-    @state_event
-    def on_exit_location(self, agent, time, location):
-        pass
-
-    @state_event
-    def on_enter_npc(self, npc):
-        pass
-
-    @state_event
-    def on_exit_npc(self, npc):
-        pass
-
-    @state_event
-    def on_die(self):
-        pass
-
-    @state_event
-    def on_trade_enter(self, agent, contragent, time, is_init):
-        pass
-
-    @state_event
-    def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
-        pass
-
-    @state_event
-    def on_state_init(self):
-        pass
-
-    @state_event
-    def on_state_enter(self, old_state):
-        for agent in self.quest.agents:
-            self.subscribe(agent)
-
-        if self.enter_state_message_template:
-            self.quest.log_fmt(template=self.enter_state_message_template, time=self.start_time)  # todo: send targets
-        elif self.enter_state_message:
-            self.quest.log(text=self.enter_state_message, time=self.start_time)  # todo: send targets, position
-
-    @state_event
-    def on_state_exit(self, next_state):
-        for agent in self.quest.agents:
-            self.unsubscribe(agent)
-        # todo: may be need to send state_exit_message?
+class QuestException(Exception):
+    pass
 
 
-class FinalState(State):
-    status = 'end'
-    result = None
-
-    def on_state_enter(self, old_state):
-        pass
-
-    def on_state_exit(self, next_state):
-        pass
+class Cancel(QuestException):
+    pass
 
 
-class StandartWin(FinalState):
-    enter_state_message_template = u'Задание {quest.title} выполнено успешно.'
-    result = 'win'
+def script_compile(code, fn):
+    import __future__
+    return compile(
+        code, fn, 'exec',
+        flags=(0
+           | __future__.unicode_literals.compiler_flag
+           | __future__.print_function.compiler_flag
+           | __future__.division.compiler_flag
+           ),
+    )
 
 
-class StandartFail(FinalState):
-    enter_state_message_template = u'Задание {quest.title} провалено.'
-    result = 'fail'
+class EventHandler(Subdoc):
+    event = StringField(doc=u"Сигнатура события: onDie, onEnterLocation, onQuest")
+    id = StringField(doc=u"Идентификатор события. Локальное имя события внутри квеста.")
 
+
+class LogRecord(Subdoc):
+    quest_uid   = StringField  (tags="client", doc=u"UID of quest")
+    time        = DateTimeField(tags="client", doc=u"Время создания записи")
+    text        = StringField  (tags="client", doc=u"Текст записи")
+    position    = PositionField(tags="client", doc=u"Привязанная к записи позиция на карте")
+    # target  # todo: target of log record
+
+    def __init__(self, quest=None, **kw):
+        quest_uid = kw.pop('quest_uid', None) or quest and quest.uid
+        super(LogRecord, self).__init__(quest_uid=quest_uid, **kw)
+
+
+class QuestState(Root):
+    id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
+    enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
+    exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
+    status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
+    result = StringField(doc=u"Результат квеста данном текущем состоянии (None/win/fail)")
+    on_enter = StringField(
+        caption=u"Python скрипт, выполняемый при входе в состояние",
+        doc=u"""
+        В контекст получает:
+            - объекты: [agent, quest, state, event]
+            - функции-условия: ???
+            - функции-действия: [say, add_event, del_event, ...]
+        """
+    )
+    on_exit = StringField(
+        caption=u"Python скрипт, выполняемый при выходе из состояния",
+        doc=u"""
+        В контекст получает:
+            - объекты: [agent, quest, state, event]
+            - функции-условия: ???
+            - функции-действия: [say, add_event, del_event, ...]
+        """
+    )
+    on_event = StringField(
+        caption=u"Python скрипт, выполняемый по факту любого события",
+        doc=u"""
+            В контекст получает:
+                - объекты: [agent, quest, state, event]
+                - функции-условия: ???
+                - функции-действия:
+                    - go("new_state_name") - переход в состояние с именем new_state_name
+                    - say(state.exit_state_message) - произнести от имени NPC фразу по указанному шаблону
+                    - add_event(id="SomeTimerName", delay=60*60*3) - запустить именованный таймер на 3 часа
+                    - add_event(id="SomeActionName", caption=u"Сделай это!", action='reg://.../trader3') - создать
+                        для игрока кнопку действия с заданной надписью у указанного NPC
+                    - del_event(id="SomeActionName") - удалить запланированное событиеили экшн.
+                    - quest.log("some message about {quest.name}") - добавить запись в журнал квеста
+
+            Пример:
+                (
+                event.name is 'onDie'
+                and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
+                and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
+                and say(u"Boom!")
+                and bang(position=agent.car.position, power=1000)
+                and go("win")
+
+                or event.id is 'quest_fail_timer'
+                and say("I'm so sorry")
+                and go("fail")
+                )
+
+            Пример 2:
+                if (
+                    event.name is 'onDie'
+                    and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
+                    and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
+                ):
+                    say(u"Boom!")
+                    bang(position=agent.car.position, power=1000)
+                    go("win")
+
+                if (event.id is 'quest_fail_timer'):
+                    say("I'm so sorry")
+                    go("fail")
+        """,
+    )
+
+    def _exec_event_handler(self, quest, handler, event):
+        code_text = getattr(self, handler, None)
+        if not code_text:
+            return
+
+        # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
+        fn = '{uri}#states[{state.id}].{attr}'.format(uri=quest.node_hash(), state=self, attr=handler)
+        try:
+            code = script_compile(code_text, fn)
+        except SyntaxError as e:
+            log.error('Syntax error in quest handler.')
+            raise e
+
+        quest.local_context.update(state=self, event=event)
+        try:
+            exec code in quest.global_context, quest.local_context
+        except Exception as e:
+            log.error('Runtime error in quest handler.')
+            raise e
+        finally:
+            del quest.local_context
 
 # Условия:
 # - has([items], who=None)  # money too
@@ -193,23 +198,217 @@ class StandartFail(FinalState):
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
+class Quest(Root):
+    __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context']
+    first_state = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
+    current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
+    states = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type=QuestState, reinst=True),
+        reinst=True,
+        caption=u"Состояния квеста",
+        doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
+    )
 
-class LogRecord(object):
-    def __init__(self, quest, time, text, position=None, target=None):
-        self.quest = quest  # todo: weakref #refactor
-        self.time = time
-        self.text = text
-        self.position = position
-        self.target = target
+    on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
+        Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
+    caption = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
+    text = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
+    text_short = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    typename = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
+    list_icon = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    level = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
+    starttime = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
+    deadline = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
-    def as_dict(self):
-        return dict(
-            quest=self.quest.id,
-            time=self.time,
-            text=self.text,
-            position=self.position,
-            target=self.target,
+    hirer = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
+    town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
+    agent = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
+    history = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type=LogRecord, reinst=True),
+        reinst=True,
+        caption=u"Журнал квеста",
+        doc=u"Записи добавляются в журнал методом quest.log(...)",
+    )
+
+    @property
+    def states_map(self):
+        states_map = getattr(self, '_states_map', None)
+        if not states_map:
+            states_map = {state.id: state for state in self.states}  # todo: optimize
+            self._states_map = states_map
+
+        return states_map
+
+    @property
+    def state(self):
+        if self.current_state is None:
+            return
+        try:
+            return self.states_map[self.current_state]
+        except KeyError:
+            raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
+
+    @property
+    def status(self):
+        state = self.state
+        return state and state.status
+
+    @property
+    def result(self):
+        state = self.state
+        return state and state.result
+
+    def as_client_dict(self):
+        d = super(Quest, self).as_client_dict()
+        d.update(
+            status=self.status,
+            result=self.result,
+            #log=self._log,
         )
+        return d
+
+    # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
+
+    def generate(self, agent, event, **kw):
+        """
+        :param agent: sublayers_server.model.registry.classes.agents.Agent
+        :param event: sublayers_server.model.events.Event
+        """
+        code_text = self.on_generate
+        if not code_text:
+            return
+
+        # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
+        fn = '{uri}#.{attr}'.format(uri=self.node_hash(), attr='on_generate')
+        try:
+            code = script_compile(code_text, fn)
+        except SyntaxError as e:
+            log.error('Syntax error in quest handler.')
+            raise e
+
+        time = kw.pop('time', event and event.time)
+        self.local_context.update(
+            event=event,
+            agent=agent,
+            Cancel=unicode_args_substitution(Cancel, self._template_render),
+            time=time,
+            **kw
+        )
+        try:
+            exec code in self.global_context, self.local_context
+        except Cancel as e:
+            log.debug('Quest {uri} is cancelled: {e.message}'.format(uri=fn, e=e))
+            return False
+        except Exception as e:
+            log.error('Runtime error in quest handler.')
+            raise e
+        else:
+            return True
+        finally:
+            del self.local_context
+
+    @event_deco
+    def start(self, agent, event):
+        """
+        :param agent: sublayers_server.model.registry.classes.agents.Agent
+        :param event: sublayers_server.model.events.Event
+        """
+        assert not self.abstract
+        self.agent = agent
+        self.set_state(new_state=self.first_state, event=event)
+
+    def set_state(self, new_state, event):
+        assert new_state
+        assert not self.abstract
+
+        if isinstance(new_state, QuestState):
+            new_state_id = new_state.id
+        elif isinstance(new_state, basestring):
+            new_state_id = new_state
+            new_state = self.states_map[new_state_id]
+        else:
+            raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(**locals()))
+
+        old_state_id = self.current_state
+        old_state = self.state
+
+        if new_state_id == old_state_id:
+            return
+
+        if old_state:
+            self.do_state_exit(old_state, event)
+
+        self.current_state = new_state_id
+        self.do_state_enter(new_state, event)
+
+    def make_global_context(self):
+        return dict(
+            quest=self,
+            agent=self.agent,
+            log=lambda template, **kw: log.debug(self._template_render(template, **kw) or True),
+        )
+
+    def make_local_context(self):
+        return dict()
+
+    @property
+    def global_context(self):
+        ctx = getattr(self, '_global_context', None)
+        if ctx is None:
+            ctx = self.make_global_context()
+            self._global_context = ctx
+
+        return ctx
+
+    @property
+    def local_context(self):
+        ctx = getattr(self, '_local_context', None)
+        if ctx is None:
+            ctx = self.make_local_context()
+            self._local_context = ctx
+
+        return ctx
+
+    @local_context.deleter
+    def local_context(self):
+        self._local_context = None
+
+    def _template_render(self, template, **kw):
+        try:
+            context = dict(self.global_context, **self.local_context)
+            context.update(kw)
+            return template.format(**context)
+        except Exception as e:
+            log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
+            raise e
+
+    def do_state_exit(self, state, event):
+        state._exec_event_handler(quest=self, handler='on_exit', event=event)
+
+    def do_state_enter(self, state, event):
+        state._exec_event_handler(quest=self, handler='on_enter', event=event)
+
+    def do_event(self, event):
+        state = self.state
+        assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
+        self._go_state_name = None
+        self.local_context.update(
+            go=partial(self._go, event=event),
+        )
+        state._exec_event_handler(quest=self, handler='on_event', event=event)
+        new_state = getattr(self, '_go_state_name', None)
+        if new_state:
+            self.set_state(new_state, event)
+
+    def log(self, text, event=None, position=None, **kw):
+        rendered_text = self._template_render(text, position=position, **kw)
+        log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
+        self.history.append(log_record)
+        return True
+
+    def _go(self, new_state, event):
+        self._go_state_name = new_state
+        return True
 
 
 class QuestUpdateMessage(Message):
@@ -225,6 +424,10 @@ class QuestUpdateMessage(Message):
         return d
 
 
+class QuestAddMessage(QuestUpdateMessage):
+    pass
+
+
 class QuestLogMessage(Message):
     def __init__(self, event_record, **kw):
         super(QuestLogMessage, self).__init__(**kw)
@@ -236,196 +439,3 @@ class QuestLogMessage(Message):
             quest_event=self.event_record.as_dict(),
         )
         return d
-
-
-class Quest(Item):
-    # todo: Сделать квесты не итемами
-    first_state = TextAttribute(default='Begin', caption=u'Начальное состояние', doc=u'Имя начального состояния квеста')
-
-    caption = TextAttribute(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text = TextAttribute(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short = TextAttribute(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
-    typename = TextAttribute(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
-    list_icon = Attribute(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')
-    level = Attribute(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
-    deadline = Attribute(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
-
-    hirer = Attribute(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
-    town = Attribute(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
-
-    def __init__(self, agents=None, npc=None, **kw):
-        super(Quest, self).__init__(**kw)
-        self._state = None
-        self.agents = agents or []  # todo: weakset
-        self.npc = npc  # todo: weakset
-        self._log = []
-        self.key = None
-
-    def instantiate(self, *av, **kw):
-        inst = super(Quest, self).instantiate(*av, **kw)
-        inst.key = inst.gen_key(**kw)
-        return inst
-
-    def gen_key(self, agents=None, npc=None, **kw):
-        u"""Генерирует ключ уникальности квеста для агента.
-        Этот ключ определяет может ли агент получить этот квест у данного персонажа.
-        Перекрывая этот метод в квестах можно добиться запрета повторной выдачи квеста как в глобальном,
-        так и в локальном смысле. В ключ можно добавлять дополнительные обстоятельства, например если мы взяли квест по
-        доставке фуфаек и больше не должны иметь возможности взять этот квест по фуфайкам, зато можно взять по доставке
-        медикаментов, то нужно включить в кортеж ключа uri прототипа доставляемого товара.
-        """
-        if agents is None:
-            agents = self.agents
-        if npc is None:
-            npc = getattr(self, 'npc', None)
-
-        return self.id, tuple([agent.user.name for agent in agents]), npc.id
-
-    def as_client_dict(self):
-        d = super(Quest, self).as_client_dict()
-        d.update(
-            status=self.state.status if self.state else None,
-            result=self.state.result if self.state else None,
-            log=self._log,
-        )
-        return d
-
-    def log_fmt(self, template, position=None, target=None, context=None):
-        context = context.copy() if context else {}
-        context.update(position=position, target=target, quest=self)
-        text = self._template_render(template, context)
-        self.log(text, position=position, target=target)
-
-    def log(self, time, text, position=None, target=None):
-        log_record = LogRecord(quest=self, time=time, text=text, position=position, target=target)
-        self._log.append(log_record)
-        self.update(time=time)  # todo: refactor (send quest event message)
-
-    def _template_render(self, template, context):
-        try:
-            return template.format(**context)
-        except Exception as e:
-            log.error('Template render error in quest %r. Template: %r; context: %r', self, template, context)
-            raise e
-
-    def update(self, time):
-        # todo: #refactor
-        if self.title_template:
-            self.title = self._template_render(self.title_template, dict(quest=self, time=time))
-
-        if self.description_template:
-            self.description = self._template_render(self.description_template, dict(quest=self, time=time))
-
-        for agent in self.agents:
-            QuestUpdateMessage(agent=agent, time=time, quest=self).post()
-
-    def start(self, time, agents=None, **kw):
-        assert not self.abstract
-        if agents:
-            self.agents.append(agents)
-        for agent in self.agents:
-            agent.quests.append(self)
-        self.set_state(self.first_state, time=time)
-
-    @property
-    def state(self):
-        return self._state
-
-    def set_state(self, value, time):
-        assert value
-        assert not self.abstract
-
-        if isinstance(value, State):
-            new_state = value
-        else:
-            if isinstance(value, str):
-                new_state_cls = getattr(self, value)
-                new_state_name = value
-            elif isinstance(value, type):
-                new_state_cls = value
-                new_state_name = new_state_cls.__name__
-            else:
-                raise TypeError('Try to set state by {!r}'.format(value))
-
-            new_state = new_state_cls(quest=self, name=new_state_name, time=time)
-
-        old_state = self._state
-
-        if old_state is not None:
-            old_state.on_state_exit(next_state=new_state)
-
-        self._state = new_state
-        new_state.on_state_enter(old_state=old_state)
-
-    def __getstate__(self):
-        d = super(Quest, self).__getstate__()
-        d.update(state=self.state.as_dict())
-        return d
-
-    def __setstate__(self, state):
-        st = state.pop('state', None)
-        if st:
-            self.set_state(getattr(self, st['name'])(quest=self, **st))
-        super(Quest, self).__setstate__(state)
-
-    class Begin(State):
-        u"""Стартовое состояние квеста"""
-        caption = u'Начало'
-
-    class Win(StandartWin):
-        u"""Состояние успешного прохождения квеста"""
-        caption = u'Успех'
-
-    class Fail(StandartFail):
-        u"""Состояния провала квеста"""
-        caption = u'Провал'
-
-
-class UserQuest(Quest):
-    class Begin(Quest.Begin):
-        pass
-
-
-class QNKills(Quest):
-
-    class Begin(State):
-        def on_state_init(self):
-            State.on_state_init(self)
-            self.kills_count = 0
-
-        def on_kill(self, agent, time, obj):
-            super(QNKills.Begin, self).on_kill(agent, time, obj)
-            self.kills_count += 1
-            if self.kills_count >= 5:
-                self.quest.set_state(self.quest.Win, time=time)
-
-
-class QMortalCurse(Quest):
-    u"""Смертное прокльятье.
-    Каждое 13 убийство влечет смерть самого игрока.
-    Избавиться можно только пожертвовав 13 разным проходимцам какие-нибудь вещи бесплатно.
-    """
-
-    class Begin(State):
-        caption = u'Начало'
-
-        def on_state_init(self):
-            State.on_state_init(self)
-            self.kills_count = 0
-            self.tramps = set()
-            self.magic_count = 13
-
-        def on_kill(self, agent, time, obj):
-            State.on_kill(self, agent, time, obj)
-            if agent is self.quest.agent:
-                self.kills_count += 1
-                if (self.kills_count % self.magic_count) == 0:
-                    for a in self.quest.agents:
-                        a.die()
-
-        def on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init):
-            State.on_trade_exit(self, agent, contragent, canceled, buy, sale, cost, time, is_init)
-            if agent in self.quest.agents and contragent not in self.quest.agents and sale and not buy and cost == 0:
-                self.tramps.add(contragent.user.name)
-                if len(self.tramps) >= self.magic_count:
-                    self.quest.set_state(self.quest.Win, time=time)

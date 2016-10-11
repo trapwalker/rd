@@ -94,8 +94,6 @@ class Doc(AbstractDocument):
                 ):
                     getter = lambda: getattr(self, name)
                     yield name, attr, getter
-            else:
-                log.warning('Doc.iter_attrs: dynamic field! %s in %r', name, self)
 
 
 class Subdoc(Doc):
@@ -151,7 +149,7 @@ class Node(Doc):
         """
         #_id=kw.pop('_id', ObjectId()),
         super(Node, self).__init__(**kw)
-        self._subnodes = WeakSet()
+        self._subnodes = WeakSet()  # todo: use __not_a_field__ notation to store this attribute
 
         if self.uri is None:
             owner = self._values.get('owner')
@@ -284,7 +282,7 @@ class Node(Doc):
         if self.uri:
             parent = self
         else:
-            parent = self.parent
+            parent = self._values.get('parent', None)
             params.update(self._values)
 
         if by_uri:

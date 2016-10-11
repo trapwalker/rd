@@ -12,10 +12,13 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
 from sublayers_server.model.registry.classes.trader import Trader
+from sublayers_server.model.registry.classes.quests import QuestAddMessage
 
 from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-                                             SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
+from sublayers_server.model.messages import (
+    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
+)
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
@@ -36,9 +39,11 @@ class Agent(Object):
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
+        self.example = example
+        if example:
+            example._agent_model = self
         self._disconnect_timeout_event = None
         self.subscriptions = SubscriptionList()
-        self.example = example
         self.observers = CounterSet()
         self.api = None
         self.connection = None
@@ -69,14 +74,8 @@ class Agent(Object):
         self._current_location = None
         self.current_location = example.current_location
 
-        self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
-
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
-
-    def add_quest(self, quest, time):
-        self.quests[quest.key] = quest
-        QuestUpdateMessage(agent=self, time=time, quest=quest).post()
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -108,12 +107,6 @@ class Agent(Object):
     def log(self, time, text, dest, position=None):
         # todo: ##realize ##quest
         pass
-
-    def update_quest_list(self, npc):
-        for quest in npc.quests or []:
-            # todo: Проверка на доступность этого квеста данному агенту
-            # todo: Проверка на наличие этого квеста у агента
-            pass
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -543,6 +536,10 @@ class Agent(Object):
         # Создание нового
         if new_example_inventory:
             self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
+
+    def add_quest(self, quest, time):
+        self.example.quests_unstarted.append(quest)
+        QuestAddMessage(agent=self, time=time, quest=quest).post()
 
 
 # todo: Переименовать в UserAgent

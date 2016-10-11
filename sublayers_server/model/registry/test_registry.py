@@ -26,7 +26,8 @@ def test_registry():
     log.debug('### test registry')
 
     #log.debug('Delete all: %s', (yield Root.objects.delete()))
-    #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+    log.debug('Delete fixtures: %s', (yield Root.objects.filter({'fixtured': True}).delete()))
+    reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     #log.debug('Delete all saved objects: %s', (yield Root.objects.filter({'fixtured': False}).delete()))
 
     nodes = yield Root.objects.filter(fixtured=True).find_all()
@@ -60,6 +61,18 @@ def test_registry():
 
     a3 = yield a.objects.get(profile_id='123456')
     print('a3.car =', a3 and a3.car)
+
+    Q = reg['quests/examples/mortal_course']
+    q = Q.instantiate(abstract=False)
+    q.start.sync(self=q, agent=None, event=None)
+    q.do_event(event=None)
+    q.do_event(event=None)
+
+    print('\n# Test quest integration #')
+
+    v = reg['institutions/mayor/manny_askorti'].quests[0]
+    v1 = v.instantiate()
+    print('generate:', v1.generate(agent=u2, event=None))
 
     
     #a2.position = [123, 456]
