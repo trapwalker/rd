@@ -95,7 +95,7 @@ class Institution(Root):
     text = StringField(caption=u"Текст приветствия", tags='client')
     type = StringField(caption=u"Специальность NPC", tags='client')
     quests = ListField(
-        caption=u"Квесты",
+        caption=u"Генераторы квестов",
         reinst=True,
         base_field=EmbeddedDocumentField(
             embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',

@@ -72,7 +72,7 @@ def test_registry():
 
     v = reg['institutions/mayor/manny_askorti'].quests[0]
     v1 = v.instantiate()
-    print('generate:', v1.generate(agent='Ag', event='Ev'))
+    print('generate:', v1.generate(agent=u2, event=None))
 
     
     #a2.position = [123, 456]

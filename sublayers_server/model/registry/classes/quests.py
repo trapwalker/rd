@@ -286,10 +286,12 @@ class Quest(Root):
             log.error('Syntax error in quest handler.')
             raise e
 
+        time = kw.pop('time', event and event.time)
         self.local_context.update(
             event=event,
             agent=agent,
             Cancel=unicode_args_substitution(Cancel, self._template_render),
+            time=time,
             **kw
         )
         try:
@@ -420,6 +422,10 @@ class QuestUpdateMessage(Message):
             quest=self.quest.as_client_dict(),
         )
         return d
+
+
+class QuestAddMessage(QuestUpdateMessage):
+    pass
 
 
 class QuestLogMessage(Message):

@@ -170,6 +170,9 @@ class Agent(Root):
 
     @property
     def quests(self):
+        """
+        :rtype: list[sublayers_server.model.registry.classes.quests.Quest]
+        """
         return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
 
     def __init__(self, **kw):
