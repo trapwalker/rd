@@ -334,7 +334,7 @@ var ClientManager = (function () {
 
         clock.setDt((new Date().getTime() - servtime) / 1000.);
 
-        setTimeout(function() {textConsoleManager.stop();}, 10);
+        textConsoleManager.async_stop();
 
         if (!user.userCar) {
             // создать машинку
@@ -748,20 +748,17 @@ var ClientManager = (function () {
 
     ClientManager.prototype.PreEnterToLocation = function (event) {
         console.log('ClientManager.prototype.PreEnterToLocation', event);
-
+        locationManager.load_city_image = false;
         function complete(load) {
-            //console.log('All images fot city laod: ', load);
+            locationManager.load_city_image = true;
             if (locationManager.in_location_flag)
-                textConsoleManager.stop();
+                textConsoleManager.async_stop();
         }
 
         if (event.static_image_list.length == 0)
-            textConsoleManager.stop();
+            textConsoleManager.async_stop();
         else {
-            // todo: fix this
-            setTimeout(function () {
-                preloaderImage.add_list(event.static_image_list, complete, 10000);
-            }, 10);
+            preloaderImage.add_list(event.static_image_list, complete, 10000);
             textConsoleManager.start('enter_location');
         }
     };

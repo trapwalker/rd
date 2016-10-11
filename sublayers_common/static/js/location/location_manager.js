@@ -13,6 +13,8 @@ var LocationManager = (function () {
         this.location_cls = '';
         this.in_location_flag = false;
 
+        this.load_city_image = false; // показывает, загружены ли изображения города
+
         // Менеджер посетителей города
         this.visitor_manager = new LocationVisitorsManager();
 
@@ -200,7 +202,8 @@ var LocationManager = (function () {
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
 
-        textConsoleManager.stop();
+        if (this.load_city_image)
+            textConsoleManager.async_stop();
     };
 
     LocationManager.prototype.onExit = function () {
