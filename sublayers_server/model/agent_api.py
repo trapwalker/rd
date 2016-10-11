@@ -138,26 +138,26 @@ class AgentConsoleNamespace(Namespace):
                 self.api.send_kick(username=name_to_reset)
                 agent.example.reset()
 
-    def quest(self, *args):
-        if not args:
-            pass  # todo: Вывести перечень активных квестов
-        elif args[0] == 'get':
-            for q in args[1:]:
-                try:
-                    q = self.agent.server.reg[q]
-                except:
-                    log.error('Quest %s is not found', q)
-                    raise
-                log.debug('Abstract quest %s selected', q)
-                quest = q.instantiate()
-                log.debug('Quest %s instantiated', quest)
-                quest.start(agents=self.agent, time=self.agent.server.get_time())
-                # todo: store quest to agent or global storage
-                log.debug('Quest %s started', quest)
+    # def quest(self, *args):
+    #     if not args:
+    #         pass  # todo: Вывести перечень активных квестов
+    #     elif args[0] == 'get':
+    #         for q in args[1:]:
+    #             try:
+    #                 q = self.agent.server.reg[q]
+    #             except:
+    #                 log.error('Quest %s is not found', q)
+    #                 raise
+    #             log.debug('Abstract quest %s selected', q)
+    #             quest = q.instantiate()
+    #             log.debug('Quest %s instantiated', quest)
+    #             quest.generate(agents=self.agent, time=self.agent.server.get_time())
+    #             # todo: store quest to agent or global storage
+    #             log.debug('Quest %s started', quest)
 
     def qi(self):
-        for k, q in self.agent.quests.items():
-            log.info('QUEST: {}:: {}'.format(k, q))
+        for quest in self.agent.example.quests:
+            log.info('QUEST: {}'.format(quest))
 
 
 class UpdateAgentAPIEvent(Event):

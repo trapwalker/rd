@@ -61,19 +61,15 @@ class MapLocation(Observer):
     def on_enter(self, agent, time):
         agent.on_enter_location(location=self, time=time)
         PreEnterToLocation(agent=agent, location=self, time=time).post()
-        # if hasattr(self.example, 'buildings'):
-        #     for building in self.example.buildings:
-        #         head = building.head
-        #         if head and head.quests:
-        #             for quest in head.quests:
-        #                 # todo: (!) Проверить quest на unicode
-        #                 quest_uri = URI(quest)
-        #                 quest = quest_uri.resolve()
-        #                 quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))
-        #                 if quest_key not in agent.quests:
-        #                     log.info('new quest %r', quest)
-        #                     new_quest = quest.instantiate(agents=[agent], npc=head, **dict(quest_uri.params))
-        #                     agent.add_quest(quest=new_quest, time=time)
+
+        for building in self.example.buildings or []:
+            head = building.head
+            for quest in head and head.quests or []:
+                new_quest = quest.instantiate()
+                if new_quest.generate(agent=agent.example, event=None, time=time, npc=head):
+                    agent.add_quest(quest=new_quest, time=time)
+                else:
+                    del new_quest
 
         ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
 
@@ -83,7 +79,7 @@ class MapLocation(Observer):
             self.inventory.add_manager(agent=agent)
         EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
 
-        for visitor in self.visitors:
+        for visitor in self.visitors:  # todo: optimize
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=time).post()
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
         agent.current_location = self

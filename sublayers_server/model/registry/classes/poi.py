@@ -94,13 +94,14 @@ class Institution(Root):
     photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
     text = StringField(caption=u"Текст приветствия", tags='client')
     type = StringField(caption=u"Специальность NPC", tags='client')
-    # quests = ListField(
-    #     caption=u"Квесты",
-    #     base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.quests.Quest'),
-    # )
-
-    def as_dict4quest(self):  # todo: устранить
-        pass
+    quests = ListField(
+        caption=u"Генераторы квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst=True,
+        ),
+    )
 
 
 class Trainer(Institution):

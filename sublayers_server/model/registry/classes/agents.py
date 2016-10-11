@@ -9,11 +9,13 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
-
 from sublayers_server.model.events import ChangeAgentBalanceEvent
+
+from itertools import chain
 
 
 class Agent(Root):
+    __not_a_fields__ = ['_agent_model']
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
@@ -141,6 +143,42 @@ class Agent(Root):
         reinst=True,
     )
 
+    quests_unstarted = ListField(
+        caption=u"Список доступных (невзятых) квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+    quests_active = ListField(
+        caption=u"Список активных квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+    quests_ended = ListField(
+        caption=u"Список законченных квестов (пройденных или проваленных)",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+
+    @property
+    def quests(self):
+        """
+        :rtype: list[sublayers_server.model.registry.classes.quests.Quest]
+        """
+        return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
+
+    def __init__(self, **kw):
+        super(Agent, self).__init__(**kw)
+        self._agent_model = None
+
     def set_balance(self, balance, server, time):
         self.balance = balance
         ChangeAgentBalanceEvent(agent_ex=self, server=server, time=time).post()
@@ -182,7 +220,6 @@ class Agent(Root):
             if car.last_parking_npc == npc.node_hash():
                 res.append(car)
         return res
-
 
     # Для того, чтобы "закрыть" поле
     @property

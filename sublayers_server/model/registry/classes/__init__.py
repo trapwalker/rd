@@ -1,6 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 
-#import quests
 import agents
 import item
 import mobiles
@@ -16,5 +15,7 @@ import inventory
 import skills
 import world
 import trader
+
+import quests
 
 #import _test
