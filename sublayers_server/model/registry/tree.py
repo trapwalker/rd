@@ -94,8 +94,6 @@ class Doc(AbstractDocument):
                 ):
                     getter = lambda: getattr(self, name)
                     yield name, attr, getter
-            else:
-                log.warning('Doc.iter_attrs: dynamic field! %s in %r', name, self)
 
 
 class Subdoc(Doc):
