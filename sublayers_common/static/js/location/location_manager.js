@@ -199,6 +199,8 @@ var LocationManager = (function () {
         this.in_location_flag = true;
         // Принудительно перерисовать все квесты
         //journalManager.quest.redraw();
+
+        textConsoleManager.stop();
     };
 
     LocationManager.prototype.onExit = function () {

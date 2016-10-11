@@ -97,7 +97,7 @@ var PreloaderImage = (function(){
     };
 
     PreloaderImage.prototype.task_delay_timer = function(task_id) {
-        console.log('PreloaderImage.prototype.task_delay_timer', task_id);
+        //console.log('PreloaderImage.prototype.task_delay_timer', task_id);
         var task = this.del_task(task_id);
         if (! task) return;
         task.maxdelay_timer = null;

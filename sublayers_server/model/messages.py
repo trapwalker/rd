@@ -508,6 +508,24 @@ def patch_svg_links(src, pth):
     return r.sub(r'\1{}\2'.format(pth), src)
 
 
+class PreEnterToLocation(Message):
+    def __init__(self, location, agent, **kw):
+        super(PreEnterToLocation, self).__init__(agent=agent, **kw)
+        self.location = location
+        self.agent = agent
+
+    def as_dict(self):
+        d = super(PreEnterToLocation, self).as_dict()
+        location = self.location
+
+        from sublayers_server.model.map_location import Town, GasStation
+        if isinstance(location, Town) or isinstance(location, GasStation):
+            d.update(static_image_list=location.example.static_image_list)
+        else:
+            log.warn('Unknown type location: %s', location)
+        return d
+
+
 class EnterToLocation(Message):
     def __init__(self, location, agent, **kw):
         super(EnterToLocation, self).__init__(agent=agent, **kw)
