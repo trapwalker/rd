@@ -4,6 +4,9 @@ var TextConsoleManager = (function(){
         this.active_console = null;
         this.consoles = {};
         this.app_version = $('#settings_app_version').text();
+
+        this.first_start_time = null;  // время начала показывания консоли. Если даже стартанули другие консоли, не закрывая предыдущую.
+        this.min_view_time = 0;
     }
 
     TextConsoleManager.prototype.add = function(console, name) {
@@ -24,7 +27,7 @@ var TextConsoleManager = (function(){
             console.warn('Попытка удаления отсутствующей консоли - ' + name + '.');
     };
 
-    TextConsoleManager.prototype.start = function(name) {
+    TextConsoleManager.prototype.start = function(name, min_view_time) {
         // Останавливаем все консоли
         for (var key in this.consoles)
             if (this.consoles.hasOwnProperty(key) && this.consoles[key])
@@ -35,14 +38,34 @@ var TextConsoleManager = (function(){
             this.jq_main_div.addClass('show');
             this.active_console = this.consoles[name];
             this.active_console.start();
+
+            if (min_view_time != undefined && min_view_time > 0) {
+                this.min_view_time = min_view_time;
+                if (! this.first_start_time)
+                    this.first_start_time = clock.getClientTime();
+            }
+
         }
     };
 
-    TextConsoleManager.prototype.stop = function() {
+    TextConsoleManager.prototype._stop = function() {
         for (var i = 0; i < this.consoles.length; i++)
             this.consoles[i].stop();
         this.active_console = null;
         this.jq_main_div.removeClass('show');
+
+        this.first_start_time = null;
+        this.min_view_time = 0;
+    };
+
+    TextConsoleManager.prototype.stop = function() {
+        var self = this;
+        var curr_time = clock.getClientTime();
+        if (this.first_start_time && curr_time - this.first_start_time < this.min_view_time) {
+            setTimeout(self._stop.bind(self), this.min_view_time - (curr_time - this.first_start_time));
+        }
+        else
+            self._stop();
     };
 
     TextConsoleManager.prototype.async_stop = function() {
@@ -557,16 +580,23 @@ var ConsoleEnterToLocation = (function (_super) {
 
     function ConsoleEnterToLocation() {
         _super.call(this);
-
         this.target_div = textConsoleManager.jq_main_div;
+        this._init_messages();
+        textConsoleManager.add(this, 'enter_location');
+    }
 
+    ConsoleEnterToLocation.prototype._init_messages = function() {
+        this._messages = [];
         this.add_message('user', 'Активация протокола входа в локацию.');
         this.add_message('system', 'Проверка протоколов безопасности...');
         this.add_message('system', 'Одобрено.');
         this.add_message('system', 'Загрузка данных.');
+    };
 
-        textConsoleManager.add(this, 'enter_location');
-    }
+    ConsoleEnterToLocation.prototype.start = function() {
+        this._init_messages();
+        _super.prototype.start.call(this);
+    };
 
     return ConsoleEnterToLocation;
 })(TextConsole);
@@ -577,16 +607,23 @@ var ConsoleEnterToMap = (function (_super) {
 
     function ConsoleEnterToMap() {
         _super.call(this);
-
         this.target_div = textConsoleManager.jq_main_div;
+        this._init_messages();
+        textConsoleManager.add(this, 'enter_map');
+    }
 
+    ConsoleEnterToMap.prototype._init_messages = function() {
+        this._messages = [];
         this.add_message('user', 'Активация протокола выхода на карту.');
         this.add_message('system', 'Проверка протоколов безопасности...');
         this.add_message('system', 'Одобрено.');
         this.add_message('system', 'Загрузка данных.');
+    };
 
-        textConsoleManager.add(this, 'enter_map');
-    }
+    ConsoleEnterToMap.prototype.start = function() {
+        this._init_messages();
+        _super.prototype.start.call(this);
+    };
 
     return ConsoleEnterToMap;
 })(TextConsole);

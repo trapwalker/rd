@@ -264,6 +264,21 @@ function main() {
         }
     });
 
+    // Обработка переключения вкладки сайта
+    function sitePageFocus(focus) {
+         if (focus) {// Отключено, нужно включить звук
+            audioManager.gain_all(GlobalGeneralSiteGain);
+        }
+        else {
+            GlobalGeneralSiteGain = audioManager.general_gain;
+            audioManager.gain_all(0.0);
+        }
+    }
+
+    window.onblur = function () {sitePageFocus(false);};
+    window.onfocus = function () {sitePageFocus(true);};
+    // завершение обработки переключения вкладки сайта
+
     // Вход и регистрация по Enter
     $('#RDSiteWReg input').on('keydown', windowRegKeyDownEnter);
 
