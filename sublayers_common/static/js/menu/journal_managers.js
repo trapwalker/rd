@@ -80,10 +80,10 @@ var ParkingJournalManager = (function () {
                 for (var k = 0; k < town.car_list.length; k++) {
                     var car_info = town.car_list[k];
                     jq_town_car_list.append(
-                        '<div class="journal-parking-menu-city-car" data-car_id="' + car_info.car.id + '">' +
+                        '<div class="journal-parking-menu-city-car" data-car_id="' + car_info.car.uid + '">' +
                             car_info.car.title +
                         '</div>');
-                    var jq_car_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.id + '"></div>');
+                    var jq_car_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.uid + '"></div>');
                     jq_car_info_block.append(car_info.armorer_css);
                     var jq_car_img_block = $('<div class="journal-page-parking-picture town-interlacing">' + car_info.html_car_img +'</div>' +
                         '<div class="journal-page-car-name">' + car_info.car.title + '</div>');
