@@ -342,6 +342,10 @@ class Quest(Root):
         self.current_state = new_state_id
         self.do_state_enter(new_state, event)
 
+        agent_model = self.agent and self.agent._agent_model
+        if agent_model:
+            QuestUpdateMessage(agent=agent_model, time=event.time, quest=self).post()
+
     def make_global_context(self):
         return dict(
             quest=self,
