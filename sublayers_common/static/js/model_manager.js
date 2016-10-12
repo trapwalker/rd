@@ -757,7 +757,7 @@ var ClientManager = (function () {
         }
 
         if (event.static_image_list.length == 0)
-            textConsoleManager.async_stop();
+            complete(true);
         else {
             preloaderImage.add_list(event.static_image_list, complete, 10000);
             textConsoleManager.start('enter_location', 3000);
