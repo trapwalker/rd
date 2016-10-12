@@ -64,7 +64,7 @@ class GetRatingInfo(BaseSiteHandler):
             cmp_func = compare_function_for_adventurers
 
         # todo: принять в аргументе имя рейтинга и как-то обработтать это в поиске
-        rate_users = yield User.objects.filter({'quick': False, 'registration_status': 'register'}).limit(10).find_all()
+        rate_users = yield User.objects.filter({'quick': False, 'registration_status': 'register'}).limit(50).find_all()
         # todo: load agents for all users
         # agent_exemplar = self.server.reg_agents.get([str(user._id)])
 

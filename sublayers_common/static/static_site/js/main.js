@@ -275,8 +275,8 @@ function main() {
         }
     }
 
-    window.onblur = function () {sitePageFocus(false); console.log('документ неактивен');};
-    window.onfocus = function () {sitePageFocus(true); console.log('документ снова активен');};
+    window.onblur = function () {sitePageFocus(false);};
+    window.onfocus = function () {sitePageFocus(true);};
     // завершение обработки переключения вкладки сайта
 
     // Вход и регистрация по Enter
