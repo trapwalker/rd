@@ -200,9 +200,9 @@ class QuestState(Root):
 
 class Quest(Root):
     __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context']
-    first_state = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
-    current_state = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
-    states = ListField(
+    first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
+    current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
+    states          = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=QuestState, reinst=True),
         reinst=True,
         caption=u"Состояния квеста",
@@ -211,19 +211,19 @@ class Quest(Root):
 
     on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
-    caption = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
-    typename = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
-    list_icon = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
-    level = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
-    starttime = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
-    deadline = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    caption     = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
+    text        = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
+    text_short  = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    typename    = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
+    list_icon   = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    level       = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
+    starttime   = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
+    deadline    = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
-    hirer = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
-    town = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
-    agent = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
-    history = ListField(
+    hirer       = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
+    town        = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
+    agent       = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
+    history     = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=LogRecord, reinst=True),
         reinst=True,
         caption=u"Журнал квеста",
@@ -259,6 +259,7 @@ class Quest(Root):
         return state and state.result
 
     def as_client_dict(self):
+        # todo: render templates
         d = super(Quest, self).as_client_dict()
         d.update(
             status=self.status,
