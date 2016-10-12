@@ -309,13 +309,14 @@ class Quest(Root):
             del self.local_context
 
     @event_deco
-    def start(self, agent, event):
+    def start(self, event, agent=None):
         """
         :param agent: sublayers_server.model.registry.classes.agents.Agent
         :param event: sublayers_server.model.events.Event
         """
         assert not self.abstract
-        self.agent = agent
+        if agent:
+            self.agent = agent
         self.set_state(new_state=self.first_state, event=event)
 
     def set_state(self, new_state, event):

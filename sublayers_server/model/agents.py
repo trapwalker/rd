@@ -12,7 +12,6 @@ from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
 from sublayers_server.model.registry.classes.trader import Trader
-from sublayers_server.model.registry.classes.quests import QuestAddMessage
 
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
@@ -536,10 +535,6 @@ class Agent(Object):
         # Создание нового
         if new_example_inventory:
             self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
-
-    def add_quest(self, quest, time):
-        self.example.quests_unstarted.append(quest)
-        QuestAddMessage(agent=self, time=time, quest=quest).post()
 
 
 # todo: Переименовать в UserAgent

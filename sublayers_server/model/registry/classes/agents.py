@@ -10,6 +10,7 @@ from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
 from sublayers_server.model.events import ChangeAgentBalanceEvent
+from sublayers_server.model.registry.classes.quests import QuestAddMessage
 
 from itertools import chain
 
@@ -241,3 +242,11 @@ class Agent(Root):
             self._frag = value
         if dvalue is not None:
             self._frag += dvalue
+
+    def add_quest(self, quest, time):
+        self.quests_unstarted.append(quest)
+        model = self._agent_model
+        if model:
+            QuestAddMessage(agent=model, time=time, quest=quest).post()
+        else:
+            log.warning("Can't send message: agent %s is offline", self)
