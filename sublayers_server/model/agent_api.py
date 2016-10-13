@@ -5,6 +5,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from uuid import UUID
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
@@ -792,6 +793,12 @@ class AgentAPI(API):
         self.agent.example.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
+    # Квесты
+
+    @public_method
+    def quest_note_action(self, ):
+        pass
+
     # Запрос инфы о другом игроке
 
     @public_method
@@ -853,5 +860,5 @@ class AgentAPI(API):
 
     @public_method
     def quest_activate(self, quest_uid):
-        self.agent.example.start_quest(quest_uid)
+        self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
 

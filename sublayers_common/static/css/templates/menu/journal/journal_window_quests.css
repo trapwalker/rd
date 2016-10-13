@@ -25,10 +25,8 @@
 .journal-quest-info-block-main-npc-photo {
     position: relative;
     float: left;
-    width: 146px;
-    height: 170px;
-    margin-right: 5px;
-    border: 1px solid #29F200;
+    width: 170px;
+    height: 146px;
     box-sizing: border-box;
 }
 

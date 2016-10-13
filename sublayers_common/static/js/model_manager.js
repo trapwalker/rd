@@ -1065,9 +1065,40 @@ var ClientManager = (function () {
     };
 
     // Журнал (квесты)
+    ClientManager.prototype.QuestsInitMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestInitMessage', event);
+        journalManager.quests.clear();
+        for (var i = 0; i < event.quests.length; i++)
+            journalManager.quests.addQuest(event.quests[i]);
+    };
+
+    ClientManager.prototype.QuestAddMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestAddMessage', event);
+        journalManager.quests.addQuest(event.quest);
+    };
+
+    ClientManager.prototype.QuestDelMessage = function (event) {
+        console.log('ClientManager.prototype.QuestDelMessage', event);
+    };
+
     ClientManager.prototype.QuestUpdateMessage = function (event) {
+        console.log('ClientManager.prototype.QuestUpdateMessage', event);
+        //journalManager.quests.update(event.quest);
+    };
+    //
+
+    ClientManager.prototype.SendQuestNoteAction = function (note_id, note_result) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', event);
-        journalManager.quest.update(event.quest);
+        var mes = {
+            call: "quest_note_action",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                note_id: note_id,
+                note_result: note_result
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
     };
 
     // Административные сообщения
@@ -1974,6 +2005,18 @@ var ClientManager = (function () {
                 x: x,
                 y: y
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Квесты
+    ClientManager.prototype.sendActivateQuest = function (quest_id) {
+        console.log('ClientManager.prototype.sendActivateQuest', quest_id);
+        var mes = {
+            call: "quest_activate",
+            rpc_call_id: rpcCallList.getID(),
+            params: {quest_uid: quest_id}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
