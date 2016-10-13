@@ -149,9 +149,6 @@ var WCanvasFireSectorsScaled = (function (_super) {
     WCanvasFireSectorsScaled.prototype._drawOneRechargeSide = function(ctx, recharge_area_radius, width, direction, recharge_state){
         var half_width =  width /2.;
 
-        //var sp21 = rotateVector(new Point(recharge_area_radius, 0), half_width);
-        //var sp22 = rotateVector(new Point(recharge_area_radius, 0), -half_width);
-
         ctx.save();
         ctx.rotate(direction);
 
@@ -183,25 +180,37 @@ var WCanvasFireSectorsScaled = (function (_super) {
             ctx.stroke();
         }
 
-        ctx.font = "11pt MICRADI";
+        var font_size = 14;
+        ctx.font = font_size + "px MICRADI";
         ctx.textAlign = "center";
         ctx.textBaseline = "center";
         ctx.fillStyle = 'rgba(85, 255, 85, 0.6)';
 
-        var const_width_letter = 15; // Ширина одной буквы равна 15px;
         // todo: вычисляем
         var recharge_text = recharge_state.prc >= 1 ? "READY" : "RELOAD";
 
         this.fillTextCircle(ctx, recharge_text, recharge_area_radius + 20, -half_width / 2 + Math.PI / 2,
-                half_width / 2 + Math.PI / 2);
+                half_width / 2 + Math.PI / 2, font_size);
 
         ctx.restore();
     };
 
-    WCanvasFireSectorsScaled.prototype.fillTextCircle = function (ctx, text, radius, startRotation, endRotation) {
+    WCanvasFireSectorsScaled.prototype.fillTextCircle = function (ctx, text, radius, startRotation, endRotation, font_size) {
         var numRadsPerLetter = Math.abs(endRotation - startRotation) / text.length;
+        var center_of_line = (endRotation + startRotation) / 2.;
+        var start_rotation = startRotation;
+        // магические цифры. Но иначе сложный алгоритм с учётом радиуса
+        if (numRadsPerLetter * radius < font_size) { // полумагическое число, должно быть не меньше пиксельного размера шрифта
+            numRadsPerLetter = font_size/ radius;
+            start_rotation = center_of_line - numRadsPerLetter * (text.length / 2.);
+        }
+        if (numRadsPerLetter * radius > font_size * 4.) { // полумагическое число, должно быть не больше чем в 4 раза от пиксельного шрифта
+            numRadsPerLetter = font_size * 4. / radius;
+            start_rotation = center_of_line - numRadsPerLetter * (text.length / 2.);
+        }
+
         ctx.save();
-        ctx.rotate(startRotation + numRadsPerLetter / 2.);
+        ctx.rotate(start_rotation + numRadsPerLetter / 2.);
 
         for (var i = 0; i < text.length; i++) {
             ctx.save();

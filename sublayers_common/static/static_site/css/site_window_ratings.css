@@ -28,6 +28,8 @@
     text-align: center;
     width: 13%;
     overflow: hidden;
+    padding: 2px 0;
+    box-sizing: border-box;
 }
 
 .window-ratings-header-path.small {
@@ -69,7 +71,7 @@
     width: 0;
     height: 0;
     left: 3px;
-    top: 2px;
+    top: 4px;
     border-top: 5px solid transparent;
     border-left: 5px solid #00ff00;
     border-bottom: 5px solid transparent;
@@ -79,7 +81,7 @@
     content: ' ';
     position: absolute;
     right: 3px;
-    top: 2px;
+    top: 4px;
     width: 0;
     height: 0;
     border-top: 5px solid transparent;
@@ -183,6 +185,20 @@
 .window-ratings-board .scroll-block { padding-right: 45px; }
 .window-ratings-board .scroll-btn.up { left: 156px; }
 .window-ratings-board .scroll-btn.down { left: 228px; }
+
+.fading-content-before.ratings-content-before {
+    width: 100%;
+    height: 20px;
+    top: 0;
+    z-index: 1;
+}
+
+.fading-content-after.ratings-content-after {
+    width: 100%;
+    height: 20px;
+    z-index: 1;
+    bottom: 45px;
+}
 
 /*Настройка правой части */
 
