@@ -319,6 +319,11 @@ class Quest(Root):
         assert not self.abstract
         if agent:
             self.agent = agent
+
+        if self.agent:
+            self.quests_unstarted.remove(self)
+            self.quests_active.append(self)
+
         self.set_state(new_state=self.first_state, event=event)
 
     def set_state(self, new_state, event):

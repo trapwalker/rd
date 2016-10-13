@@ -850,5 +850,7 @@ class AgentAPI(API):
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 
-
+    @public_method
+    def quest_activate(self, quest_uid):
+        self.agent.example.start_quest(quest_uid)
 
