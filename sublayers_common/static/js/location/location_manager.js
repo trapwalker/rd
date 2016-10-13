@@ -339,6 +339,13 @@ var LocationManager = (function () {
         return null;
     };
 
+    LocationManager.prototype.get_building_by_node_hash = function(npc_node_hash){
+        for(var key in this.buildings)
+            if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head.node_hash == npc_node_hash)
+                return this.buildings[key];
+        return null;
+    };
+
     LocationManager.prototype.get_npc_by_type = function(npc_type){
         var res = [];
         for(var key in this.npc)
@@ -624,7 +631,7 @@ var LocationPlaceBuilding = (function (_super) {
         );
         this.centralMenuBindReaction();
 
-        // todo: заполнить квесты
+        this.selected_quest = null;
     }
 
     LocationPlaceBuilding.prototype.activate = function () {
@@ -656,11 +663,34 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
         }
+        if ((btnIndex == '1') && (this.selected_quest)) {
+            if (this.selected_quest.status == null)
+                clientManager.sendActivateQuest(this.selected_quest.uid);
+            //if (this.selected_quest.status == 'active')
+            //    Сообщение на отмену квеста
+        }
+    };
+
+    LocationPlaceBuilding.prototype.set_header_text = function (html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+
+        //if (!html_text)
+        //    if (this.selected_quest)
+        //        html_text = $('<div>Цена отмены квеста</div>');
+
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationPlaceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, '', false);
+        if (!this.selected_quest)
+            locationManager.setBtnState(1, '', false);
+        else {
+            if (this.selected_quest.status == null)
+                locationManager.setBtnState(1, '</br>Принять', true);
+            if (this.selected_quest.status == 'active')
+                locationManager.setBtnState(1, '</br>Отказаться', false);
+        }
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
@@ -692,6 +722,15 @@ var LocationPlaceBuilding = (function (_super) {
         if (!make && !locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
+    };
+
+    LocationPlaceBuilding.prototype.set_selected_quest = function (quest_id) {
+        if (journalManager.quests.quests.hasOwnProperty(quest_id))
+            this.selected_quest = journalManager.quests.quests[quest_id];
+        else
+            this.selected_quest = null;
+        this.set_buttons();
+        this.set_header_text();
     };
 
     return LocationPlaceBuilding;

@@ -311,7 +311,7 @@ class Quest(Root):
             del self.local_context
 
     @event_deco
-    def start(self, event, agent=None):
+    def start(self, event, agent=None, **kw):
         """
         :param agent: sublayers_server.model.registry.classes.agents.Agent
         :param event: sublayers_server.model.events.Event

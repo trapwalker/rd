@@ -251,7 +251,7 @@ class Agent(Root):
         else:
             log.warning("Can't send message: agent %s is offline", self)
 
-    def start_quest(self, quest_uid):
+    def start_quest(self, quest_uid, server, time):
         quest = None
         for q in self.quests_unstarted:
             if q.uid == quest_uid:
@@ -261,5 +261,5 @@ class Agent(Root):
             log.error('Trying to start unknown quest by uid %r. Agent: %s', quest_uid, self)
             return
 
-        quest.start(agent=self)
+        quest.start(agent=self, server=server, time=time)
 
