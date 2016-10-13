@@ -66,7 +66,7 @@ class MapLocation(Observer):
             head = building.head
             for quest in head and head.quests or []:
                 new_quest = quest.instantiate()
-                if new_quest.generate(agent=agent.example, event=None, time=time, npc=head):
+                if new_quest.generate(agent=agent.example, event=None, hirer=head, time=time, npc=head):
                     agent.example.add_quest(quest=new_quest, time=time)
                 else:
                     del new_quest
