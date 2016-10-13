@@ -321,8 +321,8 @@ class Quest(Root):
             self.agent = agent
 
         if self.agent:
-            self.quests_unstarted.remove(self)
-            self.quests_active.append(self)
+            self.agent.quests_unstarted.remove(self)
+            self.agent.quests_active.append(self)
 
         self.set_state(new_state=self.first_state, event=event)
 
