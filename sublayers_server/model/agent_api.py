@@ -385,6 +385,7 @@ class AgentAPI(API):
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
         messages.UserExampleSelfMessage(agent=self.agent, time=time).post()
+        messages.QuestsInitMessage(agent=self.agent, time=time).post()
 
         # Отослать все пати инвайты
         PartyGetAllInvitesEvent(agent=self.agent, time=self.agent.server.get_time()).post()

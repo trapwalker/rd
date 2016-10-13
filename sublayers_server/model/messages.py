@@ -955,6 +955,16 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
         return d
 
 
+class QuestsInitMessage(Message):
+    u"""Отправка всех квестов агента на клиент"""
+    def as_dict(self):
+        d = super(QuestsInitMessage, self).as_dict()
+        d.update(
+            quests=[quest.as_client_dict() for quest in self.agent.example.quests],
+        )
+        return d
+
+
 # Общее сообщение-родитель для всех видов информационных сообщений для города (для заполнения города)
 class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
