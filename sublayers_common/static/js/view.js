@@ -140,7 +140,7 @@ $(document).ready(function () {
 });
 
 function init_site_sound() {
-    audioManager.gain_all(0.0);
+    audioManager.gain_all(1.0);
 
     //audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
     //audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.5);
