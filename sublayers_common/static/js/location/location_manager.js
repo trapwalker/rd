@@ -199,8 +199,9 @@ var LocationManager = (function () {
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         this.in_location_flag = true;
+
         // Принудительно перерисовать все квесты
-        //journalManager.quest.redraw();
+        journalManager.quests.redraw();
 
         if (this.load_city_image)
             textConsoleManager.async_stop();
@@ -668,6 +669,7 @@ var LocationPlaceBuilding = (function (_super) {
                 clientManager.sendActivateQuest(this.selected_quest.uid);
             //if (this.selected_quest.status == 'active')
             //    Сообщение на отмену квеста
+            this.set_selected_quest(null);
         }
     };
 
@@ -715,6 +717,14 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
         //console.log('LocationPlaceBuilding.prototype.centralMenuReaction', page_id);
         this.active_central_page = page_id;
+
+        // Обязательно сбросить текущий квест (возможно выбрать первый квест)
+        //var page_type = page_id.split('_')[0];
+        //if (page_type == 'buildingPageAvailableTasks' || page_type == 'buildingPageActiveTasks')
+        //    $('#' + page_id).find('.building-quest-list-item').first().click();
+        //else
+        if (this.selected_quest)
+            this.set_selected_quest(null);
     };
 
     LocationPlaceBuilding.prototype.set_panels = function (make) {
@@ -725,10 +735,23 @@ var LocationPlaceBuilding = (function (_super) {
     };
 
     LocationPlaceBuilding.prototype.set_selected_quest = function (quest_id) {
-        if (journalManager.quests.quests.hasOwnProperty(quest_id))
-            this.selected_quest = journalManager.quests.quests[quest_id];
-        else
+        var click_quest = null;
+        if (quest_id && journalManager.quests.quests.hasOwnProperty(quest_id))
+            click_quest = journalManager.quests.quests[quest_id];
+
+        // Отключить подсветку старого квеста
+        if (this.selected_quest) {
+            this.selected_quest.jq_npc_block.removeClass('selected');
+            if (this.selected_quest == click_quest) // Если квест тот же, что и был, то уже не включим подсветку
+                click_quest = null;
             this.selected_quest = null;
+        }
+
+        if (click_quest) {
+            click_quest.jq_npc_block.addClass('selected');
+            this.selected_quest = click_quest;
+        }
+
         this.set_buttons();
         this.set_header_text();
     };
