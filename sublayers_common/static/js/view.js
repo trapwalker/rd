@@ -90,7 +90,9 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnRadio').onclick = function () {
-        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, null);
+        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, function () {
+            radioPlayer.update();
+        });
         returnFocusToMap();
     };
 
@@ -137,6 +139,26 @@ $(document).ready(function () {
     resizeWindowHandler();
 });
 
+function init_site_sound() {
+    audioManager.gain_all(0.0);
+
+    //audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
+    //audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.5);
+    //audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'}, null, null, 0.5);
+    //audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'}, null, null, 0.65);
+    //audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'}, null, null, 1.0);
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
+    //audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 1.0);
+    //audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.8);
+    //audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.6);
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
+    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.2);
+
+    // audioKeyboard = new AudioKeyboard([
+    //     audioManager.get('key_cl_1')
+    // ]);
+}
+
 var b_canvas;
 var b_context;
 var pat;
@@ -144,6 +166,9 @@ var img = [];
 var img1;
 var window_scaled_prc = 1.0;
 
+init_site_sound();
+
+initRadioPlayer();
 
 function returnFocusToMap() {
     document.getElementById('map').focus();

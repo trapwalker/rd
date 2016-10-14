@@ -204,6 +204,8 @@ var LocationManager = (function () {
 
         if (this.load_city_image)
             textConsoleManager.async_stop();
+
+        radioPlayer.update();
     };
 
     LocationManager.prototype.onExit = function () {
