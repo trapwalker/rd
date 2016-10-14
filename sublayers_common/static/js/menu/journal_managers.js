@@ -21,7 +21,7 @@ var JournalManager = (function () {
         self.jq_main_div.find('.journal-page-button-block')[0].click();
 
         self.parking.redraw();
-        self.quests.redraw();
+        //self.quests.redraw();
     };
 
     return JournalManager;
@@ -167,10 +167,10 @@ var QuestJournalManager = (function () {
     }
 
     QuestJournalManager.prototype.addQuest = function(quest) {
-        console.log('QuestManager.prototype.addQuest', quest);
+        //console.log('QuestManager.prototype.addQuest', quest);
         if (!this.quests.hasOwnProperty(quest.uid)) {
             this.quests[quest.uid] = quest;
-            this.redraw_quest(quest.uid)
+            this.redraw_quest(quest.uid);
         }
         else
             console.error('Попытка повторного добавления существущего квеста.');
@@ -293,6 +293,8 @@ var QuestJournalManager = (function () {
                     quest.jq_npc_block.click({quest_id: quest.uid, build: build}, function(event) {
                         event.data.build.set_selected_quest(event.data.quest_id);
                     });
+
+                    build.resizeInventory(jq_build_quest_list);
                 }
             }
         }
@@ -304,7 +306,6 @@ var QuestJournalManager = (function () {
             switch (quest.status) {
                 case 'active':
                     jq_current_group = this.jq_active_group;
-                    console.log(this.active_count);
                     this.active_count++;
                     break;
                 case 'end':
@@ -350,7 +351,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.redraw = function() {
-        console.log('QuestJournalManager.prototype.redraw');
+        //console.log('QuestJournalManager.prototype.redraw');
 
         // Очищаем журнал квестов
         var jq_quest_main = journalManager.jq_main_div.find('.journal_page_task');

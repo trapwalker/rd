@@ -4,7 +4,7 @@
     function random_str() { return (Math.random() * 10000).toFixed(0); }
 
     function complete(load) {
-        console.log('finish_preloader_static_image_list =', preloaderImage.count_loading, load, preloaderImage.tasks);
+        //console.log('finish_preloader_static_image_list =', preloaderImage.count_loading, load, preloaderImage.tasks);
         resourceLoadManager.del(preloaderImage);
     }
 
