@@ -18,7 +18,7 @@ def event_deco(func):
             kw.get('server', None) or
             getattr(kw.get('agent', None), 'server', None)
         )
-        assert server, 'event_deoc decorated method called without `server` source'
+        assert server, 'event_deco decorated method called without `server` source'
         #time = kw.pop('time', server.get_time())
         event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
         event.post()

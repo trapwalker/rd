@@ -4,6 +4,9 @@ var TextConsoleManager = (function(){
         this.active_console = null;
         this.consoles = {};
         this.app_version = $('#settings_app_version').text();
+        this.user_name = $('#settings_user_name').text();
+        this.user_balance = $('#settings_user_balance').text();
+        this.user_position = $('#settings_user_position').text();
 
         this.first_start_time = null;  // время начала показывания консоли. Если даже стартанули другие консоли, не закрывая предыдущую.
         this.min_view_time = 0;
@@ -342,7 +345,11 @@ var TextConsole = (function(){
             clearTimeout(this._timeout);
             this._timeout = null;
 
-            this.target_div.find('.console-new-text').text(this._text + '... Прервано...');
+            if ((this._messages.length > 0) || this._cur_message)
+                this.target_div.find('.console-new-text').text(this._text + '... Прервано...');
+            else
+                this.target_div.find('.console-new-text').text(this._text);
+
             var old_text = this.target_div.find('.console-old-text').first().text();
             var new_text = this.target_div.find('.console-new-text').first().text();
 
@@ -432,9 +439,9 @@ var ConsoleFirstEnter = (function (_super) {
         this.add_message('user', 'Запрос статуса активной страховки.');
         this.add_message(
             'system',
-            'Базовая страховка активна для Username.\n\n' +
+            'Базовая страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
             '--------------------------------------------------------------\n' +
-            'Уважаемый, Username! Поздравляем вас с успешной регистрацией в системе Nuke Commander и получение корпоративных водительских прав. Финансовый отдел корпорации Нукойл одобрил оформление авто-кредита и аренду клиентского оборудования системы Nuke Navigator.\n\n' +
+            'Уважаемый, ' + textConsoleManager.user_name + '! Поздравляем вас с успешной регистрацией в системе Nuke Commander и получением корпоративных водительских прав. Финансовый отдел корпорации Нукойл одобрил оформление авто-кредита и аренду клиентского оборудования системы Nuke Navigator.\n\n' +
             'Наша компания приветствует квалифицированных пользователей и предлагает плату за прохождение обучения. Желаете пройти обучение за бонус в 150nc + 100exp?\n\n' +
             'Y - Yes\n' +
             'N - No\n' +
@@ -561,12 +568,13 @@ var ConsoleEnter = (function (_super) {
             '       >                                              <\n' +
             '       ================================================'
         );
+
         this.add_message('user', 'Запрос статуса активной страховки.');
-        this.add_message('system', 'Страховка_name активна для Username.');
+        this.add_message('system', 'Страховка активна для ' + textConsoleManager.user_name + '.');
         this.add_message('user', 'Запрос актуальных координат.');
-        this.add_message('system', 'Ваши координаты: x200:y300 (Вайтхилл).');
+        this.add_message('system', 'Ваши координаты: ' + textConsoleManager.user_position + '.');
         this.add_message('user', 'Запрос баланса.');
-        this.add_message('system', 'Баланс вашего счёта: 0nc.');
+        this.add_message('system', 'Баланс вашего счёта: ' + textConsoleManager.user_balance + '.');
 
         textConsoleManager.add(this, 'enter');
     }

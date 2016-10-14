@@ -62,17 +62,23 @@ def test_registry():
     a3 = yield a.objects.get(profile_id='123456')
     print('a3.car =', a3 and a3.car)
 
-    Q = reg['quests/examples/mortal_course']
-    q = Q.instantiate(abstract=False)
-    q.start.sync(self=q, agent=None, event=None)
-    q.do_event(event=None)
-    q.do_event(event=None)
+    Q = reg[r'quests\examples\n_active']
+    #q = Q.instantiate(abstract=False)
+    #q.start.sync(self=q, agent=None, event=None)
+    #q.do_event(event=None)
+    #q.do_event(event=None)
 
     print('\n# Test quest integration #')
 
-    v = reg['institutions/mayor/manny_askorti'].quests[0]
+    v = reg['institutions/trader/bob_ferolito'].quests[0]
     v1 = v.instantiate()
     print('generate:', v1.generate(agent=u2, event=None))
+    u2.add_quest(quest=v1, time=0)
+
+    v2 = v.instantiate()
+    print('generate:', v2.generate(agent=u2, event=None))
+    #u2.add_quest(quest=v1, time=0)
+
 
     
     #a2.position = [123, 456]

@@ -199,8 +199,9 @@ var LocationManager = (function () {
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         this.in_location_flag = true;
+
         // Принудительно перерисовать все квесты
-        //journalManager.quest.redraw();
+        journalManager.quests.redraw();
 
         if (this.load_city_image)
             textConsoleManager.async_stop();
@@ -338,6 +339,13 @@ var LocationManager = (function () {
         for(var key in this.npc)
             if (this.npc.hasOwnProperty(key) && this.npc[key].npc_rec.node_hash == npc_node_hash)
                 return this.npc[key];
+        return null;
+    };
+
+    LocationManager.prototype.get_building_by_node_hash = function(npc_node_hash){
+        for(var key in this.buildings)
+            if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head.node_hash == npc_node_hash)
+                return this.buildings[key];
         return null;
     };
 
@@ -626,7 +634,7 @@ var LocationPlaceBuilding = (function (_super) {
         );
         this.centralMenuBindReaction();
 
-        // todo: заполнить квесты
+        this.selected_quest = null;
     }
 
     LocationPlaceBuilding.prototype.activate = function () {
@@ -658,11 +666,35 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
         }
+        if ((btnIndex == '1') && (this.selected_quest)) {
+            if (this.selected_quest.status == null)
+                clientManager.sendActivateQuest(this.selected_quest.uid);
+            //if (this.selected_quest.status == 'active')
+            //    Сообщение на отмену квеста
+            this.set_selected_quest(null);
+        }
+    };
+
+    LocationPlaceBuilding.prototype.set_header_text = function (html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+
+        //if (!html_text)
+        //    if (this.selected_quest)
+        //        html_text = $('<div>Цена отмены квеста</div>');
+
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationPlaceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, '', false);
+        if (!this.selected_quest)
+            locationManager.setBtnState(1, '', false);
+        else {
+            if (this.selected_quest.status == null)
+                locationManager.setBtnState(1, '</br>Принять', true);
+            if (this.selected_quest.status == 'active')
+                locationManager.setBtnState(1, '</br>Отказаться', false);
+        }
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
@@ -687,6 +719,14 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
         //console.log('LocationPlaceBuilding.prototype.centralMenuReaction', page_id);
         this.active_central_page = page_id;
+
+        // Обязательно сбросить текущий квест (возможно выбрать первый квест)
+        //var page_type = page_id.split('_')[0];
+        //if (page_type == 'buildingPageAvailableTasks' || page_type == 'buildingPageActiveTasks')
+        //    $('#' + page_id).find('.building-quest-list-item').first().click();
+        //else
+        if (this.selected_quest)
+            this.set_selected_quest(null);
     };
 
     LocationPlaceBuilding.prototype.set_panels = function (make) {
@@ -694,6 +734,28 @@ var LocationPlaceBuilding = (function (_super) {
         if (!make && !locationManager.isActivePlace(this)) return;
         locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
+    };
+
+    LocationPlaceBuilding.prototype.set_selected_quest = function (quest_id) {
+        var click_quest = null;
+        if (quest_id && journalManager.quests.quests.hasOwnProperty(quest_id))
+            click_quest = journalManager.quests.quests[quest_id];
+
+        // Отключить подсветку старого квеста
+        if (this.selected_quest) {
+            this.selected_quest.jq_npc_block.removeClass('selected');
+            if (this.selected_quest == click_quest) // Если квест тот же, что и был, то уже не включим подсветку
+                click_quest = null;
+            this.selected_quest = null;
+        }
+
+        if (click_quest) {
+            click_quest.jq_npc_block.addClass('selected');
+            this.selected_quest = click_quest;
+        }
+
+        this.set_buttons();
+        this.set_header_text();
     };
 
     return LocationPlaceBuilding;

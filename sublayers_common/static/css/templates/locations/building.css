@@ -30,9 +30,10 @@
 
 .building-quest-list-block {
     position: relative;
-    margin: auto;
-    width: 500px;
+    margin: 60px auto 0 auto;
+    width: calc(100% - 30px);
     height: 190px;
+    overflow-y: hidden;
     overflow-x: auto;
 }
 
@@ -45,46 +46,65 @@
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 170px;
     width: 170px;
-    margin-right: 10px;
+    margin-right: 12px;
     box-sizing: border-box;
     float: left;
-    border: 1px solid #1A8901;
+    border: 1px solid #0e4b00;
+    background-color: #030f00;
     font-family: FreePixel;
-    opacity: 0.6;
+    overflow: hidden;
 }
-.building-quest-list-item:hover { border-color: #29FB00; opacity: 1; }
+.building-quest-list-item:hover, .building-quest-list-item.selected { border-color: #0e4b00; background-color: #082801;}
+.building-quest-list-item:hover .building-quest-list-item-description,
+.building-quest-list-item.selected .building-quest-list-item-description {
+    color: #2ffa00;
+}
 
 .building-quest-list-item-caption {
     position: relative;
+    height: 20px;
     width: 100%;
-    padding: 5px 5px 0px 25px;
+    padding: 3px 5px 0px 25px;
     font-weight: bold;
     box-sizing: border-box;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .building-quest-list-item-lvl {
     position: relative;
     width: 100%;
+    height: 20px;
     padding: 0px 5px 0px 25px;
     font-weight: bold;
     box-sizing: border-box;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .building-quest-list-item-description {
     position: relative;
     width: 100%;
-    padding: 5px 5px 0px 5px;
+    height: calc(100% - 20px - 20px - 20px);
+    padding: 2px 10px 5px 10px;
     font-size: 11pt;
     box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #31c811;
 }
 
 .building-quest-list-item-time {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
+    position: relative;
+    width: 100%;
+    height: 20px;
     box-sizing: border-box;
     font-size: 10pt;
-    margin: 0px 5px 2px 0px;
+    line-height: 20px;
+    text-align: right;
+    padding: 0 10px 0 0;
 }
 
 .building-center-menu-block {
