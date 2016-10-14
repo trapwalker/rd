@@ -229,6 +229,7 @@ var QuestJournalManager = (function () {
             '<div class="journal-quest-info-block" data-quest_id="' + quest.uid + '">' +
                 '<div class="journal-quest-info-block-main-block">' +
                     '<div class="journal-quest-info-block-main-npc-photo" style="background-image: url(' + quest.hirer.photo + ')">' +
+                        '<div class="npc-name-div"><span class="npc-name">' + quest.hirer.title + '</span></div>' +
                     '</div>' +
                     '<div class="journal-quest-info-block-main-description-block">' +
                         '<div class="journal-quest-info-block-main-description-start-date">00.00.0000; 00:00:00</div>' +
