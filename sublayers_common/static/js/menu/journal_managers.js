@@ -188,8 +188,13 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.update = function(quest) {
         //console.log('QuestJournalManager.prototype.update', quests);
-        this.quests[quest.id] = quest;
-        this.redraw();
+        if (!this.quests.hasOwnProperty(quest.uid)) {
+            console.error('Апдейт несуществущего квеста.');
+            return;
+        }
+        this.clear_quest(quest.uid);
+        this.quests[quest.uid] = quest;
+        this.redraw_quest(quest.uid);
     };
 
     QuestJournalManager.prototype._create_status_group = function(status_name) {
@@ -247,16 +252,30 @@ var QuestJournalManager = (function () {
         return jq_quest_block;
     };
 
-
-
     QuestJournalManager.prototype.clear_quest  = function(quest_id) {
-        // todo: тут снести верстку квеста
+        var quest = this.quests[quest_id];
+        if (quest.hasOwnProperty('jq_npc_block'))
+            quest.jq_npc_block.remove();
+        if (quest.hasOwnProperty('jq_journal_menu'))
+            quest.jq_journal_menu.remove();
+        if (quest.hasOwnProperty('jq_journal_info'))
+            quest.jq_journal_info.remove();
+
+        // Установить счетчики
+        if (this.jq_active_group && this.jq_completed_group && this.jq_failed_group) {
+            if (quest.status == 'active') this.active_count--;
+            if ((quest.status == 'end') && (quest.result == 'win')) this.completed_count--;
+            if ((quest.status == 'end') && (quest.result == 'failed')) this.failed_count--;
+
+            this.jq_active_group.find('.journal-menu-counter').first().text(this.active_count);
+            this.jq_completed_group.find('.journal-menu-counter').first().text(this.completed_count);
+            this.jq_failed_group.find('.journal-menu-counter').first().text(this.failed_count);
+        }
     };
 
     QuestJournalManager.prototype.redraw_quest = function(quest_id) {
         //console.log('QuestJournalManager.prototype.redraw', this.quests);
         var quest = this.quests[quest_id];
-        this.clear_quest(quest_id);
 
         // Отрисовываем квесты у NPC
         if (locationManager.in_location_flag) {
@@ -284,6 +303,7 @@ var QuestJournalManager = (function () {
             switch (quest.status) {
                 case 'active':
                     jq_current_group = this.jq_active_group;
+                    console.log(this.active_count);
                     this.active_count++;
                     break;
                 case 'end':
@@ -339,7 +359,10 @@ var QuestJournalManager = (function () {
         this.jq_quest_info_list.empty();
         jq_quest_list.empty();
 
-        // todo: тут снести персональную верстку в отдельно взятом квесте
+        // Удаление квестов
+        for (var key in this.quests)
+            if (this.quests.hasOwnProperty(key))
+                this.clear_quest(key);
 
         // Добавляем "Активные" "Выполненные" "Проваленные"
         this.active_count = 0;
@@ -357,10 +380,6 @@ var QuestJournalManager = (function () {
         for (var key in this.quests)
             if (this.quests.hasOwnProperty(key))
                 this.redraw_quest(key);
-
-
-
-
 
         // Вешаем клики на все группы (статусы и города)
         jq_quest_list.find('.journal-menu-name-block').click(function () {
@@ -392,5 +411,6 @@ var QuestJournalManager = (function () {
 
     return QuestJournalManager;
 })();
+
 
 var journalManager = new JournalManager();

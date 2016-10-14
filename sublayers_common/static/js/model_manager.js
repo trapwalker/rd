@@ -1083,7 +1083,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.QuestUpdateMessage = function (event) {
         console.log('ClientManager.prototype.QuestUpdateMessage', event);
-        //journalManager.quests.update(event.quest);
+        journalManager.quests.update(event.quest);
     };
     //
 
