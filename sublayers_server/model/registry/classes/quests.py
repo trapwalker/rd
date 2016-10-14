@@ -171,8 +171,9 @@ class QuestState(Root):
         try:
             exec code in quest.global_context, quest.local_context
         except Exception as e:
-            log.error('Runtime error in quest handler.')
-            raise e
+            log.error('Runtime error in quest handler `%s`.', handler)
+            quest._set_error_status(handler, event, e)
+            #raise e
         finally:
             del quest.local_context
 
@@ -199,7 +200,7 @@ class QuestState(Root):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 class Quest(Root):
-    __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context']
+    __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context', '_error']
     first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states          = ListField(
@@ -230,6 +231,9 @@ class Quest(Root):
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
 
+    def _set_error_status(self, handler, event, e):
+        self._error = True
+
     @property
     def states_map(self):
         states_map = getattr(self, '_states_map', None)
@@ -250,6 +254,8 @@ class Quest(Root):
 
     @property
     def status(self):
+        if getattr(self, '_error', None):
+            return 'error'
         state = self.state
         return state and state.status
 
@@ -287,7 +293,7 @@ class Quest(Root):
             code = script_compile(code_text, fn)
         except SyntaxError as e:
             log.error('Syntax error in quest handler.')
-            raise e
+            raise e  # todo: Подавить эту ошибку, чтобы сервер не падал
 
         time = kw.pop('time', event and event.time)
         self.local_context.update(
@@ -303,9 +309,12 @@ class Quest(Root):
             log.debug('Quest {uri} is cancelled: {e.message}'.format(uri=fn, e=e))
             return False
         except Exception as e:
-            log.error('Runtime error in quest handler.')
-            raise e
+            log.error('Runtime error in quest handler `%s`.', 'on_generate')
+            self._set_error_status('on_generate', event, e)
+            return False
+            #raise e
         else:
+            log.info('Quest %s generation accepted', self)
             return True
         finally:
             del self.local_context
