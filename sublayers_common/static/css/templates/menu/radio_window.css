@@ -54,15 +54,25 @@
 }
 
 .radio-window-header-logo {
-
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 20px 20px 20px 40px;
+    background-image: url("/static/img/radio/logo.png");
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    float: left;
 }
 
 .radio-window-header-track {
-
+    position: relative;
+    height: 50px;
+    line-height: 50px;
 }
 
 .radio-window-header-news {
-
+    position: relative;
+    height: 50px;
+    line-height: 50px;
 }
 
 .radio-window-header-bottom {
