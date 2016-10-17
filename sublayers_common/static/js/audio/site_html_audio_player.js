@@ -340,11 +340,58 @@ var RadioPlayer = (function () {
     };
 
     RadioPlayer.prototype.update = function () {
+        var self = this;
+
+        // ПИТАНИЕ
         this.jq_power_btn = $('.radio-btn-power').first();
         this.jq_power_btn.click(RadioPlayer.prototype.click_power.bind(this));
 
+        // КАЧЕСТВО
         this.jq_quality_btn = $('.radio-btn-quality').first();
         this.jq_quality_btn.click(RadioPlayer.prototype.change_quality.bind(this));
+
+        // ГРОМКОСТЬ
+        this.jq_volume_disc = $('.radio-volume-scale').first();
+        this.jq_volume_disc_item = $('.radio-volume-scale-hover').first();
+        this.volume_disc_active = false;
+        this.volume_disc_start_coord = null;
+
+        this.jq_volume_disc.mousedown(function (event) {
+            self.volume_disc_active = true;
+            var offset = $('.radio-volume-scale').offset();
+            self.volume_disc_start_coord = offset.left;
+            if (self.power_on) { // Колёсико влияет на звук только когда включено питание
+                var value = event.clientX - self.volume_disc_start_coord;
+                var width = $('.radio-volume-scale').get(0).getBoundingClientRect().width;
+                var val = value / width;
+                var width_orig = $('.radio-volume-scale').width();
+                $('.radio-volume-scale-hover').width(val * width_orig);
+                self.set_volume(val.toFixed(2));
+            }
+        });
+
+        this.jq_volume_disc.mousemove(function (event) {
+            if (self.volume_disc_active) {
+                if (self.power_on) { // Колёсико влияет на звук только когда включено питание
+                    var value = event.clientX - self.volume_disc_start_coord;
+                    var width = $('.radio-volume-scale').get(0).getBoundingClientRect().width;
+                    if (value > width) value = width;
+                    if (value < 0) value = 0;
+                    var val = value / width;
+                    var width_orig = $('.radio-volume-scale').width();
+                    $('.radio-volume-scale-hover').width(val * width_orig);
+                    self.set_volume(val.toFixed(2));
+                }
+            }
+        });
+
+        this.jq_volume_disc.mouseleave(function () {
+            self.volume_disc_active = false;
+        });
+
+        this.jq_volume_disc.mouseup(function () {
+            self.volume_disc_active = false;
+        });
     };
 
     return RadioPlayer;
