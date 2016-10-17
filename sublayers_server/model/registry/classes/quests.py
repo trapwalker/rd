@@ -276,13 +276,11 @@ class Quest(Root):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def generate(self, agent, event, hirer=None, **kw):
+    def generate(self, agent, event, **kw):
         """
         :param agent: sublayers_server.model.registry.classes.agents.Agent
         :param event: sublayers_server.model.events.Event
         """
-        self.hirer = hirer
-
         code_text = self.on_generate
         if not code_text:
             return
@@ -443,6 +441,8 @@ class QuestUpdateMessage(Message):
         d.update(
             quest=self.quest.as_client_dict(),
         )
+        if self.quest.hirer is None:
+            log.error('============ %s', self.__class__)
         return d
 
 
