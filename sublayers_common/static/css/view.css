@@ -30,34 +30,45 @@ body{
     overflow: hidden;
 }
 
-#textConsoleDiv {
+#textConsoleDivWrap {
     position: absolute;
     pointer-events: auto;
-    background-color: black;
+    background-color: #030f00;
+    box-sizing: border-box;
+    padding: 0 0 0 100px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    display: none;
+}
+
+#textConsoleDivWrap.show { display: block; }
+
+#textConsoleDiv {
+    position: absolute;
+    height: 90%;
+    width: 630px;
+    pointer-events: auto;
+    background-color: #030f00;
     white-space: pre-wrap;
-    /*padding: 50px 105px 50px 50px;*/
-    padding: 50px 1280px 50px 50px;
     box-sizing: border-box;
     color: #2ffa00;
     font-family: FreePixel;
     font-weight: bold;
     text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
     letter-spacing: 2px;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: -50px;
-    overflow-y: scroll;
-    display: none;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
-#textConsoleDiv.show { display: block; }
-#textConsoleDiv:focus { outline: 0px solid transparent; }
+
+#textConsoleDiv:focus, #textConsoleDivWrap:focus { outline: 0px solid transparent; }
 
 #title {
     border-color: rgba(0, 255, 84, 0.50);
     border-style: solid;
     border-width: 2px;
-
     background-color: rgba(6, 12, 7, 0.25);
     padding-top: 2px;
     box-sizing: border-box;

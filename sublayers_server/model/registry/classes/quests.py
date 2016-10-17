@@ -171,7 +171,7 @@ class QuestState(Root):
         try:
             exec code in quest.global_context, quest.local_context
         except Exception as e:
-            log.error('Runtime error in quest handler `%s`.', handler)
+            log.exception('Runtime error in quest handler `%s`.', handler)
             quest._set_error_status(handler, event, e)
             #raise e
         finally:
@@ -307,7 +307,7 @@ class Quest(Root):
             log.debug('Quest {uri} is cancelled: {e.message}'.format(uri=fn, e=e))
             return False
         except Exception as e:
-            log.error('Runtime error in quest handler `%s`.', 'on_generate')
+            log.exception('Runtime error in quest handler `on_generate`.')
             self._set_error_status('on_generate', event, e)
             return False
             #raise e

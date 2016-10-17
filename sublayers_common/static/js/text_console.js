@@ -1,5 +1,6 @@
 var TextConsoleManager = (function(){
     function TextConsoleManager() {
+        this.jq_main_div_wrap = $('#textConsoleDivWrap');
         this.jq_main_div = $('#textConsoleDiv');
         this.active_console = null;
         this.consoles = {};
@@ -10,6 +11,10 @@ var TextConsoleManager = (function(){
 
         this.first_start_time = null;  // время начала показывания консоли. Если даже стартанули другие консоли, не закрывая предыдущую.
         this.min_view_time = 0;
+
+        // todo: передалать этот костыль !
+        this.jq_main_div_wrap.click(function(){$('#textConsoleDiv').focus();})
+
     }
 
     TextConsoleManager.prototype.add = function(console, name) {
@@ -38,7 +43,7 @@ var TextConsoleManager = (function(){
         this.active_console = null;
 
         if (this.consoles.hasOwnProperty(name) && this.consoles[name]) {
-            this.jq_main_div.addClass('show');
+            this.jq_main_div_wrap.addClass('show');
             this.active_console = this.consoles[name];
             this.active_console.start();
 
@@ -55,7 +60,7 @@ var TextConsoleManager = (function(){
         for (var i = 0; i < this.consoles.length; i++)
             this.consoles[i].stop();
         this.active_console = null;
-        this.jq_main_div.removeClass('show');
+        this.jq_main_div_wrap.removeClass('show');
 
         this.first_start_time = null;
         this.min_view_time = 0;
