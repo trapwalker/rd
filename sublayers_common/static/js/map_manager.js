@@ -307,6 +307,7 @@ var MapManager = (function(_super) {
         */
         $('#bodydiv').droppable({
             greedy: true,
+            tolerance: 'pointer',
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
@@ -364,6 +365,18 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.unproject = function(point, zoom) {
         return map.unproject(point, zoom);
+    };
+
+    // =============================== Model Events
+
+    MapManager.prototype.onEnterLocation = function () {
+        //console.log('MapManager.prototype.onEnterLocation');
+        $('#bodydiv').droppable('disable');
+    };
+
+    MapManager.prototype.onExitLocation = function () {
+        //console.log('MapManager.prototype.onExitLocation');
+        $('#bodydiv').droppable('enable');
     };
 
     // =============================== Map Coords
