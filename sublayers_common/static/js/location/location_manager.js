@@ -25,7 +25,8 @@ var LocationManager = (function () {
         this.jq_town_div = $('#activeTownDiv');
 
         // Все что выкинется из инвентаря в городе упадет сюда
-        $('#activeTownDivBack').droppable({
+        this.jq_droppable_div = $('#activeTownDivBack');
+        this.jq_droppable_div.droppable({
             greedy: true,
             drop: function(event, ui) {
                 if (!ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) return;
@@ -152,7 +153,8 @@ var LocationManager = (function () {
 
         // Вставляем верстку города
         this.jq_town_div.append(data.location_html);
-        $('#activeTownDivBack').css('display', 'block');
+        this.jq_droppable_div.css('display', 'block');
+        this.jq_droppable_div.droppable('enable');
 
         // Свалка
         this.dump = new LocationDump(this.jq_town_div);
@@ -207,6 +209,9 @@ var LocationManager = (function () {
             textConsoleManager.async_stop();
 
         radioPlayer.update();
+
+        mapManager.onEnterLocation();
+
     };
 
     LocationManager.prototype.onExit = function () {
@@ -226,7 +231,8 @@ var LocationManager = (function () {
         this.panel_right.clear();
 
         this.jq_town_div.empty();
-        $('#activeTownDivBack').css('display', 'none');
+        this.jq_droppable_div.droppable('disable');
+        this.jq_droppable_div.css('display', 'none');
 
         // Сбрасываем все здания
         for (var key in this.buildings)
@@ -259,6 +265,8 @@ var LocationManager = (function () {
         this.visitor_manager.clear_visitors();
 
         this.in_location_flag = false;
+
+        mapManager.onExitLocation();
     };
 
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
