@@ -177,7 +177,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.delQuest = function(quest_id) {
-        if (this.quests.hasOwnProperty(quest.id)) {
+        if (this.quests.hasOwnProperty(quest_id)) {
             var quest = this.quests[quest_id];
             this.clear_quest(quest.uid);
             delete this.quests[quest_id];
@@ -225,11 +225,13 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
+        var hirer_photo = quest.hirer ?  quest.hirer.photo : '';
+        var hirer_name = quest.hirer ?  quest.hirer.title : '';
         var jq_quest_info_block = $(
             '<div class="journal-quest-info-block" data-quest_id="' + quest.uid + '">' +
                 '<div class="journal-quest-info-block-main-block">' +
-                    '<div class="journal-quest-info-block-main-npc-photo" style="background-image: url(' + quest.hirer.photo + ')">' +
-                        '<div class="npc-name-div"><span class="npc-name">' + quest.hirer.title + '</span></div>' +
+                    '<div class="journal-quest-info-block-main-npc-photo" style="background-image: url(' + hirer_photo + ')">' +
+                        '<div class="npc-name-div"><span class="npc-name">' + hirer_name + '</span></div>' +
                     '</div>' +
                     '<div class="journal-quest-info-block-main-description-block">' +
                         '<div class="journal-quest-info-block-main-description-start-date">00.00.0000; 00:00:00</div>' +
@@ -279,7 +281,7 @@ var QuestJournalManager = (function () {
         var quest = this.quests[quest_id];
 
         // Отрисовываем квесты у NPC
-        if (locationManager.in_location_flag) {
+        if (locationManager.in_location_flag && quest.hirer) {
             var build = locationManager.get_building_by_node_hash(quest.hirer.node_hash);
             if (build) {
                 var jq_build_quest_list = null;
