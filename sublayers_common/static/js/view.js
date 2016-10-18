@@ -139,6 +139,30 @@ $(document).ready(function () {
     resizeWindowHandler();
 });
 
+var index_notes_test = 0;
+function addTestNotes() {
+    var npc_html_hash1 = 'reg--registry-institutions-trader-bob_ferolito';
+    var build1 = locationManager.get_building_by_field('html_hash', npc_html_hash1);
+    var n1 = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash1,
+        btn_caption: 'жми сюда ' + index_notes_test,
+        uid: 'notes_' + index_notes_test
+    });
+    n1.bind_with_build(build1);
+    index_notes_test++;
+
+    var npc_html_hash2 = 'reg--registry-institutions-mechanic-raul_alone';
+    var build2 = locationManager.get_building_by_field('html_hash', npc_html_hash2);
+    var n2 = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash2,
+        btn_caption: 'жми сюда ' + index_notes_test,
+        uid: 'notes_' + index_notes_test
+    });
+    n2.bind_with_build(build2);
+    index_notes_test++;
+}
+
+
 function init_site_sound() {
     audioManager.gain_all(1.0);
 
