@@ -708,7 +708,10 @@ var LocationPlaceBuilding = (function (_super) {
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
-    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {};
+    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
+        // взять все ноты для данного нпц и вывести их сюда
+
+    };
 
     LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
         var self = this;
@@ -725,12 +728,13 @@ var LocationPlaceBuilding = (function (_super) {
         jq_menu_item_list.first().click();
 
         // Биндим скроллы
-        this.jq_main_div.find('.building-center-menu-block-scroll-btn').click(function() {
-            var scroll_block = $(this).parent().parent().find('.building-center-menu-block-wrap').first();
-            var scroll_pos = scroll_block.scrollTop();
-            var mul = $(this).hasClass('up') ? -1 : 1;
-            scroll_block.scrollTop(scroll_pos + mul * 20);
-        });
+        //this.jq_main_div.find('.building-center-menu-block-scroll-btn').click(function() {
+        //    var scroll_block = $(this).parent().parent().find('.building-center-menu-block-wrap').first();
+        //    var scroll_pos = scroll_block.scrollTop();
+        //    var mul = $(this).hasClass('up') ? -1 : 1;
+        //    scroll_block.scrollTop(scroll_pos + mul * 20);
+        //});
+
         if (jq_menu_item_list.length < 6) // Магия вёрстки!!!
             this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'none');
         else
@@ -844,6 +848,16 @@ var LocationPlaceNPC = (function (_super) {
 
     return LocationPlaceNPC;
 })(LocationPlace);
+
+
+// info функция нужна чтобы меньше использовать jquery эвенты! Можно воспользоваться кодом в методе
+// LocationPlaceBuilding.centralMenuBindReaction
+function clickBuildingScrollBtn(target) {
+    var scroll_block = $(target).parent().parent().find('.building-center-menu-block-wrap').first();
+    var scroll_pos = scroll_block.scrollTop();
+    var mul = $(target).hasClass('up') ? -1 : 1;
+    scroll_block.scrollTop(scroll_pos + mul * 20);
+}
 
 
 var locationManager;
