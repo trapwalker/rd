@@ -637,7 +637,7 @@ var LocationPlaceBuilding = (function (_super) {
         this.active_screen_name = 'location_screen';
 
         this.addExtraPages(
-            this.jq_main_div.find('.building-center-menu-block').first(),
+            this.jq_main_div.find('.building-center-menu-block-wrap').first(),
             this.jq_main_div.find('.building-center-pages-block').first()
         );
         this.centralMenuBindReaction();
@@ -712,7 +712,8 @@ var LocationPlaceBuilding = (function (_super) {
 
     LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
         var self = this;
-        this.jq_main_div.find('.building-center-menu-item').click(function () {
+        var jq_menu_item_list = this.jq_main_div.find('.building-center-menu-item');
+        jq_menu_item_list.click(function () {
             var page_id = $(this).data('page_id');
             if (! page_id) return;
             self.jq_main_div.find('.building-center-menu-item').removeClass('active');
@@ -721,7 +722,20 @@ var LocationPlaceBuilding = (function (_super) {
             self.jq_main_div.find('#' + page_id).css('display', 'block');
             self.centralMenuReaction(page_id)
         });
-        this.jq_main_div.find('.building-center-menu-item').first().click();
+        jq_menu_item_list.first().click();
+
+        // Биндим скроллы
+        this.jq_main_div.find('.building-center-menu-block-scroll-btn').click(function() {
+            var scroll_block = $(this).parent().parent().find('.building-center-menu-block-wrap').first();
+            var scroll_pos = scroll_block.scrollTop();
+            var mul = $(this).hasClass('up') ? -1 : 1;
+            scroll_block.scrollTop(scroll_pos + mul * 20);
+        });
+        if (jq_menu_item_list.length < 6) // Магия вёрстки!!!
+            this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'none');
+        else
+            this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'block');
+
     };
 
     LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
