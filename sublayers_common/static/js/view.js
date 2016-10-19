@@ -179,6 +179,24 @@ function addTestNotes() {
     note.bind_with_build(build);
     index_notes_test++;
 
+    note = new QuestNoteNPCCar({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'Машина ' + index_notes_test,
+        uid: 'notes_' + index_notes_test,
+        delivery_stuff: [
+            {
+                item: inv.items[0].example,
+                count: 4
+            },
+            {
+                item: inv.items[1].example,
+                count: 2
+            }
+        ]
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
     npc_html_hash = 'reg--registry-institutions-mechanic-raul_alone';
     build = locationManager.get_building_by_field('html_hash', npc_html_hash);
     note = new QuestNoteNPCBtn({
