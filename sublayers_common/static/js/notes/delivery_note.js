@@ -25,14 +25,15 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
         // пройти по списку доставки, посчитать сколько таких предметов есть в инвентарях (+ квестовый) и вывести
         var inventory = inventoryList.getInventory(user.ID);
         this.availability_test = false;
+        var t = clock.getCurrentTime();
         if (inventory) {
             this.availability_test = true;
             for (var i = 0; i < this.delivery_stuff.length; i++) {
                 var count_need = this.delivery_stuff[i].count;
                 var item = this.delivery_stuff[i].item;
-                var count = inventory.calcCountByNodeHash(item.node_hash);
+                var count = inventory.calcCountByNodeHash(item.node_hash, t);
                 this.availability_test = this.availability_test && count_need <= count;
-                console.log(item.node_hash, count, count_need);
+                //console.log(item.node_hash, count, count_need);
                 // todo: добавить вёртску
                 var jq_item = $(
                     '<div class="npcInventory-itemWrap">' +

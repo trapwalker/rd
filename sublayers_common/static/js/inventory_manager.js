@@ -321,13 +321,14 @@ var Inventory = (function () {
         this.max_size = new_size;
     };
 
-    Inventory.prototype.calcCountByNodeHash = function (node_hash) {
+    Inventory.prototype.calcCountByNodeHash = function (node_hash, time) {
         //console.log('Inventory.prototype.setNewSize', new_size);
         var count = 0;
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
                 if (this.items[pos].example.node_hash == node_hash)
-                    count++;
+                    count += this.items[pos].getCurrentVal(time);
+
         return count;
     };
 

@@ -660,6 +660,14 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.activate');
         _super.prototype.activate.call(this);
         $('#' + this.building_rec.name + '-back').css('display', 'block');
+        var note = this.get_active_note();
+        if (note) {
+            note.activate();
+            this.set_buttons();
+            this.set_panels();
+            this.set_header_text();
+        }
+
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
