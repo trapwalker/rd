@@ -141,25 +141,54 @@ $(document).ready(function () {
 
 var index_notes_test = 0;
 function addTestNotes() {
-    var npc_html_hash1 = 'reg--registry-institutions-trader-bob_ferolito';
-    var build1 = locationManager.get_building_by_field('html_hash', npc_html_hash1);
-    var n1 = new QuestNoteNPCBtn({
-        npc_html_hash: npc_html_hash1,
+    var npc_html_hash;
+    var build;
+    var note;
+
+    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash,
         btn_caption: 'жми сюда ' + index_notes_test,
         uid: 'notes_' + index_notes_test
     });
-    n1.bind_with_build(build1);
+    note.bind_with_build(build);
     index_notes_test++;
 
-    var npc_html_hash2 = 'reg--registry-institutions-mechanic-raul_alone';
-    var build2 = locationManager.get_building_by_field('html_hash', npc_html_hash2);
-    var n2 = new QuestNoteNPCBtn({
-        npc_html_hash: npc_html_hash2,
+    var inv = inventoryList.getInventory(user.ID);
+
+    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtnDelivery({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'Доставка ' + index_notes_test,
+        uid: 'notes_' + index_notes_test,
+        delivery_stuff: [
+            {
+                item: inv.items[0].example,
+                count: 4
+            },
+            {
+                item: inv.items[1].example,
+                count: 2
+            }
+        ]
+
+
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    npc_html_hash = 'reg--registry-institutions-mechanic-raul_alone';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash,
         btn_caption: 'жми сюда ' + index_notes_test,
         uid: 'notes_' + index_notes_test
     });
-    n2.bind_with_build(build2);
+    note.bind_with_build(build);
     index_notes_test++;
+
 }
 
 

@@ -1,0 +1,45 @@
+
+
+.notes-npc-delivery-up {
+    position: relative;
+    padding: 10px;
+    width: 100%;
+    height: 195px;
+    box-sizing: border-box;
+    border-width: 0px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, #30fc00, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+
+.notes-npc-delivery-inventory-label {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    text-align: center;
+    line-height: 30px;
+}
+
+.notes-npc-delivery-inventory-wrap {
+    position: relative;
+    margin: 10px auto 0 auto;
+    width: calc(100% - 40px);
+    height: 85px;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.notes-npc-delivery-inventory {
+    position: relative;
+    height: 100%;
+}
+
+.npcInventory-notes-delivery-count {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font: 10pt Nouveau_IBM;
+    color: #2ffa00;
+}

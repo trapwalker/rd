@@ -40,7 +40,6 @@ var QuestNoteNPCBtn = (function (_super) {
         this.build = null;
     }
 
-
     // вызываются тольо когда нота пришла когда клиент уже был в городе
     QuestNoteNPCBtn.prototype.bind_with_build = function (build) {
         this.set_div(
@@ -88,7 +87,6 @@ var QuestNoteNPCBtn = (function (_super) {
         console.log('Click for note: ' + this.uid + '    =>>> ' + btnIndex);
     };
 
-
     QuestNoteNPCBtn.prototype.clear = function() {
         if (this.jq_main_div)
             this.jq_main_div.empty();
@@ -108,7 +106,6 @@ var QuestNoteNPCBtn = (function (_super) {
         this.build = null;
         _super.prototype.delete.call(this);
     };
-
 
     return QuestNoteNPCBtn;
 })(SimpleNote);
