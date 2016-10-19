@@ -50,9 +50,11 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
 
                 jq_inv_list.append(jq_item);
 
-                // todo: повесить события мышки на итемы, чтобы выводить информацию на внеэкранки
-                //jq_item.mouseenter({slot_name: position, armorer: this}, LocationArmorerNPC.inventory_slot_event_mouseenter);
-                //jq_item.mouseleave({slot_name: position, armorer: this}, LocationArmorerNPC.inventory_slot_event_mouseleave);
+                // повесить события мышки на итемы, чтобы выводить информацию на внеэкранки
+                jq_item.mouseenter({item_example: item}, function(event) {
+                    locationManager.panel_right.show({text: event.data.item_example.description}, 'description');
+                });
+                jq_item.mouseleave(function () {locationManager.panel_right.show({text: ''}, 'description');});
             }
         }
 
