@@ -6,6 +6,7 @@ cachetools
 PyYAML
 cmd2
 click
+defaultencodinghack
 
 git+https://github.com/py-bson/bson
 git+https://github.com/sergyp/motorengine
