@@ -155,6 +155,7 @@ class Town(MapLocation):
         # Инициализация торговца
         # найти торговца в городе
         for npc in set(self.example.get_npc_list()):
+            # todo: Спрятать инициализацию NPC в виртуальный метод, чтобы могли инициализироваться все
             if isinstance(npc, Trader):
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
