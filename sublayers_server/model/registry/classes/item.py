@@ -137,8 +137,6 @@ class MechanicItem(SlotItem):
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
 
 
-
-
 class TunerItem(SlotItem):
     class TunerImage(Subdoc):
         class TunerImageView(Subdoc):

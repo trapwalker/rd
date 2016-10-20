@@ -91,6 +91,12 @@ class GasStation(Town):
 
 
 class Institution(Root):
+    karma = FloatField(caption=u"Значение кармы NPC", tags='client')
+    # Сумма следующих 3 коэффициентов должна давать 1
+    koef_karma = FloatField(caption=u"Коэффициент влияния кармы на отношение данного NPC")
+    koef_rel_index = FloatField(caption=u"Коэффициент влияния индекса отношения на отношение данного NPC")
+    koef_pont_points = FloatField(caption=u"Коэффициент влияния очков крутости на отношение данного NPC")
+
     photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
     text = StringField(caption=u"Текст приветствия", tags='client')
     type = StringField(caption=u"Специальность NPC", tags='client')
@@ -102,6 +108,10 @@ class Institution(Root):
             reinst=True,
         ),
     )
+
+    @property
+    def karma_norm(self):
+        return min(max(self.karma / 100, -1), 1)
 
 
 class Trainer(Institution):
