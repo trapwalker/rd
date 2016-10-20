@@ -101,6 +101,7 @@ class MapLocation(Observer):
             for visitor in self.visitors:
                 if not visitor is agent:
                     ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
+            self.inventory.send_inventory(agent, time)
         else:
             self.on_enter(agent=agent, time=time)
 

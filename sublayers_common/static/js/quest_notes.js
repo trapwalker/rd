@@ -35,12 +35,12 @@ var QuestNoteNPCBtn = (function (_super) {
         this.npc_html_hash = options.npc_html_hash;
         this.btn_caption = options.btn_caption;
 
-        this.jq_main_div = null;  // Вёрстка в здании
-        this.jq_menu_div = null;  // Вёрстка в меню (по сути кнопка-плашка)\
+        this.jq_main_div = null;  // Р’С‘СЂСЃС‚РєР° РІ Р·РґР°РЅРёРё
+        this.jq_menu_div = null;  // Р’С‘СЂСЃС‚РєР° РІ РјРµРЅСЋ (РїРѕ СЃСѓС‚Рё РєРЅРѕРїРєР°-РїР»Р°С€РєР°)\
         this.build = null;
     }
 
-    // вызываются тольо когда нота пришла когда клиент уже был в городе
+    // РІС‹Р·С‹РІР°СЋС‚СЃСЏ С‚РѕР»СЊРѕ РєРѕРіРґР° РЅРѕС‚Р° РїСЂРёС€Р»Р° РєРѕРіРґР° РєР»РёРµРЅС‚ СѓР¶Рµ Р±С‹Р» РІ РіРѕСЂРѕРґРµ
     QuestNoteNPCBtn.prototype.bind_with_build = function (build) {
         this.set_div(
             build,
@@ -51,12 +51,12 @@ var QuestNoteNPCBtn = (function (_super) {
         build.centralMenuScrollSet();
     };
 
-    // автоматически вызывается
+    // Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РІС‹Р·С‹РІР°РµС‚СЃСЏ
     QuestNoteNPCBtn.prototype.set_div = function(build, jq_build_menu, jq_build_center) {
         if (this.jq_main_div) this.jq_main_div.remove();
         if (this.jq_menu_div) this.jq_menu_div.remove();
         this.build = build;
-        // Добавление плашки в здание
+        // Р”РѕР±Р°РІР»РµРЅРёРµ РїР»Р°С€РєРё РІ Р·РґР°РЅРёРµ
         var page_id = 'building_note_' + this.uid + '_' + build.building_rec.name;
         this.jq_menu_div = $('<div class="building-center-menu-item" data-page_id="' + page_id + '" data-note_uid="' +
             this.uid + '">' + this.btn_caption + '</div>');
@@ -67,7 +67,7 @@ var QuestNoteNPCBtn = (function (_super) {
         this.redraw();
     };
 
-    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    // С„СѓРЅРєС†РёСЏ РїРµСЂРµСЂРёСЃРѕРІРєРё С‚РµРєСѓС‰РµР№ РЅРѕС‚С‹ - РїСЂРѕСЃС‚Рѕ РїРµСЂРµСЂРёСЃРѕРІРєР° РІРЅСѓС‚СЂРµРЅРЅРѕСЃС‚РµР№ РІ Р·РґР°РЅРёРё
     QuestNoteNPCBtn.prototype.redraw = function() {
         this.clear();
         if (! this.jq_main_div || ! this.jq_menu_div) return;
@@ -101,7 +101,7 @@ var QuestNoteNPCBtn = (function (_super) {
         }
         if (this.jq_main_div) {this.jq_main_div.remove(); this.jq_main_div = null;}
         if (this.jq_menu_div) {this.jq_menu_div.remove(); this.jq_menu_div = null;}
-        this.build.centralMenuScrollSet();  // Спрятать скролл, если вдруг он больше не нужен
+        this.build.centralMenuScrollSet();  // РЎРїСЂСЏС‚Р°С‚СЊ СЃРєСЂРѕР»Р», РµСЃР»Рё РІРґСЂСѓРі РѕРЅ Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РµРЅ
 
         this.build = null;
         _super.prototype.delete.call(this);
@@ -109,7 +109,6 @@ var QuestNoteNPCBtn = (function (_super) {
 
     return QuestNoteNPCBtn;
 })(SimpleNote);
-
 
 
 var NotesManager = (function () {
@@ -121,7 +120,7 @@ var NotesManager = (function () {
         if (! this.notes.hasOwnProperty(note.uid))
             this.notes[note.uid] = note;
         else
-            throw 'нота с таким uid уже существует' + note.uid;
+            throw 'РЅРѕС‚Р° СЃ С‚Р°РєРёРј uid СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚' + note.uid;
     };
 
     NotesManager.prototype.del = function(note) {
@@ -139,5 +138,6 @@ var NotesManager = (function () {
 
     return NotesManager;
 })();
+
 
 var notesManager = new NotesManager();
