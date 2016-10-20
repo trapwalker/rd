@@ -143,6 +143,7 @@ class Trader(Institution):
         return None
 
     def on_refresh(self, event):
+        log.debug('Trader {self}.on_refresh'.format(**locals()))
         self.current_list = []
         for price_option in self.price_list:
             self.current_list.append(
@@ -190,6 +191,7 @@ class Trader(Institution):
                 )
 
         self.send_prices(location=event.location, time=event.time)
+        log.debug('Trader {self}.on_refresh END'.format(**locals()))
 
     def send_prices(self, location, time):
         for visitor in location.visitors:
