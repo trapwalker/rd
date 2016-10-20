@@ -144,25 +144,28 @@ class Trader(Institution):
 
     def on_refresh(self, event):
         log.debug('Trader {self}.on_refresh'.format(**locals()))
-        self.current_list = []
+        current_list = []
+        self.current_list = current_list
         for price_option in self.price_list:
-            self.current_list.append(
+            current_list.append(
                 Price(
                     trader=self,
                     price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
                     count=0,
                     is_infinity=price_option.count_max == 0,
                     is_lot=False,
-                    price_option=price_option
+                    price_option=price_option,
                 )
             )
 
         for item in self.items:
             if item.abstract or self.item_in_ignore_list(item):
-                continue
-            price = self.get_item_price(item)
+                continue  # todo: warning на этапе анализа ямла
+
+            price = self.get_item_price(item)  # todo: Избавиться от двойной проверки итема по игнор-листу
             if not price:
-                continue
+                continue  # todo: warning
+
             price_option = price.price_option
             # Вычисляем шанс генерации итемов данного лота
             count = 0
@@ -171,14 +174,16 @@ class Trader(Institution):
                     count = round(price_option.count_min + random.random() * (price_option.count_max - price_option.count_min))
             else:
                 continue
+
             is_infinity = price_option.count_max == 0
+
             if price.item.node_hash() == item.node_hash():
                 price.is_lot = True
                 if not is_infinity:
                     price.count += count
             else:
                 # Формирование нового правила
-                self.current_list.append(
+                current_list.append(
                     Price(
                         trader=self,
                         price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
@@ -239,6 +244,7 @@ class Trader(Institution):
         current_ancestor_lvl = None
         for price in self.current_list:
             ancestor_lvl = item.get_ancestor_level(price.item)
+            ancestor_lvl = 2
             if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
                 current_price = price
                 current_ancestor_lvl = ancestor_lvl
