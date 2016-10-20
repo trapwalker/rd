@@ -63,8 +63,8 @@ class Price(object):
         self.item = item or price_option.item
         self.price_option = price_option
 
-    def is_match(self, item):
-        return item and item.is_ancestor_by_lvl(self.item) >= 0
+    # def is_match(self, item):
+    #     return item and item.get_ancestor_level(self.item) >= 0
 
     def __str__(self):
         return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
@@ -213,7 +213,7 @@ class Trader(Institution):
 
     def item_in_ignore_list(self, item):
         for ignore_item in self.ignore_list:
-            if item.is_ancestor_by_lvl(ignore_item) >= 0:
+            if item.get_ancestor_level(ignore_item) >= 0:
                 return True
         return None
 
@@ -233,16 +233,16 @@ class Trader(Institution):
 
     def get_item_price(self, item):
         # info: функция расширена для работы с несколькими правилами. Берёт самое близкое по родителям
-        if self.item_in_ignore_list(item):
+        if not item or self.item_in_ignore_list(item):
             return None
         current_price = None
         current_ancestor_lvl = None
         for price in self.current_list:
-            if price.is_match(item):
-                ancestor_lvl = item.is_ancestor_by_lvl(price.item)
-                if ancestor_lvl is not None and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
-                    current_price = price
-                    current_ancestor_lvl = ancestor_lvl
+            ancestor_lvl = item.get_ancestor_level(price.item)
+            if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
+                current_price = price
+                current_ancestor_lvl = ancestor_lvl
+
         return current_price
 
     def change_price(self, item, count):
