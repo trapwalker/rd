@@ -3,6 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
+from sublayers_server.model.events import Event
 from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.events import event_deco
@@ -64,13 +65,18 @@ def script_compile(code, fn):
            | __future__.unicode_literals.compiler_flag
            | __future__.print_function.compiler_flag
            | __future__.division.compiler_flag
-           ),
+        ),
     )
 
 
-class EventHandler(Subdoc):
-    event = StringField(doc=u"Сигнатура события: onDie, onEnterLocation, onQuest")
-    id = StringField(doc=u"Идентификатор события. Локальное имя события внутри квеста.")
+class QuestEvent(Event):
+    def __init__(self, name, quest, **kw):
+        super(QuestEvent, self).__init__(**kw)
+        self.name = name
+        self.quest = quest
+
+    def on_perform(self):
+        self.quest.do_event(event=self)
 
 
 class LogRecord(Subdoc):

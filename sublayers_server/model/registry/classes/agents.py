@@ -10,7 +10,7 @@ from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
 from sublayers_server.model.events import ChangeAgentBalanceEvent
-from sublayers_server.model.registry.classes.quests import QuestAddMessage
+from sublayers_server.model.registry.classes.quests import QuestAddMessage, QuestEvent
 
 from itertools import chain
 
@@ -263,3 +263,6 @@ class Agent(Root):
 
         quest.start(agent=self, server=server, time=time)
 
+    def on_event(self, event, name, cls=QuestEvent, **kw):
+        for q in self.quests_active:
+            cls(server=event.server, time=event.time, name=name, quest=q, **kw).post()
