@@ -1551,13 +1551,13 @@ var ClientManager = (function () {
 
     // Сообщения локаций
 
-    ClientManager.prototype.sendEnterToNPC = function (npc_type) {
+    ClientManager.prototype.sendEnterToNPC = function (npc) {
         //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
         var mes = {
             call: "enter_to_npc",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                npc_type: npc_type
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);

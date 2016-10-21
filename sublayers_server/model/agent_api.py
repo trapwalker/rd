@@ -601,9 +601,9 @@ class AgentAPI(API):
         ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
-    def enter_to_npc(self, npc_type):
-        # log.info('agent %s want enter to npc %s', self.agent, npc_type)
-        EnterToNPCEvent(agent=self.agent, npc_type=npc_type, time=self.agent.server.get_time()).post()
+    def enter_to_npc(self, npc_node_hash):
+        log.info('agent %s want enter to npc %s', self.agent, npc_node_hash)
+        # EnterToNPCEvent(agent=self.agent, npc_type=npc_node_hash, time=self.agent.server.get_time()).post()
 
     @public_method
     def show_inventory(self, owner_id):

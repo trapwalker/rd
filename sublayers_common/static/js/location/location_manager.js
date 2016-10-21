@@ -931,6 +931,8 @@ var LocationPlaceNPC = (function (_super) {
         _super.prototype.activate.call(this);
         if (this.owner_name)
             $('#' + this.owner_name + '-back').css('display', 'block');
+
+        clientManager.sendEnterToNPC(this);
     };
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
