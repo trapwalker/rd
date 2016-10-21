@@ -40,6 +40,10 @@ var RadioPlayer = (function () {
         this.playing = false;
         this.play_started = false;
 
+        this.news_text = 'ЗДЕСЬ МОГЛА БЫТЬ ВАША РЕКЛАМА! ТЕЛ. 555-555-555';
+
+        this.volume_level = 25;
+
         // timeout на загрузку радио при старте проигрывания
         this.timer_for_buffer = null;
 
@@ -133,6 +137,8 @@ var RadioPlayer = (function () {
         // Эвенты на воспроизведение
         this.audio.onloadeddata = RadioPlayer.prototype.load_buffer_complete.bind(this);
         this.audio.onpause = RadioPlayer.prototype.onpause.bind(this);
+
+        this.current_quality = 1;
     }
 
     RadioPlayer.prototype.set_channel_drag_handler = function (event, ui) {
@@ -153,6 +159,38 @@ var RadioPlayer = (function () {
         //console.log(this.current_channel_pointer_number);
     };
 
+    RadioPlayer.prototype.set_channel_dec = function (event, ui) {
+        var old_channel = this.current_channel_pointer_number;
+        if (old_channel == 0) {
+            this.current_channel_pointer_number = 4
+        }
+        else {
+            this.current_channel_pointer_number = this.current_channel_pointer_number - 1
+        }
+
+        if (!this.channel_map.hasOwnProperty(this.current_channel_pointer_number)) {
+            this.current_channel_pointer_number = 0;
+        }
+        if (this.playing && old_channel != this.current_channel_pointer_number) this.click_play();
+        //console.log(this.current_channel_pointer_number);
+    };
+
+    RadioPlayer.prototype.set_channel_inc = function (event, ui) {
+        var old_channel = this.current_channel_pointer_number;
+        if (old_channel == 4) {
+            this.current_channel_pointer_number = 0
+        }
+        else {
+            this.current_channel_pointer_number = this.current_channel_pointer_number + 1
+        }
+
+        if (!this.channel_map.hasOwnProperty(this.current_channel_pointer_number)) {
+            this.current_channel_pointer_number = 0;
+        }
+        if (this.playing && old_channel != this.current_channel_pointer_number) this.click_play();
+        //console.log(this.current_channel_pointer_number);
+    };
+
     RadioPlayer.prototype.set_channel_carrete = function (offset_x) {
         if (offset_x < 0) offset_x = 0;
         if (offset_x > constHtmlSize[currentSiteSize].width_channels_rail_click) offset_x = constHtmlSize[currentSiteSize].width_channels_rail_click;
@@ -166,7 +204,7 @@ var RadioPlayer = (function () {
 
     RadioPlayer.prototype.get_channel_key = function () {
         var channel = this.current_channel_pointer_number;
-        var quality = this.jq_quality_btn.hasClass('high-quality') ? '0' : '1';
+        var quality = this.current_quality;
 
         var channel_str = this.channel_map.hasOwnProperty(channel) ? this.channel_map[channel] : null;
         var quality_str = this.quality_map.hasOwnProperty(quality) ? this.quality_map[quality] : null;
@@ -229,6 +267,12 @@ var RadioPlayer = (function () {
             return;
         }
         var new_scr = this.channels[radio_key].link;
+        this.jq_current_channel.text(this.channels[radio_key].name);
+        this.radio_window_header_channel.text(this.channels[radio_key].name);
+
+        var logo_url_str = "url('" + this.channels[radio_key].logo_url + "')";
+        this.radio_window_header_logo.css('background-image', logo_url_str);
+
         if (this.playing && this.audio.src == new_scr) {
             console.warn('Нет смысла нажимать play для неизменившегося source', radio_key);
             return;
@@ -272,6 +316,10 @@ var RadioPlayer = (function () {
             this.jq_volume_indicator.css('display', 'none');
             this.power_on = false;
             audioManager.stop('radio_noise_switch');
+            this.ticker_destroy();
+            this.jq_current_channel.text('...');
+            this.radio_window_header_channel.text('...');
+            this.radio_window_header_logo.css('background-image', 'url("/static/img/radio/no_logo.png")');
         }
         else {
             this.click_play();
@@ -283,6 +331,7 @@ var RadioPlayer = (function () {
             this.power_on = true;
             // Отстроить звук
             this.set_volume(this.current_volume, true);
+            this.ticker_create(this.news_text);
         }
 
         // Звук кнопки сети
@@ -313,17 +362,13 @@ var RadioPlayer = (function () {
     };
 
     RadioPlayer.prototype.change_quality = function (event) {
-        //console.log('RadioPlayer.prototype.change_quality', event);
-        if (this.jq_quality_btn.hasClass('high-quality')) {
-            //this.jq_quality_btn.addClass('active');
-            this.jq_quality_btn.text('320');
-            this.jq_quality_btn.removeClass('high-quality');
-            this.jq_quality_btn.addClass('super-quality');
+        if (this.current_quality) {
+            this.jq_quality_btn.text('128');
+            this.current_quality = 0;
         }
         else {
-            this.jq_quality_btn.text('128');
-            this.jq_quality_btn.removeClass('super-quality');
-            this.jq_quality_btn.addClass('high-quality');
+            this.jq_quality_btn.text('320');
+            this.current_quality = 1;
         }
 
         if (this.playing) this.click_play();
@@ -339,8 +384,48 @@ var RadioPlayer = (function () {
         this.set_channel_carrete(scale_length_new * carrete_pos / scale_length_old);
     };
 
+    // СОЗДАНИЕ И ОБНОВЛЕНИЕ БЕГУЩЕЙ СТРОКИ
+    RadioPlayer.prototype.ticker_create = function (ticker_string) {
+        this.radio_window_header_ticker.css({"overflow": "hidden", "width": "100%"});
+        this.radio_window_header_ticker.text(ticker_string);
+
+        // оболочка для текста ввиде span (IE не любит дивы с inline-block)
+        this.radio_window_header_ticker.wrapInner("<span>");
+        this.radio_window_header_ticker.find("span").css({
+            "width": "50%",
+            "display": "inline-block",
+            "text-align": "center"
+        });
+        this.radio_window_header_ticker.append(this.radio_window_header_ticker.find("span").clone()); // тут у нас два span с текстом
+
+        this.radio_window_header_ticker.wrapInner("<div>");
+        this.radio_window_header_ticker.find("div").css("width", "200%");
+
+        var reset = function () {
+            $(this).css("margin-left", "0%");
+            $(this).animate({"margin-left": "-100%"}, 12000, 'linear', reset);
+        };
+
+        reset.call(this.radio_window_header_ticker.find("div"));
+
+        this.radio_window_header_ticker_displayed = true;
+    };
+
+    // УНИЧТОЖЕНИЕ БЕГУЩЕЙ СТРОКИ
+    RadioPlayer.prototype.ticker_destroy = function () {
+        this.radio_window_header_ticker.empty();
+        this.radio_window_header_ticker.text('...');
+        this.radio_window_header_ticker_displayed = false;
+    };
+
     RadioPlayer.prototype.update = function () {
         var self = this;
+
+        this.radio_window_header_channel = $('.radio-window-header-channel').first();
+        this.radio_window_header_logo = $('.radio-window-header-logo').first();
+
+        // БЕГУЩАЯ СТРОКА
+        this.radio_window_header_ticker = $(".radio-window-header-ticker");
 
         // ПИТАНИЕ
         this.jq_power_btn = $('.radio-btn-power').first();
@@ -367,6 +452,10 @@ var RadioPlayer = (function () {
                 var width_orig = $('.radio-volume-scale').width();
                 $('.radio-volume-scale-hover').width(val * width_orig);
                 self.set_volume(val.toFixed(2));
+                var volume_text = val * 100;
+                self.volume_level = volume_text;
+                self.radio_window_header_ticker.text('Volume : ' + volume_text.toFixed(0));
+                this.radio_window_header_ticker_displayed = false;
             }
         });
 
@@ -381,22 +470,74 @@ var RadioPlayer = (function () {
                     var width_orig = $('.radio-volume-scale').width();
                     $('.radio-volume-scale-hover').width(val * width_orig);
                     self.set_volume(val.toFixed(2));
+                    var volume_text = val * 100;
+                    self.volume_level = volume_text;
+                    self.radio_window_header_ticker.text('Volume : ' + volume_text.toFixed(0));
+                    this.radio_window_header_ticker_displayed = false;
                 }
             }
         });
 
         this.jq_volume_disc.mouseleave(function () {
             self.volume_disc_active = false;
+
+            if (this.radio_window_header_ticker_displayed == false) {
+                self.ticker_destroy();
+                self.ticker_create(self.news_text);
+                this.radio_window_header_ticker_displayed = true;
+            }
         });
 
         this.jq_volume_disc.mouseup(function () {
             self.volume_disc_active = false;
+
+            if (this.radio_window_header_ticker_displayed == false) {
+                self.ticker_destroy();
+                self.ticker_create(self.news_text);
+                this.radio_window_header_ticker_displayed = true;
+            }
         });
+
+        // ВЫБОР КАНАЛА
+        this.jq_current_channel = $('.radio-channel-name').first();
+        $('.radio-channel-dec').click(function (event) {
+            self.set_channel_dec();
+        });
+
+        $('.radio-channel-inc').click(function (event) {
+            self.set_channel_inc();
+        });
+
+        // ЕСЛИ РАДИО ВКЛЮЧЕНО
+        if (this.power_on) {
+            this.jq_power_btn.addClass('active');
+            this.jq_power_btn.text('ВКЛ');
+            this.jq_quality_btn.addClass('active');
+            this.ticker_create(this.news_text);
+            var radio_key = this.get_channel_key();
+            this.jq_current_channel.text(this.channels[radio_key].name);
+            if (this.current_quality) {
+                this.jq_quality_btn.text('320');
+            }
+            else {
+                this.jq_quality_btn.text('128');
+            }
+
+            var radio_key = this.get_channel_key();
+            this.radio_window_header_channel.text(this.channels[radio_key].name);
+            var logo_url_str = "url('" + this.channels[radio_key].logo_url + "')";
+            this.radio_window_header_logo.css('background-image', logo_url_str);
+
+            var value = this.volume_level / 100;
+            var width_orig = $('.radio-volume-scale').width();
+            var val = value * width_orig;
+            $('.radio-volume-scale-hover').width(val);
+        }
+
     };
 
     return RadioPlayer;
 })();
-
 
 var radioPlayer;
 
@@ -409,53 +550,63 @@ function initRadioPlayer() {
         channels: {
             'r_ch0_128': {
                 link: "http://listen.radiotower.su:8000/vigilante_2084_128",
-                name: "Vigilante 2084 128",
-                screen_class: 'vigilante'
+                name: "Vigilante 2084",
+                screen_class: 'vigilante',
+                logo_url: '/static/img/radio/vigilante_2084.png'
             },
             'r_ch0_320': {
                 link: "http://listen.radiotower.su:8000/vigilante_2084_320",
-                name: "Vigilante 2084 320",
-                screen_class: 'vigilante'
+                name: "Vigilante 2084",
+                screen_class: 'vigilante',
+                logo_url: '/static/img/radio/vigilante_2084.png'
             },
             'r_ch1_128': {
                 link: "http://listen.radiotower.su:8000/lonesome_town_128",
-                name: "Lonesome Town 128",
-                screen_class: 'town'
+                name: "Lonesome Town",
+                screen_class: 'town',
+                logo_url: '/static/img/radio/lonesome_town.png'
             },
             'r_ch1_320': {
                 link: "http://listen.radiotower.su:8000/lonesome_town_320",
-                name: "Lonesome Town 320",
-                screen_class: 'town'
+                name: "Lonesome Town",
+                screen_class: 'town',
+                logo_url: '/static/img/radio/lonesome_town.png'
             },
             'r_ch2_128': {
                 link: "http://listen.radiotower.su:8000/mad_dog_fm_128",
-                name: "Mad Dog FM 128",
-                screen_class: 'maddog'
+                name: "Mad Dog FM",
+                screen_class: 'maddog',
+                logo_url: '/static/img/radio/mad_dog_fm.png'
             },
             'r_ch2_320': {
                 link: "http://listen.radiotower.su:8000/mad_dog_fm_320",
-                name: "Mad Dog FM 320",
-                screen_class: 'maddog'
+                name: "Mad Dog FM",
+                screen_class: 'maddog',
+                logo_url: '/static/img/radio/mad_dog_fm.png'
             },
             'r_ch3_128': {
                 link: "http://listen.radiotower.su:8000/rrn_radio_128",
-                name: "RRN Radio 128",
-                screen_class: 'rrn'
+                name: "RRN Radio",
+                screen_class: 'rrn',
+                logo_url: '/static/img/radio/rrn_radio.png'
             },
             'r_ch3_320': {
                 link: "http://listen.radiotower.su:8000/rrn_radio_320",
-                name: "RRN Radio 320",
-                screen_class: 'rrn'
+                name: "RRN Radio",
+                screen_class: 'rrn',
+                logo_url: '/static/img/radio/rrn_radio.png'
             },
             'r_ch4_128': {
                 link: "http://listen.radiotower.su:8000/industrial_junk_128",
-                name: "Industrial Junk 128",
-                screen_class: 'junk'
+                name: "Industrial Junk",
+                screen_class: 'junk',
+                logo_url: '/static/img/radio/industrial_junk.png'
             },
             'r_ch4_320': {
                 link: "http://listen.radiotower.su:8000/industrial_junk_320",
-                name: "Industrial Junk 320",
-                screen_class: 'junk'
+                name: "Industrial Junk",
+                screen_class: 'junk',
+                logo_url: '/static/img/radio/industrial_junk.png'
             }
         },
         channel_name_prefix: 'r_',

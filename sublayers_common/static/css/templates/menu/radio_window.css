@@ -15,22 +15,6 @@
     height: calc(100% - 30px);
 }
 
-.radio-window-header-block {
-    position: relative;
-    box-sizing: border-box;
-    width: 100%;
-    height: 25px;
-    border-width: 0 0 1px 0;
-    border-style: solid;
-    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
-    border-image-slice: 1;
-    color: #2ffa00;
-    font: 12pt Nouveau_IBM;
-    text-align: center;
-    line-height: 25px;
-    cursor: url('/static/img/cursors/text.png'), text;
-}
-
 #locationMenuItem_Radio .radio-window-wrap {
     padding-top: 25px;
 }
@@ -58,21 +42,39 @@
     width: 60px;
     height: 60px;
     margin: 20px 20px 20px 40px;
-    background-image: url("/static/img/radio/logo.png");
+    background-image: url("/static/img/radio/no_logo.png");
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     float: left;
 }
 
-.radio-window-header-track {
+.radio-window-header-channel {
     position: relative;
     height: 50px;
     line-height: 50px;
+}
+
+.radio-window-header-block {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 25px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    color: #2ffa00;
+    font: 12pt Nouveau_IBM;
+    text-align: center;
+    line-height: 25px;
+    cursor: url('/static/img/cursors/text.png'), text;
 }
 
 .radio-window-header-news {
     position: relative;
     height: 50px;
     line-height: 50px;
+    margin-left: 120px;
+    margin-right: 20px;
 }
 
 .radio-window-header-bottom {
@@ -89,22 +91,6 @@
     position: relative;
     width: 100%;
     height: 150px;
-}
-
-.radio-window-header-bottom-left {
-    position: relative;
-    width: 50%;
-    height: 170px;
-    float: left;
-    border-width: 0 1px 0 0;
-    border-style: solid;
-    border-color: #2ffa00;
-}
-
-.radio-window-header-bottom-right {
-    position: relative;
-    width: 50%;
-    height: 170px;
 }
 
 .radio-window-page-block {
@@ -257,6 +243,7 @@
     height: 26px;
     margin-top: 8px;
     bottom: 8px;
+    font: 12pt Nouveau_IBM;
     line-height: 26px;
     text-align: center;
     box-sizing: border-box;
