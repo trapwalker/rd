@@ -74,6 +74,7 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
 
     QuestNoteNPCBtnDelivery.prototype.clickBtn = function (btnIndex) {
         console.log('Click for note: ' + this.uid + '    =>>> ' + btnIndex);
+        clientManager.SendQuestNoteAction(this.uid, true);
     };
 
     return QuestNoteNPCBtnDelivery;

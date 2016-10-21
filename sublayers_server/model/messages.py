@@ -81,7 +81,8 @@ class InitAgent(Message):
     def as_dict(self):
         d = super(InitAgent, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(time=self.time)
+            agent=self.agent.as_dict(time=self.time),
+            notes=[note.as_client_dict() for note in self.agent.example.notes]
         )
         return d
 
@@ -555,6 +556,8 @@ class EnterToLocation(Message):
             log.warn('Unknown type location: %s', location)
         d.update(
             location=self.location.as_dict(time=self.time),
+            relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.get_relationship(npc=npc))
+                      for npc in location.example.get_npc_list()],
             location_html=location_html,
         )
         return d

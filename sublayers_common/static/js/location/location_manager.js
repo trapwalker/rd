@@ -65,6 +65,7 @@ var LocationManager = (function () {
 
         // Дикт всех специалистов
         this.npc = {};
+        this.npc_relations = [];
 
         // Дикт для всех локаций меню
         this.location_menu = null;
@@ -176,6 +177,9 @@ var LocationManager = (function () {
             this.screens.location_screen = this.buildings['nucoil'];
         this.active_screen_name = 'location_screen';
 
+        // Установка отношений для всех нпс в городе
+        this.npc_relations = data.relations;
+
         this.setBtnState(1, '', false);
         this.setBtnState(2, '', false);
         this.setBtnState(3, '</br>Назад', false);
@@ -211,7 +215,6 @@ var LocationManager = (function () {
         radioPlayer.update();
 
         mapManager.onEnterLocation();
-
     };
 
     LocationManager.prototype.onExit = function () {
@@ -376,6 +379,32 @@ var LocationManager = (function () {
         return res;
     };
 
+    LocationManager.prototype.get_relation = function(npc_node_hash){
+        for (var i = 0; i < this.npc_relations.length; i++)
+            if (this.npc_relations[i].npc_node_hash == npc_node_hash)
+                return this.npc_relations[i].relation;
+        console.warn('Relation for npc not found: ', npc_node_hash, this.npc_relations);
+        return null;
+    };
+
+
+    // Обработчик событий мышки в зданиях, при наведении на НПЦ
+    LocationManager.prototype.handler_npc_mouseover = function(npc_node_hash, build_type) {
+        //console.log('LocationManager.prototype.handler_npc_mouseover', npc_node_hash, build_type);
+        var npc = this.get_npc_by_node_hash(npc_node_hash);
+        var build = this.buildings[build_type];
+        if (!build || !npc){
+            console.log(npc_node_hash, build_type, npc, build);
+            return;
+        }
+        locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
+    };
+
+    LocationManager.prototype.handler_mouseleave = function() {
+        this.screens[this.active_screen_name].set_panels();
+    };
+
+
     return LocationManager;
 })();
 
@@ -461,6 +490,18 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-building').first();
         jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.find('.karma').text(options.build.head.karma);
+        jq_panel.css('display', 'block');
+    };
+
+    LocationPanelInfo.prototype.show_npc_inside_building = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_npc_inside_building', options);
+        var jq_panel = this.jq_main_div.find('.pi-npc-building').first();
+        var npc_example = options.npc_example;
+        var build_example = options.build_example;
+        jq_panel.find('.location').text(build_example.title);
+        jq_panel.find('.name').text(npc_example.title);
+        jq_panel.find('.karma').text(npc_example.karma);
         jq_panel.css('display', 'block');
     };
 
@@ -834,7 +875,8 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.set_panels = function (make) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
-        locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+        var head_example = this.building_rec.head;
+        locationManager.panel_left.show({respect: locationManager.get_relation(head_example.node_hash) * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 
