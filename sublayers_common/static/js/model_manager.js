@@ -774,6 +774,12 @@ var ClientManager = (function () {
         mapCanvasManager.is_canvas_render = false;
     };
 
+    ClientManager.prototype.ChangeAgentKarma = function (event) {
+        console.log('ClientManager.prototype.ChangeAgentKarma', event);
+        if (locationManager.in_location_flag)
+            locationManager.npc_relations = event.relations;
+    };
+
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
         textConsoleManager.start('enter_map', 2000);

@@ -417,13 +417,21 @@ class Agent(Object):
         # todo: registry fix?
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
 
-
         d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
                      self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
         self.example.set_exp(dvalue=d_user_exp)   # начисляем опыт агенту
 
+        if obj.owner_example:
+            self_lvl = self.example.get_lvl()
+            killed_lvl = obj.owner_example.get_lvl()
+
+            # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
+            # изменение кармы)
+            if ((self_lvl - killed_lvl) >= 3) and (obj.owner_example.karma_norm >= -0.1):
+                self.example.set_karma(dvalue=-1, time=time)
+
         # Отправить сообщение на клиент о начисленной экспе
-        UserExampleSelfRPGMessage(agent=self, time=time,).post()
+        UserExampleSelfRPGMessage(agent=self, time=time).post()
         self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):

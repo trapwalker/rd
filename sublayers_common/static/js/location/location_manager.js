@@ -398,6 +398,7 @@ var LocationManager = (function () {
             return;
         }
         locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50} , 'building_quest');
     };
 
     LocationManager.prototype.handler_mouseleave = function() {
@@ -490,7 +491,7 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-building').first();
         jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
-        jq_panel.find('.karma').text(options.build.head.karma);
+        jq_panel.find('.karma').text(getKarmaName(options.build.head.karma));
         jq_panel.css('display', 'block');
     };
 
@@ -501,7 +502,7 @@ var LocationPanelInfo = (function () {
         var build_example = options.build_example;
         jq_panel.find('.location').text(build_example.title);
         jq_panel.find('.name').text(npc_example.title);
-        jq_panel.find('.karma').text(npc_example.karma);
+        jq_panel.find('.karma').text(getKarmaName(npc_example.karma));
         jq_panel.css('display', 'block');
     };
 
@@ -876,7 +877,7 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
         var head_example = this.building_rec.head;
-        locationManager.panel_left.show({respect: locationManager.get_relation(head_example.node_hash) * 100}, 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50} , 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 

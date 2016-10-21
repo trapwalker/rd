@@ -11,6 +11,7 @@ from sublayers_server.model.registry.odm.fields import (
 from sublayers_server.model.events import ChangeAgentBalanceEvent
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
+from sublayers_server.model.messages import ChangeAgentKarma
 
 from itertools import chain
 
@@ -32,8 +33,8 @@ class RelationshipRec(Subdoc):
     def get_relationship(self, agent):
         npc = self.npc
         return (npc.koef_rel_index * self.get_index_norm() +
-                npc.koef_karma  * (1 - abs(agent.karma_norm - self.npc.karma_norm) / 2) +
-                npc.koef_pont_points * agent.get_pont_points())
+                npc.koef_karma  * (1 - abs(agent.karma_norm - self.npc.karma_norm)))
+                # + npc.koef_pont_points * agent.get_pont_points())  # todo: norm pont_points
 
 
 class Agent(Root):
@@ -43,7 +44,7 @@ class Agent(Root):
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
 
     # Карма и отношения
-    karma = FloatField(default=0, caption=u"Значение кармы игрока")
+    karma = FloatField(default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
     npc_rel_list = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=RelationshipRec),
         caption=u'Список взаимоотношений игрока с NPCs',
@@ -205,6 +206,10 @@ class Agent(Root):
         reinst=True,
     )
 
+    def get_lvl(self):
+        lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
+        return lvl
+
     @property
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
@@ -281,6 +286,14 @@ class Agent(Root):
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+
+    def set_karma(self, time, value=None, dvalue=None):
+        if value is not None:
+            self.karma = value
+        if dvalue is not None:
+            self.karma += dvalue
+        if self._agent_model:
+            ChangeAgentKarma(agent=self._agent_model, time=time).post()
 
     @property
     def frag(self):
