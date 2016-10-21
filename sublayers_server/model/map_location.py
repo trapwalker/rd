@@ -143,7 +143,7 @@ class MapLocation(Observer):
             if location.example.uri == uri:
                 return location
 
-    def on_enter_npc(self, agent, time, npc_type):
+    def on_enter_npc(self, event):
         pass
 
 
@@ -177,10 +177,13 @@ class Town(MapLocation):
             if isinstance(location, Town):
                 yield location
 
-    def on_enter_npc(self, agent, time, npc_type):
-        npc = getattr(self.example, npc_type)
+    def on_enter_npc(self, event):
+        super(Town, self).on_enter_npc(event)
+        npc = getattr(self.example, event.npc_type)  # todo: Получать NPC непосредственно
         if npc:
-            agent.on_enter_npc(npc)
+            event.agent.on_enter_npc(event=event, npc=npc)
+        else:
+            log.warning('Enter to absent NPC ({event.npc_type!r}) agent={event.agent!r}'.format(**locals()))
 
 
 class GasStation(Town):

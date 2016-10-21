@@ -374,7 +374,7 @@ class EnterToNPCEvent(Event):
     def on_perform(self):
         super(EnterToNPCEvent, self).on_perform()
         if self.agent.current_location:
-            self.agent.current_location.on_enter_npc(agent=self.agent, time=self.time, npc_type=self.npc_type)
+            self.agent.current_location.on_enter_npc(event=self)
 
 
 class ActivateLocationChats(Event):

@@ -494,15 +494,14 @@ class Agent(Object):
         self.reload_parking_bag(new_example_inventory=None, time=time)
         # self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
-    def on_enter_npc(self, npc):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_enter_npc(self, event, npc):
         log.debug('%s:: on_enter_npc(%s)', self, npc)
+        self.example.on_event(event=event, name='on_enter_npc')  # todo: ##quest send NPC as param
 
-    def on_exit_npc(self, npc):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_exit_npc(self, event, npc):
+        # todo: ##quest call it
         log.debug('%s:: on_exit_npc(%s)', self, npc)
+        self.example.on_event(event=event, name='on_exit_npc')  # todo: ##quest send NPC as param
 
     def on_die(self, event, unit):
         log.debug('%s:: on_die()', self)
