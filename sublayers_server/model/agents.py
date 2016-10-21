@@ -13,7 +13,7 @@ from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
 from sublayers_server.model.registry.classes.trader import Trader
 
-from sublayers_server.model.utils import SubscriptionList
+# from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
@@ -504,17 +504,16 @@ class Agent(Object):
         # todo: delivery for subscribers ##quest
         log.debug('%s:: on_exit_npc(%s)', self, npc)
 
-    def on_die(self, object, time):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_die(self, event, unit):
         log.debug('%s:: on_die()', self)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.01)
+            barter.cancel(time=event.time-0.01)
 
-        Die(agent=self, time=time).post()
+        Die(agent=self, time=event.time).post()
+        self.example.on_event(event=event, name='on_die')  # todo: ##quest send unit as param
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -588,8 +587,8 @@ class QuickUser(User):
             self._quick_profile_save(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
-    def on_die(self, object, time):
-        QuickGameDie(agent=self, obj=object, time=time).post()
+    def on_die(self, event, unit):
+        QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
 
 # todo: Переиеновать в AIAgent
