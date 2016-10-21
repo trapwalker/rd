@@ -18,4 +18,6 @@ import trader
 
 import quests
 
+import notes
+
 #import _test

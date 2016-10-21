@@ -81,7 +81,8 @@ class InitAgent(Message):
     def as_dict(self):
         d = super(InitAgent, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(time=self.time)
+            agent=self.agent.as_dict(time=self.time),
+            notes=[note.as_client_dict() for note in self.agent.example.notes]
         )
         return d
 

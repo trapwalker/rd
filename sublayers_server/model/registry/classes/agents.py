@@ -10,6 +10,7 @@ from sublayers_server.model.registry.odm.fields import (
 )
 from sublayers_server.model.events import ChangeAgentBalanceEvent
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
+from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
 
 from itertools import chain
 
@@ -198,6 +199,12 @@ class Agent(Root):
         ),
     )
 
+    notes = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type='sublayers_server.model.registry.classes.notes.Note'),
+        default=list, caption=u"Список доступных нотесов",
+        reinst=True,
+    )
+
     @property
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
@@ -308,3 +315,22 @@ class Agent(Root):
     def get_pont_points(self):
         return 0
 
+    def add_note(self, note_class, time, **kw):
+        note = note_class(**kw)
+        self.notes.append(note)
+        # отправить сообщение на клиент
+        if self._agent_model:
+            AddNoteMessage(agent=self._agent_model, note=note, time=time).post()
+
+    def get_note(self, note_uid):
+        for note in self.notes:
+            if note.uid == note_uid:
+                return note
+
+    def del_note(self, note_uid, time):
+        note = self.get_note(note_uid)
+        if note:
+            self.notes.remove(note)
+            # отправить сообщение на клиент
+            if self._agent_model:
+                DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()
