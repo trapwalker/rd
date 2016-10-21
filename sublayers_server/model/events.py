@@ -114,21 +114,27 @@ class Event(object):
         """
         assert self.actual
         log.debug('RUN    %s', self)
+
+        stat_log = self.server.stat_log
+        stat_log.s_events_on(time=self.time, delta=-1.0)
+        perform_start_time = self.server.get_time()
+        curr_lag = perform_start_time - self.time
+        assert curr_lag >= 0.0, '{}'.format(curr_lag)
+        stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
+        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
+        if stat_log.get_metric('s_events_lag_max') < curr_lag:
+            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
+
         if self.callback_before is not None:
             self.callback_before(event=self)
         self.on_perform()
         if self.callback_after is not None:
             self.callback_after(event=self)
 
+        # todo: set metrics #self.server.get_time() - perform_start_time
+
     def on_perform(self):
-        stat_log = self.server.stat_log
-        stat_log.s_events_on(time=self.time, delta=-1.0)
-        curr_lag = self.server.get_time() - self.time
-        assert curr_lag >= 0.0, '{}'.format(curr_lag)
-        stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
-        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
-        if stat_log.get_metric('s_events_lag_max') < curr_lag:
-            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
+        pass
 
 
 class Objective(Event):
@@ -360,15 +366,15 @@ class ExitFromMapLocation(Event):
 
 
 class EnterToNPCEvent(Event):
-    def __init__(self, agent, npc_type, **kw):
+    def __init__(self, agent, npc, **kw):
         super(EnterToNPCEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.npc_type = npc_type
+        self.npc = npc
 
     def on_perform(self):
         super(EnterToNPCEvent, self).on_perform()
         if self.agent.current_location:
-            self.agent.current_location.on_enter_npc(agent=self.agent, time=self.time, npc_type=self.npc_type)
+            self.agent.current_location.on_enter_npc(event=self)
 
 
 class ActivateLocationChats(Event):

@@ -143,7 +143,7 @@ class MapLocation(Observer):
             if location.example.uri == uri:
                 return location
 
-    def on_enter_npc(self, agent, time, npc_type):
+    def on_enter_npc(self, event):
         pass
 
 
@@ -177,10 +177,10 @@ class Town(MapLocation):
             if isinstance(location, Town):
                 yield location
 
-    def on_enter_npc(self, agent, time, npc_type):
-        npc = getattr(self.example, npc_type)
-        if npc:
-            agent.on_enter_npc(npc)
+    def on_enter_npc(self, event):
+        super(Town, self).on_enter_npc(event)
+        # todo: Проверить законность входа в переданного NPC в этой локации
+        event.agent.on_enter_npc(event=event)
 
 
 class GasStation(Town):

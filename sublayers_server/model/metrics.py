@@ -32,7 +32,6 @@ class Metric(object):
 
 
 class IncMetric(Metric):
-
     def __init__(self, init=0.0, delta=None, **kw):
         super(IncMetric, self).__init__(**kw)
         self.init = init
@@ -69,6 +68,7 @@ class ValueMetric(Metric):
 
 # Метрика для расчёта средних значений. Использовать только для объектов-синглтонов !!!
 class MovingAverageMetric(Metric):
+    u"""Метрика для расчёта средних значений. Использовать только для объектов-синглтонов !!!"""
     def __init__(self, max_count=10, **kw):
         super(MovingAverageMetric, self).__init__(**kw)
         self._max_count = max_count

@@ -4,7 +4,7 @@ $(document).ready(function () {
     //    textConsoleManager.start('first_enter');
     //else
     //    textConsoleManager.start('enter');
-
+    /**/
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 

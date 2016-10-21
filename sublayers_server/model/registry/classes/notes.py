@@ -63,3 +63,7 @@ class DeliveryNote(NPCPageNote):
         default=list,
         tags='client',
     )
+
+
+# todo: Сделать регистрацию классов нотов через метакласс
+ALL = {name: value for name, value in locals() if isinstance(value, Note)}

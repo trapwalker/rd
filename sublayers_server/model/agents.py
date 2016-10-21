@@ -13,7 +13,7 @@ from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
 from sublayers_server.model.registry.classes.trader import Trader
 
-from sublayers_server.model.utils import SubscriptionList
+# from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
@@ -42,7 +42,7 @@ class Agent(Object):
         if example:
             example._agent_model = self
         self._disconnect_timeout_event = None
-        self.subscriptions = SubscriptionList()
+        # self.subscriptions = SubscriptionList()
         self.observers = CounterSet()
         self.api = None
         self.connection = None
@@ -262,7 +262,7 @@ class Agent(Object):
         self._disconnect_timeout_event = None
         self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
         self.save(time=event.time)
-        self.subscriptions.on_disconnect(agent=self, time=event.time)
+        # self.subscriptions.on_disconnect(agent=self, time=event.time)
         if self.car:
             self.car.displace(time=event.time)
         log.info('Agent %s displaced by disconnect timeout', self)
@@ -388,7 +388,7 @@ class Agent(Object):
         ).post()
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=True, time=time)
-        self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
+        # self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
 
     def on_out(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
@@ -404,7 +404,7 @@ class Agent(Object):
         ).post()
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=False, time=time)
-        self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
+        # self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
 
     def on_message(self, connection, message):
         # todo: delivery for subscribers ##quest
@@ -432,13 +432,15 @@ class Agent(Object):
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=time).post()
-        self.subscriptions.on_kill(agent=self, time=time, obj=obj)
+        # self.subscriptions.on_kill(agent=self, time=time, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
+        # todo: Разобраться с именем этого метода
         self.on_change_inventory(inventory=inventory, time=time)
 
     @event_deco
     def on_change_inventory(self, event, inventory):
+        # todo: Разобраться с именем этого метода
         time = event.time
         if inventory is self.inventory:  # todo: возможно стереть!
             total_old = self.inventory.example.total_item_type_info()
@@ -453,7 +455,7 @@ class Agent(Object):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
         # todo: csll it ##quest
-        self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
+        # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 
     def has_active_barter(self):
@@ -488,7 +490,7 @@ class Agent(Object):
         elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
             LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
 
-        self.subscriptions.on_enter_location(agent=self, time=time, location=location)
+        # self.subscriptions.on_enter_location(agent=self, time=time, location=location)
 
     def on_exit_location(self, time, location):
         log.debug('%s:: on_exit_location(%s)', self, location)
@@ -498,42 +500,40 @@ class Agent(Object):
             self.inventory = None
 
         self.reload_parking_bag(new_example_inventory=None, time=time)
-        self.subscriptions.on_exit_location(agent=self, time=time, location=location)
+        # self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
-    def on_enter_npc(self, npc):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
-        log.debug('%s:: on_enter_npc(%s)', self, npc)
+    def on_enter_npc(self, event):
+        log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
+        self.example.on_event(event=event, name='on_enter_npc')  # todo: ##quest send NPC as param
 
-    def on_exit_npc(self, npc):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_exit_npc(self, event, npc):
+        # todo: ##quest call it
         log.debug('%s:: on_exit_npc(%s)', self, npc)
+        self.example.on_event(event=event, name='on_exit_npc')  # todo: ##quest send NPC as param
 
-    def on_die(self, object, time):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_die(self, event, unit):
         log.debug('%s:: on_die()', self)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.01)
+            barter.cancel(time=event.time-0.01)
 
-        Die(agent=self, time=time).post()
+        Die(agent=self, time=event.time).post()
+        self.example.on_event(event=event, name='on_die')  # todo: ##quest send unit as param
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
-        self.subscriptions.on_trade_enter(agent=self, contragent=contragent, time=time, is_init=is_init)
+        # self.subscriptions.on_trade_enter(agent=self, contragent=contragent, time=time, is_init=is_init)
 
     def on_trade_exit(self, contragent, canceled, buy, sale, cost, time, is_init):
         # todo: csll it ##quest
         log.debug('%s:: on_trade_exit(contragent=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
                   self, contragent, canceled, buy, sale, cost)
-        self.subscriptions.on_trade_exit(
-            agent=self, contragent=contragent, 
-            canceled=canceled, buy=buy, sale=sale, cost=cost,
-            time=time, is_init=is_init)
+        # self.subscriptions.on_trade_exit(
+        #     agent=self, contragent=contragent,
+        #     canceled=canceled, buy=buy, sale=sale, cost=cost,
+        #     time=time, is_init=is_init)
 
     def reload_parking_bag(self, new_example_inventory, time):
         # Сохранение старого
@@ -594,8 +594,8 @@ class QuickUser(User):
             self._quick_profile_save(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
-    def on_die(self, object, time):
-        QuickGameDie(agent=self, obj=object, time=time).post()
+    def on_die(self, event, unit):
+        QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
 
 # todo: Переиеновать в AIAgent
