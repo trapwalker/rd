@@ -65,6 +65,7 @@ var LocationManager = (function () {
 
         // Дикт всех специалистов
         this.npc = {};
+        this.npc_relations = [];
 
         // Дикт для всех локаций меню
         this.location_menu = null;
@@ -176,6 +177,9 @@ var LocationManager = (function () {
             this.screens.location_screen = this.buildings['nucoil'];
         this.active_screen_name = 'location_screen';
 
+        // Установка отношений для всех нпс в городе
+        this.npc_relations = data.relations;
+
         this.setBtnState(1, '', false);
         this.setBtnState(2, '', false);
         this.setBtnState(3, '</br>Назад', false);
@@ -211,7 +215,6 @@ var LocationManager = (function () {
         radioPlayer.update();
 
         mapManager.onEnterLocation();
-
     };
 
     LocationManager.prototype.onExit = function () {
@@ -289,6 +292,10 @@ var LocationManager = (function () {
 
     LocationManager.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationManager.prototype.clickBtn', btnIndex);
+        if($('#btn_' + btnIndex + '_noactive').css('display') == 'block') {
+            return;
+        }
+
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
             if (user.example_car)
@@ -357,6 +364,13 @@ var LocationManager = (function () {
         return null;
     };
 
+    LocationManager.prototype.get_building_by_field = function(field, value){
+        for(var key in this.buildings)
+            if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head[field] == value)
+                return this.buildings[key];
+        return null;
+    };
+
     LocationManager.prototype.get_npc_by_type = function(npc_type){
         var res = [];
         for(var key in this.npc)
@@ -364,6 +378,32 @@ var LocationManager = (function () {
                 res.push(this.npc[key]);
         return res;
     };
+
+    LocationManager.prototype.get_relation = function(npc_node_hash){
+        for (var i = 0; i < this.npc_relations.length; i++)
+            if (this.npc_relations[i].npc_node_hash == npc_node_hash)
+                return this.npc_relations[i].relation;
+        console.warn('Relation for npc not found: ', npc_node_hash, this.npc_relations);
+        return null;
+    };
+
+
+    // Обработчик событий мышки в зданиях, при наведении на НПЦ
+    LocationManager.prototype.handler_npc_mouseover = function(npc_node_hash, build_type) {
+        //console.log('LocationManager.prototype.handler_npc_mouseover', npc_node_hash, build_type);
+        var npc = this.get_npc_by_node_hash(npc_node_hash);
+        var build = this.buildings[build_type];
+        if (!build || !npc){
+            console.log(npc_node_hash, build_type, npc, build);
+            return;
+        }
+        locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
+    };
+
+    LocationManager.prototype.handler_mouseleave = function() {
+        this.screens[this.active_screen_name].set_panels();
+    };
+
 
     return LocationManager;
 })();
@@ -450,6 +490,18 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-building').first();
         jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.find('.karma').text(options.build.head.karma);
+        jq_panel.css('display', 'block');
+    };
+
+    LocationPanelInfo.prototype.show_npc_inside_building = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_npc_inside_building', options);
+        var jq_panel = this.jq_main_div.find('.pi-npc-building').first();
+        var npc_example = options.npc_example;
+        var build_example = options.build_example;
+        jq_panel.find('.location').text(build_example.title);
+        jq_panel.find('.name').text(npc_example.title);
+        jq_panel.find('.karma').text(npc_example.karma);
         jq_panel.css('display', 'block');
     };
 
@@ -637,7 +689,7 @@ var LocationPlaceBuilding = (function (_super) {
         this.active_screen_name = 'location_screen';
 
         this.addExtraPages(
-            this.jq_main_div.find('.building-center-menu-block').first(),
+            this.jq_main_div.find('.building-center-menu-block-wrap').first(),
             this.jq_main_div.find('.building-center-pages-block').first()
         );
         this.centralMenuBindReaction();
@@ -649,6 +701,14 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.activate');
         _super.prototype.activate.call(this);
         $('#' + this.building_rec.name + '-back').css('display', 'block');
+        var note = this.get_active_note();
+        if (note) {
+            note.activate();
+            this.set_buttons();
+            this.set_panels();
+            this.set_header_text();
+        }
+
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
@@ -674,12 +734,20 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
         }
-        if ((btnIndex == '1') && (this.selected_quest)) {
-            if (this.selected_quest.status == null)
-                clientManager.sendActivateQuest(this.selected_quest.uid);
-            //if (this.selected_quest.status == 'active')
-            //    Сообщение на отмену квеста
-            this.set_selected_quest(null);
+        else {
+            var note = this.get_active_note();
+            if (note) {
+                note.clickBtn(btnIndex);
+            }
+            else {
+                if ((btnIndex == '1') && (this.selected_quest)) {
+                    if (this.selected_quest.status == null)
+                        clientManager.sendActivateQuest(this.selected_quest.uid);
+                    //if (this.selected_quest.status == 'active')
+                    //    Сообщение на отмену квеста
+                    this.set_selected_quest(null);
+                }
+            }
         }
     };
 
@@ -695,33 +763,75 @@ var LocationPlaceBuilding = (function (_super) {
 
     LocationPlaceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        if (!this.selected_quest)
-            locationManager.setBtnState(1, '', false);
-        else {
-            if (this.selected_quest.status == null)
-                locationManager.setBtnState(1, '</br>Принять', true);
-            if (this.selected_quest.status == 'active')
-                locationManager.setBtnState(1, '</br>Отказаться', false);
+
+        // Если выбрана какая-то нота, то отдать управление ей, иначе по стандартному пути
+        var note = this.get_active_note();
+        if (note) {
+            note.set_buttons();
+        } else {
+            if (!this.selected_quest)
+                locationManager.setBtnState(1, '', false);
+            else {
+                if (this.selected_quest.status == null)
+                    locationManager.setBtnState(1, '</br>Принять', true);
+                if (this.selected_quest.status == 'active')
+                    locationManager.setBtnState(1, '</br>Отказаться', false);
+            }
+            locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
-    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {};
+    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
+        // взять все ноты для данного нпц и вывести их сюда
+        var notes = notesManager.get_notes_by_type(QuestNoteNPCBtn);
+        for (var i = 0; i < notes.length; i++) {
+            if (notes[i].npc_html_hash == this.building_rec.head.html_hash)
+                notes[i].set_div(this, jq_center_menu, jq_center_pages);
+        }
+    };
+
+    // Это обработчик клика! здесь this - это не здание
+    LocationPlaceBuilding.prototype.centralMenuBindReaction_handler = function(event) {
+        var self = event.data.build;
+        var page_id = $(this).data('page_id');
+        if (! page_id) return;
+        self.jq_main_div.find('.building-center-menu-item').removeClass('active');
+        $(this).addClass('active');
+        self.jq_main_div.find('.building-center-page').css('display', 'none');
+        self.jq_main_div.find('#' + page_id).css('display', 'block');
+        self.centralMenuReaction(page_id)
+    };
 
     LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
         var self = this;
-        this.jq_main_div.find('.building-center-menu-item').click(function () {
-            var page_id = $(this).data('page_id');
-            if (! page_id) return;
-            self.jq_main_div.find('.building-center-menu-item').removeClass('active');
-            $(this).addClass('active');
-            self.jq_main_div.find('.building-center-page').css('display', 'none');
-            self.jq_main_div.find('#' + page_id).css('display', 'block');
-            self.centralMenuReaction(page_id)
-        });
-        this.jq_main_div.find('.building-center-menu-item').first().click();
+        var jq_menu_item_list = this.jq_main_div.find('.building-center-menu-item');
+        jq_menu_item_list.click({build: this}, this.centralMenuBindReaction_handler);
+        jq_menu_item_list.first().click();
+
+        // Биндим скроллы
+        //this.jq_main_div.find('.building-center-menu-block-scroll-btn').click(function() {
+        //    var scroll_block = $(this).parent().parent().find('.building-center-menu-block-wrap').first();
+        //    var scroll_pos = scroll_block.scrollTop();
+        //    var mul = $(this).hasClass('up') ? -1 : 1;
+        //    scroll_block.scrollTop(scroll_pos + mul * 20);
+        //});
+
+        this.centralMenuScrollSet();
+    };
+
+    LocationPlaceBuilding.prototype.centralMenuScrollSet = function () {
+        var jq_menu_item_list = this.jq_main_div.find('.building-center-menu-item');
+        if (jq_menu_item_list.length <= 6) // Магия вёрстки!!!
+            this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'none');
+        else
+            this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'block');
+    };
+
+    // Используется, когда удаляется активная нота, и автоматически переключается на первую ноту!
+    LocationPlaceBuilding.prototype.centralMenuScrollToTop = function () {
+        this.jq_main_div.find('.building-center-menu-block-wrap').first().scrollTop(-9999);
     };
 
     LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
@@ -733,14 +843,40 @@ var LocationPlaceBuilding = (function (_super) {
         //if (page_type == 'buildingPageAvailableTasks' || page_type == 'buildingPageActiveTasks')
         //    $('#' + page_id).find('.building-quest-list-item').first().click();
         //else
-        if (this.selected_quest)
+
+
+        // Если эта страница-нота
+        var note = this.get_active_note();
+        if (note) {
+            note.activate();
+        }else {
+           if (this.selected_quest)
             this.set_selected_quest(null);
+        }
+
+        // сделать обязательно, так как мы  перешли в новое состояние
+        this.set_buttons();
+        this.set_header_text();
+    };
+
+    LocationPlaceBuilding.prototype.get_active_note = function () {
+        if (this.active_central_page.indexOf('building_note_') == 0) {
+            var note_uid = $('#' + this.active_central_page).data('note_uid');
+            if (note_uid) {
+                var note = notesManager.notes[note_uid];
+                if (note) return note;
+            } else {
+                console.warn('note_uid not found in data for ', page_id);
+            }
+        }
+        return null;
     };
 
     LocationPlaceBuilding.prototype.set_panels = function (make) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
-        locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+        var head_example = this.building_rec.head;
+        locationManager.panel_left.show({respect: locationManager.get_relation(head_example.node_hash) * 100}, 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 
@@ -830,6 +966,16 @@ var LocationPlaceNPC = (function (_super) {
 
     return LocationPlaceNPC;
 })(LocationPlace);
+
+
+// info функция нужна чтобы меньше использовать jquery эвенты! Можно воспользоваться кодом в методе
+// LocationPlaceBuilding.centralMenuBindReaction
+function clickBuildingScrollBtn(target) {
+    var scroll_block = $(target).parent().parent().find('.building-center-menu-block-wrap').first();
+    var scroll_pos = scroll_block.scrollTop();
+    var mul = $(target).hasClass('up') ? -1 : 1;
+    scroll_block.scrollTop(scroll_pos + mul * 20);
+}
 
 
 var locationManager;

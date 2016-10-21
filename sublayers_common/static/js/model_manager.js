@@ -817,7 +817,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.InventoryShowMessage', event);
         var inventory = this._getInventory(event.inventory);
         inventoryList.addInventory(inventory);
-        if (inventory.owner_id == user.ID)
+        if (locationManager.in_location_flag &&
+            ((inventory.owner_id == user.ID) || (inventory.owner_id == locationManager.uid)))
             locationManager.update();
     };
 

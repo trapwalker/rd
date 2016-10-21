@@ -63,8 +63,8 @@ class Price(object):
         self.item = item or price_option.item
         self.price_option = price_option
 
-    def is_match(self, item):
-        return item and item.is_ancestor_by_lvl(self.item) >= 0
+    # def is_match(self, item):
+    #     return item and item.get_ancestor_level(self.item) >= 0
 
     def __str__(self):
         return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
@@ -143,25 +143,29 @@ class Trader(Institution):
         return None
 
     def on_refresh(self, event):
-        self.current_list = []
+        # log.debug('Trader {self}.on_refresh'.format(**locals()))
+        current_list = []
+        self.current_list = current_list
         for price_option in self.price_list:
-            self.current_list.append(
+            current_list.append(
                 Price(
                     trader=self,
                     price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
                     count=0,
                     is_infinity=price_option.count_max == 0,
                     is_lot=False,
-                    price_option=price_option
+                    price_option=price_option,
                 )
             )
 
         for item in self.items:
             if item.abstract or self.item_in_ignore_list(item):
-                continue
-            price = self.get_item_price(item)
+                continue  # todo: warning на этапе анализа ямла
+
+            price = self.get_item_price(item)  # todo: Избавиться от двойной проверки итема по игнор-листу
             if not price:
-                continue
+                continue  # todo: warning
+
             price_option = price.price_option
             # Вычисляем шанс генерации итемов данного лота
             count = 0
@@ -170,14 +174,16 @@ class Trader(Institution):
                     count = round(price_option.count_min + random.random() * (price_option.count_max - price_option.count_min))
             else:
                 continue
+
             is_infinity = price_option.count_max == 0
+
             if price.item.node_hash() == item.node_hash():
                 price.is_lot = True
                 if not is_infinity:
                     price.count += count
             else:
                 # Формирование нового правила
-                self.current_list.append(
+                current_list.append(
                     Price(
                         trader=self,
                         price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
@@ -190,6 +196,7 @@ class Trader(Institution):
                 )
 
         self.send_prices(location=event.location, time=event.time)
+        # log.debug('Trader {self}.on_refresh END'.format(**locals()))
 
     def send_prices(self, location, time):
         for visitor in location.visitors:
@@ -211,7 +218,7 @@ class Trader(Institution):
 
     def item_in_ignore_list(self, item):
         for ignore_item in self.ignore_list:
-            if item.is_ancestor_by_lvl(ignore_item) >= 0:
+            if item.get_ancestor_level(ignore_item) >= 0:
                 return True
         return None
 
@@ -231,16 +238,17 @@ class Trader(Institution):
 
     def get_item_price(self, item):
         # info: функция расширена для работы с несколькими правилами. Берёт самое близкое по родителям
-        if self.item_in_ignore_list(item):
+        if not item or self.item_in_ignore_list(item):
             return None
         current_price = None
         current_ancestor_lvl = None
         for price in self.current_list:
-            if price.is_match(item):
-                ancestor_lvl = item.is_ancestor_by_lvl(price.item)
-                if ancestor_lvl is not None and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
-                    current_price = price
-                    current_ancestor_lvl = ancestor_lvl
+            ancestor_lvl = item.get_ancestor_level(price.item)
+            ancestor_lvl = 2
+            if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
+                current_price = price
+                current_ancestor_lvl = ancestor_lvl
+
         return current_price
 
     def change_price(self, item, count):

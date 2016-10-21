@@ -796,8 +796,9 @@ class AgentAPI(API):
     # Квесты
 
     @public_method
-    def quest_note_action(self, ):
-        pass
+    def quest_note_action(self, note_id, note_result):
+        log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, note_id, note_result)
+        # todo: найти ноту с этим ID и вызвать какую-то реакцию
 
     # Запрос инфы о другом игроке
 

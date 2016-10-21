@@ -18,12 +18,13 @@ var LocationServiceBuilding = (function (_super) {
     }
 
     LocationServiceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
-        _super.prototype.addExtraPages.call(this, jq_center_menu, jq_center_pages);
         // Добавление дополнительных функций в здание
         var page_id = 'buildingPageRepair_' + this.building_rec.name;
         jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Ремонт</br>автомобиля</div>');
         this.jq_repair_page = $('<div id="' + page_id + '" class="building-center-page">');
         jq_center_pages.append(this.jq_repair_page);
+        // Вызвать после, чтобы основной функционал здания был сверху
+        _super.prototype.addExtraPages.call(this, jq_center_menu, jq_center_pages);
     };
 
     LocationServiceBuilding.prototype.update = function () {
@@ -122,24 +123,22 @@ var LocationServiceBuilding = (function (_super) {
         this.set_filler(this.jq_repair_fill_need, this.current_prc_hp);
     };
 
-    LocationServiceBuilding.prototype.centralMenuReaction = function (page_id) {
-        _super.prototype.centralMenuReaction.call(this, page_id);
-        this.set_buttons();
-    };
+    //LocationServiceBuilding.prototype.centralMenuReaction = function (page_id) {
+    //    _super.prototype.centralMenuReaction.call(this, page_id);
+    //    this.set_buttons();
+    //};
 
     LocationServiceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (this.active_central_page == 'buildingPageRepair_autoservice') {
-            locationManager.setBtnState(1, '</br>Ремонт', true);
-            locationManager.setBtnState(2, 'Ремонт</br>всего', true);
+            locationManager.setBtnState(1, '</br>Ремонт', user.example_car ? true : false);
+            locationManager.setBtnState(2, 'Ремонт</br>всего', user.example_car ? true : false);
+            locationManager.setBtnState(3, '</br>Назад', true);
+            locationManager.setBtnState(4, '</br>Выход', true);
         }
         else {
-            locationManager.setBtnState(1, '', false);
-            locationManager.setBtnState(2, '', false);
+            _super.prototype.set_buttons.call(this);
         }
-
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
     };
 
     LocationServiceBuilding.prototype.clickBtn = function (btnIndex) {
@@ -159,15 +158,7 @@ var LocationServiceBuilding = (function (_super) {
                     user.example_car.max_hp - user.example_car.hp);
                 return;
             }
-        } else {
-            if (btnIndex == '1') {
-                return;
-            }
-            if (btnIndex == '2') {
-                return;
-            }
         }
-
         _super.prototype.clickBtn.call(this, btnIndex);
     };
 

@@ -139,6 +139,77 @@ $(document).ready(function () {
     resizeWindowHandler();
 });
 
+var index_notes_test = 0;
+function addTestNotes() {
+    var npc_html_hash;
+    var build;
+    var note;
+
+    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'жми сюда ' + index_notes_test,
+        uid: 'notes_' + index_notes_test
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    var inv = inventoryList.getInventory(user.ID);
+
+    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtnDelivery({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'Доставка ' + index_notes_test,
+        uid: 'notes_' + index_notes_test,
+        delivery_stuff: [
+            {
+                item: inv.items[0].example,
+                count: 4
+            },
+            {
+                item: inv.items[1].example,
+                count: 2
+            }
+        ]
+
+
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    note = new QuestNoteNPCCar({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'Машина ' + index_notes_test,
+        uid: 'notes_' + index_notes_test,
+        delivery_stuff: [
+            {
+                item: inv.items[0].example,
+                count: 4
+            },
+            {
+                item: inv.items[1].example,
+                count: 2
+            }
+        ]
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    npc_html_hash = 'reg--registry-institutions-mechanic-raul_alone';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'жми сюда ' + index_notes_test,
+        uid: 'notes_' + index_notes_test
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+}
+
+
 function init_site_sound() {
     audioManager.gain_all(1.0);
 

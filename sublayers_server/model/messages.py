@@ -555,6 +555,8 @@ class EnterToLocation(Message):
             log.warn('Unknown type location: %s', location)
         d.update(
             location=self.location.as_dict(time=self.time),
+            relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.get_relationship(npc=npc))
+                      for npc in location.example.get_npc_list()],
             location_html=location_html,
         )
         return d

@@ -3,8 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
@@ -15,11 +14,41 @@ from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from itertools import chain
 
 
+class RelationshipRec(Subdoc):
+    npc = UniReferenceField(
+        reference_document_type='sublayers_server.model.registry.classes.poi.Institution',
+        tags='client',
+        caption=u"Целевой NPC",
+    )
+    rel_index = FloatField(default=0, caption=u"Накапливаемое отношение")
+
+    def get_index_norm(self):
+        return min(max(self.rel_index / 100, -1), 1)
+
+    def set_index(self, d_index):
+        self.rel_index = min(max(self.rel_index + d_index, -100), 100)
+
+    def get_relationship(self, agent):
+        npc = self.npc
+        return (npc.koef_rel_index * self.get_index_norm() +
+                npc.koef_karma  * (1 - abs(agent.karma_norm - self.npc.karma_norm) / 2) +
+                npc.koef_pont_points * agent.get_pont_points())
+
+
 class Agent(Root):
     __not_a_fields__ = ['_agent_model']
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
+
+    # Карма и отношения
+    karma = FloatField(default=0, caption=u"Значение кармы игрока")
+    npc_rel_list = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type=RelationshipRec),
+        caption=u'Список взаимоотношений игрока с NPCs',
+        default=list,
+        tags='client',
+    )
 
     # Поля статистики агента
     _exp = FloatField(default=0, caption=u"Количество опыта")
@@ -170,11 +199,24 @@ class Agent(Root):
     )
 
     @property
+    def karma_norm(self):
+        return min(max(self.karma / 100, -1), 1)
+
+    @property
     def quests(self):
         """
         :rtype: list[sublayers_server.model.registry.classes.quests.Quest]
         """
         return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
+
+    def get_relationship(self, npc):
+        rel_list = self.npc_rel_list
+        for rel_rec in rel_list:
+            if npc is rel_rec.npc:
+                return rel_rec.get_relationship(agent=self)
+        rel_rec = RelationshipRec(npc=npc)
+        rel_list.append(rel_rec)
+        return rel_rec.get_relationship(agent=self)
 
     def __init__(self, **kw):
         super(Agent, self).__init__(**kw)
@@ -262,4 +304,7 @@ class Agent(Root):
             return
 
         quest.start(agent=self, server=server, time=time)
+
+    def get_pont_points(self):
+        return 0
 

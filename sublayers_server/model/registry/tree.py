@@ -411,20 +411,17 @@ class Node(Doc):
         super(Node, self).load_references(fields=fields, callback=on_load, alias=alias)
 
     def is_ancestor(self, parent_candidate):
-        if self.parent is None:
-            return None
-        if self.parent == parent_candidate:
-            return True
-        return self.parent.is_ancestor(parent_candidate)
+        return self.get_ancestor_level(parent_candidate) >= 0
 
-    def is_ancestor_by_lvl(self, parent_candidate, lvl=0):
-        if self.node_hash() == parent_candidate.node_hash():
-            return lvl
-        if self.parent is None:
-            return -1
-        if self.parent == parent_candidate:
-            return lvl + 1
-        return self.parent.is_ancestor_by_lvl(parent_candidate, lvl+1)
+    def get_ancestor_level(self, parent_candidate):  # todo: rename to `get_ancestor_level`
+        h = parent_candidate.node_hash()
+        i = 0
+        obj = self
+        while obj and obj.node_hash() != h:
+            i += 1
+            obj = obj.parent
+
+        return i if obj else -1
 
 
 class Root(Node):

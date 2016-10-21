@@ -83,6 +83,7 @@ class Application(BaseApplication):
             "key": "4926489",
             "secret": "4gyveXhKv5aVNCor5bkB",
         })
+        # todo: Убрать ключи из кода
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)

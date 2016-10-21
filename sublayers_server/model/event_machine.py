@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import print_function
 import logging.config
 log = logging.getLogger(__name__)
 
@@ -118,7 +118,10 @@ class Server(object):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
-        self.init_zones(time=event.time)
+        if not options.zones_disable:
+            self.init_zones(time=event.time)
+        else:
+            log.info('Zones activation disabled')
 
         # загрузка радиоточек
         towers_root = self.reg['poi/radio_towers']
@@ -139,7 +142,7 @@ class Server(object):
         for car_proto in self.reg['world_settings'].quick_game_car:
             self.quick_game_cars_proto.append(car_proto)
 
-        print 'Load world complete !'
+        print('Load world complete !')
 
     def post_message(self, message):
         """

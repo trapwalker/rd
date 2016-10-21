@@ -14,6 +14,7 @@ from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
 
+from tornado.options import options
 
 
 class RadioPoint(Observer):
@@ -101,6 +102,7 @@ class MapLocation(Observer):
             for visitor in self.visitors:
                 if not visitor is agent:
                     ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
+            self.inventory.send_inventory(agent, time)
         else:
             self.on_enter(agent=agent, time=time)
 
@@ -155,7 +157,8 @@ class Town(MapLocation):
         # Инициализация торговца
         # найти торговца в городе
         for npc in set(self.example.get_npc_list()):
-            if isinstance(npc, Trader):
+            # todo: Спрятать инициализацию NPC в виртуальный метод, чтобы могли инициализироваться все
+            if isinstance(npc, Trader) and not options.quick_debug:
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
     def on_exit(self, agent, time):
