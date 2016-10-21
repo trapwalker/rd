@@ -179,11 +179,8 @@ class Town(MapLocation):
 
     def on_enter_npc(self, event):
         super(Town, self).on_enter_npc(event)
-        npc = getattr(self.example, event.npc_type)  # todo: Получать NPC непосредственно
-        if npc:
-            event.agent.on_enter_npc(event=event, npc=npc)
-        else:
-            log.warning('Enter to absent NPC ({event.npc_type!r}) agent={event.agent!r}'.format(**locals()))
+        # todo: Проверить законность входа в переданного NPC в этой локации
+        event.agent.on_enter_npc(event=event)
 
 
 class GasStation(Town):

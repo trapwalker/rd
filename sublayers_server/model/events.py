@@ -366,10 +366,10 @@ class ExitFromMapLocation(Event):
 
 
 class EnterToNPCEvent(Event):
-    def __init__(self, agent, npc_type, **kw):
+    def __init__(self, agent, npc, **kw):
         super(EnterToNPCEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.npc_type = npc_type
+        self.npc = npc
 
     def on_perform(self):
         super(EnterToNPCEvent, self).on_perform()

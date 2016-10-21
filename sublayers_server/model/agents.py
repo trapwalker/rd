@@ -494,8 +494,8 @@ class Agent(Object):
         self.reload_parking_bag(new_example_inventory=None, time=time)
         # self.subscriptions.on_exit_location(agent=self, time=time, location=location)
 
-    def on_enter_npc(self, event, npc):
-        log.debug('%s:: on_enter_npc(%s)', self, npc)
+    def on_enter_npc(self, event):
+        log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
         self.example.on_event(event=event, name='on_enter_npc')  # todo: ##quest send NPC as param
 
     def on_exit_npc(self, event, npc):
