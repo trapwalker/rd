@@ -3,7 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.events import Event
+from sublayers_server.model import quest_events
+from sublayers_server.model.registry.classes import notes
 from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.events import event_deco
@@ -67,16 +68,6 @@ def script_compile(code, fn):
            | __future__.division.compiler_flag
         ),
     )
-
-
-class QuestEvent(Event):
-    def __init__(self, name, quest, **kw):
-        super(QuestEvent, self).__init__(**kw)
-        self.name = name
-        self.quest = quest
-
-    def on_perform(self):
-        self.quest.do_event(event=self)
 
 
 class LogRecord(Subdoc):
@@ -146,7 +137,7 @@ class QuestState(Root):
 
             Пример 2:
                 if (
-                    event.name is 'onDie'
+                    event.name is 'OnDie'
                     and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
                     and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
                 ):
@@ -333,6 +324,7 @@ class Quest(Root):
         if agent:
             self.agent = agent
 
+        log.debug('QUEST {self} is started by {agent}'.format(**locals()))
         if self.agent:
             self.agent.quests_unstarted.remove(self)
             self.agent.quests_active.append(self)
@@ -368,11 +360,14 @@ class Quest(Root):
             QuestUpdateMessage(agent=agent_model, time=event.time, quest=self).post()
 
     def make_global_context(self):
-        return dict(
+        ctx = dict(
             quest=self,
             agent=self.agent,
             log=lambda template, **kw: log.debug(self._template_render(template, **kw) or True),
         )
+        ctx.update(quest_events.ALL)  # Вся коллекция квестовых классов подмешивается в глобальный контекст
+        ctx.update(notes.ALL)         # Вся коллекция note-классов подмешивается в глобальный контекст
+        return ctx
 
     def make_local_context(self):
         return dict()

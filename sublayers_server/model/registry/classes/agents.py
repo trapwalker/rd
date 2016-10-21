@@ -9,7 +9,8 @@ from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
 from sublayers_server.model.events import ChangeAgentBalanceEvent
-from sublayers_server.model.registry.classes.quests import QuestAddMessage, QuestEvent
+from sublayers_server.model import quest_events
+from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
 
 from itertools import chain
@@ -312,9 +313,9 @@ class Agent(Root):
 
         quest.start(agent=self, server=server, time=time)
 
-    def on_event(self, event, name, cls=QuestEvent, **kw):
+    def on_event(self, event, name, cls=quest_events.QuestEvent, **kw):
         for q in self.quests_active:
-            cls(server=event.server, time=event.time, name=name, quest=q, **kw).post()
+            cls(server=event.server, time=event.time, quest=q, **kw).post()
 
     def get_pont_points(self):
         return 0
