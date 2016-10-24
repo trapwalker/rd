@@ -95,6 +95,10 @@ var LocationManager = (function () {
     LocationManager.prototype.activateScreen = function (screenName, btn_id) {
         //console.log('LocationManager.prototype.activateScreen', screenName, btn_id);
         if (this.screens.hasOwnProperty(screenName)) {
+            // Вставка для проброса эвента деактивации при смене локации (здание, нпц, меню и тд)
+            if (this.active_screen_name != screenName)
+                locationManager.screens[locationManager.active_screen_name].on_deactivate();
+
             this.active_screen_name = screenName;
             var location = locationManager.screens[screenName];
             $('#btn_screen_location_pressed').css('display', 'none');
@@ -536,6 +540,10 @@ var LocationPlace = (function () {
     LocationPlace.prototype.activate = function () {
         //console.log('LocationPlace.prototype.activate');
 
+        // Вызвать метод деактивации локации
+        if (locationManager.screens[locationManager.active_screen_name] && locationManager.screens[locationManager.active_screen_name] != this)
+            locationManager.screens[locationManager.active_screen_name].on_deactivate();
+
         // Выключить ландшафт здания и специалистов
         $('#layer2').css('display', 'none');
         $('#landscape').css('display', 'none');
@@ -558,6 +566,11 @@ var LocationPlace = (function () {
         this.set_panels();
         // Настроить речь NPC
         this.set_header_text();
+    };
+
+    LocationPlace.prototype.on_deactivate = function () {
+        // Срабатывает при переключениями между экранами, локациями и тд. Можно на него завязать отправку сообщений на сервер
+        //console.log('LocationPlace.prototype.on_deactivate', this);
     };
 
     LocationPlace.prototype.set_buttons = function () {
@@ -716,6 +729,10 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
         if (btnIndex == '3') {
+
+            // Вызвать метод деактивации здания
+            this.on_deactivate();
+
             $('#layer2').css('display', 'block');
             $('#landscape').css('display', 'block');
             $('.building-back').css('display', 'none');
