@@ -334,7 +334,7 @@ class Agent(Root):
 
         quest.start(agent=self, server=server, time=time)
 
-    def on_event(self, event, name, cls=quest_events.QuestEvent, **kw):
+    def on_event(self, event, cls=quest_events.QuestEvent, **kw):
         for q in self.quests_active:
             cls(server=event.server, time=event.time, quest=q, **kw).post()
 

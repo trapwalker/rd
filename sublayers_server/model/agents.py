@@ -18,6 +18,7 @@ from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
 )
+from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
@@ -501,15 +502,16 @@ class Agent(Object):
 
         self.reload_parking_bag(new_example_inventory=None, time=time)
         # self.subscriptions.on_exit_location(agent=self, time=time, location=location)
+        #self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
     def on_enter_npc(self, event):
         log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
-        self.example.on_event(event=event, name='on_enter_npc')  # todo: ##quest send NPC as param
+        self.example.on_event(event=event, cls=quest_events.OnEnterNPC)  # todo: ##quest send NPC as param
 
     def on_exit_npc(self, event, npc):
         # todo: ##quest call it
         log.debug('%s:: on_exit_npc(%s)', self, npc)
-        self.example.on_event(event=event, name='on_exit_npc')  # todo: ##quest send NPC as param
+        self.example.on_event(event=event, cls=quest_events.OnExitNPC)  # todo: ##quest send NPC as param
 
     def on_die(self, event, unit):
         log.debug('%s:: on_die()', self)
@@ -520,7 +522,7 @@ class Agent(Object):
             barter.cancel(time=event.time-0.01)
 
         Die(agent=self, time=event.time).post()
-        self.example.on_event(event=event, name='on_die')  # todo: ##quest send unit as param
+        self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)

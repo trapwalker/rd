@@ -22,13 +22,10 @@ class QuestEvent(Event):
         self.quest.do_event(event=self)
 
 
-class OnNote(QuestEvent):
-    pass
-
-
-class OnEnterNPC(QuestEvent):
-    pass
-
+class OnNote(QuestEvent): pass
+class OnEnterNPC(QuestEvent): pass
+class OnExitNPC(QuestEvent): pass
+class OnDie(QuestEvent): pass
 
 # todo: Сделать регистрацию квестовых событий через метакласс
 ALL = {name: value for name, value in locals().items() if isinstance(value, QuestEvent)}
