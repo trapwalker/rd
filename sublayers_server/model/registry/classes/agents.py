@@ -222,6 +222,10 @@ class Agent(Root):
         """
         return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
 
+    def __init__(self, **kw):
+        super(Agent, self).__init__(**kw)
+        self._agent_model = None
+
     def get_relationship(self, npc):
         rel_list = self.npc_rel_list
         for rel_rec in rel_list:
@@ -231,9 +235,13 @@ class Agent(Root):
         rel_list.append(rel_rec)
         return rel_rec.get_relationship(agent=self)
 
-    def __init__(self, **kw):
-        super(Agent, self).__init__(**kw)
-        self._agent_model = None
+    def set_relationship(self, time, npc, dvalue):
+        relation = self.get_relationship(npc)
+        if dvalue is not None:
+            old_norm_index = relation.get_index_norm()
+            relation.set_index(dvalue)
+            if self._agent_model and old_norm_index != relation.get_index_norm():
+                ChangeAgentKarma(agent=self._agent_model, time=time).post()
 
     def set_balance(self, balance, server, time):
         self.balance = balance
