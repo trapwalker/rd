@@ -31,4 +31,4 @@ class OnEnterNPC(QuestEvent):
 
 
 # todo: Сделать регистрацию квестовых событий через метакласс
-ALL = {name: value for name, value in locals() if isinstance(value, QuestEvent)}
+ALL = {name: value for name, value in locals().items() if isinstance(value, QuestEvent)}
