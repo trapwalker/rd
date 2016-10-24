@@ -726,6 +726,11 @@ var LocationPlaceBuilding = (function (_super) {
         clientManager.sendEnterToBuilding(this);
     };
 
+    LocationPlaceBuilding.prototype.on_deactivate = function () {
+        _super.prototype.on_deactivate.call(this);
+        clientManager.sendExitFromBuilding(this);
+    };
+
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
         if (btnIndex == '3') {
@@ -952,6 +957,11 @@ var LocationPlaceNPC = (function (_super) {
             $('#' + this.owner_name + '-back').css('display', 'block');
 
         clientManager.sendEnterToNPC(this);
+    };
+
+    LocationPlaceNPC.prototype.on_deactivate = function () {
+        _super.prototype.on_deactivate.call(this);
+        clientManager.sendExitFromNPC(this);
     };
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {

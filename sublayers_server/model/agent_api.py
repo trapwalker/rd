@@ -609,7 +609,14 @@ class AgentAPI(API):
     @public_method
     def enter_to_building(self, head_node_hash, build_name):
         log.info('agent %s want enter to build [%s] with head: %s', self.agent, build_name, head_node_hash)
-        # EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def exit_from_npc(self, npc_node_hash):
+        log.info('agent %s want exit from npc %s', self.agent, npc_node_hash)
+
+    @public_method
+    def exit_from_building(self, head_node_hash, build_name):
+        log.info('agent %s want exit from build [%s] with head: %s', self.agent, build_name, head_node_hash)
 
     @public_method
     def show_inventory(self, owner_id):
