@@ -607,6 +607,11 @@ class AgentAPI(API):
         EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
 
     @public_method
+    def enter_to_building(self, head_node_hash, build_name):
+        log.info('agent %s want enter to build [%s] with head: %s', self.agent, build_name, head_node_hash)
+        # EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
+
+    @public_method
     def show_inventory(self, owner_id):
         # log.info('agent %s want show inventory from %s', self.agent, owner_id)
         ShowInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()

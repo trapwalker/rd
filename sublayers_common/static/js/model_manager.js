@@ -1570,6 +1570,21 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendEnterToBuilding = function (build) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "enter_to_building",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                head_node_hash: build.building_rec.head.node_hash,
+                build_name: build.building_rec.name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
     // Оружейник
 
     ClientManager.prototype.sendArmorerApply = function (npc) {

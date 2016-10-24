@@ -710,6 +710,7 @@ var LocationPlaceBuilding = (function (_super) {
             this.set_header_text();
         }
 
+        clientManager.sendEnterToBuilding(this);
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
