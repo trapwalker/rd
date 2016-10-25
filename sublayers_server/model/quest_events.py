@@ -1,4 +1,4 @@
-﻿1# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -27,5 +27,17 @@ class OnEnterNPC(QuestEvent): pass
 class OnExitNPC(QuestEvent): pass
 class OnDie(QuestEvent): pass
 
+class OnKill(QuestEvent):
+    def __init__(self, unit, agent, **kw):
+        """
+        :param unit: killed Unit example object
+        :param agent: killed agent example object
+        :param kw: super params
+        """
+        super(OnKill, self).__init__(**kw)
+        self.unit = unit  # todo: weakref?
+        self.agent = agent  # todo: weakref?
+
+
 # todo: Сделать регистрацию квестовых событий через метакласс
-ALL = {name: value for name, value in locals().items() if isinstance(value, QuestEvent)}
+ALL = {name: value for name, value in locals().items() if isinstance(value, type) and issubclass(value, QuestEvent)}

@@ -411,7 +411,7 @@ class Agent(Object):
         # todo: delivery for subscribers ##quest
         pass
 
-    def on_kill(self, time, obj):
+    def on_kill(self, event, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
 
         # todo: party
@@ -429,11 +429,12 @@ class Agent(Object):
             # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
             # изменение кармы)
             if ((self_lvl - killed_lvl) >= 3) and (obj.owner_example.karma_norm >= -0.1):
-                self.example.set_karma(dvalue=-1, time=time)
+                self.example.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе
-        UserExampleSelfRPGMessage(agent=self, time=time).post()
-        # self.subscriptions.on_kill(agent=self, time=time, obj=obj)
+        UserExampleSelfRPGMessage(agent=self, time=event.time).post()
+        self.example.on_event(event=event, cls=quest_events.OnKill, agent=obj.owner_example, unit=obj.example)
+        # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
         # todo: Разобраться с именем этого метода

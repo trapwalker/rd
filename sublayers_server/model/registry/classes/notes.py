@@ -66,4 +66,4 @@ class DeliveryNote(NPCPageNote):
 
 
 # todo: Сделать регистрацию классов нотов через метакласс
-ALL = {name: value for name, value in locals().items() if isinstance(value, Note)}
+ALL = {name: value for name, value in locals().items() if isinstance(value, type) and issubclass(value, Note)}

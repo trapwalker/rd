@@ -336,7 +336,7 @@ class Unit(Observer):
             for w in sector.weapon_list:
                 yield w
 
-    def on_kill(self, time, obj):
+    def on_kill(self, event, obj):
         # Начисление опыта и фрага машинке
         self.example.set_frag(dvalue=1)  # начисляем фраг машинке
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
@@ -508,10 +508,10 @@ class Bot(Mobile):
         if self.owner:
             chat.room.exclude(agent=self.owner, time=time)
 
-    def on_kill(self, time, obj):
+    def on_kill(self, event, obj):
         # Начисление опыта и фрага агенту
-        self.main_agent.on_kill(time=time, obj=obj)
-        super(Bot, self).on_kill(time=time, obj=obj)
+        self.main_agent.on_kill(event=event, obj=obj)
+        super(Bot, self).on_kill(event=event, obj=obj)
 
     def on_init(self, event):
         super(Bot, self).on_init(event=event)
