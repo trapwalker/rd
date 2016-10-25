@@ -329,8 +329,8 @@ class Barter(object):
         self.recipient_inv.add_inventory(inventory=self.initiator_table, time=event.time)
 
         # Обмен деньгами
-        self.initiator.change_balance(self.recipient_money - self.initiator_money, event.time)
-        self.recipient.change_balance(self.initiator_money - self.recipient_money, event.time)
+        self.initiator.example.set_balance(time=event.time, delta=self.recipient_money - self.initiator_money)
+        self.recipient.example.set_balance(time=event.time, delta=self.initiator_money - self.recipient_money)
 
         # Отправить сообщения о закрытии окон
         SuccessBarterMessage(agent=self.initiator, barter=self, time=event.time).post()

@@ -272,7 +272,7 @@ class TransactionGasStation(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return
-        agent.change_balance(-sum_fuel, self.time)
+        agent.example.set_balance(time=self.time, delta=-sum_fuel)
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
 
@@ -319,7 +319,7 @@ class TransactionHangarSell(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
-        self.agent.change_balance(self.agent.example.car.price, time=self.time)
+        self.agent.example.set_balance(time=self.time, delta=self.agent.example.car.price)
         self.agent.example.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
@@ -371,7 +371,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
-            self.agent.set_balance(agent_balance - car_proto.price, time=self.time)
+            self.agent.example.set_balance(time=self.time, delta=-car_proto.price)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
         else:
@@ -428,7 +428,7 @@ class TransactionParkingSelect(TransactionTownNPC):
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
-            agent.change_balance(-summ_for_paying, self.time)
+            agent.example.set_balance(time=self.time, delta=-summ_for_paying)
 
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -684,7 +684,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
                                      replica=u'Недопустимое значение ремонта!').post()
             return
         ex_car.hp = ex_car.hp + self.hp
-        agent.change_balance(-repair_cost, self.time)
+        agent.example.set_balance(time=self.time, delta=-repair_cost)
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -888,7 +888,7 @@ class TransactionTraderApply(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return
-        agent.change_balance(sale_price - buy_price, self.time)
+        agent.example.set_balance(time=self.time, delta=sale_price - buy_price)
 
         # Перезагружаем модельный инвентарь
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
@@ -1019,7 +1019,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return
-        agent.change_balance(-price, self.time)
+        agent.example.set_balance(time=self.time, delta=-price)
 
         # Устанавливаем состояние
         self.agent.example.driving.value = self.skills[u'driving']
@@ -1070,9 +1070,11 @@ class BagExchangeStartEvent(TransactionTownNPC):
 
         if self.car_uid is None:
             agent.reload_parking_bag(new_example_inventory=None, time=self.time)
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Выбрана недоступная машинка!').post()
-            return
+            messages.NPCReplicaMessage(
+                agent=self.agent, time=self.time, npc=npc,
+                replica=u'Выбрана недоступная машинка!',
+            ).post()
+            return  # todo: Пометить жулика
 
         car_list = [car for car in agent.example.get_car_list_by_npc(npc)]
 
@@ -1083,15 +1085,15 @@ class BagExchangeStartEvent(TransactionTownNPC):
         if not target_car_ex:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'Выбрана недоступная машинка!').post()
-            return
+            return  # todo: Пометить жулика
 
         # Списать деньги за стоянку, обновить время установки машинки на стоянку
         car_price = npc.get_car_price(target_car_ex)
         if agent.balance < car_price:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
-            return
-        agent.change_balance(-car_price, self.time)
+            return  # todo: Пометить жулика
+        agent.example.set_balance(time=self.time, delta=-car_price)
         target_car_ex.date_setup_parking = time.mktime(datetime.now().timetuple())
 
         # Создать инвентарь

@@ -222,8 +222,8 @@ class Unit(Observer):
 
         # вернуть агенту стоимость машинки
         if self.owner:
-            self.owner.change_balance(self.example.price, event.time)
-            # todo: возможно это нужно перенести
+            self.owner.example.set_balance(time=event.time, delta=self.example.price)
+            # todo: возможно это нужно перенести (!)
             self.owner.example.car = None
 
         # todo: Сделать другой эвенет, передавать в него не список итемов, а inventory

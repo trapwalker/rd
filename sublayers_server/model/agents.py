@@ -143,12 +143,6 @@ class Agent(Object):
     def balance(self):
         return self.example.balance
 
-    def set_balance(self, value, time):
-        self.example.set_balance(value, server=self.server, time=time)
-
-    def change_balance(self, dvalue, time):
-        self.example.set_balance(self.balance + dvalue, server=self.server, time=time)
-
     def on_save(self, time):
         self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
         if self.car:

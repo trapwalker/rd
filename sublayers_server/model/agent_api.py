@@ -92,6 +92,7 @@ class AgentConsoleNamespace(Namespace):
     def dropcar(self):
         self.api.delete_car()
 
+    # todo: Завернуть сообщения консоли в отдельные события
     def money(self, value=None):
         if value is not None:
             value = int(value)
@@ -105,7 +106,7 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.change_balance(value, time=self.agent.server.get_time())
+            self.agent.example.set_balance(time=self.agent.server.get_time(), new_balance=value)
 
         self.write('You have {} money.'.format(self.agent.balance))
         return self.agent.balance

@@ -8,11 +8,10 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
-from sublayers_server.model.events import ChangeAgentBalanceEvent
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
-from sublayers_server.model.messages import ChangeAgentKarma
+from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
 
 from itertools import chain
 
@@ -243,9 +242,16 @@ class Agent(Root):
             if self._agent_model and old_norm_index != relation.get_index_norm():
                 ChangeAgentKarma(agent=self._agent_model, time=time).post()
 
-    def set_balance(self, balance, server, time):
-        self.balance = balance
-        ChangeAgentBalanceEvent(agent_ex=self, server=server, time=time).post()
+    def set_balance(self, time, new_balance=None, delta=None):
+        if new_balance is not None:
+            self.balance = new_balance
+
+        if delta:
+            self.balance += delta
+
+        agent_model = self._agent_model
+        if agent_model and (delta or new_balance is not None):
+            ChangeAgentBalance(agent=agent_model, time=time).post()
         return self.balance
 
     def iter_skills(self):  # todo: need review
