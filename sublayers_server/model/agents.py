@@ -501,12 +501,12 @@ class Agent(Object):
 
     def on_enter_npc(self, event):
         log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
-        self.example.on_event(event=event, cls=quest_events.OnEnterNPC)  # todo: ##quest send NPC as param
+        self.example.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
 
     def on_exit_npc(self, event, npc):
         # todo: ##quest call it
         log.debug('%s:: on_exit_npc(%s)', self, npc)
-        self.example.on_event(event=event, cls=quest_events.OnExitNPC)  # todo: ##quest send NPC as param
+        self.example.on_event(event=event, cls=quest_events.OnExitNPC, npc=npc)  # todo: ##quest send NPC as param
 
     def on_die(self, event, unit):
         log.debug('%s:: on_die()', self)

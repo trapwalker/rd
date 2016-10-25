@@ -23,9 +23,12 @@ class QuestEvent(Event):
 
 
 class OnNote(QuestEvent): pass
-class OnEnterNPC(QuestEvent): pass
-class OnExitNPC(QuestEvent): pass
 class OnDie(QuestEvent): pass
+
+class NPCEvent(QuestEvent): pass
+class OnEnterNPC(NPCEvent): pass
+class OnExitNPC(NPCEvent): pass
+
 
 class OnKill(QuestEvent):
     def __init__(self, unit, agent, **kw):
