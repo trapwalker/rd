@@ -1584,6 +1584,33 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendExitFromNPC = function (npc) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "exit_from_npc",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendExitFromBuilding = function (build) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "exit_from_building",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                head_node_hash: build.building_rec.head.node_hash,
+                build_name: build.building_rec.name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     // Оружейник
 
