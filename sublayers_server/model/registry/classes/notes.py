@@ -35,7 +35,7 @@ class DelNoteMessage(Message):
 
 class Note(Subdoc):
     uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
-    quest_id = StringField(tags='client')
+    quest_uid = UUIDField(tags='client')
 
     @property
     def cls(self):
