@@ -96,7 +96,7 @@ var LocationManager = (function () {
         //console.log('LocationManager.prototype.activateScreen', screenName, btn_id);
         if (this.screens.hasOwnProperty(screenName)) {
             // Вставка для проброса эвента деактивации при смене локации (здание, нпц, меню и тд)
-            if (this.active_screen_name != screenName)
+            if (this.active_screen_name != screenName && locationManager.screens[locationManager.active_screen_name])
                 locationManager.screens[locationManager.active_screen_name].on_deactivate();
 
             this.active_screen_name = screenName;
