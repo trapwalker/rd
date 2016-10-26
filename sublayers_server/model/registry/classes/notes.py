@@ -37,6 +37,15 @@ class Note(Subdoc):
     uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
     quest_id = StringField(tags='client')
 
+    @property
+    def cls(self):
+        return self.__class__.__name__
+
+    def as_client_dict(self):
+        d = super(Note, self).as_client_dict()
+        d.update(cls=self.cls)
+        return d
+
 
 class NPCPageNote(Note):
     page_caption = StringField(caption=u'Название кнопки у нпц', tags='client')
