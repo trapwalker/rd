@@ -12,10 +12,5 @@ var QuestNoteNPCCar = (function (_super) {
         jq_up_path.append(user.templates.html_car_img);
     };
 
-    QuestNoteNPCCar.prototype.set_buttons = function(){
-        locationManager.setBtnState(1, '</br> Сдать', this.availability_test);
-        locationManager.setBtnState(2, '', false);
-    };
-
     return QuestNoteNPCCar;
 })(QuestNoteNPCBtnDelivery);

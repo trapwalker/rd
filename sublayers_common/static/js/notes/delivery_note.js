@@ -68,7 +68,7 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
     };
 
     QuestNoteNPCBtnDelivery.prototype.set_buttons = function(){
-        locationManager.setBtnState(1, '</br> Сдать', this.availability_test);
+        locationManager.setBtnState(1, this.btn1_caption, this.availability_test);
         locationManager.setBtnState(2, '', false);
     };
 

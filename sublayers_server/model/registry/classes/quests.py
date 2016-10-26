@@ -482,7 +482,7 @@ class QuestLogMessage(Message):
 
 
 class KillerQuest(Quest):
-    count_to_kill = IntField(caption=u'Количество убийств')
+    count_to_kill = IntField(caption=u'Количество убийств', tags='client')
     victims = ListField(
         default=[],
         caption=u"Награда, выраженная в предметах",
@@ -492,8 +492,8 @@ class KillerQuest(Quest):
         reinst=True,
     )
 
-    def as_dict(self):
-        d = super(KillerQuest, self).as_dict()
+    def as_client_dict(self):
+        d = super(KillerQuest, self).as_client_dict()
         d.update(
             # todo: photo url send
             victims=[dict(name=agent.login, photo='', profile_id=agent.profile_id) for agent in self.victims],

@@ -300,6 +300,21 @@ var ClientManager = (function () {
             $('.self-balance-view').text(user.balance.toFixed(0).toString() + 'NC');
     };
 
+    ClientManager.prototype._createNote = function (note) {
+        //console.log('ClientManager.prototype._createNote', note);
+        switch (note.cls) {
+            case 'QuestNoteNPCBtnDelivery':
+                break;
+            case 'QuestNoteNPCCar':
+                break;
+            case 'NPCWantedNote':
+                new QuestNoteNPCBtnKiller(note);
+                break;
+            default:
+                console.warn('Неопределён тип ноты:', data.cls)
+        }
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
@@ -314,10 +329,8 @@ var ClientManager = (function () {
                 this.sendGetPartyInfo(event.agent.party.name);
             }
             timeManager.timerStart();
-            for (var i = 0; i < event.notes.length; i++) {
-                console.log('Note Init: ', event.notes[i]);
-                // todo: как-то создать ноту
-            }
+            for (var i = 0; i < event.notes.length; i++)
+                this._createNote(event.notes[i]);
         }
     };
 
@@ -1093,17 +1106,21 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.QuestUpdateMessage = function (event) {
-        console.log('ClientManager.prototype.QuestUpdateMessage', event);
+        //console.log('ClientManager.prototype.QuestUpdateMessage', event);
         journalManager.quests.update(event.quest);
     };
 
     // Нотесы
     ClientManager.prototype.AddNoteMessage = function(event) {
-        console.log('ClientManager.prototype.AddNoteMessage', event);
+        //console.log('ClientManager.prototype.AddNoteMessage', event);
+        this._createNote(event.note);
     };
 
     ClientManager.prototype.DelNoteMessage = function(event) {
         console.log('ClientManager.prototype.DelNoteMessage', event);
+        var note = notesManager.get_note(event.note_uid);
+        if (note)
+            note.delete();
     };
 
     // Административные сообщения
@@ -2059,7 +2076,7 @@ var ClientManager = (function () {
 
     // Квесты
     ClientManager.prototype.sendActivateQuest = function (quest_id) {
-        console.log('ClientManager.prototype.sendActivateQuest', quest_id);
+        //console.log('ClientManager.prototype.sendActivateQuest', quest_id);
         var mes = {
             call: "quest_activate",
             rpc_call_id: rpcCallList.getID(),
@@ -2069,14 +2086,14 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.SendQuestNoteAction = function (note_id, note_result) {
+    ClientManager.prototype.SendQuestNoteAction = function (note_uid, note_result) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', event);
         var mes = {
             call: "quest_note_action",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                note_id: note_id,
-                note_result: note_result
+                uid: note_uid,
+                result: note_result
             }
         };
         rpcCallList.add(mes);

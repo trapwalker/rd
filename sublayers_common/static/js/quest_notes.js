@@ -32,13 +32,22 @@ var QuestNoteNPCBtn = (function (_super) {
 
     function QuestNoteNPCBtn(options) {
         _super.call(this, options);
-        this.npc_html_hash = options.npc_html_hash;
-        this.btn_caption = options.btn_caption;
+        this.npc_html_hash = options.npc.html_hash;
+        this.page_caption = options.page_caption;
         this.quest_uid = options.quest_uid;
+        this.btn1_caption = options.btn1_caption;
+        //this.btn2_caption = options.btn2_caption;
 
         this.jq_main_div = null;  // Вёрстка в здании
         this.jq_menu_div = null;  // Вёрстка в меню (по сути кнопка-плашка)\
         this.build = null;
+
+        // Попытка автоматически сбиндить ноту со зданием
+        if (locationManager.in_location_flag){
+            var build = locationManager.get_building_by_field('html_hash', this.npc_html_hash);
+            if (build)
+                this.bind_with_build(build);
+        }
     }
 
     // вызываются тольо когда нота пришла когда клиент уже был в городе
@@ -60,7 +69,7 @@ var QuestNoteNPCBtn = (function (_super) {
         // Добавление плашки в здание
         var page_id = 'building_note_' + this.uid + '_' + build.building_rec.name;
         this.jq_menu_div = $('<div class="building-center-menu-item" data-page_id="' + page_id + '" data-note_uid="' +
-            this.uid + '">' + this.btn_caption + '</div>');
+            this.uid + '">' + this.page_caption + '</div>');
         jq_build_menu.append(this.jq_menu_div);
         this.jq_main_div = $('<div id="' + page_id + '" class="building-center-page" data-note_uid="' + this.uid + '">');
         jq_build_center.append(this.jq_main_div);
@@ -80,8 +89,8 @@ var QuestNoteNPCBtn = (function (_super) {
     };
 
     QuestNoteNPCBtn.prototype.set_buttons = function(){
-        locationManager.setBtnState(1, '</br>btn_1_' + this.uid, true);
-        locationManager.setBtnState(2, '</br>btn_2_' + this.uid, true);
+        locationManager.setBtnState(1, this.btn1_caption, false);
+        locationManager.setBtnState(2, "", false);
     };
 
     QuestNoteNPCBtn.prototype.clickBtn = function (btnIndex) {
@@ -117,16 +126,22 @@ var NotesManager = (function () {
         this.notes = {};
     }
 
+    NotesManager.prototype.get_note = function(note_uid) {
+        if (this.notes.hasOwnProperty(note_uid))
+            return this.notes[note_uid];
+        return null;
+    };
+
     NotesManager.prototype.add = function(note) {
         if (! this.notes.hasOwnProperty(note.uid))
             this.notes[note.uid] = note;
         else
-            throw 'нота с таким uid уже существует' + note.uid;
+            throw 'нота с таким uid уже существует ' + note.uid;
     };
 
     NotesManager.prototype.del = function(note) {
          if (this.notes.hasOwnProperty(note.uid))
-            delete this.notes[note.uid];
+             delete this.notes[note.uid];
     };
 
     NotesManager.prototype.get_notes_by_type = function(type) {
