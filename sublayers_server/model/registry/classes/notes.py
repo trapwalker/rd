@@ -38,6 +38,7 @@ class Note(Root):
 
 
 class NPCPageNote(Note):
+    quest_id = StringField(tags='client')
     page_caption = StringField(caption=u'Название кнопки у нпц', tags='client')
     btn1_caption = StringField(default=u'<br>Сдать', caption=u'Текст для кнопки btn1', tags='client')
     npc = UniReferenceField(
@@ -63,6 +64,10 @@ class DeliveryNote(NPCPageNote):
         default=list,
         tags='client',
     )
+
+
+class NPCWantedNote(NPCPageNote):
+    count_to_kill = IntField(caption=u"")
 
 
 # todo: Сделать регистрацию классов нотов через метакласс
