@@ -320,7 +320,7 @@ class Agent(Root):
         if dvalue is not None:
             self._frag += dvalue
 
-    def add_quest(self, quest, time):
+    def add_quest(self, quest, time):  # todo: Пробросить event
         self.quests_unstarted.append(quest)
         model = self._agent_model
         if model:

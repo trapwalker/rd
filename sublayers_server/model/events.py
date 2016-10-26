@@ -334,7 +334,7 @@ class EnterToMapLocation(Event):
         super(EnterToMapLocation, self).on_perform()
         obj = self.server.objects.get(self.obj_id)
         if obj and obj.can_come(agent=self.agent):
-            obj.on_enter(agent=self.agent, time=self.time)
+            obj.on_enter(agent=self.agent, event=self)
         else:
             log.warning('agent %s try to enter the location %s, but access denied', self.agent, obj)
 
@@ -348,7 +348,7 @@ class ReEnterToLocation(Event):
 
     def on_perform(self):
         super(ReEnterToLocation, self).on_perform()
-        self.location.on_re_enter(agent=self.agent, time=self.time)
+        self.location.on_re_enter(agent=self.agent, event=self)
 
 
 class ExitFromMapLocation(Event):
@@ -360,7 +360,7 @@ class ExitFromMapLocation(Event):
     def on_perform(self):
         super(ExitFromMapLocation, self).on_perform()
         if self.agent.current_location:
-            self.agent.current_location.on_exit(agent=self.agent, time=self.time)
+            self.agent.current_location.on_exit(agent=self.agent, event=self)
         else:
             log.warning('agent %s try to exit from location, but location is not found', self.agent)
 

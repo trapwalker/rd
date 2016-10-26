@@ -356,8 +356,8 @@ class Quest(Root):
         old_state_id = self.current_state
         old_state = self.state
 
-        if new_state_id == old_state_id:
-            return
+        # if new_state_id == old_state_id:
+        #     return
 
         if old_state:
             self.do_state_exit(old_state, event)
@@ -475,6 +475,7 @@ class QuestLogMessage(Message):
 
 
 class KillerQuest(Quest):
+    count_to_kill = IntField(caption=u'Количество убийств')
     victims = ListField(
         default=[],
         caption=u"Награда, выраженная в предметах",
