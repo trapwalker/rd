@@ -417,7 +417,14 @@ class Quest(Root):
         state._exec_event_handler(quest=self, handler='on_exit', event=event)
 
     def do_state_enter(self, state, event):
+        self._go_state_name = None
+        self.local_context.update(
+            go=partial(self._go, event=event),
+        )
         state._exec_event_handler(quest=self, handler='on_enter', event=event)
+        new_state = getattr(self, '_go_state_name', None)
+        if new_state:
+            self.set_state(new_state, event)
 
     def do_event(self, event):
         state = self.state
