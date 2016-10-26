@@ -353,14 +353,15 @@ class Agent(Root):
         # отправить сообщение на клиент
         if self._agent_model:
             AddNoteMessage(agent=self._agent_model, note=note, time=time).post()
+        return note.uid
 
-    def get_note(self, note_uid):
+    def get_note(self, uid):
         for note in self.notes:
-            if note.uid == note_uid:
+            if note.uid == uid:
                 return note
 
-    def del_note(self, note_uid, time):
-        note = self.get_note(note_uid)
+    def del_note(self, uid, time):
+        note = self.get_note(uid)
         if note:
             self.notes.remove(note)
             # отправить сообщение на клиент
