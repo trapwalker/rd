@@ -315,7 +315,7 @@ var ClientManager = (function () {
             }
             timeManager.timerStart();
             for (var i = 0; i < event.notes.length; i++) {
-                console.log('Note Init: ', event.data.notes[i]);
+                console.log('Note Init: ', event.notes[i]);
                 // todo: как-то создать ноту
             }
         }

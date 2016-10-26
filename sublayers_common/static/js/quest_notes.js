@@ -34,6 +34,7 @@ var QuestNoteNPCBtn = (function (_super) {
         _super.call(this, options);
         this.npc_html_hash = options.npc_html_hash;
         this.btn_caption = options.btn_caption;
+        this.quest_uid = options.quest_uid;
 
         this.jq_main_div = null;  // Вёрстка в здании
         this.jq_menu_div = null;  // Вёрстка в меню (по сути кнопка-плашка)\
