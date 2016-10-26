@@ -186,6 +186,15 @@ var QuestJournalManager = (function () {
             console.error('Попытка удаления отсутствующего квеста.');
     };
 
+    QuestJournalManager.prototype.getQuest = function(quest_uid) {
+        //console.log('QuestManager.prototype.getQuest', quest);
+        if (quest_uid && this.quests.hasOwnProperty(quest_uid)) {
+            return this.quests[quest_uid];
+        }
+        else
+            console.error('Квест с данным uid не найден:', quest_uid);
+    };
+
     QuestJournalManager.prototype.update = function(quest) {
         //console.log('QuestJournalManager.prototype.update', quests);
         if (!this.quests.hasOwnProperty(quest.uid)) {

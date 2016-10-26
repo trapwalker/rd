@@ -1,4 +1,4 @@
-
+/* Нота для квеста доставки */
 
 .notes-npc-delivery-up {
     position: relative;
@@ -43,3 +43,51 @@
     font: 10pt Nouveau_IBM;
     color: #2ffa00;
 }
+
+
+/* Нота для квеста убийства списка игроков */
+
+.notes-npc-killer-up {
+    position: relative;
+    padding: 10px;
+    width: 100%;
+    height: 96px;
+    box-sizing: border-box;
+    border-width: 0px 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, #30fc00, #30fc00, transparent);
+    border-image-slice: 1;
+    text-align: center;
+}
+
+.notes-npc-killer-inventory-label {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    text-align: center;
+    line-height: 30px;
+}
+
+.notes-npc-killer-inventory-wrap {
+    position: relative;
+    margin: 10px auto 0 auto;
+    width: calc(100% - 40px);
+    height: 180px;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.notes-npc-killer-inventory {
+    position: relative;
+    height: 100%;
+}
+
+.npcInventory-notes-killer-name {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font: 10pt Nouveau_IBM;
+    color: #2ffa00;
+}
+
