@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.tree import Root, Subdoc
+from sublayers_server.model.registry.tree import Subdoc, get_uuid
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, UUIDField
 )
@@ -33,8 +33,9 @@ class DelNoteMessage(Message):
         return d
 
 
-class Note(Root):
-    pass
+class Note(Subdoc):
+    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
+    quest_id = StringField(tags='client')
 
 
 class NPCPageNote(Note):
@@ -63,6 +64,10 @@ class DeliveryNote(NPCPageNote):
         default=list,
         tags='client',
     )
+
+
+class NPCWantedNote(NPCPageNote):
+    pass
 
 
 # todo: Сделать регистрацию классов нотов через метакласс

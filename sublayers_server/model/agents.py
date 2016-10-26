@@ -470,34 +470,34 @@ class Agent(Object):
             LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, total_inventory=total_inventory,
                                time=time).post()
 
-    def on_enter_location(self, time, location):
+    def on_enter_location(self, location, event):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.01)
+            barter.cancel(time=event.time-0.01)
 
         # Раздеплоить машинку агента
         if self.car:  # Вход в город и раздеплой машинки
             self.car.example.last_location = location.example
-            self.car.displace(time=time)
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
+            self.car.displace(time=event.time)
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
         elif self.example.car and self.inventory:  # Обновление клиента (re-enter)
-            self.inventory.send_inventory(agent=self, time=time)
+            self.inventory.send_inventory(agent=self, time=event.time)
         elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
 
-        # self.subscriptions.on_enter_location(agent=self, time=time, location=location)
+        # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
 
-    def on_exit_location(self, time, location):
+    def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
         if self.inventory:
-            self.inventory.save_to_example(time=time)
-            self.inventory.del_all_visitors(time=time)
+            self.inventory.save_to_example(time=event.time)
+            self.inventory.del_all_visitors(time=event.time)
             self.inventory = None
 
-        self.reload_parking_bag(new_example_inventory=None, time=time)
-        # self.subscriptions.on_exit_location(agent=self, time=time, location=location)
-        #self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+        self.reload_parking_bag(new_example_inventory=None, time=event.time)  # todo: Проброс события
+        # self.subscriptions.on_exit_location(agent=self, event=event, location=location)
+        # self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
     def on_enter_npc(self, event):
         log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))

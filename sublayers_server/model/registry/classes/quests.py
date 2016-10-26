@@ -227,6 +227,16 @@ class Quest(Root):
         caption=u"Журнал квеста",
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
+    reward_money = FloatField(caption=u'Сумма денежной награды')
+    reward_karma = FloatField(caption=u'Величина кармической награды')
+    reward_items = ListField(
+        caption=u"Награда, выраженная в предметах",
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+            reinst=True,
+        ),
+        reinst=True,
+    )
 
     def _set_error_status(self, handler, event, e):
         self._error = True
@@ -346,8 +356,8 @@ class Quest(Root):
         old_state_id = self.current_state
         old_state = self.state
 
-        if new_state_id == old_state_id:
-            return
+        # if new_state_id == old_state_id:
+        #     return
 
         if old_state:
             self.do_state_exit(old_state, event)
@@ -460,5 +470,25 @@ class QuestLogMessage(Message):
         d = super(QuestLogMessage, self).as_dict()
         d.update(
             quest_event=self.event_record.as_dict(),
+        )
+        return d
+
+
+class KillerQuest(Quest):
+    count_to_kill = IntField(caption=u'Количество убийств')
+    victims = ListField(
+        default=[],
+        caption=u"Награда, выраженная в предметах",
+        base_field=UniReferenceField(
+            reference_document_type='sublayers_server.model.registry.classes.agents.Agent',
+        ),
+        reinst=True,
+    )
+
+    def as_dict(self):
+        d = super(KillerQuest, self).as_dict()
+        d.update(
+            # todo: photo url send
+            victims=[dict(name=agent.login, photo='', profile_id=agent.profile_id) for agent in self.victims],
         )
         return d
