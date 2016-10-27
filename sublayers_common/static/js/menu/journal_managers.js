@@ -99,8 +99,6 @@ var ParkingJournalManager = (function () {
         // Вешаем клики на названия машинок в городах
         jq_town_list.find('.journal-parking-menu-city-car').click(function () {
             var car_id = $(this).data('car_id');
-
-            console.log(car_id);
             var jq_parking_main = journalManager.jq_main_div.find('.journal_page_parking');
 
             jq_parking_main.find('.journal-parking-menu-city-car').removeClass('active');

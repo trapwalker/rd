@@ -254,10 +254,10 @@ function resizeWindowHandler() {
     var scale_prc_w_width = $(window).width() / 1920;
     var scale_prc_w_height = $(window).height() / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
-    if (scale_prc > 0.3) {
-        $('#activeTownDiv').css('transform', 'scale(' + scale_prc + ')');
-        window_scaled_prc = scale_prc;
-    }
+    //if (scale_prc > 0.3) {
+    //    $('#activeTownDiv').css('transform', 'scale(' + scale_prc + ')');
+    //    window_scaled_prc = scale_prc;
+    //}
 }
 
 

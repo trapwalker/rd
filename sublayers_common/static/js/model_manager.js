@@ -303,7 +303,8 @@ var ClientManager = (function () {
     ClientManager.prototype._createNote = function (note) {
         //console.log('ClientManager.prototype._createNote', note);
         switch (note.cls) {
-            case 'QuestNoteNPCBtnDelivery':
+            case 'NPCDeliveryNote':
+                new QuestNoteNPCBtnDelivery(note);
                 break;
             case 'QuestNoteNPCCar':
                 break;
@@ -311,7 +312,7 @@ var ClientManager = (function () {
                 new QuestNoteNPCBtnKiller(note);
                 break;
             default:
-                console.warn('Неопределён тип ноты:', data.cls)
+                console.warn('Неопределён тип ноты:', note.cls)
         }
     };
 

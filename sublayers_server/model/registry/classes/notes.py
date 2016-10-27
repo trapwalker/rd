@@ -57,22 +57,8 @@ class NPCPageNote(Note):
     )
 
 
-class DeliveryItem(Subdoc):
-    count = IntField(default=0, caption=u"Количество данного типа товара", tags='client')
-    item = UniReferenceField(
-        reference_document_type='sublayers_server.model.registry.classes.item.Item',
-        tags='client',
-        caption=u"Необходимый итем",
-    )
-
-
-class DeliveryNote(NPCPageNote):
-    delivery_items = ListField(
-        base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem),
-        caption=u'Список итемов',
-        default=list,
-        tags='client',
-    )
+class NPCDeliveryNote(NPCPageNote):
+    pass
 
 
 class NPCWantedNote(NPCPageNote):

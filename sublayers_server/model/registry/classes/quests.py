@@ -197,6 +197,7 @@ class QuestState(Root):
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
+
 class Quest(Root):
     __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context', '_error']
     first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
@@ -499,5 +500,49 @@ class KillerQuest(Quest):
         d.update(
             # todo: photo url send
             victims=[dict(name=agent.login, photo='', profile_id=agent.profile_id) for agent in self.victims],
+        )
+        return d
+
+
+class DeliveryItem(Subdoc):
+    count = IntField(default=0, caption=u"Количество данного типа товара", tags='client')
+    item = UniReferenceField(
+        reference_document_type='sublayers_server.model.registry.classes.item.Item',
+        tags='client',
+        caption=u"Необходимый итем",
+    )
+
+
+class DeliveryQuest(Quest):
+    recipient_list = ListField(
+        default=[],
+        caption=u"Список возможных получателей доставки",
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.Institution',),
+        reinst=True,
+    )
+    recipient = UniReferenceField(tags='client', caption=u'Получатель доставки')
+
+    delivery_set_list = ListField(
+        default=[],
+        caption=u"Список возможных комплектов для доставки",
+        base_field=ListField(
+            default=[],
+            caption=u"Список возможных наборов итемов для доставки",
+            base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem,),
+            reinst=True,
+        ),
+        reinst=True,
+    )
+    delivery_set = ListField(
+        default=[],
+        caption=u"Список итемов для доставки",
+        base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem,),
+        reinst=True,
+    ),
+
+    def as_client_dict(self):
+        d = super(DeliveryQuest, self).as_client_dict()
+        d.update(
+            delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
         )
         return d
