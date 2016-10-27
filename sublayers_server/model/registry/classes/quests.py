@@ -211,6 +211,8 @@ class Quest(Root):
 
     on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
+    on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
+        стартового состояния. Любое исключение в скрипте отменяет принятие квеста. Исключение Cancel тихо отменяет.''')
     caption     = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
     text        = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
     text_short  = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
@@ -336,7 +338,43 @@ class Quest(Root):
         if agent:
             self.agent = agent
 
-        log.debug('QUEST {self} is started by {agent}'.format(**locals()))
+        code_text = self.on_start
+        if not code_text:
+            return
+
+        # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
+        fn = '{uri}#.{attr}'.format(uri=self.node_hash(), attr='on_start')
+        try:
+            code = script_compile(code_text, fn)
+        except SyntaxError as e:
+            log.error('Syntax error in quest handler.')
+            raise e  # todo: Подавить эту ошибку, чтобы сервер не падал
+
+        time = kw.pop('time', event and event.time)
+        self.local_context.update(
+            event=event,
+            agent=self.agent,
+            Cancel=unicode_args_substitution(Cancel, self._template_render),
+            time=time,
+            **kw
+        )
+        try:
+            exec code in self.global_context, self.local_context
+        except Cancel as e:
+            log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
+            return False
+        except Exception as e:
+            log.exception('Runtime error in quest handler `on_start`.')
+            self._set_error_status('on_start', event, e)
+            return False
+            #raise e
+        else:
+            log.info('Quest starting accepted: %s', self)
+            return True
+        finally:
+            del self.local_context
+
+        log.debug('QUEST is started {self} by {agent}'.format(**locals()))
         if self.agent:
             self.agent.quests_unstarted.remove(self)
             self.agent.quests_active.append(self)
@@ -512,6 +550,10 @@ class DeliveryItem(Subdoc):
         caption=u"Необходимый итем",
     )
 
+    def as_client_dict(self):
+        d = super(DeliveryItem, self).as_client_dict()
+        return d
+
 
 class DeliveryQuest(Quest):
     recipient_list = ListField(
@@ -528,7 +570,7 @@ class DeliveryQuest(Quest):
         base_field=ListField(
             default=[],
             caption=u"Список возможных наборов итемов для доставки",
-            base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem,),
+            base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem, reinst=True,),
             reinst=True,
         ),
         reinst=True,
@@ -536,7 +578,7 @@ class DeliveryQuest(Quest):
     delivery_set = ListField(
         default=[],
         caption=u"Список итемов для доставки",
-        base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem,),
+        base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem, reinst=True,),
         reinst=True,
     ),
 
