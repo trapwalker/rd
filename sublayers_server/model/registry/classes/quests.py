@@ -339,40 +339,38 @@ class Quest(Root):
             self.agent = agent
 
         code_text = self.on_start
-        if not code_text:
-            return
+        if code_text:  # todo: ##refactoring
+            # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
+            fn = '{uri}#.{attr}'.format(uri=self.node_hash(), attr='on_start')
+            try:
+                code = script_compile(code_text, fn)
+            except SyntaxError as e:
+                log.error('Syntax error in quest handler.')
+                raise e  # todo: Подавить эту ошибку, чтобы сервер не падал
 
-        # todo: Реализовать механизм получения URI места декларации конкретного значения атрибута (учет наследования)
-        fn = '{uri}#.{attr}'.format(uri=self.node_hash(), attr='on_start')
-        try:
-            code = script_compile(code_text, fn)
-        except SyntaxError as e:
-            log.error('Syntax error in quest handler.')
-            raise e  # todo: Подавить эту ошибку, чтобы сервер не падал
-
-        time = kw.pop('time', event and event.time)
-        self.local_context.update(
-            event=event,
-            agent=self.agent,
-            Cancel=unicode_args_substitution(Cancel, self._template_render),
-            time=time,
-            **kw
-        )
-        try:
-            exec code in self.global_context, self.local_context
-        except Cancel as e:
-            log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
-            return False
-        except Exception as e:
-            log.exception('Runtime error in quest handler `on_start`.')
-            self._set_error_status('on_start', event, e)
-            return False
-            #raise e
-        else:
-            log.info('Quest starting accepted: %s', self)
-            return True
-        finally:
-            del self.local_context
+            time = kw.pop('time', event and event.time)
+            self.local_context.update(
+                event=event,
+                agent=self.agent,
+                Cancel=unicode_args_substitution(Cancel, self._template_render),
+                time=time,
+                **kw
+            )
+            try:
+                exec code in self.global_context, self.local_context
+            except Cancel as e:
+                log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
+                return False
+            except Exception as e:
+                log.exception('Runtime error in quest handler `on_start`.')
+                self._set_error_status('on_start', event, e)
+                return False
+                #raise e
+            else:
+                log.info('Quest starting accepted: %s', self)
+                return True
+            finally:
+                del self.local_context
 
         log.debug('QUEST is started {self} by {agent}'.format(**locals()))
         if self.agent:
