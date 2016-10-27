@@ -394,6 +394,7 @@ class Quest(Root):
         old_state_id = self.current_state
         old_state = self.state
 
+        # Мы можем переходить в то же состояние в котором уже находимся. Это нормально. Все так делают.
         # if new_state_id == old_state_id:
         #     return
 
