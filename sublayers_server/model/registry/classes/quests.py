@@ -16,6 +16,7 @@ from sublayers_server.model.registry.odm.fields import (
 )
 
 from functools import partial, wraps
+import random
 
 
 def unicode_args_substitution(func, template_renderer, **kw_dict):
@@ -374,6 +375,7 @@ class Quest(Root):
             quest=self,
             agent=self.agent,
             log=lambda template, **kw: log.debug(self._template_render(template, **kw) or True),
+            random=random,
         )
         ctx.update(quest_events.ALL)  # Вся коллекция квестовых классов подмешивается в глобальный контекст
         ctx.update(notes.ALL)         # Вся коллекция note-классов подмешивается в глобальный контекст
