@@ -29,6 +29,7 @@ from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
+from sublayers_server.model.quest_events import OnNote
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -810,9 +811,22 @@ class AgentAPI(API):
     # Квесты
 
     @public_method
-    def quest_note_action(self, note_id, note_result):
-        log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, note_id, note_result)
+    def quest_note_action(self, uid, result):
+        log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
+        note = self.agent.example.get_note(uid)
+        if not note:
+            log.warning('Note #{} is not found'.format(uid))
+            return
+
+        server = self.agent.server
+
+        for q in self.agent.example.quests_active:
+            OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result).post()
+
+    @public_method
+    def quest_activate(self, quest_uid):
+        self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
 
     # Запрос инфы о другом игроке
 
@@ -872,8 +886,3 @@ class AgentAPI(API):
                 self.update_agent_api(time=event.time + 0.1)
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
-
-    @public_method
-    def quest_activate(self, quest_uid):
-        self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
-

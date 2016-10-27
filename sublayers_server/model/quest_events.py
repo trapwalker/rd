@@ -22,7 +22,13 @@ class QuestEvent(Event):
         self.quest.do_event(event=self)
 
 
-class OnNote(QuestEvent): pass
+class OnNote(QuestEvent):
+    def __init__(self, note_uid, result=None, **kw):
+        super(OnNote, self).__init__(**kw)
+        self.note_uid = note_uid
+        self.result = result
+
+
 class OnDie(QuestEvent): pass
 
 class NPCEvent(QuestEvent): pass
