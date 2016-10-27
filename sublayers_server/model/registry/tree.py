@@ -276,7 +276,7 @@ class Node(Doc):
     #     else:
     #         super(Node, self)._instantiaite_field(new_instance, field, name)
 
-    def instantiate(self, name=None, by_uri=None, **kw):
+    def instantiate(self, name=None, **kw):
         # assert self.abstract, "Can't instantiate abstract object: {}".format(self)
         params = {}
         if self.uri:
@@ -284,9 +284,6 @@ class Node(Doc):
         else:
             parent = self._values.get('parent', None)
             params.update(self._values)
-
-        if by_uri:
-            params.update(by_uri.params)
 
         fixture_default = self.__class__.fixtured.default
         fixtured = kw.pop('fixtured', fixture_default() if isinstance(fixture_default, Callable) else fixture_default)
