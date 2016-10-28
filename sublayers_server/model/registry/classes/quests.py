@@ -12,7 +12,7 @@ from sublayers_server.model.events import event_deco
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField,
+    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField
 )
 
 from functools import partial, wraps
@@ -81,6 +81,19 @@ class LogRecord(Subdoc):
     def __init__(self, quest=None, **kw):
         quest_uid = kw.pop('quest_uid', None) or quest and quest.uid
         super(LogRecord, self).__init__(quest_uid=quest_uid, **kw)
+
+
+class QuestRange(Subdoc):
+    min = FloatField(doc=u"Минимальное значение генерации")
+    max = FloatField(doc=u"Максимальное значение генерации")
+
+    def __init__(self, **kw):
+        super(QuestRange, self).__init__(**kw)
+        self.min, self.max = min(self.max, self.min), max(self.max, self.min)
+
+    def get_random_int(self):
+        int_max, int_min = int(self.max), int(self.min)
+        return random.randint(int_min, int_max)
 
 
 class QuestState(Root):
@@ -231,12 +244,34 @@ class Quest(Root):
         caption=u"Журнал квеста",
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
-    reward_money = FloatField(caption=u'Сумма денежной награды')
+    total_reward_money = FloatField(caption=u'Общая сумма награды в нукойнах')
+    karma_coef = FloatField(caption=u'Часть кармы от общей награды')
+    money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
+    reward_money = FloatField(caption=u'Сумма денежной награды', tags='client')
     reward_karma = FloatField(caption=u'Величина кармической награды')
     reward_items = ListField(
-        caption=u"Награда, выраженная в предметах",
+        default=[],
+        caption=u"Список итемов награды",
         base_field=EmbeddedDocumentField(
             embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+            caption=u"Итем для награды",
+            reinst=True,
+            tags='client',
+        ),
+        reinst=True,
+        tags='client',
+    )
+    reward_items_list = ListField(
+        default=[],
+        caption=u"Список возможных комплектов для награды",
+        base_field=ListField(
+            default=[],
+            caption=u"Список возможных наборов итемов для награды",
+            base_field=EmbeddedDocumentField(
+                embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+                caption=u"Необходимый итем",
+                reinst=True,
+            ),
             reinst=True,
         ),
         reinst=True,
@@ -534,6 +569,19 @@ class Quest(Root):
         if self.agent._agent_model:
             messages.NPCReplicaMessage(agent=self.agent._agent_model, npc=npc, replica=replica, time=event.time).post()
 
+    def generate_reward(self):
+        self.reward_money = self.total_reward_money * self.money_coef
+        self.reward_karma = self.total_reward_money * self.karma_coef / 1000.
+
+        if len(self.reward_items_list) > 0:
+            self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
+
+    def give_reward(self, event):
+        if not self.give_items(items=self.reward_items, event=event):
+            return False
+        self.agent.set_balance(time=event.time, delta=self.reward_money)
+        self.agent.set_karma(time=event.time, dvalue=self.reward_karma)
+        return True
 
 
 class QuestUpdateMessage(messages.Message):
@@ -569,10 +617,18 @@ class QuestLogMessage(messages.Message):
 
 
 class KillerQuest(Quest):
+    unique_victims = BooleanField(caption=u'Должны ли быть жертвы уникальными')
+    price_victim = IntField(caption=u'Цена одной жертвы в нукойнах')
+    count_to_kill_range = EmbeddedDocumentField(
+                embedded_document_type=QuestRange,
+                caption=u"Диапазон количетсва жертв",
+                reinst=True,
+            )
     count_to_kill = IntField(caption=u'Количество убийств', tags='client')
+    karma_victims = IntField(caption=u'Максимальное значение кармы жертвы')
     victims = ListField(
         default=[],
-        caption=u"Награда, выраженная в предметах",
+        caption=u"Список жертв (заполняется динамически)",
         base_field=UniReferenceField(
             reference_document_type='sublayers_server.model.registry.classes.agents.Agent',
         ),

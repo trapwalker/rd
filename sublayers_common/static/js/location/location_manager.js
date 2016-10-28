@@ -923,7 +923,7 @@ var LocationPlaceBuilding = (function (_super) {
         }
 
         this.set_buttons();
-        this.set_header_text();
+        this.set_header_text(this.selected_quest ? this.selected_quest.npc_reward_text : null);
     };
 
     return LocationPlaceBuilding;

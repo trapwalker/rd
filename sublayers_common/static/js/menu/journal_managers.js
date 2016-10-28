@@ -255,7 +255,7 @@ var QuestJournalManager = (function () {
         var jq_quest_block = $(
             '<div class="building-quest-list-item">' +
                 '<div class="building-quest-list-item-caption">' + quest.caption + '</div>' +
-                '<div class="building-quest-list-item-lvl">Уровень: ' + quest.lvl + '</div>' +
+                '<div class="building-quest-list-item-lvl">Уровень: ' + quest.level + '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text + '</div>' +
                 '<div class="building-quest-list-item-time">00:00:00</div>' +
             '</div>');
@@ -306,6 +306,12 @@ var QuestJournalManager = (function () {
                     build.resizeInventory(jq_build_quest_list);
                 }
             }
+
+            // Обновление текста награды
+            quest.npc_reward_text = 'Награда: ' + quest.reward_money + 'NC';
+            for (var i=0; i < quest.reward_items.length; i++)
+                quest.npc_reward_text = quest.npc_reward_text + ', ' + quest.reward_items[i].title + ' &times; ' + quest.reward_items[i].amount;
+            quest.npc_reward_text += '.';
         }
 
         // Вывод квеста в журнал (квесты NPC в журнал не выводяться)
@@ -419,6 +425,7 @@ var QuestJournalManager = (function () {
             if (this.quests.hasOwnProperty(key))
                 this.delQuest(key);
     };
+
 
     return QuestJournalManager;
 })();
