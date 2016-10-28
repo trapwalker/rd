@@ -368,16 +368,17 @@ class Quest(Root):
                 #raise e
             else:
                 log.info('Quest starting accepted: %s', self)
+
+                log.debug('QUEST is started {self} by {agent}'.format(**locals()))
+                if self.agent:
+                    self.agent.quests_unstarted.remove(self)
+                    self.agent.quests_active.append(self)
+
+                self.set_state(new_state=self.first_state, event=event)
                 return True
+
             finally:
                 del self.local_context
-
-        log.debug('QUEST is started {self} by {agent}'.format(**locals()))
-        if self.agent:
-            self.agent.quests_unstarted.remove(self)
-            self.agent.quests_active.append(self)
-
-        self.set_state(new_state=self.first_state, event=event)
 
     def set_state(self, new_state, event):
         assert new_state
