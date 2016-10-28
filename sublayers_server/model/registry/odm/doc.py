@@ -190,7 +190,7 @@ class AbstractDocument(Document):
                         if proto:
                             from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
                             if isinstance(proto, Node):
-                                callback(proto.instantiate(**(uri and uri.params or {})))  #, embedded=True))
+                                callback(proto.instantiate(**(uri and dict(uri.params) or {})))  #, embedded=True))
                             else:
                                 callback(proto)
                                 log.warning('Doc.find_embeded_field: prototype of embeded field is not Node: %r!', proto)
