@@ -572,13 +572,6 @@ class Quest(Root):
         if len(self.reward_items_list) > 0:
             self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
 
-    def give_reward(self, event):
-        if not self.give_items(items=self.reward_items, event=event):
-            return False
-        self.agent.set_balance(time=event.time, delta=self.reward_money)
-        self.agent.set_karma(time=event.time, dvalue=self.reward_karma)
-        return True
-
 
 class QuestUpdateMessage(messages.Message):
     def __init__(self, quest, **kw):
@@ -648,7 +641,7 @@ class DeliveryQuest(Quest):
         reinst=True,
     )
     recipient = UniReferenceField(tags='client', caption=u'Получатель доставки')
-
+    total_delivery_money_coef = FloatField(caption=u'Множитель общей стоимости награды за квест от стоимости доставляемого товара')
     delivery_set_list = ListField(
         default=[],
         caption=u"Список возможных комплектов для доставки",
