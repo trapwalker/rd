@@ -52,9 +52,10 @@ class Item(Root):
 
     def instantiate(self, **kw):
         inst = super(Item, self).instantiate(**kw)
-        if self.amount > self.stack_size:
-            log.warning('Item stack owerflow truncated: {self.amount}>{self.stack_size} in {self}'.format(self=self))
-            self.amount = self.stack_size
+        if inst.amount > inst.stack_size:
+            log.warning('Item stack owerflow truncated: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=inst))
+            inst.amount = inst.stack_size
+        return inst
 
     # def __str__(self):
     #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
