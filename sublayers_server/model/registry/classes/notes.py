@@ -61,6 +61,10 @@ class NPCDeliveryNote(NPCPageNote):
     pass
 
 
+class NPCRewardItemsNote(NPCPageNote):
+    pass
+
+
 class NPCWantedNote(NPCPageNote):
     pass
 

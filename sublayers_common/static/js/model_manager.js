@@ -311,6 +311,9 @@ var ClientManager = (function () {
             case 'NPCWantedNote':
                 new QuestNoteNPCBtnKiller(note);
                 break;
+            case 'NPCRewardItemsNote':
+                new QuestNoteNPCRewardItems(note);
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }

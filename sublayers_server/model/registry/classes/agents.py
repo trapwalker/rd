@@ -25,7 +25,7 @@ class RelationshipRec(Subdoc):
     rel_index = FloatField(default=0, caption=u"Накапливаемое отношение")
 
     def get_index_norm(self):
-        return min(max(self.rel_index / 100, -1), 1)
+        return min(max(self.rel_index / 100.0, -1), 1)
 
     def set_index(self, d_index):
         self.rel_index = min(max(self.rel_index + d_index, -100), 100)
@@ -235,8 +235,13 @@ class Agent(Root):
         return rel_rec.get_relationship(agent=self)
 
     def set_relationship(self, time, npc, dvalue):
-        relation = self.get_relationship(npc)
-        if dvalue is not None:
+        self.get_relationship(npc)
+        relation = None
+        for relation_rec in self.npc_rel_list:
+            if npc is relation_rec.npc:
+                relation = relation_rec
+                break
+        if dvalue is not None and relation is not None:
             old_norm_index = relation.get_index_norm()
             relation.set_index(dvalue)
             if self._agent_model and old_norm_index != relation.get_index_norm():
