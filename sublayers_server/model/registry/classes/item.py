@@ -18,7 +18,7 @@ from sublayers_server.model.registry.odm.fields import (
 class Item(Root):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
-    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
+    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке', tags='client')
     stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags='client')
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags='client')

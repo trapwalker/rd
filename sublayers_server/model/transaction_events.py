@@ -869,7 +869,7 @@ class TransactionTraderApply(TransactionTownNPC):
             tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, price.item.title, str(int(item_buy_price))))
 
             # Добавляем итемы в инвентарь игрока
-            ex_car.inventory.add(item=price.item, count=table_rec['count'])
+            ex_car.inventory.add_item(item=price.item, count=table_rec['count'])
             total_items_buy_sale.append((price.item, -table_rec['count']))
         buy_price = math.ceil(buy_price)
 
