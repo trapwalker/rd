@@ -70,7 +70,7 @@ def test_registry():
 
     print('\n# Test quest integration #')
 
-    v = reg['institutions/trader/bob_ferolito'].quests[0]
+    v = reg['institutions/trader/bob_ferolito'].quests[2]
     v1 = v.instantiate()
     print('generate:', v1.generate(agent=u2, event=None))
     u2.add_quest(quest=v1, time=0)

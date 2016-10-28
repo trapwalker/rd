@@ -338,7 +338,7 @@ class Agent(Root):
             log.error('Trying to start unknown quest by uid %r. Agent: %s', quest_uid, self)
             return
 
-        quest.start(agent=self, server=server, time=time)
+        quest.start(server=server, time=time)
 
     def on_event(self, event, cls=quest_events.QuestEvent, **kw):
         for q in self.quests_active:

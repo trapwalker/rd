@@ -322,9 +322,8 @@ class Quest(Root):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def generate(self, agent, event, **kw):
+    def generate(self, event, **kw):
         """
-        :param agent: sublayers_server.model.registry.classes.agents.Agent
         :param event: sublayers_server.model.events.Event
         """
         code_text = self.on_generate
@@ -342,7 +341,7 @@ class Quest(Root):
         time = kw.pop('time', event and event.time)
         self.local_context.update(
             event=event,
-            agent=agent,
+            agent=self.agent,
             Cancel=unicode_args_substitution(Cancel, self._template_render),
             time=time,
             **kw
@@ -366,12 +365,9 @@ class Quest(Root):
     @event_deco
     def start(self, event, agent=None, **kw):
         """
-        :param agent: sublayers_server.model.registry.classes.agents.Agent
         :param event: sublayers_server.model.events.Event
         """
         assert not self.abstract
-        if agent:
-            self.agent = agent
 
         code_text = self.on_start
         if code_text:  # todo: ##refactoring
