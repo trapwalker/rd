@@ -190,7 +190,21 @@ class AbstractDocument(Document):
                         if proto:
                             from sublayers_server.model.registry.tree import Node  # todo: Раскостылить
                             if isinstance(proto, Node):
-                                callback(proto.instantiate(**(uri and dict(uri.params) or {})))  #, embedded=True))
+
+                                # Подготовка параметров, поступающих через URI
+                                uri_params = uri and dict(uri.params) or {}
+                                for key, value in uri_params.items():
+                                    field = proto._fields.get(key)
+                                    # todo: URI encoding decode
+                                    if field:
+                                        try:
+                                            uri_params[key] = field.from_son(value)
+                                        except Exception as e:
+                                            log.exception(
+                                                "Can't convert URI param {key}={value!r}: {uri}".format(**locals())
+                                            )
+
+                                callback(proto.instantiate(**uri_params))  #, embedded=True))
                             else:
                                 callback(proto)
                                 log.warning('Doc.find_embeded_field: prototype of embeded field is not Node: %r!', proto)
