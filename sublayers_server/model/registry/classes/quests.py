@@ -3,12 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
+import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes import notes
 from sublayers_server.model.registry.tree import Root
 from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.events import event_deco
-from sublayers_server.model.messages import Message
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
@@ -489,8 +489,54 @@ class Quest(Root):
         self._go_state_name = new_state
         return True
 
+    def can_give_items(self, items, event):
+        if not self.agent.car:
+            return False
+        if self.agent._agent_model:
+            self.agent._agent_model.inventory.save_to_example(time=event.time)
+        return len(items) <= (self.agent.car.inventory.size - len(self.agent.car.inventory.items))
 
-class QuestUpdateMessage(Message):
+    def give_items(self, items, event):
+        if not self.can_give_items(items=items, event=event):
+            return False
+        for item in items:
+            self.agent.car.inventory.items.append(item)
+        if self.agent._agent_model:
+            self.agent._agent_model.reload_inventory(time=event.time, save=False)
+        return True
+
+    def can_take_items(self, items, event):
+        if not self.agent.car:
+            return False
+
+        if self.agent._agent_model:
+            self.agent._agent_model.inventory.save_to_example(time=event.time)
+
+        assortment = self.agent.car.inventory.total_item_type_info()
+        for item in items:
+            if assortment.get(item.node_hash(), None) is None:
+                return False
+            assortment[item.node_hash()] -= item.amount
+            if assortment[item.node_hash()] < 0:
+                return False
+        return True
+
+    def take_items(self, items, event):
+        if not self.can_take_items(items=items, event=event):
+            return False
+        for item in items:
+            self.agent.car.inventory.del_item(item=item, count=item.amount)
+        if self.agent._agent_model:
+            self.agent._agent_model.reload_inventory(time=event.time, save=False)
+        return True
+
+    def npc_replica(self, npc, replica, event):
+        if self.agent._agent_model:
+            messages.NPCReplicaMessage(agent=self.agent._agent_model, npc=npc, replica=replica, time=event.time).post()
+
+
+
+class QuestUpdateMessage(messages.Message):
     def __init__(self, quest, **kw):
         super(QuestUpdateMessage, self).__init__(**kw)
         self.quest = quest  # todo: weakref #refactor
@@ -509,7 +555,7 @@ class QuestAddMessage(QuestUpdateMessage):
     pass
 
 
-class QuestLogMessage(Message):
+class QuestLogMessage(messages.Message):
     def __init__(self, event_record, **kw):
         super(QuestLogMessage, self).__init__(**kw)
         self.event_record = event_record  # todo: weakref #refactor
@@ -542,19 +588,6 @@ class KillerQuest(Quest):
         return d
 
 
-class DeliveryItem(Subdoc):
-    count = IntField(default=0, caption=u"Количество данного типа товара", tags='client')
-    item = UniReferenceField(
-        reference_document_type='sublayers_server.model.registry.classes.item.Item',
-        tags='client',
-        caption=u"Необходимый итем",
-    )
-
-    def as_client_dict(self):
-        d = super(DeliveryItem, self).as_client_dict()
-        return d
-
-
 class DeliveryQuest(Quest):
     recipient_list = ListField(
         default=[],
@@ -570,7 +603,12 @@ class DeliveryQuest(Quest):
         base_field=ListField(
             default=[],
             caption=u"Список возможных наборов итемов для доставки",
-            base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem, reinst=True,),
+            base_field=EmbeddedDocumentField(
+                embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+                caption=u"Необходимый итем",
+                reinst=True,
+                tags='client',
+            ),
             reinst=True,
         ),
         reinst=True,
@@ -578,7 +616,12 @@ class DeliveryQuest(Quest):
     delivery_set = ListField(
         default=[],
         caption=u"Список итемов для доставки",
-        base_field=EmbeddedDocumentField(embedded_document_type=DeliveryItem, reinst=True,),
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+            caption=u"Необходимый итем",
+            reinst=True,
+            tags='client',
+        ),
         reinst=True,
     ),
 

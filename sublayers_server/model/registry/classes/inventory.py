@@ -54,7 +54,7 @@ class Inventory(Subdoc):
                 new_items.append(add_item)
         self.items = new_items
 
-    def add(self, item, count):
+    def add_item(self, item, count):
         for add_item in self.items:
             if (add_item.amount < add_item.stack_size) and (add_item.node_hash() == item.node_hash()):
                 d_amount = min((add_item.stack_size - add_item.amount), count)
@@ -66,6 +66,21 @@ class Inventory(Subdoc):
             d_amount = min(item.stack_size, count)
             self.items.append(item.instantiate(amount=d_amount))
             count -= d_amount
+
+    def del_item(self, item, count):
+        items = self.items
+        for del_item in items:
+            if del_item.node_hash() == item.node_hash():
+                d_amount = min(del_item.amount, count)
+                del_item.amount -= d_amount
+                count -= d_amount
+                if count == 0:
+                    break
+        self.items = []
+        for add_item in items:
+            if add_item.amount > 0:
+                self.items.append(add_item)
+        return count == 0
     
     def placing(self):
         u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
@@ -128,7 +143,6 @@ class Inventory(Subdoc):
             incomings=incomings,
             outgoings=outgoings
         )
-
 
 
 class InventoryField(EmbeddedDocumentField):

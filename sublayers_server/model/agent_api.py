@@ -814,6 +814,8 @@ class AgentAPI(API):
     def quest_note_action(self, uid, result):
         log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
+        uid = UUID(uid)
+
         note = self.agent.example.get_note(uid)
         if not note:
             log.warning('Note #{} is not found'.format(uid))
