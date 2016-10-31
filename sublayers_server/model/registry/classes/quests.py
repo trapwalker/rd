@@ -659,7 +659,6 @@ class DeliveryQuest(Quest):
         reinst=True,
     )
     delivery_set = ListField(
-        default=[],
         caption=u"Список итемов для доставки",
         base_field=EmbeddedDocumentField(
             embedded_document_type='sublayers_server.model.registry.classes.item.Item',
@@ -673,6 +672,7 @@ class DeliveryQuest(Quest):
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()
         d.update(
-            delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
+            #delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
+            delivery_set=items,
         )
         return d
