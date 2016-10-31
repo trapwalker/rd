@@ -672,7 +672,6 @@ class DeliveryQuest(Quest):
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()
         d.update(
-            #delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
-            delivery_set=items,
+            delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
         )
         return d
