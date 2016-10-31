@@ -244,7 +244,6 @@ class Trader(Institution):
         current_ancestor_lvl = None
         for price in self.current_list:
             ancestor_lvl = item.get_ancestor_level(price.item)
-            ancestor_lvl = 2
             if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
                 current_price = price
                 current_ancestor_lvl = ancestor_lvl
