@@ -170,12 +170,20 @@
     <script src="{{ static_url('js/audio/audio_manager.js') }}"></script>
     <script src="{{ static_url('js/audio/site_html_audio_player.js') }}"></script>
 
+
+
+    <script src="{{ static_url('js/teaching/teaching.js') }}"></script>
+
     <script src="{{ static_url('js/view.js') }}"></script>
     <script src="{{ static_url('js/notes/quest_notes.js') }}"></script>
     <script src="{{ static_url('js/notes/delivery_note.js') }}"></script>
     <script src="{{ static_url('js/notes/car_note.js') }}"></script>
     <script src="{{ static_url('js/notes/killer_note.js') }}"></script>
     <script src="{{ static_url('js/notes/reward_items_note.js') }}"></script>
+
+    <script src="{{ static_url('js/teaching/teaching_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_hangar_note.js') }}"></script>
+
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location/location_manager.js') }}"></script>
     <script src="{{ static_url('js/location/location_place_menu.js') }}"></script>
@@ -265,6 +273,7 @@
 
     <div id="activeTownDivBack">
         <div id="activeTownDiv"></div>
+        <canvas id="townTeachingCanvas" width="1920" height="1080">1111</canvas>
     </div>
     <div style="display: none">
         <span id="settings_host_name">{{ host_name }}</span>

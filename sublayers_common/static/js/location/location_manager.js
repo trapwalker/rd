@@ -84,11 +84,14 @@ var LocationManager = (function () {
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
 
-        SetImageOnLoad(lasers_img, function (img) {
+        setTimeout(function(){
+            SetImageOnLoad(lasers_img, function (img) {
                 locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
                 locationManager.locations_canvas_effects['laser'].start();
             }
         );
+        }, 50);
+
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
@@ -125,6 +128,9 @@ var LocationManager = (function () {
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
+
+                // при попадании на ландшафт города нужно вызвать обновление teachingManager
+                teachingManager.redraw();
             }
         }
     };
@@ -566,6 +572,10 @@ var LocationPlace = (function () {
         this.set_panels();
         // Настроить речь NPC
         this.set_header_text();
+
+
+        // обновление менеджера обучения
+        teachingManager.redraw();
     };
 
     LocationPlace.prototype.on_deactivate = function () {
@@ -757,6 +767,9 @@ var LocationPlaceBuilding = (function (_super) {
 
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
+
+            // Выход на старт какого-то из скринов: нужно обновить teachingManager
+            teachingManager.redraw();
         }
         else {
             var note = this.get_active_note();
