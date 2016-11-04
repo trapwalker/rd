@@ -1,6 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import logging
+log = logging.getLogger(__name__)
+
 import six
 import motorengine.fields
 from bson.objectid import ObjectId
@@ -74,6 +77,8 @@ class UniReferenceField(ReferenceField): # todo: replace to mixed
         if reference_document_type is None:
             from sublayers_server.model.registry.odm import AbstractDocument
             reference_document_type = AbstractDocument
+            log.warning('Undefined reference_document_type of field')
+
         super(UniReferenceField, self).__init__(reference_document_type=reference_document_type, *args, **kw)
 
     def validate(self, value):

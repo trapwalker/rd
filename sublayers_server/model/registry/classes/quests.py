@@ -235,9 +235,12 @@ class Quest(Root):
     starttime   = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
     deadline    = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
-    hirer       = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста')
-    town        = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста')
-    agent       = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста')
+    hirer       = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста',
+                                    reference_document_type='sublayers_server.model.registry.classes.poi.Institution', )
+    town        = UniReferenceField(tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста',
+                                    reference_document_type='sublayers_server.model.registry.classes.poi.Town', )
+    agent       = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста',
+                                    reference_document_type='sublayers_server.model.registry.classes.agents.Agent', )
     history     = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=LogRecord, reinst=True),
         reinst=True,
@@ -609,10 +612,10 @@ class KillerQuest(Quest):
     unique_victims = BooleanField(caption=u'Должны ли быть жертвы уникальными')
     price_victim = IntField(caption=u'Цена одной жертвы в нукойнах')
     count_to_kill_range = EmbeddedDocumentField(
-                embedded_document_type=QuestRange,
-                caption=u"Диапазон количетсва жертв",
-                reinst=True,
-            )
+        embedded_document_type=QuestRange,
+        caption=u"Диапазон количетсва жертв",
+        reinst=True,
+    )
     count_to_kill = IntField(caption=u'Количество убийств', tags='client')
     karma_victims = IntField(caption=u'Максимальное значение кармы жертвы')
     victims = ListField(
@@ -637,16 +640,18 @@ class DeliveryQuest(Quest):
     recipient_list = ListField(
         default=[],
         caption=u"Список возможных получателей доставки",
-        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.Institution',),
+        base_field=UniReferenceField(
+            reference_document_type='sublayers_server.model.registry.classes.poi.Institution', ),
         reinst=True,
     )
-    recipient = UniReferenceField(tags='client', caption=u'Получатель доставки')
-    total_delivery_money_coef = FloatField(caption=u'Множитель общей стоимости награды за квест от стоимости доставляемого товара')
+    recipient = UniReferenceField(tags='client', caption=u'Получатель доставки',
+                                  reference_document_type='sublayers_server.model.registry.classes.poi.Institution', )
+    total_delivery_money_coef = FloatField(
+        caption=u'Множитель общей стоимости награды за квест от стоимости доставляемого товара')
     delivery_set_list = ListField(
         default=[],
         caption=u"Список возможных комплектов для доставки",
         base_field=ListField(
-            default=[],
             caption=u"Список возможных наборов итемов для доставки",
             base_field=EmbeddedDocumentField(
                 embedded_document_type='sublayers_server.model.registry.classes.item.Item',
@@ -671,7 +676,11 @@ class DeliveryQuest(Quest):
 
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()
+        items = []
+        for delivery_rec in self.delivery_set:
+            items.append(delivery_rec.as_client_dict())
+
         d.update(
-            delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
+            delivery_set=items,  # [delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
         )
         return d

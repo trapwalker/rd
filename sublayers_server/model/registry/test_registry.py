@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
 from sublayers_server.test_iolop import io_loop, start
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm.doc import _call_stat
 
@@ -70,14 +70,7 @@ def test_registry():
 
     print('\n# Test quest integration #')
 
-    v = reg['institutions/trader/bob_ferolito'].quests[2]
-    v1 = v.instantiate()
-    print('generate:', v1.generate(agent=u2, event=None))
-    u2.add_quest(quest=v1, time=0)
-
-    v2 = v.instantiate()
-    print('generate:', v2.generate(agent=u2, event=None))
-    #u2.add_quest(quest=v1, time=0)
+    
 
 
     
