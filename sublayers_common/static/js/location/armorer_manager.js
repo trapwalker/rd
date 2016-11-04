@@ -308,6 +308,10 @@ var LocationArmorerNPC = (function (_super) {
                 top_slot.append(itemDivTop);
                 side_slot.append(itemDivSide);
             }
+
+
+            // Вызвать обновление teachingManager
+            teachingManager.redraw();
         }
         else {
             // Позиция в инвентаре
@@ -408,6 +412,10 @@ var LocationArmorerNPC = (function (_super) {
         if (this.active_slot == slot_name) this.active_slot = null;
         else this.active_slot = slot_name;
         this.setEnableSector();
+
+        // Обновляем teachingManager
+        teachingManager.redraw();
+
         if (!this.items.hasOwnProperty(this.active_slot)) return;
         var item_rec = this.items[this.active_slot];
 
