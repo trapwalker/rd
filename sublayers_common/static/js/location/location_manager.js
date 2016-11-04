@@ -440,6 +440,10 @@ var LocationPanelInfo = (function () {
     LocationPanelInfo.prototype.show = function (options, window_name) {
         //console.log('LocationPanelInfo.prototype.show', options, window_name);
 
+        // Если обучение активно, то включить панели обучения
+        if (teachingManager.is_active())
+            return;
+
         // Выключить все панели в этом блоке
         if (this.jq_main_div)
             this.jq_main_div.find('.panel-info-item').css('display', 'none');

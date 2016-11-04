@@ -2,7 +2,7 @@
 
 var TeachingManager = (function(){
     function TeachingManager(){
-        this.active = true;
+        this.active = false;
 
         this.jq_canvas = $('#townTeachingCanvas');
 
@@ -12,6 +12,12 @@ var TeachingManager = (function(){
         canvas.height = 1080;
 
         this.active_note = null;
+
+        this.jq_panel_left = null;
+        this.jq_panel_right = null;
+
+        this.jq_panel_left_content = null;
+        this.jq_panel_right_content = null;
     }
 
 
@@ -22,11 +28,27 @@ var TeachingManager = (function(){
     TeachingManager.prototype.activate = function() {
         this.jq_canvas.css('display', 'block');
         this.active = true;
+
+        // Выключить все панели в городе
+        if (locationManager.panel_left.jq_main_div)
+            locationManager.panel_left.jq_main_div.find('.panel-info-item').css('display', 'none');
+        if (locationManager.panel_right.jq_main_div)
+            locationManager.panel_right.jq_main_div.find('.panel-info-item').css('display', 'none');
+        // Включить панели обучения
+        this.jq_panel_left = $('.panel-info-teaching-left').first();
+        this.jq_panel_right = $('.panel-info-teaching-right').first();
+        this.jq_panel_left_content = this.jq_panel_left.find('.panel-info-content');
+        this.jq_panel_right_content = this.jq_panel_right.find('.panel-info-content');
+        this.jq_panel_left.css('display', 'block');
+        this.jq_panel_right.css('display', 'block');
     };
 
     TeachingManager.prototype.deactivate = function() {
         this.jq_canvas.css('display', 'none');
         this.active = false;
+        // Выключить панели обучения
+        this.jq_panel_left.css('display', 'none');
+        this.jq_panel_right.css('display', 'none');
     };
 
     TeachingManager.prototype.update = function(note) {
@@ -49,6 +71,7 @@ var TeachingManager = (function(){
 
 
 function teachTest(aaa) {
+    teachingManager.activate();
     if (!aaa) {
         var note = new HangarTeachingNote({uid: 5555});
         teachingManager.update(note);

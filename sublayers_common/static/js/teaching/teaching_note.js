@@ -3,7 +3,7 @@ var TeachingNote = (function (_super) {
 
     function TeachingNote(options) {
         _super.call(this, options);
-        this.start_point = new Point(1420, 189)
+        this.start_point = new Point(1420, 189);
     }
 
 
@@ -45,15 +45,15 @@ var NavigateTeachingNote = (function (_super) {
         };
         this.back_btn_coord = new Point(1600, 615);
 
-        //this.needed_location = null;  // здесь должно быть здание или нпц из города
+        //this.needed_location = null;  // Р·РґРµСЃСЊ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ Р·РґР°РЅРёРµ РёР»Рё РЅРїС† РёР· РіРѕСЂРѕРґР°
     }
 
     NavigateTeachingNote.prototype.redraw = function() {
         if (this.needed_screen_name == locationManager.active_screen_name)
-            // Указать на кнопку назад
+            // РЈРєР°Р·Р°С‚СЊ РЅР° РєРЅРѕРїРєСѓ РЅР°Р·Р°Рґ
             this.draw_line(this.start_point, this.back_btn_coord);
         else
-            // Указать на кнопку переключения скрина
+            // РЈРєР°Р·Р°С‚СЊ РЅР° РєРЅРѕРїРєСѓ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃРєСЂРёРЅР°
             this.draw_line(this.start_point, this.screens_btn_coord[this.needed_screen_name]);
     };
 
