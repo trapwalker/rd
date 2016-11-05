@@ -1,9 +1,6 @@
 /*
 * Нота, суть которой привести игрока к нпц по продаже машин и купить машину.
-*
-* */
-
-
+*/
 
 var HangarTeachingNote = (function (_super) {
     __extends(HangarTeachingNote, _super);
@@ -21,17 +18,14 @@ var HangarTeachingNote = (function (_super) {
 
         this.inventory_coord = new Point(734, 701);
         this.buy_btn = new Point(325, 608);
-
-        //
-
     }
 
     HangarTeachingNote.prototype.redraw = function() {
         var active_place = locationManager.get_current_active_place();
         if (this.needed_screen_name != locationManager.active_screen_name || (active_place != this.needed_building && active_place != this.needed_npc && active_place != null)) {
             _super.prototype.redraw.call(this);
-            teachingManager.jq_panel_left_content.text('Вам нужно купить машину');
-            teachingManager.jq_panel_left_content.text('Зайдите в здание автодилера');
+            teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе города. Покидание города без оборудованного транспорта обречет вас на смерть от холода и отравления. Купите свой первый транспорт.');
+            teachingManager.jq_panel_right_content.text('Зайти к автодилеру чтобы купить ТС.');
             return;
         }
 
@@ -62,11 +56,7 @@ var HangarTeachingNote = (function (_super) {
             teachingManager.jq_panel_left_content.text('Нужно выбрать транспорт, цену за который сможет покрыть автокредит Нукойл.');
             teachingManager.jq_panel_right_content.text('Выберите подходящий транспорт.');
         }
-
-
     };
-
-
 
     return HangarTeachingNote;
 })(NavigateTeachingNote);

@@ -1,5 +1,3 @@
-
-
 var TeachingManager = (function(){
     function TeachingManager(){
         this.active = false;
@@ -19,7 +17,6 @@ var TeachingManager = (function(){
         this.jq_panel_left_content = null;
         this.jq_panel_right_content = null;
     }
-
 
     TeachingManager.prototype.is_active = function() {
         return this.active;
@@ -59,12 +56,9 @@ var TeachingManager = (function(){
 
     TeachingManager.prototype.redraw = function() {
         if (!this.is_active() || !this.active_note) return;
-
-        console.log('TeachingManager.prototype.redraw');
         this.context.clearRect(0, 0, 1920, 1080);
         this.active_note.redraw();
     };
-
 
     return TeachingManager;
 })();
@@ -82,5 +76,22 @@ function teachTest(aaa) {
     }
 }
 
+function teachNukoilTest() {
+    teachingManager.activate();
+    var note = new NukoilTeachingNote({uid: 19375324});
+    teachingManager.update(note);
+}
+
+function teachTrainerTest() {
+    teachingManager.activate();
+    var note = new TrainerTeachingNote({uid: 23453489});
+    teachingManager.update(note);
+}
+
+function teachJournalTest() {
+    teachingManager.activate();
+    var note = new JournalTeachingNote({uid: 67309456});
+    teachingManager.update(note);
+}
 
 var teachingManager;

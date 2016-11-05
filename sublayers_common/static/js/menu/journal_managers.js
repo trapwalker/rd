@@ -17,6 +17,9 @@ var JournalManager = (function () {
             $(this).addClass('active');
             journalManager.jq_main_div.find('.journal-page-block').css('display', 'none');
             journalManager.jq_main_div.find('.' + $(this).data('page_class')).css('display', 'block');
+
+            // Обновление менеджера обучения
+            teachingManager.redraw();
         });
         self.jq_main_div.find('.journal-page-button-block')[0].click();
 

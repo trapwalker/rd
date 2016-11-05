@@ -395,6 +395,9 @@ var LocationTrainerNPC = (function (_super) {
             else
                 skill.value -= d_val;
         }
+
+        // Обновление менеджера обучения
+        teachingManager.redraw();
     };
 
     LocationTrainerNPC.prototype.setPerk = function(perk_node_hash) {

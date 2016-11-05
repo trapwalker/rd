@@ -6,7 +6,6 @@ var TeachingNote = (function (_super) {
         this.start_point = new Point(1420, 189);
     }
 
-
     TeachingNote.prototype.draw_line = function(p1, p2) {
         var ctx = teachingManager.context;
         ctx.save();
@@ -25,7 +24,6 @@ var TeachingNote = (function (_super) {
         var p2 = getRadialRandomPoint(new Point(500, 500), 50);
         this.draw_line(p1, p2);
     };
-
 
     return TeachingNote;
 })(SimpleNote);
@@ -56,9 +54,6 @@ var NavigateTeachingNote = (function (_super) {
             // Указать на кнопку переключения скрина
             this.draw_line(this.start_point, this.screens_btn_coord[this.needed_screen_name]);
     };
-
-
-
 
     return NavigateTeachingNote;
 })(TeachingNote);
