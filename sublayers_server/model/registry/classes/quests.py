@@ -672,7 +672,7 @@ class DeliveryQuest(Quest):
             tags='client',
         ),
         reinst=True,
-    ),
+    )
 
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()
