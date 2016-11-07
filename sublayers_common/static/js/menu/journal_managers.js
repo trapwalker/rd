@@ -256,7 +256,7 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype._create_building_quest_block = function(quest) {
         var jq_quest_block = $(
-            '<div class="building-quest-list-item">' +
+            '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
                 '<div class="building-quest-list-item-caption">' + quest.caption + '</div>' +
                 '<div class="building-quest-list-item-lvl">Уровень: ' + quest.level + '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text + '</div>' +

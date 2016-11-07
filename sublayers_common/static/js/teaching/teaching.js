@@ -46,6 +46,10 @@ var TeachingManager = (function(){
         // Выключить панели обучения
         this.jq_panel_left.css('display', 'none');
         this.jq_panel_right.css('display', 'none');
+
+        // Нота должна удалиться
+        this.active_note.delete();
+        this.active_note = null;
     };
 
     TeachingManager.prototype.update = function(note) {
@@ -64,16 +68,10 @@ var TeachingManager = (function(){
 })();
 
 
-function teachTest(aaa) {
+function teachTest() {
     teachingManager.activate();
-    if (!aaa) {
-        var note = new HangarTeachingNote({uid: 5555});
-        teachingManager.update(note);
-    }
-    else {
-        var note = new HangarTeachingNote({uid: 6666});
-        teachingManager.update(note);
-    }
+    var note = new FinishQuestTeachingNote({uid: 5555});
+    teachingManager.update(note);
 }
 
 function teachNukoilTest() {

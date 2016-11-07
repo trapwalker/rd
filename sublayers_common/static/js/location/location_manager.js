@@ -842,7 +842,10 @@ var LocationPlaceBuilding = (function (_super) {
         $(this).addClass('active');
         self.jq_main_div.find('.building-center-page').css('display', 'none');
         self.jq_main_div.find('#' + page_id).css('display', 'block');
-        self.centralMenuReaction(page_id)
+        self.centralMenuReaction(page_id);
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
     };
 
     LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
@@ -941,6 +944,9 @@ var LocationPlaceBuilding = (function (_super) {
 
         this.set_buttons();
         this.set_header_text(this.selected_quest ? this.selected_quest.npc_reward_text : null);
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
     };
 
     return LocationPlaceBuilding;
