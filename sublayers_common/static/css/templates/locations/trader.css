@@ -84,3 +84,11 @@
     width: 50%;
     height: 100%;
 }
+
+
+.trader-filter-label {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+}

@@ -23,6 +23,14 @@ var LocationTraderNPC = (function (_super) {
         this.traderTableDiv = null;
 
         this.price_list = {};
+
+        this.filters = this.create_filters();
+
+        this.current_trader_filter_index = 0;
+        this.jq_trader_filter = this.jq_main_div.find('.trader-filter-label').first();
+        this.jq_trader_filter.click(this.click_trader_filter.bind(this));
+
+
         this.update();
     }
 
@@ -236,6 +244,10 @@ var LocationTraderNPC = (function (_super) {
         // Отрисовать верстку
         this._reDrawItemList(this.traderInvDiv, this.traderInv, this.traderInvCls);
         this._reDrawItemList(this.traderTableDiv, this.traderTable, this.traderTableCls);
+
+        // Установка фильтров
+        this.filter_apply(this.filters[this.current_trader_filter_index], this.traderInv, this.traderInvDiv);
+        this.jq_trader_filter.text(this.filters[this.current_trader_filter_index].name);
     };
 
     LocationTraderNPC.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
@@ -436,6 +448,40 @@ var LocationTraderNPC = (function (_super) {
         }
     };
 
+    LocationTraderNPC.prototype.filter_apply = function (filter, table, jq_table) {
+        //console.log('LocationTraderNPC.prototype.filter_apply', filter);
+        jq_table.find('.npcInventory-itemWrap').each(
+            function (index, element) {
+                var el = $(element);
+                var pos = el.data('pos');
+                var item = table[pos];
+                console.log(item);
+                if (filter.filter(item))
+                    el.css('display', 'block');
+                else
+                    el.css('display', 'none');
+            });
+    };
+
+    LocationTraderNPC.prototype.click_trader_filter = function () {
+        //console.log('LocationTraderNPC.prototype.click_trader_filter');
+        this.current_trader_filter_index = (this.current_trader_filter_index + 1) % this.filters.length;
+        var new_filter = this.filters[this.current_trader_filter_index];
+        this.filter_apply(new_filter, this.traderInv, this.traderInvDiv);
+        this.jq_trader_filter.text(new_filter.name);
+    };
+
+
+    LocationTraderNPC.prototype.create_filters = function () {
+        console.log('LocationTraderNPC.prototype.create_filters');
+        return [
+            new TraderAssortmentFilter('Все'),
+            new TraderAssortmentFilterTags('Оружие', ['armorer']),
+            new TraderAssortmentFilterTags('Тюнер', ['tuner']),
+            new TraderAssortmentFilterTags('Механик', ['mechanic'])
+        ];
+    };
+
     return LocationTraderNPC;
 })(LocationPlaceNPC);
 
@@ -459,3 +505,52 @@ var LocationBarmanNPC = (function (_super) {
 
     return LocationBarmanNPC;
 })(LocationTraderNPC);
+
+
+
+var TraderAssortmentFilter = (function () {
+    function TraderAssortmentFilter(name) {
+        this.name = name;
+    }
+    TraderAssortmentFilter.prototype.filter = function (example) {
+        return true;
+    };
+
+    return TraderAssortmentFilter;
+})();
+
+
+var TraderAssortmentFilterTags = (function (_super) {
+    __extends(TraderAssortmentFilterTags, _super);
+
+    function TraderAssortmentFilterTags(name, tags) {
+        this.name = name;
+        this.tags = tags || [];
+    }
+    TraderAssortmentFilterTags.prototype.filter = function (example) {
+        for (var i = 0; i < this.tags.length; i++)
+            if (example.tags.indexOf(this.tags[i]) < 0)
+                return false;
+        return true;
+    };
+
+    return TraderAssortmentFilterTags;
+})(TraderAssortmentFilter);
+
+
+var TraderAssortmentFilterTeaching = (function (_super) {
+    __extends(TraderAssortmentFilterTeaching, _super);
+
+    function TraderAssortmentFilterTeaching(name) {
+        this.name = name;
+    }
+    TraderAssortmentFilterTeaching.prototype.filter = function (example) {
+        //if (example.node_hash == )
+
+        return false;
+    };
+
+    return TraderAssortmentFilterTeaching;
+})(TraderAssortmentFilter);
+
+
