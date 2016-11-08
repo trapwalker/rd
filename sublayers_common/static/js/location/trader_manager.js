@@ -540,7 +540,7 @@ var TraderAssortmentFilterTags = (function (_super) {
     __extends(TraderAssortmentFilterTags, _super);
 
     function TraderAssortmentFilterTags(name, tags) {
-        this.name = name;
+        _super.call(this, name);
         this.tags = tags || [];
     }
     TraderAssortmentFilterTags.prototype.filter = function (example) {
@@ -552,21 +552,3 @@ var TraderAssortmentFilterTags = (function (_super) {
 
     return TraderAssortmentFilterTags;
 })(TraderAssortmentFilter);
-
-
-var TraderAssortmentFilterTeaching = (function (_super) {
-    __extends(TraderAssortmentFilterTeaching, _super);
-
-    function TraderAssortmentFilterTeaching(name) {
-        this.name = name;
-    }
-    TraderAssortmentFilterTeaching.prototype.filter = function (example) {
-        //if (example.node_hash == )
-
-        return false;
-    };
-
-    return TraderAssortmentFilterTeaching;
-})(TraderAssortmentFilter);
-
-

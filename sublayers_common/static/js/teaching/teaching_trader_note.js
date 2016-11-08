@@ -14,13 +14,13 @@ var TraderTeachingNote = (function (_super) {
         this.npc_coord = new Point(953, 658);
 
         this.buy_area = new Point(1260, 330);
-        this.buy_btn = new Point(325, 608);
+        this.buy_btn = new Point(295, 608);
+
+        this.filter = null;
     }
 
-    TraderTeachingNote.prototype.check_table = function() {
-        var table = this.needed_npc.traderTable;
-        console.log('table = ', table);
-        return table.length > 1;
+    TraderTeachingNote.prototype.check_table = function () {
+        return this.needed_npc.traderTable.length > 1;
     };
 
     TraderTeachingNote.prototype.redraw = function() {
@@ -51,6 +51,15 @@ var TraderTeachingNote = (function (_super) {
 
         if (active_place === this.needed_npc) {
             teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе торговца. Тут можно приобрести различные полезные вещи и продать ненужные.');
+
+            // Если не было добавлено обучающего списка, то добавить и переключить
+            if (! this.filter) {
+                this.filter = new TraderAssortmentFilterTags('Обучение', ['teaching']);
+                active_place.filters.push(this.filter);
+                active_place.current_trader_filter_index = active_place.filters.indexOf(this.filter);
+                active_place.filter_apply('trader', this.filter);
+            }
+
             if (this.check_table()) {
                 this.draw_line(this.start_point, this.buy_btn);
                 teachingManager.jq_panel_right_content.text('Нажмите кнопку <Подтвердить сделку>.');
@@ -60,6 +69,17 @@ var TraderTeachingNote = (function (_super) {
                 teachingManager.jq_panel_right_content.text('Найдите пулемет в колонке “Товары на продажу” и перекиньте его на столик обмена.');
             }
         }
+    };
+
+    TraderTeachingNote.prototype.delete = function() {
+        // Удалить фильтр
+        if (this.filter) {
+            var index = this.needed_npc.filters.indexOf(this.filter);
+            this.needed_npc.current_trader_filter_index = 0;
+            this.needed_npc.filter_apply('trader', this.needed_npc.filters[0]);
+            this.needed_npc.filters.splice(index, 1);
+        }
+        _super.prototype.delete.call(this);
     };
 
     return TraderTeachingNote;
