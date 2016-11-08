@@ -280,6 +280,14 @@ class Quest(Root):
         reinst=True,
     )
 
+    # @property
+    # def agent(self):
+    #     return self.__dict__.get('_agent')
+    #
+    # @agent.setter
+    # def agent(self, value):
+    #     self.__dict__['_agent'] = value
+
     def _set_error_status(self, handler, event, e):
         self._error = True
 
@@ -366,7 +374,7 @@ class Quest(Root):
             del self.local_context
 
     @event_deco
-    def start(self, event, agent=None, **kw):
+    def start(self, event, **kw):
         """
         :param event: sublayers_server.model.events.Event
         """
@@ -403,7 +411,7 @@ class Quest(Root):
             else:
                 log.info('Quest starting accepted: %s', self)
 
-                log.debug('QUEST is started {self} by {agent}'.format(**locals()))
+                log.debug('QUEST is started {self} by {self.agent}'.format(**locals()))
                 if self.agent:
                     self.agent.quests_unstarted.remove(self)
                     self.agent.quests_active.append(self)
