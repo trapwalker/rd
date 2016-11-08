@@ -28,8 +28,8 @@ var LocationTraderNPC = (function (_super) {
 
         this.current_trader_filter_index = 0;
         this.jq_trader_filter = this.jq_main_div.find('.trader-filter-label').first();
-        this.jq_trader_filter.click(this.click_trader_filter.bind(this));
-
+        this.current_player_filter_index = 0;
+        this.jq_player_filter = this.jq_main_div.find('.player-filter-label').first();
 
         this.update();
     }
@@ -154,6 +154,11 @@ var LocationTraderNPC = (function (_super) {
         // Отрисовать верстку
         this._reDrawItemList(this.playerInvDiv, this.playerInv, this.playerInvCls);
         this._reDrawItemList(this.playerTableDiv, this.playerTable, this.playerTableCls);
+
+        // Установка фильтров
+        if (this.filters) {
+            this.jq_player_filter.text(this.filters[this.current_player_filter_index].name);
+        }
     };
 
     LocationTraderNPC.prototype.updateTraderInv = function() {
@@ -246,14 +251,22 @@ var LocationTraderNPC = (function (_super) {
         this._reDrawItemList(this.traderTableDiv, this.traderTable, this.traderTableCls);
 
         // Установка фильтров
-        this.filter_apply(this.filters[this.current_trader_filter_index], this.traderInv, this.traderInvDiv);
-        this.jq_trader_filter.text(this.filters[this.current_trader_filter_index].name);
+        if (this.filters) {
+            this.jq_trader_filter.text(this.filters[this.current_trader_filter_index].name);
+        }
     };
 
     LocationTraderNPC.prototype._reDrawItemList = function(parentDiv, itemList, dropCls) {
         var self = this;
+        var filter = null;
+        if (this.filters) {
+            if (parentDiv == this.traderInvDiv) filter = this.filters[this.current_trader_filter_index];
+            if (parentDiv == this.playerInvDiv) filter = this.filters[this.current_player_filter_index];
+        }
+
         for(var i = 0; i < itemList.length; i++) {
             var example = itemList[i];
+            if (filter && !filter.filter(example)) continue;  // фильтрация!
             var count_str = example._trader_infinity ? '---' : example.count.toFixed(0);  // '&infin;'
             var itemDiv = $(
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
@@ -448,38 +461,39 @@ var LocationTraderNPC = (function (_super) {
         }
     };
 
-    LocationTraderNPC.prototype.filter_apply = function (filter, table, jq_table) {
+    LocationTraderNPC.prototype.filter_apply = function (type, filter) {
         //console.log('LocationTraderNPC.prototype.filter_apply', filter);
-        jq_table.find('.npcInventory-itemWrap').each(
-            function (index, element) {
-                var el = $(element);
-                var pos = el.data('pos');
-                var item = table[pos];
-                console.log(item);
-                if (filter.filter(item))
-                    el.css('display', 'block');
-                else
-                    el.css('display', 'none');
-            });
-    };
+        this[type+ 'InvDiv'].find('.npcInventory-itemWrap').remove();
+        this._reDrawItemList(this[type+ 'InvDiv'], this[type+ 'Inv'], this[type+ 'InvCls']);
+        this['jq_' + type + '_filter'].text(filter.name);
 
-    LocationTraderNPC.prototype.click_trader_filter = function () {
-        //console.log('LocationTraderNPC.prototype.click_trader_filter');
-        this.current_trader_filter_index = (this.current_trader_filter_index + 1) % this.filters.length;
-        var new_filter = this.filters[this.current_trader_filter_index];
-        this.filter_apply(new_filter, this.traderInv, this.traderInvDiv);
-        this.jq_trader_filter.text(new_filter.name);
     };
-
 
     LocationTraderNPC.prototype.create_filters = function () {
-        console.log('LocationTraderNPC.prototype.create_filters');
+        //console.log('LocationTraderNPC.prototype.create_filters');
+        // Вешаем эвенты на стрелочки
+        this.jq_main_div.find('.trader-filter-change-arrow').click(this.filter_click_arrow.bind(this));
         return [
             new TraderAssortmentFilter('Все'),
+            new TraderAssortmentFilterTags('Боеприпасы', ['ammo']),
             new TraderAssortmentFilterTags('Оружие', ['armorer']),
             new TraderAssortmentFilterTags('Тюнер', ['tuner']),
             new TraderAssortmentFilterTags('Механик', ['mechanic'])
         ];
+    };
+
+    LocationTraderNPC.prototype.filter_click_arrow = function (event) {
+        //console.log('LocationTraderNPC.prototype.filter_click_arrow', event);
+        if (this.filters) {
+            var target_inv = $(event.currentTarget).data('target_inv');
+            var d_value = $(event.currentTarget).data('d_val');
+            var str_name_of_index = 'current_' + target_inv + '_filter_index';
+            var new_filter_value = this[str_name_of_index] + d_value;
+            new_filter_value = new_filter_value < 0 ? this.filters.length + new_filter_value : new_filter_value;
+            this[str_name_of_index] = (new_filter_value) % this.filters.length;
+            var new_filter = this.filters[this[str_name_of_index]];
+            this.filter_apply(target_inv, new_filter);
+        }
     };
 
     return LocationTraderNPC;
@@ -502,6 +516,8 @@ var LocationBarmanNPC = (function (_super) {
     LocationBarmanNPC.prototype.apply = function() {
         //console.log('LocationBarmanNPC.prototype.apply');
     };
+
+    LocationBarmanNPC.prototype.create_filters = function () {};
 
     return LocationBarmanNPC;
 })(LocationTraderNPC);
