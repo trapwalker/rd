@@ -346,6 +346,11 @@ class Agent(Root):
 
         quest.start(server=server, time=time)
 
+    def get_quest(self, uid):
+        for q in self.quests:
+            if q.uid == uid:
+                return q
+
     def on_event(self, event, cls=quest_events.QuestEvent, **kw):
         for q in self.quests_active:
             cls(server=event.server, time=event.time, quest=q, **kw).post()

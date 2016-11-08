@@ -59,6 +59,8 @@ var JournalTeachingNote = (function (_super) {
             return;
         }
         // todo: тут сразу же завершить ноту т.к. больше делать нечего
+
+        model_manager.SendQuestNoteAction(this.uid, true);
     };
 
     return JournalTeachingNote;

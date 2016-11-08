@@ -314,6 +314,30 @@ var ClientManager = (function () {
             case 'NPCRewardItemsNote':
                 new QuestNoteNPCRewardItems(note);
                 break;
+            case 'HangarTeachingNote':
+                teachingManager.update(new HangarTeachingNote(note));
+                break;
+            case 'NukoilTeachingNote':
+                teachingManager.update(new NukoilTeachingNote(note));
+                break;
+            case 'TraderTeachingNote':
+                teachingManager.update(new TraderTeachingNote(note));
+                break;
+            case 'ArmorerTeachingNote':
+                teachingManager.update(new ArmorerTeachingNote(note));
+                break;
+            case 'GetQuestTeachingNote':
+                teachingManager.update(new GetQuestTeachingNote(note));
+                break;
+            case 'JournalTeachingNote':
+                teachingManager.update(new JournalTeachingNote(note));
+                break;
+            case 'FinishQuestTeachingNote':
+                teachingManager.update(new FinishQuestTeachingNote(note));
+                break;
+            case 'TrainerTeachingNote':
+                teachingManager.update(new TrainerTeachingNote(note));
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }

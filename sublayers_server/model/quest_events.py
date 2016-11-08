@@ -29,11 +29,23 @@ class OnNote(QuestEvent):
         self.result = result
 
 
+class OnQuestChange(QuestEvent):
+    def __init__(self, target_quest_uid, **kw):
+        super(OnQuestChange, self).__init__(**kw)
+        self.target_quest_uid = target_quest_uid
+
 class OnDie(QuestEvent): pass
 
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass
 class OnExitNPC(NPCEvent): pass
+
+class OnBuyCar(NPCEvent): pass
+class OnGasStationFuel(NPCEvent): pass
+class OnTraderTransaction(NPCEvent): pass
+class OnArmorerTransaction(NPCEvent): pass
+
+
 
 
 class OnKill(QuestEvent):

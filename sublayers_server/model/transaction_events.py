@@ -18,6 +18,7 @@ from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
 from sublayers_server.model.parking_bag import ParkingBagMessage
+from sublayers_server.model import quest_events
 
 
 # todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
@@ -291,6 +292,10 @@ class TransactionGasStation(TransactionTownNPC):
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
+        # Эвент квестов
+        if self.fuel > 0:
+            self.agent.example.on_event(event=self, cls=quest_events.OnGasStationFuel)
+
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
@@ -373,6 +378,9 @@ class TransactionHangarBuy(TransactionTownNPC):
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
             self.agent.example.set_balance(time=self.time, delta=-car_proto.price)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+
+            # Эвент квестов
+            self.agent.example.on_event(event=self, cls=quest_events.OnBuyCar)
 
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -549,6 +557,9 @@ class TransactionArmorerApply(TransactionTownNPC):
             position += 1
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
+
+        # Эвент для квестов
+        self.agent.example.on_event(event=self, cls=quest_events.OnArmorerTransaction)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -906,6 +917,9 @@ class TransactionTraderApply(TransactionTownNPC):
                                            info_string=msg).post()
         # Мессадж завершения транзакции
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+
+        # Эвент для квестов
+        self.agent.example.on_event(event=self, cls=quest_events.OnTraderTransaction)
 
 
 class TransactionSetRPGState(TransactionTownNPC):

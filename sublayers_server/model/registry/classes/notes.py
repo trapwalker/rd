@@ -69,5 +69,19 @@ class NPCWantedNote(NPCPageNote):
     pass
 
 
+# Ноты обучения
+
+class GetQuestTeachingNote(Note):
+    target_quest_uid = UUIDField(tags='client')
+
+class HangarTeachingNote(Note): pass
+class NukoilTeachingNote(Note): pass
+class TraderTeachingNote(Note): pass
+class ArmorerTeachingNote(Note): pass
+class JournalTeachingNote(Note): pass
+class FinishQuestTeachingNote(Note): pass
+class TrainerTeachingNote(Note): pass
+
+
 # todo: Сделать регистрацию классов нотов через метакласс
 ALL = {name: value for name, value in locals().items() if isinstance(value, type) and issubclass(value, Note)}

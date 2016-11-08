@@ -29,7 +29,7 @@ from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
-from sublayers_server.model.quest_events import OnNote
+from sublayers_server.model.quest_events import OnNote, OnQuestChange
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -829,6 +829,10 @@ class AgentAPI(API):
     @public_method
     def quest_activate(self, quest_uid):
         self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
+        # todo: данный эвент должен вызываться при смене состояния квеста
+        for q in self.agent.example.quests_active:
+            server = self.agent.server
+            OnQuestChange(server=server, quest=q, time=server.get_time() + 0.5, target_quest_uid=quest_uid).post()
 
     # Запрос инфы о другом игроке
 

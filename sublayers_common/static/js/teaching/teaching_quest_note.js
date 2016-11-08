@@ -6,15 +6,13 @@ var GetQuestTeachingNote = (function (_super) {
 
     function GetQuestTeachingNote(options) {
         _super.call(this, options);
-        this.needed_building = locationManager.buildings.market; // todo: mayor
-        this.quest_uid = 'f472e85e-a58a-11e6-b515-bc5ff4c881d1'; // todo: options.quest_uid
+        this.needed_building = locationManager.buildings.mayor;
+        this.quest_uid = options.target_quest_uid;
 
         this.build_coord = new Point(958, 196);
         this.active_quests_page = new Point(735, 320);
         this.first_quest = new Point(850, 370);
         this.buy_btn = new Point(325, 608);
-
-        this.jq_page_available_quests = null;
     }
 
     GetQuestTeachingNote.prototype.move_quest_to_start = function () {
@@ -85,7 +83,7 @@ var FinishQuestTeachingNote = (function (_super) {
         _super.call(this, options);
         this.needed_building = locationManager.buildings.market; //.bar; // todo: должно прийти с сервера и где-то нужно взять координаты
         this.build_coord = new Point(958, 240);
-        this.note_uid = 'b95c5370-a593-11e6-b6ec-bc5ff4c881d1'; // todo: options.quest_uid
+        this.note_uid = 'b95c5370-a593-11e6-b6ec-bc5ff4c881d1'; // todo: options.target_quest_uid
         this.buy_btn = new Point(325, 608);
         this.third_note_btn =  new Point(735, 420);
     }
