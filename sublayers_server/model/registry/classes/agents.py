@@ -50,6 +50,7 @@ class Agent(Root):
         caption=u'Список взаимоотношений игрока с NPCs',
         default=list,
         tags='client',
+        reinst=True,
     )
 
     # Поля статистики агента

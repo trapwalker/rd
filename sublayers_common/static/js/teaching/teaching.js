@@ -74,6 +74,18 @@ function teachTest() {
     teachingManager.update(note);
 }
 
+function teachGetQuestTest() {
+    teachingManager.activate();
+    var note = new GetQuestTeachingNote({uid: 38947568});
+    teachingManager.update(note);
+}
+
+function teachFinishQuestTest() {
+    teachingManager.activate();
+    var note = new FinishQuestTeachingNote({uid: 23489577});
+    teachingManager.update(note);
+}
+
 function teachNukoilTest() {
     teachingManager.activate();
     var note = new NukoilTeachingNote({uid: 19375324});

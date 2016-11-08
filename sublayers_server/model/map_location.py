@@ -66,7 +66,8 @@ class MapLocation(Observer):
         for building in self.example.buildings or []:
             head = building.head
             for quest in head and head.quests or []:
-                new_quest = quest.instantiate(abstract=False, hirer=head, agent=agent.example)
+                new_quest = quest.instantiate(abstract=False, hirer=head)
+                new_quest.agent = agent.example
                 if new_quest.generate(event=event):
                     agent.example.add_quest(quest=new_quest, time=event.time)
                 else:
