@@ -84,11 +84,14 @@ var LocationManager = (function () {
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
 
-        SetImageOnLoad(lasers_img, function (img) {
+        setTimeout(function(){
+            SetImageOnLoad(lasers_img, function (img) {
                 locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
                 locationManager.locations_canvas_effects['laser'].start();
             }
         );
+        }, 50);
+
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
@@ -125,6 +128,9 @@ var LocationManager = (function () {
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
+
+                // при попадании на ландшафт города нужно вызвать обновление teachingManager
+                teachingManager.redraw();
             }
         }
     };
@@ -434,6 +440,10 @@ var LocationPanelInfo = (function () {
     LocationPanelInfo.prototype.show = function (options, window_name) {
         //console.log('LocationPanelInfo.prototype.show', options, window_name);
 
+        // Если обучение активно, то включить панели обучения
+        if (teachingManager.is_active())
+            return;
+
         // Выключить все панели в этом блоке
         if (this.jq_main_div)
             this.jq_main_div.find('.panel-info-item').css('display', 'none');
@@ -566,6 +576,10 @@ var LocationPlace = (function () {
         this.set_panels();
         // Настроить речь NPC
         this.set_header_text();
+
+
+        // обновление менеджера обучения
+        teachingManager.redraw();
     };
 
     LocationPlace.prototype.on_deactivate = function () {
@@ -757,6 +771,9 @@ var LocationPlaceBuilding = (function (_super) {
 
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
+
+            // Выход на старт какого-то из скринов: нужно обновить teachingManager
+            teachingManager.redraw();
         }
         else {
             var note = this.get_active_note();
@@ -825,7 +842,10 @@ var LocationPlaceBuilding = (function (_super) {
         $(this).addClass('active');
         self.jq_main_div.find('.building-center-page').css('display', 'none');
         self.jq_main_div.find('#' + page_id).css('display', 'block');
-        self.centralMenuReaction(page_id)
+        self.centralMenuReaction(page_id);
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
     };
 
     LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
@@ -924,6 +944,9 @@ var LocationPlaceBuilding = (function (_super) {
 
         this.set_buttons();
         this.set_header_text(this.selected_quest ? this.selected_quest.npc_reward_text : null);
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
     };
 
     return LocationPlaceBuilding;

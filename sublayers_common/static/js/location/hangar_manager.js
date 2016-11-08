@@ -69,6 +69,9 @@ var LocationHangarNPC = (function (_super) {
                 self.current_car = $(this).data('car_number');
                 self.set_panels();
                 self.set_header_text();
+
+                // Обновление менеджера обучения
+                teachingManager.redraw();
             });
             this.jq_main_div.find('.npcInventory-itemWrap').first().click();
         }

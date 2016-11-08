@@ -307,6 +307,9 @@ var LocationTraderNPC = (function (_super) {
 
         this.jq_main_div.find('.trader-player-exchange-total').text(price_trader + 'NC');
         this.jq_main_div.find('.trader-trader-exchange-total').text(price_player + 'NC');
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
     };
 
     LocationTraderNPC.prototype.changeItemDropable = function(pos, count, srcList, destList, srcDiv, destDiv, srcCls, destCls) {

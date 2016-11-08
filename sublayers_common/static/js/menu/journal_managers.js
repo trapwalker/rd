@@ -17,6 +17,9 @@ var JournalManager = (function () {
             $(this).addClass('active');
             journalManager.jq_main_div.find('.journal-page-block').css('display', 'none');
             journalManager.jq_main_div.find('.' + $(this).data('page_class')).css('display', 'block');
+
+            // Обновление менеджера обучения
+            teachingManager.redraw();
         });
         self.jq_main_div.find('.journal-page-button-block')[0].click();
 
@@ -253,7 +256,7 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype._create_building_quest_block = function(quest) {
         var jq_quest_block = $(
-            '<div class="building-quest-list-item">' +
+            '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
                 '<div class="building-quest-list-item-caption">' + quest.caption + '</div>' +
                 '<div class="building-quest-list-item-lvl">Уровень: ' + quest.level + '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text + '</div>' +
