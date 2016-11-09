@@ -74,12 +74,15 @@ class NPCWantedNote(NPCPageNote):
 class GetQuestTeachingNote(Note):
     target_quest_uid = UUIDField(tags='client')
 
+
+class FinishQuestTeachingNote(GetQuestTeachingNote):
+    target_note_uid = UUIDField(tags='client')
+
 class HangarTeachingNote(Note): pass
 class NukoilTeachingNote(Note): pass
 class TraderTeachingNote(Note): pass
 class ArmorerTeachingNote(Note): pass
 class JournalTeachingNote(Note): pass
-class FinishQuestTeachingNote(Note): pass
 class TrainerTeachingNote(Note): pass
 
 

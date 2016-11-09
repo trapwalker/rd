@@ -37,30 +37,20 @@ var JournalTeachingNote = (function (_super) {
             return;
         }
 
-        if (!journalManager.quests.jq_active_group.hasClass('active')) {
+        if (!journalManager.quests.jq_active_group.find('.journal-menu-name-block').first().hasClass('active')) {
             teachingManager.jq_panel_left_content.text('Выберите активные квесты.');
             teachingManager.jq_panel_right_content.text('Выберите активные квесты.');
             this.draw_line(this.start_point, this.active_groupe_btn);
             return;
         }
 
-        return;
-        // todo: получить с сервера quest_id
-        var quest_id = 0;
-        var is_activate_quest = false;
-        journalManager.jq_main_div.find('.journal_page_task').find('.journal-quest-info-block').each(function (index, element) {
-            var jq_elem = $(element);
-            is_activate_quest = is_activate_quest || ((quest_id == jq_elem.data('quest_id')) && jq_elem.hasClass('active'));
-        });
-        if (!is_activate_quest) {
+        if (!journalManager.jq_main_div.find('.journal_page_task').find('.journal-quest-info-block').first().hasClass('active')) {
             teachingManager.jq_panel_left_content.text('Выберите квест.');
             teachingManager.jq_panel_right_content.text('Выберите квест.');
-            this.draw_line(this.start_point, this.active_groupe_btn);
-            return;
+            this.draw_line(this.start_point, this.quest_btn);
         }
-        // todo: тут сразу же завершить ноту т.к. больше делать нечего
-
-        model_manager.SendQuestNoteAction(this.uid, true);
+        else
+            clientManager.SendQuestNoteAction(this.uid, true); // тут сразу же завершить ноту т.к. больше делать нечего
     };
 
     return JournalTeachingNote;

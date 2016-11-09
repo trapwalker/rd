@@ -2115,7 +2115,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.SendQuestNoteAction = function (note_uid, note_result) {
-        //console.log('ClientManager.prototype.QuestUpdateMessage', event);
+        //console.log('ClientManager.prototype.QuestUpdateMessage', note_uid, note_result);
         var mes = {
             call: "quest_note_action",
             rpc_call_id: rpcCallList.getID(),

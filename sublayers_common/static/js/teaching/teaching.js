@@ -48,8 +48,10 @@ var TeachingManager = (function(){
         this.jq_panel_right.css('display', 'none');
 
         // Нота должна удалиться
-        this.active_note.delete();
-        this.active_note = null;
+        if (this.active_note) {
+            this.active_note.delete();
+            this.active_note = null;
+        }
     };
 
     TeachingManager.prototype.update = function(note) {

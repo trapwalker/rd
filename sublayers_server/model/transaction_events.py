@@ -1061,6 +1061,8 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
+        self.agent.example.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
+
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate

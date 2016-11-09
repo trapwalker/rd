@@ -358,6 +358,9 @@ var QuestJournalManager = (function () {
                         if (quest_id == jq_elem.data('quest_id'))
                             jq_elem.addClass('active');
                     });
+
+                    // Вызвать обновление teachingManager
+                    teachingManager.redraw();
                 });
 
                 // Установить счетчики
@@ -415,6 +418,9 @@ var QuestJournalManager = (function () {
                 j_list.addClass('active');
                 j_arrow.addClass('active');
             }
+
+            // Вызвать обновление teachingManager
+            teachingManager.redraw();
         });
     };
 

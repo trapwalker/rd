@@ -44,7 +44,7 @@ class OnBuyCar(NPCEvent): pass
 class OnGasStationFuel(NPCEvent): pass
 class OnTraderTransaction(NPCEvent): pass
 class OnArmorerTransaction(NPCEvent): pass
-
+class OnRPGSetTransaction(NPCEvent): pass
 
 
 

@@ -81,9 +81,9 @@ var FinishQuestTeachingNote = (function (_super) {
 
     function FinishQuestTeachingNote(options) {
         _super.call(this, options);
-        this.needed_building = locationManager.buildings.market; //.bar; // todo: должно прийти с сервера и где-то нужно взять координаты
+        this.needed_building = locationManager.buildings.bar;
         this.build_coord = new Point(958, 240);
-        this.note_uid = 'b95c5370-a593-11e6-b6ec-bc5ff4c881d1'; // todo: options.target_quest_uid
+        this.note_uid = options.target_note_uid;
         this.buy_btn = new Point(325, 608);
         this.third_note_btn =  new Point(735, 420);
     }

@@ -25,6 +25,15 @@ var TeachingNote = (function (_super) {
         this.draw_line(p1, p2);
     };
 
+    TeachingNote.prototype.delete = function() {
+        _super.prototype.delete.call();
+        if (teachingManager.active_note == this){
+            teachingManager.active_note = null;
+            teachingManager.deactivate();
+        }
+
+    };
+
     return TeachingNote;
 })(SimpleNote);
 
