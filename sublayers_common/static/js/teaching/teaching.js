@@ -31,6 +31,7 @@ var TeachingManager = (function(){
             locationManager.panel_left.jq_main_div.find('.panel-info-item').css('display', 'none');
         if (locationManager.panel_right.jq_main_div)
             locationManager.panel_right.jq_main_div.find('.panel-info-item').css('display', 'none');
+
         // Включить панели обучения
         this.jq_panel_left = $('.panel-info-teaching-left').first();
         this.jq_panel_right = $('.panel-info-teaching-right').first();

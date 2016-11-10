@@ -4,7 +4,7 @@ $(document).ready(function () {
     //    textConsoleManager.start('first_enter');
     //else
     //    textConsoleManager.start('enter');
-    /**/
+
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
 
@@ -27,7 +27,6 @@ $(document).ready(function () {
         modalLose: 'modalLose',
         modalRestart: 'modalRestart'
     });
-
 
     // Инициализация.
     user = new User(1, 1000);
