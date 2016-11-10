@@ -66,9 +66,17 @@ class ExpTable(Root):
     def car_exp_price_by_exp(self, exp):
         table = {pair.k: pair.v for pair in self.car_exp_price or []}
         lvl = self.car_lvl_by_exp(exp=exp)
-        return table[lvl]  # todo: проверять на пустоту и на исключения
+        try:
+            return table[lvl]
+        except:
+            log.exception('Lvl = {}   not found   in table_keys: {}'.format(lvl, table.keys()))
+            return 0
 
     def car_m_exp_by_exp(self, exp):
         table = {pair.k: pair.v for pair in self.car_m_exp or []}
         lvl = self.car_lvl_by_exp(exp=exp)
-        return table[lvl]  # todo: проверять на пустоту и на исключения
+        try:
+            return table[lvl]
+        except:
+            log.exception('Lvl = {}   not found   in table_keys: {}'.format(lvl, table.keys()))
+            return 0

@@ -1,4 +1,9 @@
 $(document).ready(function () {
+    initConsoles();
+    //if ($('#settings_first_enter').text() == 'True')
+    //    textConsoleManager.start('first_enter');
+    //else
+    //    textConsoleManager.start('enter');
 
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
@@ -8,6 +13,8 @@ $(document).ready(function () {
     locationManager = new LocationManager();
     mapCanvasManager = new MapCanvasManager();
     wStrategyModeManager = new WStrategyModeManager();
+
+    teachingManager = new TeachingManager();
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -20,7 +27,6 @@ $(document).ready(function () {
         modalLose: 'modalLose',
         modalRestart: 'modalRestart'
     });
-
 
     // Инициализация.
     user = new User(1, 1000);
@@ -85,7 +91,9 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnRadio').onclick = function () {
-        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, null);
+        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, function () {
+            radioPlayer.update();
+        });
         returnFocusToMap();
     };
 
@@ -132,6 +140,97 @@ $(document).ready(function () {
     resizeWindowHandler();
 });
 
+var index_notes_test = 0;
+function addTestNotes() {
+    var npc_html_hash;
+    var build;
+    var note;
+
+    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'жми сюда ' + index_notes_test,
+        uid: 'notes_' + index_notes_test
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    var inv = inventoryList.getInventory(user.ID);
+
+    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtnDelivery({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'Доставка ' + index_notes_test,
+        uid: 'notes_' + index_notes_test,
+        delivery_stuff: [
+            {
+                item: inv.items[0].example,
+                count: 4
+            },
+            {
+                item: inv.items[1].example,
+                count: 2
+            }
+        ]
+
+
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    note = new QuestNoteNPCCar({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'Машина ' + index_notes_test,
+        uid: 'notes_' + index_notes_test,
+        delivery_stuff: [
+            {
+                item: inv.items[0].example,
+                count: 4
+            },
+            {
+                item: inv.items[1].example,
+                count: 2
+            }
+        ]
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+    npc_html_hash = 'reg--registry-institutions-mechanic-raul_alone';
+    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
+    note = new QuestNoteNPCBtn({
+        npc_html_hash: npc_html_hash,
+        btn_caption: 'жми сюда ' + index_notes_test,
+        uid: 'notes_' + index_notes_test
+    });
+    note.bind_with_build(build);
+    index_notes_test++;
+
+}
+
+
+function init_site_sound() {
+    audioManager.gain_all(1.0);
+
+    //audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
+    //audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.5);
+    //audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'}, null, null, 0.5);
+    //audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'}, null, null, 0.65);
+    //audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'}, null, null, 1.0);
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
+    //audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 1.0);
+    //audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.8);
+    //audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.6);
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
+    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.2);
+
+    // audioKeyboard = new AudioKeyboard([
+    //     audioManager.get('key_cl_1')
+    // ]);
+}
+
 var b_canvas;
 var b_context;
 var pat;
@@ -139,6 +238,9 @@ var img = [];
 var img1;
 var window_scaled_prc = 1.0;
 
+init_site_sound();
+
+initRadioPlayer();
 
 function returnFocusToMap() {
     document.getElementById('map').focus();
@@ -155,6 +257,7 @@ function resizeWindowHandler() {
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
     if (scale_prc > 0.3) {
         $('#activeTownDiv').css('transform', 'scale(' + scale_prc + ')');
+        $('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
         window_scaled_prc = scale_prc;
     }
 }

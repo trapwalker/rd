@@ -278,6 +278,9 @@ var LocationGasStationNPC = (function (_super) {
         this.current_prc_gas = ui.position.left / this.rail_width;
         this._show_text_gas();
         this.set_filler(this.jq_gs_fill_need, this.current_prc_gas);
+
+        // Обновление менеджера обучения
+        teachingManager.redraw();
     };
 
     LocationGasStationNPC.prototype.set_buttons = function () {

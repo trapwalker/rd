@@ -86,6 +86,9 @@ var LocationPlaceMenu = (function (_super) {
         //console.log('LocationPlaceMenu.prototype.init_click', this.jq_main_div);
         this.selected_page_name = page_id;
         this.set_buttons();
+
+        // Обновление менеджера обучения
+        teachingManager.redraw();
     };
 
     LocationPlaceMenu.prototype.set_buttons = function () {

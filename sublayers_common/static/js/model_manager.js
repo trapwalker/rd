@@ -300,6 +300,49 @@ var ClientManager = (function () {
             $('.self-balance-view').text(user.balance.toFixed(0).toString() + 'NC');
     };
 
+    ClientManager.prototype._createNote = function (note) {
+        //console.log('ClientManager.prototype._createNote', note);
+        switch (note.cls) {
+            case 'NPCDeliveryNote':
+                new QuestNoteNPCBtnDelivery(note);
+                break;
+            case 'QuestNoteNPCCar':
+                break;
+            case 'NPCWantedNote':
+                new QuestNoteNPCBtnKiller(note);
+                break;
+            case 'NPCRewardItemsNote':
+                new QuestNoteNPCRewardItems(note);
+                break;
+            case 'HangarTeachingNote':
+                teachingManager.update(new HangarTeachingNote(note));
+                break;
+            case 'NukoilTeachingNote':
+                teachingManager.update(new NukoilTeachingNote(note));
+                break;
+            case 'TraderTeachingNote':
+                teachingManager.update(new TraderTeachingNote(note));
+                break;
+            case 'ArmorerTeachingNote':
+                teachingManager.update(new ArmorerTeachingNote(note));
+                break;
+            case 'GetQuestTeachingNote':
+                teachingManager.update(new GetQuestTeachingNote(note));
+                break;
+            case 'JournalTeachingNote':
+                teachingManager.update(new JournalTeachingNote(note));
+                break;
+            case 'FinishQuestTeachingNote':
+                teachingManager.update(new FinishQuestTeachingNote(note));
+                break;
+            case 'TrainerTeachingNote':
+                teachingManager.update(new TrainerTeachingNote(note));
+                break;
+            default:
+                console.warn('Неопределён тип ноты:', note.cls)
+        }
+    };
+
     // Входящие сообщения
 
     ClientManager.prototype.InitAgent = function(event){
@@ -314,6 +357,8 @@ var ClientManager = (function () {
                 this.sendGetPartyInfo(event.agent.party.name);
             }
             timeManager.timerStart();
+            for (var i = 0; i < event.notes.length; i++)
+                this._createNote(event.notes[i]);
         }
     };
 
@@ -333,6 +378,8 @@ var ClientManager = (function () {
         var fireSectors = this._getSectors(event.car.fire_sectors);
 
         clock.setDt((new Date().getTime() - servtime) / 1000.);
+
+        textConsoleManager.async_stop();
 
         if (!user.userCar) {
             // создать машинку
@@ -744,16 +791,44 @@ var ClientManager = (function () {
         chat.party_info_message(event);
     };
 
+    ClientManager.prototype.PreEnterToLocation = function (event) {
+        //console.log('ClientManager.prototype.PreEnterToLocation', event);
+        locationManager.load_city_image = false;
+
+        function complete(load) {
+            locationManager.load_city_image = true;
+            if (locationManager.in_location_flag)
+                textConsoleManager.async_stop();
+        }
+
+        if (event.static_image_list.length == 0)
+            complete(true);
+        else {
+            preloaderImage.add_list(event.static_image_list, complete, 10000);
+            textConsoleManager.start('enter_location', 3000);
+        }
+    };
+
     ClientManager.prototype.EnterToLocation = function (event) {
         //console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
         mapCanvasManager.is_canvas_render = false;
     };
 
+    ClientManager.prototype.ChangeAgentKarma = function (event) {
+        console.log('ClientManager.prototype.ChangeAgentKarma', event);
+        if (locationManager.in_location_flag)
+            locationManager.npc_relations = event.relations;
+    };
+
     ClientManager.prototype.ExitFromLocation = function () {
         //console.log('ClientManager.prototype.ExitFromTown', event);
-        locationManager.onExit();
-        mapCanvasManager.is_canvas_render = true;
+        textConsoleManager.start('enter_map', 2000);
+        // todo: fix this
+        setTimeout(function () {
+            locationManager.onExit();
+            mapCanvasManager.is_canvas_render = true;
+        }, 10);
     };
 
     ClientManager.prototype.ChatRoomIncludeMessage = function(event){
@@ -793,7 +868,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.InventoryShowMessage', event);
         var inventory = this._getInventory(event.inventory);
         inventoryList.addInventory(inventory);
-        if (inventory.owner_id == user.ID)
+        if (locationManager.in_location_flag &&
+            ((inventory.owner_id == user.ID) || (inventory.owner_id == locationManager.uid)))
             locationManager.update();
     };
 
@@ -1041,9 +1117,38 @@ var ClientManager = (function () {
     };
 
     // Журнал (квесты)
+    ClientManager.prototype.QuestsInitMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestInitMessage', event);
+        journalManager.quests.clear();
+        for (var i = 0; i < event.quests.length; i++)
+            journalManager.quests.addQuest(event.quests[i]);
+    };
+
+    ClientManager.prototype.QuestAddMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestAddMessage', event);
+        journalManager.quests.addQuest(event.quest);
+    };
+
+    ClientManager.prototype.QuestDelMessage = function (event) {
+        console.log('ClientManager.prototype.QuestDelMessage', event);
+    };
+
     ClientManager.prototype.QuestUpdateMessage = function (event) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', event);
-        journalManager.quest.update(event.quest);
+        journalManager.quests.update(event.quest);
+    };
+
+    // Нотесы
+    ClientManager.prototype.AddNoteMessage = function(event) {
+        //console.log('ClientManager.prototype.AddNoteMessage', event);
+        this._createNote(event.note);
+    };
+
+    ClientManager.prototype.DelNoteMessage = function(event) {
+        console.log('ClientManager.prototype.DelNoteMessage', event);
+        var note = notesManager.get_note(event.note_uid);
+        if (note)
+            note.delete();
     };
 
     // Административные сообщения
@@ -1497,18 +1602,60 @@ var ClientManager = (function () {
 
     // Сообщения локаций
 
-    ClientManager.prototype.sendEnterToNPC = function (npc_type) {
+    ClientManager.prototype.sendEnterToNPC = function (npc) {
         //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
         var mes = {
             call: "enter_to_npc",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                npc_type: npc_type
+                npc_node_hash: npc.npc_rec.node_hash
             }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    ClientManager.prototype.sendEnterToBuilding = function (build) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "enter_to_building",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                head_node_hash: build.building_rec.head.node_hash,
+                build_name: build.building_rec.name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendExitFromNPC = function (npc) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "exit_from_npc",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                npc_node_hash: npc.npc_rec.node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendExitFromBuilding = function (build) {
+        //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
+        var mes = {
+            call: "exit_from_building",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                head_node_hash: build.building_rec.head.node_hash,
+                build_name: build.building_rec.name
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     // Оружейник
 
@@ -1949,6 +2096,32 @@ var ClientManager = (function () {
             params: {
                 x: x,
                 y: y
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Квесты
+    ClientManager.prototype.sendActivateQuest = function (quest_id) {
+        //console.log('ClientManager.prototype.sendActivateQuest', quest_id);
+        var mes = {
+            call: "quest_activate",
+            rpc_call_id: rpcCallList.getID(),
+            params: {quest_uid: quest_id}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.SendQuestNoteAction = function (note_uid, note_result) {
+        //console.log('ClientManager.prototype.QuestUpdateMessage', note_uid, note_result);
+        var mes = {
+            call: "quest_note_action",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                uid: note_uid,
+                result: note_result
             }
         };
         rpcCallList.add(mes);

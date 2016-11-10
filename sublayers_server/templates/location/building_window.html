@@ -7,32 +7,24 @@
     {% end %}
     <div class="building-center-block">
         <div class="building-center-menu-block town-back-interlacing-nocontent">
-            <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks_{{ building }}">Доступные задания</div>
-            <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks_{{ building }}">Активные задания</div>
+            <div class="building-center-menu-block-wrap">
+                <div class="building-center-menu-item" data-page_id="buildingPageAvailableTasks_{{ building }}">Доступные задания</div>
+                <div class="building-center-menu-item" data-page_id="buildingPageActiveTasks_{{ building }}">Активные задания</div>
+            </div>
+            <div class="building-center-menu-block-scroll-wrap">
+                <div class="building-center-menu-block-scroll-btn up" onclick="clickBuildingScrollBtn(this)"></div>
+                <div class="building-center-menu-block-scroll-btn down" onclick="clickBuildingScrollBtn(this)"></div>
+            </div>
         </div>
         <div class="building-center-pages-block town-back-interlacing-nocontent">
             <div id="buildingPageAvailableTasks_{{ building }}" class="building-center-page">
                 <div class="building-quest-list-block">
-                    <div class="building-quest-list building-inventory-list">
-{#                        <div class="building-quest-list-item">#}
-{#                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>#}
-{#                            <div class="building-quest-list-item-lvl">Уровень: 1</div>#}
-{#                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>#}
-{#                            <div class="building-quest-list-item-time">00:00:00</div>#}
-{#                        </div>#}
-                    </div>
+                    <div class="building-quest-list building-inventory-list"></div>
                 </div>
             </div>
             <div id="buildingPageActiveTasks_{{ building }}" class="building-center-page">
                 <div class="building-quest-list-block">
-                    <div class="building-quest-list building-inventory-list">
-{#                        <div class="building-quest-list-item">#}
-{#                            <div class="building-quest-list-item-caption">Тестовый квест 1</div>#}
-{#                            <div class="building-quest-list-item-lvl">Уровень: 1</div>#}
-{#                            <div class="building-quest-list-item-description">Очень длинное писание тестового квеста</div>#}
-{#                            <div class="building-quest-list-item-time">00:00:00</div>#}
-{#                        </div>#}
-                    </div>
+                    <div class="building-quest-list building-inventory-list"></div>
                 </div>
             </div>
         </div>
@@ -41,7 +33,9 @@
         <div class="building-npc-list-block">
             <div class="building-npc-list building-inventory-list">
                 {% for npc in cur_build.instances %}
-                <div class="building-npc-list-item" onclick="locationManager.openNPC('{{ npc.node_html() }}')">
+                <div class="building-npc-list-item" onclick="locationManager.openNPC('{{ npc.node_html() }}')"
+                        onmouseover="locationManager.handler_npc_mouseover('{{ npc.node_hash() }}', '{{ building }}')"
+                        onmouseout="locationManager.handler_mouseleave()">
                     <img class="building-npc-photo" src="{{ npc.photo }}"/>
                     <div class="building-npc-name-block"><span class="building-npc-name"> {{ npc.doc }} </span></div>
                 </div>

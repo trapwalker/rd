@@ -54,3 +54,4 @@ env_*
 *.whl
 _apk/*.apk
 *.track
+*.rej

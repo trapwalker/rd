@@ -30,9 +30,10 @@
 
 .building-quest-list-block {
     position: relative;
-    margin: auto;
-    width: 500px;
+    margin: 60px auto 0 auto;
+    width: calc(100% - 30px);
     height: 190px;
+    overflow-y: hidden;
     overflow-x: auto;
 }
 
@@ -45,46 +46,65 @@
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     height: 170px;
     width: 170px;
-    margin-right: 10px;
+    margin-right: 12px;
     box-sizing: border-box;
     float: left;
-    border: 1px solid #1A8901;
+    border: 1px solid #0e4b00;
+    background-color: #030f00;
     font-family: FreePixel;
-    opacity: 0.6;
+    overflow: hidden;
 }
-.building-quest-list-item:hover { border-color: #29FB00; opacity: 1; }
+.building-quest-list-item:hover, .building-quest-list-item.selected { border-color: #0e4b00; background-color: #082801;}
+.building-quest-list-item:hover .building-quest-list-item-description,
+.building-quest-list-item.selected .building-quest-list-item-description {
+    color: #2ffa00;
+}
 
 .building-quest-list-item-caption {
     position: relative;
+    height: 20px;
     width: 100%;
-    padding: 5px 5px 0px 25px;
+    padding: 3px 5px 0px 25px;
     font-weight: bold;
     box-sizing: border-box;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .building-quest-list-item-lvl {
     position: relative;
     width: 100%;
+    height: 20px;
     padding: 0px 5px 0px 25px;
     font-weight: bold;
     box-sizing: border-box;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .building-quest-list-item-description {
     position: relative;
     width: 100%;
-    padding: 5px 5px 0px 5px;
+    height: calc(100% - 20px - 20px - 20px);
+    padding: 2px 10px 5px 10px;
     font-size: 11pt;
     box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #31c811;
 }
 
 .building-quest-list-item-time {
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
+    position: relative;
+    width: 100%;
+    height: 20px;
     box-sizing: border-box;
     font-size: 10pt;
-    margin: 0px 5px 2px 0px;
+    line-height: 20px;
+    text-align: right;
+    padding: 0 10px 0 0;
 }
 
 .building-center-menu-block {
@@ -93,9 +113,77 @@
     height: 100%;
     width: 162px;
     border-right: 1px solid green;
-    padding: 10px 0px 10px 0px;
+    padding: 10px 0 0 0;
     box-sizing: border-box;
+    overflow: hidden;
 }
+
+.building-center-menu-block-wrap {
+    position: relative;
+    height: calc(100% - 42px);
+    width: calc(100% + 10px);
+    box-sizing: border-box;
+    overflow-y: scroll;
+}
+
+.building-center-menu-block-scroll-wrap {
+    position: relative;
+    height: 30px;
+    width: 150px;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+.building-center-menu-block-scroll-btn {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+    box-sizing: border-box;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: #082801;
+    border: 1px solid #0e4b00;
+}
+
+
+.building-center-menu-block-scroll-btn:hover {
+    background-color: #0c4b00;
+    border-color: #31c811;
+}
+
+
+.building-center-menu-block-scroll-btn.up {
+    background-image: url(/static/static_site/img/btn_slide_up.png);
+    /*border-right: none;*/
+}
+
+.building-center-menu-block-scroll-btn.up:hover {
+    background-image: url(/static/static_site/img/btn_slide_up_over.png);
+}
+
+.building-center-menu-block-scroll-btn.up:active {
+    background: none;
+}
+
+.building-center-menu-block-scroll-btn.down {
+    background-image: url(/static/static_site/img/btn_slide_down.png);
+}
+
+.building-center-menu-block-scroll-btn.down:hover {
+    background-image: url(/static/static_site/img/btn_slide_down_over.png);
+}
+
+.building-center-menu-block-scroll-btn.down:active {
+    background: none;
+}
+
+
+/*.building-center-menu-block-scroll-btn.up {background-color: red;}*/
+/*.building-center-menu-block-scroll-btn.down {background-color: white;}*/
+
+
 
 .building-center-menu-item {
     position: relative;

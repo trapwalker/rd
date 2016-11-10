@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage, PreEnterToLocation
 )
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.events import ActivateLocationChats, Event
@@ -14,6 +14,7 @@ from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
 
+from tornado.options import options
 
 
 class RadioPoint(Observer):
@@ -58,73 +59,71 @@ class MapLocation(Observer):
         for chat in self.radio_points:
             chat.room.include(agent=agent, time=event.time)
 
-    def on_enter(self, agent, time):
-        agent.on_enter_location(location=self, time=time)
+    def on_enter(self, agent, event):
+        agent.on_enter_location(location=self, event=event)  # todo: (!)
+        PreEnterToLocation(agent=agent, location=self, time=event.time).post()
 
-        # if hasattr(self.example, 'buildings'):
-        #     for building in self.example.buildings:
-        #         head = building.head
-        #         if head and head.quests:
-        #             for quest in head.quests:
-        #                 # todo: (!) Проверить quest на unicode
-        #                 quest_uri = URI(quest)
-        #                 quest = quest_uri.resolve()
-        #                 quest_key = quest.gen_key(agents=[agent], npc=head, **dict(quest_uri.params))
-        #                 if quest_key not in agent.quests:
-        #                     log.info('new quest %r', quest)
-        #                     new_quest = quest.instantiate(agents=[agent], npc=head, **dict(quest_uri.params))
-        #                     agent.add_quest(quest=new_quest, time=time)
+        for building in self.example.buildings or []:
+            head = building.head
+            for quest in head and head.quests or []:
+                new_quest = quest.instantiate(abstract=False, hirer=head)
+                new_quest.agent = agent.example
+                if new_quest.generate(event=event):
+                    agent.example.add_quest(quest=new_quest, time=event.time)
+                else:
+                    del new_quest
 
-        ActivateLocationChats(agent=agent, location=self, time=time + 0.1).post()
+        ActivateLocationChats(agent=agent, location=self, time=event.time + 0.1).post()
 
         # Добавить агента в список менеджеров мусорки
         if self.inventory is not None:
-            self.inventory.add_visitor(agent=agent, time=time)
+            self.inventory.add_visitor(agent=agent, time=event.time)
             self.inventory.add_manager(agent=agent)
-        EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
+        EnterToLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
 
-        for visitor in self.visitors:
-            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=time).post()
-            ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
+        for visitor in self.visitors:  # todo: optimize
+            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=event.time).post()
+            ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=event.time).post()
         agent.current_location = self
         self.visitors.append(agent)
         # todo: review
         Event(
-            server=agent.server, time=time,
+            server=agent.server, time=event.time,
             callback_after=lambda event: UserExampleSelfMessage(agent=agent, time=event.time).post()
         ).post()
 
-    def on_re_enter(self, agent, time):
-        agent.save(time)  # todo: Уточнить можно ли сохранять здесь
+    def on_re_enter(self, agent, event):
+        agent.save(event.time)  # todo: Уточнить можно ли сохранять здесь
         if agent in self.visitors:
-
+            PreEnterToLocation(agent=agent, location=self, time=event.time).post()
             # todo: review agent.on_enter_location call
-            agent.on_enter_location(location=self, time=time)
+            agent.on_enter_location(location=self, event=event)
 
-            EnterToLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
+            EnterToLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
             for visitor in self.visitors:
                 if not visitor is agent:
-                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=time).post()
+                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=event.time).post()
+            self.inventory.send_inventory(agent, event.time)
         else:
-            self.on_enter(agent=agent, time=time)
+            self.on_enter(agent=agent, event=event)
 
-    def on_exit(self, agent, time):
+    def on_exit(self, agent, event):
         self.visitors.remove(agent)
         agent.current_location = None
-        agent.on_exit_location(time=time, location=self)
+        agent.on_exit_location(location=self, event=event)
         for chat in self.radio_points:
-            chat.room.exclude(agent=agent, time=time)
-        PrivateChatRoom.close_privates(agent=agent, time=time)
+            chat.room.exclude(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
+        PrivateChatRoom.close_privates(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
 
         # Удалить агента из списка менеджеров мусорки
         if self.inventory is not None:
-            self.inventory.del_visitor(agent=agent, time=time)
+            self.inventory.del_visitor(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
             self.inventory.del_manager(agent=agent)
 
-        ExitFromLocation(agent=agent, location=self, time=time).post()  # отправть сообщения входа в город
-        agent.api.update_agent_api(time=time)
+        ExitFromLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
+        agent.api.update_agent_api(time=event.time)  # todo: Пробросить event вместо time? ##refactor
         for visitor in self.visitors:
-            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=time).post()
+            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=event.time).post()
 
     def add_to_chat(self, chat, time):
         super(MapLocation, self).add_to_chat(chat=chat, time=time)
@@ -145,7 +144,7 @@ class MapLocation(Observer):
             if location.example.uri == uri:
                 return location
 
-    def on_enter_npc(self, agent, time, npc_type):
+    def on_enter_npc(self, event):
         pass
 
 
@@ -159,13 +158,14 @@ class Town(MapLocation):
         # Инициализация торговца
         # найти торговца в городе
         for npc in set(self.example.get_npc_list()):
-            if isinstance(npc, Trader):
+            # todo: Спрятать инициализацию NPC в виртуальный метод, чтобы могли инициализироваться все
+            if isinstance(npc, Trader) and not options.quick_debug:
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
-    def on_exit(self, agent, time):
-        super(Town, self).on_exit(agent=agent, time=time)
-        # if self.example.trader:
-        #     InventoryHideMessage(agent=agent, time=time, inventory_id=str(self.uid) + '_trader').post()
+    # def on_exit(self, agent, event):
+    #     super(Town, self).on_exit(agent=agent, event=event)
+    #     # if self.example.trader:
+    #     #     InventoryHideMessage(agent=agent, time=event.time, inventory_id=str(self.uid) + '_trader').post()
 
     def as_dict(self, time):
         d = super(Town, self).as_dict(time=time)
@@ -178,10 +178,10 @@ class Town(MapLocation):
             if isinstance(location, Town):
                 yield location
 
-    def on_enter_npc(self, agent, time, npc_type):
-        npc = getattr(self.example, npc_type)
-        if npc:
-            agent.on_enter_npc(npc)
+    def on_enter_npc(self, event):
+        super(Town, self).on_enter_npc(event)
+        # todo: Проверить законность входа в переданного NPC в этой локации
+        event.agent.on_enter_npc(event=event)
 
 
 class GasStation(Town):

@@ -94,8 +94,6 @@ class Doc(AbstractDocument):
                 ):
                     getter = lambda: getattr(self, name)
                     yield name, attr, getter
-            else:
-                log.warning('Doc.iter_attrs: dynamic field! %s in %r', name, self)
 
 
 class Subdoc(Doc):
@@ -151,7 +149,7 @@ class Node(Doc):
         """
         #_id=kw.pop('_id', ObjectId()),
         super(Node, self).__init__(**kw)
-        self._subnodes = WeakSet()
+        self._subnodes = WeakSet()  # todo: use __not_a_field__ notation to store this attribute
 
         if self.uri is None:
             owner = self._values.get('owner')
@@ -278,17 +276,14 @@ class Node(Doc):
     #     else:
     #         super(Node, self)._instantiaite_field(new_instance, field, name)
 
-    def instantiate(self, name=None, by_uri=None, **kw):
+    def instantiate(self, name=None, **kw):
         # assert self.abstract, "Can't instantiate abstract object: {}".format(self)
         params = {}
         if self.uri:
             parent = self
         else:
-            parent = self.parent
+            parent = self._values.get('parent', None)
             params.update(self._values)
-
-        if by_uri:
-            params.update(by_uri.params)
 
         fixture_default = self.__class__.fixtured.default
         fixtured = kw.pop('fixtured', fixture_default() if isinstance(fixture_default, Callable) else fixture_default)
@@ -413,20 +408,17 @@ class Node(Doc):
         super(Node, self).load_references(fields=fields, callback=on_load, alias=alias)
 
     def is_ancestor(self, parent_candidate):
-        if self.parent is None:
-            return None
-        if self.parent == parent_candidate:
-            return True
-        return self.parent.is_ancestor(parent_candidate)
+        return self.get_ancestor_level(parent_candidate) >= 0
 
-    def is_ancestor_by_lvl(self, parent_candidate, lvl=0):
-        if self.node_hash() == parent_candidate.node_hash():
-            return lvl
-        if self.parent is None:
-            return -1
-        if self.parent == parent_candidate:
-            return lvl + 1
-        return self.parent.is_ancestor_by_lvl(parent_candidate, lvl+1)
+    def get_ancestor_level(self, parent_candidate):  # todo: rename to `get_ancestor_level`
+        h = parent_candidate.node_hash()
+        i = 0
+        obj = self
+        while obj and obj.node_hash() != h:
+            i += 1
+            obj = obj.parent
+
+        return i if obj else -1
 
 
 class Root(Node):

@@ -48,7 +48,6 @@ class CachebleQuerySet(QuerySet):
         if obj is None:
             super(CachebleQuerySet, self).get(callback=callback, alias=alias, **kwargs)
         else:
-            #obj.load_references(callback=lambda _: None)  # todo: optimize? При взятии из кеша происходит перезагрузка ссылок
             tornado.ioloop.IOLoop.instance().add_callback(callback, obj)
 
     def save(self, document, callback, alias=None, upsert=False):

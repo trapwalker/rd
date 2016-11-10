@@ -3,20 +3,55 @@
 import logging
 log = logging.getLogger(__name__)
 
-
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
 )
+from sublayers_server.model import quest_events
+from sublayers_server.model.registry.classes.quests import QuestAddMessage
+from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
+from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
 
-from sublayers_server.model.events import ChangeAgentBalanceEvent
+from itertools import chain
+
+
+class RelationshipRec(Subdoc):
+    npc = UniReferenceField(
+        reference_document_type='sublayers_server.model.registry.classes.poi.Institution',
+        tags='client',
+        caption=u"Целевой NPC",
+    )
+    rel_index = FloatField(default=0, caption=u"Накапливаемое отношение")
+
+    def get_index_norm(self):
+        return min(max(self.rel_index / 100.0, -1), 1)
+
+    def set_index(self, d_index):
+        self.rel_index = min(max(self.rel_index + d_index, -100), 100)
+
+    def get_relationship(self, agent):
+        npc = self.npc
+        return (npc.koef_rel_index * self.get_index_norm() +
+                npc.koef_karma  * (1 - abs(agent.karma_norm - self.npc.karma_norm)))
+                # + npc.koef_pont_points * agent.get_pont_points())  # todo: norm pont_points
 
 
 class Agent(Root):
+    __not_a_fields__ = ['_agent_model']
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
+
+    # Карма и отношения
+    karma = FloatField(default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
+    npc_rel_list = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type=RelationshipRec),
+        caption=u'Список взаимоотношений игрока с NPCs',
+        default=list,
+        tags='client',
+        reinst=True,
+    )
 
     # Поля статистики агента
     _exp = FloatField(default=0, caption=u"Количество опыта")
@@ -141,9 +176,88 @@ class Agent(Root):
         reinst=True,
     )
 
-    def set_balance(self, balance, server, time):
-        self.balance = balance
-        ChangeAgentBalanceEvent(agent_ex=self, server=server, time=time).post()
+    quests_unstarted = ListField(
+        caption=u"Список доступных (невзятых) квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+    quests_active = ListField(
+        caption=u"Список активных квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+    quests_ended = ListField(
+        caption=u"Список законченных квестов (пройденных или проваленных)",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst = True,
+        ),
+    )
+
+    notes = ListField(
+        base_field=EmbeddedDocumentField(embedded_document_type='sublayers_server.model.registry.classes.notes.Note'),
+        default=list, caption=u"Список доступных нотесов",
+        reinst=True,
+    )
+
+    def get_lvl(self):
+        lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
+        return lvl
+
+    @property
+    def karma_norm(self):
+        return min(max(self.karma / 100, -1), 1)
+
+    @property
+    def quests(self):
+        """
+        :rtype: list[sublayers_server.model.registry.classes.quests.Quest]
+        """
+        return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
+
+    def __init__(self, **kw):
+        super(Agent, self).__init__(**kw)
+        self._agent_model = None
+
+    def get_relationship(self, npc):
+        rel_list = self.npc_rel_list
+        for rel_rec in rel_list:
+            if npc is rel_rec.npc:
+                return rel_rec.get_relationship(agent=self)
+        rel_rec = RelationshipRec(npc=npc)
+        rel_list.append(rel_rec)
+        return rel_rec.get_relationship(agent=self)
+
+    def set_relationship(self, time, npc, dvalue):
+        self.get_relationship(npc)
+        relation = None
+        for relation_rec in self.npc_rel_list:
+            if npc is relation_rec.npc:
+                relation = relation_rec
+                break
+        if dvalue is not None and relation is not None:
+            old_norm_index = relation.get_index_norm()
+            relation.set_index(dvalue)
+            if self._agent_model and old_norm_index != relation.get_index_norm():
+                ChangeAgentKarma(agent=self._agent_model, time=time).post()
+
+    def set_balance(self, time, new_balance=None, delta=None):
+        if new_balance is not None:
+            self.balance = new_balance
+
+        if delta:
+            self.balance += delta
+
+        agent_model = self._agent_model
+        if agent_model and (delta or new_balance is not None):
+            ChangeAgentBalance(agent=agent_model, time=time).post()
         return self.balance
 
     def iter_skills(self):  # todo: need review
@@ -183,7 +297,6 @@ class Agent(Root):
                 res.append(car)
         return res
 
-
     # Для того, чтобы "закрыть" поле
     @property
     def exp(self):
@@ -195,6 +308,14 @@ class Agent(Root):
         if dvalue is not None:
             self._exp += dvalue
 
+    def set_karma(self, time, value=None, dvalue=None):
+        if value is not None:
+            self.karma = value
+        if dvalue is not None:
+            self.karma += dvalue
+        if self._agent_model:
+            ChangeAgentKarma(agent=self._agent_model, time=time).post()
+
     @property
     def frag(self):
         return self._frag
@@ -204,3 +325,56 @@ class Agent(Root):
             self._frag = value
         if dvalue is not None:
             self._frag += dvalue
+
+    def add_quest(self, quest, time):  # todo: Пробросить event
+        self.quests_unstarted.append(quest)
+        model = self._agent_model
+        if model:
+            QuestAddMessage(agent=model, time=time, quest=quest).post()
+        else:
+            log.warning("Can't send message: agent %s is offline", self)
+
+    def start_quest(self, quest_uid, server, time):
+        quest = None
+        for q in self.quests_unstarted:
+            if q.uid == quest_uid:
+                quest = q
+
+        if quest is None:
+            log.error('Trying to start unknown quest by uid %r. Agent: %s', quest_uid, self)
+            return
+
+        quest.start(server=server, time=time)
+
+    def get_quest(self, uid):
+        for q in self.quests:
+            if q.uid == uid:
+                return q
+
+    def on_event(self, event, cls=quest_events.QuestEvent, **kw):
+        for q in self.quests_active:
+            cls(server=event.server, time=event.time, quest=q, **kw).post()
+
+    def get_pont_points(self):
+        return 0
+
+    def add_note(self, note_class, time, **kw):
+        note = note_class(**kw)
+        self.notes.append(note)
+        # отправить сообщение на клиент
+        if self._agent_model:
+            AddNoteMessage(agent=self._agent_model, note=note, time=time).post()
+        return note.uid
+
+    def get_note(self, uid):
+        for note in self.notes:
+            if note.uid == uid:
+                return note
+
+    def del_note(self, uid, time):
+        note = self.get_note(uid)
+        if note:
+            self.notes.remove(note)
+            # отправить сообщение на клиент
+            if self._agent_model:
+                DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()

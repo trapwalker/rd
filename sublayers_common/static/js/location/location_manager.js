@@ -13,6 +13,8 @@ var LocationManager = (function () {
         this.location_cls = '';
         this.in_location_flag = false;
 
+        this.load_city_image = false; // показывает, загружены ли изображения города
+
         // Менеджер посетителей города
         this.visitor_manager = new LocationVisitorsManager();
 
@@ -23,7 +25,8 @@ var LocationManager = (function () {
         this.jq_town_div = $('#activeTownDiv');
 
         // Все что выкинется из инвентаря в городе упадет сюда
-        $('#activeTownDivBack').droppable({
+        this.jq_droppable_div = $('#activeTownDivBack');
+        this.jq_droppable_div.droppable({
             greedy: true,
             drop: function(event, ui) {
                 if (!ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) return;
@@ -62,6 +65,7 @@ var LocationManager = (function () {
 
         // Дикт всех специалистов
         this.npc = {};
+        this.npc_relations = [];
 
         // Дикт для всех локаций меню
         this.location_menu = null;
@@ -80,17 +84,24 @@ var LocationManager = (function () {
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
 
-        SetImageOnLoad(lasers_img, function (img) {
+        setTimeout(function(){
+            SetImageOnLoad(lasers_img, function (img) {
                 locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
                 locationManager.locations_canvas_effects['laser'].start();
             }
         );
+        }, 50);
+
     }
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
     LocationManager.prototype.activateScreen = function (screenName, btn_id) {
         //console.log('LocationManager.prototype.activateScreen', screenName, btn_id);
         if (this.screens.hasOwnProperty(screenName)) {
+            // Вставка для проброса эвента деактивации при смене локации (здание, нпц, меню и тд)
+            if (this.active_screen_name != screenName && locationManager.screens[locationManager.active_screen_name])
+                locationManager.screens[locationManager.active_screen_name].on_deactivate();
+
             this.active_screen_name = screenName;
             var location = locationManager.screens[screenName];
             $('#btn_screen_location_pressed').css('display', 'none');
@@ -117,6 +128,9 @@ var LocationManager = (function () {
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
+
+                // при попадании на ландшафт города нужно вызвать обновление teachingManager
+                teachingManager.redraw();
             }
         }
     };
@@ -150,7 +164,8 @@ var LocationManager = (function () {
 
         // Вставляем верстку города
         this.jq_town_div.append(data.location_html);
-        $('#activeTownDivBack').css('display', 'block');
+        this.jq_droppable_div.css('display', 'block');
+        this.jq_droppable_div.droppable('enable');
 
         // Свалка
         this.dump = new LocationDump(this.jq_town_div);
@@ -171,6 +186,9 @@ var LocationManager = (function () {
         if (this.location_cls == 'GasStation')
             this.screens.location_screen = this.buildings['nucoil'];
         this.active_screen_name = 'location_screen';
+
+        // Установка отношений для всех нпс в городе
+        this.npc_relations = data.relations;
 
         this.setBtnState(1, '', false);
         this.setBtnState(2, '', false);
@@ -197,8 +215,19 @@ var LocationManager = (function () {
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         this.in_location_flag = true;
+
         // Принудительно перерисовать все квесты
-        //journalManager.quest.redraw();
+        journalManager.quests.redraw();
+
+        if (this.load_city_image)
+            textConsoleManager.async_stop();
+
+        radioPlayer.update();
+
+        mapManager.onEnterLocation();
+
+        // Сообщить менеджеру обучения, что произведён вход в город
+        teachingManager.on_enter_location();
     };
 
     LocationManager.prototype.onExit = function () {
@@ -218,7 +247,8 @@ var LocationManager = (function () {
         this.panel_right.clear();
 
         this.jq_town_div.empty();
-        $('#activeTownDivBack').css('display', 'none');
+        this.jq_droppable_div.droppable('disable');
+        this.jq_droppable_div.css('display', 'none');
 
         // Сбрасываем все здания
         for (var key in this.buildings)
@@ -251,6 +281,8 @@ var LocationManager = (function () {
         this.visitor_manager.clear_visitors();
 
         this.in_location_flag = false;
+
+        mapManager.onExitLocation();
     };
 
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
@@ -273,6 +305,10 @@ var LocationManager = (function () {
 
     LocationManager.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationManager.prototype.clickBtn', btnIndex);
+        if($('#btn_' + btnIndex + '_noactive').css('display') == 'block') {
+            return;
+        }
+
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
             if (user.example_car)
@@ -334,6 +370,20 @@ var LocationManager = (function () {
         return null;
     };
 
+    LocationManager.prototype.get_building_by_node_hash = function(npc_node_hash){
+        for(var key in this.buildings)
+            if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head.node_hash == npc_node_hash)
+                return this.buildings[key];
+        return null;
+    };
+
+    LocationManager.prototype.get_building_by_field = function(field, value){
+        for(var key in this.buildings)
+            if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head[field] == value)
+                return this.buildings[key];
+        return null;
+    };
+
     LocationManager.prototype.get_npc_by_type = function(npc_type){
         var res = [];
         for(var key in this.npc)
@@ -341,6 +391,33 @@ var LocationManager = (function () {
                 res.push(this.npc[key]);
         return res;
     };
+
+    LocationManager.prototype.get_relation = function(npc_node_hash){
+        for (var i = 0; i < this.npc_relations.length; i++)
+            if (this.npc_relations[i].npc_node_hash == npc_node_hash)
+                return this.npc_relations[i].relation;
+        console.warn('Relation for npc not found: ', npc_node_hash, this.npc_relations);
+        return null;
+    };
+
+
+    // Обработчик событий мышки в зданиях, при наведении на НПЦ
+    LocationManager.prototype.handler_npc_mouseover = function(npc_node_hash, build_type) {
+        //console.log('LocationManager.prototype.handler_npc_mouseover', npc_node_hash, build_type);
+        var npc = this.get_npc_by_node_hash(npc_node_hash);
+        var build = this.buildings[build_type];
+        if (!build || !npc){
+            console.log(npc_node_hash, build_type, npc, build);
+            return;
+        }
+        locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50} , 'building_quest');
+    };
+
+    LocationManager.prototype.handler_mouseleave = function() {
+        this.screens[this.active_screen_name].set_panels();
+    };
+
 
     return LocationManager;
 })();
@@ -365,6 +442,10 @@ var LocationPanelInfo = (function () {
 
     LocationPanelInfo.prototype.show = function (options, window_name) {
         //console.log('LocationPanelInfo.prototype.show', options, window_name);
+
+        // Если обучение активно, то включить панели обучения
+        if (teachingManager.is_active())
+            return;
 
         // Выключить все панели в этом блоке
         if (this.jq_main_div)
@@ -427,6 +508,18 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-building').first();
         jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.find('.karma').text(getKarmaName(options.build.head.karma));
+        jq_panel.css('display', 'block');
+    };
+
+    LocationPanelInfo.prototype.show_npc_inside_building = function (options) {
+        //console.log('LocationPanelInfo.prototype.show_npc_inside_building', options);
+        var jq_panel = this.jq_main_div.find('.pi-npc-building').first();
+        var npc_example = options.npc_example;
+        var build_example = options.build_example;
+        jq_panel.find('.location').text(build_example.title);
+        jq_panel.find('.name').text(npc_example.title);
+        jq_panel.find('.karma').text(getKarmaName(npc_example.karma));
         jq_panel.css('display', 'block');
     };
 
@@ -460,6 +553,10 @@ var LocationPlace = (function () {
     LocationPlace.prototype.activate = function () {
         //console.log('LocationPlace.prototype.activate');
 
+        // Вызвать метод деактивации локации
+        if (locationManager.screens[locationManager.active_screen_name] && locationManager.screens[locationManager.active_screen_name] != this)
+            locationManager.screens[locationManager.active_screen_name].on_deactivate();
+
         // Выключить ландшафт здания и специалистов
         $('#layer2').css('display', 'none');
         $('#landscape').css('display', 'none');
@@ -482,6 +579,15 @@ var LocationPlace = (function () {
         this.set_panels();
         // Настроить речь NPC
         this.set_header_text();
+
+
+        // обновление менеджера обучения
+        teachingManager.redraw();
+    };
+
+    LocationPlace.prototype.on_deactivate = function () {
+        // Срабатывает при переключениями между экранами, локациями и тд. Можно на него завязать отправку сообщений на сервер
+        //console.log('LocationPlace.prototype.on_deactivate', this);
     };
 
     LocationPlace.prototype.set_buttons = function () {
@@ -614,23 +720,41 @@ var LocationPlaceBuilding = (function (_super) {
         this.active_screen_name = 'location_screen';
 
         this.addExtraPages(
-            this.jq_main_div.find('.building-center-menu-block').first(),
+            this.jq_main_div.find('.building-center-menu-block-wrap').first(),
             this.jq_main_div.find('.building-center-pages-block').first()
         );
         this.centralMenuBindReaction();
 
-        // todo: заполнить квесты
+        this.selected_quest = null;
     }
 
     LocationPlaceBuilding.prototype.activate = function () {
         //console.log('LocationPlaceBuilding.prototype.activate');
         _super.prototype.activate.call(this);
         $('#' + this.building_rec.name + '-back').css('display', 'block');
+        var note = this.get_active_note();
+        if (note) {
+            note.activate();
+            this.set_buttons();
+            this.set_panels();
+            this.set_header_text();
+        }
+
+        clientManager.sendEnterToBuilding(this);
+    };
+
+    LocationPlaceBuilding.prototype.on_deactivate = function () {
+        _super.prototype.on_deactivate.call(this);
+        clientManager.sendExitFromBuilding(this);
     };
 
     LocationPlaceBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationPlaceBuilding.prototype.clickBtn', btnIndex);
         if (btnIndex == '3') {
+
+            // Вызвать метод деактивации здания
+            this.on_deactivate();
+
             $('#layer2').css('display', 'block');
             $('#landscape').css('display', 'block');
             $('.building-back').css('display', 'none');
@@ -650,43 +774,182 @@ var LocationPlaceBuilding = (function (_super) {
 
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
+
+            // Выход на старт какого-то из скринов: нужно обновить teachingManager
+            teachingManager.redraw();
         }
+        else {
+            var note = this.get_active_note();
+            if (note) {
+                note.clickBtn(btnIndex);
+            }
+            else {
+                if ((btnIndex == '1') && (this.selected_quest)) {
+                    if (this.selected_quest.status == null)
+                        clientManager.sendActivateQuest(this.selected_quest.uid);
+                    //if (this.selected_quest.status == 'active')
+                    //    Сообщение на отмену квеста
+                    this.set_selected_quest(null);
+                }
+            }
+        }
+    };
+
+    LocationPlaceBuilding.prototype.set_header_text = function (html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+
+        //if (!html_text)
+        //    if (this.selected_quest)
+        //        html_text = $('<div>Цена отмены квеста</div>');
+
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     LocationPlaceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, '', false);
-        locationManager.setBtnState(2, '', false);
+
+        // Если выбрана какая-то нота, то отдать управление ей, иначе по стандартному пути
+        var note = this.get_active_note();
+        if (note) {
+            note.set_buttons();
+        } else {
+            if (!this.selected_quest)
+                locationManager.setBtnState(1, '', false);
+            else {
+                if (this.selected_quest.status == null)
+                    locationManager.setBtnState(1, '</br>Принять', true);
+                if (this.selected_quest.status == 'active')
+                    locationManager.setBtnState(1, '</br>Отказаться', false);
+            }
+            locationManager.setBtnState(2, '', false);
+        }
         locationManager.setBtnState(3, '</br>Назад', true);
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
-    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {};
+    LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
+        // взять все ноты для данного нпц и вывести их сюда
+        var notes = notesManager.get_notes_by_type(QuestNoteNPCBtn);
+        for (var i = 0; i < notes.length; i++) {
+            if (notes[i].npc_html_hash == this.building_rec.head.html_hash)
+                notes[i].set_div(this, jq_center_menu, jq_center_pages);
+        }
+    };
+
+    // Это обработчик клика! здесь this - это не здание
+    LocationPlaceBuilding.prototype.centralMenuBindReaction_handler = function(event) {
+        var self = event.data.build;
+        var page_id = $(this).data('page_id');
+        if (! page_id) return;
+        self.jq_main_div.find('.building-center-menu-item').removeClass('active');
+        $(this).addClass('active');
+        self.jq_main_div.find('.building-center-page').css('display', 'none');
+        self.jq_main_div.find('#' + page_id).css('display', 'block');
+        self.centralMenuReaction(page_id);
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
+    };
 
     LocationPlaceBuilding.prototype.centralMenuBindReaction = function () {
         var self = this;
-        this.jq_main_div.find('.building-center-menu-item').click(function () {
-            var page_id = $(this).data('page_id');
-            if (! page_id) return;
-            self.jq_main_div.find('.building-center-menu-item').removeClass('active');
-            $(this).addClass('active');
-            self.jq_main_div.find('.building-center-page').css('display', 'none');
-            self.jq_main_div.find('#' + page_id).css('display', 'block');
-            self.centralMenuReaction(page_id)
-        });
-        this.jq_main_div.find('.building-center-menu-item').first().click();
+        var jq_menu_item_list = this.jq_main_div.find('.building-center-menu-item');
+        jq_menu_item_list.click({build: this}, this.centralMenuBindReaction_handler);
+        jq_menu_item_list.first().click();
+
+        // Биндим скроллы
+        //this.jq_main_div.find('.building-center-menu-block-scroll-btn').click(function() {
+        //    var scroll_block = $(this).parent().parent().find('.building-center-menu-block-wrap').first();
+        //    var scroll_pos = scroll_block.scrollTop();
+        //    var mul = $(this).hasClass('up') ? -1 : 1;
+        //    scroll_block.scrollTop(scroll_pos + mul * 20);
+        //});
+
+        this.centralMenuScrollSet();
+    };
+
+    LocationPlaceBuilding.prototype.centralMenuScrollSet = function () {
+        var jq_menu_item_list = this.jq_main_div.find('.building-center-menu-item');
+        if (jq_menu_item_list.length <= 6) // Магия вёрстки!!!
+            this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'none');
+        else
+            this.jq_main_div.find('.building-center-menu-block-scroll-wrap').css('display', 'block');
+    };
+
+    // Используется, когда удаляется активная нота, и автоматически переключается на первую ноту!
+    LocationPlaceBuilding.prototype.centralMenuScrollToTop = function () {
+        this.jq_main_div.find('.building-center-menu-block-wrap').first().scrollTop(-9999);
     };
 
     LocationPlaceBuilding.prototype.centralMenuReaction = function (page_id) {
         //console.log('LocationPlaceBuilding.prototype.centralMenuReaction', page_id);
         this.active_central_page = page_id;
+
+        // Обязательно сбросить текущий квест (возможно выбрать первый квест)
+        //var page_type = page_id.split('_')[0];
+        //if (page_type == 'buildingPageAvailableTasks' || page_type == 'buildingPageActiveTasks')
+        //    $('#' + page_id).find('.building-quest-list-item').first().click();
+        //else
+
+
+        // Если эта страница-нота
+        var note = this.get_active_note();
+        if (note) {
+            note.activate();
+        }else {
+           if (this.selected_quest)
+            this.set_selected_quest(null);
+        }
+
+        // сделать обязательно, так как мы  перешли в новое состояние
+        this.set_buttons();
+        this.set_header_text();
+    };
+
+    LocationPlaceBuilding.prototype.get_active_note = function () {
+        if (this.active_central_page.indexOf('building_note_') == 0) {
+            var note_uid = $('#' + this.active_central_page).data('note_uid');
+            if (note_uid) {
+                var note = notesManager.notes[note_uid];
+                if (note) return note;
+            } else {
+                console.warn('note_uid not found in data for ', page_id);
+            }
+        }
+        return null;
     };
 
     LocationPlaceBuilding.prototype.set_panels = function (make) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
-        locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+        var head_example = this.building_rec.head;
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50} , 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
+    };
+
+    LocationPlaceBuilding.prototype.set_selected_quest = function (quest_id) {
+        var click_quest = null;
+        if (quest_id && journalManager.quests.quests.hasOwnProperty(quest_id))
+            click_quest = journalManager.quests.quests[quest_id];
+
+        // Отключить подсветку старого квеста
+        if (this.selected_quest) {
+            this.selected_quest.jq_npc_block.removeClass('selected');
+            if (this.selected_quest == click_quest) // Если квест тот же, что и был, то уже не включим подсветку
+                click_quest = null;
+            this.selected_quest = null;
+        }
+
+        if (click_quest) {
+            click_quest.jq_npc_block.addClass('selected');
+            this.selected_quest = click_quest;
+        }
+
+        this.set_buttons();
+        this.set_header_text(this.selected_quest ? this.selected_quest.npc_reward_text : null);
+
+        // Вызвать обновление teachingManager
+        teachingManager.redraw();
     };
 
     return LocationPlaceBuilding;
@@ -718,6 +981,13 @@ var LocationPlaceNPC = (function (_super) {
         _super.prototype.activate.call(this);
         if (this.owner_name)
             $('#' + this.owner_name + '-back').css('display', 'block');
+
+        clientManager.sendEnterToNPC(this);
+    };
+
+    LocationPlaceNPC.prototype.on_deactivate = function () {
+        _super.prototype.on_deactivate.call(this);
+        clientManager.sendExitFromNPC(this);
     };
 
     LocationPlaceNPC.prototype.clickBtn = function (btnIndex) {
@@ -753,6 +1023,16 @@ var LocationPlaceNPC = (function (_super) {
 
     return LocationPlaceNPC;
 })(LocationPlace);
+
+
+// info функция нужна чтобы меньше использовать jquery эвенты! Можно воспользоваться кодом в методе
+// LocationPlaceBuilding.centralMenuBindReaction
+function clickBuildingScrollBtn(target) {
+    var scroll_block = $(target).parent().parent().find('.building-center-menu-block-wrap').first();
+    var scroll_pos = scroll_block.scrollTop();
+    var mul = $(target).hasClass('up') ? -1 : 1;
+    scroll_block.scrollTop(scroll_pos + mul * 20);
+}
 
 
 var locationManager;

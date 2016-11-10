@@ -13,9 +13,12 @@ from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
 from sublayers_server.model.registry.classes.trader import Trader
 
-from sublayers_server.model.utils import SubscriptionList
-from sublayers_server.model.messages import (QuestUpdateMessage, PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-                                             SetObserverForClient, Die, QuickGameDie, TraderInfoMessage)
+# from sublayers_server.model.utils import SubscriptionList
+from sublayers_server.model.messages import (
+    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
+)
+from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
@@ -36,9 +39,11 @@ class Agent(Object):
         @type example: sublayers_server.model.registry.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
-        self._disconnect_timeout_event = None
-        self.subscriptions = SubscriptionList()
         self.example = example
+        if example:
+            example._agent_model = self
+        self._disconnect_timeout_event = None
+        # self.subscriptions = SubscriptionList()
         self.observers = CounterSet()
         self.api = None
         self.connection = None
@@ -69,14 +74,8 @@ class Agent(Object):
         self._current_location = None
         self.current_location = example.current_location
 
-        self.quests = {}  # Все квесты, касающиеся агента. Ключ - Quest.key, значение - сам квест
-
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
-
-    def add_quest(self, quest, time):
-        self.quests[quest.key] = quest
-        QuestUpdateMessage(agent=self, time=time, quest=quest).post()
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -108,12 +107,6 @@ class Agent(Object):
     def log(self, time, text, dest, position=None):
         # todo: ##realize ##quest
         pass
-
-    def update_quest_list(self, npc):
-        for quest in npc.quests or []:
-            # todo: Проверка на доступность этого квеста данному агенту
-            # todo: Проверка на наличие этого квеста у агента
-            pass
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -149,12 +142,6 @@ class Agent(Object):
     @property
     def balance(self):
         return self.example.balance
-
-    def set_balance(self, value, time):
-        self.example.set_balance(value, server=self.server, time=time)
-
-    def change_balance(self, dvalue, time):
-        self.example.set_balance(self.balance + dvalue, server=self.server, time=time)
 
     def on_save(self, time):
         self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
@@ -270,7 +257,7 @@ class Agent(Object):
         self._disconnect_timeout_event = None
         self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
         self.save(time=event.time)
-        self.subscriptions.on_disconnect(agent=self, time=event.time)
+        # self.subscriptions.on_disconnect(agent=self, time=event.time)
         if self.car:
             self.car.displace(time=event.time)
         log.info('Agent %s displaced by disconnect timeout', self)
@@ -396,7 +383,7 @@ class Agent(Object):
         ).post()
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=True, time=time)
-        self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
+        # self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
 
     def on_out(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
@@ -412,33 +399,44 @@ class Agent(Object):
         ).post()
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=False, time=time)
-        self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
+        # self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
 
     def on_message(self, connection, message):
         # todo: delivery for subscribers ##quest
         pass
 
-    def on_kill(self, time, obj):
+    def on_kill(self, event, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
 
         # todo: party
         # todo: registry fix?
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
 
-
         d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
                      self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
         self.example.set_exp(dvalue=d_user_exp)   # начисляем опыт агенту
 
+        if obj.owner_example:
+            self_lvl = self.example.get_lvl()
+            killed_lvl = obj.owner_example.get_lvl()
+
+            # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
+            # изменение кармы)
+            if ((self_lvl - killed_lvl) >= 3) and (obj.owner_example.karma_norm >= -0.1):
+                self.example.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
+
         # Отправить сообщение на клиент о начисленной экспе
-        UserExampleSelfRPGMessage(agent=self, time=time,).post()
-        self.subscriptions.on_kill(agent=self, time=time, obj=obj)
+        UserExampleSelfRPGMessage(agent=self, time=event.time).post()
+        self.example.on_event(event=event, cls=quest_events.OnKill, agent=obj.owner_example, unit=obj.example)
+        # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
+        # todo: Разобраться с именем этого метода
         self.on_change_inventory(inventory=inventory, time=time)
 
     @event_deco
     def on_change_inventory(self, event, inventory):
+        # todo: Разобраться с именем этого метода
         time = event.time
         if inventory is self.inventory:  # todo: возможно стереть!
             total_old = self.inventory.example.total_item_type_info()
@@ -453,7 +451,7 @@ class Agent(Object):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
         # todo: csll it ##quest
-        self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
+        # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 
     def has_active_barter(self):
@@ -472,68 +470,67 @@ class Agent(Object):
             LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, total_inventory=total_inventory,
                                time=time).post()
 
-    def on_enter_location(self, time, location):
+    def on_enter_location(self, location, event):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.01)
+            barter.cancel(time=event.time-0.01)
 
         # Раздеплоить машинку агента
         if self.car:  # Вход в город и раздеплой машинки
             self.car.example.last_location = location.example
-            self.car.displace(time=time)
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
+            self.car.displace(time=event.time)
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
         elif self.example.car and self.inventory:  # Обновление клиента (re-enter)
-            self.inventory.send_inventory(agent=self, time=time)
+            self.inventory.send_inventory(agent=self, time=event.time)
         elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=time + 0.01).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
 
-        self.subscriptions.on_enter_location(agent=self, time=time, location=location)
+        # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
 
-    def on_exit_location(self, time, location):
+    def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
         if self.inventory:
-            self.inventory.save_to_example(time=time)
-            self.inventory.del_all_visitors(time=time)
+            self.inventory.save_to_example(time=event.time)
+            self.inventory.del_all_visitors(time=event.time)
             self.inventory = None
 
-        self.reload_parking_bag(new_example_inventory=None, time=time)
-        self.subscriptions.on_exit_location(agent=self, time=time, location=location)
+        self.reload_parking_bag(new_example_inventory=None, time=event.time)  # todo: Проброс события
+        # self.subscriptions.on_exit_location(agent=self, event=event, location=location)
+        # self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
-    def on_enter_npc(self, npc):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
-        log.debug('%s:: on_enter_npc(%s)', self, npc)
+    def on_enter_npc(self, event):
+        log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
+        self.example.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
 
-    def on_exit_npc(self, npc):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_exit_npc(self, event, npc):
+        # todo: ##quest call it
         log.debug('%s:: on_exit_npc(%s)', self, npc)
+        self.example.on_event(event=event, cls=quest_events.OnExitNPC, npc=npc)  # todo: ##quest send NPC as param
 
-    def on_die(self, object, time):
-        # todo: csll it ##quest
-        # todo: delivery for subscribers ##quest
+    def on_die(self, event, unit):
         log.debug('%s:: on_die()', self)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
-            barter.cancel(time=time-0.01)
+            barter.cancel(time=event.time-0.01)
 
-        Die(agent=self, time=time).post()
+        Die(agent=self, time=event.time).post()
+        self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
-        self.subscriptions.on_trade_enter(agent=self, contragent=contragent, time=time, is_init=is_init)
+        # self.subscriptions.on_trade_enter(agent=self, contragent=contragent, time=time, is_init=is_init)
 
     def on_trade_exit(self, contragent, canceled, buy, sale, cost, time, is_init):
         # todo: csll it ##quest
         log.debug('%s:: on_trade_exit(contragent=%r, cancelled=%r, buy=%r, sale=%r, cost=%r)',
                   self, contragent, canceled, buy, sale, cost)
-        self.subscriptions.on_trade_exit(
-            agent=self, contragent=contragent, 
-            canceled=canceled, buy=buy, sale=sale, cost=cost,
-            time=time, is_init=is_init)
+        # self.subscriptions.on_trade_exit(
+        #     agent=self, contragent=contragent,
+        #     canceled=canceled, buy=buy, sale=sale, cost=cost,
+        #     time=time, is_init=is_init)
 
     def reload_parking_bag(self, new_example_inventory, time):
         # Сохранение старого
@@ -594,8 +591,8 @@ class QuickUser(User):
             self._quick_profile_save(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
-    def on_die(self, object, time):
-        QuickGameDie(agent=self, obj=object, time=time).post()
+    def on_die(self, event, unit):
+        QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
 
 # todo: Переиеновать в AIAgent

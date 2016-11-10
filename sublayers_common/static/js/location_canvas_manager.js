@@ -8,7 +8,7 @@ var LocationCanvasManager = (function(_super){
     function LocationCanvasManager() {
         _super.call(this, "ctest_2");
         this.is_canvas_render = false;
-        console.log('location canvas manager !!!');
+        //console.log('location canvas manager !!!');
     }
 
     LocationCanvasManager.prototype.redraw = function(time) {

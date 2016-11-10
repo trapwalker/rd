@@ -5,6 +5,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from uuid import UUID
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.api_tools import API, public_method
@@ -28,6 +29,7 @@ from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
+from sublayers_server.model.quest_events import OnNote, OnQuestChange
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -91,6 +93,7 @@ class AgentConsoleNamespace(Namespace):
     def dropcar(self):
         self.api.delete_car()
 
+    # todo: Завернуть сообщения консоли в отдельные события
     def money(self, value=None):
         if value is not None:
             value = int(value)
@@ -104,7 +107,7 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.change_balance(value, time=self.agent.server.get_time())
+            self.agent.example.set_balance(time=self.agent.server.get_time(), new_balance=value)
 
         self.write('You have {} money.'.format(self.agent.balance))
         return self.agent.balance
@@ -138,26 +141,26 @@ class AgentConsoleNamespace(Namespace):
                 self.api.send_kick(username=name_to_reset)
                 agent.example.reset()
 
-    def quest(self, *args):
-        if not args:
-            pass  # todo: Вывести перечень активных квестов
-        elif args[0] == 'get':
-            for q in args[1:]:
-                try:
-                    q = self.agent.server.reg[q]
-                except:
-                    log.error('Quest %s is not found', q)
-                    raise
-                log.debug('Abstract quest %s selected', q)
-                quest = q.instantiate()
-                log.debug('Quest %s instantiated', quest)
-                quest.start(agents=self.agent, time=self.agent.server.get_time())
-                # todo: store quest to agent or global storage
-                log.debug('Quest %s started', quest)
+    # def quest(self, *args):
+    #     if not args:
+    #         pass  # todo: Вывести перечень активных квестов
+    #     elif args[0] == 'get':
+    #         for q in args[1:]:
+    #             try:
+    #                 q = self.agent.server.reg[q]
+    #             except:
+    #                 log.error('Quest %s is not found', q)
+    #                 raise
+    #             log.debug('Abstract quest %s selected', q)
+    #             quest = q.instantiate()
+    #             log.debug('Quest %s instantiated', quest)
+    #             quest.generate(agents=self.agent, time=self.agent.server.get_time())
+    #             # todo: store quest to agent or global storage
+    #             log.debug('Quest %s started', quest)
 
     def qi(self):
-        for k, q in self.agent.quests.items():
-            log.info('QUEST: {}:: {}'.format(k, q))
+        for quest in self.agent.example.quests:
+            log.info('QUEST: {}'.format(quest))
 
 
 class UpdateAgentAPIEvent(Event):
@@ -385,6 +388,7 @@ class AgentAPI(API):
     def on_update_agent_api(self, time):
         messages.InitAgent(agent=self.agent, time=time).post()
         messages.UserExampleSelfMessage(agent=self.agent, time=time).post()
+        messages.QuestsInitMessage(agent=self.agent, time=time).post()
 
         # Отослать все пати инвайты
         PartyGetAllInvitesEvent(agent=self.agent, time=self.agent.server.get_time()).post()
@@ -599,9 +603,22 @@ class AgentAPI(API):
         ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
-    def enter_to_npc(self, npc_type):
-        # log.info('agent %s want enter to npc %s', self.agent, npc_type)
-        EnterToNPCEvent(agent=self.agent, npc_type=npc_type, time=self.agent.server.get_time()).post()
+    def enter_to_npc(self, npc_node_hash):
+        log.info('agent %s want enter to npc %s', self.agent, npc_node_hash)
+        # todo: resolve NPC by node_hash ##quest
+        EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def enter_to_building(self, head_node_hash, build_name):
+        log.info('agent %s want enter to build [%s] with head: %s', self.agent, build_name, head_node_hash)
+
+    @public_method
+    def exit_from_npc(self, npc_node_hash):
+        log.info('agent %s want exit from npc %s', self.agent, npc_node_hash)
+
+    @public_method
+    def exit_from_building(self, head_node_hash, build_name):
+        log.info('agent %s want exit from build [%s] with head: %s', self.agent, build_name, head_node_hash)
 
     @public_method
     def show_inventory(self, owner_id):
@@ -791,6 +808,32 @@ class AgentAPI(API):
         self.agent.example.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
+    # Квесты
+
+    @public_method
+    def quest_note_action(self, uid, result):
+        log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
+        # todo: найти ноту с этим ID и вызвать какую-то реакцию
+        uid = UUID(uid)
+
+        note = self.agent.example.get_note(uid)
+        if not note:
+            log.warning('Note #{} is not found'.format(uid))
+            return
+
+        server = self.agent.server
+
+        for q in self.agent.example.quests_active:
+            OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result).post()
+
+    @public_method
+    def quest_activate(self, quest_uid):
+        self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
+        # todo: данный эвент должен вызываться при смене состояния квеста
+        for q in self.agent.example.quests_active:
+            server = self.agent.server
+            OnQuestChange(server=server, quest=q, time=server.get_time() + 0.5, target_quest_uid=quest_uid).post()
+
     # Запрос инфы о другом игроке
 
     @public_method
@@ -849,6 +892,3 @@ class AgentAPI(API):
                 self.update_agent_api(time=event.time + 0.1)
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
-
-
-

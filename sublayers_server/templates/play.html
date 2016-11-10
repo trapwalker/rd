@@ -55,6 +55,7 @@
     <link rel="stylesheet" href="{{ static_url('css/controls/cruise_control.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/controls/zoom_slider.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger_glass.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/quest_npc_notes.css') }}"/>
 
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/panel_info_common.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/locations/panel_info/pi_location.css') }}"/>
@@ -109,6 +110,8 @@
     <script src="{{ static_url('js/geometric.js') }}"></script>
     <script src="{{ static_url('js/generator_ID.js') }}"></script>
     <script src="{{ static_url('js/resource_load_manager.js') }}"></script>
+    <script src="{{ static_url('js/preloader_image.js') }}"></script>
+    <script src="{{ static_url('js/preloader_static_images_list.js') }}"></script>
 
     <script src="{{ static_url('js/third_party/blur.js') }}"></script>
 {#    <script src="{{ static_url('js/canvas_test.js') }}"></script>#}
@@ -163,7 +166,28 @@
     <script src="{{ static_url('js/rpc_list.js') }}"></script>
     <script src="{{ static_url('js/leaflet_addon.js') }}"></script>
 
+    <script src="{{ static_url('js/audio/audio_object.js') }}"></script>
+    <script src="{{ static_url('js/audio/audio_manager.js') }}"></script>
+    <script src="{{ static_url('js/audio/site_html_audio_player.js') }}"></script>
+
+    <script src="{{ static_url('js/teaching/teaching.js') }}"></script>
+
     <script src="{{ static_url('js/view.js') }}"></script>
+    <script src="{{ static_url('js/notes/quest_notes.js') }}"></script>
+    <script src="{{ static_url('js/notes/delivery_note.js') }}"></script>
+    <script src="{{ static_url('js/notes/car_note.js') }}"></script>
+    <script src="{{ static_url('js/notes/killer_note.js') }}"></script>
+    <script src="{{ static_url('js/notes/reward_items_note.js') }}"></script>
+
+    <script src="{{ static_url('js/teaching/teaching_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_hangar_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_nukoil_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_armorer_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_trainer_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_journal_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_quest_note.js') }}"></script>
+    <script src="{{ static_url('js/teaching/teaching_trader_note.js') }}"></script>
+
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location/location_manager.js') }}"></script>
     <script src="{{ static_url('js/location/location_place_menu.js') }}"></script>
@@ -190,6 +214,7 @@
     <script src="{{ static_url('js/third_party/leaflet_label.js') }}"></script>
     <script src="{{ static_url('js/cookie.js') }}"></script>
     <script src="{{ static_url('js/modal_window.js') }}"></script>
+    <script src="{{ static_url('js/text_console.js') }}"></script>
 
     <script src="{{ static_url('js/effects/effect_location_laser_animation.js') }}"></script>
 </head>
@@ -252,14 +277,23 @@
 
     <div id="activeTownDivBack">
         <div id="activeTownDiv"></div>
+        <canvas id="townTeachingCanvas" width="1920" height="1080">1111</canvas>
     </div>
-
     <div style="display: none">
         <span id="settings_host_name">{{ host_name }}</span>
         <span id="settings_ws_port">{{ ws_port }}</span>
         <span id="settings_map_link">{{ map_link }}</span>
+        <span id="settings_app_version">{{ version }}</span>
+        <span id="settings_user_name">{{ user_name }}</span>
+        <span id="settings_first_enter">{{ first_enter }}</span>
+        <span id="settings_user_balance">Нет доступа</span>
+        <span id="settings_user_position">Нет доступа</span>
     </div>
-
+    <div id="textConsoleDivWrap" tabindex="0">
+        <div id="textConsoleDiv" tabindex="0">
+            <span class="console-old-text"></span><span class="console-new-text"></span>
+        </div>
+    </div>
 </div>
 </body>
 </html>

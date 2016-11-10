@@ -18,7 +18,7 @@ def event_deco(func):
             kw.get('server', None) or
             getattr(kw.get('agent', None), 'server', None)
         )
-        assert server, 'event_deoc decorated method called without `server` source'
+        assert server, 'event_deco decorated method called without `server` source'
         #time = kw.pop('time', server.get_time())
         event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
         event.post()
@@ -114,21 +114,27 @@ class Event(object):
         """
         assert self.actual
         log.debug('RUN    %s', self)
+
+        stat_log = self.server.stat_log
+        stat_log.s_events_on(time=self.time, delta=-1.0)
+        perform_start_time = self.server.get_time()
+        curr_lag = perform_start_time - self.time
+        assert curr_lag >= 0.0, '{}'.format(curr_lag)
+        stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
+        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
+        if stat_log.get_metric('s_events_lag_max') < curr_lag:
+            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
+
         if self.callback_before is not None:
             self.callback_before(event=self)
         self.on_perform()
         if self.callback_after is not None:
             self.callback_after(event=self)
 
+        # todo: set metrics #self.server.get_time() - perform_start_time
+
     def on_perform(self):
-        stat_log = self.server.stat_log
-        stat_log.s_events_on(time=self.time, delta=-1.0)
-        curr_lag = self.server.get_time() - self.time
-        assert curr_lag >= 0.0, '{}'.format(curr_lag)
-        stat_log.s_events_lag_cur(time=self.time, value=curr_lag)
-        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
-        if stat_log.get_metric('s_events_lag_max') < curr_lag:
-            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
+        pass
 
 
 class Objective(Event):
@@ -328,7 +334,7 @@ class EnterToMapLocation(Event):
         super(EnterToMapLocation, self).on_perform()
         obj = self.server.objects.get(self.obj_id)
         if obj and obj.can_come(agent=self.agent):
-            obj.on_enter(agent=self.agent, time=self.time)
+            obj.on_enter(agent=self.agent, event=self)
         else:
             log.warning('agent %s try to enter the location %s, but access denied', self.agent, obj)
 
@@ -342,7 +348,7 @@ class ReEnterToLocation(Event):
 
     def on_perform(self):
         super(ReEnterToLocation, self).on_perform()
-        self.location.on_re_enter(agent=self.agent, time=self.time)
+        self.location.on_re_enter(agent=self.agent, event=self)
 
 
 class ExitFromMapLocation(Event):
@@ -354,21 +360,21 @@ class ExitFromMapLocation(Event):
     def on_perform(self):
         super(ExitFromMapLocation, self).on_perform()
         if self.agent.current_location:
-            self.agent.current_location.on_exit(agent=self.agent, time=self.time)
+            self.agent.current_location.on_exit(agent=self.agent, event=self)
         else:
             log.warning('agent %s try to exit from location, but location is not found', self.agent)
 
 
 class EnterToNPCEvent(Event):
-    def __init__(self, agent, npc_type, **kw):
+    def __init__(self, agent, npc, **kw):
         super(EnterToNPCEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.npc_type = npc_type
+        self.npc = npc
 
     def on_perform(self):
         super(EnterToNPCEvent, self).on_perform()
         if self.agent.current_location:
-            self.agent.current_location.on_enter_npc(agent=self.agent, time=self.time, npc_type=self.npc_type)
+            self.agent.current_location.on_enter_npc(event=self)
 
 
 class ActivateLocationChats(Event):
@@ -535,24 +541,3 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
-
-
-class ChangeAgentBalanceEvent(Event):
-    def __init__(self, agent_ex, server, **kw):
-        super(ChangeAgentBalanceEvent, self).__init__(server=server, **kw)
-        self.agent_ex = agent_ex
-
-    def on_perform(self):
-        super(ChangeAgentBalanceEvent, self).on_perform()
-        agent = None
-        agent_ex = self.agent_ex
-        # todo: по идее можно сделать так:
-        agent = self.server.agents.get(agent_ex.login, None)
-        if not agent:
-            # todo: Но если так не найдено, то пусть так ищет
-            for agent_model in self.server.agents.values():
-                if agent_model.example is agent_ex:
-                    agent = agent_model
-                    break
-        if agent:
-            ChangeAgentBalance(agent=agent, time=self.time).post()

@@ -22,6 +22,11 @@ class POI(Root):
     def get_modify_value(self, param_name, example_agent=None):
         return getattr(self, param_name, None)
 
+    def distance_to(self, poi):
+        p1 = self.position.as_point()
+        p2 = poi.position.as_point()
+        return p1.distance(p2)
+
 
 class POIObserver(POI):
     p_observing_range = FloatField(caption=u"Радиус подбора лута")
@@ -56,6 +61,11 @@ class Building(Subdoc):
 
 
 class Town(MapLocation):
+    static_image_list = ListField(
+        base_field=StringField(),
+        caption=u'StaticImages', doc=u'Список статических файлов этого города'
+    )
+
     buildings = ListField(  # todo: (!) Обойти все упоминания и исправить интерфейс
         base_field=EmbeddedDocumentField(embedded_document_type=Building),
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.',
@@ -86,16 +96,33 @@ class GasStation(Town):
 
 
 class Institution(Root):
+    karma = FloatField(caption=u"Значение кармы NPC", tags='client')
+    # Сумма следующих 3 коэффициентов должна давать 1
+    koef_karma = FloatField(caption=u"Коэффициент влияния кармы на отношение данного NPC")
+    koef_rel_index = FloatField(caption=u"Коэффициент влияния индекса отношения на отношение данного NPC")
+    koef_pont_points = FloatField(caption=u"Коэффициент влияния очков крутости на отношение данного NPC")
+
+    hometown = UniReferenceField(
+        doc=u"Ссылка на родной город НПЦ, необходимая для подсчёта расстояний между нпц",
+        reference_document_type='sublayers_server.model.registry.classes.poi.MapLocation',
+        caption=u"Родной город НПЦ",
+    )
+
     photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
     text = StringField(caption=u"Текст приветствия", tags='client')
     type = StringField(caption=u"Специальность NPC", tags='client')
-    # quests = ListField(
-    #     caption=u"Квесты",
-    #     base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.quests.Quest'),
-    # )
+    quests = ListField(
+        caption=u"Генераторы квестов",
+        reinst=True,
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+            reinst=True,
+        ),
+    )
 
-    def as_dict4quest(self):  # todo: устранить
-        pass
+    @property
+    def karma_norm(self):
+        return min(max(self.karma / 100, -1), 1)
 
 
 class Trainer(Institution):

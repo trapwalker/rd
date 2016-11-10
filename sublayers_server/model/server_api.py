@@ -28,7 +28,8 @@ class ServerAPI(API):
             if agent_exemplar is None:
                 # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
                 agent_exemplar = self.server.reg['agents/user'].instantiate(
-                    name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id)
+                    name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id),
+                    abstract=False,
                 )
                 yield agent_exemplar.load_references()
                 yield agent_exemplar.save(upsert=True)

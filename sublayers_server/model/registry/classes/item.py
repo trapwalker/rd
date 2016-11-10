@@ -18,7 +18,7 @@ from sublayers_server.model.registry.odm.fields import (
 class Item(Root):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
-    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке')
+    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке', tags='client')
     stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags='client')
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags='client')
@@ -49,6 +49,13 @@ class Item(Root):
         assert temp_amount > 0, 'Item dont split. new amount on splited item = {}'.format(self.amount)
         assert not self.uri, 'Item has URI {!r} and cannot splited'.format(self.uri)
         return self.instantiate(amount=count)
+
+    def instantiate(self, **kw):
+        inst = super(Item, self).instantiate(**kw)
+        if inst.amount > inst.stack_size:
+            log.warning('Item stack owerflow truncated: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=inst))
+            inst.amount = inst.stack_size
+        return inst
 
     # def __str__(self):
     #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
@@ -135,8 +142,6 @@ class MechanicItem(SlotItem):
     a_braking = FloatField(caption=u"Ускорение торможения")
     max_fuel = FloatField(caption=u"Максимальное количество топлива")
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
-
-
 
 
 class TunerItem(SlotItem):

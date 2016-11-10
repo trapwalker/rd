@@ -81,7 +81,8 @@ class InitAgent(Message):
     def as_dict(self):
         d = super(InitAgent, self).as_dict()
         d.update(
-            agent=self.agent.as_dict(time=self.time)
+            agent=self.agent.as_dict(time=self.time),
+            notes=[note.as_client_dict() for note in self.agent.example.notes]
         )
         return d
 
@@ -508,6 +509,24 @@ def patch_svg_links(src, pth):
     return r.sub(r'\1{}\2'.format(pth), src)
 
 
+class PreEnterToLocation(Message):
+    def __init__(self, location, agent, **kw):
+        super(PreEnterToLocation, self).__init__(agent=agent, **kw)
+        self.location = location
+        self.agent = agent
+
+    def as_dict(self):
+        d = super(PreEnterToLocation, self).as_dict()
+        location = self.location
+
+        from sublayers_server.model.map_location import Town, GasStation
+        if isinstance(location, Town) or isinstance(location, GasStation):
+            d.update(static_image_list=location.example.static_image_list)
+        else:
+            log.warn('Unknown type location: %s', location)
+        return d
+
+
 class EnterToLocation(Message):
     def __init__(self, location, agent, **kw):
         super(EnterToLocation, self).__init__(agent=agent, **kw)
@@ -537,6 +556,8 @@ class EnterToLocation(Message):
             log.warn('Unknown type location: %s', location)
         d.update(
             location=self.location.as_dict(time=self.time),
+            relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.get_relationship(npc=npc))
+                      for npc in location.example.get_npc_list()],
             location_html=location_html,
         )
         return d
@@ -715,17 +736,6 @@ class BalanceClsInfo(Message):
                 'name': self.balance_cls_name.name,
             }
         )
-        return d
-
-
-class QuestUpdateMessage(Message):
-    def __init__(self, quest, **kw):
-        super(QuestUpdateMessage, self).__init__(**kw)
-        self.quest = quest
-
-    def as_dict(self):
-        d = super(QuestUpdateMessage, self).as_dict()
-        d['quest'] = self.quest.as_client_dict()
         return d
 
 
@@ -948,6 +958,25 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
         return d
 
 
+class QuestsInitMessage(Message):
+    u"""Отправка всех квестов агента на клиент"""
+    def as_dict(self):
+        d = super(QuestsInitMessage, self).as_dict()
+        d.update(
+            quests=[quest.as_client_dict() for quest in self.agent.example.quests],
+        )
+        q = d['quests'] and d['quests'][0] or None
+        if q and q['hirer'] is None:
+            log.error(
+                '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
+                self.__class__, q,
+                self.agent.example.quests_unstarted,
+                self.agent.example.quests_active,
+                self.agent.example.quests_ended,
+            )
+        return d
+
+
 # Общее сообщение-родитель для всех видов информационных сообщений для города (для заполнения города)
 class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
@@ -1143,4 +1172,15 @@ class ChangeAgentBalance(Message):
             agent_balance=self.agent.balance,
             uid=self.agent.uid
         )
+        return d
+
+
+class ChangeAgentKarma(Message):
+    def as_dict(self):
+        relations = []
+        if self.agent.current_location:
+            relations = [dict(npc_node_hash=npc.node_hash(), relation=self.agent.example.get_relationship(npc=npc))
+                         for npc in self.agent.current_location.example.get_npc_list()]
+        d = super(ChangeAgentKarma, self).as_dict()
+        d.update(relations=relations)
         return d

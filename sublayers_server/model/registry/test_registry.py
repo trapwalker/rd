@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
 from sublayers_server.test_iolop import io_loop, start
 from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.odm.doc import _call_stat
 
@@ -26,7 +26,8 @@ def test_registry():
     log.debug('### test registry')
 
     #log.debug('Delete all: %s', (yield Root.objects.delete()))
-    #reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
+    log.debug('Delete fixtures: %s', (yield Root.objects.filter({'fixtured': True}).delete()))
+    reg = yield Root.load(path=ur'D:\Home\svp\projects\sublayers\sublayers_world\registry')
     #log.debug('Delete all saved objects: %s', (yield Root.objects.filter({'fixtured': False}).delete()))
 
     nodes = yield Root.objects.filter(fixtured=True).find_all()
@@ -60,6 +61,17 @@ def test_registry():
 
     a3 = yield a.objects.get(profile_id='123456')
     print('a3.car =', a3 and a3.car)
+
+    Q = reg[r'quests\examples\n_active']
+    #q = Q.instantiate(abstract=False)
+    #q.start.sync(self=q, agent=None, event=None)
+    #q.do_event(event=None)
+    #q.do_event(event=None)
+
+    print('\n# Test quest integration #')
+
+    
+
 
     
     #a2.position = [123, 456]

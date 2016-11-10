@@ -201,3 +201,44 @@ function stopEvent(event) {
 function getRadialRandomPoint(point, radius) {
     return summVector(point, polarPoint(radius * Math.random(), 2 * Math.PI * Math.random()))
 }
+
+var const_karma_list = ['Новая надежда', 'Мессия', 'Спаситель', 'Святой', 'Герой', 'Страж', 'Борец', 'Спасатель',
+    'Защитник', 'Друг людей', 'Правильный', 'Честный парень', 'Партнер', 'Славный малый', 'Поселенец',
+    'Человек простой', 'Странник', 'Наблюдатель', 'Выживальщик', 'Авантюрист', 'Равнодушный', 'Циник', 'Хулиган',
+    'Жулик', 'Изгой', 'Мошенник', 'Грабитель', 'Захватчик', 'Убийца', 'Псих', 'Больной ублюдок', 'Маньяк', 'Антихрист'];
+
+function getKarmaName(karma) {
+    if (karma >= 1) return const_karma_list[0];
+    if (karma >= 0.85) return const_karma_list[1];
+    if (karma >= 0.75) return const_karma_list[2];
+    if (karma >= 0.65) return const_karma_list[3];
+    if (karma >= 0.6) return const_karma_list[4];
+    if (karma >= 0.55) return const_karma_list[5];
+    if (karma >= 0.5) return const_karma_list[6];
+    if (karma >= 0.45) return const_karma_list[7];
+    if (karma >= 0.4) return const_karma_list[8];
+    if (karma >= 0.35) return const_karma_list[9];
+    if (karma >= 0.3) return const_karma_list[10];
+    if (karma >= 0.25) return const_karma_list[11];
+    if (karma >= 0.2) return const_karma_list[12];
+    if (karma >= 0.15) return const_karma_list[13];
+    if (karma >= 0.1) return const_karma_list[14];
+    if (karma >= 0.05) return const_karma_list[15];    
+    if (karma >= -0.05) return const_karma_list[16];
+    if (karma >= -0.1) return const_karma_list[17];
+    if (karma >= -0.15) return const_karma_list[18];
+    if (karma >= -0.2) return const_karma_list[19];
+    if (karma >= -0.25) return const_karma_list[20];
+    if (karma >= -0.3) return const_karma_list[21];
+    if (karma >= -0.35) return const_karma_list[22];
+    if (karma >= -0.4) return const_karma_list[23];
+    if (karma >= -0.45) return const_karma_list[24];
+    if (karma >= -0.5) return const_karma_list[25];
+    if (karma >= -0.55) return const_karma_list[26];
+    if (karma >= -0.6) return const_karma_list[27];
+    if (karma >= -0.65) return const_karma_list[28];
+    if (karma >= -0.75) return const_karma_list[29];
+    if (karma >= -0.85) return const_karma_list[30];
+    if (karma >= -1) return const_karma_list[31];
+    return const_karma_list[32];
+}

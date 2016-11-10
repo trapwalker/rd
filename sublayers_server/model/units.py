@@ -216,14 +216,14 @@ class Unit(Observer):
         super(Unit, self).on_die(event)
         # Отправка сообщения owner'у о гибели машинки
         if self.owner:
-            self.owner.on_die(object=self, time=event.time)
+            self.owner.on_die(event=event, unit=self)
         # todo: удалить себя и на этом месте создать обломки
         self.delete(time=event.time)
 
         # вернуть агенту стоимость машинки
         if self.owner:
-            self.owner.change_balance(self.example.price, event.time)
-            # todo: возможно это нужно перенести
+            self.owner.example.set_balance(time=event.time, delta=self.example.price)
+            # todo: возможно это нужно перенести (!)
             self.owner.example.car = None
 
         # todo: Сделать другой эвенет, передавать в него не список итемов, а inventory
@@ -336,7 +336,7 @@ class Unit(Observer):
             for w in sector.weapon_list:
                 yield w
 
-    def on_kill(self, time, obj):
+    def on_kill(self, event, obj):
         # Начисление опыта и фрага машинке
         self.example.set_frag(dvalue=1)  # начисляем фраг машинке
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
@@ -508,14 +508,10 @@ class Bot(Mobile):
         if self.owner:
             chat.room.exclude(agent=self.owner, time=time)
 
-    def on_kill(self, time, obj):
+    def on_kill(self, event, obj):
         # Начисление опыта и фрага агенту
-        self.main_agent.on_kill(time=time, obj=obj)
-        super(Bot, self).on_kill(time=time, obj=obj)
-
-    def on_die(self, event):
-        super(Bot, self).on_die(event)
-        # self.main_agent.on_die(object=self, time=event.time)
+        self.main_agent.on_kill(event=event, obj=obj)
+        super(Bot, self).on_kill(event=event, obj=obj)
 
     def on_init(self, event):
         super(Bot, self).on_init(event=event)
