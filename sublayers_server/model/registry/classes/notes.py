@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.tree import Subdoc, get_uuid
 from sublayers_server.model.registry.odm.fields import (
-    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, UUIDField
+    StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, UUIDField,
 )
 
 from sublayers_server.model.messages import Message
@@ -77,6 +77,8 @@ class GetQuestTeachingNote(Note):
 
 class FinishQuestTeachingNote(GetQuestTeachingNote):
     target_note_uid = UUIDField(tags='client')
+    target_build_name = StringField(tags='client')
+    target_build_coord = StringField(tags='client')
 
 class HangarTeachingNote(Note): pass
 class NukoilTeachingNote(Note): pass

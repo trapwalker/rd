@@ -87,8 +87,11 @@ var FinishQuestTeachingNote = (function (_super) {
 
     function FinishQuestTeachingNote(options) {
         _super.call(this, options);
-        this.needed_building = locationManager.buildings.bar;
-        this.build_coord = new Point(958, 240);
+        this.target_build_name = options.target_build_name;
+        var cords_list = options.target_build_coord.split(',');
+        this.build_coord = new Point(parseInt(cords_list[0]), parseInt(cords_list[1]));
+        this.needed_building = locationManager.buildings[this.target_build_name];
+
         this.note_uid = options.target_note_uid;
         this.buy_btn = new Point(325, 608);
         this.third_note_btn =  new Point(735, 420);
@@ -96,7 +99,7 @@ var FinishQuestTeachingNote = (function (_super) {
 
     FinishQuestTeachingNote.prototype.on_enter_location = function() {
         _super.prototype.on_enter_location.call(this);
-        this.needed_building = locationManager.buildings.bar;
+        this.needed_building = locationManager.buildings[this.target_build_name];
     };
 
     FinishQuestTeachingNote.prototype.move_note_to_third = function () {

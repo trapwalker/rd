@@ -45,8 +45,8 @@ var TeachingManager = (function(){
         this.jq_canvas.css('display', 'none');
         this.active = false;
         // Выключить панели обучения
-        this.jq_panel_left.css('display', 'none');
-        this.jq_panel_right.css('display', 'none');
+        if(this.jq_panel_left) this.jq_panel_left.css('display', 'none');
+        if(this.jq_panel_right) this.jq_panel_right.css('display', 'none');
 
         // Нота должна удалиться
         if (this.active_note) {
@@ -69,9 +69,12 @@ var TeachingManager = (function(){
     };
 
     TeachingManager.prototype.on_enter_location = function() {
-        this.activate();
-        if (this.active_note)
+        if (this.active_note) {
+            this.activate();
             this.active_note.on_enter_location();
+        }
+        else
+            this.deactivate();
     };
 
     return TeachingManager;

@@ -45,13 +45,19 @@ var JournalTeachingNote = (function (_super) {
             return;
         }
 
-        if (!journalManager.jq_main_div.find('.journal_page_task').find('.journal-quest-info-block').first().hasClass('active')) {
+        var jq_journal_page_task = journalManager.jq_main_div.find('.journal_page_task');
+        if (
+            jq_journal_page_task.find('.journal-quest-menu-quest').first().hasClass('active') ||
+            jq_journal_page_task.find('.journal-quest-info-block').first().hasClass('active')
+        ) {
+            clientManager.SendQuestNoteAction(this.uid, true); // тут сразу же завершить ноту т.к. больше делать нечего
+        }
+        else {
             teachingManager.jq_panel_left_content.text('Выберите квест.');
             teachingManager.jq_panel_right_content.text('Выберите квест.');
             this.draw_line(this.start_point, this.quest_btn);
         }
-        else
-            clientManager.SendQuestNoteAction(this.uid, true); // тут сразу же завершить ноту т.к. больше делать нечего
+
     };
 
     return JournalTeachingNote;
