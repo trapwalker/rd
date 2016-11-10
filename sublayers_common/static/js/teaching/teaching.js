@@ -67,6 +67,11 @@ var TeachingManager = (function(){
         this.active_note.redraw();
     };
 
+    TeachingManager.prototype.on_enter_location = function() {
+        if (this.active_note)
+            this.active_note.on_enter_location();
+    };
+
     return TeachingManager;
 })();
 

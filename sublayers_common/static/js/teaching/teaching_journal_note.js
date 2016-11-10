@@ -15,6 +15,7 @@ var JournalTeachingNote = (function (_super) {
     }
 
     JournalTeachingNote.prototype.redraw = function() {
+        if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
         if (this.needed_screen_name != locationManager.active_screen_name) {
             _super.prototype.redraw.call(this);

@@ -19,11 +19,18 @@ var TraderTeachingNote = (function (_super) {
         this.filter = null;
     }
 
+    TraderTeachingNote.prototype.on_enter_location = function() {
+        _super.prototype.on_enter_location.call(this);
+        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/bob_ferolito');
+        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/bob_ferolito');
+    };
+
     TraderTeachingNote.prototype.check_table = function () {
         return this.needed_npc.traderTable.length > 1;
     };
 
     TraderTeachingNote.prototype.redraw = function() {
+        if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&

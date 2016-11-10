@@ -18,7 +18,14 @@ var TrainerTeachingNote = (function (_super) {
         this.buy_btn = new Point(325, 608);
     }
 
+    TrainerTeachingNote.prototype.on_enter_location = function() {
+        _super.prototype.on_enter_location.call(this);
+        this.needed_building = locationManager.buildings.library;
+        this.needed_npc = locationManager.npc['reg--registry-institutions-trainer-blackhawk_2094'];
+    };
+
     TrainerTeachingNote.prototype.redraw = function() {
+        if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&

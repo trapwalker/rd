@@ -15,6 +15,11 @@ var GetQuestTeachingNote = (function (_super) {
         this.buy_btn = new Point(325, 608);
     }
 
+    GetQuestTeachingNote.prototype.on_enter_location = function() {
+        _super.prototype.on_enter_location.call(this);
+        this.needed_building = locationManager.buildings.mayor;
+    };
+
     GetQuestTeachingNote.prototype.move_quest_to_start = function () {
         var self = this;
         var active_page = $('#' + this.needed_building.active_central_page);
@@ -28,6 +33,7 @@ var GetQuestTeachingNote = (function (_super) {
     };
 
     GetQuestTeachingNote.prototype.redraw = function() {
+        if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&
@@ -88,6 +94,11 @@ var FinishQuestTeachingNote = (function (_super) {
         this.third_note_btn =  new Point(735, 420);
     }
 
+    FinishQuestTeachingNote.prototype.on_enter_location = function() {
+        _super.prototype.on_enter_location.call(this);
+        this.needed_building = locationManager.buildings.bar;
+    };
+
     FinishQuestTeachingNote.prototype.move_note_to_third = function () {
         var self = this;
         var jq_menu_notes_wrap = this.needed_building.jq_main_div.find('.building-center-menu-block-wrap').first();
@@ -100,6 +111,7 @@ var FinishQuestTeachingNote = (function (_super) {
     };
 
     FinishQuestTeachingNote.prototype.redraw = function() {
+        if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&

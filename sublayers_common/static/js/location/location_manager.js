@@ -225,6 +225,9 @@ var LocationManager = (function () {
         radioPlayer.update();
 
         mapManager.onEnterLocation();
+
+        // Сообщить менеджеру обучения, что произведён вход в город
+        teachingManager.on_enter_location();
     };
 
     LocationManager.prototype.onExit = function () {

@@ -34,6 +34,8 @@ var TeachingNote = (function (_super) {
 
     };
 
+    TeachingNote.prototype.on_enter_location = function() {};
+
     return TeachingNote;
 })(SimpleNote);
 
