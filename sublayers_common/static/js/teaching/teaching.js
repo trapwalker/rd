@@ -56,7 +56,7 @@ var TeachingManager = (function(){
     };
 
     TeachingManager.prototype.update = function(note) {
-        console.log('TeachingManager.prototype.update', note);
+        //console.log('TeachingManager.prototype.update', note);
         if (!this.is_active()) this.activate();
         this.active_note = note;
         this.redraw();
@@ -69,6 +69,7 @@ var TeachingManager = (function(){
     };
 
     TeachingManager.prototype.on_enter_location = function() {
+        this.activate();
         if (this.active_note)
             this.active_note.on_enter_location();
     };
