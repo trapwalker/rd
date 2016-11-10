@@ -4,25 +4,75 @@ var TeachingNote = (function (_super) {
     function TeachingNote(options) {
         _super.call(this, options);
         this.start_point = new Point(1420, 189);
+        this.temp_x = 1800;
     }
 
     TeachingNote.prototype.draw_line = function(p1, p2) {
         var ctx = teachingManager.context;
         ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        //ctx.strokeStyle = '#00ff00';
-        ctx.strokeStyle = '#e2dd10';
-        ctx.stroke();
-        ctx.restore();
+        ctx.lineCap = 'round';
 
+        // Линия до конкретной точкм
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.1)";
+        ctx.lineWidth='8';
+        ctx.moveTo(this.temp_x, p1.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.2)";
+        ctx.lineWidth='5';
+        ctx.moveTo(this.temp_x, p1.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.3)";
+        ctx.lineWidth='3';
+        ctx.moveTo(this.temp_x, p1.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0, 255, 0, 0.4)";
+        ctx.lineWidth='2';
+        ctx.moveTo(this.temp_x, p1.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0, 255, 0, 1)";
+        ctx.lineWidth='1';
+        ctx.moveTo(this.temp_x, p1.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        // Рисуем точку
+        ctx.beginPath();
+        var grd = ctx.createRadialGradient(p2.x, p2.y, 0, p2.x, p2.y, 10);
+        grd.addColorStop(0, "rgba(0, 255, 0, 1)");
+        grd.addColorStop(0.2, "rgba(0, 255, 0, 0.4)");
+        grd.addColorStop(0.4, "rgba(0, 255, 0, 0.6)");
+        grd.addColorStop(0.6, "rgba(0, 255, 0, 0.1)");
+        grd.addColorStop(0.8, "rgba(0, 255, 0, 0.5)");
+        grd.addColorStop(1, "rgba(0, 255, 0, 0)");
+
+        ctx.arc(p2.x, p2.y, 10, 0, 2 * Math.PI, false);
+        ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.restore();
     };
 
     TeachingNote.prototype.redraw = function() {
-        var p1 = new Point(1600, 300);
-        var p2 = getRadialRandomPoint(new Point(500, 500), 50);
-        this.draw_line(p1, p2);
     };
 
     TeachingNote.prototype.delete = function() {
@@ -31,7 +81,6 @@ var TeachingNote = (function (_super) {
             teachingManager.active_note = null;
             teachingManager.deactivate();
         }
-
     };
 
     return TeachingNote;
