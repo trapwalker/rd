@@ -95,6 +95,27 @@ var FinishQuestTeachingNote = (function (_super) {
         this.note_uid = options.target_note_uid;
         this.buy_btn = new Point(325, 608);
         this.third_note_btn =  new Point(735, 420);
+
+        this.text_for_right_navigate = '';
+        this.text_for_left_navigate = '';
+        this.text_for_left_info = '';
+        switch (this.target_build_name){
+            case 'bar':
+                this.text_for_right_navigate = 'Зайдите в здание “Бар”.';
+                this.text_for_left_navigate = 'По заданию вам необходимо передать кое-что в бар.';
+                this.text_for_left_info = 'Вы находитесь в здании “Бар”. Тут находятся бармен и компаньонка. Бармен может предложить интересные задания, а компаньонка поможет хорошо провести свободное время.';
+                break;
+            case 'market':
+                this.text_for_right_navigate = 'Зайдите в здание “Рынок”.';
+                this.text_for_left_navigate = 'По заданию вам необходимо отдать кое-что на рынке.';
+                this.text_for_left_info = 'Вы находитесь в здании рынка. Тут находится торговец.';
+                break;
+            case 'library':
+                this.text_for_right_navigate = 'Зайдите в здание “Библиотека”.';
+                this.text_for_left_navigate = 'По заданию вам необходимо передать кое-что в библиотеке.';
+                this.text_for_left_info = 'Вы находитесь в здании “Библиотека”. Тут находится тренер.';
+                break;
+        }
     }
 
     FinishQuestTeachingNote.prototype.on_enter_location = function() {
@@ -119,21 +140,21 @@ var FinishQuestTeachingNote = (function (_super) {
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&
              (active_place != null))) {
-            teachingManager.jq_panel_left_content.text('По заданию вам необходимо передать кое что в бар.');
-            teachingManager.jq_panel_right_content.text('Зайдите в здание “Бар”.');
+            teachingManager.jq_panel_left_content.text(this.text_for_left_navigate);
+            teachingManager.jq_panel_right_content.text(this.text_for_right_navigate);
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('По заданию вам необходимо передать кое что в бар.');
-            teachingManager.jq_panel_right_content.text('Зайдите в здание “Бар”.');
+            teachingManager.jq_panel_left_content.text(this.text_for_left_navigate);
+            teachingManager.jq_panel_right_content.text(this.text_for_right_navigate);
             this.draw_line(this.start_point, this.build_coord);
         }
 
         if (active_place === this.needed_building) {
-            teachingManager.jq_panel_left_content.text('Вы находитесь в здании “Бар”. Тут находятся бармен и компаньонка. Бармен может предложить интересные задания, а компаньонка поможет хорошо провести свободное время.');
+            teachingManager.jq_panel_left_content.text(this.text_for_left_info);
             var note = active_place.get_active_note();
             this.move_note_to_third();
             if (note && note.uid == this.note_uid) {
@@ -143,7 +164,7 @@ var FinishQuestTeachingNote = (function (_super) {
             }
             else {
                 // Иначе указать на третью плашку
-                teachingManager.jq_panel_right_content.text('Нажмите на кнопку <Первый квест>.');
+                teachingManager.jq_panel_right_content.text('Нажмите на кнопку <Учебная доставка>.');
                 this.draw_line(this.start_point, this.third_note_btn);
             }
         }
