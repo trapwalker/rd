@@ -30,3 +30,14 @@
 
 .panel-info-description ul {margin-top: 2px;}
 .panel-info-description li {}
+
+/* Для внеэкранок обучения */
+
+.panel-info-teaching-left .panel-info-content-wrapper {
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.panel-info-teaching-left .panel-info-content, .panel-info-teaching-right .panel-info-content {
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
