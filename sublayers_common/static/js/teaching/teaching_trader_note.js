@@ -36,24 +36,24 @@ var TraderTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
              (active_place != null))) {
-            _super.prototype.redraw.call(this);
             teachingManager.jq_panel_left_content.text('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании рынка.');
             teachingManager.jq_panel_right_content.text('Зайдите в рынок.');
+            _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            this.draw_line(this.start_point, this.build_coord);
             teachingManager.jq_panel_left_content.text('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании рынка.');
             teachingManager.jq_panel_right_content.text('Зайдите в рынок.');
+            this.draw_line(this.start_point, this.build_coord);
         }
 
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            this.draw_line(this.start_point, this.npc_coord);
             teachingManager.jq_panel_left_content.text('Вы находитесь в здании рынка. Тут находится торговец.');
             teachingManager.jq_panel_right_content.text('Зайдите к торговцу.');
+            this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
@@ -68,12 +68,12 @@ var TraderTeachingNote = (function (_super) {
             }
 
             if (this.check_table()) {
-                this.draw_line(this.start_point, this.buy_btn);
                 teachingManager.jq_panel_right_content.text('Нажмите кнопку <Подтвердить сделку>.');
+                this.draw_line(this.start_point, this.buy_btn);
             }
             else {
-                this.draw_line(this.start_point, this.buy_area);
                 teachingManager.jq_panel_right_content.text('Найдите пулемет в колонке “Товары на продажу” и перекиньте его на столик обмена.');
+                this.draw_line(this.start_point, this.buy_area);
             }
         }
     };
