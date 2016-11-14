@@ -7,51 +7,40 @@ var TeachingNote = (function (_super) {
         this.temp_x = 1800;
     }
 
+    TeachingNote.prototype.async_draw_line = function(p1, p2) {
+        setTimeout(this.draw_line.bind(this, p1, p2), 10);
+    };
+
+    TeachingNote.prototype.draw_stroke_line = function(ctx, points, stroke_style, line_width) {
+        ctx.beginPath();
+        ctx.strokeStyle = stroke_style;
+        ctx.lineWidth=line_width;
+        ctx.moveTo(points[0].x, points[0].y);
+        for (var i = 1; i < points.length; i++)
+             ctx.lineTo(points[i].x, points[i].y);
+        ctx.stroke();
+    };
+
+    // info: нужно вызывать строго после установки внеэкранок. Иначе не сработает автоопределение высоты правой внеэкранки
     TeachingNote.prototype.draw_line = function(p1, p2) {
+        // todo: если не получается вызывать после заполнения внеэкранки, то вызывать async_draw_line
         var ctx = teachingManager.context;
         ctx.save();
         ctx.lineCap = 'round';
 
-        // Линия до конкретной точкм
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(0, 255, 0, 0.1)";
-        ctx.lineWidth='8';
-        ctx.moveTo(this.temp_x, p1.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+        //console.log('h=', teachingManager.jq_panel_right.height());
+        var h = teachingManager.jq_panel_right.height();
+        p1.y = 80 + (h ? h : 0);
 
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(0, 255, 0, 0.2)";
-        ctx.lineWidth='5';
-        ctx.moveTo(this.temp_x, p1.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+        var zero_point = new Point(this.temp_x, p1.y);
+        var points = [zero_point, p1, p2];
 
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(0, 255, 0, 0.3)";
-        ctx.lineWidth='3';
-        ctx.moveTo(this.temp_x, p1.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(0, 255, 0, 0.4)";
-        ctx.lineWidth='2';
-        ctx.moveTo(this.temp_x, p1.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(0, 255, 0, 1)";
-        ctx.lineWidth='1';
-        ctx.moveTo(this.temp_x, p1.y);
-        ctx.lineTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+        // Линии с размытием
+        this.draw_stroke_line(ctx, points, "rgba(0, 255, 0, 0.1)", "8");
+        this.draw_stroke_line(ctx, points, "rgba(0, 255, 0, 0.2)", "5");
+        this.draw_stroke_line(ctx, points, "rgba(0, 255, 0, 0.3)", "3");
+        this.draw_stroke_line(ctx, points, "rgba(0, 255, 0, 0.4)", "2");
+        this.draw_stroke_line(ctx, points, "rgba(0, 255, 0, 1)", "1");
 
         // Рисуем точку
         ctx.beginPath();

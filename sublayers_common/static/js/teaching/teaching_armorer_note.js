@@ -32,26 +32,24 @@ var ArmorerTeachingNote = (function (_super) {
         if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
         if (this.needed_screen_name != locationManager.active_screen_name || (active_place != this.needed_building && active_place != this.needed_npc && active_place != null)) {
-            _super.prototype.redraw.call(this);
             teachingManager.jq_panel_left_content.text('Все специалисты по модификации ТС находятся в здании “Сервис”.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Сервис”.');
+            _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            this.draw_line(this.start_point, this.build_coord);
-
             teachingManager.jq_panel_left_content.text('Все специалисты по модификации ТС находятся в здании “Сервис”.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Сервис”.');
+            this.draw_line(this.start_point, this.build_coord);
         }
         
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            this.draw_line(this.start_point, this.npc_coord);
-
             teachingManager.jq_panel_left_content.text('Вы находитесь в здании “Сервис”. Тут находятся механик, оружейник и стилист. Каждый специалист в своей области.');
             teachingManager.jq_panel_right_content.text('Зайдите к оружейнику.');
+            this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
@@ -59,18 +57,18 @@ var ArmorerTeachingNote = (function (_super) {
             var npc = this.needed_npc;
 
             if (! this.need_rose_activate) { // Значит уже вертели какой-то пулёмет, можно подтверждать
-                this.draw_line(this.start_point, this.buy_btn);
                 teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
                 teachingManager.jq_panel_right_content.text('Нажмите кнопку <Установить>.');
+                this.draw_line(this.start_point, this.buy_btn);
                 return;
             }
 
             var deffered_call = false;
             // Если есть активный слот, нужно вертеть
             if (npc.active_slot && npc.items[npc.active_slot].example) {
-                this.draw_line(this.start_point, this.rose_of_wind_coord);
                 teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
                 teachingManager.jq_panel_right_content.text('Выберите необходимое направление на виджете справа.');
+                this.draw_line(this.start_point, this.rose_of_wind_coord);
                 // Запоминаем направление выбранного итема
                 var new_item_direction = npc.items[npc.active_slot].direction;
                 if (this.last_item_direction == null) this.last_item_direction = new_item_direction;
@@ -88,16 +86,16 @@ var ArmorerTeachingNote = (function (_super) {
                 // Если не выбран слот, значит нужно либо установить оружие, либо выбрать слот
                 if (this.need_weapon_drag) {
                     // рисовать указатели на инвентарь и на машинку
-                    this.draw_line(this.start_point, this.inventory_coord);
-                    this.draw_line(this.start_point, this.car_coord);
                     teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
                     teachingManager.jq_panel_right_content.text('Найдите пулемет в инвентаре и перетащите его в слот автомобиля.');
+                    this.draw_line(this.start_point, this.inventory_coord);
+                    this.draw_line(this.start_point, this.car_coord);
                 }
                 else {
                     // рисовать указатель на выбор слота (на машинку)
-                    this.draw_line(this.start_point, this.car_coord);
                     teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
                     teachingManager.jq_panel_right_content.text('Выберите оружие для изменения направления.');
+                    this.draw_line(this.start_point, this.car_coord);
                 }
             }
             if (deffered_call) setTimeout(function(){teachingManager.redraw();}, 10);

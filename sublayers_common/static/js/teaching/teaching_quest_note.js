@@ -119,17 +119,17 @@ var FinishQuestTeachingNote = (function (_super) {
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&
              (active_place != null))) {
-            _super.prototype.redraw.call(this);
             teachingManager.jq_panel_left_content.text('По заданию вам необходимо передать кое что в бар.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Бар”.');
+            _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            this.draw_line(this.start_point, this.build_coord);
             teachingManager.jq_panel_left_content.text('По заданию вам необходимо передать кое что в бар.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Бар”.');
+            this.draw_line(this.start_point, this.build_coord);
         }
 
         if (active_place === this.needed_building) {
@@ -138,13 +138,13 @@ var FinishQuestTeachingNote = (function (_super) {
             this.move_note_to_third();
             if (note && note.uid == this.note_uid) {
                 // Если мы активировали правильную ноту
-                this.draw_line(this.start_point, this.buy_btn);
                 teachingManager.jq_panel_right_content.text('Нажмите на кнопку <Сдать>.');
+                this.draw_line(this.start_point, this.buy_btn);
             }
             else {
                 // Иначе указать на третью плашку
-                this.draw_line(this.start_point, this.third_note_btn);
                 teachingManager.jq_panel_right_content.text('Нажмите на кнопку <Первый квест>.');
+                this.draw_line(this.start_point, this.third_note_btn);
             }
         }
     };
