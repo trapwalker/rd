@@ -6,6 +6,7 @@ var TeachingNote = (function (_super) {
         this.start_point = new Point(1420, 189);
         this.temp_x = 1800;
         this.first_call_draw_line_on_redraw = true;
+        this.special_color_str = '170, 255, 60,'
     }
 
     TeachingNote.prototype.async_draw_line = function(p1, p2) {
@@ -48,9 +49,9 @@ var TeachingNote = (function (_super) {
 
             // Линия - граница правой внеэкранной области
             var grad = ctx.createLinearGradient(this.temp_x, p1.y, p1.x, p1.y);
-            grad.addColorStop(0, "rgba(0, 255, 0, 0)");
-            grad.addColorStop(0.5, "rgba(0, 255, 0, 1)");
-            grad.addColorStop(1, "rgba(0, 255, 0, 0)");
+            grad.addColorStop(0, "rgba(" + this.special_color_str + " 0)");
+            grad.addColorStop(0.5, "rgba(" + this.special_color_str + " 1)");
+            grad.addColorStop(1, "rgba(" + this.special_color_str + " 1)");
             this.draw_stroke_line(ctx, [new Point(this.temp_x, p1.y), p1], grad);
 
             // Линия граница левой внеэкранки
@@ -58,28 +59,28 @@ var TeachingNote = (function (_super) {
             var lp1 = new Point(105, left_y);
             var lp2 = new Point(490, left_y);
             var gradleft = ctx.createLinearGradient(lp1.x, lp1.y, lp2.x, lp2.y);
-            gradleft.addColorStop(0, "rgba(0, 255, 0, 0)");
-            gradleft.addColorStop(0.5, "rgba(0, 255, 0, 1)");
-            gradleft.addColorStop(1, "rgba(0, 255, 0, 0)");
+            gradleft.addColorStop(0, "rgba(" + this.special_color_str + " 0)");
+            gradleft.addColorStop(0.5, "rgba(" + this.special_color_str + " 1)");
+            gradleft.addColorStop(1, "rgba(" + this.special_color_str + " 0)");
             this.draw_stroke_line(ctx, [lp1, lp2], gradleft);
         }
 
         // Линия-указатель с размытием
         var grad2 = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
-        grad2.addColorStop(0, "rgba(0, 255, 0, 0)");
-        grad2.addColorStop(0.4, "rgba(0, 255, 0, 1)");
-        grad2.addColorStop(1, "rgba(0, 255, 0, 1)");
+        grad2.addColorStop(0, "rgba(" + this.special_color_str + " 1)");
+        grad2.addColorStop(0.4, "rgba(" + this.special_color_str + " 1)");
+        grad2.addColorStop(1, "rgba(" + this.special_color_str + " 1)");
         this.draw_stroke_line(ctx, [p1, p2], grad2);
 
         // Рисуем точку
         ctx.beginPath();
         var grd = ctx.createRadialGradient(p2.x, p2.y, 0, p2.x, p2.y, 10);
-        grd.addColorStop(0, "rgba(0, 255, 0, 1)");
-        grd.addColorStop(0.2, "rgba(0, 255, 0, 0.4)");
-        grd.addColorStop(0.4, "rgba(0, 255, 0, 0.6)");
-        grd.addColorStop(0.6, "rgba(0, 255, 0, 0.1)");
-        grd.addColorStop(0.8, "rgba(0, 255, 0, 0.5)");
-        grd.addColorStop(1, "rgba(0, 255, 0, 0)");
+        grd.addColorStop(0, "rgba(" + this.special_color_str + " 1)");
+        grd.addColorStop(0.2, "rgba(" + this.special_color_str + " 0.4)");
+        grd.addColorStop(0.4, "rgba(" + this.special_color_str + " 0.6)");
+        grd.addColorStop(0.6, "rgba(" + this.special_color_str + " 0.1)");
+        grd.addColorStop(0.8, "rgba(" + this.special_color_str + " 0.5)");
+        grd.addColorStop(1, "rgba(" + this.special_color_str + " 0)");
 
         ctx.arc(p2.x, p2.y, 10, 0, 2 * Math.PI, false);
         ctx.strokeStyle = "rgba(0, 0, 0, 0)";

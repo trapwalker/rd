@@ -41,6 +41,7 @@
 /*}*/
 
 .panel-info-teaching-left .panel-info-content, .panel-info-teaching-right .panel-info-content {
-    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    text-shadow: 0 0 1px #aaff4e, 0 0 10px #aaff4e;
     text-align: center;
+    color: #aaff4e;  /*170, 255, 60*/
 }
