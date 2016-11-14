@@ -15,7 +15,6 @@ from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
 
-from sublayers_server.model.registry.storage import Collection
 from sublayers_server.model.registry.tree import Root
 
 import os
