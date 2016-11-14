@@ -65,6 +65,8 @@ var TeachingManager = (function(){
     TeachingManager.prototype.redraw = function() {
         if (!this.is_active() || !this.active_note) return;
         this.context.clearRect(0, 0, 1920, 1080);
+
+        this.active_note.first_call_draw_line_on_redraw = true;  // Чтобы нота подчёркивала внеэкранку только 1 раз
         this.active_note.redraw();
     };
 
