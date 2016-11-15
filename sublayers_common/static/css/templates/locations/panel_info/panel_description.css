@@ -42,7 +42,7 @@
 /*}*/
 
 .panel-info-teaching-left .panel-info-content, .panel-info-teaching-right .panel-info-content {
-    text-shadow: 0 0 1px #adff2f, 0 0 10px #adff2f;
+    text-shadow: 0 0 1px #c0ff00, 0 0 10px #c0ff00;
     text-align: center;
-    color: #adff2f;  /*173, 255, 47*/
+    color: #c0ff00;  /*192, 255, 0*/
 }
