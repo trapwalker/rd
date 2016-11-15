@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -52,6 +53,8 @@ define("world_path", default='../sublayers_world', help="Path to world data", ty
 define("zones_disable", default=False, help="Zones activation disable", type=bool)
 
 define("quick_debug", default=False, help="quick debug flag", type=bool)
+
+define("mode", default="basic", help="server mode. available values: basic, quick", type=str)
 
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)

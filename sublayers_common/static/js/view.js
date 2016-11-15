@@ -32,7 +32,7 @@ $(document).ready(function () {
     user = new User(1, 1000);
     ownerList = new OwnerList();
 
-    ws_connector = new WSConnector();
+    ws_connector = new WSConnector({url: 'ws://'+ $('#settings_host_name').text() + $('#settings_server_mode').text() + '/ws'});
 
     rpcCallList = new RPCCallList();
 
