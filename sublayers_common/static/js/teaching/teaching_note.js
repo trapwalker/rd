@@ -6,7 +6,7 @@ var TeachingNote = (function (_super) {
         this.start_point = new Point(1420, 189);
         this.temp_x = 1800;
         this.first_call_draw_line_on_redraw = true;
-        this.special_color_str = '170, 255, 60,'
+        this.special_color_str = '173, 255, 47,'
     }
 
     TeachingNote.prototype.async_draw_line = function(p1, p2) {

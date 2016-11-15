@@ -2,6 +2,7 @@
     position: relative;
     width: 100%;
     /*height: 200px;*/
+    max-height: 200px;
     font: 16px Nouveau_IBM;
     color: #2ffa00;
     box-sizing: border-box;
@@ -41,7 +42,7 @@
 /*}*/
 
 .panel-info-teaching-left .panel-info-content, .panel-info-teaching-right .panel-info-content {
-    text-shadow: 0 0 1px #aaff4e, 0 0 10px #aaff4e;
+    text-shadow: 0 0 1px #adff2f, 0 0 10px #adff2f;
     text-align: center;
-    color: #aaff4e;  /*170, 255, 60*/
+    color: #adff2f;  /*173, 255, 47*/
 }
