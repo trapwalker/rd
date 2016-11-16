@@ -69,9 +69,9 @@ class Server(object):
         self.visibility_mng = VisibilityManager(server=self)
 
         # todo: QuickGame settings fix it
-        self.quick_game_cars_proto = []
-        self.quick_game_start_pos = Point(12468002, 26989281)
-
+        if options.mode == 'quick':
+            self.quick_game_cars_proto = []
+            self.quick_game_start_pos = Point(12468002, 26989281)
 
         #self.ioloop.add_callback(callback=self.load_registry)
 
@@ -122,6 +122,18 @@ class Server(object):
         else:
             log.info('Zones activation disabled')
 
+        if options.mode == 'basic':
+            self.on_load_poi(event)
+        elif options.mode == 'quick':
+            self.on_load_poi_quick_mode(event)
+
+        # Создание экземпляров машинок для быстрой игры
+        for car_proto in self.reg['world_settings'].quick_game_car:
+            self.quick_game_cars_proto.append(car_proto)
+
+        print('Load world complete !')
+
+    def on_load_poi(self, event):
         # загрузка радиоточек
         towers_root = self.reg['poi/radio_towers']
         for rt_exm in towers_root:
@@ -141,7 +153,13 @@ class Server(object):
         for car_proto in self.reg['world_settings'].quick_game_car:
             self.quick_game_cars_proto.append(car_proto)
 
-        print('Load world complete !')
+    def on_load_poi_quick_mode(self, event):
+        # todo: загрузить только одну специально созданную радио-точку
+        # загрузка радиоточек
+        towers_root = self.reg['poi/radio_towers']
+        for rt_exm in towers_root:
+            RadioPoint(time=event.time, example=rt_exm, server=self)
+
 
     def post_message(self, message):
         """
