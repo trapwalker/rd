@@ -60,11 +60,6 @@ class User(Document):
             self.auth.standard.email = email
 
     @property
-    def is_quick_user(self):
-        # todo: ##refactoring Убрать это свойство
-        return self.quick
-
-    @property
     def id(self):
         return self._id
 
