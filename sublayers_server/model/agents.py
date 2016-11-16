@@ -544,11 +544,6 @@ class Agent(Object):
 
 # todo: Переименовать в UserAgent
 class User(Agent):
-    # todo: realize
-    def __init__(self, **kw):
-        super(User, self).__init__(**kw)
-        self.kalman = KalmanLatLong(15)  # todo: use adaptive speed
-
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
         d['user_name'] = self.user.name

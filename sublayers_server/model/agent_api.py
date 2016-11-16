@@ -524,43 +524,6 @@ class AgentAPI(API):
         self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment, time=self.agent.server.get_time())
 
     @public_method
-    def set_position(self, projection, position=None, comment=None):
-        log.debug('set_position {self.agent}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals()))
-        if self.car is None or self.car.limbo or not self.car.is_alive:
-            return
-
-        try:
-            p = Point(projection['x'], projection['y']) if projection else None
-        except Exception as e:
-            log.warning('Wrong coordinates: %r // %r', projection, position)
-            return
-
-        p_filtered = None
-        kalman = getattr(self.agent, 'kalman')
-        if position and kalman:
-            kalman.process(p.y, p.x, position['accuracy'], position['timestamp'])
-            p_filtered = Point(kalman.get_lng(), kalman.get_lat())
-            dbg = (
-                'KALMAN({username}): p={p}; pf={p_filtered}; dp={dp}; '
-                'src_accur={position[accuracy]}; flt_accur={kaccur}'
-            ).format(
-                username=self.agent.user and self.agent.user.name,
-                dp = p - p_filtered,
-                kaccur=kalman.get_accuracy(),
-                **locals()
-            )
-            log.debug(dbg)
-            comment = dbg
-            try:
-                fn = 'log/tracks/{username}.track'.format(username=self.agent.user.name)
-                with open(fn, 'a') as tracklog:
-                    tracklog.write('{position} # {dbg}\n'.format(**locals()))
-            except Exception as e:
-                log.exception("Can't store track point")
-
-        self.car.set_position(time=self.agent.server.get_time(), point=p_filtered or p, comment=comment)
-
-    @public_method
     def delete_car(self):
         if self.car.limbo or not self.car.is_alive:
             return
