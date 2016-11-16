@@ -589,6 +589,14 @@ class QuickUser(User):
     def on_die(self, event, unit):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
+    def on_kill(self, event, obj):
+        log.debug('%s:: on_kill(%s)', self, obj)
+        self.example.set_frag(dvalue=1)  # начисляем фраг агенту
+
+        # добавить хп своей машинке
+        if self.car:
+            self.car.set_hp(time=event.time, dhp=-10)
+
 
 # todo: Переиеновать в AIAgent
 class AI(Agent):
