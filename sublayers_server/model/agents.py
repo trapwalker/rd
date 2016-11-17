@@ -574,7 +574,7 @@ class QuickUser(User):
 
     def append_car(self, time, **kw):
         super(QuickUser, self).append_car(time=time, **kw)
-        # Запомнить время старта
+        # Сбросить время старта и количество фрагов
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
         self.user.car_index = None
@@ -595,7 +595,6 @@ class QuickUser(User):
 
     def on_kill(self, event, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
-        self.example.set_frag(dvalue=1)  # начисляем фраг агенту
         self.quick_game_kills += 1
         # добавить хп своей машинке
         if self.car:

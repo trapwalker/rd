@@ -31,6 +31,7 @@ class PlayHandler(BaseHandler):
                                 server_mode=options.mode,
                                 host_name=options.mobile_host, user_name=user.name, first_enter=True)
                 else:
+                    # todo: убрать понятие car_die и просто выдавать новую машинку
                     if not user.car_die:
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
                                     server_mode=options.mode,
