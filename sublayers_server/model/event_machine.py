@@ -126,10 +126,9 @@ class Server(object):
             self.on_load_poi(event)
         elif options.mode == 'quick':
             self.on_load_poi_quick_mode(event)
-
-        # Создание экземпляров машинок для быстрой игры
-        for car_proto in self.reg['world_settings'].quick_game_car:
-            self.quick_game_cars_proto.append(car_proto)
+            # Создание экземпляров машинок для быстрой игры
+            for car_proto in self.reg['world_settings'].quick_game_car:
+                self.quick_game_cars_proto.append(car_proto)
 
         print('Load world complete !')
 
@@ -148,10 +147,6 @@ class Server(object):
         gs_root = self.reg['poi/locations/gas_stations']
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
-
-        # Создание экземпляров машинок для быстрой игры
-        for car_proto in self.reg['world_settings'].quick_game_car:
-            self.quick_game_cars_proto.append(car_proto)
 
     def on_load_poi_quick_mode(self, event):
         # todo: загрузить только одну специально созданную радио-точку
