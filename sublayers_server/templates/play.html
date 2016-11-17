@@ -99,6 +99,10 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
 
+    {% if server_mode == 'quick' %}
+        <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
+    {% end %}
+
     <script src="{{ static_url('js/third_party/leaflet-src.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>

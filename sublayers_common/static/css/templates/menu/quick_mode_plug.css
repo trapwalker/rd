@@ -1,0 +1,21 @@
+.quickMode-main {
+    position: relative;
+    height: 300px;
+    width: 430px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #31c811;
+    font: 12pt Nouveau_IBM;
+}
+
+.quick-mode-window-wrap {
+    position: relative;
+    margin: 2px auto;
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
+    width: calc(100% - 4px);
+    height: calc(100% - 30px);
+    padding: 50px;
+    text-align: center;
+    font-size: 20px;
+    line-height: 35px;
+}
