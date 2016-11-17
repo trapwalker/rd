@@ -126,6 +126,7 @@ class ServerAPI(API):
     @tornado.gen.coroutine
     def get_agent_teaching(self, user, do_disconnect=False):
         # User здесь обязательно QuickUser
+        assert not user.quick
         log.info('!!! get_agent_teaching_mode  !!!!')
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
@@ -144,7 +145,7 @@ class ServerAPI(API):
                 yield agent_exemplar.save(upsert=True)
 
             log.debug('User agent exemplar: %s', agent_exemplar)
-            agent = User(
+            agent = QuickUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),
@@ -157,7 +158,7 @@ class ServerAPI(API):
 
         log.info('GameUser INFO: %s    [car_index=%s, car_die=%s, car=%s]', user.name, user.car_index, user.car_die, agent.example.car)
 
-        if not user.car_die and agent.example.car is None:
+        if agent.example.car is None:
             log.info('Gameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
             # Создание "быстрой" машинки
             agent.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)

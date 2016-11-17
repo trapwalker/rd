@@ -592,12 +592,12 @@ var ClientManager = (function () {
         modalWindow.modalDialogInfoShow({
             caption: 'Car Crash',
             header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы можете зарегистрироваться на сайте и играть полноценно.',
+            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали ' + event.points + ' баллов!',
             callback_ok: function () {
                 window.location.reload();
             }
         });
-        window.location = '/#quick';
+        //window.location = '/#quick';
     };
 
     ClientManager.prototype.Chat = function (event){
@@ -1002,7 +1002,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.QuickConsumerPanelInfoMessage = function (event) {
         //console.log('ClientManager.prototype.QuickConsumerPanelInfoMessage', event);
-        wFireController.updateQuickConsumerPanel(event.quick_panel);
+        if (wFireController) wFireController.updateQuickConsumerPanel(event.quick_panel);
     };
 
     ClientManager.prototype.NPCTransactionMessage = function (event) {

@@ -22,7 +22,6 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.kalman import KalmanLatLong
 
 from tornado.options import options
 import tornado.gen
@@ -565,9 +564,10 @@ class QuickUser(User):
     def __init__(self, **kw):
         super(QuickUser, self).__init__(**kw)
         self.time_quick_game_start = None
+        self.quick_game_kills = 0
 
     def _quick_profile_save(self, time):
-        self.user.time_quick_game = time - self.time_quick_game_start
+        self.user.time_quick_game = self.get_quick_game_points(time)
         self.user.car_die = True
         # todo: refactor callback - must be callable
         tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb)
@@ -576,6 +576,7 @@ class QuickUser(User):
         super(QuickUser, self).append_car(time=time, **kw)
         # Запомнить время старта
         self.time_quick_game_start = self.server.get_time()
+        self.quick_game_kills = 0
         self.user.car_index = None
         # todo: refactor callback - must be callable
         tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb2)
@@ -586,13 +587,16 @@ class QuickUser(User):
             self._quick_profile_save(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
+    def get_quick_game_points(self, time):
+        return round(time - self.time_quick_game_start) + self.quick_game_kills * 100
+
     def on_die(self, event, unit):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
-
+        self.quick_game_kills += 1
         # добавить хп своей машинке
         if self.car:
             self.car.set_hp(time=event.time, dhp=-10)

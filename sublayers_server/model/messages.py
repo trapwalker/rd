@@ -116,6 +116,7 @@ class QuickGameDie(Message):
     def as_dict(self):
         d = super(QuickGameDie, self).as_dict()
         d.update(
+            points=self.agent.get_quick_game_points(time=self.time),
             object=self.obj.as_dict(time=self.time),
         )
         return d
