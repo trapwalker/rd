@@ -95,7 +95,7 @@ class ServerAPI(API):
 
         log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
-        if agent.example.car is None:
+        if agent.example.car is None or agent.car is None:
             log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
             # Создание "быстрой" машинки
             try:
@@ -114,8 +114,6 @@ class ServerAPI(API):
             agent.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
             agent.example.current_location = None
             agent.current_location = None
-            # todo: Не забыть на быструю машинку повесить пулемёты !
-            log.info('Server API: New QuickGameAgent is connected and New Car is Ready !!!!!!: %s', agent)  # todo: fix text
         else:
             if agent and do_disconnect:
                 if agent.connection:
