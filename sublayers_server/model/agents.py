@@ -598,7 +598,7 @@ class QuickUser(User):
         self.quick_game_kills += 1
         # добавить хп своей машинке
         if self.car:
-            self.car.set_hp(time=event.time, dhp=-10)
+            self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
 
 
 # todo: Переиеновать в AIAgent
