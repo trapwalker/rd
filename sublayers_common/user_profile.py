@@ -45,8 +45,6 @@ class User(Document):
 
     quick = BooleanField(default=False)
     car_index = IntField(default=None)
-    time_quick_game = IntField(default=0)
-    car_die = BooleanField(default=None)
     ordinal_number = IntField(default=None)
     date_created = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)
     avatar_link = StringField(default='/static/content/default_images/default_avatar_170_146.png', max_length=255)

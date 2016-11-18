@@ -106,9 +106,7 @@ class StandardLoginHandler(BaseSiteHandler):
             quick_user = self.current_user if self.current_user.quick else None
             if quick_user and quick_user.name == nickname:
                 quick_user.car_index = qg_car_index
-                quick_user.car_die = False
                 yield quick_user.save()
-                log.info('Save quick_user.car_die = False')
                 self.finish({'status': 'Такой пользователь существует'})
                 return
 

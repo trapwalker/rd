@@ -76,9 +76,11 @@ class GetRatingInfo(BaseSiteHandler):
 
 
 class GetQuickGameRecords(BaseSiteHandler):
-    @tornado.gen.coroutine
     def post(self):
+        # quick_users = self.application.db.quick_game_records.filter({'quick': True}).order_by('points', -1).limit(50).find_all()
+        quick_users = self.application.db.quick_game_records.find().sort("points", -1).limit(50)
         # todo: Сделать метод в классе User для этого действия
-        quick_users = yield User.objects.filter({'quick': True}).order_by('time_quick_game', -1).limit(10).find_all()
+        # quick_users = yield User.objects.filter({'quick': True}).order_by('time_quick_game', -1).limit(10).find_all()
         # todo: Вывод их через шаблон, + отправка их количества, чтобы можно было как-то обработать на клиенте
         self.render('table_ratings_quick_game.html', quick_users=quick_users)
+

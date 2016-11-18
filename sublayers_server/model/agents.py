@@ -550,27 +550,22 @@ class User(Agent):
         return d
 
 
-def test_cb(f):
-    pass
-    # print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
-
-
-def test_cb2(f):
-    pass
-    # print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
-
-
 class QuickUser(User):
     def __init__(self, **kw):
         super(QuickUser, self).__init__(**kw)
         self.time_quick_game_start = None
         self.quick_game_kills = 0
 
-    def _quick_profile_save(self, time):
-        self.user.time_quick_game = self.get_quick_game_points(time)
-        self.user.car_die = True
-        # todo: refactor callback - must be callable
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb)
+    def _add_quick_game_record(self, time):
+        # pymongo add to quick_game_records
+        self.server.app.db.quick_game_records.insert(
+            {
+                'name': self.user.name,
+                'user_uid': self.user.id,
+                'points': self.get_quick_game_points(time),
+                'time': self.server.get_time()
+            }
+        )
 
     def append_car(self, time, **kw):
         super(QuickUser, self).append_car(time=time, **kw)
@@ -578,13 +573,10 @@ class QuickUser(User):
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
         self.user.car_index = None
-        # todo: refactor callback - must be callable
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb2)
 
     def drop_car(self, car, time, **kw):
         if car is self.car:
-            # Если удаляется своя машинка, то сохранить профиль
-            self._quick_profile_save(time=time)
+            self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):

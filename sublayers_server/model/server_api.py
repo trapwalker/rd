@@ -93,9 +93,9 @@ class ServerAPI(API):
         else:
             agent.user = user  # Обновить юзера
 
-        log.info('QuickGameUser INFO: %s    [car_index=%s, car_die=%s, car=%s]', user.name, user.car_index, user.car_die, agent.example.car)
+        log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
-        if not user.car_die and agent.example.car is None:
+        if agent.example.car is None:
             log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
             # Создание "быстрой" машинки
             try:
@@ -156,7 +156,7 @@ class ServerAPI(API):
 
         user.car_index = randint(0, len(self.server.quick_game_cars_proto) - 1)
 
-        log.info('GameUser INFO: %s    [car_index=%s, car_die=%s, car=%s]', user.name, user.car_index, user.car_die, agent.example.car)
+        log.info('GameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
         if agent.example.car is None:
             log.info('Gameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
