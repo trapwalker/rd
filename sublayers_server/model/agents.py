@@ -18,13 +18,15 @@ from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
 )
+from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 
 from tornado.options import options
-import tornado.gen
+
+import tornado.web
 
 
 # todo: make agent offline status possible
@@ -592,6 +594,27 @@ class QuickUser(User):
         if self.car:
             self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
 
+    @tornado.gen.coroutine
+    def init_example_car(self):
+        user = self.user
+        log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
+        # Создание "быстрой" машинки
+        try:
+            user.car_index = int(user.car_index)
+        except:
+            user.car_index = 0
+
+        if user.car_index < 0 or user.car_index >= len(self.server.quick_game_cars_proto):
+            log.warning('Unknown QuickGame car index %s', user.car_index)
+            user.car_index = 0
+        else:
+            user.car_index = int(user.car_index)
+        self.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
+        yield self.example.car.load_references()
+
+        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
+        self.example.current_location = None
+        self.current_location = None
 
 # todo: Переиеновать в AIAgent
 class AI(Agent):

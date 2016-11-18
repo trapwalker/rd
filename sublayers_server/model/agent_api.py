@@ -32,6 +32,8 @@ from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
 from sublayers_server.model.quest_events import OnNote, OnQuestChange
 from tornado.options import options
 
+import tornado.gen
+
 # todo: Проверить допустимость значений входных параметров
 
 import random
@@ -892,8 +894,13 @@ class AgentAPI(API):
 
     @public_method
     def quick_play_again(self):
-        # todo: зафиксировать факт жульничества
+        def callback(*kw):
+            api.update_agent_api(time=api.agent.server.get_time())
+
+        api = self
         if (options.mode != 'quick') or (self.agent.car is not None):
+            # todo: зафиксировать факт жульничества
+            log.warning('Lie!!!!')
             return
-        self.make_car(time=self.agent.server.get_time())
-        self.send_init_car_map(time=self.agent.server.get_time())
+        tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
+

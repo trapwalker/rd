@@ -96,24 +96,7 @@ class ServerAPI(API):
         log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
         if agent.example.car is None or agent.car is None:
-            log.info('QuickGameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
-            # Создание "быстрой" машинки
-            try:
-                user.car_index = int(user.car_index)
-            except:
-                user.car_index = 0
-
-            if user.car_index < 0 or user.car_index >= len(self.server.quick_game_cars_proto):
-                log.warning('Unknown QuickGame car index %s', user.car_index)
-                user.car_index = 0
-            else:
-                user.car_index = int(user.car_index)
-            agent.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
-            yield agent.example.car.load_references()
-
-            agent.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
-            agent.example.current_location = None
-            agent.current_location = None
+            yield agent.init_example_car()
         else:
             if agent and do_disconnect:
                 if agent.connection:

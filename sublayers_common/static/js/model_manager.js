@@ -589,15 +589,18 @@ var ClientManager = (function () {
     ClientManager.prototype.QuickGameDie = function (event) {
         // console.log('ClientManager.prototype.QuickGameDie');
         //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
-        modalWindow.modalDialogInfoShow({
+        modalWindow.modalQuickGamePointsPageShow({
             caption: 'Car Crash',
             header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали ' + event.points + ' баллов!',
+            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
             callback_ok: function () {
-                window.location.reload();
+                clientManager.sendQuickPlayAgain();
+                modalWindow.modalQuickGamePointsPageHide();
+            },
+            callback_cancel: function() {
+                window.location = '/#quick';
             }
         });
-        //window.location = '/#quick';
     };
 
     ClientManager.prototype.Chat = function (event){
@@ -2130,11 +2133,11 @@ var ClientManager = (function () {
 
     // Быстрая игра (играть еще раз)
      ClientManager.prototype.sendQuickPlayAgain = function () {
-        console.log('ClientManager.prototype.sendQuickPlayAgain');
+        //console.log('ClientManager.prototype.sendQuickPlayAgain');
         var mes = {
             call: "quick_play_again",
             rpc_call_id: rpcCallList.getID(),
-            params: { }
+            params: {}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
