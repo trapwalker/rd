@@ -2128,6 +2128,18 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Быстрая игра (играть еще раз)
+     ClientManager.prototype.sendQuickPlayAgain = function () {
+        console.log('ClientManager.prototype.sendQuickPlayAgain');
+        var mes = {
+            call: "quick_play_again",
+            rpc_call_id: rpcCallList.getID(),
+            params: { }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();
 

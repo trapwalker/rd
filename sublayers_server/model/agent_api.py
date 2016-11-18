@@ -30,6 +30,7 @@ from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBart
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
 from sublayers_server.model.quest_events import OnNote, OnQuestChange
+from tornado.options import options
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -888,3 +889,11 @@ class AgentAPI(API):
                 self.update_agent_api(time=event.time + 0.1)
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
+
+    @public_method
+    def quick_play_again(self):
+        # todo: зафиксировать факт жульничества
+        if (options.mode != 'quick') or (self.agent.car is not None):
+            return
+        self.make_car(time=self.agent.server.get_time())
+        self.send_init_car_map(time=self.agent.server.get_time())
