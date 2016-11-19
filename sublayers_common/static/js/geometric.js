@@ -242,3 +242,12 @@ function getKarmaName(karma) {
     if (karma >= -1) return const_karma_list[31];
     return const_karma_list[32];
 }
+
+function getQuickUserLogin(login) {
+    var parts = login.split('_');
+    if (parts.length == 0) return '';
+    var res = parts[0];
+    for (var i = 1; i < parts.length - 1; i++)
+        res += '_' + parts[i];
+    return res;
+}

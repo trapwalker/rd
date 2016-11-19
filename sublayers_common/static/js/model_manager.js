@@ -73,7 +73,7 @@ var ClientManager = (function () {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party);
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser"));
                 return ownerList.add(owner);
             }
         return null;
@@ -352,6 +352,8 @@ var ClientManager = (function () {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
+            user.quick = event.agent.cls == "QuickUser";
+
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 this.sendGetPartyInfo(event.agent.party.name);

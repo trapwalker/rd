@@ -551,7 +551,7 @@ var User = (function () {
         this.login = null;
         this.userCar = null;
         this.balance = 0;
-
+        this.quick = false;
 
         this.example_car = null;
         this.example_agent = null;
@@ -560,19 +560,18 @@ var User = (function () {
         this.car_npc_info = null;
     }
 
-
     return User;
 })();
 
 // Владелец машины
 var Owner = (function () {
-    function Owner(uid, login, aParty) {
+    function Owner(uid, login, aParty, quick) {
         this.uid = uid;
         this.login = login;
         this.cars = [];
         this.party = aParty;
+        this.quick = quick;
     }
-
 
     Owner.prototype.bindCar = function (aCar) {
         if (!this.car(aCar.ID)) {
@@ -581,7 +580,6 @@ var Owner = (function () {
         }
         return this;
     };
-
 
     Owner.prototype.unbindCar = function (aCar) {
         for (var i = 0; i < this.cars.length; i++)
@@ -592,7 +590,6 @@ var Owner = (function () {
         return this;
     };
 
-
     Owner.prototype.unbindAllCars = function () {
         for (; this.cars.length > 0;) {
             var tcar = this.cars.pop();
@@ -601,7 +598,6 @@ var Owner = (function () {
         return this;
     };
 
-
     Owner.prototype.car = function (aID) {
         for (var i = 0; i < this.cars.length; i++)
             if (this.cars[i].ID === aID)
@@ -609,12 +605,10 @@ var Owner = (function () {
         return null;
     };
 
-
     Owner.prototype.setParty = function (aParty) {
         this.party = aParty;
         return this;
     };
-
 
     return Owner;
 })();

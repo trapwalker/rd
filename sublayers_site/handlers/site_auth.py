@@ -120,13 +120,13 @@ class StandardLoginHandler(BaseSiteHandler):
         login_free = False
         email = ''
         password = str(randint(0,999999))
-        username = nickname + str(randint(0,999999))
+        username = '{}_{}'.format(nickname, str(randint(0, 999999)))
         while not login_free:
             email = username + '@' + username  # todo: Предотвратить заполнение email заведомо ложной информацией
             login_free = ((yield User.get_by_email(email=email)) is None) and \
                          ((yield User.get_by_name(name=username)) is None)
             if not login_free:
-                username = nickname + str(randint(0,999999))
+                username = '{}_{}'.format(nickname, str(randint(0, 999999)))
 
         user = User(name=username, email=email, raw_password=password, car_index=qg_car_index, quick=True)
         result = yield user.save()

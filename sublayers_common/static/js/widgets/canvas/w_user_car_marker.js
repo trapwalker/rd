@@ -126,9 +126,15 @@ var WCanvasCarMarker = (function (_super) {
         // Вывод лейбла
         if (this.car.owner || this.car == user.userCar) {
             var owner = this.car.owner || user;
-            var party_str = "";
-            if (owner.party != null) party_str = '[' + owner.party.name + ']';
-            var label_str = owner.login + party_str;
+            var label_str = '';
+            if (owner.quick)
+                label_str = getQuickUserLogin(owner.login);
+            else {
+                var party_str = "";
+                if (owner.party != null) party_str = '[' + owner.party.name + ']';
+                label_str = owner.login + party_str;
+            }
+
             ctx.textAlign = "center";
             ctx.textBaseline = "center";
             ctx.font = "8pt MICRADI";
