@@ -562,7 +562,7 @@ class QuickUser(User):
         # pymongo add to quick_game_records
         self.server.app.db.quick_game_records.insert(
             {
-                'name': self.user.name,
+                'name': '_'.join(self.user.name.split('_')[:-1]),
                 'user_uid': self.user.id,
                 'points': self.get_quick_game_points(time),
                 'time': self.server.get_time()

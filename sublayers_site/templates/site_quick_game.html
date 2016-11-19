@@ -14,7 +14,7 @@
                        {% if current_user %}
                            {% set quick_game_user = current_user if current_user.quick else None %}
                            {% if quick_game_user %}
-                                value="{{ quick_game_user.name }}"
+                                value="{{ '_'.join(quick_game_user.name.split('_')[:-1]) }}"
                            {%end%}
                        {%end%}
                         >
