@@ -8,6 +8,7 @@ var WRadiationRadial = (function (_super) {
     function WRadiationRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
+        this.max_radiation_dps = 20;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WRadiationRadial' + (-generator_ID.getID());
@@ -265,9 +266,7 @@ var WRadiationRadial = (function (_super) {
 
     WRadiationRadial.prototype.change = function () {
         //console.log('WRadiationRadial.prototype.change');
-        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
-        // todo: определить способ плавного изменения области заливки
-        //this.draw_fill_area(prc);
+        this.draw_fill_area(this.car.radiation_dps / this.max_radiation_dps);
     };
 
     WRadiationRadial.prototype.delFromVisualManager = function () {

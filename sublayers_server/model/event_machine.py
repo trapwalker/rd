@@ -10,6 +10,7 @@ from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
+from sublayers_server.model.radiation import StationaryRadiation
 from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
@@ -148,13 +149,24 @@ class Server(object):
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
-    def on_load_poi_quick_mode(self, event):
-        # todo: загрузить только одну специально созданную радио-точку
-        # загрузка радиоточек
-        towers_root = self.reg['poi/radio_towers']
-        for rt_exm in towers_root:
-            RadioPoint(time=event.time, example=rt_exm, server=self)
+        # todo: Сделать загрузку стационарных точек радиации
 
+    def on_load_poi_quick_mode(self, event):
+        # загрузка радиоточки
+        tower = self.reg['poi/quick_game_poi/quick_game_radio_tower']
+        if tower:
+            tower.position = self.quick_game_start_pos
+            RadioPoint(time=event.time, example=tower, server=self)
+
+        # Установка точки радиации-быстрой игры
+        quick_rad = self.reg['poi/quick_game_poi/quick_game_radiation_area']
+        if quick_rad:
+            quick_rad.position = self.quick_game_start_pos
+            StationaryRadiation(time=event.time, example=quick_rad, server=self)
+        quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
+        if quick_rad_anti:
+            quick_rad_anti.position = self.quick_game_start_pos
+            StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
 
     def post_message(self, message):
         """

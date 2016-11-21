@@ -43,6 +43,10 @@ class RadioTower(POIObserver):
     pass
 
 
+class RadiationArea(POIObserver):
+    radiation_dps = FloatField(caption=u"DPS зоны радиации")
+
+
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
 

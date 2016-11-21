@@ -527,6 +527,8 @@ var ClientManager = (function () {
             case 'RadioPoint':  // todo: раскоментировать, когда радиоточки будут установлены или сделать через куки-настройки
                 //console.log('Radio Towers are hidden');
                 break;
+            case 'StationaryQuickRadiation': break;
+            case 'StationaryRadiation': break;
             case 'Town':
             case 'POILoot':
             case 'POIContainer':
@@ -637,6 +639,15 @@ var ClientManager = (function () {
             console.error('Error! Пришла высота на неизветную машинку!')
     };
 
+    ClientManager.prototype.ChangeRadiation = function(event){
+         //console.log('ClientManager.prototype.ChangeRadiation ', event);
+        if (user.userCar && event.obj_id == user.userCar.ID){
+            user.userCar.radiation_dps += event.radiation_dps;
+        }
+        else
+            console.error('Error! Пришла радиация на неизветную машинку!')
+    };
+
     ClientManager.prototype.UpdateObservingRange = function (event) {
         //console.log('ClientManager.prototype.UpdateObservingRange ', event);
         var car = this._getMObj(event.obj_id);
@@ -671,7 +682,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
-        //console.log('ClientManager.prototype.FireAutoEffect', event)
+        //console.log('ClientManager.prototype.FireAutoEffect', event);
         if (event.action)
             fireEffectManager.addController({
                 subj: event.subj,

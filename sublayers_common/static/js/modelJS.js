@@ -184,6 +184,7 @@ var UserCar = (function (_super) {
         this.v_backward = aVBackward;
         this.fireSidesMng = new FireSideMng();
         this.altitude = 0.0;
+        this.radiation_dps = 0.0;
         this.radius_visible = aObservingRange;  // todo: поискать и стереть
     }
 
