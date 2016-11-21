@@ -219,6 +219,10 @@ class Observer(VisibleObject):
                                                          example_agent=getattr(self, 'owner_example', None)),
                   name='p_vigilance',
                   owner=self)
+        Parameter(original=self.example.get_modify_value(param_name='p_armor',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_armor',
+                  owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
 

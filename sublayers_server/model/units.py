@@ -48,7 +48,9 @@ class Unit(Observer):
                   owner=self)
 
         self.hp_state = HPState(
-            t=time, hp=self.example.hp,
+            owner=self,
+            t=time,
+            hp=self.example.hp,
             max_hp=self.example.get_modify_value(param_name='max_hp', example_agent=self.owner_example),
         )
         self._direction = direction or self.example.direction
@@ -88,9 +90,15 @@ class Unit(Observer):
     def max_hp(self):
         return self.hp_state.max_hp
 
-    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None):
+    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, weapon=None):
         HPTask(
-            owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter,
+            owner=self,
+            dhp=dhp,
+            dps=dps,
+            add_shooter=add_shooter,
+            del_shooter=del_shooter,
+            shooter=shooter,
+            weapon=weapon,
         ).start(time=time)
 
     def setup_weapons(self, time):

@@ -51,6 +51,7 @@ class Mobile(Root):
     p_obs_range_rate_max = FloatField(caption=u"Коэффициент радиуса обзора при скорости = 0", tags="parameter")
 
     # атрибуты от Unit
+    p_armor              = FloatField(caption=u"Броня машинки", tags="parameter")
     p_radiation_armor = FloatField(caption=u"Уровень защиты от радиации (0-100)", tags="parameter")
 
 
