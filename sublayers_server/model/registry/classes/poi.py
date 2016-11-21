@@ -39,6 +39,7 @@ class PoiStash(POIObserver):
 
 
 class RadioTower(POIObserver):
+    radio_point_name = StringField(caption=u'Техническое имя', tags='client')
     pass
 
 
