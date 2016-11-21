@@ -187,8 +187,8 @@ class ChatRoom(object):
 
     def on_message(self, agent, msg_text, time):
         # формирование мессаджа
-        msg = ChatMessage(time=time, text=msg_text, sender_login=agent.user.name,
-                          recipients_login=[member.user.name for member in self.members], chat_name=self.name)
+        msg = ChatMessage(time=time, text=msg_text, sender_login=agent.print_login(),
+                          recipients_login=[member.print_login() for member in self.members], chat_name=self.name)
         # добавление в историю
         self.history.append(msg)
         if len(self.history) > self.history_len:
@@ -198,7 +198,7 @@ class ChatRoom(object):
 
     def send_history(self, recipient, time):
         for msg in self.history:
-            if recipient.user.name in msg.recipients_login:
+            if recipient.print_login() in msg.recipients_login:
                 ChatRoomMessage(agent=recipient, msg=msg, time=time).post()
 
 

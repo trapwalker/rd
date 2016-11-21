@@ -1,8 +1,4 @@
-{% set print_name = agent.user.name %}
-{% if agent.user.quick %}
-    {% set print_name = '_'.join(print_name.split('_')[:-1]) %}
-{% end %}
-{% set window_caption = 'Nuke:\PersonInfo>' + print_name %}
+{% set window_caption = 'Nuke:\PersonInfo>' + agent.print_login() %}
 
 {% set car = agent.car.example %}
 <div class="personWindow-main">
@@ -22,7 +18,7 @@
                 <div class="person-window-person-photo" style="background: url('{{ agent.user.avatar_link }}') 100% 100% no-repeat transparent; ">
                     <div class="npc-name-div">
                         <span class="npc-name">
-                            {{ print_name }}
+                            {{ agent.print_login() }}
                         </span>
                     </div>
                 </div>

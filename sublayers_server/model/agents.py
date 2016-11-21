@@ -542,6 +542,8 @@ class Agent(Object):
         if new_example_inventory:
             self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
 
+    def print_login(self):
+        return self.user.name
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -562,7 +564,7 @@ class QuickUser(User):
         # pymongo add to quick_game_records
         self.server.app.db.quick_game_records.insert(
             {
-                'name': '_'.join(self.user.name.split('_')[:-1]),
+                'name': self.print_login(),
                 'user_uid': self.user.id,
                 'points': self.get_quick_game_points(time),
                 'time': self.server.get_time()
@@ -615,6 +617,9 @@ class QuickUser(User):
         self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
         self.example.current_location = None
         self.current_location = None
+
+    def print_login(self):
+        return '_'.join(self.user.name.split('_')[:-1])
 
 # todo: Переиеновать в AIAgent
 class AI(Agent):

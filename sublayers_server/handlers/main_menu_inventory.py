@@ -64,13 +64,7 @@ class BarterInventoryHandler(BaseHandler):
             my_table_id = barter.recipient_table_obj.uid
             other_table_id = barter.initiator_table_obj.uid
 
-        initiator_name = barter.initiator.user.name
-        if barter.initiator.user.quick:
-            initiator_name = '_'.join(initiator_name.split('_')[:-1])
-        recipient_name = barter.recipient.user.name
-        if barter.recipient.user.quick:
-            recipient_name = '_'.join(recipient_name.split('_')[:-1])
-        barter_name = '{!r} <=> {!r}'.format(initiator_name, recipient_name)  # todo: use unicode
+        barter_name = '{!r} <=> {!r}'.format(barter.initiator.print_login(), barter.recipient.print_login())  # todo: use unicode
 
         if agent.current_location is None:
             self.render("inventory_barter_window.html", agent=agent, inv_id=inv_id, barter=barter,

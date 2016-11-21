@@ -40,12 +40,9 @@ class AddInviteBarterMessage(Message):
 
     def as_dict(self):
         d = super(AddInviteBarterMessage, self).as_dict()
-        initiator = self.barter.initiator.user.name
-        if self.barter.initiator.user.quick:
-            initiator = '_'.join(initiator.split('_')[:-1])
         d.update(
             barter_id=self.barter.id,
-            initiator=initiator,
+            initiator=self.barter.initiator.print_login(),
         )
         return d
 
