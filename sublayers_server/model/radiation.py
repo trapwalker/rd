@@ -28,45 +28,37 @@ class ChangeRadiation(Message):
 class StationaryRadiation(Observer):
     def __init__(self, **kw):
         super(StationaryRadiation, self).__init__(**kw)
-        self.targets = []
+        self.targets = dict()
         self.radiation_dps = self.example.radiation_dps
-        self.effects = []  # todo: забирать названия эффектов из экзампла
-
-    def _on_effects(self, obj, time):
-        if obj not in self.targets and obj.is_frag:
-            self.targets.append(obj)
-            for effect in self.effects:
-                effect.start(owner=obj, time=time)
-
-    def _off_effects(self, obj, time):
-        if obj in self.targets:
-            for effect in self.effects:
-                effect.done(owner=obj, time=time)
-            self.targets.remove(obj)
 
     def on_before_delete(self, event):
-        targets = self.targets[:]
-        for target in targets:
-            self._off_effects(obj=target, time=event.time)
-            target.set_hp(time=event.time, dps=-self.radiation_dps)
-        assert len(self.targets) == 0
+        for obj_id, dps in self.targets.iteritems():
+            obj = self.server.objects[obj_id]
+            if obj:
+                obj.set_hp(time=event.time, dps=-dps)
+        self.targets = dict()
         super(StationaryRadiation, self).on_before_delete(event=event)
 
     def on_kill(self, **kw):
         pass
 
+    def calc_radiation_dps(self, obj, time):
+        return self.radiation_dps * (1. - obj.params.get('p_radiation_armor').value / 100.)
+
     def on_contact_in(self, time, obj):
         super(StationaryRadiation, self).on_contact_in(time=time, obj=obj)
-        if isinstance(obj, Unit):
-            self._on_effects(obj=obj, time=time)
-            obj.set_hp(time=time, dps=self.radiation_dps)
+        if isinstance(obj, Unit) and obj.id not in self.targets:
+            dps = self.calc_radiation_dps(obj=obj, time=time)
+            self.targets[obj.id] = dps
+            obj.set_hp(time=time, dps=dps)
             if obj.main_agent:
-                ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=self.radiation_dps, obj_id=obj.id).post()
+                ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=dps, obj_id=obj.id).post()
 
     def on_contact_out(self, time, obj):
         super(StationaryRadiation, self).on_contact_out(time=time, obj=obj)
-        if isinstance(obj, Unit):
-            self._off_effects(obj=obj, time=time)
-            obj.set_hp(time=time, dps=-self.radiation_dps)
+        if isinstance(obj, Unit) and obj.id in self.targets:
+            dps = self.targets[obj.id]
+            del self.targets[obj.id]
+            obj.set_hp(time=time, dps=-dps)
             if obj.main_agent:
-                ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=-self.radiation_dps, obj_id=obj.id).post()
+                ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=-dps, obj_id=obj.id).post()

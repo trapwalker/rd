@@ -40,6 +40,13 @@ class Unit(Observer):
         self.owner_example = None if self.owner is None else self.owner.example
         super(Unit, self).__init__(time=time, **kw)
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
+
+        # Установка параметров
+        Parameter(original=self.example.get_modify_value(param_name='p_radiation_armor',
+                                                         example_agent=getattr(self, 'owner_example', None)),
+                  name='p_radiation_armor',
+                  owner=self)
+
         self.hp_state = HPState(
             t=time, hp=self.example.hp,
             max_hp=self.example.get_modify_value(param_name='max_hp', example_agent=self.owner_example),

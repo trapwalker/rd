@@ -49,6 +49,11 @@ class Mobile(Root):
     p_visibility_max     = FloatField(caption=u"Максимальный коэффициент заметности", tags="parameter")
     p_obs_range_rate_min = FloatField(caption=u"Коэффициент радиуса обзора при максимальной скорости", tags="parameter")
     p_obs_range_rate_max = FloatField(caption=u"Коэффициент радиуса обзора при скорости = 0", tags="parameter")
+
+    # атрибуты от Unit
+    p_radiation_armor = FloatField(caption=u"Уровень защиты от радиации (0-100)", tags="parameter")
+
+
     # Модификаторы эффектов зон
     m_cc_dirt            = FloatField(caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier')
     m_cc_wood            = FloatField(caption=u"Модификатор CC в лесу", tags='parameter p_modifier')
