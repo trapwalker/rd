@@ -90,7 +90,12 @@ class Unit(Observer):
     def max_hp(self):
         return self.hp_state.max_hp
 
-    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, weapon=None):
+    def restart_weapons(self, time):
+        print 'UNIT  restart_weapons'
+        self.hp_state.restart_weapons(time)
+
+    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, weapon=None,
+               view_effect=True):
         HPTask(
             owner=self,
             dhp=dhp,
@@ -99,6 +104,7 @@ class Unit(Observer):
             del_shooter=del_shooter,
             shooter=shooter,
             weapon=weapon,
+            view_effect=view_effect,
         ).start(time=time)
 
     def setup_weapons(self, time):
