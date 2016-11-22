@@ -105,7 +105,7 @@ class WeaponAuto(Weapon):
 
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
-        car.set_hp(dps=dps, add_shooter=self.owner, time=time, weapon=self)
+        car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.targets.append(car)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
@@ -113,7 +113,7 @@ class WeaponAuto(Weapon):
 
     def _stop_fire_to_car(self, car, time):
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
-            car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, weapon=self)
+            car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
         del self.dps_list[car.id]
         self.targets.remove(car)
         for agent in self.owner.subscribed_agents:

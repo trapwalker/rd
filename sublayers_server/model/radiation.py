@@ -36,7 +36,7 @@ class StationaryRadiation(Observer):
             obj = self.server.objects[obj_id]
             if obj:
                 # info: можно сделать targets.keys()  и вызывать self.radiation_off
-                obj.set_hp(time=event.time, dps=-dps, del_shooter=self, weapon=self, view_effect=False)
+                obj.set_hp(time=event.time, dps=-dps, del_weapon=self)
                 if obj.main_agent:
                     ChangeRadiation(agent=obj.main_agent, time=event.time, radiation_dps=dps, obj_id=obj_id).post()
         self.targets = dict()
@@ -56,7 +56,7 @@ class StationaryRadiation(Observer):
         if isinstance(obj, Unit) and obj.id not in self.targets:
             dps = self.calc_radiation_dps(obj=obj, time=time)
             self.targets[obj.id] = dps
-            obj.set_hp(time=time, dps=dps, add_shooter=self, weapon=self, view_effect=False)
+            obj.set_hp(time=time, dps=dps, add_weapon=self)
             if obj.main_agent:
                 ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=dps, obj_id=obj.id).post()
 
@@ -64,7 +64,7 @@ class StationaryRadiation(Observer):
         if isinstance(obj, Unit) and obj.id in self.targets:
             dps = self.targets[obj.id]
             del self.targets[obj.id]
-            obj.set_hp(time=time, dps=-dps, del_shooter=self, weapon=self, view_effect=False)
+            obj.set_hp(time=time, dps=-dps, del_weapon=self)
             if obj.main_agent:
                 ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=-dps, obj_id=obj.id).post()
 

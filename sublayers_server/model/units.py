@@ -93,8 +93,8 @@ class Unit(Observer):
     def restart_weapons(self, time):
         self.hp_state.restart_weapons(time)
 
-    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, weapon=None,
-               view_effect=True):
+    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, add_weapon=None,
+               del_weapon=None):
         HPTask(
             owner=self,
             dhp=dhp,
@@ -102,8 +102,8 @@ class Unit(Observer):
             add_shooter=add_shooter,
             del_shooter=del_shooter,
             shooter=shooter,
-            weapon=weapon,
-            view_effect=view_effect,
+            add_weapon=add_weapon,
+            del_weapon=del_weapon,
         ).start(time=time)
 
     def setup_weapons(self, time):
