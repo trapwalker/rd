@@ -46,7 +46,6 @@ class StationaryRadiation(Observer):
         pass
 
     def restart_fire_to_car(self, car, time):
-        print 'radiation restart_fire_to_car'
         self.radiation_off(obj=car, time=time)
         self.radiation_on(obj=car, time=time)
 

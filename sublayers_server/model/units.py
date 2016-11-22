@@ -45,7 +45,7 @@ class Unit(Observer):
         Parameter(original=self.example.get_modify_value(param_name='p_radiation_armor',
                                                          example_agent=getattr(self, 'owner_example', None)),
                   name='p_radiation_armor',
-                  owner=self)
+                  owner=self, min_value=0.0, max_value=100.)
 
         self.hp_state = HPState(
             owner=self,
@@ -91,7 +91,6 @@ class Unit(Observer):
         return self.hp_state.max_hp
 
     def restart_weapons(self, time):
-        print 'UNIT  restart_weapons'
         self.hp_state.restart_weapons(time)
 
     def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, weapon=None,
