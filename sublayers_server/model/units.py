@@ -14,7 +14,7 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import (
-    FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
+    Event, FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
 )
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
@@ -181,7 +181,7 @@ class Unit(Observer):
             if sector.side == side:
                 sector.fire_discharge(time=time)
 
-    def on_fire_auto_enable(self, enable, time):
+    def on_fire_auto_enable(self, enable, time, event=None):
         # log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
         if self.turn_on_auto_fire == enable:
             return
@@ -286,7 +286,7 @@ class Unit(Observer):
 
     def on_before_delete(self, event):
         # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
-        self.on_fire_auto_enable(enable=False, time=event.time)
+        self.on_fire_auto_enable(enable=False, time=event.time, event=event)
 
         # снять все таски стрельбы по нам
         tasks = self.tasks[:]
@@ -497,6 +497,7 @@ class Bot(Mobile):
     def __init__(self, time, **kw):
         super(Bot, self).__init__(time=time, **kw)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
+        self.start_shield_event = None
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
@@ -528,6 +529,12 @@ class Bot(Mobile):
         self.main_agent.on_kill(event=event, obj=obj)
         super(Bot, self).on_kill(event=event, obj=obj)
 
+    def start_shield_off(self, event):
+        self.start_shield_event = None
+        self.params.get('p_radiation_armor').current -= 100
+        self.params.get('p_armor').current -= 100
+        self.restart_weapons(time=event.time)
+
     def on_init(self, event):
         super(Bot, self).on_init(event=event)
         # если при инициализации машина не движется, то включить возможный пассивнх хил
@@ -535,11 +542,37 @@ class Bot(Mobile):
             self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
                                                                             example_agent=self.owner_example))
 
+        # Включение стартовой неуязвимости:
+        if self.example.start_shield_time > 0:
+            self.params.get('p_radiation_armor').current += 100
+            self.params.get('p_armor').current += 100
+            self.restart_weapons(time=event.time)
+            # todo: use event_deco
+            self.start_shield_event = Event(server=self.server, time=event.time + self.example.start_shield_time,
+                                            callback_after=self.start_shield_off)
+            self.start_shield_event.post()
+
+    def on_fire_discharge(self, event):
+        super(Bot, self).on_fire_discharge(event=event)
+        if self.start_shield_event:
+            self.start_shield_event.cancel()
+            self.start_shield_off(event=event)
+
+    def on_fire_auto_enable(self, event=None, **kw):
+        super(Bot, self).on_fire_auto_enable(event=event, **kw)
+        if self.start_shield_event:
+            self.start_shield_event.cancel()
+            self.start_shield_off(event=event)
+
     def on_start(self, event):
         super(Bot, self).on_start(event=event)
         # todo: убедиться, что отрицательное значение - хорошая идея
         self.set_hp(time=event.time, dps=self.example.get_modify_value(param_name='repair_rate_on_stay',
                                                                        example_agent=self.owner_example))
+
+        if self.start_shield_event:
+            self.start_shield_event.cancel()
+            self.start_shield_off(event=event)
 
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)

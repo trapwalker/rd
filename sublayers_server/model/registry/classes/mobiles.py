@@ -169,6 +169,8 @@ class Mobile(Root):
         caption=u"Таблица опыта",
     )
 
+    start_shield_time           = FloatField(caption=u"Время действия стартового щита при появлении на карте")
+
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots(tags='armorer') if isinstance(v, Weapon))
 
