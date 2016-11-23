@@ -19,7 +19,7 @@ import yaml.scanner
 import os
 
 from mongoengine import Document
-from mongoengine.fields import StringField, BooleanField, UUIDField, ListField, EmbeddedDocumentField
+from mongoengine.fields import StringField, BooleanField, UUIDField, ListField, ReferenceField, EmbeddedDocumentField
 
 from sublayers_server.model.registry_me.uri import URI
 # from sublayers_server.model.registry_me.odm.fields import (
@@ -118,8 +118,8 @@ class Node(Doc):
     fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
     uri = StringField(sparse=True, identify=True)
     abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
-    parent = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
-    owner = UniReferenceField(reference_document_type='sublayers_server.model.registry.tree.Node')
+    parent = ReferenceField(reference_document_type='sublayers_server.model.registr_me.tree.Node')
+    owner = ReferenceField(reference_document_type='sublayers_server.model.registry_me.tree.Node')
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     name = StringField()
     doc = StringField()

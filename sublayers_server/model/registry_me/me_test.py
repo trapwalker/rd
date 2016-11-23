@@ -13,42 +13,14 @@ if __name__ == '__main__':
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from mongoengine import connect, Document, QuerySet
-from mongoengine.fields import StringField, UUIDField, ReferenceField, CachedReferenceField
-
-
-class CachedQuerySet(QuerySet):
-    __objects_cache = {}
-
-    def next(self):
-        """Wrap the result in a :class:`~mongoengine.Document` object.
-        """
-        if self._limit == 0 or self._none:
-            raise StopIteration
-
-        raw_doc = self._cursor.next()
-        if self._as_pymongo:
-            return self._get_as_pymongo(raw_doc)
-
-        id = raw_doc['_id']
-        doc = self.__objects_cache.get(id, None)
-        if doc is None:
-            doc = self._document._from_son(
-                raw_doc,
-                _auto_dereference=self._auto_dereference,
-                only_fields=self.only_fields,
-            )
-
-        if self._scalar:
-            return self._get_scalar(doc)
-
-        return doc
+from mongoengine.fields import IntField, StringField, UUIDField, ReferenceField, CachedReferenceField
 
 
 class Node(Document):
     meta = dict(
         collection='registry',
         allow_inheritance=True,
-        queryset_class=CachedQuerySet,
+        #queryset_class=CachedQuerySet,
     )
     uri = StringField(unique=True, primary_key=True, null=True)
     uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
@@ -58,7 +30,7 @@ class Node(Document):
         return 'reg:///_/{}'.format(self.uid)
 
     def __init__(self, uri=None, **kw):
-        super(Node, self).__init__(uri=uri, **kw)
+        super(Node, self).__init__(uri=uri, __only_fields=self._fields.keys(), **kw)
         if self.uri is None:
             self.uri = self.make_uri()
 
@@ -66,16 +38,25 @@ class Node(Document):
         return self.to_json()
 
     __str__ = __repr__
-                
+
+    def __getattribute__(self, name):
+        return super(Node, self).__getattribute__(name)
+
+
+class C(Node):
+    x = IntField(null=True)
+    y = IntField(null=True)
+    z = IntField(null=True)
 
 
 if __name__ == '__main__':
     db = connect(db='test_me')
+    print ('delete:', Node.objects.delete())
 
     Node.objects.delete()
-    a = Node(uri='reg:///a')
-    b = Node(uri='reg:///b')
-    aa = Node(uri='reg:///a/a', parent=a)
+    a = C(x=3, y=7, uri='reg:///a')
+    b = C(x=5, uri='reg:///b')
+    aa = C(uri='reg:///a/a', parent=a)
 
     a.save()
     b.save()
@@ -83,9 +64,6 @@ if __name__ == '__main__':
 
     print('=' * 60)
     pp(list(Node.objects.all()))
-
     aa2 = Node.objects.get(uri='reg:///a/a')
     aa3 = Node.objects.get(uri='reg:///a/a')
-
-
-
+    print('cached:', aa2.parent is aa3.parent)
