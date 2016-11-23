@@ -7,12 +7,11 @@ import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes import notes
 from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField
+    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
 )
 
 from functools import partial, wraps
@@ -196,6 +195,7 @@ class QuestState(Root):
 # - sale(login|location|npc, [items], cost=None)
 # - time(duration)
 # - trigger(name, value=None)
+# - set_timer(name, duration)
 # - heal(login|prototype|uid, count=1)
 
 # Действия:
@@ -520,6 +520,15 @@ class Quest(Root):
         new_state = getattr(self, '_go_state_name', None)
         if new_state:
             self.set_state(new_state, event)
+
+    def set_timer(self, event, name=None, time=None, delay=None):
+        if time is None:
+            time = event.time
+
+        if delay is not None:
+            time += delay
+
+        return quest_events.OnTimer(server=event.server, time=time, quest=self, name=name).post()
 
     def log(self, text, event=None, position=None, **kw):
         rendered_text = self._template_render(text, position=position, **kw)
