@@ -378,3 +378,10 @@ class Agent(Root):
             # отправить сообщение на клиент
             if self._agent_model:
                 DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()
+
+
+class AIQuickAgent(Agent):
+    ai_quest = EmbeddedDocumentField(
+        embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+        reinst=True,
+    )

@@ -48,6 +48,14 @@ class AIQuickAgent(Agent):
             self.car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
             self.append_car(car=self.car, time=event.time)
 
+            quest = self.example.ai_quest
+            new_quest = quest.instantiate(abstract=False, hirer=None)
+            new_quest.agent = self.example
+            if new_quest.generate(event=event):
+                self.example.add_quest(quest=new_quest, time=event.time)
+                self.example.start_quest(new_quest.uid, time=self.server.get_time(), server=self.server)
+            else:
+                del new_quest
         else:
             self.timer_restart_car(time=event.time+30.)
 

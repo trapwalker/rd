@@ -190,7 +190,7 @@ class Server(object):
             # Создать AIQuickAgent
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.reg['agents/user/quick'].instantiate(
+                agent_exemplar = self.reg['agents/ai'].instantiate(
                     #storage=self.application.reg_agents,
                     login=user.name,
                     profile_id=str(user._id),

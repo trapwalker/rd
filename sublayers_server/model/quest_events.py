@@ -24,7 +24,7 @@ class QuestEvent(Event):
 
 class OnTimer(QuestEvent):
     def __init__(self, name=None, uid=None, **kw):
-        super(OnNote, self).__init__(**kw)
+        super(OnTimer, self).__init__(**kw)
         self.name = name
         self.uid = uid
         # todo: register timer in quest for search by name or UID
