@@ -18,9 +18,12 @@ from sublayers_server.model.vectors import Point
 
 from sublayers_server.model.registry.tree import Root
 
+from sublayers_common.user_profile import User as UserProfile
+
 import os
 import sys
 import tornado.ioloop
+import tornado.gen
 from time import sleep
 from threading import Thread
 from collections import deque
@@ -73,6 +76,7 @@ class Server(object):
         if options.mode == 'quick':
             self.quick_game_cars_proto = []
             self.quick_game_start_pos = Point(12468002, 26989281)
+            self.quick_bots = []
 
         #self.ioloop.add_callback(callback=self.load_registry)
 
@@ -130,6 +134,8 @@ class Server(object):
             # Создание экземпляров машинок для быстрой игры
             for car_proto in self.reg['world_settings'].quick_game_car:
                 self.quick_game_cars_proto.append(car_proto)
+            # Создание AIQuickBot'ов
+            self.ioloop.add_callback(callback=self.load_ai_quick_bots)
 
         print('Load world complete !')
 
@@ -167,6 +173,42 @@ class Server(object):
         if quick_rad_anti:
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
+
+    @tornado.gen.coroutine
+    def load_ai_quick_bots(self):
+        from sublayers_server.model.registry.classes.agents import Agent
+        from sublayers_server.model.ai_quick_agent import AIQuickAgent
+        # Создать 5 Ботов
+        for i in range(1, 3):
+            # Найти или создать профиль
+            name = 'quick_bot_{}'.format(i)
+            user = yield UserProfile.get_by_name(name=name)
+            if user is None:
+                user = UserProfile(name=name, email='quick_bot_{}@1'.format(i), raw_password='1')
+                yield user.save()
+
+            # Создать AIQuickAgent
+            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            if agent_exemplar is None:
+                agent_exemplar = self.reg['agents/user/quick'].instantiate(
+                    #storage=self.application.reg_agents,
+                    login=user.name,
+                    profile_id=str(user._id),
+                    name=str(user._id),
+                    fixtured=False,
+                )
+                yield agent_exemplar.load_references()
+                role_class_ex = self.reg['rpg_settings/role_class/chosen_one']
+                agent_exemplar.role_class = role_class_ex
+                yield agent_exemplar.save(upsert=True)
+
+            log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
+            agent = AIQuickAgent(
+                server=self,
+                user=user,
+                time=self.get_time(),
+                example=agent_exemplar,
+            )
 
     def post_message(self, message):
         """

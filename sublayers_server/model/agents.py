@@ -620,8 +620,3 @@ class QuickUser(User):
 
     def print_login(self):
         return '_'.join(self.user.name.split('_')[:-1])
-
-# todo: Переиеновать в AIAgent
-class AI(Agent):
-    # todo: realize in future
-    pass

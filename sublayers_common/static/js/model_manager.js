@@ -69,7 +69,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
@@ -509,7 +509,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        //console.log('ClientManager.prototype.See', event);
+        console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
             //console.warn('Контакт ивент до инициализации своей машинки!');
             return;

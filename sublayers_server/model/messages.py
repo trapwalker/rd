@@ -48,7 +48,10 @@ class Message(object):
             if connection.ws_connection:
                 connection.send(serialize(make_push_package([self])))
         else:
-            log.debug('Connection not found for agent %s', self.agent.user.name)
+            # todo: refactoring
+            from sublayers_server.model.ai_quick_agent import AIQuickAgent
+            if not isinstance(self.agent, AIQuickAgent):
+                log.debug('Connection not found for agent %s', self.agent.user.name)
 
     def __str__(self):
         return self.__str_template__.format(self=self)
