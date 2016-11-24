@@ -113,19 +113,6 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
         # Починили машинку на нужное значение хп
         obj.set_hp(dhp=-item.example.build_points, time=self.time)
 
-        # todo: удалить это потом! сейчас просто тест защиты
-        # Если это крутой ремкомплект, то на 10 секунд подняли броню
-        obj.params.get('p_radiation_armor').current += 100
-        obj.params.get('p_armor').current += 100
-        obj.restart_weapons(time=self.time)
-
-        def test_shield_generator(event):
-            obj.params.get('p_radiation_armor').current -= 100
-            obj.params.get('p_armor').current -= 100
-            obj.restart_weapons(time=event.time)
-
-        Event(server=self.server, time=self.time + 10, callback_after=test_shield_generator).post()
-
 
 class TransactionActivateMine(TransactionActivateItem):
     def on_perform(self):

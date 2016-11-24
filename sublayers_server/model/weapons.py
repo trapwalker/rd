@@ -35,7 +35,7 @@ class Weapon(Consumer):
         elif power_dif >= 10:
             return 0.0
         else:
-            return (10 - power_dif) / 10.
+            return (10. - power_dif) / 10.
 
     def as_dict(self, **kw):
         return dict(
@@ -170,7 +170,7 @@ class WeaponDischarge(Weapon):
         return random() < self.crit_rate
 
     def calc_dmg(self, car, is_crit, time):
-        # Крит не зависит от брони
+        # Крит игнорирует броню
         if is_crit:
             return self.dmg * (1 + self.crit_power)
         return self.dmg * self.calc_dmg_rate(car=car, time=time)
@@ -194,7 +194,8 @@ class WeaponDischarge(Weapon):
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
 
         for car in self.sector.area_target_list:
-            car.set_hp(dhp=self.area_dmg, shooter=self.owner, time=time)
+            dmg = self.calc_area_dmg(car=car, time=time)
+            car.set_hp(dhp=dmg, shooter=self.owner, time=time)
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел
