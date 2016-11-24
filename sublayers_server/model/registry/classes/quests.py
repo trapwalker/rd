@@ -503,6 +503,7 @@ class Quest(Root):
         self._go_state_name = None
         self.local_context.update(
             go=partial(self._go, event=event),
+            set_timer=partial(self.set_timer, event=event),
         )
         state._exec_event_handler(quest=self, handler='on_enter', event=event)
         new_state = getattr(self, '_go_state_name', None)
@@ -515,6 +516,7 @@ class Quest(Root):
         self._go_state_name = None
         self.local_context.update(
             go=partial(self._go, event=event),
+            set_timer=partial(self.set_timer, event=event),
         )
         state._exec_event_handler(quest=self, handler='on_event', event=event)
         new_state = getattr(self, '_go_state_name', None)
