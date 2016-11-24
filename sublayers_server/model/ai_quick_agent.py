@@ -36,8 +36,6 @@ class AIQuickAgent(Agent):
         # todo: сделать правильно!
         if len(self.server.app.clients) < 10:
             # Добавить свою машинку на карту
-            print 'on_timer_restart_car   create car'
-
             self.example.car = self.server.quick_game_cars_proto[0].instantiate(fixtured=False)
             yield self.example.car.load_references()
 

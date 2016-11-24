@@ -699,3 +699,20 @@ class DeliveryQuest(Quest):
             delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
         )
         return d
+
+
+class AIQuickQuest(Quest):
+    route = ListField(
+        default=[],
+        caption=u"Маршрут патрулирования",
+        base_field=PositionField(caption=u"Точка патрулирования", reinst=True,),
+        reinst=True,
+    )
+
+    def _next_route_point(self, current_index):
+        if not self.route:
+            return None
+        if current_index + 1 >= len(self.route):
+            return 0
+        else:
+            return current_index + 1
