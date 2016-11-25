@@ -43,8 +43,8 @@ class AIQuickAgent(Agent):
             self.example.current_location = None
             self.current_location = None
 
-            self.car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
-            self.append_car(car=self.car, time=event.time)
+            car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
+            self.append_car(car=car, time=event.time)
 
             quest = self.example.ai_quest
             new_quest = quest.instantiate(abstract=False, hirer=None)
@@ -60,4 +60,8 @@ class AIQuickAgent(Agent):
     def drop_car(self, time, **kw):
         super(AIQuickAgent, self).drop_car(time=time, **kw)
         self.timer_restart_car(time=time+30.)
+
+    @property
+    def is_online(self):
+        return True
 

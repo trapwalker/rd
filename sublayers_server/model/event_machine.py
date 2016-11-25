@@ -179,7 +179,7 @@ class Server(object):
         from sublayers_server.model.registry.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
         # Создать 5 Ботов
-        for i in range(1, 3):
+        for i in range(1, 10):
             # Найти или создать профиль
             name = 'quick_bot_{}'.format(i)
             user = yield UserProfile.get_by_name(name=name)
@@ -190,7 +190,7 @@ class Server(object):
             # Создать AIQuickAgent
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.reg['agents/ai'].instantiate(
+                agent_exemplar = self.reg['agents/user/ai'].instantiate(
                     #storage=self.application.reg_agents,
                     login=user.name,
                     profile_id=str(user._id),
