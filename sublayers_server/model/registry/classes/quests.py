@@ -13,6 +13,7 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
 )
+from sublayers_server.model.vectors import Point
 
 from functools import partial, wraps
 import random
@@ -708,11 +709,14 @@ class AIQuickQuest(Quest):
         base_field=PositionField(caption=u"Точка патрулирования", reinst=True,),
         reinst=True,
     )
+    route_index = IntField(caption=u'Индекс текущей точки патрулирования')
 
-    def _next_route_point(self, current_index):
+    def get_next_route_point(self):
         if not self.route:
-            return None
-        if current_index + 1 >= len(self.route):
-            return 0
+            return Point.random_gauss(self.agent._agent_model.server.quick_game_start_pos,
+                                      self.agent._agent_model.server.quick_game_play_radius)
+        if self.route_index + 1 >= len(self.route):
+            self.route_index = 0
         else:
-            return current_index + 1
+            self.route_index = self.route_index + 1
+        return self.route[self.route_index].as_point()

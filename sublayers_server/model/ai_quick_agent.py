@@ -7,6 +7,8 @@ from sublayers_server.model.agents import Agent
 from sublayers_server.model.events import Event
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
+from sublayers_server.model.quest_events import OnAISee, OnAIOut
+
 
 import tornado.gen
 
@@ -32,7 +34,6 @@ class AIQuickAgent(Agent):
 
     @tornado.gen.coroutine
     def on_timer_restart_car(self, event):
-        print 'on_timer_restart_car'
         # todo: сделать правильно!
         if len(self.server.app.clients) < 10:
             # Добавить свою машинку на карту
@@ -45,6 +46,7 @@ class AIQuickAgent(Agent):
 
             car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
+            self.car.fire_auto_enable(enable=True, time=event.time + 0.1)
 
             quest = self.example.ai_quest
             new_quest = quest.instantiate(abstract=False, hirer=None)
@@ -65,3 +67,12 @@ class AIQuickAgent(Agent):
     def is_online(self):
         return True
 
+    # todo: пробросить сюда Ивент
+    def on_see(self, time, subj, obj):
+        super(AIQuickAgent, self).on_see(time=time, subj=subj, obj=obj)
+        self.example.on_event(event=Event(server=self.server, time=time), cls=OnAISee, obj=obj)
+
+    # todo: пробросить сюда Ивент
+    def on_out(self, time, subj, obj):
+        super(AIQuickAgent, self).on_out(time=time, subj=subj, obj=obj)
+        self.example.on_event(event=Event(server=self.server, time=time), cls=OnAIOut, obj=obj)

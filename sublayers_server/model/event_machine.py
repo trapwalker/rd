@@ -76,7 +76,9 @@ class Server(object):
         if options.mode == 'quick':
             self.quick_game_cars_proto = []
             self.quick_game_start_pos = Point(12468002, 26989281)
-            self.quick_bots = []
+            self.quick_game_play_radius = 1000
+            self.quick_game_death_radius = self.quick_game_play_radius * 20
+
 
         #self.ioloop.add_callback(callback=self.load_registry)
 
@@ -167,10 +169,12 @@ class Server(object):
         # Установка точки радиации-быстрой игры
         quick_rad = self.reg['poi/quick_game_poi/quick_game_radiation_area']
         if quick_rad:
+            quick_rad.p_observing_range = self.quick_game_death_radius
             quick_rad.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad, server=self)
         quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
         if quick_rad_anti:
+            quick_rad.position = self.quick_game_play_radius
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
 
@@ -179,7 +183,7 @@ class Server(object):
         from sublayers_server.model.registry.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
         # Создать 5 Ботов
-        for i in range(1, 10):
+        for i in range(1, 11):
             # Найти или создать профиль
             name = 'quick_bot_{}'.format(i)
             user = yield UserProfile.get_by_name(name=name)

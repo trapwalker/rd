@@ -42,7 +42,21 @@ class OnQuestChange(QuestEvent):
         super(OnQuestChange, self).__init__(**kw)
         self.target_quest_uid = target_quest_uid
 
+
 class OnDie(QuestEvent): pass
+
+
+class OnAISee(QuestEvent):
+    def __init__(self, obj, **kw):
+        super(OnAISee, self).__init__(**kw)
+        self.obj = obj
+
+
+class OnAIOut(QuestEvent):
+    def __init__(self, obj, **kw):
+        super(OnAIOut, self).__init__(**kw)
+        self.obj = obj
+
 
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass
