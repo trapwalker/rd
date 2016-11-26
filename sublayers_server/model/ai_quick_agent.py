@@ -9,7 +9,7 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
 from sublayers_server.model.quest_events import OnAISee, OnAIOut
 
-
+import random
 import tornado.gen
 
 
@@ -34,10 +34,10 @@ class AIQuickAgent(Agent):
 
     @tornado.gen.coroutine
     def on_timer_restart_car(self, event):
-        # todo: сделать правильно!
         if len(self.server.app.clients) < 10:
             # Добавить свою машинку на карту
-            self.example.car = self.server.quick_game_cars_proto[0].instantiate(fixtured=False)
+            car_proto_list = self.server.quick_game_bot_cars_proto
+            self.example.car = car_proto_list[random.randint(0, len(car_proto_list) - 1)].instantiate(fixtured=False)
             yield self.example.car.load_references()
 
             self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)

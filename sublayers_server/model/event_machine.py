@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import logging.config
+
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
@@ -22,6 +23,7 @@ from sublayers_common.user_profile import User as UserProfile
 
 import os
 import sys
+import random
 import tornado.ioloop
 import tornado.gen
 from time import sleep
@@ -30,14 +32,14 @@ from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 from functools import partial, wraps
 
-
 MAX_SERVER_SLEEP_TIME = 0.1
 
 
 def async_call_deco(f):
     wraps(f)
+
     def closure(*av, **kw):
-        #callback = kw.pop('callback', None)  # todo: make result returning by callback
+        # callback = kw.pop('callback', None)  # todo: make result returning by callback
         ff = partial(f, *av, **kw)
         tornado.ioloop.IOLoop.instance().add_callback(ff)
 
@@ -45,7 +47,6 @@ def async_call_deco(f):
 
 
 class Server(object):
-
     def __init__(self, uid=None):
         """
         @param uuid.UUID uid: Unique id of server
@@ -75,12 +76,14 @@ class Server(object):
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
             self.quick_game_cars_proto = []
+            self.quick_game_bot_cars_proto = []
+            self.quick_game_bot_agents_proto = []
             self.quick_game_start_pos = Point(12468002, 26989281)
             self.quick_game_play_radius = 1000
             self.quick_game_death_radius = self.quick_game_play_radius * 20
 
 
-        #self.ioloop.add_callback(callback=self.load_registry)
+            # self.ioloop.add_callback(callback=self.load_registry)
 
     @async_call_deco
     def load_registry(self):
@@ -89,7 +92,7 @@ class Server(object):
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
             self.load_world()
 
-        #Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
+        # Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
         Root.objects.find_all(callback=load_registry_done_callback)
 
     def __getstate__(self):
@@ -133,9 +136,19 @@ class Server(object):
             self.on_load_poi(event)
         elif options.mode == 'quick':
             self.on_load_poi_quick_mode(event)
-            # Создание экземпляров машинок для быстрой игры
-            for car_proto in self.reg['world_settings'].quick_game_car:
+
+            # Создание экземпляров машинок игроков для быстрой игры
+            for car_proto in self.reg['world_settings'].quick_game_cars:
                 self.quick_game_cars_proto.append(car_proto)
+
+            # Создание экземпляров машинок ботов для быстрой игры
+            for car_proto in self.reg['world_settings'].quick_game_bot_cars:
+                self.quick_game_bot_cars_proto.append(car_proto)
+
+            # Получение экземпляров агентов ботов для быстрой игры
+            for agent_ex in self.reg['world_settings'].quick_game_bot_agents:
+                self.quick_game_bot_agents_proto.append(agent_ex)
+
             # Создание AIQuickBot'ов
             self.ioloop.add_callback(callback=self.load_ai_quick_bots)
 
@@ -157,7 +170,7 @@ class Server(object):
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
-        # todo: Сделать загрузку стационарных точек радиации
+            # todo: Сделать загрузку стационарных точек радиации
 
     def on_load_poi_quick_mode(self, event):
         # загрузка радиоточки
@@ -182,8 +195,12 @@ class Server(object):
     def load_ai_quick_bots(self):
         from sublayers_server.model.registry.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
-        # Создать 5 Ботов
-        for i in range(1, 11):
+
+        bot_count = self.reg['world_settings'].quick_game_bot_count
+        if not bot_count:
+            bot_count = 0
+        # Создать ботов
+        for i in range(1, bot_count + 1):
             # Найти или создать профиль
             name = 'quick_bot_{}'.format(i)
             user = yield UserProfile.get_by_name(name=name)
@@ -194,14 +211,16 @@ class Server(object):
             # Создать AIQuickAgent
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.reg['agents/user/ai'].instantiate(
-                    #storage=self.application.reg_agents,
+                agent_exemplar = self.quick_game_bot_agents_proto[
+                    random.randint(0, len(self.quick_game_bot_agents_proto) - 1)]
+                agent_exemplar = agent_exemplar.instantiate(
                     login=user.name,
                     profile_id=str(user._id),
                     name=str(user._id),
                     fixtured=False,
                 )
                 yield agent_exemplar.load_references()
+
                 role_class_ex = self.reg['rpg_settings/role_class/chosen_one']
                 agent_exemplar.role_class = role_class_ex
                 yield agent_exemplar.save(upsert=True)
@@ -265,7 +284,6 @@ class EServerIsNotStarted(errors.EIllegal):
 
 
 class LocalServer(Server):
-
     def __init__(self, app=None, **kw):
         super(LocalServer, self).__init__(**kw)
         self.api = ServerAPI(self)
@@ -316,8 +334,6 @@ class LocalServer(Server):
             log.exception('Event performing error %s', event)
         finally:
             t = self.get_time() - t
-            
-
 
         self.ioloop.add_callback(callback=self.event_loop)
 

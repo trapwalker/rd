@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import logging
+
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.tree import Root
@@ -10,7 +11,7 @@ from sublayers_server.model.registry.classes.item import SlotLock, MechanicItem 
 from sublayers_server.model.registry.classes.inventory import InventoryField
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    StringField, UniReferenceField, ListField,
+    StringField, UniReferenceField, ListField, IntField,
 )
 
 
@@ -19,6 +20,11 @@ class WorldSettings(Root):
     role_class_order = ListField(base_field=UniReferenceField(
         reference_document_type='sublayers_server.model.registry.classes.role_class.RoleClass'
     ))
-    quick_game_car = ListField(base_field=UniReferenceField(
-        reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'
-    ))
+    quick_game_cars = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'))
+
+    quick_game_bot_count = IntField(caption=u"Количество ботов в быстрой игре")
+    quick_game_bot_cars = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'))
+    quick_game_bot_agents = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.agents.AIQuickAgent'))
