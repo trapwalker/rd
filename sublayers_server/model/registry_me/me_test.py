@@ -13,10 +13,15 @@ if __name__ == '__main__':
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from mongoengine import connect, Document, QuerySet
-from mongoengine.fields import IntField, StringField, UUIDField, ReferenceField, BooleanField
+from mongoengine.fields import IntField, StringField, UUIDField, ReferenceField, BooleanField, ListField
 
 
 class Node(Document):
+    u"""
+    Правила работы с узлами реестра:
+    - # todo: вложенные объекты (Embedded, list, dict), полученные по наследству или по умолчанию модифицировать нельзя
+
+    """
     meta = dict(
         collection='registry',
         allow_inheritance=True,
@@ -25,10 +30,17 @@ class Node(Document):
     uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     parent = ReferenceField(document_type='self', not_inherited=True)
+    # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
     # todo: Убедиться, что fixtured не наследуется.
     fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
     title = StringField(caption=u"Название", tags={"client"})
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
+
+    owner = ReferenceField(document_type='self', not_inherited=True)
+    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
+    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)")
+    doc = StringField(caption=u"Описание узла реестра")
+    tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     def make_uri(self):
         return 'reg:///_/{}'.format(self.uid)
@@ -43,6 +55,16 @@ class Node(Document):
         return self.to_json()
 
     __str__ = __repr__
+
+    # def ___hasvalue___(self, name):
+    #     field = self._fields.get(name) or self._dynamic_fields.get(name)
+    #     if field:
+    #         if name in self._data:
+    #             return True
+    #
+    #         parent = self.parent
+    #         if parent:
+    #             return parent.___hasvalue___(name)
 
     def __getattribute__(self, name):
         """Implementation of inheritance by registry parent line"""
@@ -60,14 +82,16 @@ class Node(Document):
                 if field and name not in self._data:
                     if getattr(field, 'not_inherited', False):
                         value = field.default
-                        return value() if callable(value) else value
+                        value = value() if callable(value) else value
+                        return value
 
                     parent = self.parent
                     if parent and hasattr(parent, name):
                         return getattr(parent, name)
                     else:
                         value = field.default
-                        return value() if callable(value) else value
+                        value = value() if callable(value) else value
+                        return value
 
         return super(Node, self).__getattribute__(name)
 
@@ -96,6 +120,8 @@ if __name__ == '__main__':
     b = C(x=5, uri='reg:///b')
     aa = C(uri='reg:///a/a', parent=a)
     xx = C(parent=aa)
+
+    xx.tags = ['t1', 't2']
 
     a.save()
     b.save()
