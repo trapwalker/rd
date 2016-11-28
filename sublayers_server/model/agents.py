@@ -554,11 +554,16 @@ class User(Agent):
         return d
 
 
+class AI(Agent):
+    pass
+
+
 class QuickUser(User):
     def __init__(self, **kw):
         super(QuickUser, self).__init__(**kw)
         self.time_quick_game_start = None
         self.quick_game_kills = 0
+        self.quick_game_bot_kills = 0
 
     def _add_quick_game_record(self, time):
         # pymongo add to quick_game_records
@@ -576,6 +581,7 @@ class QuickUser(User):
         # Сбросить время старта и количество фрагов
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
+        self.quick_game_bot_kills = 0
         self.user.car_index = None
 
     def drop_car(self, car, time, **kw):
@@ -584,14 +590,17 @@ class QuickUser(User):
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):
-        return round(time - self.time_quick_game_start) + self.quick_game_kills * 100
+        return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
 
     def on_die(self, event, unit):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
         log.debug('%s:: on_kill(%s)', self, obj)
-        self.quick_game_kills += 1
+        if obj.owner and isinstance(obj.owner, AI):
+            self.quick_game_bot_kills += 1
+        else:
+            self.quick_game_kills += 1
         # добавить хп своей машинке
         if self.car:
             self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки

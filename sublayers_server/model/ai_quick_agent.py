@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import Agent
+from sublayers_server.model.agents import AI
 from sublayers_server.model.events import Event
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
@@ -24,7 +24,7 @@ class InitAIQuickCar(Event):
         self.server.ioloop.add_callback(callback=self.ai.on_timer_restart_car, event=self)
 
 
-class AIQuickAgent(Agent):
+class AIQuickAgent(AI):
     def __init__(self, time, **kw):
         super(AIQuickAgent, self).__init__(time=time, **kw)
         self.timer_restart_car(time=time)
@@ -76,3 +76,4 @@ class AIQuickAgent(Agent):
     def on_out(self, time, subj, obj):
         super(AIQuickAgent, self).on_out(time=time, subj=subj, obj=obj)
         self.example.on_event(event=Event(server=self.server, time=time), cls=OnAIOut, obj=obj)
+

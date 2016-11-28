@@ -72,14 +72,16 @@ class Server(object):
 
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
+        self.poi_loot_objects_life_time = 600  # Время жизни лута на карте для обычного режима
 
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
+            self.poi_loot_objects_life_time = 60  # Время жизни лута на карте для режима быстрой игры
             self.quick_game_cars_proto = []
             self.quick_game_bot_cars_proto = []
             self.quick_game_bot_agents_proto = []
-            self.quick_game_start_pos = Point(12468002, 26989281)
-            self.quick_game_play_radius = 1000
+            self.quick_game_start_pos = Point(12468000, 26989000)
+            self.quick_game_play_radius = 1600
             self.quick_game_death_radius = self.quick_game_play_radius * 20
 
 
@@ -187,7 +189,7 @@ class Server(object):
             StationaryRadiation(time=event.time, example=quick_rad, server=self)
         quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
         if quick_rad_anti:
-            quick_rad.position = self.quick_game_play_radius
+            quick_rad.p_observing_range = self.quick_game_play_radius
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
 

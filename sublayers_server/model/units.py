@@ -255,7 +255,7 @@ class Unit(Observer):
                 example=None,
                 inventory_size=self.example.inventory.size,
                 position=self.position(event.time),
-                life_time=600.0,
+                life_time=self.server.poi_loot_objects_life_time,
                 items=self.inventory.get_items(),
                 sub_class_car=self.example.sub_class_car,
                 car_direction=self.direction(event.time),
@@ -269,7 +269,7 @@ class Unit(Observer):
             example=None,
             inventory_size=1,
             position=Point.random_gauss(self.position(time), 10),
-            life_time=600.0,
+            life_time=self.server.poi_loot_objects_life_time,
             items=[item],
         ).post()
 
