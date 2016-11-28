@@ -118,7 +118,9 @@ class Node(Doc):
     fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
     uri = StringField(sparse=True, identify=True)
     abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
+
     parent = ReferenceField(reference_document_type='sublayers_server.model.registr_me.tree.Node')
+
     owner = ReferenceField(reference_document_type='sublayers_server.model.registry_me.tree.Node')
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     name = StringField()

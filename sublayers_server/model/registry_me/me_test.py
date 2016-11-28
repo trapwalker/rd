@@ -13,7 +13,7 @@ if __name__ == '__main__':
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from mongoengine import connect, Document, QuerySet
-from mongoengine.fields import IntField, StringField, UUIDField, ReferenceField, CachedReferenceField
+from mongoengine.fields import IntField, StringField, UUIDField, ReferenceField, BooleanField
 
 
 class Node(Document):
@@ -22,9 +22,13 @@ class Node(Document):
         allow_inheritance=True,
         #queryset_class=CachedQuerySet,
     )
-    uri = StringField(unique=True, primary_key=True, null=True)
-    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
-    parent = ReferenceField(document_type='self')
+    uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
+    uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
+    parent = ReferenceField(document_type='self', not_inherited=True)
+    # todo: Убедиться, что fixtured не наследуется.
+    fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
+    title = StringField(caption=u"Название", tags={"client"})
+    abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
 
     def make_uri(self):
         return 'reg:///_/{}'.format(self.uid)
@@ -54,6 +58,10 @@ class Node(Document):
             if self._initialised:
                 field = self._fields.get(name) or self._dynamic_fields.get(name)
                 if field and name not in self._data:
+                    if getattr(field, 'not_inherited', False):
+                        value = field.default
+                        return value() if callable(value) else value
+
                     parent = self.parent
                     if parent and hasattr(parent, name):
                         return getattr(parent, name)
@@ -62,6 +70,15 @@ class Node(Document):
                         return value() if callable(value) else value
 
         return super(Node, self).__getattribute__(name)
+
+    def __delattr__(self, *args, **kwargs):
+        """Handle deletions of fields"""
+        field_name = args[0]
+        field = self._fields.get(field_name) or self._dynamic_fields.get(field_name)
+        if field:
+            self._data.pop(field_name, None)
+        else:
+            super(Node, self).__delattr__(*args, **kwargs)
 
 
 class C(Node):
