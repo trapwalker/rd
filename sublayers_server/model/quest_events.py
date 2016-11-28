@@ -58,6 +58,8 @@ class OnAIOut(QuestEvent):
         self.obj = obj
 
 
+class OnAppendCar(QuestEvent): pass
+
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass
 class OnExitNPC(NPCEvent): pass

@@ -20,7 +20,7 @@ from sublayers_server.model.messages import (
 )
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
-from sublayers_server.model.events import event_deco
+from sublayers_server.model.events import event_deco, Event
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 
@@ -217,6 +217,9 @@ class Agent(Object):
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь добавлен на карту
                 self.party.add_observer_to_party(observer=car, time=time)
+            # сообщить квестам, что добавилась машинка
+            # todo: refactor this call
+            self.example.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAppendCar)
 
     def drop_car(self, car, time, drop_owner=True):
         if car is self.car:
@@ -407,7 +410,7 @@ class Agent(Object):
         pass
 
     def on_kill(self, event, obj):
-        log.debug('%s:: on_kill(%s)', self, obj)
+        # log.debug('%s:: on_kill(%s)', self, obj)
 
         # todo: party
         # todo: registry fix?
@@ -510,7 +513,7 @@ class Agent(Object):
         self.example.on_event(event=event, cls=quest_events.OnExitNPC, npc=npc)  # todo: ##quest send NPC as param
 
     def on_die(self, event, unit):
-        log.debug('%s:: on_die()', self)
+        # log.debug('%s:: on_die()', self)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1

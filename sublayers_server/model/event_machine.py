@@ -76,7 +76,7 @@ class Server(object):
 
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
-            self.poi_loot_objects_life_time = 60  # Время жизни лута на карте для режима быстрой игры
+            self.poi_loot_objects_life_time = 28  # Время жизни лута на карте для режима быстрой игры
             self.quick_game_cars_proto = []
             self.quick_game_bot_cars_proto = []
             self.quick_game_bot_agents_proto = []
@@ -227,8 +227,8 @@ class Server(object):
                 agent_exemplar.role_class = role_class_ex
                 yield agent_exemplar.save(upsert=True)
 
-            log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
-            agent = AIQuickAgent(
+            # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
+            AIQuickAgent(
                 server=self,
                 user=user,
                 time=self.get_time(),
