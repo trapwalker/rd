@@ -104,8 +104,8 @@ class URI(tuple):
 
     def __unicode__(self):
         return str(self).decode(URI_ENCODING)
-        
-    def __str__(self):
+
+    def to_string(self, with_params=True, with_anchor=True):
         scheme, storage, path, params, anchor = self
         try:
             if path:
@@ -118,20 +118,23 @@ class URI(tuple):
                         '=' + quote(v.encode(URI_ENCODING))
                     ) if v else ''
                     for k, v in params
-                ]
-                
+                    ]
+
             return '{scheme}{storage}{path}{params}{anchor}'.format(
                 scheme='{}://'.format(scheme.encode(URI_ENCODING)) if scheme else '',
                 storage=storage and quote(storage.encode(URI_ENCODING)) or '',
                 path=('/' + '/'.join(path)) if path else '',
-                params=('?' + '&'.join(params)) if params else '',
-                anchor='#{}'.format(quote(anchor.encode(URI_ENCODING))) if anchor is not None else '',
+                params=('?' + '&'.join(params)) if with_params and params else '',
+                anchor='#{}'.format(quote(anchor.encode(URI_ENCODING))) if with_anchor and anchor is not None else '',
             )
         except UnicodeDecodeError as e:
             e_info = dict(locals())
             del e_info['self']
             log.exception('Uri to string conversion error: %s', pformat(e_info))
             raise e
+
+    def __str__(self):
+        return self.to_string()
 
     @classmethod
     def _make(cls, iterable, new=tuple.__new__, len=len):
@@ -210,18 +213,19 @@ class URI(tuple):
         @return: Registry node, resolved by URI
         """
         # todo: declare throwing exceptions: URIFormatError, StorageNotFound
-        from sublayers_server.model.registry.tree import Node
-        return Node.DISPATCHER[self]  # todo: (!!!!) fix it
+        from sublayers_server.model.registry_me.tree import Node
+        #return Node.DISPATCHER[self]  # todo: (!!!!) fix it
+        return Node.objects.get(uri=self.to_string(with_params=False, with_anchor=False))  # todo: (!!!!) ensure getting from cache
 
     def instantiate(self, storage=None, name=None, **kw):
         u'''Этот метод отличается от того, что в ноде добавлением в инстанс параметров из URI'''
         # todo: declare exceptions
         params = self.params
-        params = params.copy() if params else {}
+        params = OrderedDict(params) if params else OrderedDict()
         params.update(kw)
         proto = self.resolve()
         assert proto.abstract, 'URI.instantiate: the try to instantiate of non abstract object: {}'.format(self)
-        return proto.instantiate(storage=storage, name=name, **params)
+        return proto.instantiate(storage=storage, parent=proto, name=name, **params)
 
 
 class Selector(URI):

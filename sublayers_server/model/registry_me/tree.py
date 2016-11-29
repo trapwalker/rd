@@ -10,10 +10,17 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
+
+from sublayers_server.model.registry_me.uri import URI
+
+from copy import copy
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from mongoengine import connect, Document, QuerySet
-from mongoengine.fields import IntField, StringField, UUIDField, ReferenceField, BooleanField, ListField
+from mongoengine.fields import (
+    IntField, StringField, UUIDField, ReferenceField, BooleanField,
+    ListField, EmbeddedDocumentField,
+)
 
 
 class Node(Document):
@@ -55,6 +62,9 @@ class Node(Document):
         return self.to_json()
 
     __str__ = __repr__
+
+    def __eq__(self, other):
+        return self.pk == other.pk
 
     # def ___hasvalue___(self, name):
     #     field = self._fields.get(name) or self._dynamic_fields.get(name)
@@ -104,6 +114,44 @@ class Node(Document):
         else:
             super(Node, self).__delattr__(*args, **kwargs)
 
+    def _reinst_list(self, field, lst):
+        lst = copy(lst)
+        subfield = field.field
+        for i, item in enumerate(lst):
+            if item is not None:
+                if isinstance(subfield, ListField):
+                    lst[i] = self._reinst_list(subfield, copy(item))
+                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):
+                    lst[i] = item.instantiate()
+                # todo: make support of dict fields
+                else:
+                    lst[i] = copy(item)
+        return lst
+
+    def _instantiaite_field(self, new_instance, field, name):
+        if getattr(field, 'reinst', None):
+            value = getattr(self, name)
+            if value is not None:
+                if isinstance(field, EmbeddedDocumentField):
+                    assert not isinstance(value, basestring), (
+                        'Embeded fields, described by string ({value!r}) is not supported yet'.format(value=value)
+                    )
+                    if isinstance(value, basestring):
+                        value = URI(value)  # todo: handle exceptions
+
+                    setattr(new_instance, name, value.instantiate())
+                elif isinstance(field, ListField):
+                    setattr(new_instance, name, self._reinst_list(field, value))
+
+    def instantiate(self, storage=None, **kw):
+        # todo: Сделать поиск ссылок в параметрах URI
+        inst = self.__class__(**kw)
+
+        for name, field in self._fields.items():
+            self._instantiaite_field(inst, field, name)
+
+        return inst
+
 
 class C(Node):
     x = IntField(null=True)
@@ -120,6 +168,7 @@ if __name__ == '__main__':
     b = C(x=5, uri='reg:///b')
     aa = C(uri='reg:///a/a', parent=a)
     xx = C(parent=aa)
+    uri = URI(aa.uri)
 
     xx.tags = ['t1', 't2']
 
@@ -135,4 +184,4 @@ if __name__ == '__main__':
     b2  = Node.objects.get(uri='reg:///b')
     print('cached:', aa2.parent is aa3.parent)
 
-    print(repr(aa.y))
+    qq = URI('reg:///a/a?z=115&y=225').instantiate()
