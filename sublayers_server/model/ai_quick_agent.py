@@ -28,6 +28,11 @@ class AIQuickAgent(AI):
     def __init__(self, time, **kw):
         super(AIQuickAgent, self).__init__(time=time, **kw)
         self.create_ai_quest(time=time)
+        self._quick_bot_kills = 0
+        self._quick_bot_deaths = 0
+        self._quick_bot_time = 0
+        self._quick_bot_start_time = None
+        self._quick_bot_max_lt = 0
 
     @event_deco
     def create_ai_quest(self, event):
@@ -59,12 +64,17 @@ class AIQuickAgent(AI):
             car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
             self.car.fire_auto_enable(enable=True, time=event.time + 0.1)
+
+            self._quick_bot_start_time = event.time
         else:
             self.timer_restart_car(time=event.time+30.)
 
     def drop_car(self, time, **kw):
         super(AIQuickAgent, self).drop_car(time=time, **kw)
         self.timer_restart_car(time=time+30.)
+        life_t = time - self._quick_bot_start_time
+        self._quick_bot_time += life_t
+        self._quick_bot_max_lt = max(self._quick_bot_max_lt, life_t)
 
     @property
     def is_online(self):
@@ -79,4 +89,12 @@ class AIQuickAgent(AI):
     def on_out(self, time, subj, obj):
         super(AIQuickAgent, self).on_out(time=time, subj=subj, obj=obj)
         self.example.on_event(event=Event(server=self.server, time=time), cls=OnAIOut, obj=obj)
+
+    def on_die(self, **kw):
+        super(AIQuickAgent, self).on_die(**kw)
+        self._quick_bot_deaths += 1
+
+    def on_kill(self, **kw):
+        super(AIQuickAgent, self).on_kill(**kw)
+        self._quick_bot_kills += 1
 
