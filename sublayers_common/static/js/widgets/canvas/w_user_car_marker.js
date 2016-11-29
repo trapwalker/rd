@@ -36,11 +36,14 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasCarMarker.prototype.click_handler', event);
         //console.log('Произведён клик на машинку ', this.car);
-        var name = this.car.owner ? this.car.owner.login : user.login;
+        var owner = this.car.owner ? this.car.owner : user;
+
+        var print_login = owner.quick ? getQuickUserLogin(owner.login) : owner.login;
+
         windowTemplateManager.openUniqueWindow(
-            'person_info_' + name,
+            'person_info_' + print_login,
             '/person_info',
-            {person: name, mode: 'map'},
+            {person: owner.login, mode: 'map'},
             function(jq_window) {
                 jq_window.find('.person-window-btn').click(function(){
                     if (user.party)
@@ -126,9 +129,15 @@ var WCanvasCarMarker = (function (_super) {
         // Вывод лейбла
         if (this.car.owner || this.car == user.userCar) {
             var owner = this.car.owner || user;
-            var party_str = "";
-            if (owner.party != null) party_str = '[' + owner.party.name + ']';
-            var label_str = owner.login + party_str;
+            var label_str = '';
+            if (owner.quick)
+                label_str = getQuickUserLogin(owner.login);
+            else {
+                var party_str = "";
+                if (owner.party != null) party_str = '[' + owner.party.name + ']';
+                label_str = owner.login + party_str;
+            }
+
             ctx.textAlign = "center";
             ctx.textBaseline = "center";
             ctx.font = "8pt MICRADI";

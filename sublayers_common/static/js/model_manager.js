@@ -69,11 +69,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party);
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser"));
                 return ownerList.add(owner);
             }
         return null;
@@ -352,6 +352,8 @@ var ClientManager = (function () {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
+            user.quick = event.agent.cls == "QuickUser";
+
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 this.sendGetPartyInfo(event.agent.party.name);
@@ -507,7 +509,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        //console.log('ClientManager.prototype.See', event);
+        console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
             //console.warn('Контакт ивент до инициализации своей машинки!');
             return;
@@ -525,6 +527,8 @@ var ClientManager = (function () {
             case 'RadioPoint':  // todo: раскоментировать, когда радиоточки будут установлены или сделать через куки-настройки
                 //console.log('Radio Towers are hidden');
                 break;
+            case 'StationaryQuickRadiation': break;
+            case 'StationaryRadiation': break;
             case 'Town':
             case 'POILoot':
             case 'POIContainer':
@@ -589,15 +593,18 @@ var ClientManager = (function () {
     ClientManager.prototype.QuickGameDie = function (event) {
         // console.log('ClientManager.prototype.QuickGameDie');
         //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
-        modalWindow.modalDialogInfoShow({
+        modalWindow.modalQuickGamePointsPageShow({
             caption: 'Car Crash',
             header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы можете зарегистрироваться на сайте и играть полноценно.',
+            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
             callback_ok: function () {
-                window.location.reload();
+                clientManager.sendQuickPlayAgain();
+                modalWindow.modalQuickGamePointsPageHide();
+            },
+            callback_cancel: function() {
+                window.location = '/#quick';
             }
         });
-        window.location = '/#quick';
     };
 
     ClientManager.prototype.Chat = function (event){
@@ -630,6 +637,15 @@ var ClientManager = (function () {
         }
         else
             console.error('Error! Пришла высота на неизветную машинку!')
+    };
+
+    ClientManager.prototype.ChangeRadiation = function(event){
+         //console.log('ClientManager.prototype.ChangeRadiation ', event);
+        if (user.userCar && event.obj_id == user.userCar.ID){
+            user.userCar.radiation_dps += event.radiation_dps;
+        }
+        else
+            console.error('Error! Пришла радиация на неизветную машинку!')
     };
 
     ClientManager.prototype.UpdateObservingRange = function (event) {
@@ -666,7 +682,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
-        //console.log('ClientManager.prototype.FireAutoEffect', event)
+        //console.log('ClientManager.prototype.FireAutoEffect', event);
         if (event.action)
             fireEffectManager.addController({
                 subj: event.subj,
@@ -1002,7 +1018,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.QuickConsumerPanelInfoMessage = function (event) {
         //console.log('ClientManager.prototype.QuickConsumerPanelInfoMessage', event);
-        wFireController.updateQuickConsumerPanel(event.quick_panel);
+        if (wFireController) wFireController.updateQuickConsumerPanel(event.quick_panel);
     };
 
     ClientManager.prototype.NPCTransactionMessage = function (event) {
@@ -2123,6 +2139,18 @@ var ClientManager = (function () {
                 uid: note_uid,
                 result: note_result
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Быстрая игра (играть еще раз)
+     ClientManager.prototype.sendQuickPlayAgain = function () {
+        //console.log('ClientManager.prototype.sendQuickPlayAgain');
+        var mes = {
+            call: "quick_play_again",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

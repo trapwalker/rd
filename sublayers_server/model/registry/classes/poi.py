@@ -16,11 +16,18 @@ from sublayers_server.model.registry.odm.fields import (
 
 class POI(Root):
     position = PositionField(caption=u"Координаты")
-    p_visibility_min = FloatField(caption=u"Минимальный коэффициент заметности")
-    p_visibility_max = FloatField(caption=u"Максимальный коэффициент заметности")
+    p_visibility_min = FloatField(caption=u"Минимальный коэффициент заметности", tags="parameter param_aggregate")
+    p_visibility_max = FloatField(caption=u"Максимальный коэффициент заметности", tags="parameter param_aggregate")
 
     def get_modify_value(self, param_name, example_agent=None):
         return getattr(self, param_name, None)
+
+    def param_aggregate(self, example_agent):
+        d = dict()
+        for param_name, attr, getter in self.iter_attrs(tags='param_aggregate'):
+            d[param_name] = getattr(self, param_name)
+
+        return d
 
     def distance_to(self, poi):
         p1 = self.position.as_point()
@@ -29,8 +36,8 @@ class POI(Root):
 
 
 class POIObserver(POI):
-    p_observing_range = FloatField(caption=u"Радиус подбора лута")
-    p_vigilance = FloatField(caption=u"Коэффициент зоркости")
+    p_observing_range = FloatField(caption=u"Радиус подбора лута", tags="parameter param_aggregate")
+    p_vigilance = FloatField(caption=u"Коэффициент зоркости", tags="parameter param_aggregate")
 
 
 class PoiStash(POIObserver):
@@ -39,7 +46,12 @@ class PoiStash(POIObserver):
 
 
 class RadioTower(POIObserver):
+    radio_point_name = StringField(caption=u'Техническое имя', tags='client')
     pass
+
+
+class RadiationArea(POIObserver):
+    radiation_dps = FloatField(caption=u"DPS зоны радиации")
 
 
 class MapLocation(POIObserver):

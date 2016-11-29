@@ -131,7 +131,7 @@ var PartyManager = (function () {
         //console.log('PartyManager.prototype.redraw', $(jq_main_div));
         var self = partyManager;
         self.jq_main_div = $(jq_main_div).first();
-
+        if (self.jq_main_div.find('.party-window-menu-item').length == 0) return;
         // Вешаем клики на кнопки верхнего меню
         self.jq_main_div.find('.party-window-menu-item').click(function() {
             var data = $(this).data('page_class');

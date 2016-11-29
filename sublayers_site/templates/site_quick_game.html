@@ -12,10 +12,10 @@
                 <div class="window-qg-content-nickname-label">НИКНЕЙМ></div>
                 <input class="window-qg-content-nickname-input" type="text" id="quick_game_nickname" autocomplete="off"
                        {% if current_user %}
-                       {% set quick_game_user = current_user if current_user.quick else None %}
-                       {% if quick_game_user %}
-                            value="{{ quick_game_user.name }}"
-                       {%end%}
+                           {% set quick_game_user = current_user if current_user.quick else None %}
+                           {% if quick_game_user %}
+                                value="{{ '_'.join(quick_game_user.name.split('_')[:-1]) }}"
+                           {%end%}
                        {%end%}
                         >
             </div>
@@ -42,7 +42,6 @@
             <div class="window-qg-content-rating-line-block header">
                 <div class="window-qg-content-rating-column col-number buttons-and-headers">#</div>
                 <div class="window-qg-content-rating-column col-points buttons-and-headers">Очки</div>
-                <div class="window-qg-content-rating-column col-time buttons-and-headers">Время</div>
                 <div class="window-qg-content-rating-column col-nick buttons-and-headers">Имя</div>
             </div>
 
@@ -58,10 +57,11 @@
 
     function StartQuickGame() {
         var username = document.getElementById('quick_game_nickname').value;
-        if (username.length < 4) {
-            console.warn('Короткое имя пользователя. Имя будет назначено сервером.');
-            username = 'QuickUser' + username;
-        }
+        if (username.length == 0) return;
+{#        if (username.length < 4) {#}
+{#            console.warn('Короткое имя пользователя. Имя будет назначено сервером.');#}
+{#            username = 'QuickUser' + username;#}
+{#        }#}
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
@@ -72,7 +72,7 @@
             },
             success: function() {
                 audioManager.play('button_screen_press');
-                window.location = '/play';
+                window.location = '/quick/play';
             }
         });
     }

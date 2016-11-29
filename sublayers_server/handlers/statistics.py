@@ -6,12 +6,20 @@ log = logging.getLogger(__name__)
 import tornado.web
 
 from sublayers_common.handlers.base import BaseHandler
+from tornado.options import options
+from sublayers_server.model.agents import AI
 
 
 class ServerStatisticsHandler(BaseHandler):
     def get(self):
         server_stat = self.application.srv.get_server_stat()
-        self.render("module_entry_server_stats.html", server_stat=server_stat)
+        quick_game_bot_info = []
+        if options.mode == 'quick':
+            for agent in self.application.srv.agents.values():
+                if isinstance(agent, AI):
+                    quick_game_bot_info.append(agent)
+
+        self.render("module_entry_server_stats.html", server_stat=server_stat, quick_game_bot_info=quick_game_bot_info)
 
 
 class ServerStatisticsRefreshHandler(BaseHandler):

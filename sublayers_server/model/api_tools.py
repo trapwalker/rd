@@ -17,6 +17,8 @@ except ImportError as e:
 
 from sublayers_server.model.utils import serialize
 
+from tornado.options import options
+
 
 class EAPIError(Exception):
     """Abstract API exception"""
@@ -62,6 +64,20 @@ def public_method(func):
 
     functools.update_wrapper(cover, func)
     cover._public_method = True
+    return cover
+
+
+def basic_mode(func):
+    """ basic_mode method decorator """
+    def cover(*av, **kw):
+        if options.mode != 'basic':
+            return log.warning('Server Mode:{server_mode}. Try to call {method}({params})'.format(
+                server_mode=options.mode,
+                method=func.__name__,
+                params=', '.join(map(repr, av) + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
+            ))
+        return func(*av, **kw)
+    functools.update_wrapper(cover, func)
     return cover
 
 

@@ -21,7 +21,7 @@ class RadioPoint(Observer):
     def __init__(self, time, **kw):
         super(RadioPoint, self).__init__(time=time, **kw)
         self.room = None
-        self.name = self.example.name
+        self.name = self.example.radio_point_name
 
     def on_init(self, event):
         super(RadioPoint, self).on_init(event)
@@ -153,7 +153,7 @@ class Town(MapLocation):
 
     def __init__(self, time, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(time=time, **kw)
-        self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся name)
+        self.town_name = self.example.title  # todo: сделать единообразно с радиоточками (там берётся radio_point_name)
 
         # Инициализация торговца
         # найти торговца в городе

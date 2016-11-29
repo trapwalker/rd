@@ -9,6 +9,7 @@ var JournalManager = (function () {
 
     JournalManager.prototype.redraw = function(jq_main_div) {
         var self = journalManager;
+        if (jq_main_div.find('.journal-page-button-block').length == 0) return;
         if (jq_main_div)
             self.jq_main_div = $(jq_main_div).first();
 

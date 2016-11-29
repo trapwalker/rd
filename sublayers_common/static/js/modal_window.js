@@ -16,6 +16,7 @@ var ModalWindow = (function () {
         this.modalDialogInfo = $('#modalInfoPage');
         this.modalAnswerInfo = $('#modalAnswerPage');
         this.modalItemDivision = $('#modalItemDivisionPage');
+        this.modalQuickGamePoints = $('#modalQuickGamePointsPage');
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -27,6 +28,8 @@ var ModalWindow = (function () {
         this.modalDialogInfo.addClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-hide');
         this.modalItemDivision.addClass('modal-window-hide');
+        this.modalQuickGamePoints.addClass('modal-window-hide');
+
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
@@ -36,6 +39,7 @@ var ModalWindow = (function () {
         this.modalDialogInfoLoad();
         this.modalDialogAnswerLoad();
         this.modalItemDivisionLoad();
+        this.modalQuickGamePointsPageLoad();
     }
 
     ModalWindow.prototype._modalBackShow = function () {
@@ -460,6 +464,55 @@ var ModalWindow = (function () {
                 containment: "parent"
             });
         });
+    };
+
+
+    ModalWindow.prototype.modalQuickGamePointsPageLoad = function () {
+        // Загрузить информацию из документа в див
+        this.modalQuickGamePoints.load('/static/modal_window/quickGamePointsPage.html', function(){});
+    };
+
+    ModalWindow.prototype.modalQuickGamePointsPageShow = function (options) {
+        var self = this;
+        this._modalBackShow();
+        options = options || {};
+        // включить модальное окно modalOptions
+        this.modalQuickGamePoints.removeClass('modal-window-hide');
+        this.modalQuickGamePoints.addClass('modal-window-show');
+
+        // Повесить новый текст
+        var caption = this.modalQuickGamePoints.find('.windowDragCloseHeader-caption span').first();
+        var header = this.modalQuickGamePoints.find('.modal-window-wrap .modal-header').first();
+        var body_text = this.modalQuickGamePoints.find('.modal-window-wrap span').first();
+
+        if (options.caption) caption.text(options.caption);
+        if (options.header) header.text(options.header); else header.text('');
+        if (options.body_text) body_text.text(options.body_text); else body_text.text('');
+
+        // Повесить новый эвент
+        var btn_ok = this.modalQuickGamePoints.find('#quickGamePointsPageBtnOK');
+        var btn_cancel = this.modalQuickGamePoints.find('#quickGamePointsPageBtnCancel');
+        btn_ok.off('click');
+        btn_cancel.off('click');
+        btn_ok.on('click', function(event) {
+            self.modalDialogAnswerHide();
+            var cb_ok = options.callback_ok;
+            if (typeof(cb_ok) === 'function')
+                cb_ok(event);
+        });
+
+        btn_cancel.on('click', function(event) {
+            self.modalDialogAnswerHide();
+            var cb_cancel = options.callback_cancel;
+            if (typeof(cb_cancel) === 'function')
+                cb_cancel(event);
+        });
+    };
+
+    ModalWindow.prototype.modalQuickGamePointsPageHide = function(){
+        this._modalBackHide();
+        this.modalQuickGamePoints.removeClass('modal-window-show');
+        this.modalQuickGamePoints.addClass('modal-window-hide');
     };
 
     return ModalWindow;

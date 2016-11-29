@@ -14,7 +14,7 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import (
-    FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
+    Event, FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
 )
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
@@ -40,9 +40,20 @@ class Unit(Observer):
         self.owner_example = None if self.owner is None else self.owner.example
         super(Unit, self).__init__(time=time, **kw)
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
+
+        # Установка параметров
+        Parameter(original=self._param_aggregate['p_armor'],
+                  name='p_armor',
+                  owner=self, min_value=0.0, max_value=100.)
+        Parameter(original=self._param_aggregate['p_radiation_armor'],
+                  name='p_radiation_armor',
+                  owner=self, min_value=0.0, max_value=100.)
+
         self.hp_state = HPState(
-            t=time, hp=self.example.hp,
-            max_hp=self.example.get_modify_value(param_name='max_hp', example_agent=self.owner_example),
+            owner=self,
+            t=time,
+            hp=self.example.hp,
+            max_hp=self._param_aggregate['max_hp'],
         )
         self._direction = direction or self.example.direction
         self.altitude = 0.0
@@ -81,9 +92,20 @@ class Unit(Observer):
     def max_hp(self):
         return self.hp_state.max_hp
 
-    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None):
+    def restart_weapons(self, time):
+        self.hp_state.restart_weapons(time)
+
+    def set_hp(self, time, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, add_weapon=None,
+               del_weapon=None):
         HPTask(
-            owner=self, dhp=dhp, dps=dps, add_shooter=add_shooter, del_shooter=del_shooter, shooter=shooter,
+            owner=self,
+            dhp=dhp,
+            dps=dps,
+            add_shooter=add_shooter,
+            del_shooter=del_shooter,
+            shooter=shooter,
+            add_weapon=add_weapon,
+            del_weapon=del_weapon,
         ).start(time=time)
 
     def setup_weapons(self, time):
@@ -99,10 +121,10 @@ class Unit(Observer):
             return 0.0
 
         example_agent = None if self.owner is None else self.owner.example
-        dps_rate = self.example.get_modify_value(param_name='dps_rate', example_agent=example_agent)
-        damage_rate = self.example.get_modify_value(param_name='damage_rate', example_agent=example_agent)
-        time_recharge_rate = self.example.get_modify_value(param_name='time_recharge_rate', example_agent=example_agent)
-        radius_rate = self.example.get_modify_value(param_name='radius_rate', example_agent=example_agent)
+        dps_rate = self._param_aggregate['dps_rate']
+        damage_rate = self._param_aggregate['damage_rate']
+        time_recharge_rate = self._param_aggregate['time_recharge_rate']
+        radius_rate = self._param_aggregate['radius_rate']
 
         for w_ex in self.example.iter_weapons():
             sector = FireSector(
@@ -142,6 +164,9 @@ class Unit(Observer):
         pass
 
     def fire_discharge(self, side, time):
+        if self.limbo or not self.is_alive:
+            log.debug('Error! {} try fire_discharge in limbo'.format(self))
+            return
         FireDischargeEvent(obj=self, side=side, time=time).post()
 
     def fire_auto_enable(self, enable, time):
@@ -161,7 +186,7 @@ class Unit(Observer):
             if sector.side == side:
                 sector.fire_discharge(time=time)
 
-    def on_fire_auto_enable(self, enable, time):
+    def on_fire_auto_enable(self, enable, time, event=None):
         # log.debug('on_fire_auto_enable      %s  bot = %s', enable, self.uid)
         if self.turn_on_auto_fire == enable:
             return
@@ -187,8 +212,7 @@ class Unit(Observer):
             if item:
                 weapon.set_item(item=item, time=event.time)
         # включить пассивный отхил  # todo: убедиться, что отрицательное значение здесь - правильное решение
-        self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate',
-                                                                        example_agent=self.owner_example))
+        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate'])
 
     def on_zone_check(self, event):
         # зонирование
@@ -235,7 +259,7 @@ class Unit(Observer):
                 example=None,
                 inventory_size=self.example.inventory.size,
                 position=self.position(event.time),
-                life_time=600.0,
+                life_time=self.server.poi_loot_objects_life_time,
                 items=self.inventory.get_items(),
                 sub_class_car=self.example.sub_class_car,
                 car_direction=self.direction(event.time),
@@ -249,7 +273,7 @@ class Unit(Observer):
             example=None,
             inventory_size=1,
             position=Point.random_gauss(self.position(time), 10),
-            life_time=600.0,
+            life_time=self.server.poi_loot_objects_life_time,
             items=[item],
         ).post()
 
@@ -266,7 +290,7 @@ class Unit(Observer):
 
     def on_before_delete(self, event):
         # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
-        self.on_fire_auto_enable(enable=False, time=event.time)
+        self.on_fire_auto_enable(enable=False, time=event.time, event=event)
 
         # снять все таски стрельбы по нам
         tasks = self.tasks[:]
@@ -349,30 +373,24 @@ class Mobile(Unit):
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params())
-        self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self.example.get_modify_value(
-            param_name='max_fuel',
-            example_agent=self.owner_example
-        ))
+        self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self._param_aggregate['max_fuel'])
         self.cur_motion_task = None
 
-        v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
-        self.max_control_speed = self.example.get_modify_value(
-            param_name='max_control_speed',
-            example_agent=self.owner_example,
-        )
+        v_forward = self._param_aggregate['v_forward']
+        self.max_control_speed = self._param_aggregate['max_control_speed']
         assert v_forward <= self.max_control_speed
         Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
 
         Parameter(
-            original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
+            original=self._param_aggregate['p_fuel_rate'],
             owner=self, name='p_fuel_rate',
         )
         Parameter(
-            original=self.example.get_modify_value(param_name='p_obs_range_rate_max', example_agent=self.owner_example),
+            original=self._param_aggregate['p_obs_range_rate_max'],
             owner=self, name='p_obs_range_rate_max',
         )
         Parameter(
-            original=self.example.get_modify_value(param_name='p_obs_range_rate_min', example_agent=self.owner_example),
+            original=self._param_aggregate['p_obs_range_rate_min'],
             owner=self, name='p_obs_range_rate_min',
         )
 
@@ -398,13 +416,13 @@ class Mobile(Unit):
         return dict(
             p=self._position,
             fi=self._direction,
-            r_min=self.example.get_modify_value(param_name='r_min', example_agent=self.owner_example),
-            ac_max=self.example.get_modify_value(param_name='ac_max', example_agent=self.owner_example),
-            v_forward=self.example.get_modify_value(param_name='max_control_speed', example_agent=self.owner_example),
-            v_backward=self.example.get_modify_value(param_name='v_backward', example_agent=self.owner_example),
-            a_forward=self.example.get_modify_value(param_name='a_forward', example_agent=self.owner_example),
-            a_backward=self.example.get_modify_value(param_name='a_backward', example_agent=self.owner_example),
-            a_braking=self.example.get_modify_value(param_name='a_braking', example_agent=self.owner_example),
+            r_min=self._param_aggregate['r_min'],
+            ac_max=self._param_aggregate['ac_max'],
+            v_forward=self._param_aggregate['max_control_speed'],
+            v_backward=self._param_aggregate['v_backward'],
+            a_forward=self._param_aggregate['a_forward'],
+            a_backward=self._param_aggregate['a_backward'],
+            a_braking=self._param_aggregate['a_braking'],
         )
 
     def as_dict(self, time):
@@ -429,11 +447,6 @@ class Mobile(Unit):
     def set_motion(self, time, target_point=None, cc=None, turn=None, comment=None):
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
-
-    @event_deco
-    def set_position(self, event, point, comment=None):
-        self.state.set(t=event.time, p=point)
-        self.on_update(event)
 
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
@@ -482,6 +495,7 @@ class Bot(Mobile):
     def __init__(self, time, **kw):
         super(Bot, self).__init__(time=time, **kw)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
+        self.start_shield_event = None
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
@@ -513,24 +527,53 @@ class Bot(Mobile):
         self.main_agent.on_kill(event=event, obj=obj)
         super(Bot, self).on_kill(event=event, obj=obj)
 
+    def start_shield_off(self, event):
+        self.start_shield_event = None
+        self.params.get('p_radiation_armor').current -= 100
+        self.params.get('p_armor').current -= 100
+        self.restart_weapons(time=event.time)
+
     def on_init(self, event):
         super(Bot, self).on_init(event=event)
         # если при инициализации машина не движется, то включить возможный пассивнх хил
         if not self.state.is_moving:
-            self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
-                                                                            example_agent=self.owner_example))
+            self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
+
+        # Включение стартовой неуязвимости:
+        if self.example.start_shield_time > 0:
+            self.params.get('p_radiation_armor').current += 100
+            self.params.get('p_armor').current += 100
+            self.restart_weapons(time=event.time)
+            # todo: use event_deco
+            self.start_shield_event = Event(server=self.server, time=event.time + self.example.start_shield_time,
+                                            callback_after=self.start_shield_off)
+            self.start_shield_event.post()
+
+    def on_fire_discharge(self, event):
+        super(Bot, self).on_fire_discharge(event=event)
+        if self.start_shield_event:
+            self.start_shield_event.cancel()
+            self.start_shield_off(event=event)
+
+    def on_fire_auto_enable(self, event=None, **kw):
+        super(Bot, self).on_fire_auto_enable(event=event, **kw)
+        if self.start_shield_event:
+            self.start_shield_event.cancel()
+            self.start_shield_off(event=event)
 
     def on_start(self, event):
         super(Bot, self).on_start(event=event)
         # todo: убедиться, что отрицательное значение - хорошая идея
-        self.set_hp(time=event.time, dps=self.example.get_modify_value(param_name='repair_rate_on_stay',
-                                                                       example_agent=self.owner_example))
+        self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'])
+
+        if self.start_shield_event:
+            self.start_shield_event.cancel()
+            self.start_shield_off(event=event)
 
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)
         # todo: убедиться, что отрицательное значение получается путём подставления минуса - хорошо
-        self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
-                                                                        example_agent=self.owner_example))
+        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
 
 
 class ExtraMobile(Mobile):

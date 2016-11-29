@@ -7,13 +7,13 @@ import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes import notes
 from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.registry.tree import Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField
+    UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
 )
+from sublayers_server.model.vectors import Point
 
 from functools import partial, wraps
 import random
@@ -196,6 +196,7 @@ class QuestState(Root):
 # - sale(login|location|npc, [items], cost=None)
 # - time(duration)
 # - trigger(name, value=None)
+# - set_timer(name, duration)
 # - heal(login|prototype|uid, count=1)
 
 # Действия:
@@ -503,6 +504,7 @@ class Quest(Root):
         self._go_state_name = None
         self.local_context.update(
             go=partial(self._go, event=event),
+            set_timer=partial(self.set_timer, event=event),
         )
         state._exec_event_handler(quest=self, handler='on_enter', event=event)
         new_state = getattr(self, '_go_state_name', None)
@@ -515,11 +517,21 @@ class Quest(Root):
         self._go_state_name = None
         self.local_context.update(
             go=partial(self._go, event=event),
+            set_timer=partial(self.set_timer, event=event),
         )
         state._exec_event_handler(quest=self, handler='on_event', event=event)
         new_state = getattr(self, '_go_state_name', None)
         if new_state:
             self.set_state(new_state, event)
+
+    def set_timer(self, event, name=None, time=None, delay=None):
+        if time is None:
+            time = event.time
+
+        if delay is not None:
+            time += delay
+
+        return quest_events.OnTimer(server=event.server, time=time, quest=self, name=name).post()
 
     def log(self, text, event=None, position=None, **kw):
         rendered_text = self._template_render(text, position=position, **kw)
@@ -688,3 +700,23 @@ class DeliveryQuest(Quest):
             delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
         )
         return d
+
+
+class AIQuickQuest(Quest):
+    route = ListField(
+        default=[],
+        caption=u"Маршрут патрулирования",
+        base_field=PositionField(caption=u"Точка патрулирования", reinst=True,),
+        reinst=True,
+    )
+    route_index = IntField(caption=u'Индекс текущей точки патрулирования')
+
+    def get_next_route_point(self):
+        if not self.route:
+            return Point.random_gauss(self.agent._agent_model.server.quick_game_start_pos,
+                                      self.agent._agent_model.server.quick_game_play_radius)
+        if self.route_index + 1 >= len(self.route):
+            self.route_index = 0
+        else:
+            self.route_index = self.route_index + 1
+        return self.route[self.route_index].as_point()
