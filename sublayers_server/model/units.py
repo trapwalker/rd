@@ -164,6 +164,9 @@ class Unit(Observer):
         pass
 
     def fire_discharge(self, side, time):
+        if self.limbo or not self.is_alive:
+            log.debug('Error! {} try fire_discharge in limbo'.format(self))
+            return
         FireDischargeEvent(obj=self, side=side, time=time).post()
 
     def fire_auto_enable(self, enable, time):
