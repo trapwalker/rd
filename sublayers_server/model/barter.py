@@ -42,7 +42,7 @@ class AddInviteBarterMessage(Message):
         d = super(AddInviteBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.user.name,
+            initiator=self.barter.initiator.print_login(),
         )
         return d
 

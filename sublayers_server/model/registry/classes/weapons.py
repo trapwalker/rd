@@ -17,12 +17,13 @@ class Weapon(ArmorerItem):
     ammo_per_second = FloatField(caption=u'Расход патронов в секунду')
     radius = FloatField(caption=u'Дальность стрельбы (м)')
     width = FloatField(caption=u'Ширина сектора стрельбы (град)')
+    power_penetration = FloatField(caption=u'Мощность оружия (пробитие)')
 
 
 class Cannon(Weapon):
     is_auto = False
     dmg = FloatField(caption=u'Урон за выстрел')
-    area_dmg = FloatField(caption=u'Урон за выстрел', default=10)
+    area_dmg = FloatField(caption=u'Урон за выстрел')
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
 
 

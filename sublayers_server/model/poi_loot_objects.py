@@ -105,7 +105,8 @@ class POIContainer(Observer):
     def drop_item_to_map(self, item, time):
         CreatePOILootEvent(server=self.server, time=time, poi_cls=POILoot, example=None,
                            inventory_size=1,
-                           position=Point.random_gauss(self.position(time), 10), life_time=600.0, items=[item]).post()
+                           position=Point.random_gauss(self.position(time), 10),
+                           life_time=self.server.poi_loot_objects_life_time, items=[item]).post()
 
 
 class POILoot(POIContainer):

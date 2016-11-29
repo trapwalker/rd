@@ -94,6 +94,8 @@ class PointObject(Object):
         self.example = example
         if example is None:
             log.warning('Object %s has no example node', self)
+        else:
+            self._param_aggregate = self.example.param_aggregate(example_agent=getattr(self, 'owner_example', None))
         self.server.geo_objects.append(self)
 
     def on_after_delete(self, event):
@@ -126,12 +128,10 @@ class VisibleObject(PointObject):
         self.params = dict()
         self.set_default_params()
 
-        Parameter(original=self.example.get_modify_value(param_name='p_visibility_min',
-                                                         example_agent=getattr(self, 'owner_example', None)),
+        Parameter(original=self._param_aggregate['p_visibility_min'],
                   name='p_visibility_min',
                   owner=self)
-        Parameter(original=self.example.get_modify_value(param_name='p_visibility_max',
-                                                         example_agent=getattr(self, 'owner_example', None)),
+        Parameter(original=self._param_aggregate['p_visibility_max'],
                   name='p_visibility_max',
                   owner=self)
 
@@ -183,19 +183,13 @@ class VisibleObject(PointObject):
     def set_default_params(self):
         for name, attr, getter in self.example.iter_attrs(tags='parameter p_modifier'):
             Parameter(
-                original=self.example.get_modify_value(
-                    param_name=name,
-                    example_agent=getattr(self, 'owner_example', None),
-                ),
+                original=self._param_aggregate[name],
                 name=name,
                 owner=self,
             )
         for name, attr, getter in self.example.iter_attrs(tags='parameter p_resist'):
             Parameter(
-                original=self.example.get_modify_value(
-                    param_name=name,
-                    example_agent=getattr(self, 'owner_example', None),
-                ),
+                original=self._param_aggregate[name],
                 name=name,
                 max_value=1.0,
                 owner=self,
@@ -211,12 +205,10 @@ class VisibleObject(PointObject):
 class Observer(VisibleObject):
     def __init__(self, **kw):
         super(Observer, self).__init__(**kw)
-        Parameter(original=self.example.get_modify_value(param_name='p_observing_range',
-                                                         example_agent=getattr(self, 'owner_example', None)),
+        Parameter(original=self._param_aggregate['p_observing_range'],
                   name='p_observing_range',
                   owner=self)
-        Parameter(original=self.example.get_modify_value(param_name='p_vigilance',
-                                                         example_agent=getattr(self, 'owner_example', None)),
+        Parameter(original=self._param_aggregate['p_vigilance'],
                   name='p_vigilance',
                   owner=self)
         self.watched_agents = CounterSet()

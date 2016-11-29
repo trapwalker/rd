@@ -18,7 +18,7 @@ var BarterManager = (function () {
         // Запрос на открытие окна
         if (locationManager.in_location_flag)
             $.ajax({
-                url: "http://" + $('#settings_host_name').text() + '/api/barter',
+                url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/barter',
                 data: {barter_id: barter_id},
                 success: function(data) { locationManager.location_chat.interaction_manager.start_barter(data, barter_id); }
             });

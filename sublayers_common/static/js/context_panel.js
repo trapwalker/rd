@@ -243,8 +243,13 @@ var InviteBarterObserver = (function(_super){
         if (!jq_content_div) return;
         for (var i = 0; i < self.observing_list.length; i++) {
             var mobj = self.observing_list[i];
-            if ((mobj.owner) && (mobj.owner.login))
-                jq_content_div.append('<div class="context-list-item" data-login="' + mobj.owner.login + '">' + mobj.owner.login +'</div>');
+            if ((mobj.owner) && (mobj.owner.login)) {
+                var print_name = mobj.owner.quick ? getQuickUserLogin(mobj.owner.login) : mobj.owner.login;
+                jq_content_div.append('<div class="context-list-item" data-login="' + mobj.owner.login + '">' + print_name +'</div>');
+            }
+
+            //if ((mobj.owner) && (mobj.owner.login))
+            //    jq_content_div.append('<div class="context-list-item" data-login="' + mobj.owner.login + '">' + mobj.owner.login +'</div>');
         }
         jq_content_div.find('.context-list-item').first().css('border', 'none');
         jq_content_div.find('.context-list-item').click(function() {
@@ -314,7 +319,8 @@ var CPActivateBarterManager = (function () {
         if (!jq_content_div) return;
         for (var i = 0; i < self.barters.length; i++) {
             var barter = self.barters[i];
-            jq_content_div.append('<div class="context-list-item" data-id="' + barter.id + '">' + user.login + ' < > ' + barter.sender +'</div>');
+            var print_name = user.quick ? getQuickUserLogin(user.login) : user.login;
+            jq_content_div.append('<div class="context-list-item" data-id="' + barter.id + '">' + print_name + ' < > ' + barter.sender +'</div>');
         }
         jq_content_div.find('.context-list-item').first().css('border', 'none');
         jq_content_div.find('.context-list-item').click(function() {

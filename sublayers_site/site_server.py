@@ -39,7 +39,6 @@ from sublayers_common.base_application import BaseApplication
 
 import sublayers_server.model.registry.classes  #autoregistry classes
 from sublayers_server.model.registry.tree import Root
-from sublayers_server.model.registry.storage import Collection
 from sublayers_site.news import NewsManager
 
 

@@ -242,3 +242,9 @@ function getKarmaName(karma) {
     if (karma >= -1) return const_karma_list[31];
     return const_karma_list[32];
 }
+
+function getQuickUserLogin(login) {
+    var parts = login.split('_');
+    parts.pop();
+    return parts.join('_');
+}

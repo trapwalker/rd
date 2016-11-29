@@ -110,7 +110,7 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
         # Убрать один ремкомплект из инвентаря
         item._div_item(count=1, time=self.time)
 
-        # залили в бак топливо
+        # Починили машинку на нужное значение хп
         obj.set_hp(dhp=-item.example.build_points, time=self.time)
 
 

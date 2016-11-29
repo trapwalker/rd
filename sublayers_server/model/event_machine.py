@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import logging.config
+
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.server_api import ServerAPI
@@ -10,31 +11,35 @@ from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation
+from sublayers_server.model.radiation import StationaryRadiation
 from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
 
-from sublayers_server.model.registry.storage import Collection
 from sublayers_server.model.registry.tree import Root
+
+from sublayers_common.user_profile import User as UserProfile
 
 import os
 import sys
+import random
 import tornado.ioloop
+import tornado.gen
 from time import sleep
 from threading import Thread
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 from functools import partial, wraps
 
-
 MAX_SERVER_SLEEP_TIME = 0.1
 
 
 def async_call_deco(f):
     wraps(f)
+
     def closure(*av, **kw):
-        #callback = kw.pop('callback', None)  # todo: make result returning by callback
+        # callback = kw.pop('callback', None)  # todo: make result returning by callback
         ff = partial(f, *av, **kw)
         tornado.ioloop.IOLoop.instance().add_callback(ff)
 
@@ -42,7 +47,6 @@ def async_call_deco(f):
 
 
 class Server(object):
-
     def __init__(self, uid=None):
         """
         @param uuid.UUID uid: Unique id of server
@@ -68,13 +72,20 @@ class Server(object):
 
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
+        self.poi_loot_objects_life_time = 600  # Время жизни лута на карте для обычного режима
 
         # todo: QuickGame settings fix it
-        self.quick_game_cars_proto = []
-        self.quick_game_start_pos = Point(12468002, 26989281)
+        if options.mode == 'quick':
+            self.poi_loot_objects_life_time = 28  # Время жизни лута на карте для режима быстрой игры
+            self.quick_game_cars_proto = []
+            self.quick_game_bot_cars_proto = []
+            self.quick_game_bot_agents_proto = []
+            self.quick_game_start_pos = Point(12468000, 26989000)
+            self.quick_game_play_radius = 1600
+            self.quick_game_death_radius = self.quick_game_play_radius * 20
 
 
-        #self.ioloop.add_callback(callback=self.load_registry)
+            # self.ioloop.add_callback(callback=self.load_registry)
 
     @async_call_deco
     def load_registry(self):
@@ -83,7 +94,7 @@ class Server(object):
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
             self.load_world()
 
-        #Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
+        # Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
         Root.objects.find_all(callback=load_registry_done_callback)
 
     def __getstate__(self):
@@ -123,6 +134,29 @@ class Server(object):
         else:
             log.info('Zones activation disabled')
 
+        if options.mode == 'basic':
+            self.on_load_poi(event)
+        elif options.mode == 'quick':
+            self.on_load_poi_quick_mode(event)
+
+            # Создание экземпляров машинок игроков для быстрой игры
+            for car_proto in self.reg['world_settings'].quick_game_cars:
+                self.quick_game_cars_proto.append(car_proto)
+
+            # Создание экземпляров машинок ботов для быстрой игры
+            for car_proto in self.reg['world_settings'].quick_game_bot_cars:
+                self.quick_game_bot_cars_proto.append(car_proto)
+
+            # Получение экземпляров агентов ботов для быстрой игры
+            for agent_ex in self.reg['world_settings'].quick_game_bot_agents:
+                self.quick_game_bot_agents_proto.append(agent_ex)
+
+            # Создание AIQuickBot'ов
+            self.ioloop.add_callback(callback=self.load_ai_quick_bots)
+
+        print('Load world complete !')
+
+    def on_load_poi(self, event):
         # загрузка радиоточек
         towers_root = self.reg['poi/radio_towers']
         for rt_exm in towers_root:
@@ -138,11 +172,68 @@ class Server(object):
         for gs_exm in gs_root:
             GasStation(time=event.time, server=self, example=gs_exm)
 
-        # Создание экземпляров машинок для быстрой игры
-        for car_proto in self.reg['world_settings'].quick_game_car:
-            self.quick_game_cars_proto.append(car_proto)
+            # todo: Сделать загрузку стационарных точек радиации
 
-        print('Load world complete !')
+    def on_load_poi_quick_mode(self, event):
+        # загрузка радиоточки
+        tower = self.reg['poi/quick_game_poi/quick_game_radio_tower']
+        if tower:
+            tower.position = self.quick_game_start_pos
+            RadioPoint(time=event.time, example=tower, server=self)
+
+        # Установка точки радиации-быстрой игры
+        quick_rad = self.reg['poi/quick_game_poi/quick_game_radiation_area']
+        if quick_rad:
+            quick_rad.p_observing_range = self.quick_game_death_radius
+            quick_rad.position = self.quick_game_start_pos
+            StationaryRadiation(time=event.time, example=quick_rad, server=self)
+        quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
+        if quick_rad_anti:
+            quick_rad.p_observing_range = self.quick_game_play_radius
+            quick_rad_anti.position = self.quick_game_start_pos
+            StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
+
+    @tornado.gen.coroutine
+    def load_ai_quick_bots(self):
+        from sublayers_server.model.registry.classes.agents import Agent
+        from sublayers_server.model.ai_quick_agent import AIQuickAgent
+
+        bot_count = self.reg['world_settings'].quick_game_bot_count
+        if not bot_count:
+            bot_count = 0
+        # Создать ботов
+        for i in range(1, bot_count + 1):
+            # Найти или создать профиль
+            name = 'quick_bot_{}'.format(i)
+            user = yield UserProfile.get_by_name(name=name)
+            if user is None:
+                user = UserProfile(name=name, email='quick_bot_{}@1'.format(i), raw_password='1')
+                yield user.save()
+
+            # Создать AIQuickAgent
+            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            if agent_exemplar is None:
+                agent_exemplar = self.quick_game_bot_agents_proto[
+                    random.randint(0, len(self.quick_game_bot_agents_proto) - 1)]
+                agent_exemplar = agent_exemplar.instantiate(
+                    login=user.name,
+                    profile_id=str(user._id),
+                    name=str(user._id),
+                    fixtured=False,
+                )
+                yield agent_exemplar.load_references()
+
+                role_class_ex = self.reg['rpg_settings/role_class/chosen_one']
+                agent_exemplar.role_class = role_class_ex
+                yield agent_exemplar.save(upsert=True)
+
+            # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
+            AIQuickAgent(
+                server=self,
+                user=user,
+                time=self.get_time(),
+                example=agent_exemplar,
+            )
 
     def post_message(self, message):
         """
@@ -195,7 +286,6 @@ class EServerIsNotStarted(errors.EIllegal):
 
 
 class LocalServer(Server):
-
     def __init__(self, app=None, **kw):
         super(LocalServer, self).__init__(**kw)
         self.api = ServerAPI(self)
@@ -246,8 +336,6 @@ class LocalServer(Server):
             log.exception('Event performing error %s', event)
         finally:
             t = self.get_time() - t
-            
-
 
         self.ioloop.add_callback(callback=self.event_loop)
 

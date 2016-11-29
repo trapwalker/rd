@@ -99,6 +99,10 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
 
+    {% if server_mode == 'quick' %}
+        <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
+    {% end %}
+
     <script src="{{ static_url('js/third_party/leaflet-src.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
@@ -273,6 +277,7 @@
         <div id="modalInfoPage"></div>
         <div id="modalAnswerPage"></div>
         <div id="modalItemDivisionPage"></div>
+        <div id="modalQuickGamePointsPage"></div>
     </div>
 
     <div id="activeTownDivBack">
@@ -282,6 +287,8 @@
     <div style="display: none">
         <span id="settings_host_name">{{ host_name }}</span>
         <span id="settings_ws_port">{{ ws_port }}</span>
+        <span id="settings_server_mode_link_path">{{ '/quick' if server_mode == 'quick' else '' }}</span>
+        <span id="settings_server_mode">{{ server_mode }}</span>
         <span id="settings_map_link">{{ map_link }}</span>
         <span id="settings_app_version">{{ version }}</span>
         <span id="settings_user_name">{{ user_name }}</span>

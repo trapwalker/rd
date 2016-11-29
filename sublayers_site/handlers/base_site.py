@@ -76,7 +76,7 @@ class BaseSiteHandler(BaseHandler):
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")
 
-        for car_proto in self.application.reg['world_settings'].quick_game_car:
+        for car_proto in self.application.reg['world_settings'].quick_game_cars:
             html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)

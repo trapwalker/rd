@@ -541,4 +541,27 @@
 #divisionItemBtnMinus {left: 0;}
 #divisionItemBtnPlus {right: 0;}
 
+/* Окно завершения быстрой игры */
+#modalQuickGamePointsPage {
+    width: 340px;
+    height: 174px;
+    margin-left: -170px;
+}
 
+#quickGamePointsPageBtnOK {
+    position: relative;
+    float: left;
+    margin-left: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}
+
+#quickGamePointsPageBtnCancel {
+    position: relative;
+    float: right;
+    margin-right: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}

@@ -1,4 +1,5 @@
-{% set window_caption = 'Nuke:\PersonInfo>' + agent.user.name %}
+{% set window_caption = 'Nuke:\PersonInfo>' + agent.print_login() %}
+
 {% set car = agent.car.example %}
 <div class="personWindow-main">
     {% include ../drag_close_header.html %}
@@ -15,7 +16,11 @@
             </div>
             <div class="person-window-top-person">
                 <div class="person-window-person-photo" style="background: url('{{ agent.user.avatar_link }}') 100% 100% no-repeat transparent; ">
-                    <div class="npc-name-div"><span class="npc-name">{{ agent.user.name }}</span></div>
+                    <div class="npc-name-div">
+                        <span class="npc-name">
+                            {{ agent.print_login() }}
+                        </span>
+                    </div>
                 </div>
                 <div class="person-window-pers-info">
                     <div class="person-window-pers-info-line person-window-dark-back">

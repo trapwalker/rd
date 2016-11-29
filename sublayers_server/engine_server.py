@@ -91,7 +91,7 @@ class Application(BaseApplication):
         self.srv = LocalServer(app=self)
         log.debug('server instance init')
         self.srv.start()
-        log.info('ENGINE LOOP STARTED' + '-' * 50)
+        log.info('ENGINE LOOP STARTED: mode={options.mode}'.format(options=options) + '-' * 50)
         self.clients = []
         self.chat = []
         # todo: truncate chat history
@@ -142,11 +142,6 @@ class Application(BaseApplication):
 
             (r"/interlacing", TestInterlacingHandler),
         ])
-
-    def stop(self):
-        log.debug('====== ioloop before stop')
-        tornado.ioloop.IOLoop.instance().stop()
-        log.debug('====== ioloop after stop')
 
     def on_stop(self):
         if self.srv.is_active:
