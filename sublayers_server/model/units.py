@@ -42,8 +42,10 @@ class Unit(Observer):
         self.main_agent = self._get_main_agent()  # перекрывать в классах-наследниках если нужно
 
         # Установка параметров
-        Parameter(original=self.example.get_modify_value(param_name='p_radiation_armor',
-                                                         example_agent=getattr(self, 'owner_example', None)),
+        Parameter(original=self._param_aggregate['p_armor'],
+                  name='p_armor',
+                  owner=self, min_value=0.0, max_value=100.)
+        Parameter(original=self._param_aggregate['p_radiation_armor'],
                   name='p_radiation_armor',
                   owner=self, min_value=0.0, max_value=100.)
 
@@ -51,7 +53,7 @@ class Unit(Observer):
             owner=self,
             t=time,
             hp=self.example.hp,
-            max_hp=self.example.get_modify_value(param_name='max_hp', example_agent=self.owner_example),
+            max_hp=self._param_aggregate['max_hp'],
         )
         self._direction = direction or self.example.direction
         self.altitude = 0.0
@@ -119,10 +121,10 @@ class Unit(Observer):
             return 0.0
 
         example_agent = None if self.owner is None else self.owner.example
-        dps_rate = self.example.get_modify_value(param_name='dps_rate', example_agent=example_agent)
-        damage_rate = self.example.get_modify_value(param_name='damage_rate', example_agent=example_agent)
-        time_recharge_rate = self.example.get_modify_value(param_name='time_recharge_rate', example_agent=example_agent)
-        radius_rate = self.example.get_modify_value(param_name='radius_rate', example_agent=example_agent)
+        dps_rate = self._param_aggregate['dps_rate']
+        damage_rate = self._param_aggregate['damage_rate']
+        time_recharge_rate = self._param_aggregate['time_recharge_rate']
+        radius_rate = self._param_aggregate['radius_rate']
 
         for w_ex in self.example.iter_weapons():
             sector = FireSector(
@@ -207,8 +209,7 @@ class Unit(Observer):
             if item:
                 weapon.set_item(item=item, time=event.time)
         # включить пассивный отхил  # todo: убедиться, что отрицательное значение здесь - правильное решение
-        self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate',
-                                                                        example_agent=self.owner_example))
+        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate'])
 
     def on_zone_check(self, event):
         # зонирование
@@ -369,30 +370,24 @@ class Mobile(Unit):
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
         self.state = MotionState(t=time, **self.init_state_params())
-        self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self.example.get_modify_value(
-            param_name='max_fuel',
-            example_agent=self.owner_example
-        ))
+        self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self._param_aggregate['max_fuel'])
         self.cur_motion_task = None
 
-        v_forward = self.example.get_modify_value(param_name='v_forward', example_agent=self.owner_example)
-        self.max_control_speed = self.example.get_modify_value(
-            param_name='max_control_speed',
-            example_agent=self.owner_example,
-        )
+        v_forward = self._param_aggregate['v_forward']
+        self.max_control_speed = self._param_aggregate['max_control_speed']
         assert v_forward <= self.max_control_speed
         Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
 
         Parameter(
-            original=self.example.get_modify_value(param_name='p_fuel_rate', example_agent=self.owner_example),
+            original=self._param_aggregate['p_fuel_rate'],
             owner=self, name='p_fuel_rate',
         )
         Parameter(
-            original=self.example.get_modify_value(param_name='p_obs_range_rate_max', example_agent=self.owner_example),
+            original=self._param_aggregate['p_obs_range_rate_max'],
             owner=self, name='p_obs_range_rate_max',
         )
         Parameter(
-            original=self.example.get_modify_value(param_name='p_obs_range_rate_min', example_agent=self.owner_example),
+            original=self._param_aggregate['p_obs_range_rate_min'],
             owner=self, name='p_obs_range_rate_min',
         )
 
@@ -418,13 +413,13 @@ class Mobile(Unit):
         return dict(
             p=self._position,
             fi=self._direction,
-            r_min=self.example.get_modify_value(param_name='r_min', example_agent=self.owner_example),
-            ac_max=self.example.get_modify_value(param_name='ac_max', example_agent=self.owner_example),
-            v_forward=self.example.get_modify_value(param_name='max_control_speed', example_agent=self.owner_example),
-            v_backward=self.example.get_modify_value(param_name='v_backward', example_agent=self.owner_example),
-            a_forward=self.example.get_modify_value(param_name='a_forward', example_agent=self.owner_example),
-            a_backward=self.example.get_modify_value(param_name='a_backward', example_agent=self.owner_example),
-            a_braking=self.example.get_modify_value(param_name='a_braking', example_agent=self.owner_example),
+            r_min=self._param_aggregate['r_min'],
+            ac_max=self._param_aggregate['ac_max'],
+            v_forward=self._param_aggregate['max_control_speed'],
+            v_backward=self._param_aggregate['v_backward'],
+            a_forward=self._param_aggregate['a_forward'],
+            a_backward=self._param_aggregate['a_backward'],
+            a_braking=self._param_aggregate['a_braking'],
         )
 
     def as_dict(self, time):
@@ -539,8 +534,7 @@ class Bot(Mobile):
         super(Bot, self).on_init(event=event)
         # если при инициализации машина не движется, то включить возможный пассивнх хил
         if not self.state.is_moving:
-            self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
-                                                                            example_agent=self.owner_example))
+            self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
 
         # Включение стартовой неуязвимости:
         if self.example.start_shield_time > 0:
@@ -567,8 +561,7 @@ class Bot(Mobile):
     def on_start(self, event):
         super(Bot, self).on_start(event=event)
         # todo: убедиться, что отрицательное значение - хорошая идея
-        self.set_hp(time=event.time, dps=self.example.get_modify_value(param_name='repair_rate_on_stay',
-                                                                       example_agent=self.owner_example))
+        self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'])
 
         if self.start_shield_event:
             self.start_shield_event.cancel()
@@ -577,8 +570,7 @@ class Bot(Mobile):
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)
         # todo: убедиться, что отрицательное значение получается путём подставления минуса - хорошо
-        self.set_hp(time=event.time, dps=-self.example.get_modify_value(param_name='repair_rate_on_stay',
-                                                                        example_agent=self.owner_example))
+        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
 
 
 class ExtraMobile(Mobile):

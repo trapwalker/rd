@@ -24,6 +24,11 @@ class SlotField(EmbeddedDocumentField):
 
 
 class Mobile(Root):
+    u"""
+    Tags:
+        - parameter - для атрибута с таким тегом будет создан модельный объект Parameter
+        - param_aggregate - атрибуты с данным тегов будут обрабатываться в функции param_aggregate
+    """
     # атрибуты от PointObject
     position = PositionField(caption=u"Последние координаты объекта", reinst=True)
 
@@ -41,79 +46,79 @@ class Mobile(Root):
     k_way_exp = FloatField(caption=u"Коэффициент экпы от пройдённого пути")
 
     # атрибуты от ObserverObjects
-    p_observing_range = FloatField(caption=u"Радиус обзора", tags="parameter")
+    p_observing_range = FloatField(caption=u"Радиус обзора", tags="parameter param_aggregate")
 
     # атрибуты от VisibleObjects
-    p_vigilance          = FloatField(caption=u"Коэффициент зоркости", tags="parameter")
-    p_visibility_min     = FloatField(caption=u"Минимальный коэффициент заметности", tags="parameter")
-    p_visibility_max     = FloatField(caption=u"Максимальный коэффициент заметности", tags="parameter")
-    p_obs_range_rate_min = FloatField(caption=u"Коэффициент радиуса обзора при максимальной скорости", tags="parameter")
-    p_obs_range_rate_max = FloatField(caption=u"Коэффициент радиуса обзора при скорости = 0", tags="parameter")
+    p_vigilance          = FloatField(caption=u"Коэффициент зоркости", tags="parameter param_aggregate")
+    p_visibility_min     = FloatField(caption=u"Минимальный коэффициент заметности", tags="parameter param_aggregate")
+    p_visibility_max     = FloatField(caption=u"Максимальный коэффициент заметности", tags="parameter param_aggregate")
+    p_obs_range_rate_min = FloatField(caption=u"Коэффициент радиуса обзора при максимальной скорости", tags="parameter param_aggregate")
+    p_obs_range_rate_max = FloatField(caption=u"Коэффициент радиуса обзора при скорости = 0", tags="parameter param_aggregate")
 
     # атрибуты от Unit
-    p_armor              = FloatField(caption=u"Броня машинки", tags="parameter")
-    p_radiation_armor = FloatField(caption=u"Уровень защиты от радиации (0-100)", tags="parameter")
+    p_armor              = FloatField(caption=u"Броня машинки", tags="parameter param_aggregate")
+    p_radiation_armor = FloatField(caption=u"Уровень защиты от радиации (0-100)", tags="parameter param_aggregate")
 
 
     # Модификаторы эффектов зон
-    m_cc_dirt            = FloatField(caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier')
-    m_cc_wood            = FloatField(caption=u"Модификатор CC в лесу", tags='parameter p_modifier')
-    m_visibility_wood    = FloatField(caption=u"Модификатор видимости в лесу", tags='parameter p_modifier')
-    m_observing_range_wood = FloatField(caption=u"Модификатор обзора в лесу", tags='parameter p_modifier')
-    m_cc_slope           = FloatField(caption=u"Модификатор CC в горах", tags='parameter p_modifier')
-    m_cc_water           = FloatField(caption=u"Модификатор CC на воде", tags='parameter p_modifier')
-    m_r_cc_wood_on_road  = FloatField(caption=u"Модификатор резиста штрафа СС в лесу на дороге", tags='parameter p_modifier')
-    m_r_cc_water_on_road = FloatField(caption=u"Модификатор резиста штрафа СС в воде на дороге ", tags='parameter p_modifier')
-    m_r_cc_dirt_on_road  = FloatField(caption=u"Модификатор резиста штрафа СС на бездорожье на дороге", tags='parameter p_modifier')
-    m_r_cc_slope_on_road = FloatField(caption=u"Модификатор резиста штрафа СС в горах на дороге", tags='parameter p_modifier')
-    m_r_cc_dirt          = FloatField(caption=u"Модификатор резиста бездорожья для отмены бездорожья", tags='parameter p_modifier')
-    m_cc_mine            = FloatField(caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier')
-    m_cc_fuel_empty      = FloatField(caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier')
+    m_cc_dirt            = FloatField(caption=u"Модификатор CC на бездорожье", tags='parameter p_modifier param_aggregate')
+    m_cc_wood            = FloatField(caption=u"Модификатор CC в лесу", tags='parameter p_modifier param_aggregate')
+    m_visibility_wood    = FloatField(caption=u"Модификатор видимости в лесу", tags='parameter p_modifier param_aggregate')
+    m_observing_range_wood = FloatField(caption=u"Модификатор обзора в лесу", tags='parameter p_modifier param_aggregate')
+    m_cc_slope           = FloatField(caption=u"Модификатор CC в горах", tags='parameter p_modifier param_aggregate')
+    m_cc_water           = FloatField(caption=u"Модификатор CC на воде", tags='parameter p_modifier param_aggregate')
+    m_r_cc_wood_on_road  = FloatField(caption=u"Модификатор резиста штрафа СС в лесу на дороге", tags='parameter p_modifier param_aggregate')
+    m_r_cc_water_on_road = FloatField(caption=u"Модификатор резиста штрафа СС в воде на дороге ", tags='parameter p_modifier param_aggregate')
+    m_r_cc_dirt_on_road  = FloatField(caption=u"Модификатор резиста штрафа СС на бездорожье на дороге", tags='parameter p_modifier param_aggregate')
+    m_r_cc_slope_on_road = FloatField(caption=u"Модификатор резиста штрафа СС в горах на дороге", tags='parameter p_modifier param_aggregate')
+    m_r_cc_dirt          = FloatField(caption=u"Модификатор резиста бездорожья для отмены бездорожья", tags='parameter p_modifier param_aggregate')
+    m_cc_mine            = FloatField(caption=u"Модификатор CC замедляющей мины", tags='parameter p_modifier param_aggregate')
+    m_cc_fuel_empty      = FloatField(caption=u"Модификатор CC при пустом баке", tags='parameter p_modifier param_aggregate')
 
     # Резисты к модификаторам эффетов зон
-    r_empty                = FloatField(caption=u"Пустой резист", tags='parameter p_resist')
-    r_cc_dirt              = FloatField(caption=u"Резист к модификатору CC на бездорожье", tags='parameter p_resist')
-    r_cc_wood              = FloatField(caption=u"Резист к модификатору CC в лесу", tags='parameter p_resist')
-    r_visibility_wood      = FloatField(caption=u"Резист к модификатору видимости в лесу", tags='parameter p_resist')
-    r_observing_range_wood = FloatField(caption=u"Резист к модификатору обзора в лесу", tags='parameter p_resist')
-    r_cc_slope             = FloatField(caption=u"Резист к модификатору CC в горах", tags='parameter p_resist')
-    r_cc_water             = FloatField(caption=u"Резист к модификатору CC в воде", tags='parameter p_resist')
-    r_cc_mine              = FloatField(caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist')
-    r_cc_fuel_empty        = FloatField(caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist')
+    r_empty                = FloatField(caption=u"Пустой резист", tags='parameter p_resist param_aggregate')
+    r_cc_dirt              = FloatField(caption=u"Резист к модификатору CC на бездорожье", tags='parameter p_resist param_aggregate')
+    r_cc_wood              = FloatField(caption=u"Резист к модификатору CC в лесу", tags='parameter p_resist param_aggregate')
+    r_visibility_wood      = FloatField(caption=u"Резист к модификатору видимости в лесу", tags='parameter p_resist param_aggregate')
+    r_observing_range_wood = FloatField(caption=u"Резист к модификатору обзора в лесу", tags='parameter p_resist param_aggregate')
+    r_cc_slope             = FloatField(caption=u"Резист к модификатору CC в горах", tags='parameter p_resist param_aggregate')
+    r_cc_water             = FloatField(caption=u"Резист к модификатору CC в воде", tags='parameter p_resist param_aggregate')
+    r_cc_mine              = FloatField(caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist param_aggregate')
+    r_cc_fuel_empty        = FloatField(caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist param_aggregate')
 
     # атрибуты от Unit
-    p_defence            = FloatField(caption=u"Броня", tags='parameter')
-    max_hp               = FloatField(caption=u"Максимальное значение HP", tags='client')
-    hp                   = FloatField(caption=u"Текущее значение HP", tags='client')
+    p_defence            = FloatField(caption=u"Броня", tags='parameter param_aggregate')
+    max_hp               = FloatField(caption=u"Максимальное значение HP", tags='param_aggregate client')
+    hp                   = FloatField(caption=u"Текущее значение HP", tags='client param_aggregate')
     direction            = FloatField(caption=u"Текущее направление машины")
 
     # атрибуты Mobile
-    r_min                = FloatField(caption=u"Минимальный радиус разворота")
-    ac_max               = FloatField(caption=u"Максимальная перегрузка при развороте")
-    max_control_speed    = FloatField(caption=u"Абсолютная максимальная скорость движения")
-    v_forward            = FloatField(caption=u"Максимальная скорость движения вперед")
-    v_backward           = FloatField(caption=u"Максимальная скорость движения назад")
-    a_forward            = FloatField(caption=u"Ускорение разгона вперед")
-    a_backward           = FloatField(caption=u"Ускорение разгона назад")
-    a_braking            = FloatField(caption=u"Ускорение торможения")
+    r_min                = FloatField(caption=u"Минимальный радиус разворота", tags="param_aggregate")
+    ac_max               = FloatField(caption=u"Максимальная перегрузка при развороте", tags="param_aggregate")
+    max_control_speed    = FloatField(caption=u"Абсолютная максимальная скорость движения", tags="param_aggregate")
+    v_forward            = FloatField(caption=u"Максимальная скорость движения вперед", tags="param_aggregate")
+    v_backward           = FloatField(caption=u"Максимальная скорость движения назад", tags="param_aggregate")
+    a_forward            = FloatField(caption=u"Ускорение разгона вперед", tags="param_aggregate")
+    a_backward           = FloatField(caption=u"Ускорение разгона назад", tags="param_aggregate")
+    a_braking            = FloatField(caption=u"Ускорение торможения", tags="param_aggregate")
 
-    max_fuel             = FloatField(caption=u"Максимальное количество топлива", tags="client")
-    fuel                 = FloatField(caption=u"Текущее количество топлива", tags="client")
-    p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)")
+    max_fuel             = FloatField(caption=u"Максимальное количество топлива", tags="client param_aggregate")
+    fuel                 = FloatField(caption=u"Текущее количество топлива", tags="client param_aggregate")
+    p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)", tags="param_aggregate")
 
     # атрибуты влияющие на эффективность стрельбы
-    dps_rate             = FloatField(caption=u"Множитель модификации урона автоматического оружия")
-    damage_rate          = FloatField(caption=u"Множитель модификации урона залпового оружия")
-    time_recharge_rate   = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия")
-    radius_rate          = FloatField(caption=u"Множитель модификации дальности стрельбы")
+    dps_rate             = FloatField(caption=u"Множитель модификации урона автоматического оружия", tags="param_aggregate")
+    damage_rate          = FloatField(caption=u"Множитель модификации урона залпового оружия", tags="param_aggregate")
+    time_recharge_rate   = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия", tags="param_aggregate")
+    radius_rate          = FloatField(caption=u"Множитель модификации дальности стрельбы", tags="param_aggregate")
 
     # атрибуты, отвечающие за авто-ремонт машины.
-    repair_rate          = FloatField(caption=u"Скорость отхила в секунду")
-    repair_rate_on_stay  = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении")
+    repair_rate          = FloatField(caption=u"Скорость отхила в секунду", tags="param_aggregate")
+    repair_rate_on_stay  = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении", tags="param_aggregate")
 
     # атрибуты, связанные с критами.
-    crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
-    crit_power           = FloatField(caption=u"Сила крита [0 .. сколько угодно]")
+    crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags="param_aggregate")
+    crit_power           = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags="param_aggregate")
 
     slot_FL   = SlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags='armorer')
     slot_FL_f = StringField(caption=u'Флаги переднего левого слота [FBLR]', tags='client slot_limit')
@@ -212,6 +217,26 @@ class Mobile(Root):
         # todo: проверить допустимость значения
         assert original_value is not None, '{} is not allowed {}'.format(param_name, original_value)
         return original_value + mechanic_slots_effect + agent_effect
+
+    def param_aggregate(self, example_agent):
+        d = dict()
+        for param_name, attr, getter in self.iter_attrs(tags='param_aggregate'):
+            d[param_name] = getattr(self, param_name)
+
+        for slot_name, slot_value in self.iter_slots(tags='mechanic'):
+            if isinstance(slot_value, MechanicItem):
+                for param_name in d.keys():
+                    d[param_name] = d[param_name] + getattr(slot_value, param_name, 0.0)
+
+        if example_agent:
+            for skill_name, skill_value in example_agent.iter_skills():
+                for param_name in d.keys():
+                    d[param_name] = d[param_name] + skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+            for perk in example_agent.perks:
+                for param_name in d.keys():
+                    d[param_name] = d[param_name] + getattr(perk, param_name, 0.0)
+
+        return d
 
     # Для того, чтобы "закрыть" поле
     @property

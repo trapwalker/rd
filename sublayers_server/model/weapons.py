@@ -152,11 +152,11 @@ class WeaponDischarge(Weapon):
         # сразу запоминаем шанс крита и силу крита, чтобы потом при каждом выстреле не пересчитывать
         self.crit_rate = 0.0
         self.crit_power = 0.0
-        mobile_ex = self.owner.example
-        agent_ex = None if self.owner.owner is None else self.owner.owner.example
-        if mobile_ex is not None and hasattr(mobile_ex, 'get_modify_value'):
-            self.crit_rate = mobile_ex.get_modify_value(param_name='crit_rate', example_agent=agent_ex)
-            self.crit_power = mobile_ex.get_modify_value(param_name='crit_power', example_agent=agent_ex)
+
+        param_dict = self.owner._param_aggregate
+        if param_dict is not None:
+            self.crit_rate = param_dict.get('crit_rate', self.crit_rate)
+            self.crit_power = param_dict.get('crit_power', self.crit_power)
 
     def as_dict(self, **kw):
         d = super(WeaponDischarge, self).as_dict(**kw)
