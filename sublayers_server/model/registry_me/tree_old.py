@@ -50,36 +50,19 @@ class RegistryNodeFormatError(RegistryError):
 class Node(Doc):
     # todo: make sparse indexes
     # todo: override attributes in subclasses
-    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
-    title = StringField(caption=u"Название", tags='client')
-    fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
     uri = StringField(sparse=True, identify=True)
-    abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
-
+    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
     parent = ReferenceField(reference_document_type='sublayers_server.model.registr_me.tree.Node')
+
+    fixtured = BooleanField(default=False, doc=u"Признак предопределенности объекта из файлового репозитория")
+    title = StringField(caption=u"Название", tags='client')
+    abstract = BooleanField(default=True, doc=u"Абстракция - Признак абстрактности узла")
 
     owner = ReferenceField(reference_document_type='sublayers_server.model.registry_me.tree.Node')
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     name = StringField()
     doc = StringField()
     tags = ListField(base_field=StringField(tags="client"), caption=u"Теги", doc=u"Набор тегов объекта")
-
-    @property
-    def tag_set(self):
-        tags = set(self.tags or [])
-        if self.parent:
-            tags.update(self.parent.tag_set)
-        return tags
-
-    def make_uri(self):
-        owner = self.owner
-        assert not owner or owner.uri, '{}.make_uri without owner.uri'.format(self)
-        path = (owner and owner.uri and URI(owner.uri).path or ()) + (self.name or ('+' + self._id),)
-        return URI(
-            scheme='reg',
-            #storage=self.__class__.__collection__,
-            path=path,
-        )
 
     def __init__(self, **kw):  # embedded=False,
         """
@@ -102,29 +85,6 @@ class Node(Doc):
                 self.uri = str(self_uri)
             elif self.abstract and self.name:
                 self.uri = str(URI(scheme='reg', path=(self.name,)))
-
-    def __getitem__(self, idx):
-        path = None
-        # todo: test to URI
-        if isinstance(idx, basestring):
-            idx = idx.replace('\\', '/')
-            path = idx.split('/')
-        else:
-            path = idx
-
-        if path:
-            child_name = path[0]
-            for node in self._subnodes:
-                if node.name == child_name:
-                    return node[path[1:]]
-        else:
-            return self
-
-    def __setattr__(self, name, value):
-        if name in ['_subnodes']:
-            return object.__setattr__(self, name, value)
-
-        return super(Node, self).__setattr__(name, value)
 
     def __getattribute__(self, name):
         # required for the next test
@@ -253,12 +213,6 @@ class Node(Doc):
             queue.extend(item)
             if not item.abstract or not reject_abstract:
                 yield item
-
-    def __iter__(self):
-        return iter(self._subnodes)
-
-    def __hash__(self):
-        return hash(self.uid)  # todo: test just created objects
 
     # todo: rename to "_load_node_from_fs"
     @classmethod

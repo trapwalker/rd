@@ -13,6 +13,7 @@ if __name__ == '__main__':
 
 from sublayers_server.model.registry_me.uri import URI
 
+from weakref import WeakSet
 from copy import copy
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
@@ -49,6 +50,13 @@ class Node(Document):
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
+    @property
+    def tag_set(self):
+        tags = set(self.tags or [])
+        if self.parent:
+            tags.update(self.parent.tag_set)
+        return tags
+
     def make_uri(self):
         owner = self.owner
 
@@ -63,8 +71,15 @@ class Node(Document):
     def __init__(self, **kw):
         only_fields = set(kw.pop('__only_fields', [])) | (set(self._fields.keys()) - {'uid'})
         super(Node, self).__init__(__only_fields=only_fields, **kw)
+        self._subnodes = WeakSet()
+        if self.name is None:
+            self.name = str(self.uid)
+
         if 'uri' not in kw:
             self.uri = self.make_uri()
+
+        if self.owner:
+            self.owner._subnodes.add(self)
 
     def __repr__(self):
         return self.to_json()
@@ -184,6 +199,26 @@ class Node(Document):
             d[name] = value
         return d
 
+    def iter_childs(self):
+        return iter(self._subnodes)
+
+    def get_child(self, idx):
+        path = None
+        # todo: test to URI
+        if isinstance(idx, basestring):
+            idx = idx.replace('\\', '/')
+            path = idx.split('/')
+        else:
+            path = idx
+
+        if path:
+            child_name = path[0]
+            for node in self._subnodes:
+                if node.name == child_name:
+                    return node[path[1:]]
+        else:
+            return self
+
 
 class C(Node):
     x = IntField(null=True)
@@ -199,15 +234,13 @@ if __name__ == '__main__':
     db = connect(db='test_me')
     print ('delete:', Node.objects.delete())
     Node.objects.delete()
-    r = Node(name='registry')
+    r = Node(name='registry').save()
 
-    a = C (owner=r , name='a' , x=3, y=7)
-    b = C2(owner=r , name='b' , x=5)
-    aa = C(owner=a , name='aa', parent=a)
-    xx = C(owner=aa, name='xx', parent=aa)
+    a = C (owner=r , name='a' , x=3, y=7) #.save()
+    b = C2(owner=r , name='b' , x=5) #.save()
+    aa = C(owner=a , name='aa', parent=a) #.save()
+    xx = C(owner=aa, name='xx', parent=aa) #.save()
     uri = URI(aa.uri)
-
-    xx.tags = ['t1', 't2']
 
     a.save()
     b.save()
@@ -221,4 +254,4 @@ if __name__ == '__main__':
     b2  = Node.objects.get(uri='reg:///registry/b')
     print('cached:', aa2.parent is aa3.parent)
 
-    qq = URI('reg:///registry/a/aa?z=115&y=225').instantiate()
+    qq = URI('reg:///registry/a/aa?z=115&y=225').instantiate().save()
