@@ -195,7 +195,8 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             //new WCarMarker(car);                 // виджет маркера
-            new WCanvasCarMarker(car);
+            var t = new WCanvasCarMarker(car);
+            new WCanvasHPCarMarker(car, t);
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
@@ -405,7 +406,9 @@ var ClientManager = (function () {
 
             // Виджеты:
             //new WCarMarker(mcar);    // виджет маркера
-            new WCanvasCarMarker(mcar);
+            //new WCanvasCarMarker(mcar);
+            var t = new WCanvasCarMarker(mcar);
+            new WCanvasHPCarMarker(mcar, t);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз
@@ -509,7 +512,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.See = function (event) {
-        console.log('ClientManager.prototype.See', event);
+        //console.log('ClientManager.prototype.See', event);
         if (user.userCar == null) {
             //console.warn('Контакт ивент до инициализации своей машинки!');
             return;
