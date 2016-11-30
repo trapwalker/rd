@@ -50,12 +50,20 @@ class Node(Document):
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     def make_uri(self):
-        return 'reg:///_/{}'.format(self.uid)
+        owner = self.owner
 
-    def __init__(self, uri=None, **kw):
+        if owner and owner.uri:
+            base_uri = URI(owner.uri)
+        else:
+            base_uri = URI(scheme='reg', storage='', path=())
+
+        uri = base_uri.replace(path=base_uri.path + (self.name or str(self.uid),))
+        return str(uri)
+
+    def __init__(self, **kw):
         only_fields = set(kw.pop('__only_fields', [])) | (set(self._fields.keys()) - {'uid'})
-        super(Node, self).__init__(uri=uri, __only_fields=only_fields, **kw)
-        if self.uri is None:
+        super(Node, self).__init__(__only_fields=only_fields, **kw)
+        if 'uri' not in kw:
             self.uri = self.make_uri()
 
     def __repr__(self):
@@ -152,6 +160,30 @@ class Node(Document):
 
         return inst
 
+    def iter_attrs(self, tags=None, classes=None):
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
+
+        for name, attr in self._fields.items():
+            field_tags = getattr(attr, 'tags', None)
+            if (
+                (tags is None or field_tags is not None and field_tags & tags) and
+                (classes is None or isinstance(attr, classes))
+            ):
+                getter = lambda: getattr(self, name)
+                yield name, attr, getter
+
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = {}
+        for name, attr, getter in self.iter_attrs(tags='client'):
+            value = getter()
+            if isinstance(value, Node):
+                value = value.as_client_dict()
+            d[name] = value
+        return d
+
 
 class C(Node):
     x = IntField(null=True)
@@ -159,15 +191,20 @@ class C(Node):
     z = IntField(null=True)
 
 
+class C2(C):
+    w = StringField(null=True, tags='q w e')
+
+
 if __name__ == '__main__':
     db = connect(db='test_me')
     print ('delete:', Node.objects.delete())
-
     Node.objects.delete()
-    a = C(x=3, y=7, uri='reg:///a')
-    b = C(x=5, uri='reg:///b')
-    aa = C(uri='reg:///a/a', parent=a)
-    xx = C(parent=aa)
+    r = Node(name='registry')
+
+    a = C (owner=r , name='a' , x=3, y=7)
+    b = C2(owner=r , name='b' , x=5)
+    aa = C(owner=a , name='aa', parent=a)
+    xx = C(owner=aa, name='xx', parent=aa)
     uri = URI(aa.uri)
 
     xx.tags = ['t1', 't2']
@@ -179,9 +216,9 @@ if __name__ == '__main__':
 
     print('=' * 60)
     pp(list(Node.objects.all()))
-    aa2 = Node.objects.get(uri='reg:///a/a')
-    aa3 = Node.objects.get(uri='reg:///a/a')
-    b2  = Node.objects.get(uri='reg:///b')
+    aa2 = Node.objects.get(uri='reg:///registry/a/aa')
+    aa3 = Node.objects.get(uri='reg:///registry/a/aa')
+    b2  = Node.objects.get(uri='reg:///registry/b')
     print('cached:', aa2.parent is aa3.parent)
 
-    qq = URI('reg:///a/a?z=115&y=225').instantiate()
+    qq = URI('reg:///registry/a/aa?z=115&y=225').instantiate()

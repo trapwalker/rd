@@ -34,69 +34,6 @@ class RegistryNodeFormatError(RegistryError):
     pass
 
 
-class Doc(Document):
-    _meta = dict(
-        allow_inheritance=True,
-    )
-
-    # def _reinst_list(self, field, lst):
-    #     lst = copy(lst)
-    #     subfield = field._base_field
-    #     for i, item in enumerate(lst):
-    #         if item is not None:
-    #             if isinstance(subfield, ListField):
-    #                 lst[i] = self._reinst_list(subfield, copy(item))
-    #             elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Doc):
-    #                 lst[i] = item.instantiate()
-    #             else:
-    #                 lst[i] = copy(item)
-    #     return lst
-    #
-    # def _instantiaite_field(self, new_instance, field, name):
-    #     if hasattr(field, 'reinst') and field.reinst:
-    #         value = getattr(self, name)
-    #         if value is not None:
-    #             if isinstance(field, EmbeddedDocumentField):
-    #                 assert not isinstance(value, basestring), (
-    #                     'Embeded fields, described by string ({value!r}) is not supported yet'.format(value=value)
-    #                 )
-    #                 if isinstance(value, basestring):
-    #                     value = URI(value)  # todo: handle exceptions
-    #
-    #                 setattr(new_instance, name, value.instantiate())  # todo: Поддержка шаблонного формирования по ссылке
-    #             elif isinstance(field, ListField):
-    #                 setattr(new_instance, name, self._reinst_list(field, value))
-    #
-    # def instantiate(self, **kw):
-    #     # todo: Сделать поиск ссылок в параметрах URI
-    #     inst = self.__class__(**kw)
-    #
-    #     for name, field in self._fields.items():
-    #         self._instantiaite_field(inst, field, name)
-    #
-    #     return inst
-
-    # def as_client_dict(self):  # todo: rename to 'to_son_client'
-    #     d = {}
-    #     for name, attr, getter in self.iter_attrs(tags='client'):
-    #         d[name] = getter()
-    #     return d
-    #
-    # def iter_attrs(self, tags=None, classes=None):
-    #     if isinstance(tags, basestring):
-    #         tags = set(tags.split())
-    #     elif tags is not None:
-    #         tags = set(tags)
-    #
-    #     for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
-    #         if hasattr(attr, 'tags'):
-    #             if (
-    #                 (not tags or attr.tags & tags) and
-    #                 (not classes or isinstance(attr, classes))
-    #             ):
-    #                 getter = lambda: getattr(self, name)
-    #                 yield name, attr, getter
-
 
 # class Subdoc(Doc):
 #     def instantiate(self, **kw):
