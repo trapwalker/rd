@@ -713,7 +713,7 @@ class AIQuickQuest(Quest):
 
     def get_next_route_point(self):
         if not self.route:
-            return Point.random_gauss(self.agent._agent_model.server.quick_game_start_pos,
+            return Point.random_point(self.agent._agent_model.server.quick_game_start_pos,
                                       self.agent._agent_model.server.quick_game_play_radius)
         if self.route_index + 1 >= len(self.route):
             self.route_index = 0
