@@ -250,6 +250,20 @@ class Node(Document):
         else:
             return self
 
+    def node_hash(self):  # todo: (!) rename to proto_uri
+        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        # todo: Пороверять абстрактность без uri
+        if self.uri:
+            return self.uri
+        elif self.parent:
+            return self.parent.node_hash()
+
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
+
+    def node_html(self):  # todo: rename
+        return self.node_hash().replace('://', '-').replace('/', '-')
+
+
 
 class C(Node):
     x = IntField(null=True)
