@@ -217,8 +217,20 @@ class Node(Document):
         )
         return d
 
-    def iter_childs(self):
-        return iter(self._subnodes)
+    # TODO: Найти и убрать вызовы метода deep_iter (заменить на iter_childs)
+    def iter_childs(self, reject_abstract=False, deep=False, self_include=False):
+        queue = []
+        if self_include:
+            queue.append(self)
+        if not deep or not self_include:
+            queue.extend(list(self._subnodes))
+
+        while queue:
+            item = queue.pop()
+            if deep:
+                queue.extend(list(item._subnodes))
+            if not item.abstract or not reject_abstract:
+                yield item
 
     def get_child(self, idx):
         path = None
@@ -231,9 +243,10 @@ class Node(Document):
 
         if path:
             child_name = path[0]
+            # TODO: ##OPTIMIZE атрибут _subnodes должен быть словарем слабых ссылок, а не множеством
             for node in self._subnodes:
                 if node.name == child_name:
-                    return node[path[1:]]
+                    return node.get_child(path[1:])
         else:
             return self
 
@@ -268,3 +281,5 @@ if __name__ == '__main__':
     print('cached:', aa2.parent is aa3.parent)
 
     qq = URI('reg:///registry/a/aa?z=115&y=225').instantiate().save()
+
+    pp(list(r.iter_childs()))
