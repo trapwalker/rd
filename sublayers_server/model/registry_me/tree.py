@@ -17,6 +17,7 @@ from weakref import WeakSet
 from copy import copy
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
+from collections import deque, Callable
 from mongoengine import connect, Document, QuerySet
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
@@ -69,7 +70,8 @@ class Node(Document):
         return str(uri)
 
     def __init__(self, **kw):
-        only_fields = set(kw.pop('__only_fields', [])) | (set(self._fields.keys()) - {'uid'})
+        noninheritable = [name for name, field in self._fields.iteritems() if not getattr(field, 'not_inherited', False)]
+        only_fields = set(kw.pop('__only_fields', [])) | set(noninheritable)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
         self._subnodes = WeakSet()
         if self.name is None:
@@ -166,13 +168,22 @@ class Node(Document):
                 elif isinstance(field, ListField):
                     setattr(new_instance, name, self._reinst_list(field, value))
 
-    def instantiate(self, storage=None, **kw):
+    def instantiate(self, name=None, storage=None, **kw):
         # todo: Сделать поиск ссылок в параметрах URI
-        inst = self.__class__(**kw)
+        params = {}
+        parent = self
+        if not self.uri:  # todo: "Если инстанцируется embedded документ" - откорректировать условие
+            parent = self.parent
+            params.update(self._data)
+
+        params.update(kw)
+
+        inst = self.__class__(**params)
 
         for name, field in self._fields.items():
-            self._instantiaite_field(inst, field, name)
-
+            inst._instantiaite_field(inst, field, name)
+        # todo: Разобраться с abstract при реинстанцированиях
+        # todo: Сделать поиск ссылок в параметрах URI
         return inst
 
     def iter_attrs(self, tags=None, classes=None):
@@ -197,6 +208,13 @@ class Node(Document):
             if isinstance(value, Node):
                 value = value.as_client_dict()
             d[name] = value
+
+        d.update(
+            id=self.id,  # todo: Возможно в качестве идентификатора передавать UID?
+            node_hash=self.node_hash(),
+            html_hash=self.node_html(),
+            tags=list(self.tag_set),
+        )
         return d
 
     def iter_childs(self):
@@ -236,16 +254,11 @@ if __name__ == '__main__':
     Node.objects.delete()
     r = Node(name='registry').save()
 
-    a = C (owner=r , name='a' , x=3, y=7) #.save()
-    b = C2(owner=r , name='b' , x=5) #.save()
-    aa = C(owner=a , name='aa', parent=a) #.save()
-    xx = C(owner=aa, name='xx', parent=aa) #.save()
+    a = C (owner=r , name='a' , x=3, y=7).save()
+    b = C2(owner=r , name='b' , x=5).save()
+    aa = C(owner=a , name='aa', parent=a).save()
+    xx = C(owner=aa, name='xx', parent=aa).save()
     uri = URI(aa.uri)
-
-    a.save()
-    b.save()
-    aa.save()
-    xx.save()
 
     print('=' * 60)
     pp(list(Node.objects.all()))
