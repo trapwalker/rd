@@ -26,15 +26,6 @@ from sublayers_server.model.registry_me.uri import URI
 #     StringField, BooleanField, UUIDField, UniReferenceField, EmbeddedDocumentField, ListField,
 # )
 
-class RegistryError(Exception):
-    pass
-
-
-class RegistryNodeFormatError(RegistryError):
-    pass
-
-
-
 # class Subdoc(Doc):
 #     def instantiate(self, **kw):
 #         # values = self._values.copy()
@@ -134,10 +125,6 @@ class Node(Doc):
 
         return object.__getattribute__(self, name)
 
-    @property
-    def id(self):
-        return str(self._id)
-
     def __str__(self):
         # todo: make correct representation
         return '<{self.__class__.__name__}[{details}]>'.format(
@@ -148,71 +135,6 @@ class Node(Doc):
                 ('#' + self.uid)
             ),
         )
-
-    def node_hash(self):  # todo: (!) rename to proto_uri
-        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
-        if self.uri:
-            return self.uri
-        elif self.parent:
-            return self.parent.node_hash()
-
-        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
-
-    def node_html(self):  # todo: rename
-        return self.node_hash().replace('://', '-').replace('/', '-')
-
-    def as_client_dict(self):  # todo: rename to 'to_son_client'
-        d = super(Node, self).as_client_dict()
-        d.update(
-            id=self.id,
-            node_hash=self.node_hash(),
-            html_hash=self.node_html(),
-            tags=list(self.tag_set),
-        )
-        return d
-
-    # def _instantiaite_field(self, new_instance, field, name):
-    #     if name == 'uid':
-    #         pass
-    #     else:
-    #         super(Node, self)._instantiaite_field(new_instance, field, name)
-
-    def instantiate(self, name=None, **kw):
-        # assert self.abstract, "Can't instantiate abstract object: {}".format(self)
-        params = {}
-        if self.uri:
-            parent = self
-        else:
-            parent = self._values.get('parent', None)
-            params.update(self._values)
-
-        fixture_default = self.__class__.fixtured.default
-        fixtured = kw.pop('fixtured', fixture_default() if isinstance(fixture_default, Callable) else fixture_default)
-        uid = kw.pop('uid', self.__class__.uid.default())
-        params.update(kw)
-        #inst = self.__class__(name=name, parent=parent, abstract=False, **params)  # todo: abstract flag FIXME
-        params.update(parent=parent, name=name, uid=uid, fixtured=fixtured)
-
-        # Инстанцирование вложенных документов
-        for field_name, field in self._fields.items():
-            if self.is_embedded_field(field):
-                field_value = getattr(self, field_name)
-                if field_value and isinstance(field_value, Node):
-                    field_value = field_value.instantiate()
-                    params[field_name] = field_value
-
-        inst = super(Node, self).instantiate(**params)  # abstract=False,
-        # todo: Разобраться с abstract при реинстанцированиях
-        # todo: Сделать поиск ссылок в параметрах URI
-        return inst
-
-    def deep_iter(self, reject_abstract=True):
-        queue = [self]
-        while queue:
-            item = queue.pop()
-            queue.extend(item)
-            if not item.abstract or not reject_abstract:
-                yield item
 
     # todo: rename to "_load_node_from_fs"
     @classmethod
