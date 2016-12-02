@@ -133,7 +133,8 @@ var TemplateWindow = (function (_super) {
         if (options) setOptions(options, this.options);
 
         _super.call(this, {
-            parentDiv: this.options.parentDiv
+            parentDiv: this.options.parentDiv,
+            isModal: options.isModal
         });
     }
 
@@ -174,7 +175,7 @@ var WindowTemplateManager = (function () {
                 this.closeUniqueWindow(key);
     };
 
-    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, open_call_back, close_call_back) {
+    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, open_call_back, close_call_back, is_modal) {
         //console.log('WindowTemplateManager.prototype.openUniqueWindow');
         var self = this;
         if (this.unique[win_name] != null) this.closeUniqueWindow(win_name);
@@ -188,7 +189,8 @@ var WindowTemplateManager = (function () {
                 var temp_window = new TemplateWindow({
                     parentDiv: 'bodydiv',
                     win_name: win_name,
-                    close_call_back: close_call_back
+                    close_call_back: close_call_back,
+                    isModal: is_modal ? is_modal : false
                 });
                 temp_window.mainDiv.append(data);
                 temp_window.showWindow(true);
@@ -208,13 +210,14 @@ var WindowTemplateManager = (function () {
         });
     };
 
-    WindowTemplateManager.prototype.openWindow = function (win_url, win_data) {
+    WindowTemplateManager.prototype.openWindow = function (win_url, win_data, is_modal) {
         $.ajax({
             url: "http://" + location.host + win_url,
             data: win_data,
             success: function(data){
                 var temp_window = new TemplateWindow({
-                    parentDiv: 'bodydiv'
+                    parentDiv: 'bodydiv',
+                    isModal: is_modal ? is_modal : false
                 });
                 temp_window.mainDiv.append(data);
                 temp_window.showWindow(true);

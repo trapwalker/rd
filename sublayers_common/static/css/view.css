@@ -252,6 +252,14 @@ input:focus {
     top: 50%;
 }
 
+#mapTeachingCanvas {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    width: 1920px;
+    height: 1080px;
+}
+
 @media screen and (max-width: 1367px) {
     #activeTownDiv {
 

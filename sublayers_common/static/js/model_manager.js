@@ -69,11 +69,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser"));
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
                 return ownerList.add(owner);
             }
         return null;
@@ -339,6 +339,9 @@ var ClientManager = (function () {
             case 'TrainerTeachingNote':
                 teachingManager.update(new TrainerTeachingNote(note));
                 break;
+            case 'CruiseSpeedTeachingMapNote':
+                teachingMapManager.update(new CruiseSpeedTeachingMapNote(note));
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }
@@ -349,11 +352,11 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
-            user.quick = event.agent.cls == "QuickUser";
+            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser");
 
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);

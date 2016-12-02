@@ -87,6 +87,7 @@ class ArmorerTeachingNote(Note): pass
 class JournalTeachingNote(Note): pass
 class TrainerTeachingNote(Note): pass
 
+class CruiseSpeedTeachingMapNote(Note): pass
 
 # todo: Сделать регистрацию классов нотов через метакласс
 ALL = {name: value for name, value in locals().items() if isinstance(value, type) and issubclass(value, Note)}

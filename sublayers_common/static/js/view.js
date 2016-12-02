@@ -15,6 +15,7 @@ $(document).ready(function () {
     wStrategyModeManager = new WStrategyModeManager();
 
     teachingManager = new TeachingManager();
+    teachingMapManager = new TeachingMapManager();
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -260,6 +261,7 @@ function resizeWindowHandler() {
         $('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
         window_scaled_prc = scale_prc;
     }
+    if (teachingMapManager) teachingMapManager.redraw();
 }
 
 

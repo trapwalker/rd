@@ -12,3 +12,7 @@ from sublayers_server.model.registry.classes.quests import Quest, DeliveryQuest
 
 class TeachingQuest(Quest):
     teaching_delivery_quest = EmbeddedDocumentField(embedded_document_type=DeliveryQuest, reinst=True)
+
+
+class TeachingMapQuest(Quest):
+    pass

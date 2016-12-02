@@ -62,7 +62,6 @@ class MotionTask(TaskSingleton):
             log.debug('============================== 0 %s %s', self.owner, time)
             MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
 
-
         # Шаг 1: Синхронизация знаков сс и текущей скорости
         if (self.cc * st.v(time)) < 0:
             log.debug('============================== 1 %s %s', self.owner, time)

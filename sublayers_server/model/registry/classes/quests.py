@@ -606,8 +606,8 @@ class QuestUpdateMessage(messages.Message):
         d.update(
             quest=self.quest.as_client_dict(),
         )
-        if self.quest.hirer is None:
-            log.error('============ %s', self.__class__)
+        #if self.quest.hirer is None:
+        #    log.error('============ %s', self.__class__)
         return d
 
 

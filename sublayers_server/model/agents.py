@@ -632,3 +632,24 @@ class QuickUser(User):
 
     def print_login(self):
         return '_'.join(self.user.name.split('_')[:-1])
+
+
+class TeachingUser(QuickUser):
+    def __init__(self, time, **kw):
+        super(TeachingUser, self).__init__(time=time, **kw)
+        self.create_teaching_quest(time=time)
+
+    @event_deco
+    def create_teaching_quest(self, event):
+        quest_parent = self.server.reg['quests/teaching_map']
+        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+        new_quest.agent = self.example
+        if new_quest.generate(event=event):
+            self.example.add_quest(quest=new_quest, time=event.time)
+            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+            del new_quest
+
+    # def print_login(self):
+    #     return self.user.name

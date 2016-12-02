@@ -98,6 +98,7 @@
 
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/map_teaching.css') }}"/>
 
     {% if server_mode == 'quick' %}
         <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
@@ -192,6 +193,8 @@
     <script src="{{ static_url('js/teaching/teaching_quest_note.js') }}"></script>
     <script src="{{ static_url('js/teaching/teaching_trader_note.js') }}"></script>
 
+    <script src="{{ static_url('js/teaching/teaching_map_cruise_speed_note.js') }}"></script>
+
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location/location_manager.js') }}"></script>
     <script src="{{ static_url('js/location/location_place_menu.js') }}"></script>
@@ -279,10 +282,10 @@
         <div id="modalItemDivisionPage"></div>
         <div id="modalQuickGamePointsPage"></div>
     </div>
-
+    <canvas id="mapTeachingCanvas"></canvas>
     <div id="activeTownDivBack">
         <div id="activeTownDiv"></div>
-        <canvas id="townTeachingCanvas" width="1920" height="1080">1111</canvas>
+        <canvas id="townTeachingCanvas" width="1920" height="1080"></canvas>
     </div>
     <div style="display: none">
         <span id="settings_host_name">{{ host_name }}</span>
