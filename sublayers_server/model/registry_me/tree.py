@@ -86,7 +86,7 @@ class Node(Document):
         noninheritable = [name for name, field in self._fields.iteritems() if not getattr(field, 'not_inherited', False)]
         only_fields = set(kw.pop('__only_fields', [])) | set(noninheritable)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
-        self._subnodes = WeakSet()
+        self._subnodes = set()  #WeakSet()  # TODO: Сделать кэширование и заменить set -> WeakSet иначе дети в мусор
         if self.name is None:
             self.name = str(self.uid)
 
@@ -311,7 +311,7 @@ class Node(Document):
         with Timer(name='registryFS loader', logger=log) as timer:
             while stack:
                 pth, owner = stack.pop()
-                node = cls._load_node(pth, owner)
+                node = cls._load_node_from_fs(pth, owner)
 
                 if node:
                     all_nodes.append(node)
@@ -324,6 +324,7 @@ class Node(Document):
                             stack.append((next_path, node))
 
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), timer.duration))
+        return root
 
 
 def test1():
@@ -359,12 +360,15 @@ def test1():
 
 def test2():
     print ('delete:', Node.objects.delete())
+    regfs_path = ur'../../temp/test_registry/root'
+    root = Node.load(path=regfs_path)
 
-
+    print('Well DONE!')
     globals().update(locals())
 
 
 if __name__ == '__main__':
     db = connect(db='test_me')
 
-    test1()
+    #test1()
+    test2()
