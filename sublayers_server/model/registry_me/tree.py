@@ -292,7 +292,8 @@ class Node(Document):
                         d = yaml.load(attr_file) or {}
                     except yaml.scanner.ScannerError as e:
                         raise RegistryNodeFormatError(e)
-                    attrs.update(d)
+                    assert isinstance(d, dict), 'Yaml content is not object, but: {!r}'.format(d)
+                    attrs.update(d.items())
 
         attrs.update(owner=owner)
         attrs.setdefault('name', os.path.basename(path.strip('\/')))
@@ -327,24 +328,32 @@ class Node(Document):
         return root
 
 
+## TESTING CODE ########################################################################################################
+
+
+class A(Node):
+    x = IntField(null=True)
+    y = IntField(null=True)
+    z = IntField(null=True)
+
+
+class A2(A):
+    w = StringField(null=True, tags='q w e')
+
+
+class B(Node):
+    a = IntField(null=True)
+    b = IntField(null=True)
+
+
 def test1():
-
-    class C(Node):
-        x = IntField(null=True)
-        y = IntField(null=True)
-        z = IntField(null=True)
-
-
-    class C2(C):
-        w = StringField(null=True, tags='q w e')
-
     print ('delete:', Node.objects.delete())
 
     r = Node(name='registry').save()
-    a = C(owner=r, name='a', x=3, y=7).save()
-    b = C2(owner=r, name='b', x=5).save()
-    aa = C(owner=a, name='aa', parent=a).save()
-    xx = C(owner=aa, name='xx', parent=aa).save()
+    a = A(owner=r, name='a', x=3, y=7).save()
+    b = B(owner=r, name='b', a=5).save()
+    aa = A2(owner=a, name='aa', parent=a).save()
+    xx = A2(owner=aa, name='xx', parent=aa).save()
     uri = URI(aa.uri)
 
     print('=' * 60)
@@ -362,6 +371,10 @@ def test2():
     print ('delete:', Node.objects.delete())
     regfs_path = ur'../../temp/test_registry/root'
     root = Node.load(path=regfs_path)
+
+    print()
+    print('# Registry:')
+    pp(list(root.iter_childs(deep=True)))
 
     print('Well DONE!')
     globals().update(locals())
