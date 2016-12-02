@@ -79,11 +79,12 @@ class MotionTask(TaskSingleton):
             assert time is not None
 
         # Шаг 3: Замедлиться при необходимости
-        if (abs(st.v(t=time)) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
+        v = st.v(t=time)
+        if (abs(v) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
             log.debug('============================== 3 %s %s', self.owner, time)
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
-            assert time is not None
+            assert time is not None, 'cc = {}, v = {}'.format(self.cc, v)
 
         # Шаг 4: Расчет поворота
         st.update(t=time)

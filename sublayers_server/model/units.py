@@ -399,7 +399,12 @@ class Mobile(Unit):
         visibility_min = self.params.get('p_visibility_min').value
         visibility_max = self.params.get('p_visibility_max').value
         value = visibility_min + ((visibility_max - visibility_min) * (cur_v / self.max_control_speed))
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        if not (0 <= value <= 1):
+            log.debug('Error!!! get_visibility !!!')
+            log.debug('value={} vis_min={} vis_max={}, cur_v={}, mcs={}, time={} unit={}'.format(value, visibility_min,
+                                                                                visibility_max, cur_v,
+                                                                                self.max_control_speed, time, self))
+            self.server.stop()
         return value
 
     def get_observing_range(self, time):
