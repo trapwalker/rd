@@ -207,23 +207,25 @@ class URI(tuple):
     params = property(itemgetter(3), doc='Params of the link')
     anchor = property(itemgetter(4), doc='Anchor of the link')
 
-    def resolve(self):
+    def resolve(self, base_class=None):
         """
         @rtype: Node
         @return: Registry node, resolved by URI
         """
         # todo: declare throwing exceptions: URIFormatError, StorageNotFound
-        from sublayers_server.model.registry_me.tree import Node
+        if base_class is None:
+            from sublayers_server.model.registry_me.tree import Node
+            base_class = Node
         #return Node.DISPATCHER[self]  # todo: (!!!!) fix it
-        return Node.objects.get(uri=self.to_string(with_params=False, with_anchor=False))  # todo: (!!!!) ensure getting from cache
+        return base_class.objects.get(uri=self.to_string(with_params=False, with_anchor=False))  # todo: (!!!!) ensure getting from cache
 
-    def instantiate(self, storage=None, name=None, **kw):
+    def instantiate(self, storage=None, name=None, base_class=None, **kw):
         u'''Этот метод отличается от того, что в ноде добавлением в инстанс параметров из URI'''
         # todo: declare exceptions
         params = self.params
         params = OrderedDict(params) if params else OrderedDict()
         params.update(kw)
-        proto = self.resolve()
+        proto = self.resolve(base_class=base_class)
         assert proto.abstract, 'URI.instantiate: the try to instantiate of non abstract object: {}'.format(self)
         return proto.instantiate(storage=storage, parent=proto, name=name, **params)
 
