@@ -19,7 +19,8 @@ class HPTaskEvent(TaskPerformEvent):
 
 
 class HPTask(TaskSingleton):
-    def __init__(self, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, **kw):
+    def __init__(self, dhp=None, dps=None, add_shooter=None, del_shooter=None, shooter=None, add_weapon=None,
+                 del_weapon=None, **kw):
         super(HPTask, self).__init__(**kw)
         assert self.owner.hp_state is not None
         self.dhp = dhp
@@ -27,6 +28,8 @@ class HPTask(TaskSingleton):
         self.add_shooter = add_shooter
         self.del_shooter = del_shooter
         self.shooter = shooter
+        self.add_weapon = add_weapon
+        self.del_weapon = del_weapon
 
     def _update_state(self, dhp, dps, is_die, event):
         owner = self.owner
@@ -52,6 +55,11 @@ class HPTask(TaskSingleton):
         super(HPTask, self).on_start(event=event)
         owner = self.owner
 
+        if self.add_weapon is not None:
+            owner.hp_state.add_weapon(self.add_weapon)
+        if self.del_weapon is not None:
+            owner.hp_state.del_weapon(self.del_weapon)
+
         if self.add_shooter:
             owner.hp_state.add_shooter(self.add_shooter)
             for agent in self.owner.subscribed_agents:
@@ -60,6 +68,7 @@ class HPTask(TaskSingleton):
             owner.hp_state.del_shooter(self.del_shooter)
             for agent in self.owner.subscribed_agents:
                 FireAutoEffect(agent=agent, subj=self.del_shooter, obj=self.owner, action=False, time=event.time).post()
+
         # info Раньше вызывались эвенты, сейчас self._update_state вызывается сразу, так как если был вызван HPTask,
         # то мы обязаны сделать апдейт hp_state, иначе списывание дамага может не прекратиться.
         time = event.time

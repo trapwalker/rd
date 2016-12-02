@@ -131,7 +131,7 @@
 .window-qg-content-rating-column.col-number { width: 15%; }
 .window-qg-content-rating-column.col-points { width: 25%; }
 .window-qg-content-rating-column.col-time { width: 20%; }
-.window-qg-content-rating-column.col-nick { width: 40%; }
+.window-qg-content-rating-column.col-nick { width: 60%; }
 
 @media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .window-qg-content {

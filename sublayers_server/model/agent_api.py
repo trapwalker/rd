@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 from uuid import UUID
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.api_tools import API, public_method
+from sublayers_server.model.api_tools import API, public_method, basic_mode
 # from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 # from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
 # from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
@@ -30,6 +30,9 @@ from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBart
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
 from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
 from sublayers_server.model.quest_events import OnNote, OnQuestChange
+from tornado.options import options
+
+import tornado.gen
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -425,40 +428,49 @@ class AgentAPI(API):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
+    @basic_mode
     @public_method
     def send_create_party_from_template(self, name, description):
         self.set_party(name=unicode(name), description=unicode(description))
 
+    @basic_mode
     @public_method
     def send_join_party_from_template(self, name):
         self.set_party(name=unicode(name))
 
+    @basic_mode
     @public_method
     def set_party(self, name=None, description=''):
         # todo: review
         SetPartyEvent(agent=self.agent, name=unicode(name), description=unicode(description),
                       time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def get_party_info(self, name):
         PartyGetPartyInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def get_party_user_info(self, name):
         PartyGetPartyUserInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def send_invite(self, username):
         SendInviteEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def delete_invite(self, invite_id):
         DeleteInviteEvent(agent=self.agent, invite_id=invite_id, time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def send_kick(self, username):
         SendKickEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def send_change_category(self, username):
         SendChangeCategoryEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
@@ -524,43 +536,6 @@ class AgentAPI(API):
         self.car.set_motion(target_point=p, cc=cc, turn=turn, comment=comment, time=self.agent.server.get_time())
 
     @public_method
-    def set_position(self, projection, position=None, comment=None):
-        log.debug('set_position {self.agent}: prj={projection!r}, pos={position!r} # {comment}'.format(**locals()))
-        if self.car is None or self.car.limbo or not self.car.is_alive:
-            return
-
-        try:
-            p = Point(projection['x'], projection['y']) if projection else None
-        except Exception as e:
-            log.warning('Wrong coordinates: %r // %r', projection, position)
-            return
-
-        p_filtered = None
-        kalman = getattr(self.agent, 'kalman')
-        if position and kalman:
-            kalman.process(p.y, p.x, position['accuracy'], position['timestamp'])
-            p_filtered = Point(kalman.get_lng(), kalman.get_lat())
-            dbg = (
-                'KALMAN({username}): p={p}; pf={p_filtered}; dp={dp}; '
-                'src_accur={position[accuracy]}; flt_accur={kaccur}'
-            ).format(
-                username=self.agent.user and self.agent.user.name,
-                dp = p - p_filtered,
-                kaccur=kalman.get_accuracy(),
-                **locals()
-            )
-            log.debug(dbg)
-            comment = dbg
-            try:
-                fn = 'log/tracks/{username}.track'.format(username=self.agent.user.name)
-                with open(fn, 'a') as tracklog:
-                    tracklog.write('{position} # {dbg}\n'.format(**locals()))
-            except Exception as e:
-                log.exception("Can't store track point")
-
-        self.car.set_position(time=self.agent.server.get_time(), point=p_filtered or p, comment=comment)
-
-    @public_method
     def delete_car(self):
         if self.car.limbo or not self.car.is_alive:
             return
@@ -571,17 +546,20 @@ class AgentAPI(API):
         log.debug('Agent %r cmd: %r', self.agent.user.name, cmd)
         self.console.on_cmd(cmd.lstrip('/'))
 
+    @basic_mode
     @public_method
     def create_private_chat(self, recipient, msg):
         # log.info('agent %s try create private room with %s', self.agent, recipient)
         ChatRoomPrivateCreateEvent(agent=self.agent, recipient_login=recipient, msg=msg,
                                    time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def close_private_chat(self, name):
         # log.info('agent %s try close private chat %s', self.agent, name)
         ChatRoomPrivateCloseEvent(agent=self.agent, chat_name=name, time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def get_private_chat_members(self, name):
         # log.info('agent %s try close private chat %s', self.agent, name)
@@ -592,30 +570,36 @@ class AgentAPI(API):
                                                   chat=chat,
                                                   time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def enter_to_location(self, location_id):
         # log.info('agent %s want enter to location is %s', self.agent, town_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def exit_from_location(self):
         # log.info('agent %s want exit from location is %s', self.agent, town_id)
         ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def enter_to_npc(self, npc_node_hash):
         log.info('agent %s want enter to npc %s', self.agent, npc_node_hash)
         # todo: resolve NPC by node_hash ##quest
         EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def enter_to_building(self, head_node_hash, build_name):
         log.info('agent %s want enter to build [%s] with head: %s', self.agent, build_name, head_node_hash)
 
+    @basic_mode
     @public_method
     def exit_from_npc(self, npc_node_hash):
         log.info('agent %s want exit from npc %s', self.agent, npc_node_hash)
 
+    @basic_mode
     @public_method
     def exit_from_building(self, head_node_hash, build_name):
         log.info('agent %s want exit from build [%s] with head: %s', self.agent, build_name, head_node_hash)
@@ -649,6 +633,7 @@ class AgentAPI(API):
         ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
                             time=self.agent.server.get_time()).post()
 
+    @basic_mode
     @public_method
     def fuel_station_active(self, fuel, tank_list, npc_node_hash):
         # log.info('agent %s want active fuel station, with value=%s  and tl = %s', self.agent, fuel, tank_list)
@@ -662,36 +647,43 @@ class AgentAPI(API):
 
     # Ангар
 
+    @basic_mode
     @public_method
     def sell_car_in_hangar(self, npc_node_hash):
         log.info('agent %r sell car', self.agent)
         TransactionHangarSell(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def buy_car_in_hangar(self, car_number, npc_node_hash):
         log.info('agent %r want buy car, with number=%r', self.agent, car_number)
         TransactionHangarBuy(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def get_hangar_info(self, npc_node_hash):
         messages.HangarInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     # Стоянка
 
+    @basic_mode
     @public_method
     def parking_leave_car(self, npc_node_hash):
         log.info('agent %r sell car', self.agent)
         TransactionParkingLeave(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def parking_select_car(self, car_number, npc_node_hash):
         log.info('agent %r want buy car, with number=%r', self.agent, car_number)
         TransactionParkingSelect(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def get_parking_info(self, npc_node_hash):
         messages.ParkingInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def get_parking_bag_exchange(self, car_uid, npc_node_hash):
         BagExchangeStartEvent(time=self.agent.server.get_time(), agent=self.agent, car_uid=car_uid,
@@ -699,6 +691,7 @@ class AgentAPI(API):
 
     # Оружейник
 
+    @basic_mode
     @public_method
     def armorer_apply(self, armorer_slots, npc_node_hash):
         TransactionArmorerApply(time=self.agent.server.get_time(), agent=self.agent, armorer_slots=armorer_slots,
@@ -706,11 +699,13 @@ class AgentAPI(API):
 
     # Механик
 
+    @basic_mode
     @public_method
     def mechanic_apply(self, mechanic_slots, npc_node_hash):
         TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots,
                                  npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def mechanic_repair_apply(self, hp, npc_node_hash):
         TransactionMechanicRepairApply(time=self.agent.server.get_time(), agent=self.agent, hp=hp,
@@ -718,31 +713,33 @@ class AgentAPI(API):
 
     # Тюнер
 
+    @basic_mode
     @public_method
     def tuner_apply(self, tuner_slots, npc_node_hash):
         TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots,
                               npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def tuner_cancel(self):
         pass
 
     # Торговец
-
+    @basic_mode
     @public_method
     def get_trader_info(self, npc_node_hash):
         messages.TraderInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def trader_apply(self, player_table, trader_table, npc_node_hash):
         TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
                                trader_table=trader_table, npc_node_hash=npc_node_hash).post()
 
     # Бартер
-
     @public_method
     def init_barter(self, recipient_login):
-        # log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
+        log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
         InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
                         time=self.agent.server.get_time()).post()
 
@@ -786,13 +783,14 @@ class AgentAPI(API):
             barter.set_money(agent=self.agent, time=self.agent.server.get_time(), money=money)
 
     # RPG
-
+    @basic_mode
     @public_method
     def get_trainer_info(self, npc_node_hash):
         messages.TrainerInfoMessage(time=self.agent.server.get_time(),
                                     agent=self.agent,
                                     npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
     @public_method
     def set_rpg_state(self, npc_node_hash, skills, buy_skills, perks):
         # log.debug('Agent %s try set rpg state', self.agent)
@@ -875,6 +873,7 @@ class AgentAPI(API):
         QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
 
     # Запрос объектов в стратегическом режиме
+    @basic_mode
     @public_method
     def get_strategy_mode_info_objects(self):
         StrategyModeInfoObjectsEvent(agent=self.agent, time=self.agent.server.get_time()).post()
@@ -892,3 +891,16 @@ class AgentAPI(API):
                 self.update_agent_api(time=event.time + 0.1)
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
+
+    @public_method
+    def quick_play_again(self):
+        def callback(*kw):
+            api.update_agent_api(time=api.agent.server.get_time())
+
+        api = self
+        if (options.mode != 'quick') or (self.agent.car is not None):
+            # todo: зафиксировать факт жульничества
+            log.warning('Lie!!!!')
+            return
+        tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
+

@@ -18,14 +18,15 @@ from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
 )
+from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
-from sublayers_server.model.events import event_deco
+from sublayers_server.model.events import event_deco, Event
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.kalman import KalmanLatLong
 
 from tornado.options import options
-import tornado.gen
+
+import tornado.web
 
 
 # todo: make agent offline status possible
@@ -216,6 +217,9 @@ class Agent(Object):
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь добавлен на карту
                 self.party.add_observer_to_party(observer=car, time=time)
+            # сообщить квестам, что добавилась машинка
+            # todo: refactor this call
+            self.example.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAppendCar)
 
     def drop_car(self, car, time, drop_owner=True):
         if car is self.car:
@@ -406,7 +410,7 @@ class Agent(Object):
         pass
 
     def on_kill(self, event, obj):
-        log.debug('%s:: on_kill(%s)', self, obj)
+        # log.debug('%s:: on_kill(%s)', self, obj)
 
         # todo: party
         # todo: registry fix?
@@ -509,7 +513,7 @@ class Agent(Object):
         self.example.on_event(event=event, cls=quest_events.OnExitNPC, npc=npc)  # todo: ##quest send NPC as param
 
     def on_die(self, event, unit):
-        log.debug('%s:: on_die()', self)
+        # log.debug('%s:: on_die()', self)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
@@ -541,14 +545,11 @@ class Agent(Object):
         if new_example_inventory:
             self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
 
+    def print_login(self):
+        return self.user.name
 
 # todo: Переименовать в UserAgent
 class User(Agent):
-    # todo: realize
-    def __init__(self, **kw):
-        super(User, self).__init__(**kw)
-        self.kalman = KalmanLatLong(15)  # todo: use adaptive speed
-
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
         d['user_name'] = self.user.name
@@ -556,46 +557,78 @@ class User(Agent):
         return d
 
 
-def test_cb(f):
+class AI(Agent):
     pass
-    # print 'self.user.car_die = True!!!', f._result, '===', f.exc_info()
-
-
-def test_cb2(f):
-    pass
-    # print 'self.user.car_index = None!!!', f._result, '===', f.exc_info()
 
 
 class QuickUser(User):
     def __init__(self, **kw):
         super(QuickUser, self).__init__(**kw)
         self.time_quick_game_start = None
+        self.quick_game_kills = 0
+        self.quick_game_bot_kills = 0
 
-    def _quick_profile_save(self, time):
-        self.user.time_quick_game = time - self.time_quick_game_start
-        self.user.car_die = True
-        # todo: refactor callback - must be callable
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb)
+    def _add_quick_game_record(self, time):
+        # pymongo add to quick_game_records
+        self.server.app.db.quick_game_records.insert(
+            {
+                'name': self.print_login(),
+                'user_uid': self.user.id,
+                'points': self.get_quick_game_points(time),
+                'time': self.server.get_time()
+            }
+        )
 
     def append_car(self, time, **kw):
         super(QuickUser, self).append_car(time=time, **kw)
-        # Запомнить время старта
+        # Сбросить время старта и количество фрагов
         self.time_quick_game_start = self.server.get_time()
+        self.quick_game_kills = 0
+        self.quick_game_bot_kills = 0
         self.user.car_index = None
-        # todo: refactor callback - must be callable
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=test_cb2)
 
     def drop_car(self, car, time, **kw):
         if car is self.car:
-            # Если удаляется своя машинка, то сохранить профиль
-            self._quick_profile_save(time=time)
+            self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
+
+    def get_quick_game_points(self, time):
+        return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
 
     def on_die(self, event, unit):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
+    def on_kill(self, event, obj):
+        log.debug('%s:: on_kill(%s)', self, obj)
+        if obj.owner and isinstance(obj.owner, AI):
+            self.quick_game_bot_kills += 1
+        else:
+            self.quick_game_kills += 1
+        # добавить хп своей машинке
+        if self.car:
+            self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
 
-# todo: Переиеновать в AIAgent
-class AI(Agent):
-    # todo: realize in future
-    pass
+    @tornado.gen.coroutine
+    def init_example_car(self):
+        user = self.user
+        log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
+        # Создание "быстрой" машинки
+        try:
+            user.car_index = int(user.car_index)
+        except:
+            user.car_index = 0
+
+        if user.car_index < 0 or user.car_index >= len(self.server.quick_game_cars_proto):
+            log.warning('Unknown QuickGame car index %s', user.car_index)
+            user.car_index = 0
+        else:
+            user.car_index = int(user.car_index)
+        self.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
+        yield self.example.car.load_references()
+
+        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
+        self.example.current_location = None
+        self.current_location = None
+
+    def print_login(self):
+        return '_'.join(self.user.name.split('_')[:-1])

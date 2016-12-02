@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
+log = logging.getLogger(__name__)
+
 __all__ = ['Point']
 
-from random import gauss
+from random import gauss, random
 from math import atan2, e, cos, sin, pi
 
 EPS = 1e-9
@@ -57,6 +60,11 @@ class Point(complex):
         if not isinstance(sigma, Point):
             sigma = Point(sigma, sigma)
         return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
+
+    @classmethod
+    def random_point(cls, p, radius):
+        pp = Point.polar(radius * random(), 2*pi * random())
+        return pp + p
 
     @classmethod
     def scalar_mul(cls, p1, p2):

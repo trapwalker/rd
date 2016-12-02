@@ -36,11 +36,14 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasCarMarker.prototype.click_handler', event);
         //console.log('Произведён клик на машинку ', this.car);
-        var name = this.car.owner ? this.car.owner.login : user.login;
+        var owner = this.car.owner ? this.car.owner : user;
+
+        var print_login = owner.quick ? getQuickUserLogin(owner.login) : owner.login;
+
         windowTemplateManager.openUniqueWindow(
-            'person_info_' + name,
+            'person_info_' + print_login,
             '/person_info',
-            {person: name, mode: 'map'},
+            {person: owner.login, mode: 'map'},
             function(jq_window) {
                 jq_window.find('.person-window-btn').click(function(){
                     if (user.party)
@@ -126,9 +129,15 @@ var WCanvasCarMarker = (function (_super) {
         // Вывод лейбла
         if (this.car.owner || this.car == user.userCar) {
             var owner = this.car.owner || user;
-            var party_str = "";
-            if (owner.party != null) party_str = '[' + owner.party.name + ']';
-            var label_str = owner.login + party_str;
+            var label_str = '';
+            if (owner.quick)
+                label_str = getQuickUserLogin(owner.login);
+            else {
+                var party_str = "";
+                if (owner.party != null) party_str = '[' + owner.party.name + ']';
+                label_str = owner.login + party_str;
+            }
+
             ctx.textAlign = "center";
             ctx.textBaseline = "center";
             ctx.font = "8pt MICRADI";
@@ -319,4 +328,89 @@ var WCanvasStaticObjectMarker = (function (_super) {
 
 
     return WCanvasStaticObjectMarker;
+})(VisualObject);
+
+
+
+var WCanvasHPCarMarker = (function (_super) {
+    __extends(WCanvasHPCarMarker, _super);
+
+    function WCanvasHPCarMarker(car, w_car_marker) {
+        _super.call(this, [car]);
+        this.car = car;
+
+        this.w_car_marker = w_car_marker;
+
+        mapCanvasManager.add_vobj(this, 11);
+
+        //var time = clock.getCurrentTime();
+        this._last_time_change_hp = 0;
+        this._last_hp = 0;
+
+        this._radius_big = 39;
+        this._radius_sml = 33;
+        var pi4 = Math.PI / 4.;
+        this._p11 = polarPoint(this._radius_big, -pi4);
+        this._p22 = polarPoint(this._radius_sml, -3 * pi4);
+    }
+
+
+    WCanvasHPCarMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasHPCarMarker.prototype.redraw', time);
+
+        var hp = this.car.getCurrentHP(time);
+
+        if (hp != this._last_hp) {
+            this._last_time_change_hp = time;
+            this._last_hp = hp;
+        }
+        else {
+            if (time - this._last_time_change_hp > 5.0)
+                return;
+        }
+
+        ctx.save();
+        if (this.car == user.userCar) {
+            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos
+        }
+        else {
+            var ctx_car_pos = this.w_car_marker._last_car_ctx_pos;
+            ctx.translate(ctx_car_pos.x, ctx_car_pos.y - 3);
+        }
+
+        ctx.save(); // для возврата от рисования хп
+        // Рисование каркаса
+        var pi4 = Math.PI / 4.;
+        ctx.strokeStyle = 'rgba(85, 255, 85, 0.4)';
+        ctx.beginPath();
+        ctx.arc(0, 0, this._radius_big, -pi4, -3 * pi4, true);
+        ctx.lineTo(this._p22.x, this._p22.y);
+        ctx.arc(0, 0, this._radius_sml, - 3 * pi4,  -pi4, false);
+        ctx.lineTo(this._p11.x, this._p11.y);
+        ctx.stroke();
+
+        // Рисование заливки
+        var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp / this.car._hp_state.max_hp);
+        var pp1 = polarPoint(this._radius_big, pp_angle);
+        ctx.fillStyle = 'rgba(85, 255, 85, 0.2)';
+        ctx.beginPath();
+        ctx.arc(0, 0, this._radius_big, pp_angle, -3 * pi4, true);
+        ctx.lineTo(this._p22.x, this._p22.y);
+        ctx.arc(0, 0, this._radius_sml, - 3 * pi4,  pp_angle, false);
+        ctx.lineTo(pp1.x, pp1.y);
+        ctx.fill();
+
+        ctx.restore(); // Возврат после рисования хп
+        ctx.restore();  // Возврат транслейта
+    };
+
+    WCanvasHPCarMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCanvasHPCarMarker.prototype.delFromVisualManager');
+        this.car = null;
+        mapCanvasManager.del_vobj(this);
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    return WCanvasHPCarMarker;
 })(VisualObject);

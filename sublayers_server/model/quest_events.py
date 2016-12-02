@@ -22,6 +22,14 @@ class QuestEvent(Event):
         self.quest.do_event(event=self)
 
 
+class OnTimer(QuestEvent):
+    def __init__(self, name=None, uid=None, **kw):
+        super(OnTimer, self).__init__(**kw)
+        self.name = name
+        self.uid = uid
+        # todo: register timer in quest for search by name or UID
+
+
 class OnNote(QuestEvent):
     def __init__(self, note_uid, result=None, **kw):
         super(OnNote, self).__init__(**kw)
@@ -34,7 +42,23 @@ class OnQuestChange(QuestEvent):
         super(OnQuestChange, self).__init__(**kw)
         self.target_quest_uid = target_quest_uid
 
+
 class OnDie(QuestEvent): pass
+
+
+class OnAISee(QuestEvent):
+    def __init__(self, obj, **kw):
+        super(OnAISee, self).__init__(**kw)
+        self.obj = obj
+
+
+class OnAIOut(QuestEvent):
+    def __init__(self, obj, **kw):
+        super(OnAIOut, self).__init__(**kw)
+        self.obj = obj
+
+
+class OnAppendCar(QuestEvent): pass
 
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass

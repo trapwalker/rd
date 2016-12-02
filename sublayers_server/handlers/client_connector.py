@@ -12,6 +12,8 @@ import tornado.gen
 
 from sublayers_common.handlers.base import BaseHandler
 
+from tornado.options import options
+
 from random import randint
 
 from sublayers_common.user_profile import User
@@ -41,11 +43,16 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         self.application.clients.append(self)
         # log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
+        agent = None
 
-        if user.quick:
-            agent = yield srv.api.get_agent_quick_game(user, do_disconnect=True)  # todo: Change to make=False
-        else:
-            agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+        if options.mode == 'basic':
+            if not user.quick:
+                agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+        elif options.mode == 'quick':
+            if user.quick:
+                agent = yield srv.api.get_agent_quick_game(user, do_disconnect=True)
+            else:
+                agent = yield srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
 
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit

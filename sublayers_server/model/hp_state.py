@@ -24,15 +24,17 @@ def assert_time_in_hpstate(f):
 
 
 class HPState(object):
-    def __init__(self, t, max_hp, hp, dps=0.0):
+    def __init__(self, owner, t, max_hp, hp, dps=0.0):
         assert (max_hp > 0) and (max_hp >= hp), 'Wrong value hp={} max={}'.format(hp, max_hp)
+        self.owner = owner
         self.shooters = []
+        self.weapons = []
         self.t0 = t
         self.t_die = None
         self.max_hp = max_hp
         self.hp0 = hp
         self.dps = dps  # отрицательный dps => хил
-        self.update(self.t0)
+        self.update(t=self.t0)
         self.dhp = 0
 
     @property
@@ -49,12 +51,21 @@ class HPState(object):
         # Мин нужен для хила, хп не увеличится больше чем max_hp
         return min(self.hp0 - self.dps * (t - self.t0), self.max_hp)
 
+    def restart_weapons(self, time):
+        for weapon in self.weapons:
+            weapon.restart_fire_to_car(car=self.owner, time=time)
+
+    def add_weapon(self, weapon):
+        self.weapons.append(weapon)
+
+    def del_weapon(self, weapon):
+        assert weapon in self.weapons, '{} from {}'.format(weapon, self.weapons)
+        self.weapons.remove(weapon)
+
     def add_shooter(self, shooter):
-        #log.debug('+++++++ {} to {}'.format(shooter, len(self.shooters)))
         self.shooters.append(shooter)
 
     def del_shooter(self, shooter):
-        #log.debug('-------- {} from {}'.format(shooter, len(self.shooters)))
         assert shooter in self.shooters, '{} from {}'.format(shooter, self.shooters)
         self.shooters.remove(shooter)
 
@@ -96,8 +107,39 @@ class HPState(object):
         # todo: use standart pickling methods like __getinitargs__(), __getstate__() and __setstate__()
         # todo: Необходимо избавиться от этого метода в текущем виде. Это плохой метод.
         return self.__class__(
+            owner=self.owner,
             t=self.t0,
             max_hp=self.max_hp,
             hp=self.hp0,
             dps=self.dps,
             )
+
+
+# class DeathlessHPState(HPState):
+#     def __init__(self, deathless_mode=False, **kw):
+#         self.deathless_mode = deathless_mode
+#         super(DeathlessHPState, self).__init__(**kw)
+#
+#     def hp(self, t):
+#         if self.deathless_mode:
+#             return self.hp0
+#         else:
+#             return super(DeathlessHPState, self).hp(t)
+#
+#     def update(self, t=None, dt=0.0, dhp=None, dps=None):
+#         self.fix(t=t, dt=dt)
+#         hp0 = self.hp0
+#         super(DeathlessHPState, self).update(t, dt, dhp, dps)
+#         if self.deathless_mode:
+#             self.hp0 = hp0
+#             self.t_die = None
+#         return self.t_die
+#
+#     def __copy__(self):
+#         return self.__class__(
+#             t=self.t0,
+#             max_hp=self.max_hp,
+#             hp=self.hp0,
+#             dps=self.dps,
+#             deathless_mode=self.deathless_mode,
+#         )

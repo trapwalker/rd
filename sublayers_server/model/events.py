@@ -65,6 +65,7 @@ class Event(object):
         log.debug('POST   %s', self)
         self.server.stat_log.s_events_all(time=self.time, delta=1.0)
         self.server.stat_log.s_events_on(time=self.time, delta=1.0)
+        return self
 
     def cancel(self):
         if self.actual:
@@ -278,7 +279,7 @@ class FireAutoEnableEvent(Objective):
 
     def on_perform(self):
         super(FireAutoEnableEvent, self).on_perform()
-        self.obj.on_fire_auto_enable(enable=self.enable, time=self.time)
+        self.obj.on_fire_auto_enable(enable=self.enable, time=self.time, event=self)
 
 
 class FireAutoTestEvent(Objective):

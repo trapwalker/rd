@@ -236,15 +236,17 @@ var MapManager = (function(_super) {
 
     MapManager.prototype._init = function () {
         this.tileLayerPath = $('#settings_map_link').text();
+        this.server_min_zoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
+
         map = L.map('map',
             {
-                minZoom: ConstMinMapZoom,
+                minZoom: this.server_min_zoom,
                 maxZoom: ConstMaxMapZoom,
                 zoomControl: false,
                 attributionControl: false,
                 scrollWheelZoom: "center",
                 dragging: false,
-                zoomAnimationThreshold: (ConstMaxMapZoom - ConstMinMapZoom),
+                zoomAnimationThreshold: (ConstMaxMapZoom - this.server_min_zoom),
                 doubleClickZoom: false
             }).setView([32.93523932687671, -113.0391401052475], cookieStorage.zoom);
 
@@ -342,6 +344,7 @@ var MapManager = (function(_super) {
         if (storage) {
             mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
                 maxZoom: ConstMaxMapZoom,
+                minZoom: this.server_min_zoom,
                 continuousWorld: true,
                 opacity: 1.0,
                 errorTileUrl: '/static/img/map_404.jpg',
@@ -352,7 +355,8 @@ var MapManager = (function(_super) {
                 continuousWorld: true,
                 opacity: 1.0,
                 errorTileUrl: '/static/img/map_404.jpg',
-                maxZoom: ConstMaxMapZoom});
+                maxZoom: ConstMaxMapZoom,
+                minZoom: this.server_min_zoom});
         }
         if (cookieStorage.optionsMapTileVisible)
             mapManager.tileLayer.addTo(map);
@@ -405,7 +409,7 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.getMinZoom = function() {
-        return ConstMinMapZoom;
+        return this.server_min_zoom;
     };
 
     MapManager.prototype.getRealZoom = function (time) {
@@ -426,8 +430,9 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.setZoom = function(zoom) {
-        //console.log('MapManager.prototype.setZoom');
+        //console.log('MapManager.prototype.setZoom', zoom, this.server_min_zoom, ConstMaxMapZoom);
         if(zoom == map.getZoom()) return;
+        if(zoom < this.server_min_zoom || zoom > ConstMaxMapZoom) return;
         map.setZoom(zoom);
     };
 

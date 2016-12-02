@@ -28,6 +28,15 @@ class Weapon(Consumer):
     def __str__(self):
         return '{}---{}'.format(self.classname, self.sector)
 
+    def calc_dmg_rate(self, car, time):
+        power_dif = car.params.get('p_armor').value - self.example.power_penetration
+        if power_dif <= 0:
+            return 1.0
+        elif power_dif >= 10:
+            return 0.0
+        else:
+            return (10. - power_dif) / 10.
+
     def as_dict(self, **kw):
         return dict(
             cls=self.classname,
@@ -58,8 +67,10 @@ class WeaponAuto(Weapon):
     def __init__(self, dps, **kw):
         super(WeaponAuto, self).__init__(**kw)
         self.targets = []
+        self.dps_list = {}
         self.dps = dps
         self.is_enable = False
+        self.current_dps = 0
 
     def as_dict(self, **kw):
         d = super(WeaponAuto, self).as_dict(**kw)
@@ -68,6 +79,9 @@ class WeaponAuto(Weapon):
             enable=self.is_enable,
         )
         return d
+
+    def get_dps(self, car, time):
+        return self.dps * self.calc_dmg_rate(car=car, time=time)
 
     def add_car(self, car, time):
         if self.is_enable:  # если оружию разрешено вести стрельбу
@@ -85,15 +99,22 @@ class WeaponAuto(Weapon):
                 self.stop(time=time)
             self._stop_fire_to_car(car=car, time=time)
 
+    def restart_fire_to_car(self, car, time):
+        self._stop_fire_to_car(car, time=time)
+        self._start_fire_to_car(car, time=time)
+
     def _start_fire_to_car(self, car, time):
-        car.set_hp(dps=self.dps, add_shooter=self.owner, time=time)
+        dps = self.get_dps(car=car, time=time)
+        car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.targets.append(car)
+        self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
 
     def _stop_fire_to_car(self, car, time):
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
-            car.set_hp(dps=-self.dps, del_shooter=self.owner, time=time)
+            car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
+        del self.dps_list[car.id]
         self.targets.remove(car)
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
@@ -131,11 +152,11 @@ class WeaponDischarge(Weapon):
         # сразу запоминаем шанс крита и силу крита, чтобы потом при каждом выстреле не пересчитывать
         self.crit_rate = 0.0
         self.crit_power = 0.0
-        mobile_ex = self.owner.example
-        agent_ex = None if self.owner.owner is None else self.owner.owner.example
-        if mobile_ex is not None and hasattr(mobile_ex, 'get_modify_value'):
-            self.crit_rate = mobile_ex.get_modify_value(param_name='crit_rate', example_agent=agent_ex)
-            self.crit_power = mobile_ex.get_modify_value(param_name='crit_power', example_agent=agent_ex)
+
+        param_dict = self.owner._param_aggregate
+        if param_dict is not None:
+            self.crit_rate = param_dict.get('crit_rate', self.crit_rate)
+            self.crit_power = param_dict.get('crit_power', self.crit_power)
 
     def as_dict(self, **kw):
         d = super(WeaponDischarge, self).as_dict(**kw)
@@ -145,10 +166,17 @@ class WeaponDischarge(Weapon):
         )
         return d
 
-    def calc_dmg(self):
-        # определяем, прошёл ли крит
-        is_crit = random() < self.crit_rate
-        return self.dmg * (1 + (1.0 if is_crit else 0.0) * self.crit_power), is_crit
+    def calc_is_crit(self):
+        return random() < self.crit_rate
+
+    def calc_dmg(self, car, is_crit, time):
+        # Крит игнорирует броню
+        if is_crit:
+            return self.dmg * (1 + self.crit_power)
+        return self.dmg * self.calc_dmg_rate(car=car, time=time)
+
+    def calc_area_dmg(self, car, time):
+        return self.area_dmg * self.calc_dmg_rate(car=car, time=time)
 
     def fire(self, time):
         if self.can_fire(time=time):
@@ -156,14 +184,18 @@ class WeaponDischarge(Weapon):
 
     def on_use(self, item, time):
         super(WeaponDischarge, self).on_use(item=item, time=time)
+
         # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
         self.last_shoot = time
-        dmg, is_crit = self.calc_dmg()
+        is_crit = self.calc_is_crit()
+
         for car in self.sector.target_list:
+            dmg = self.calc_dmg(car=car, is_crit=is_crit, time=time)
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
 
         for car in self.sector.area_target_list:
-            car.set_hp(dhp=self.area_dmg, shooter=self.owner, time=time)
+            dmg = self.calc_area_dmg(car=car, time=time)
+            car.set_hp(dhp=dmg, shooter=self.owner, time=time)
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел

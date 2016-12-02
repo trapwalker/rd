@@ -107,7 +107,7 @@ class QuickConsumerPanel(object):
                 return
             event_cls = item.example.activate()
             if event_cls:
-                event_cls(server=self.owner.server, time=event.time, item=item,
+                event_cls(agent=self.owner.owner, time=event.time, item=item,
                           inventory=self.owner.inventory, target=target_id).post()
             QuickConsumerPanelMessageEvent(owner=self, time=event.time + 0.1).post()
 
