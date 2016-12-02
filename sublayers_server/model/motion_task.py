@@ -57,10 +57,12 @@ class MotionTask(TaskSingleton):
         # Шаг 0: Прекратить ускорение/замедление
         if st.t_max is not None:
             # log.debug('_calc_goto  cc=%s,  v0=%s', self.cc, st.v0)
+            log.debug('============================== 0 %s %s', self.owner, time)
+            old_v0 = st.v0
             cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
             st.update(t=time, cc=cur_cc)
-            log.debug('============================== 0 %s %s', self.owner, time)
             MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
+            assert st.t_max is None, 'st.t_max={:6f} t0={:.6f} cur_cc={:.6f}  old_v0={} new_v0={}'.format(st.t_max, st.t0, cur_cc, old_v0, st.v0)
 
 
         # Шаг 1: Синхронизация знаков сс и текущей скорости
@@ -88,6 +90,7 @@ class MotionTask(TaskSingleton):
 
         # Шаг 4: Расчет поворота
         st.update(t=time)
+        assert st.t_max is None, 't_max={:.6f} t0={:.6f}  v0={}  a={}'.format(st.t_max, st.t0, st.v0, st.a)
         if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
             log.debug('============================== 4 %s %s', self.owner, time)
             dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
@@ -123,6 +126,7 @@ class MotionTask(TaskSingleton):
             log.debug('============================== 4.3 %s %s', self.owner, time)
             MotionTaskEvent(time=time, task=self, turn=turn).post()
             st.update(t=time, turn=turn)
+            assert st.t_max is None, 't_max={}  turn_fi={}  turn={}'.format(st.t_max, turn_fi, turn)
             time += abs(turn_fi * st.r(st.t0) / st.v0)
 
         # Шаг 5: Доехать до цели
