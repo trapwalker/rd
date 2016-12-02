@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
+import os
 import sys
 import logging
 log = logging.getLogger(__name__)
@@ -12,7 +13,11 @@ if __name__ == '__main__':
 
 
 from sublayers_server.model.registry_me.uri import URI
+from sublayers_common.ctx_timer import Timer
 
+import yaml
+import time
+from fnmatch import fnmatch
 from weakref import WeakSet
 from copy import copy
 from pprint import pprint as pp
@@ -23,6 +28,14 @@ from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, EmbeddedDocumentField,
 )
+
+
+class RegistryError(Exception):
+    pass
+
+
+class RegistryNodeFormatError(RegistryError):
+    pass
 
 
 class Node(Document):
@@ -263,27 +276,73 @@ class Node(Document):
     def node_html(self):  # todo: rename
         return self.node_hash().replace('://', '-').replace('/', '-')
 
+    # todo: rename to calls: _load_node -> _load_node_from_fs
+    @classmethod
+    def _load_node_from_fs(cls, path, owner=None):
+        assert isinstance(path, unicode), '{}._load_node: path is not unicode, but: {!r}'.format(cls, path)
+        attrs = {}
+        for f in sorted(os.listdir(path)):
+            assert isinstance(f, unicode), '{}._load_node: listdir returns non unicode value'.format(cls)
+            # f = f.decode(sys.getfilesystemencoding())
+            p = os.path.join(path, f)
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
+                with open(p) as attr_file:
+                    try:
+                        d = yaml.load(attr_file) or {}
+                    except yaml.scanner.ScannerError as e:
+                        raise RegistryNodeFormatError(e)
+                    attrs.update(d)
+
+        attrs.update(owner=owner)
+        attrs.setdefault('name', os.path.basename(path.strip('\/')))
+        attrs.setdefault('parent', owner)
+        attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
+        attrs.setdefault('fixtured', True)
+
+        node = cls._from_son(attrs)
+        return node
+
+    @classmethod
+    def load(cls, path, mongo_store=True):
+        all_nodes = []
+        root = None
+        stack = deque([(path, None)])
+        with Timer(name='registryFS loader', logger=log) as timer:
+            while stack:
+                pth, owner = stack.pop()
+                node = cls._load_node(pth, owner)
+
+                if node:
+                    all_nodes.append(node)
+                    #node.to_cache()  # TODO: cache objects
+                    if owner is None:
+                        root = node  # todo: optimize
+                    for f in os.listdir(pth):
+                        next_path = os.path.join(pth, f)
+                        if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
+                            stack.append((next_path, node))
+
+        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), timer.duration))
 
 
-class C(Node):
-    x = IntField(null=True)
-    y = IntField(null=True)
-    z = IntField(null=True)
+def test1():
+
+    class C(Node):
+        x = IntField(null=True)
+        y = IntField(null=True)
+        z = IntField(null=True)
 
 
-class C2(C):
-    w = StringField(null=True, tags='q w e')
+    class C2(C):
+        w = StringField(null=True, tags='q w e')
 
-
-if __name__ == '__main__':
-    db = connect(db='test_me')
     print ('delete:', Node.objects.delete())
-    Node.objects.delete()
-    r = Node(name='registry').save()
 
-    a = C (owner=r , name='a' , x=3, y=7).save()
-    b = C2(owner=r , name='b' , x=5).save()
-    aa = C(owner=a , name='aa', parent=a).save()
+    r = Node(name='registry').save()
+    a = C(owner=r, name='a', x=3, y=7).save()
+    b = C2(owner=r, name='b', x=5).save()
+    aa = C(owner=a, name='aa', parent=a).save()
     xx = C(owner=aa, name='xx', parent=aa).save()
     uri = URI(aa.uri)
 
@@ -291,9 +350,21 @@ if __name__ == '__main__':
     pp(list(Node.objects.all()))
     aa2 = Node.objects.get(uri='reg:///registry/a/aa')
     aa3 = Node.objects.get(uri='reg:///registry/a/aa')
-    b2  = Node.objects.get(uri='reg:///registry/b')
+    b2 = Node.objects.get(uri='reg:///registry/b')
     print('cached:', aa2.parent is aa3.parent)
-
-    qq = URI('reg:///registry/a/aa?z=115&y=225').instantiate().save()
-
+    qq = URI('reg:///registry/a/aa?z=115&y=225').instantiate(base_class=Node).save()
     pp(list(r.iter_childs()))
+    globals().update(locals())
+
+
+def test2():
+    print ('delete:', Node.objects.delete())
+
+
+    globals().update(locals())
+
+
+if __name__ == '__main__':
+    db = connect(db='test_me')
+
+    test1()
