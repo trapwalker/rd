@@ -342,6 +342,33 @@ var ClientManager = (function () {
             case 'CruiseSpeedTeachingMapNote':
                 teachingMapManager.update(new CruiseSpeedTeachingMapNote(note));
                 break;
+            case 'CruiseZoneTeachingMapNote':
+                teachingMapManager.update(new CruiseZoneTeachingMapNote(note));
+                break;
+            case 'CruiseSpeedControlTeachingMapNote':
+                teachingMapManager.update(new CruiseSpeedControlTeachingMapNote(note));
+                break;
+            case 'CruiseSpeedBtnTeachingMapNote':
+                teachingMapManager.update(new CruiseSpeedBtnTeachingMapNote(note));
+                break;
+            case 'DrivingControlTeachingMapNote':
+                teachingMapManager.update(new DrivingControlTeachingMapNote(note));
+                break;
+            case 'CruiseRadialTeachingMapNote':
+                teachingMapManager.update(new CruiseRadialTeachingMapNote(note));
+                break;
+            case 'ZoomSliderTeachingMapNote':
+                teachingMapManager.update(new ZoomSliderTeachingMapNote(note));
+                break;
+            case 'DischargeShootingTeachingMapNote':
+                teachingMapManager.update(new DischargeShootingTeachingMapNote(note));
+                break;
+            case 'AutoShootingTeachingMapNote':
+                teachingMapManager.update(new AutoShootingTeachingMapNote(note));
+                break;
+            case 'TryKillTeachingMapNote':
+                teachingMapManager.update(new TryKillTeachingMapNote(note));
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }
@@ -1167,7 +1194,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.DelNoteMessage = function(event) {
-        console.log('ClientManager.prototype.DelNoteMessage', event);
+        //console.log('ClientManager.prototype.DelNoteMessage', event);
         var note = notesManager.get_note(event.note_uid);
         if (note)
             note.delete();

@@ -115,18 +115,18 @@ var TeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.single_length = 5;
         this.arrow_color = 'rgb(192, 255, 0)';
+        this.window_name = '';
+        this.window_uri = '';
     }
 
     TeachingMapNote.prototype.draw_arrow = function(ctx, point, angle) {
-        console.log("TeachingMapNote.prototype.draw_arrow");
+        //console.log("TeachingMapNote.prototype.draw_arrow");
+        angle = gradToRad(angle);
 
-        console.log(point);
         var width = $('#bodydiv').width();
         var height = $('#bodydiv').height();
-        console.log(ctx.canvas.width, width, ctx.canvas.height, height);
         if (point.x < 0) point.x = width + point.x;
         if (point.y < 0) point.y = height + point.y;
-        console.log(point);
 
         ctx.save();
         ctx.translate(point.x, point.y);

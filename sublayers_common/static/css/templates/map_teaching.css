@@ -1,13 +1,21 @@
-.mapTeachingWindow-main {
+.map-teaching-window-main {
     position: relative;
-    height: 250px;
-    width: 450px;
     background-color: rgba(0, 0, 0, 0.9);
     color: #31c811;
     font: 11pt Nouveau_IBM;
 }
+.map-teaching-window-main.cruise_speed { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_zone { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_speed_control { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_speed_btn { height: 250px; width: 450px; }
+.map-teaching-window-main.driving_control { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_radial { height: 250px; width: 450px; }
+.map-teaching-window-main.zoom_slider { height: 250px; width: 450px; }
+.map-teaching-window-main.discharge_shooting { height: 250px; width: 450px; }
+.map-teaching-window-main.auto_shooting { height: 250px; width: 450px; }
+.map-teaching-window-main.try_kill { height: 250px; width: 450px; }
 
-.mapTeachingContent-wrap {
+.map-teaching-content-wrap {
     position: relative;
     margin: 2px auto;
     border: 1px solid #0e4b00;
@@ -16,16 +24,17 @@
     height: calc(100% - 30px);
 }
 
-.mapTeachingTextBlock {
+.map-teaching-text-block {
     position: relative;
     width: 100%;
     height: calc(100% - 40px);
     padding: 10px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     box-sizing: border-box;
 }
 
-.mapTeachingBtnBlock {
+.map-teaching-btn-block {
     position: relative;
     width: 100%;
     height: 40px;
@@ -33,31 +42,22 @@
     box-sizing: border-box;
 }
 
-.mapTeachingBtnOk {
-    position: relative;
-    width: 130px;
-    height: 26px;
-    line-height: 25px;
-    margin: 0 auto;
-}
-
-.mapTeachingBtn {
+.map-teaching-btn {
     cursor: url('/static/img/cursors/hyper.png'), pointer;
     text-align: center;
     border: 1px solid #0e4b00;
     background-color: #082801;
     box-sizing: border-box;
 }
-.mapTeachingBtn:hover {
+.map-teaching-btn:hover {
     background-color: #0c4b00;
     color: #2ffa00;
     border-color: #31c811;
 }
-
-
-.mainCarInfoWindow-body-trunk-body-left-activate {
-
-    }
-
-
-    .mainCarInfoWindow-body-trunk-body-left-activate:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
+.map-teaching-btn.btn-next {
+    position: relative;
+    width: 130px;
+    height: 26px;
+    line-height: 25px;
+    margin: 0 auto;
+}
