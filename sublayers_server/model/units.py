@@ -414,7 +414,7 @@ class Mobile(Unit):
         value = p_obs_range_rate_min + (
             (p_obs_range_rate_max - p_obs_range_rate_min) * (1 - cur_v / self.max_control_speed)
         )
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        assert 0 <= value <= 1, 'value={} p_obs_r_min={} p_obs_r_max={} cur_v={} max_c_s={}'.format(value, p_obs_range_rate_min, p_obs_range_rate_max, cur_v, self.max_control_speed)
         return self.params.get('p_observing_range').value * value
 
     def init_state_params(self):
