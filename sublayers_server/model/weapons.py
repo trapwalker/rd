@@ -6,7 +6,9 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
 from sublayers_server.model.inventory import Consumer
-from sublayers_server.model.events import FireDischargeEffectEvent
+from sublayers_server.model.events import Event, FireDischargeEffectEvent
+from sublayers_server.model.quest_events import OnMakeDmg
+
 
 from random import random
 
@@ -110,6 +112,8 @@ class WeaponAuto(Weapon):
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
+        # todo: пробросить сюда Ивент
+        self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
@@ -188,6 +192,11 @@ class WeaponDischarge(Weapon):
         # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
         self.last_shoot = time
         is_crit = self.calc_is_crit()
+
+        # Засчитывается только урон по видимым целям
+        if len(self.sector.target_list) > 0:
+            # todo: пробросить сюда Ивент
+            self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
         for car in self.sector.target_list:
             dmg = self.calc_dmg(car=car, is_crit=is_crit, time=time)

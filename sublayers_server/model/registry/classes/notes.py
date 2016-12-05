@@ -87,6 +87,16 @@ class ArmorerTeachingNote(Note): pass
 class JournalTeachingNote(Note): pass
 class TrainerTeachingNote(Note): pass
 
+class CruiseSpeedTeachingMapNote(Note): pass
+class CruiseZoneTeachingMapNote(Note): pass
+class CruiseSpeedControlTeachingMapNote(Note): pass
+class CruiseSpeedBtnTeachingMapNote(Note): pass
+class DrivingControlTeachingMapNote(Note): pass
+class CruiseRadialTeachingMapNote(Note): pass
+class ZoomSliderTeachingMapNote(Note): pass
+class DischargeShootingTeachingMapNote(Note): pass
+class AutoShootingTeachingMapNote(Note): pass
+class TryKillTeachingMapNote(Note): pass
 
 # todo: Сделать регистрацию классов нотов через метакласс
 ALL = {name: value for name, value in locals().items() if isinstance(value, type) and issubclass(value, Note)}

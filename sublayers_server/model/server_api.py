@@ -3,11 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import User, QuickUser
+from sublayers_server.model.agents import User, QuickUser, TeachingUser
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry.classes.agents import Agent
+
 import tornado.web
 from random import randint
 
@@ -84,7 +85,8 @@ class ServerAPI(API):
                 yield agent_exemplar.save(upsert=True)
 
             log.debug('QuickUser agent exemplar: %s', agent_exemplar)
-            agent = QuickUser(
+            # agent = QuickUser(
+            agent = TeachingUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),

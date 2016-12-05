@@ -632,3 +632,43 @@ class QuickUser(User):
 
     def print_login(self):
         return '_'.join(self.user.name.split('_')[:-1])
+
+
+class TeachingUser(QuickUser):
+    def __init__(self, time, **kw):
+        super(TeachingUser, self).__init__(time=time, **kw)
+        self.create_teaching_quest(time=time)
+        self.armory_shield_status = False
+
+    @event_deco
+    def create_teaching_quest(self, event):
+        quest_parent = self.server.reg['quests/teaching_map']
+        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+        new_quest.agent = self.example
+        if new_quest.generate(event=event):
+            self.example.add_quest(quest=new_quest, time=event.time)
+            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+            del new_quest
+
+    def on_die(self, event, **kw):
+        super(TeachingUser, self).on_die(event=event, **kw)
+        self.armory_shield_status = False
+
+    def append_car(self, time, **kw):
+        super(TeachingUser, self).append_car(time=time, **kw)
+        # todo: пробпросить Event сюда
+        self.armory_shield_on(Event(server=self.server, time=time))
+
+    def armory_shield_on(self, event):
+        if self.car and not self.armory_shield_status:
+            self.car.params.get('p_armor').current += 100
+            self.car.restart_weapons(time=event.time)
+            self.armory_shield_status = True
+
+    def armory_shield_off(self, event):
+        if self.car and self.armory_shield_status:
+            self.car.params.get('p_armor').current -= 100
+            self.car.restart_weapons(time=event.time)
+            self.armory_shield_status = False
