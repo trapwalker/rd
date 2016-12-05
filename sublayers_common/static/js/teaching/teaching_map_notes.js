@@ -18,7 +18,7 @@ var NoActionTeachingMapNote = (function (_super) {
                 note.on_open_note_window(window);
             },
             function() {
-                note.on_close_note_window();  
+                note.on_close_note_window();
                 note.send_activate_note(); // „тобы по закрытию ноты можно было что-то перекрыть или таймер сделать другой
             },
             true);
@@ -167,11 +167,42 @@ var ZoomSliderTeachingMapNote = (function (_super) {
         this.window_name = 'zoom_slider';
         this.window_uri = '/map_teaching';
         this.elem_id_str = 'zoomSetDivForZoomSlider';
+
+        visualManager.addVisualObject(this, []);
+        visualManager.bindMobjToVobj(this, mapManager);
+        this.change_count = 0;
+
+        var self = this;
+        this._end_note_timer = setTimeout(function() {
+            self._end_note_timer = null;
+            self.change_count = 2;
+            self.change();
+        }, 15000);
     }
 
     ZoomSliderTeachingMapNote.prototype.redraw = function() {
         this.draw_arrow(teachingMapManager.context, new Point(75, 120), 180);
         this.draw_arrow(teachingMapManager.context, new Point(75, 320), 180);
+    };
+
+    ZoomSliderTeachingMapNote.prototype.send_activate_note = function() {};
+
+    ZoomSliderTeachingMapNote.prototype.change = function () {
+        //console.log('ZoomSliderTeachingMapNote.prototype.change');
+        this.change_count++;
+        if (this.change_count >= 2) {
+            _super.prototype.send_activate_note.call(this);
+            if (this._end_note_timer) {
+                clearTimeout(this._end_note_timer);
+                this._end_note_timer = null;
+            }
+        }
+    };
+
+    ZoomSliderTeachingMapNote.prototype.delete = function() {
+        visualManager.unbindMobjToVobj(this, mapManager);
+        visualManager.delVisualObject(this, []);
+        _super.prototype.delete.call(this);
     };
 
     return ZoomSliderTeachingMapNote;
