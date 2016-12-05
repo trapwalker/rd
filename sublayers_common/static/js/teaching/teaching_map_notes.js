@@ -18,8 +18,8 @@ var NoActionTeachingMapNote = (function (_super) {
                 note.on_open_note_window(window);
             },
             function() {
-                note.on_close_note_window();  // „тобы по закрытию ноты можно было что-то перекрыть или таймер сделать другой
-                note.send_activate_note();
+                note.on_close_note_window();  
+                note.send_activate_note(); // „тобы по закрытию ноты можно было что-то перекрыть или таймер сделать другой
             },
             true);
     };
