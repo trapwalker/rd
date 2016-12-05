@@ -161,6 +161,8 @@ class Node(Document):
                     lst[i] = self._reinst_list(subfield, copy(item))
                 elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):
                     lst[i] = item.instantiate()
+                elif isinstance(subfield, ReferenceField):
+                    pass
                 # todo: make support of dict fields
                 else:
                     lst[i] = copy(item)
@@ -181,6 +183,10 @@ class Node(Document):
                 elif isinstance(field, ListField):
                     setattr(new_instance, name, self._reinst_list(field, value))
 
+    def reinst_fields(self):
+        for name, field in self._fields.items():
+            self._instantiaite_field(self, field, name)
+
     def instantiate(self, name=None, storage=None, **kw):
         # todo: Сделать поиск ссылок в параметрах URI
         params = {}
@@ -190,11 +196,8 @@ class Node(Document):
             params.update(self._data)
 
         params.update(kw)
-
         inst = self.__class__(**params)
-
-        for name, field in self._fields.items():
-            inst._instantiaite_field(inst, field, name)
+        inst.reinst_fields()
         # todo: Разобраться с abstract при реинстанцированиях
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
@@ -313,7 +316,6 @@ class Node(Document):
             while stack:
                 pth, owner = stack.pop()
                 node = cls._load_node_from_fs(pth, owner)
-
                 if node:
                     all_nodes.append(node)
                     #node.to_cache()  # TODO: cache objects
@@ -324,7 +326,13 @@ class Node(Document):
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
 
+
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), timer.duration))
+
+        for node in all_nodes:
+            node.reinst_fields()
+            node.save(force_insert=True)
+
         return root
 
 
@@ -335,6 +343,7 @@ class A(Node):
     x = IntField(null=True)
     y = IntField(null=True)
     z = IntField(null=True)
+    l = ListField(ReferenceField(document_type=Node,), reinst=True)
 
 
 class A2(A):
@@ -347,7 +356,7 @@ class B(Node):
 
 
 def test1():
-    print ('delete:', Node.objects.delete())
+    print('delete:', Node.objects.delete())
 
     r = Node(name='registry').save()
     a = A(owner=r, name='a', x=3, y=7).save()
@@ -368,13 +377,16 @@ def test1():
 
 
 def test2():
-    print ('delete:', Node.objects.delete())
+    print('delete:', Node.objects.delete())
     regfs_path = ur'../../temp/test_registry/root'
     root = Node.load(path=regfs_path)
 
     print()
     print('# Registry:')
     pp(list(root.iter_childs(deep=True)))
+    a = root.get_child('a')
+    aa = a.get_child('aa')
+    #a.save(cascade=True, force_insert=True)
 
     print('Well DONE!')
     globals().update(locals())
