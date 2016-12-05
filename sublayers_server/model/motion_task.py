@@ -92,11 +92,14 @@ class MotionTask(TaskSingleton):
             temp_t = time
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
-            temp_t_max = None
-            if st.a != 0.0:
-                temp_t_max = temp_t + dv / st.a
-            assert time is not None, 'time={} old_time={} t_max_calc={} cc={}, v={} v0={} v_max={} dv={}'.format(
-                time, temp_t, temp_t_max, self.cc, v, v0, v_max, dv)
+            if time is None:
+                time = temp_t
+            # temp_t_max = None
+            # if st.a != 0.0:
+            #     temp_t_max = temp_t + dv / st.a
+            # # todo: кажется, здесь может не быть ассерта, либо нужно более правильную проверку для IF'а писать, иначе в стейте и здесь считается не одинаково
+            # assert time is not None, 'time={} old_time={} t_max_calc={} cc={}, v={} v0={} v_max={} dv={}'.format(
+            #     time, temp_t, temp_t_max, self.cc, v, v0, v_max, dv)
 
         # Шаг 4: Расчет поворота
         st.update(t=time)
