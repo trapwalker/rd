@@ -16,10 +16,11 @@ class MotionTaskEvent(TaskPerformEvent):
         '{self.task.owner.classname}#{self.task.owner.id}> task={self.task.id}'
         '#alive={self.task.owner.is_alive}   #limbo=#{self.task.owner.limbo}>')
 
-    def __init__(self, cc=None, turn=None, **kw):
+    def __init__(self, cc=None, turn=None, stop_a=False, **kw):
         super(MotionTaskEvent, self).__init__(**kw)
         self.cc = cc
         self.turn = turn
+        self.stop_a = stop_a
 
 
 class MotionTask(TaskSingleton):
@@ -60,8 +61,8 @@ class MotionTask(TaskSingleton):
             log.debug('============================== 0 %s %s', self.owner, time)
             old_v0 = st.v0
             cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
-            st.update(t=time, cc=cur_cc)
-            MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0).post()
+            st.update(t=time, cc=cur_cc, stop_a=True)
+            MotionTaskEvent(time=time, task=self, cc=cur_cc, turn=0.0, stop_a=True).post()
             assert st.t_max is None, 'st.t_max={:6f} t0={:.6f} cur_cc={:.6f}  old_v0={} new_v0={}'.format(st.t_max, st.t0, cur_cc, old_v0, st.v0)
 
 
@@ -82,11 +83,20 @@ class MotionTask(TaskSingleton):
 
         # Шаг 3: Замедлиться при необходимости
         v = st.v(t=time)
-        if (abs(v) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
+        v0 = st.v0
+        v_max = st.get_max_v_by_cc(cc=self.cc)
+        dv = v_max * abs(self.cc) - v0
+        if abs(dv) > EPS:
+        # if (abs(v) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
             log.debug('============================== 3 %s %s', self.owner, time)
+            temp_t = time
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
-            assert time is not None, 'cc = {}, v = {}'.format(self.cc, v)
+            temp_t_max = None
+            if st.a != 0.0:
+                temp_t_max = temp_t + dv / st.a
+            assert time is not None, 'time={} old_time={} t_max_calc={} cc={}, v={} v0={} v_max={} dv={}'.format(
+                time, temp_t, temp_t_max, self.cc, v, v0, v_max, dv)
 
         # Шаг 4: Расчет поворота
         st.update(t=time)
@@ -165,7 +175,7 @@ class MotionTask(TaskSingleton):
             log.warning('Exp by riding rate is None: owner.example.k_way_exp')
         owner.example.set_exp(dvalue=s * (owner.example.k_way_exp or 0))
 
-        state.update(t=event.time, cc=event.cc, turn=event.turn)
+        state.update(t=event.time, cc=event.cc, turn=event.turn, stop_a=event.stop_a)
         is_moving_after = state.is_moving
         owner.on_update(event=event)
         if is_moving_before != is_moving_after:
@@ -199,7 +209,13 @@ class MotionTask(TaskSingleton):
             owner.state.u_cc = 0.0
 
         if self.target_point:
-            self._calc_goto(start_time=event.time)
+            try:
+                self._calc_goto(start_time=event.time)
+            except Exception as e:
+                log.debug('_calc_goto error for %s %s', self.owner, event.time)
+                log.debug(e)
+                log.exception(e)
+                self.owner.server.stop()
         else:
             self._calc_keybord(start_time=event.time)
         owner.cur_motion_task = self
