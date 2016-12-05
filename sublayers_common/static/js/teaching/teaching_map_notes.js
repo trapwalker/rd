@@ -3,6 +3,8 @@ var NoActionTeachingMapNote = (function (_super) {
 
     function NoActionTeachingMapNote(options) {
         _super.call(this, options);
+        this.elem_id_str = '';
+        this.old_z_index = null;
     }
 
     NoActionTeachingMapNote.prototype.active = function() {
@@ -13,11 +15,37 @@ var NoActionTeachingMapNote = (function (_super) {
                 var window = windowTemplateManager.unique[note.window_name];
                 if (window)
                     window.setupCloseElement(jq_window.find('.btn-next'));
+                note.on_open_note_window(window);
             },
             function() {
-                clientManager.SendQuestNoteAction(note.uid, true);
+                note.on_close_note_window();  // „тобы по закрытию ноты можно было что-то перекрыть или таймер сделать другой
+                note.send_activate_note();
             },
             true);
+    };
+
+    NoActionTeachingMapNote.prototype.on_open_note_window = function(window) {
+        $('.modalDivWindow').first().css('background-color', 'rgba(0,0,0,0)');
+        $('#mapTeachingCanvasBackDiv').css('display', 'block');
+        teachingMapManager.jq_canvas.css('pointer-events', 'auto');
+        if (this.elem_id_str) {
+            this.old_z_index = $('#' + this.elem_id_str).css('z-index');
+            $('#' + this.elem_id_str).css('z-index', '2000');
+        }
+    };
+
+    NoActionTeachingMapNote.prototype.on_close_note_window = function() {
+        teachingMapManager.jq_canvas.css('pointer-events', 'none');
+        $('#mapTeachingCanvasBackDiv').css('display', 'none');
+        if (this.elem_id_str && this.old_z_index != null) {
+            $('#' + this.elem_id_str).css('z-index', this.old_z_index);
+            this.old_z_index = null;
+        }
+    };
+
+    NoActionTeachingMapNote.prototype.send_activate_note = function () {
+        var note = this;
+        setTimeout(function () { clientManager.SendQuestNoteAction(note.uid, true); }, 1500);
     };
 
     return NoActionTeachingMapNote;
@@ -31,6 +59,7 @@ var CruiseSpeedTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_speed';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseSpeedTeachingMapNote.prototype.redraw = function() {
@@ -48,6 +77,7 @@ var CruiseZoneTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_zone';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseZoneTeachingMapNote.prototype.redraw = function() {
@@ -65,6 +95,7 @@ var CruiseSpeedControlTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_speed_control';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseSpeedControlTeachingMapNote.prototype.redraw = function() {
@@ -82,6 +113,7 @@ var CruiseSpeedBtnTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_speed_btn';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseSpeedBtnTeachingMapNote.prototype.redraw = function() {
@@ -101,20 +133,10 @@ var DrivingControlTeachingMapNote = (function (_super) {
         this.window_uri = '/map_teaching';
     }
 
-    DrivingControlTeachingMapNote.prototype.active = function() {
-        _super.prototype.active.call(this);
-        var note = this;
-        windowTemplateManager.openUniqueWindow(this.window_name, this.window_uri, {window_name: this.window_name},
-            function(jq_window) {
-                var window = windowTemplateManager.unique[note.window_name];
-                if (window)
-                    window.setupCloseElement(jq_window.find('.btn-next'));
-            },
-            null, true);
-    };
+    DrivingControlTeachingMapNote.prototype.send_activate_note = function() {};
 
     return DrivingControlTeachingMapNote;
-})(TeachingMapNote);
+})(NoActionTeachingMapNote);
 
 
 var CruiseRadialTeachingMapNote = (function (_super) {
@@ -124,6 +146,7 @@ var CruiseRadialTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_radial';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseRadialTeachingMapNote.prototype.redraw = function() {
@@ -143,6 +166,7 @@ var ZoomSliderTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'zoom_slider';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'zoomSetDivForZoomSlider';
     }
 
     ZoomSliderTeachingMapNote.prototype.redraw = function() {
@@ -161,6 +185,7 @@ var DischargeShootingTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'discharge_shooting';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'fireControlArea';
     }
 
     DischargeShootingTeachingMapNote.prototype.redraw = function() {
@@ -179,6 +204,7 @@ var AutoShootingTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'auto_shooting';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'fireControlArea';
     }
 
     AutoShootingTeachingMapNote.prototype.redraw = function() {
