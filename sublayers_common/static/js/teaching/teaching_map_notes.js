@@ -22,6 +22,9 @@ var NoActionTeachingMapNote = (function (_super) {
                     jq_window.find('.btn-back').click(function() {
                         note.send_activate_note(false);
                     });
+                    jq_window.find('.windowDragCloseHeader-close').click(function() {
+                        note.send_activate_note(true);
+                    });
                 }
                 note.on_open_note_window(window);
             },
