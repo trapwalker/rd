@@ -8,6 +8,7 @@ from sublayers_server.model.state import EPS
 from copy import copy
 from sublayers_server.model.vectors import Point
 from math import sqrt, copysign
+from sublayers_server.model.state import MotionState
 
 
 class MotionTaskEvent(TaskPerformEvent):
@@ -33,6 +34,7 @@ class MotionTask(TaskSingleton):
         self.turn = turn
         self.target_point = target_point
         self.comment = comment
+        self.debug_comments = []
 
     def _calc_keybord(self, start_time):
         time = start_time
@@ -50,6 +52,7 @@ class MotionTask(TaskSingleton):
 
     def _calc_goto(self, start_time):
         time = start_time
+        self.debug_comments.append('start _calc_goto {} {}'.format(self.owner, time))
         owner = self.owner
         target_point = self.target_point
         st = copy(owner.state)
@@ -59,6 +62,7 @@ class MotionTask(TaskSingleton):
         if st.t_max is not None:
             # log.debug('_calc_goto  cc=%s,  v0=%s', self.cc, st.v0)
             # log.debug('============================== 0 %s %s', self.owner, time)
+            self.debug_comments.append('0 {} {}'.format(owner, time))
             old_v0 = st.v0
             cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
             st.update(t=time, cc=cur_cc, stop_a=True)
@@ -68,6 +72,7 @@ class MotionTask(TaskSingleton):
         # Шаг 1: Синхронизация знаков сс и текущей скорости
         if (self.cc * st.v(time)) < 0:
             # log.debug('============================== 1 %s %s', self.owner, time)
+            self.debug_comments.append('1 {} {}'.format(owner, time))
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
             time = st.update(t=time, cc=0.0, turn=0.0)
             assert time is not None
@@ -76,35 +81,27 @@ class MotionTask(TaskSingleton):
         if abs(st.v(t=time)) < EPS:
             min_cc = min(abs(self.cc), abs(owner.params.get('p_cc').original * 0.1)) * (1 if self.cc >= 0.0 else -1)
             # log.debug('============================== 2 %s %s', self.owner, time)
+            self.debug_comments.append('2 {} {}'.format(owner, time))
             MotionTaskEvent(time=time, task=self, cc=min_cc, turn=0.0).post()
             time = st.update(t=time, cc=min_cc, turn=0.0)
             assert time is not None
 
         # Шаг 3: Замедлиться при необходимости
-        v = st.v(t=time)
-        v0 = st.v0
-        v_max = st.get_max_v_by_cc(cc=self.cc)
-        dv = v_max * abs(self.cc) - v0
-        if abs(dv) > EPS:
-        # if (abs(v) - abs(self.cc * st.get_max_v_by_cc(self.cc))) > EPS:
-            log.debug('============================== 3 %s %s', self.owner, time)
+        if abs(st.get_max_v_by_cc(cc=self.cc) * abs(self.cc) - st.v0) > EPS:
+            # log.debug('============================== 3 %s %s', self.owner, time)
+            self.debug_comments.append('3 {} {}'.format(owner, time))
             temp_t = time
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
             if time is None:
                 time = temp_t
-            # temp_t_max = None
-            # if st.a != 0.0:
-            #     temp_t_max = temp_t + dv / st.a
-            # # todo: кажется, здесь может не быть ассерта, либо нужно более правильную проверку для IF'а писать, иначе в стейте и здесь считается не одинаково
-            # assert time is not None, 'time={} old_time={} t_max_calc={} cc={}, v={} v0={} v_max={} dv={}'.format(
-            #     time, temp_t, temp_t_max, self.cc, v, v0, v_max, dv)
 
         # Шаг 4: Расчет поворота
         st.update(t=time)
         assert st.t_max is None, 't_max={:.6f} t0={:.6f}  v0={}  a={}'.format(st.t_max, st.t0, st.v0, st.a)
         if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
             # log.debug('============================== 4 %s %s', self.owner, time)
+            self.debug_comments.append('4 {} {}'.format(owner, time))
             dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
             # Если target_point слишком близко, то проехать некоторое расстояние вперед
             if dist <= 0.0:
@@ -117,6 +114,7 @@ class MotionTask(TaskSingleton):
 
                 if abs(target_v - st.v(t=time)) > EPS:
                     # log.debug('============================== 4.1 %s %s', self.owner, time)
+                    self.debug_comments.append('4.1 {} {}'.format(owner, time))
                     MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
                     time = st.update(t=time, cc=target_cc, turn=0.0)
 
@@ -126,6 +124,7 @@ class MotionTask(TaskSingleton):
                 if not (dist > EPS):
                     dist = 4.1 * st.r(st.t0)  # расстояние которое надо проехать
                     # log.debug('============================== 4.2 %s %s', self.owner, time)
+                    self.debug_comments.append('4.2 {} {}'.format(owner, time))
                     MotionTaskEvent(time=time, task=self, turn=0.0).post()
                     st.update(t=time, turn=0.0)
                     time += abs(dist / st.v0)
@@ -136,6 +135,7 @@ class MotionTask(TaskSingleton):
             if st.v0 > 0:
                 turn = -turn
             # log.debug('============================== 4.3 %s %s', self.owner, time)
+            self.debug_comments.append('4.3 {} {}'.format(owner, time))
             MotionTaskEvent(time=time, task=self, turn=turn).post()
             st.update(t=time, turn=turn)
             assert st.t_max is None, 't_max={}  turn_fi={}  turn={}'.format(st.t_max, turn_fi, turn)
@@ -147,20 +147,24 @@ class MotionTask(TaskSingleton):
         a_time, m_time, b_time = st._calc_time_segment(s=dist, cc=self.cc)
         if a_time > 0.0:
             # log.debug('============================== 5.1 %s %s', self.owner, time)
+            self.debug_comments.append('5.1 {} {}'.format(owner, time))
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             upd_time = st.update(t=time, cc=self.cc, turn=0.0)
             time = min(upd_time, time + a_time)
         if m_time > 0.0:
             # log.debug('============================== 5.2 %s %s', self.owner, time)
+            self.debug_comments.append('5.2 {} {}'.format(owner, time))
             MotionTaskEvent(time=time, task=self, turn=0.0).post()
             st.update(t=time, turn=0.0)
             time += m_time
         # Замедление
         # log.debug('============================== 6 %s %s', self.owner, time)
+        self.debug_comments.append('6 {} {}'.format(owner, time))
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
         time = st.update(t=time, cc=0.0, turn=0.0)
         # Полная остановка
         # log.debug('============================== 7 %s %s', self.owner, time)
+        self.debug_comments.append('7 {} {}'.format(owner, time))
         MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
         time = st.update(t=time, cc=0.0, turn=0.0)
         assert time is None
@@ -190,9 +194,17 @@ class MotionTask(TaskSingleton):
         super(MotionTask, self).on_perform(event=event)
         try:
             self._update_state(event)
-        except:
-            log.debug('Goto error for %s %s', self.owner, event.time)
-            self.owner.server.stop()
+        except Exception as e:
+            self.done()
+            last_owner_position = self.owner.state.p0
+            log.debug('on_perform_update_state error for %s %s', self.owner, event.time)
+            for line in self.debug_comments:
+                    log.debug(line)
+            log.exception(e)
+            self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
+            self.owner.state.p0 = last_owner_position
+            self.owner.set_motion(cc=0.0, time=event.time)
+            # self.owner.server.stop()
 
     def on_start(self, event):
         owner = self.owner
@@ -214,10 +226,16 @@ class MotionTask(TaskSingleton):
             try:
                 self._calc_goto(start_time=event.time)
             except Exception as e:
+                self.done()
+                owner_position = self.owner.position(time=event.time)
                 log.debug('_calc_goto error for %s %s', self.owner, event.time)
-                log.debug(e)
+                for line in self.debug_comments:
+                    log.debug(line)
                 log.exception(e)
-                self.owner.server.stop()
+                self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
+                self.owner.state.p0 = owner_position
+                self.owner.set_motion(cc=0.0, time=event.time)
+                # self.owner.server.stop()
         else:
             self._calc_keybord(start_time=event.time)
         owner.cur_motion_task = self

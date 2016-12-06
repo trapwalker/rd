@@ -328,9 +328,6 @@ class MotionState(BaseMotionState):
             self.t_max = self.t0 + dv / self.a
         assert (self.t_max is None) or (self.t_max >= self.t0)
         if (self.t_max is not None) and ((self.t_max - self.t0) <= EPS):
-            log.debug('Info: t0={} t_max={}'.format(self.t0, self.t_max))
-            if self.t_max is not None:
-                log.debug('Info: dv={} a={}'.format(dv, self.a))
             self.a = 0.0
             self.t_max = None
         if turn is not None:
