@@ -606,8 +606,8 @@ class QuestUpdateMessage(messages.Message):
         d.update(
             quest=self.quest.as_client_dict(),
         )
-        if self.quest.hirer is None:
-            log.error('============ %s', self.__class__)
+        #if self.quest.hirer is None:
+        #    log.error('============ %s', self.__class__)
         return d
 
 
@@ -713,7 +713,7 @@ class AIQuickQuest(Quest):
 
     def get_next_route_point(self):
         if not self.route:
-            return Point.random_gauss(self.agent._agent_model.server.quick_game_start_pos,
+            return Point.random_point(self.agent._agent_model.server.quick_game_start_pos,
                                       self.agent._agent_model.server.quick_game_play_radius)
         if self.route_index + 1 >= len(self.route):
             self.route_index = 0

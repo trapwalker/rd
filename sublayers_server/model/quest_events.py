@@ -46,6 +46,9 @@ class OnQuestChange(QuestEvent):
 class OnDie(QuestEvent): pass
 
 
+class OnMakeDmg(QuestEvent): pass
+
+
 class OnAISee(QuestEvent):
     def __init__(self, obj, **kw):
         super(OnAISee, self).__init__(**kw)

@@ -399,7 +399,12 @@ class Mobile(Unit):
         visibility_min = self.params.get('p_visibility_min').value
         visibility_max = self.params.get('p_visibility_max').value
         value = visibility_min + ((visibility_max - visibility_min) * (cur_v / self.max_control_speed))
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        if not (0 <= value <= 1):
+            log.debug('Error!!! get_visibility !!!')
+            log.debug('value={} vis_min={} vis_max={}, cur_v={}, mcs={}, time={} unit={}'.format(value, visibility_min,
+                                                                                visibility_max, cur_v,
+                                                                                self.max_control_speed, time, self))
+            self.server.stop()
         return value
 
     def get_observing_range(self, time):
@@ -409,7 +414,7 @@ class Mobile(Unit):
         value = p_obs_range_rate_min + (
             (p_obs_range_rate_max - p_obs_range_rate_min) * (1 - cur_v / self.max_control_speed)
         )
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        assert 0 <= value <= 1, 'value={} p_obs_r_min={} p_obs_r_max={} cur_v={} max_c_s={}'.format(value, p_obs_range_rate_min, p_obs_range_rate_max, cur_v, self.max_control_speed)
         return self.params.get('p_observing_range').value * value
 
     def init_state_params(self):
@@ -445,6 +450,8 @@ class Mobile(Unit):
         self.set_fuel(time=event.time)
 
     def set_motion(self, time, target_point=None, cc=None, turn=None, comment=None):
+        if self.limbo or not self.is_alive:
+            log.debug('Error! {} try set_motion in limbo'.format(self))
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 

@@ -130,10 +130,10 @@ class VisibleObject(PointObject):
 
         Parameter(original=self._param_aggregate['p_visibility_min'],
                   name='p_visibility_min',
-                  owner=self)
+                  owner=self,)  # min_value=0.0, max_value=1.0)
         Parameter(original=self._param_aggregate['p_visibility_max'],
                   name='p_visibility_max',
-                  owner=self)
+                  owner=self,)  # min_value=0.0, max_value=1.0)
 
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
@@ -143,8 +143,14 @@ class VisibleObject(PointObject):
         self.set_default_tags()
 
     def get_visibility(self, time):
-        value = (self.params.get('p_visibility_min').value + self.params.get('p_visibility_max').value) / 2.0
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        visibility_min = self.params.get('p_visibility_min').value
+        visibility_max = self.params.get('p_visibility_max').value
+        value = (visibility_min + visibility_max) / 2.0
+        # assert 0 <= value <= 1, 'value={}'.format(value)
+        if not (0 <= value <= 1):
+            log.debug('Error!!! get_visibility !!!')
+            log.debug('value={} vis_min={} vis_max={}, time={} vo={}'.format(value, visibility_min, visibility_max, time, self))
+            self.server.stop()
         return value
 
     def on_init(self, event):

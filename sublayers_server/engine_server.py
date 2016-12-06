@@ -36,17 +36,16 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler, MobilePlayHandler
 from sublayers_server.handlers.mobile import MobileHeaderHandler, MobileContentHandler
 
-
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler, MenuCarHandler
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 
-
 from sublayers_server.handlers.main_menu_character import MenuCharacterHandler
 from sublayers_server.handlers.main_menu_journal import MenuJournalHandler
 from sublayers_server.handlers.party_handler import MenuPartyHandler
 from sublayers_server.handlers.main_menu_radio import MenuRadioHandler
+from sublayers_server.handlers.map_teaching import MapTeachingHandler
 
 from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
@@ -128,7 +127,7 @@ class Application(BaseApplication):
             (r"/api/menu_journal", MenuJournalHandler),
             (r"/api/menu_party", MenuPartyHandler),
             (r"/api/menu_radio", MenuRadioHandler),
-
+            (r"/api/map_teaching", MapTeachingHandler),
 
             (r"/api/context_panel/locations", ContextPanelListHandler),
             (r"/api/context_panel/barter_send", ContextPanelListHandler),

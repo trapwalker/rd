@@ -962,6 +962,7 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
         return d
 
 
+# todo: Перенести описание класса в модуль квестов
 class QuestsInitMessage(Message):
     u"""Отправка всех квестов агента на клиент"""
     def as_dict(self):
@@ -970,14 +971,14 @@ class QuestsInitMessage(Message):
             quests=[quest.as_client_dict() for quest in self.agent.example.quests],
         )
         q = d['quests'] and d['quests'][0] or None
-        if q and q['hirer'] is None:
-            log.error(
-                '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
-                self.__class__, q,
-                self.agent.example.quests_unstarted,
-                self.agent.example.quests_active,
-                self.agent.example.quests_ended,
-            )
+        #if q and q['hirer'] is None:
+        #    log.error(
+        #        '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
+        #        self.__class__, q,
+        #        self.agent.example.quests_unstarted,
+        #        self.agent.example.quests_active,
+        #        self.agent.example.quests_ended,
+        #    )
         return d
 
 

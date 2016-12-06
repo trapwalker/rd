@@ -59,7 +59,7 @@ class AIQuickAgent(AI):
             yield self.example.car.load_references()
             self.example.current_location = None
             self.current_location = None
-            self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 300)
+            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, 300)
 
             car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
@@ -67,7 +67,7 @@ class AIQuickAgent(AI):
 
             self._quick_bot_start_time = event.time
         else:
-            self.timer_restart_car(time=event.time+30.)
+            self.timer_restart_car(time=event.time+4.)
 
     def drop_car(self, time, **kw):
         super(AIQuickAgent, self).drop_car(time=time, **kw)

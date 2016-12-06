@@ -30,7 +30,6 @@ var ModalWindow = (function () {
         this.modalItemDivision.addClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-hide');
 
-
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
         this.modalOptionsLoad();
@@ -509,7 +508,7 @@ var ModalWindow = (function () {
         });
     };
 
-    ModalWindow.prototype.modalQuickGamePointsPageHide = function(){
+    ModalWindow.prototype.modalQuickGamePointsPageHide = function() {
         this._modalBackHide();
         this.modalQuickGamePoints.removeClass('modal-window-show');
         this.modalQuickGamePoints.addClass('modal-window-hide');

@@ -95,7 +95,7 @@ var TeachingNote = (function (_super) {
     };
 
     TeachingNote.prototype.delete = function() {
-        _super.prototype.delete.call();
+        _super.prototype.delete.call(this);
         if (teachingManager.active_note == this){
             teachingManager.active_note = null;
             teachingManager.deactivate();
@@ -105,6 +105,62 @@ var TeachingNote = (function (_super) {
     TeachingNote.prototype.on_enter_location = function() {};
 
     return TeachingNote;
+})(SimpleNote);
+
+
+var TeachingMapNote = (function (_super) {
+    __extends(TeachingMapNote, _super);
+
+    function TeachingMapNote(options) {
+        _super.call(this, options);
+        this.single_length = 5;
+        this.arrow_color = 'rgb(192, 255, 0)';
+        this.window_name = '';
+        this.window_uri = '';
+    }
+
+    TeachingMapNote.prototype.draw_arrow = function(ctx, point, angle) {
+        //console.log("TeachingMapNote.prototype.draw_arrow");
+        angle = gradToRad(angle);
+
+        var width = $('#bodydiv').width();
+        var height = $('#bodydiv').height();
+        if (point.x < 0) point.x = width + point.x;
+        if (point.y < 0) point.y = height + point.y;
+
+        ctx.save();
+        ctx.translate(point.x, point.y);
+        ctx.rotate(angle);
+
+        ctx.fillStyle = this.arrow_color;
+        ctx.strokeStyle = this.arrow_color;
+        ctx.lineWidth = 0;
+
+        ctx.beginPath();
+        ctx.lineTo(-this.single_length * 6, -this.single_length * 6);
+        ctx.lineTo(-this.single_length * 6, -this.single_length * 2);
+        ctx.lineTo(-this.single_length * 15, -this.single_length * 2);
+        ctx.lineTo(-this.single_length * 15, this.single_length * 2);
+        ctx.lineTo(-this.single_length * 6, this.single_length * 2);
+        ctx.lineTo(-this.single_length * 6, this.single_length * 6);
+        ctx.lineTo(0, 0);
+        ctx.fill();
+
+        ctx.restore();
+    };
+
+    TeachingMapNote.prototype.redraw = function() {
+    };
+
+    TeachingMapNote.prototype.delete = function() {
+        _super.prototype.delete.call(this);
+        if (teachingMapManager.active_note == this) {
+            teachingMapManager.active_note = null;
+            teachingMapManager.deactivate();
+        }
+    };
+
+    return TeachingMapNote;
 })(SimpleNote);
 
 
