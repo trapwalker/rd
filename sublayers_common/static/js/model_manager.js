@@ -369,6 +369,9 @@ var ClientManager = (function () {
             case 'TryKillTeachingMapNote':
                 teachingMapManager.update(new TryKillTeachingMapNote(note));
                 break;
+            case 'TryGameTeachingMapNote':
+                teachingMapManager.update(new TryGameTeachingMapNote(note));
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }

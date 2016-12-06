@@ -280,3 +280,16 @@ var TryKillTeachingMapNote = (function (_super) {
 
     return TryKillTeachingMapNote;
 })(NoActionTeachingMapNote);
+
+
+var TryGameTeachingMapNote = (function (_super) {
+    __extends(TryGameTeachingMapNote, _super);
+
+    function TryGameTeachingMapNote(options) {
+        _super.call(this, options);
+        this.window_name = 'try_game';
+        this.window_uri = '/map_teaching';
+    }
+
+    return TryGameTeachingMapNote;
+})(NoActionTeachingMapNote);

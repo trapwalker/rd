@@ -520,8 +520,11 @@ class Agent(Object):
         for barter in self.barters:
             barter.cancel(time=event.time-0.01)
 
-        Die(agent=self, time=event.time).post()
+        self.send_die_message(event, unit)
         self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+
+    def send_die_message(self, event, unit):
+        Die(agent=self, time=event.time).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -595,7 +598,7 @@ class QuickUser(User):
     def get_quick_game_points(self, time):
         return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
 
-    def on_die(self, event, unit):
+    def send_die_message(self, event, unit):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
@@ -652,18 +655,30 @@ class TeachingUser(QuickUser):
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
 
+    @event_deco
+    def init_example_car_teaching(self, event):
+        if self.car:
+            return
+        if self.api:
+            self.api.quick_play_again()
+        else:
+            log.warning('Try to use API method without API')
+
+    def send_die_message(self, event, unit):
+        pass
+
     def on_die(self, event, **kw):
         super(TeachingUser, self).on_die(event=event, **kw)
         self.armory_shield_status = False
 
     def append_car(self, time, **kw):
-        super(TeachingUser, self).append_car(time=time, **kw)
-
         quest_parent = self.server.reg['quests/teaching_map']
         for q in self.example.quests_active:
             if q.parent == quest_parent and q.status == 'active':
                 # todo: пробпросить Event сюда
                 self.armory_shield_on(Event(server=self.server, time=time))
+
+        super(TeachingUser, self).append_car(time=time, **kw)
 
     def armory_shield_on(self, event):
         if self.car and not self.armory_shield_status:
