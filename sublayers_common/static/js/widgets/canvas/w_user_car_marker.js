@@ -391,7 +391,8 @@ var WCanvasHPCarMarker = (function (_super) {
         ctx.stroke();
 
         // Рисование заливки
-        var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp / this.car._hp_state.max_hp);
+        hp = Math.min(Math.max(hp / this.car._hp_state.max_hp, 0.0), 1.0);
+        var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp);
         var pp1 = polarPoint(this._radius_big, pp_angle);
         ctx.fillStyle = 'rgba(85, 255, 85, 0.2)';
         ctx.beginPath();

@@ -658,8 +658,12 @@ class TeachingUser(QuickUser):
 
     def append_car(self, time, **kw):
         super(TeachingUser, self).append_car(time=time, **kw)
-        # todo: пробпросить Event сюда
-        self.armory_shield_on(Event(server=self.server, time=time))
+
+        quest_parent = self.server.reg['quests/teaching_map']
+        for q in self.example.quests_active:
+            if q.parent == quest_parent and q.status == 'active':
+                # todo: пробпросить Event сюда
+                self.armory_shield_on(Event(server=self.server, time=time))
 
     def armory_shield_on(self, event):
         if self.car and not self.armory_shield_status:
