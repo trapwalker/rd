@@ -85,8 +85,7 @@ class ServerAPI(API):
                 yield agent_exemplar.save(upsert=True)
 
             log.debug('QuickUser agent exemplar: %s', agent_exemplar)
-            # agent = QuickUser(
-            agent = TeachingUser(
+            agent = QuickUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),
@@ -108,14 +107,16 @@ class ServerAPI(API):
 
     @tornado.gen.coroutine
     def get_agent_teaching(self, user, do_disconnect=False):
-        # User здесь обязательно QuickUser
         assert not user.quick
+        assert user.teaching_state == 'map'
         log.info('!!! get_agent_teaching_mode  !!!!')
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
-            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            # Если нет подключённого агента, то мы не ищем в базе, а просто создаём нового!
+            # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            agent_exemplar = None
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['agents/user'].instantiate(
+                agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     #storage=self.application.reg_agents,
                     login=user.name,
                     profile_id=str(user._id),
@@ -127,8 +128,8 @@ class ServerAPI(API):
                 agent_exemplar.role_class = role_class_ex
                 yield agent_exemplar.save(upsert=True)
 
-            log.debug('User agent exemplar: %s', agent_exemplar)
-            agent = QuickUser(
+            log.debug('TeachingUser agent exemplar: %s', agent_exemplar)
+            agent = TeachingUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),
@@ -137,20 +138,10 @@ class ServerAPI(API):
         else:
             agent.user = user  # Обновить юзера
 
-        user.car_index = randint(0, len(self.server.quick_game_cars_proto) - 1)
+        log.info('TeachingUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
-        log.info('GameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
-
-        if agent.example.car is None:
-            log.info('Gameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
-            # Создание "быстрой" машинки
-            agent.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
-            yield agent.example.car.load_references()
-
-            agent.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
-            agent.example.current_location = None
-            agent.current_location = None
-            log.info('Server API: New GameAgent is connected and New Car is Ready !!!!!!: %s', agent)  # todo: fix text
+        if agent.example.car is None or agent.car is None:
+            yield agent.init_example_car()
         else:
             if agent and do_disconnect:
                 if agent.connection:

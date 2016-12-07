@@ -369,6 +369,9 @@ var ClientManager = (function () {
             case 'TryKillTeachingMapNote':
                 teachingMapManager.update(new TryKillTeachingMapNote(note));
                 break;
+            case 'TryGameTeachingMapNote':
+                teachingMapManager.update(new TryGameTeachingMapNote(note));
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }
@@ -438,7 +441,7 @@ var ClientManager = (function () {
             //new WCarMarker(mcar);    // виджет маркера
             //new WCanvasCarMarker(mcar);
             var t = new WCanvasCarMarker(mcar);
-            new WCanvasHPCarMarker(mcar, t);
+            //new WCanvasHPCarMarker(mcar, t);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз

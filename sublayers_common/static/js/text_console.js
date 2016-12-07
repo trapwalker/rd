@@ -461,6 +461,7 @@ var ConsoleFirstEnter = (function (_super) {
         if (this.first_input)
             switch (event.keyCode) {
                 case 89:
+                    this.teaching_answer(true);
                     this.add_message('user', 'Активация системы обучения.');
                     this.add_message(
                         'system',
@@ -478,6 +479,7 @@ var ConsoleFirstEnter = (function (_super) {
                     this._wait_input = false;
                     break;
                 case 78:
+                    this.teaching_answer(false);
                     this.add_message('user', 'Деактивация системы обучения.');
                     this.add_message(
                         'system',
@@ -549,6 +551,23 @@ var ConsoleFirstEnter = (function (_super) {
             resourceLoadManager.add(this);  // todo: обсудить
             _super.prototype.start.call(this);
         }
+    };
+
+    ConsoleFirstEnter.prototype.teaching_answer = function(teach) {
+        $.ajax({
+            url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/tca',
+            data: {answer: teach},
+            success: function(data) {
+                console.log(data);
+                if (data && data.length) {
+                    console.log('Начать обучение!');
+                    window.location = data;
+                }
+                else {
+                    console.log('Отказ от обучения принят');
+                }
+            }
+        });
     };
 
     return ConsoleFirstEnter;

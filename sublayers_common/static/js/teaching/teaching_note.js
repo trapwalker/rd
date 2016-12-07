@@ -95,7 +95,7 @@ var TeachingNote = (function (_super) {
     };
 
     TeachingNote.prototype.delete = function() {
-        _super.prototype.delete.call();
+        _super.prototype.delete.call(this);
         if (teachingManager.active_note == this){
             teachingManager.active_note = null;
             teachingManager.deactivate();
@@ -153,7 +153,7 @@ var TeachingMapNote = (function (_super) {
     };
 
     TeachingMapNote.prototype.delete = function() {
-        _super.prototype.delete.call();
+        _super.prototype.delete.call(this);
         if (teachingMapManager.active_note == this) {
             teachingMapManager.active_note = null;
             teachingMapManager.deactivate();

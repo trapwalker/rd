@@ -3,6 +3,8 @@ var NoActionTeachingMapNote = (function (_super) {
 
     function NoActionTeachingMapNote(options) {
         _super.call(this, options);
+        this.elem_id_str = '';
+        this.old_z_index = null;
     }
 
     NoActionTeachingMapNote.prototype.active = function() {
@@ -11,13 +13,47 @@ var NoActionTeachingMapNote = (function (_super) {
         windowTemplateManager.openUniqueWindow(this.window_name, this.window_uri, {window_name: this.window_name},
             function(jq_window) {
                 var window = windowTemplateManager.unique[note.window_name];
-                if (window)
+                if (window) {
                     window.setupCloseElement(jq_window.find('.btn-next'));
+                    window.setupCloseElement(jq_window.find('.btn-back'));
+                    jq_window.find('.btn-next').click(function() {
+                        note.send_activate_note(true);
+                    });
+                    jq_window.find('.btn-back').click(function() {
+                        note.send_activate_note(false);
+                    });
+                    jq_window.find('.windowDragCloseHeader-close').click(function() {
+                        note.send_activate_note(true);
+                    });
+                }
+                note.on_open_note_window(window);
             },
-            function() {
-                clientManager.SendQuestNoteAction(note.uid, true);
-            },
+            function() { note.on_close_note_window(); },
             true);
+    };
+
+    NoActionTeachingMapNote.prototype.on_open_note_window = function(window) {
+        $('.modalDivWindow').first().css('background-color', 'rgba(0,0,0,0)');
+        $('#mapTeachingCanvasBackDiv').css('display', 'block');
+        teachingMapManager.jq_canvas.css('pointer-events', 'auto');
+        if (this.elem_id_str) {
+            this.old_z_index = $('#' + this.elem_id_str).css('z-index');
+            $('#' + this.elem_id_str).css('z-index', '2000');
+        }
+    };
+
+    NoActionTeachingMapNote.prototype.on_close_note_window = function() {
+        teachingMapManager.jq_canvas.css('pointer-events', 'none');
+        $('#mapTeachingCanvasBackDiv').css('display', 'none');
+        if (this.elem_id_str && this.old_z_index != null) {
+            $('#' + this.elem_id_str).css('z-index', this.old_z_index);
+            this.old_z_index = null;
+        }
+    };
+
+    NoActionTeachingMapNote.prototype.send_activate_note = function (result) {
+        var note = this;
+        setTimeout(function () { clientManager.SendQuestNoteAction(note.uid, result); }, 1500);
     };
 
     return NoActionTeachingMapNote;
@@ -31,6 +67,7 @@ var CruiseSpeedTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_speed';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseSpeedTeachingMapNote.prototype.redraw = function() {
@@ -48,6 +85,7 @@ var CruiseZoneTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_zone';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseZoneTeachingMapNote.prototype.redraw = function() {
@@ -65,6 +103,7 @@ var CruiseSpeedControlTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_speed_control';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseSpeedControlTeachingMapNote.prototype.redraw = function() {
@@ -82,6 +121,7 @@ var CruiseSpeedBtnTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_speed_btn';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseSpeedBtnTeachingMapNote.prototype.redraw = function() {
@@ -101,20 +141,13 @@ var DrivingControlTeachingMapNote = (function (_super) {
         this.window_uri = '/map_teaching';
     }
 
-    DrivingControlTeachingMapNote.prototype.active = function() {
-        _super.prototype.active.call(this);
-        var note = this;
-        windowTemplateManager.openUniqueWindow(this.window_name, this.window_uri, {window_name: this.window_name},
-            function(jq_window) {
-                var window = windowTemplateManager.unique[note.window_name];
-                if (window)
-                    window.setupCloseElement(jq_window.find('.btn-next'));
-            },
-            null, true);
+    DrivingControlTeachingMapNote.prototype.send_activate_note = function(result) {
+        if (!result)
+            _super.prototype.send_activate_note.call(this, result);
     };
 
     return DrivingControlTeachingMapNote;
-})(TeachingMapNote);
+})(NoActionTeachingMapNote);
 
 
 var CruiseRadialTeachingMapNote = (function (_super) {
@@ -124,6 +157,7 @@ var CruiseRadialTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'cruise_radial';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'cruiseControlMainDiv';
     }
 
     CruiseRadialTeachingMapNote.prototype.redraw = function() {
@@ -143,11 +177,54 @@ var ZoomSliderTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'zoom_slider';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'zoomSetDivForZoomSlider';
+
+        visualManager.addVisualObject(this, []);
+        visualManager.bindMobjToVobj(this, mapManager);
+        this.change_count = 0;
+
+        var self = this;
+        this._end_note_timer = null;
     }
 
     ZoomSliderTeachingMapNote.prototype.redraw = function() {
         this.draw_arrow(teachingMapManager.context, new Point(75, 120), 180);
         this.draw_arrow(teachingMapManager.context, new Point(75, 320), 180);
+    };
+
+    ZoomSliderTeachingMapNote.prototype.send_activate_note = function(result) {
+        if (!result)
+            _super.prototype.send_activate_note.call(this, result);
+        else {
+            var self = this;
+            this._end_note_timer = setTimeout(function () {
+                self._end_note_timer = null;
+                self.change_count = 2;
+                self.change();
+            }, 15000);
+        }
+    };
+
+    ZoomSliderTeachingMapNote.prototype.change = function () {
+        //console.log('ZoomSliderTeachingMapNote.prototype.change');
+        this.change_count++;
+        if (this.change_count >= 2) {
+            _super.prototype.send_activate_note.call(this, true);
+            if (this._end_note_timer) {
+                clearTimeout(this._end_note_timer);
+                this._end_note_timer = null;
+            }
+        }
+    };
+
+    ZoomSliderTeachingMapNote.prototype.delete = function() {
+        visualManager.unbindMobjToVobj(this, mapManager);
+        visualManager.delVisualObject(this, []);
+        if (this._end_note_timer) {
+            clearTimeout(this._end_note_timer);
+            this._end_note_timer = null;
+        }
+        _super.prototype.delete.call(this);
     };
 
     return ZoomSliderTeachingMapNote;
@@ -161,6 +238,7 @@ var DischargeShootingTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'discharge_shooting';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'fireControlArea';
     }
 
     DischargeShootingTeachingMapNote.prototype.redraw = function() {
@@ -179,6 +257,7 @@ var AutoShootingTeachingMapNote = (function (_super) {
         _super.call(this, options);
         this.window_name = 'auto_shooting';
         this.window_uri = '/map_teaching';
+        this.elem_id_str = 'fireControlArea';
     }
 
     AutoShootingTeachingMapNote.prototype.redraw = function() {
@@ -199,17 +278,25 @@ var TryKillTeachingMapNote = (function (_super) {
         this.window_uri = '/map_teaching';
     }
 
-    TryKillTeachingMapNote.prototype.active = function() {
-        _super.prototype.active.call(this);
-        var note = this;
-        windowTemplateManager.openUniqueWindow(this.window_name, this.window_uri, {window_name: this.window_name},
-            function(jq_window) {
-                var window = windowTemplateManager.unique[note.window_name];
-                if (window)
-                    window.setupCloseElement(jq_window.find('.btn-next'));
-            },
-            null, true);
+    return TryKillTeachingMapNote;
+})(NoActionTeachingMapNote);
+
+
+var TryGameTeachingMapNote = (function (_super) {
+    __extends(TryGameTeachingMapNote, _super);
+
+    function TryGameTeachingMapNote(options) {
+        _super.call(this, options);
+        this.window_name = 'try_game';
+        this.window_uri = '/map_teaching';
+    }
+
+    TryGameTeachingMapNote.prototype.send_activate_note = function (result) {
+        _super.prototype.send_activate_note.call(this, result);
+        if (result) {
+            setTimeout(function(){window.location = '/play'}, 2000);
+        }
     };
 
-    return TryKillTeachingMapNote;
-})(TeachingMapNote);
+    return TryGameTeachingMapNote;
+})(NoActionTeachingMapNote);

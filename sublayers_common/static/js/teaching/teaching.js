@@ -92,6 +92,10 @@ var TeachingMapManager = (function(){
         canvas.width = 1920;
         canvas.height = 1080;
         this.active_note = null;
+        this.timer_blink = null;
+        this.currentOpacity = 1.0;
+        this.currentOpacityDiffDefault = -0.05;
+        this.currentOpacityDiff = this.currentOpacityDiffDefault;
     }
 
     TeachingMapManager.prototype.is_active = function() {
@@ -101,11 +105,27 @@ var TeachingMapManager = (function(){
     TeachingMapManager.prototype.activate = function() {
         this.jq_canvas.css('display', 'block');
         this.active = true;
+
+        this.timer_blink = setInterval(function() {
+            teachingMapManager.currentOpacity += teachingMapManager.currentOpacityDiff;
+            if(teachingMapManager.currentOpacity > 1.01 || teachingMapManager.currentOpacity < 0.5) {
+                teachingMapManager.currentOpacityDiff = -teachingMapManager.currentOpacityDiff;
+            }
+            teachingMapManager.jq_canvas.css('opacity', teachingMapManager.currentOpacity);
+        }, 80);
     };
 
     TeachingMapManager.prototype.deactivate = function() {
         this.jq_canvas.css('display', 'none');
         this.active = false;
+
+        this.jq_canvas.css('opacity', 1.0);
+        if (this.timer_blink) {
+            clearInterval(this.timer_blink);
+            this.timer_blink = null;
+            this.currentOpacity = 1.0;
+            this.currentOpacityDiff = this.currentOpacityDiffDefault;
+        }
 
         // Нота должна удалиться
         if (this.active_note) {
