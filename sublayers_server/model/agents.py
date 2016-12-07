@@ -551,8 +551,33 @@ class Agent(Object):
     def print_login(self):
         return self.user.name
 
+    def set_teaching_state(self, state):
+        user = self.user
+        def callback(*kw):
+            log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
+        self.user.teaching_state = state
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=callback)
+
+
 # todo: Переименовать в UserAgent
 class User(Agent):
+    def __init__(self, time, **kw):
+        super(User, self).__init__(time=time, **kw)
+        if self.user.teaching_state == 'city':
+            self.create_teaching_quest(time=time)
+
+    @event_deco
+    def create_teaching_quest(self, event):
+        quest_parent = self.server.reg['quests/teaching']
+        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+        new_quest.agent = self.example
+        if new_quest.generate(event=event):
+            self.example.add_quest(quest=new_quest, time=event.time)
+            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+            del new_quest
+
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
         d['user_name'] = self.user.name
@@ -642,6 +667,9 @@ class TeachingUser(QuickUser):
         super(TeachingUser, self).__init__(time=time, **kw)
         self.create_teaching_quest(time=time)
         self.armory_shield_status = False
+
+    def on_save(self, time):
+        pass
 
     @event_deco
     def create_teaching_quest(self, event):

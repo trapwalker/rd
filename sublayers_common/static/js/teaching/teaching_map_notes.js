@@ -291,5 +291,12 @@ var TryGameTeachingMapNote = (function (_super) {
         this.window_uri = '/map_teaching';
     }
 
+    TryGameTeachingMapNote.prototype.send_activate_note = function (result) {
+        _super.prototype.send_activate_note.call(this, result);
+        if (result) {
+            setTimeout(function(){window.location = '/play'}, 2000);
+        }
+    };
+
     return TryGameTeachingMapNote;
 })(NoActionTeachingMapNote);
