@@ -23,10 +23,14 @@ from copy import copy
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from collections import deque, Callable
-from mongoengine import connect, Document, QuerySet
+from mongoengine import connect, Document, QuerySet, EmbeddedDocument
+from bson import DBRef
+from mongoengine.base import get_document
+from mongoengine.dereference import DeReference
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, EmbeddedDocumentField,
+    GenericReferenceField,
 )
 
 
@@ -36,6 +40,29 @@ class RegistryError(Exception):
 
 class RegistryNodeFormatError(RegistryError):
     pass
+
+
+class InstantReferenceField(ReferenceField):
+    def to_python(self, value):
+        """Convert a MongoDB-compatible type to a Python type.
+        """
+        if (
+            not self.dbref and
+            not isinstance(value, (DBRef, Document, EmbeddedDocument))
+        ):
+            # TODO: support hash overrided URI objects descriptions
+            if isinstance(value, basestring):
+                collection = self.document_type._get_collection_name()
+                value = DBRef(collection, self.document_type.id.to_python(value))
+            elif isinstance(value, dict):
+                assert issubclass(self.document_type_obj, Node), 'InstantReferenceField is not Node: %r' % self.document_type_obj
+                value = self.document_type_obj._from_son(value)
+                value.is_instant = True
+                value.save(force_insert=True)
+            else:
+                raise AssertionError("InstantReferenceField has unsupported type: %r" % value)
+        return value
+
 
 
 class Node(Document):
@@ -55,12 +82,13 @@ class Node(Document):
     # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
     # todo: Убедиться, что fixtured не наследуется.
     fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
+    is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декаларации объекта")
     title = StringField(caption=u"Название", tags={"client"})
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
 
     owner = ReferenceField(document_type='self', not_inherited=True)
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
-    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)")
+    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
@@ -162,7 +190,10 @@ class Node(Document):
                 elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):
                     lst[i] = item.instantiate()
                 elif isinstance(subfield, ReferenceField):
-                    pass
+                    if getattr(subfield, 'reinst', None):
+                        # TODO: mark node as instant_linked
+                        # TODO: may be use cascade saving?
+                        lst[i] = item.instantiate(fixtured=self.fixtured).save()
                 # todo: make support of dict fields
                 else:
                     lst[i] = copy(item)
@@ -170,6 +201,9 @@ class Node(Document):
 
     def _instantiaite_field(self, new_instance, field, name):
         if getattr(field, 'reinst', None):
+            if name in self._data:
+                pass
+
             value = getattr(self, name)
             if value is not None:
                 if isinstance(field, EmbeddedDocumentField):
@@ -182,6 +216,9 @@ class Node(Document):
                     setattr(new_instance, name, value.instantiate())
                 elif isinstance(field, ListField):
                     setattr(new_instance, name, self._reinst_list(field, value))
+                elif isinstance(field, ReferenceField):
+                    # todo: mark node as instant_linked
+                    setattr(new_instance, name, value.instantiate(fixtured=self.fixtured).save())
 
     def reinst_fields(self):
         for name, field in self._fields.items():
@@ -195,6 +232,7 @@ class Node(Document):
             parent = self.parent
             params.update(self._data)
 
+        params.update(parent=parent)
         params.update(kw)
         inst = self.__class__(**params)
         inst.reinst_fields()
@@ -331,7 +369,7 @@ class Node(Document):
 
         for node in all_nodes:
             node.reinst_fields()
-            node.save(force_insert=True)
+            node.save(force_insert=True, cascade=True)
 
         return root
 
@@ -343,7 +381,7 @@ class A(Node):
     x = IntField(null=True)
     y = IntField(null=True)
     z = IntField(null=True)
-    l = ListField(ReferenceField(document_type=Node,), reinst=True)
+    l = ListField(InstantReferenceField(document_type=Node, reinst=True), reinst=True)
 
 
 class A2(A):
@@ -381,12 +419,14 @@ def test2():
     regfs_path = ur'../../temp/test_registry/root'
     root = Node.load(path=regfs_path)
 
-    print()
-    print('# Registry:')
-    pp(list(root.iter_childs(deep=True)))
+    # print()
+    # print('# Registry:')
+    # pp(list(root.iter_childs(deep=True)))
+    # print('Total count nodes:', Node.objects.count())
+    # pp(list(Node.objects.all()))
     a = root.get_child('a')
     aa = a.get_child('aa')
-    #a.save(cascade=True, force_insert=True)
+    # #a.save(cascade=True, force_insert=True)
 
     print('Well DONE!')
     globals().update(locals())
