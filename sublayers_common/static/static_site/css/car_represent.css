@@ -116,7 +116,7 @@
 
 .car-info-block-picture-main-site .car-info-name-block {
     position: absolute;
-    top: 25px;
+    top: 165px;
     width: 100%;
     margin: auto;
     text-align: center;
@@ -203,7 +203,7 @@
 
 @media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .car-info-block-picture-main-site .car-info-name-block {
-        top: 20px;
+        top: 125px;
     }
 
     .site-avatar::before {
