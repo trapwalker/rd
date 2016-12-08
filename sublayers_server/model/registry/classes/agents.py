@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
+    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
@@ -42,6 +42,8 @@ class Agent(Root):
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
+    teaching_flag = BooleanField(caption=u'Является ли этот агент агентом обучения')
+    quick_flag = BooleanField(caption=u'Является ли этот агент агентом быстрой игры')
 
     # Карма и отношения
     karma = FloatField(default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
