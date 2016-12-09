@@ -165,6 +165,9 @@ function onKeyDownMap(event) {
         case 52:  // 4
             clientManager.sendActivateQuickItem(4, user.userCar.ID);
             break;
+        case 32:  // Space / Пробел
+            clientManager.sendStopCar();
+            break;
         //LM=77 N O=79 P=80   Q=81
     }
 }
