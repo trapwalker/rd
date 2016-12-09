@@ -430,6 +430,7 @@ var ConsoleFirstEnter = (function (_super) {
 
         this.target_div = textConsoleManager.jq_main_div;
         this.first_input = true;
+        this.teaching_answer_value = false;
 
         this.add_message(
             'welcome',
@@ -461,7 +462,7 @@ var ConsoleFirstEnter = (function (_super) {
         if (this.first_input)
             switch (event.keyCode) {
                 case 89:
-                    this.teaching_answer(true);
+                    this.teaching_answer_value = true;
                     this.add_message('user', 'Активация системы обучения.');
                     this.add_message(
                         'system',
@@ -479,7 +480,7 @@ var ConsoleFirstEnter = (function (_super) {
                     this._wait_input = false;
                     break;
                 case 78:
-                    this.teaching_answer(false);
+                    this.teaching_answer_value = false;
                     this.add_message('user', 'Деактивация системы обучения.');
                     this.add_message(
                         'system',
@@ -539,7 +540,11 @@ var ConsoleFirstEnter = (function (_super) {
                         this._cur_message = null;
                         this.first_input = false;
                         this._wait_input = false;
-                        resourceLoadManager.del(this);  // todo: обсудить: начать коннект по вебсокету
+                        this.teaching_answer(this.teaching_answer_value);
+                        if (! this.teaching_answer_value)
+                            resourceLoadManager.del(this);  // Произошёл отказ от обучения, поэтому коннект по ws
+                        else
+                            console.log('Происходит редирект на карту быстрой игры для обучения!');
                         this.target_div.off("keydown");
                         break;
             }
@@ -558,13 +563,8 @@ var ConsoleFirstEnter = (function (_super) {
             url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/tca',
             data: {answer: teach},
             success: function(data) {
-                console.log(data);
                 if (data && data.length) {
-                    console.log('Начать обучение!');
                     window.location = data;
-                }
-                else {
-                    console.log('Отказ от обучения принят');
                 }
             }
         });
