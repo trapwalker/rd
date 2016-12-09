@@ -520,8 +520,11 @@ class Agent(Object):
         for barter in self.barters:
             barter.cancel(time=event.time-0.01)
 
-        Die(agent=self, time=event.time).post()
+        self.send_die_message(event, unit)
         self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+
+    def send_die_message(self, event, unit):
+        Die(agent=self, time=event.time).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -548,8 +551,33 @@ class Agent(Object):
     def print_login(self):
         return self.user.name
 
+    def set_teaching_state(self, state):
+        user = self.user
+        def callback(*kw):
+            log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
+        self.user.teaching_state = state
+        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=callback)
+
+
 # todo: Переименовать в UserAgent
 class User(Agent):
+    def __init__(self, time, **kw):
+        super(User, self).__init__(time=time, **kw)
+        if self.user.teaching_state == 'city':
+            self.create_teaching_quest(time=time)
+
+    @event_deco
+    def create_teaching_quest(self, event):
+        quest_parent = self.server.reg['quests/teaching']
+        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+        new_quest.agent = self.example
+        if new_quest.generate(event=event):
+            self.example.add_quest(quest=new_quest, time=event.time)
+            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+            del new_quest
+
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
         d['user_name'] = self.user.name
@@ -595,7 +623,7 @@ class QuickUser(User):
     def get_quick_game_points(self, time):
         return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
 
-    def on_die(self, event, unit):
+    def send_die_message(self, event, unit):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
@@ -626,7 +654,7 @@ class QuickUser(User):
         self.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
         yield self.example.car.load_references()
 
-        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
+        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 500) # Радиус появления игроков в быстрой игре
         self.example.current_location = None
         self.current_location = None
 
@@ -652,18 +680,30 @@ class TeachingUser(QuickUser):
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
 
+    @event_deco
+    def init_example_car_teaching(self, event):
+        if self.car:
+            return
+        if self.api:
+            self.api.quick_play_again()
+        else:
+            log.warning('Try to use API method without API')
+
+    def send_die_message(self, event, unit):
+        pass
+
     def on_die(self, event, **kw):
         super(TeachingUser, self).on_die(event=event, **kw)
         self.armory_shield_status = False
 
     def append_car(self, time, **kw):
-        super(TeachingUser, self).append_car(time=time, **kw)
-
         quest_parent = self.server.reg['quests/teaching_map']
         for q in self.example.quests_active:
             if q.parent == quest_parent and q.status == 'active':
                 # todo: пробпросить Event сюда
                 self.armory_shield_on(Event(server=self.server, time=time))
+
+        super(TeachingUser, self).append_car(time=time, **kw)
 
     def armory_shield_on(self, event):
         if self.car and not self.armory_shield_status:

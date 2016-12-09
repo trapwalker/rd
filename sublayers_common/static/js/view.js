@@ -1,9 +1,9 @@
 $(document).ready(function () {
     initConsoles();
-    //if ($('#settings_first_enter').text() == 'True')
-    //    textConsoleManager.start('first_enter');
-    //else
-    //    textConsoleManager.start('enter');
+    if ($('#settings_first_enter').text() == 'True')
+        textConsoleManager.start('first_enter');
+    else
+        textConsoleManager.start('enter');
 
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
@@ -232,6 +232,7 @@ function init_site_sound() {
     // ]);
 }
 
+var interface_scale_big = true;
 var b_canvas;
 var b_context;
 var pat;
@@ -253,6 +254,7 @@ $(window).resize(resizeWindowHandler);
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
+    interface_scale_big = $(window).width() > 1366;
     var scale_prc_w_width = $(window).width() / 1920;
     var scale_prc_w_height = $(window).height() / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;

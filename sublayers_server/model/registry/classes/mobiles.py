@@ -421,6 +421,7 @@ class Car(Mobile):
     slot_m87 = SlotField(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
     slot_m88 = SlotField(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
 
+    # Слоты стилиста
     slot_t1 = SlotField(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner wheels')
     slot_t2 = SlotField(caption=u't2', doc=u'Слот тюнера заднее крыло', tags='tuner b_fender')
     slot_t3 = SlotField(caption=u't3', doc=u'Слот тюнера glass', tags='tuner glass')

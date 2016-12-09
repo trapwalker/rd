@@ -80,8 +80,8 @@ class Server(object):
             self.quick_game_cars_proto = []
             self.quick_game_bot_cars_proto = []
             self.quick_game_bot_agents_proto = []
-            self.quick_game_start_pos = Point(12468000, 26989000)
-            self.quick_game_play_radius = 1600
+            self.quick_game_start_pos = Point(12484108, 27010266)  # Координаты быстрой игры
+            self.quick_game_play_radius = 2000                     # Радиус быстрой игры
             self.quick_game_death_radius = self.quick_game_play_radius * 20
 
 

@@ -71,7 +71,10 @@ var CruiseSpeedTeachingMapNote = (function (_super) {
     }
 
     CruiseSpeedTeachingMapNote.prototype.redraw = function() {
-        this.draw_arrow(teachingMapManager.context, new Point(-100, -420), 0);
+        if (interface_scale_big)
+            this.draw_arrow(teachingMapManager.context, new Point(-100, -420), 0);
+        else
+            this.draw_arrow(teachingMapManager.context, new Point(-75, -317), 0);
     };
 
     return CruiseSpeedTeachingMapNote;
@@ -89,7 +92,10 @@ var CruiseZoneTeachingMapNote = (function (_super) {
     }
 
     CruiseZoneTeachingMapNote.prototype.redraw = function() {
-        this.draw_arrow(teachingMapManager.context, new Point(-65, -150), 0);
+        if (interface_scale_big)
+            this.draw_arrow(teachingMapManager.context, new Point(-65, -150), 0);
+        else
+            this.draw_arrow(teachingMapManager.context, new Point(-50, -115), 0);
     };
 
     return CruiseZoneTeachingMapNote;
@@ -107,7 +113,10 @@ var CruiseSpeedControlTeachingMapNote = (function (_super) {
     }
 
     CruiseSpeedControlTeachingMapNote.prototype.redraw = function() {
-        this.draw_arrow(teachingMapManager.context, new Point(-155, -85), 0);
+        if (interface_scale_big)
+            this.draw_arrow(teachingMapManager.context, new Point(-155, -85), 0);
+        else
+            this.draw_arrow(teachingMapManager.context, new Point(-120, -63), 0);
     };
 
     return CruiseSpeedControlTeachingMapNote;
@@ -125,7 +134,10 @@ var CruiseSpeedBtnTeachingMapNote = (function (_super) {
     }
 
     CruiseSpeedBtnTeachingMapNote.prototype.redraw = function() {
-        this.draw_arrow(teachingMapManager.context, new Point(-85, -65), 90);
+        if (interface_scale_big)
+            this.draw_arrow(teachingMapManager.context, new Point(-85, -65), 90);
+        else
+            this.draw_arrow(teachingMapManager.context, new Point(-65, -52), 90);
     };
 
     return CruiseSpeedBtnTeachingMapNote;
@@ -161,9 +173,16 @@ var CruiseRadialTeachingMapNote = (function (_super) {
     }
 
     CruiseRadialTeachingMapNote.prototype.redraw = function() {
-        this.draw_arrow(teachingMapManager.context, new Point(-260, -130), 45);
-        this.draw_arrow(teachingMapManager.context, new Point(-390, -130), 45);
-        this.draw_arrow(teachingMapManager.context, new Point(-490, -95), 45);
+        if (interface_scale_big) {
+            this.draw_arrow(teachingMapManager.context, new Point(-260, -130), 45);
+            this.draw_arrow(teachingMapManager.context, new Point(-390, -130), 45);
+            this.draw_arrow(teachingMapManager.context, new Point(-490, -95), 45);
+        }
+        else {
+            this.draw_arrow(teachingMapManager.context, new Point(-200, -95), 45);
+            this.draw_arrow(teachingMapManager.context, new Point(-295, -95), 45);
+            this.draw_arrow(teachingMapManager.context, new Point(-370, -72), 45);
+        }
     };
 
     return CruiseRadialTeachingMapNote;
@@ -188,8 +207,14 @@ var ZoomSliderTeachingMapNote = (function (_super) {
     }
 
     ZoomSliderTeachingMapNote.prototype.redraw = function() {
-        this.draw_arrow(teachingMapManager.context, new Point(75, 120), 180);
-        this.draw_arrow(teachingMapManager.context, new Point(75, 320), 180);
+        if (interface_scale_big) {
+            this.draw_arrow(teachingMapManager.context, new Point(75, 120), 180);
+            this.draw_arrow(teachingMapManager.context, new Point(75, 320), 180);
+        }
+        else {
+            this.draw_arrow(teachingMapManager.context, new Point(55, 91), 180);
+            this.draw_arrow(teachingMapManager.context, new Point(55, 241), 180);
+        }
     };
 
     ZoomSliderTeachingMapNote.prototype.send_activate_note = function(result) {
@@ -242,8 +267,14 @@ var DischargeShootingTeachingMapNote = (function (_super) {
     }
 
     DischargeShootingTeachingMapNote.prototype.redraw = function() {
-        var x = Math.round($('#bodydiv').width() / 2.0) - 100;
-        this.draw_arrow(teachingMapManager.context, new Point(x, -180), 45);
+        if (interface_scale_big) {
+            var x = Math.round($('#bodydiv').width() / 2.0) - 100;
+            this.draw_arrow(teachingMapManager.context, new Point(x, -180), 45);
+        }
+        else {
+            var x = Math.round($('#bodydiv').width() / 2.0) - 70;
+            this.draw_arrow(teachingMapManager.context, new Point(x, -150), 45);
+        }
     };
 
     return DischargeShootingTeachingMapNote;
@@ -261,8 +292,14 @@ var AutoShootingTeachingMapNote = (function (_super) {
     }
 
     AutoShootingTeachingMapNote.prototype.redraw = function() {
-        var x = Math.round($('#bodydiv').width() / 2.0) - 100;
-        this.draw_arrow(teachingMapManager.context, new Point(x, -180), 45);
+        if (interface_scale_big) {
+            var x = Math.round($('#bodydiv').width() / 2.0) - 100;
+            this.draw_arrow(teachingMapManager.context, new Point(x, -180), 45);
+        }
+        else {
+            var x = Math.round($('#bodydiv').width() / 2.0) - 70;
+            this.draw_arrow(teachingMapManager.context, new Point(x, -150), 45);
+        }
     };
 
     return AutoShootingTeachingMapNote;
@@ -279,4 +316,24 @@ var TryKillTeachingMapNote = (function (_super) {
     }
 
     return TryKillTeachingMapNote;
+})(NoActionTeachingMapNote);
+
+
+var TryGameTeachingMapNote = (function (_super) {
+    __extends(TryGameTeachingMapNote, _super);
+
+    function TryGameTeachingMapNote(options) {
+        _super.call(this, options);
+        this.window_name = 'try_game';
+        this.window_uri = '/map_teaching';
+    }
+
+    TryGameTeachingMapNote.prototype.send_activate_note = function (result) {
+        _super.prototype.send_activate_note.call(this, result);
+        if (result) {
+            setTimeout(function(){window.location = '/play'}, 2000);
+        }
+    };
+
+    return TryGameTeachingMapNote;
 })(NoActionTeachingMapNote);
