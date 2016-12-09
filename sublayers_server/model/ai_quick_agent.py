@@ -67,11 +67,11 @@ class AIQuickAgent(AI):
 
             self._quick_bot_start_time = event.time
         else:
-            self.timer_restart_car(time=event.time+4.)
+            self.timer_restart_car(time=event.time+30.)
 
     def drop_car(self, time, **kw):
         super(AIQuickAgent, self).drop_car(time=time, **kw)
-        self.timer_restart_car(time=time+30.)
+        self.timer_restart_car(time=time+32.)
         life_t = time - self._quick_bot_start_time
         self._quick_bot_time += life_t
         self._quick_bot_max_lt = max(self._quick_bot_max_lt, life_t)
