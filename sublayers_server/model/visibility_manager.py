@@ -17,15 +17,26 @@ class TileContactSearchEvent(Event):
 
     def on_perform(self):
         super(TileContactSearchEvent, self).on_perform()
-        vis_mng = self.vis_mng
-        tid = self.tile_id
-        if len(vis_mng.tiles[tid][1]) > 0:
-            vis_mng.on_search_contacts(tile_id=tid, time=self.time)
-            vis_mng.on_move_objects(tile_id=tid, time=self.time)
-        if len(vis_mng.tiles[tid][1]) > 0:
-            TileContactSearchEvent(vis_mng=vis_mng, tile_id=tid, time=self.time + vis_mng.interval).post()
-        else:
-            del vis_mng.tiles[tid]
+        try:
+            vis_mng = self.vis_mng
+            tid = self.tile_id
+            if len(vis_mng.tiles[tid][1]) > 0:
+                vis_mng.on_search_contacts(tile_id=tid, time=self.time)
+                vis_mng.on_move_objects(tile_id=tid, time=self.time)
+            # if len(vis_mng.tiles[tid][1]) > 0:
+            #     TileContactSearchEvent(vis_mng=vis_mng, tile_id=tid, time=self.time + vis_mng.interval).post()
+            # else:
+            #     del vis_mng.tiles[tid]
+        except Exception as e:
+            log.debug('Error TileContactSearchEvent')
+            log.debug(e)
+            pass
+        finally:
+            if len(vis_mng.tiles[tid][1]) > 0:
+                TileContactSearchEvent(vis_mng=vis_mng, tile_id=tid, time=self.time + vis_mng.interval).post()
+            else:
+                del vis_mng.tiles[tid]
+
 
 
 class VisibilityManager(object):

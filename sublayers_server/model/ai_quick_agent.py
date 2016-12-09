@@ -67,7 +67,7 @@ class AIQuickAgent(AI):
 
             self._quick_bot_start_time = event.time
         else:
-            self.timer_restart_car(time=event.time+30.)
+            self.timer_restart_car(time=event.time+4.)
 
     def drop_car(self, time, **kw):
         super(AIQuickAgent, self).drop_car(time=time, **kw)
