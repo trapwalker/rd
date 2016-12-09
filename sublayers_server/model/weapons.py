@@ -188,7 +188,9 @@ class WeaponDischarge(Weapon):
 
     def on_use(self, item, time):
         super(WeaponDischarge, self).on_use(item=item, time=time)
-
+        if self.owner.limbo or not self.owner.is_alive:
+            log.debug('Rare Situation! {} try fire_discharge in limbo'.format(self.owner))
+            return
         # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
         self.last_shoot = time
         is_crit = self.calc_is_crit()
