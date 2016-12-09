@@ -668,9 +668,6 @@ class TeachingUser(QuickUser):
         self.create_teaching_quest(time=time)
         self.armory_shield_status = False
 
-    def on_save(self, time):
-        pass
-
     @event_deco
     def create_teaching_quest(self, event):
         quest_parent = self.server.reg['quests/teaching_map']

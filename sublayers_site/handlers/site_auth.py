@@ -89,6 +89,8 @@ class StandardLoginHandler(BaseSiteHandler):
                 fixtured=False,
             )
             yield agent_example.load_references()
+            agent_example.teaching_flag = False
+            agent_example.quick_flag = False
             yield agent_example.save(upsert=True)
 
         clear_all_cookie(self)

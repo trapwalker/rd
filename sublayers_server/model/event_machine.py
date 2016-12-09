@@ -76,7 +76,7 @@ class Server(object):
 
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
-            self.poi_loot_objects_life_time = 28  # Время жизни лута на карте для режима быстрой игры
+            self.poi_loot_objects_life_time = 3  # Время жизни лута на карте для режима быстрой игры
             self.quick_game_cars_proto = []
             self.quick_game_bot_cars_proto = []
             self.quick_game_bot_agents_proto = []
