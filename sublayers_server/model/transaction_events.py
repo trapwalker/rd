@@ -17,7 +17,9 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
-from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage,
+from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage,
+                                                      TransactionHangarLogMessage,
+                                                      TransactionArmorerLogMessage,
                                                       TransactionActivateTankLogMessage,
                                                       TransactionParkingLogMessage,
                                                       TransactionActivateRebuildSetLogMessage,
@@ -514,6 +516,8 @@ class TransactionArmorerApply(TransactionTownNPC):
 
     def on_perform(self):
         super(TransactionArmorerApply, self).on_perform()
+        setup_list = []
+        remove_list = []
 
         npc = self.get_npc_available_transaction(npc_type='armorer')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
@@ -539,6 +543,7 @@ class TransactionArmorerApply(TransactionTownNPC):
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
                 # todo: добавить стоимость демонтажа итема
                 armorer_buffer.append(slot_value)
+                remove_list.append(slot_value)
                 setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по armorer_slots и обработка всех ситуаций)
@@ -574,6 +579,7 @@ class TransactionArmorerApply(TransactionTownNPC):
                         armorer_buffer.remove(search_item)
                         search_item.direction = self.armorer_slots[slot_name]['direction']
                         setattr(ex_car, slot_name, search_item)
+                        setup_list.append(search_item)
                     else:
                         log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s', item_weight,
                                     slot_name, slot_weight)
@@ -599,6 +605,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
 
 
 class TransactionMechanicApply(TransactionTownNPC):

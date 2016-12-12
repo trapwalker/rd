@@ -709,6 +709,14 @@ var ViewMessengerGlass = (function () {
                     if (msg.action == "leave")
                         this.addMessageToLog('Вы оставили машину - ' + msg.car + ' на стоянке.');
                     break;
+                case 'TransactionArmorerLogMessage':
+                    for (var i = 0; i < msg.remove_list.length; i++)
+                        this.addMessageToLog('Оружейником демонтировано оборудование - ' + msg.remove_list[i] + '.');
+                    for (var i = 0; i < msg.setup_list.length; i++)
+                        this.addMessageToLog('Оружейником установлено оборудование - ' + msg.setup_list[i] + '.');
+                    if (msg.price > 0)
+                        this.addMessageToLog('На оплату работы оружейника потрачено - ' + msg.price + 'nc.');
+                    break;
             }
         }
         return true;
