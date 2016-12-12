@@ -676,6 +676,18 @@ var ViewMessengerGlass = (function () {
                 case "WeaponAmmoFinished":
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.');
                     break;
+                case "TransactionGasStationLogMessage":
+                    if (msg.d_fuel > 0)
+                        this.addMessageToLog('В бак долито ' +  Math.trunc(msg.d_fuel) + ' литров топлива.');
+                    for (var i = 0; i < msg.tank_list.length; i++)
+                        this.addMessageToLog('Заправлена канистра ' + msg.tank_list[i] + ' литров.');
+                    break;
+                case "TransactionHangarLogMessage":
+                    if (msg.action == "sell")
+                        this.addMessageToLog('Продана машина - ' + msg.car + ', получено ' + msg.price + 'nc.');
+                    if (msg.action == "buy")
+                        this.addMessageToLog('Куплена машина - ' + msg.car + ', потрачено ' + msg.price + 'nc.');
+                    break;
             }
         }
         return true;

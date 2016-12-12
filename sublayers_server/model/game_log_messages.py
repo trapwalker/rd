@@ -66,3 +66,37 @@ class WeaponAmmoFinished(Message):
             weapon_name=self.weapon.example.title,
         )
         return d
+class TransactionGasStationLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, d_fuel, tank_list, **kw):
+        super(TransactionGasStationLogMessage, self).__init__(**kw)
+        self.d_fuel = d_fuel
+        self.tank_list = tank_list
+
+    def as_dict(self):
+        d = super(TransactionGasStationLogMessage, self).as_dict()
+        d.update(
+            d_fuel=self.d_fuel,
+            tank_list=[tank.value_fuel for tank in self.tank_list],
+        )
+        return d
+
+
+class TransactionHangarLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, car, action, price, **kw):
+        super(TransactionHangarLogMessage, self).__init__(**kw)
+        self.car = car
+        self.price = price
+        self.action = action
+
+    def as_dict(self):
+        d = super(TransactionHangarLogMessage, self).as_dict()
+        d.update(
+            car=self.car.title,
+            price=self.price,
+            action=self.action,
+        )
+        return d
