@@ -141,7 +141,7 @@ class TransactionGasStationLogMessage(Message):
         d = super(TransactionGasStationLogMessage, self).as_dict()
         d.update(
             d_fuel=self.d_fuel,
-            tank_list=[tank.value_fuel for tank in self.tank_list],
+            tank_list=[tank.title for tank in self.tank_list],
         )
         return d
 

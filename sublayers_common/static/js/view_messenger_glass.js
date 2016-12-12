@@ -697,8 +697,10 @@ var ViewMessengerGlass = (function () {
                 case "TransactionGasStationLogMessage":
                     if (msg.d_fuel > 0)
                         this.addMessageToLog('В бак долито ' +  Math.trunc(msg.d_fuel) + ' литров топлива.');
-                    for (var i = 0; i < msg.tank_list.length; i++)
-                        this.addMessageToLog('Заправлена канистра ' + msg.tank_list[i] + ' литров.');
+                    //for (var i = 0; i < msg.tank_list.length; i++)
+                    //    this.addMessageToLog('Заправлена канистра ' + msg.tank_list[i] + ' литров.');
+                    if (msg.tank_list.length > 0)
+                        this.addMessageToLog('Заправлены канистры: ' + msg.tank_list.join(', ') + '.');
                     break;
                 case "TransactionHangarLogMessage":
                     if (msg.action == "sell")
@@ -713,18 +715,26 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog('Вы оставили машину - ' + msg.car + ' на стоянке.');
                     break;
                 case 'TransactionArmorerLogMessage':
-                    for (var i = 0; i < msg.remove_list.length; i++)
-                        this.addMessageToLog('Оружейником демонтировано оборудование - ' + msg.remove_list[i] + '.');
-                    for (var i = 0; i < msg.setup_list.length; i++)
-                        this.addMessageToLog('Оружейником установлено оборудование - ' + msg.setup_list[i] + '.');
+                    //for (var i = 0; i < msg.remove_list.length; i++)
+                    //    this.addMessageToLog('Оружейником демонтировано оборудование - ' + msg.remove_list[i] + '.');
+                    //for (var i = 0; i < msg.setup_list.length; i++)
+                    //    this.addMessageToLog('Оружейником установлено оборудование - ' + msg.setup_list[i] + '.');
+                    if (msg.remove_list.length > 0)
+                        this.addMessageToLog('Оружейником демонтировано оборудование: ' + msg.remove_list.join(', ') + '.');
+                    if (msg.setup_list.length > 0)
+                        this.addMessageToLog('Оружейником установлено оборудование: ' + msg.setup_list.join(', ') + '.');
                     if (msg.price > 0)
                         this.addMessageToLog('На оплату работы оружейника потрачено - ' + msg.price + 'nc.');
                     break;
                 case 'TransactionMechanicLogMessage':
-                    for (var i = 0; i < msg.remove_list.length; i++)
-                        this.addMessageToLog('Механиком демонтировано оборудование - ' + msg.remove_list[i] + '.');
-                    for (var i = 0; i < msg.setup_list.length; i++)
-                        this.addMessageToLog('Механиком установлено оборудование - ' + msg.setup_list[i] + '.');
+                    //for (var i = 0; i < msg.remove_list.length; i++)
+                    //    this.addMessageToLog('Механиком демонтировано оборудование - ' + msg.remove_list[i] + '.');
+                    //for (var i = 0; i < msg.setup_list.length; i++)
+                    //    this.addMessageToLog('Механиком установлено оборудование - ' + msg.setup_list[i] + '.');
+                    if (msg.remove_list.length > 0)
+                        this.addMessageToLog('Механиком демонтировано оборудование: ' + msg.remove_list.join(', ') + '.');
+                    if (msg.setup_list.length > 0)
+                        this.addMessageToLog('Механиком установлено оборудование: ' + msg.setup_list.join(', ') + '.');
                     if (msg.price > 0)
                         this.addMessageToLog('На оплату работы механика потрачено - ' + msg.price + 'nc.');
                     break;
@@ -732,10 +742,14 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog('Механиком восстановлено - ' + Math.trunc(msg.hp) + ' очков прочности, потрачено - ' + msg.price + ' nc.');
                     break;
                 case 'TransactionTunerLogMessage':
-                    for (var i = 0; i < msg.remove_list.length; i++)
-                        this.addMessageToLog('Тюнером демонтировано оборудование - ' + msg.remove_list[i] + '.');
-                    for (var i = 0; i < msg.setup_list.length; i++)
-                        this.addMessageToLog('Тюнером установлено оборудование - ' + msg.setup_list[i] + '.');
+                    //for (var i = 0; i < msg.remove_list.length; i++)
+                    //    this.addMessageToLog('Тюнером демонтировано оборудование - ' + msg.remove_list[i] + '.');
+                    //for (var i = 0; i < msg.setup_list.length; i++)
+                    //    this.addMessageToLog('Тюнером установлено оборудование - ' + msg.setup_list[i] + '.');
+                    if (msg.remove_list.length > 0)
+                        this.addMessageToLog('Тюнером демонтировано оборудование: ' + msg.remove_list.join(', ') + '.');
+                    if (msg.setup_list.length > 0)
+                        this.addMessageToLog('Тюнером установлено оборудование: ' + msg.setup_list.join(', ') + '.');
                     if (msg.pont_point != 0)
                         if (pont_point > 0)
                             this.addMessageToLog('Получено - ' + Math.trunc(msg.pont_point) + ' очков крутости.');
@@ -745,10 +759,14 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog('На оплату работы тюнера потрачено - ' + msg.price + 'nc.');
                     break;
                 case 'TransactionTraderLogMessage':
-                    for (var i = 0; i < msg.sell_list.length; i++)
-                        this.addMessageToLog('Торговцу продан предмет - ' + msg.sell_list[i] + '.');
-                    for (var i = 0; i < msg.buy_list.length; i++)
-                        this.addMessageToLog('У торговца куплен предмет - ' + msg.buy_list[i] + '.');
+                    //for (var i = 0; i < msg.sell_list.length; i++)
+                    //    this.addMessageToLog('Торговцу продан предмет - ' + msg.sell_list[i] + '.');
+                    //for (var i = 0; i < msg.buy_list.length; i++)
+                    //    this.addMessageToLog('У торговца куплен предмет - ' + msg.buy_list[i] + '.');
+                    if (msg.sell_list.length > 0)
+                        this.addMessageToLog('Торговцу проданы предметы: ' + msg.sell_list.join(', ') + '.');
+                    if (msg.buy_list.length > 0)
+                        this.addMessageToLog('У торговца куплены предметы: ' + msg.buy_list.join(', ') + '.');
                     if (msg.price != 0)
                         if (msg.price > 0)
                             this.addMessageToLog('У торговца потрачено - ' + Math.trunc(msg.price) + 'nc.');
