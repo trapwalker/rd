@@ -28,7 +28,8 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateMineLogMessage,
                                                       TransactionMechanicLogMessage,
                                                       TransactionMechanicRepairLogMessage,
-                                                      TransactionTunerLogMessage)
+                                                      TransactionTunerLogMessage,
+                                                      TransactionTraderLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -868,7 +869,8 @@ class TransactionTraderApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='trader')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
+        buy_list = []
+        sell_list = []
         agent = self.agent
         ex_car = agent.example.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -901,6 +903,7 @@ class TransactionTraderApply(TransactionTownNPC):
                 return
             item_sale_price = price.get_price(item=item_ex, agent=agent)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
+            sell_list.append(item_ex)
 
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
             tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item_ex.title, str(int(item_sale_price))))
@@ -927,6 +930,7 @@ class TransactionTraderApply(TransactionTownNPC):
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
             item_buy_price = price.get_price(item=price.item, agent=agent)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
             buy_price += item_buy_price
+            buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
             tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, price.item.title, str(int(item_buy_price))))
 
@@ -968,6 +972,8 @@ class TransactionTraderApply(TransactionTownNPC):
                                            info_string=msg).post()
         # Мессадж завершения транзакции
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        TransactionTraderLogMessage(agent=agent, time=self.time, buy_list=buy_list, sell_list=sell_list,
+                                    price=(buy_price - sale_price)).post()
 
         # Эвент для квестов
         self.agent.example.on_event(event=self, cls=quest_events.OnTraderTransaction)

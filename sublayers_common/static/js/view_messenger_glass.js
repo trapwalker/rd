@@ -744,6 +744,17 @@ var ViewMessengerGlass = (function () {
                     if (msg.price > 0)
                         this.addMessageToLog('На оплату работы тюнера потрачено - ' + msg.price + 'nc.');
                     break;
+                case 'TransactionTraderLogMessage':
+                    for (var i = 0; i < msg.sell_list.length; i++)
+                        this.addMessageToLog('Торговцу продан предмет - ' + msg.sell_list[i] + '.');
+                    for (var i = 0; i < msg.buy_list.length; i++)
+                        this.addMessageToLog('У торговца куплен предмет - ' + msg.buy_list[i] + '.');
+                    if (msg.price != 0)
+                        if (msg.price > 0)
+                            this.addMessageToLog('У торговца потрачено - ' + Math.trunc(msg.price) + 'nc.');
+                        else
+                            this.addMessageToLog('От торговца получено - ' + Math.trunc(-msg.price) + 'nc.');
+                    break;
             }
         }
         return true;
