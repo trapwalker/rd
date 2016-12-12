@@ -19,7 +19,7 @@ from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
 from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage,
                                                       TransactionActivateTankLogMessage,
-                                                      TransactionParkingLogMessage)
+                                                      TransactionParkingLogMessage,
                                                       TransactionActivateRebuildSetLogMessage,
                                                       TransactionActivateAmmoBulletsLogMessage,
                                                       TransactionActivateRocketLogMessage,
