@@ -93,9 +93,9 @@ var CruiseZoneTeachingMapNote = (function (_super) {
 
     CruiseZoneTeachingMapNote.prototype.redraw = function() {
         if (interface_scale_big)
-            this.draw_arrow(teachingMapManager.context, new Point(-65, -150), 0);
+            this.draw_arrow(teachingMapManager.context, new Point(-65, -110), 0);
         else
-            this.draw_arrow(teachingMapManager.context, new Point(-50, -115), 0);
+            this.draw_arrow(teachingMapManager.context, new Point(-50, -85), 0);
     };
 
     return CruiseZoneTeachingMapNote;
