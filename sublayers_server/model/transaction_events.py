@@ -17,7 +17,8 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
-from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage)
+from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage,
+                                                      TransactionParkingLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -427,6 +428,7 @@ class TransactionParkingSelect(TransactionTownNPC):
             # todo: translate
             if agent_ex.car:
                 info_string = u'{}: Обмен на {}, -{}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
+                TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.car, price=0, action="leave").post()
             else:
                 info_string = u'{}: Забрал {}, {}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
@@ -446,6 +448,8 @@ class TransactionParkingSelect(TransactionTownNPC):
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+
+            TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.car, price=summ_for_paying, action="select").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -472,6 +476,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         agent_ex.car.last_parking_npc = npc.node_hash()
         # todo: сделать через обычный тип Date
 
+        car_example = agent_ex.car
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
@@ -480,6 +485,8 @@ class TransactionParkingLeave(TransactionTownNPC):
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        TransactionParkingLogMessage(agent=self.agent, time=self.time, car=car_example, price=0,
+                                     action="leave").post()
 
 
 class TransactionArmorerApply(TransactionTownNPC):

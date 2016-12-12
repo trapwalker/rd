@@ -286,6 +286,7 @@
     background: transparent url('/static/img/chat/tab_close_btn_pressed.png') 50% 50% no-repeat;
 }
 
+#townChatLocation .VMGStandarttextOutArea { width: 470px; }
 .VMGStandarttextOutArea{
     position: relative;
     height: 100%;
