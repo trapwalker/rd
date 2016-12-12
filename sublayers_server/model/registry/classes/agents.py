@@ -12,6 +12,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
+from sublayers_server.model.game_log_messages import LvlLogMessage, ExpLogMessage
 
 from itertools import chain
 
@@ -304,11 +305,17 @@ class Agent(Root):
     def exp(self):
         return self._exp
 
-    def set_exp(self, value=None, dvalue=None):
+    def set_exp(self, time, value=None, dvalue=None):
+        old_lvl = self.get_lvl()
         if value is not None:
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+        if self._agent_model:
+            ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
+            lvl = self.get_lvl()
+            if lvl > old_lvl:
+                LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
 
 
     def set_karma(self, time, value=None, dvalue=None):

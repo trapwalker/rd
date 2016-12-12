@@ -116,7 +116,7 @@ class AgentConsoleNamespace(Namespace):
         return self.agent.balance
 
     def exp(self, value):
-        self.agent.example.set_exp(dvalue=int(value))
+        self.agent.example.set_exp(dvalue=int(value), time=self.agent.server.get_time())
 
     def param(self, name=None):
         if name and self.agent.car:

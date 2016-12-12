@@ -18,7 +18,6 @@ from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
 )
-from sublayers_server.model.game_log_messages import ExpLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event
@@ -419,7 +418,7 @@ class Agent(Object):
 
         d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
                      self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
-        self.example.set_exp(dvalue=d_user_exp)   # начисляем опыт агенту
+        self.example.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
 
         if obj.owner_example:
             self_lvl = self.example.get_lvl()
@@ -432,7 +431,6 @@ class Agent(Object):
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=event.time).post()
-        ExpLogMessage(agent=self, d_exp=d_user_exp, time=event.time).post()
         self.example.on_event(event=event, cls=quest_events.OnKill, agent=obj.owner_example, unit=obj.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
@@ -559,7 +557,6 @@ class Agent(Object):
             log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
         self.user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=callback)
-
 
 # todo: Переименовать в UserAgent
 class User(Agent):

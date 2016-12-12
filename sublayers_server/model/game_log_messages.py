@@ -55,6 +55,19 @@ class ExpLogMessage(Message):
         return d
 
 
+class LvlLogMessage(Message):
+    def __init__(self, lvl, **kw):
+        super(LvlLogMessage, self).__init__(**kw)
+        self.lvl = lvl
+
+    def as_dict(self):
+        d = super(LvlLogMessage, self).as_dict()
+        d.update(
+            lvl=self.lvl
+        )
+        return d
+
+
 class WeaponAmmoFinishedLogMessage(Message):
     def __init__(self, weapon, **kw):
         super(WeaponAmmoFinishedLogMessage, self).__init__(**kw)
