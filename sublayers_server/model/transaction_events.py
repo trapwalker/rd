@@ -17,7 +17,12 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
-from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage)
+from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage,
+                                                      TransactionActivateTankLogMessage,
+                                                      TransactionActivateRebuildSetLogMessage,
+                                                      TransactionActivateAmmoBulletsLogMessage,
+                                                      TransactionActivateRocketLogMessage,
+                                                      TransactionActivateMineLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -77,7 +82,8 @@ class TransactionActivateTank(TransactionActivateItem):
         # замена полной канистры на пустую
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
-
+        # Отправить сообщение в игровой лог об активации Канистры
+        TransactionActivateTankLogMessage(agent=self.agent, time=self.time, item=item.example).post()
         # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
         tank_proto = item.example.post_activate_item
         if tank_proto:
@@ -114,6 +120,9 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
         # Починили машинку на нужное значение хп
         obj.set_hp(dhp=-item.example.build_points, time=self.time)
 
+        # Отправить сообщение в игровой лог
+        TransactionActivateRebuildSetLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+
 
 class TransactionActivateMine(TransactionActivateItem):
     def on_perform(self):
@@ -138,6 +147,9 @@ class TransactionActivateMine(TransactionActivateItem):
 
         # Поставить мину на карту
         SlowMineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
+
+        # Отправка сообщения в игровой лог
+        TransactionActivateMineLogMessage(agent=self.agent, time=self.time, item=item.example).post()
 
 
 class TransactionActivateRocket(TransactionActivateItem):
@@ -164,6 +176,9 @@ class TransactionActivateRocket(TransactionActivateItem):
         # запуск
         RocketStartEvent(starter=obj, time=self.time, example_rocket=item.example.generate_obj).post()
 
+        # Отправка сообщения в игровой лог
+        TransactionActivateRocketLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):
     # Активация патронов - пройти по всем орудиям и зарядиться в подходящие
@@ -187,6 +202,9 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
         for weapon in obj.weapon_list():
             if item.example.parent in weapon.items_cls_list:
                 weapon.set_item(item=item, time=self.time)
+
+        # Отправка сообщения о зарядке патроново # если нужно отправлять в какие оружия заряжены, то список можно сформировать в цикле выше
+        TransactionActivateAmmoBulletsLogMessage(agent=self.agent, time=self.time, item=item.example).post()
 
 
 class TransactionTownNPC(TransactionEvent):

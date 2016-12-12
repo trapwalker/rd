@@ -673,8 +673,23 @@ var ViewMessengerGlass = (function () {
                 case "ExpLogMessage":
                     this.addMessageToLog('Вы получили ' + msg.d_exp + ' очков опыта.');
                     break;
-                case "WeaponAmmoFinished":
+                case "WeaponAmmoFinishedLogMessage":
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.');
+                    break;
+                case "TransactionActivateTankLogMessage":
+                    this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
+                    break;
+                case "TransactionActivateRebuildSetLogMessage":
+                    this.addMessageToLog('Автомобиль починен на ' + msg.build_points + 'hp.');
+                    break;
+                case "TransactionActivateAmmoBulletsLogMessage":
+                    this.addMessageToLog('Заряжено: ' + msg.ammo_title + '.');
+                    break;
+                case "TransactionActivateMineLogMessage":
+                    this.addMessageToLog('Установлена мина: ' + msg.item_title + '.');
+                    break;
+                case "TransactionActivateRocketLogMessage":
+                    this.addMessageToLog('Запущена ракета: ' + msg.item_title + '.');
                     break;
                 case "TransactionGasStationLogMessage":
                     if (msg.d_fuel > 0)

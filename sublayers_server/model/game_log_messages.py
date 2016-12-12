@@ -55,17 +55,67 @@ class ExpLogMessage(Message):
         return d
 
 
-class WeaponAmmoFinished(Message):
+class WeaponAmmoFinishedLogMessage(Message):
     def __init__(self, weapon, **kw):
-        super(WeaponAmmoFinished, self).__init__(**kw)
+        super(WeaponAmmoFinishedLogMessage, self).__init__(**kw)
         self.weapon = weapon
 
     def as_dict(self):
-        d = super(WeaponAmmoFinished, self).as_dict()
+        d = super(WeaponAmmoFinishedLogMessage, self).as_dict()
         d.update(
             weapon_name=self.weapon.example.title,
         )
         return d
+
+
+class TransactionActivateItemLogMessage(Message):
+    def __init__(self, item, **kw):
+        super(TransactionActivateItemLogMessage, self).__init__(**kw)
+        self.item = item
+
+    def as_dict(self):
+        d = super(TransactionActivateItemLogMessage, self).as_dict()
+        d.update(
+            item_title=self.item.title,
+        )
+        return d
+
+
+class TransactionActivateTankLogMessage(TransactionActivateItemLogMessage):
+    def as_dict(self):
+        d = super(TransactionActivateTankLogMessage, self).as_dict()
+        d.update(
+            value_fuel=self.item.value_fuel,
+        )
+        return d
+
+
+class TransactionActivateRebuildSetLogMessage(TransactionActivateItemLogMessage):
+    def as_dict(self):
+        d = super(TransactionActivateRebuildSetLogMessage, self).as_dict()
+        d.update(
+            build_points=self.item.build_points,
+        )
+        return d
+
+
+class TransactionActivateAmmoBulletsLogMessage(TransactionActivateItemLogMessage):
+    def as_dict(self):
+        d = super(TransactionActivateAmmoBulletsLogMessage, self).as_dict()
+        d.update(
+            ammo_title=self.item.title,
+        )
+        return d
+
+
+class TransactionActivateMineLogMessage(TransactionActivateItemLogMessage):
+    pass
+
+
+class TransactionActivateRocketLogMessage(TransactionActivateItemLogMessage):
+    pass
+
+
 class TransactionGasStationLogMessage(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 

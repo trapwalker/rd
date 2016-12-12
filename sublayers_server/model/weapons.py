@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
-from sublayers_server.model.game_log_messages import WeaponAmmoFinished
+from sublayers_server.model.game_log_messages import WeaponAmmoFinishedLogMessage
 from sublayers_server.model.inventory import Consumer
 from sublayers_server.model.events import Event, FireDischargeEffectEvent
 from sublayers_server.model.quest_events import OnMakeDmg
@@ -60,7 +60,7 @@ class Weapon(Consumer):
         self.set_item(time=time, item=new_item, action=action)
         # Отправить сообщение если можно о том, что закончились патроны
         if self.item is None and self.owner.owner:
-            WeaponAmmoFinished(agent=self.owner.owner, time=time, weapon=self).post()
+            WeaponAmmoFinishedLogMessage(agent=self.owner.owner, time=time, weapon=self).post()
 
     def add_car(self, car, time):
         pass
