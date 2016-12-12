@@ -673,6 +673,9 @@ var ViewMessengerGlass = (function () {
                 case "ExpLogMessage":
                     this.addMessageToLog('Вы получили ' + msg.d_exp + ' очков опыта.');
                     break;
+                case "WeaponAmmoFinished":
+                    this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.');
+                    break;
             }
         }
         return true;
