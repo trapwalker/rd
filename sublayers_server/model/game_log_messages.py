@@ -68,6 +68,36 @@ class LvlLogMessage(Message):
         return d
 
 
+class InventoryChangeLogMessage(Message):
+    def __init__(self, incomings, outgoings, **kw):
+        super(InventoryChangeLogMessage, self).__init__(**kw)
+        self.incomings = incomings
+        self.outgoings = outgoings
+        items_info = dict()
+        agent_inventory_info = None if self.agent.inventory is None else self.agent.inventory.example.items_by_node_hash()
+        registry = self.agent.server.reg
+        for node_hash in set(outgoings.keys() + incomings.keys()):
+            if items_info.get(node_hash, None) is None:
+                if agent_inventory_info and agent_inventory_info.get(node_hash, None):
+                    items_info[node_hash] = agent_inventory_info[node_hash]
+                else:
+                    items_info[node_hash] = registry[node_hash.replace('reg:///registry/', '')]  # todo: ##migration
+        self.items_info = items_info
+        # print 'incomings ', incomings
+        # print 'outgoings ', outgoings
+        # for key, value in items_info.items():
+        #     print key, 'None' if value is None else value.title
+
+    def as_dict(self):
+        d = super(InventoryChangeLogMessage, self).as_dict()
+        items_info = self.items_info
+        d.update(
+            incomings=[dict(item_title=items_info[node_hash].title, value=value) for node_hash, value in self.incomings.items()],
+            outgoings=[dict(item_title=items_info[node_hash].title, value=value) for node_hash, value in self.outgoings.items()],
+        )
+        return d
+
+
 class WeaponAmmoFinishedLogMessage(Message):
     def __init__(self, weapon, **kw):
         super(WeaponAmmoFinishedLogMessage, self).__init__(**kw)

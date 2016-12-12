@@ -18,6 +18,7 @@ from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
 )
+from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event
@@ -220,6 +221,10 @@ class Agent(Object):
             # сообщить квестам, что добавилась машинка
             # todo: refactor this call
             self.example.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAppendCar)
+            # работа с инвентарём агента: просто включить подписку
+            if car.inventory:
+                self.inventory = car.inventory
+                self.inventory.add_change_call_back(self.on_change_inventory_cb)
 
     def drop_car(self, car, time, drop_owner=True):
         if car is self.car:
@@ -230,6 +235,10 @@ class Agent(Object):
             if drop_owner:
                 car.owner = None
             self.car = None
+            # работа с инвентарём агента: нужно просто пока что выключить подписку
+            if self.inventory:
+                self.inventory.del_change_call_back(self.on_change_inventory_cb)
+                self.inventory = None
 
     def on_connect(self, connection):
         self.connection = connection
@@ -451,9 +460,12 @@ class Agent(Object):
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
             self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
-    def on_inv_change(self, time, diff_inventories):
+    def on_inv_change(self, time, diff_inventories, make_game_log=True):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
+        if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
+            InventoryChangeLogMessage(agent=self, time=time, **diff_inventories).post()
+
         # todo: csll it ##quest
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
@@ -464,7 +476,7 @@ class Agent(Object):
                 return True
         return False
 
-    def reload_inventory(self, time, save=True, total_inventory=None):
+    def reload_inventory(self, time, save=True, total_inventory=None, make_game_log=True):
         if self.inventory:
             if save:
                 self.inventory.save_to_example(time=time)
@@ -472,7 +484,7 @@ class Agent(Object):
             self.inventory = None
         if self.example.car:
             LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, total_inventory=total_inventory,
-                               time=time).post()
+                               time=time, make_game_log=make_game_log).post()
 
     def on_enter_location(self, location, event):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
@@ -484,11 +496,11 @@ class Agent(Object):
         if self.car:  # Вход в город и раздеплой машинки
             self.car.example.last_location = location.example
             self.car.displace(time=event.time)
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
         elif self.example.car and self.inventory:  # Обновление клиента (re-enter)
             self.inventory.send_inventory(agent=self, time=event.time)
         elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
 
         # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
 

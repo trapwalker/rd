@@ -404,7 +404,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             self.agent.example.set_balance(time=self.time, delta=-car_proto.price)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
@@ -462,7 +462,7 @@ class TransactionParkingSelect(TransactionTownNPC):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -503,7 +503,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
-        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()

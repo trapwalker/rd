@@ -676,6 +676,27 @@ var ViewMessengerGlass = (function () {
                 case "LvlLogMessage":
                     this.addMessageToLog('Вы получили ' + msg.lvl + ' уровень.');
                     break;
+                case 'InventoryChangeLogMessage':
+                    // console.log('InventoryChangeLogMessage', msg);
+                    if (msg.outgoings && msg.outgoings.length) {
+                        var s = 'Отдано: ';
+                        for (var i = 0; i < msg.outgoings.length; i++) {
+                            s = s + ' ' + msg.outgoings[i].item_title + ' x' + msg.outgoings[i].value + ',';
+                        }
+                        s = s.substr(0, s.length - 1) + '.';
+                        this.addMessageToLog(s);
+                    }
+
+                    if (msg.incomings && msg.incomings.length) {
+                        var s = 'Получено: ';
+                        for (var i = 0; i < msg.incomings.length; i++) {
+                            s = s + ' ' + msg.incomings[i].item_title + ' x' + msg.incomings[i].value + ',';
+                        }
+                        s = s.substr(0, s.length - 1) + '.';
+                        this.addMessageToLog(s);
+                    }
+
+                    break;
                 case "WeaponAmmoFinishedLogMessage":
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.');
                     break;
