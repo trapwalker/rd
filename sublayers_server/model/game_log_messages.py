@@ -188,3 +188,39 @@ class TransactionArmorerLogMessage(Message):
             remove_list=[item.title for item in self.remove_list],
         )
         return d
+
+
+class TransactionMechanicLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, setup_list, remove_list, price, **kw):
+        super(TransactionMechanicLogMessage, self).__init__(**kw)
+        self.setup_list = setup_list
+        self.remove_list = remove_list
+        self.price = price
+
+    def as_dict(self):
+        d = super(TransactionMechanicLogMessage, self).as_dict()
+        d.update(
+            price=self.price,
+            setup_list=[item.title for item in self.setup_list],
+            remove_list=[item.title for item in self.remove_list],
+        )
+        return d
+
+
+class TransactionMechanicRepairLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, hp, price, **kw):
+        super(TransactionMechanicRepairLogMessage, self).__init__(**kw)
+        self.hp = hp
+        self.price = price
+
+    def as_dict(self):
+        d = super(TransactionMechanicRepairLogMessage, self).as_dict()
+        d.update(
+            hp=self.hp,
+            price=self.price,
+        )
+        return d

@@ -25,7 +25,9 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateRebuildSetLogMessage,
                                                       TransactionActivateAmmoBulletsLogMessage,
                                                       TransactionActivateRocketLogMessage,
-                                                      TransactionActivateMineLogMessage)
+                                                      TransactionActivateMineLogMessage,
+                                                      TransactionMechanicLogMessage,
+                                                      TransactionMechanicRepairLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -619,6 +621,8 @@ class TransactionMechanicApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='mechanic')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
+        setup_list = []
+        remove_list = []
 
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -658,6 +662,7 @@ class TransactionMechanicApply(TransactionTownNPC):
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
                 # todo: добавить стоимость демонтажа итема
                 mechanic_buffer.append(slot_value)
+                remove_list.append(slot_value)
                 setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по mechanic_slots и обработка всех ситуаций)
@@ -680,6 +685,7 @@ class TransactionMechanicApply(TransactionTownNPC):
                     # todo: добавить стоимость монтажа итема
                     mechanic_buffer.remove(search_item)
                     setattr(ex_car, slot_name, search_item)
+                    setup_list.append(search_item)
 
         # Закидываем буффер в инвентарь
         position = 0
@@ -699,6 +705,7 @@ class TransactionMechanicApply(TransactionTownNPC):
         info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionMechanicLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
 
 
 class TransactionMechanicRepairApply(TransactionTownNPC):
@@ -745,6 +752,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         info_string = u'{}: Оставил {}, 0NC'.format(date_str, ex_car.title)
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionMechanicRepairLogMessage(agent=self.agent, time=self.time, hp=self.hp, price=repair_cost).post()
 
 
 class TransactionTunerApply(TransactionTownNPC):

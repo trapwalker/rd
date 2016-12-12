@@ -717,6 +717,16 @@ var ViewMessengerGlass = (function () {
                     if (msg.price > 0)
                         this.addMessageToLog('На оплату работы оружейника потрачено - ' + msg.price + 'nc.');
                     break;
+                case 'TransactionMechanicLogMessage':
+                    for (var i = 0; i < msg.remove_list.length; i++)
+                        this.addMessageToLog('Механиком демонтировано оборудование - ' + msg.remove_list[i] + '.');
+                    for (var i = 0; i < msg.setup_list.length; i++)
+                        this.addMessageToLog('Механиком установлено оборудование - ' + msg.setup_list[i] + '.');
+                    if (msg.price > 0)
+                        this.addMessageToLog('На оплату работы механика потрачено - ' + msg.price + 'nc.');
+                    break;
+                case 'TransactionMechanicRepairLogMessage':
+                    this.addMessageToLog('Механиком восстановлено - ' + Math.trunc(msg.hp) + ' очков прочности, потрачено - ' + msg.price + ' nc.');
             }
         }
         return true;
