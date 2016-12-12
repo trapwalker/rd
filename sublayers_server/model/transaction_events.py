@@ -27,7 +27,8 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateRocketLogMessage,
                                                       TransactionActivateMineLogMessage,
                                                       TransactionMechanicLogMessage,
-                                                      TransactionMechanicRepairLogMessage)
+                                                      TransactionMechanicRepairLogMessage,
+                                                      TransactionTunerLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -518,13 +519,12 @@ class TransactionArmorerApply(TransactionTownNPC):
 
     def on_perform(self):
         super(TransactionArmorerApply, self).on_perform()
-        setup_list = []
-        remove_list = []
 
         npc = self.get_npc_available_transaction(npc_type='armorer')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
+        setup_list = []
+        remove_list = []
         get_flags = '{}_f'.format
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -766,6 +766,8 @@ class TransactionTunerApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='tuner')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
+        setup_list = []
+        remove_list = []
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
@@ -805,6 +807,7 @@ class TransactionTunerApply(TransactionTownNPC):
                 # todo: добавить стоимость демонтажа итема
                 tuner_buffer.append(slot_value)
                 setattr(ex_car, slot_name, None)
+                remove_list.append(slot_value)
 
         # Проход 2: устанавливаем новые итемы (проход по tuner_slots и обработка всех ситуаций)
         for slot_name in self.tuner_slots.keys():
@@ -826,6 +829,7 @@ class TransactionTunerApply(TransactionTownNPC):
                     # todo: добавить стоимость монтажа итема
                     tuner_buffer.remove(search_item)
                     setattr(ex_car, slot_name, search_item)
+                    setup_list.append(search_item)
 
         # Закидываем буффер в инвентарь
         position = 0
@@ -846,6 +850,8 @@ class TransactionTunerApply(TransactionTownNPC):
         info_string = info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionTunerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list,
+                                   price=0, pont_point=0).post()
 
 
 class TransactionTraderApply(TransactionTownNPC):

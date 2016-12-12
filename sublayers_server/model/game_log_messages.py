@@ -224,3 +224,24 @@ class TransactionMechanicRepairLogMessage(Message):
             price=self.price,
         )
         return d
+
+
+class TransactionTunerLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, setup_list, remove_list, price, pont_point, **kw):
+        super(TransactionTunerLogMessage, self).__init__(**kw)
+        self.setup_list = setup_list
+        self.remove_list = remove_list
+        self.price = price
+        self.pont_point = pont_point
+
+    def as_dict(self):
+        d = super(TransactionTunerLogMessage, self).as_dict()
+        d.update(
+            price=self.price,
+            pont_point=self.pont_point,
+            setup_list=[item.title for item in self.setup_list],
+            remove_list=[item.title for item in self.remove_list],
+        )
+        return d
