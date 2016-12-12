@@ -310,6 +310,7 @@ class Agent(Root):
         if dvalue is not None:
             self._exp += dvalue
 
+
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:
             self.karma = value

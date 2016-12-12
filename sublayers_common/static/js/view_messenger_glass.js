@@ -653,6 +653,27 @@ var ViewMessengerGlass = (function () {
             var msg = params.events[0];
             if (msg.cls === "ChatRoomMessage")
                 this.addMessageByJID(msg.room_name, {login: msg.sender}, msg.msg, msg.msg_time);
+
+            // Игровые логи
+            switch (msg.cls) {
+                case "LocationLogMessage":
+                    if (msg.action == "enter")
+                        this.addMessageToLog('Вы вошли в город - ' + msg.location_name + '.');
+                    if (msg.action == "exit")
+                        this.addMessageToLog('Вы покинули город - ' + msg.location_name + '.');
+                    break;
+                case "BarterLogMessage":
+                    if (msg.action == "invite")
+                        this.addMessageToLog('Игрок - ' + msg.apponent + ' приглашает вас в бартер.');
+                    if (msg.action == "start")
+                        this.addMessageToLog('Активирован бартер с игроком - ' + msg.apponent + '.');
+                    if (msg.action == "end")
+                        this.addMessageToLog('Завершен бартер с игроком - ' + msg.apponent + '.');
+                    break;
+                case "ExpLogMessage":
+                    this.addMessageToLog('Вы получили ' + msg.d_exp + ' очков опыта.');
+                    break;
+            }
         }
         return true;
     };

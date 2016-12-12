@@ -18,6 +18,7 @@ from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
 )
+from sublayers_server.model.game_log_messages import ExpLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event
@@ -431,6 +432,7 @@ class Agent(Object):
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=event.time).post()
+        ExpLogMessage(agent=self, d_exp=d_user_exp, time=event.time).post()
         self.example.on_event(event=event, cls=quest_events.OnKill, agent=obj.owner_example, unit=obj.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 

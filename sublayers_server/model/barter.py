@@ -4,6 +4,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Event, event_deco
 from sublayers_server.model.messages import Message
+from sublayers_server.model.game_log_messages import BarterLogMessage
 from sublayers_server.model.base import Object
 from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer
 
@@ -201,6 +202,7 @@ class Barter(object):
 
         # Отправить приглашение
         AddInviteBarterMessage(agent=recipient, time=time, barter=self).post()
+        BarterLogMessage(agent=recipient, time=time, action="invite", apponent=initiator).post()
 
     @classmethod
     def can_make_barter(cls, agent1, agent2, time):
@@ -258,6 +260,9 @@ class Barter(object):
         ActivateBarterMessage(agent=self.initiator, barter=self, time=event.time).post()
         ActivateBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
         DelInviteBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
+
+        BarterLogMessage(agent=self.initiator, time=event.time, action="start", apponent=self.recipient).post()
+        BarterLogMessage(agent=self.recipient, time=event.time, action="start", apponent=self.initiator).post()
 
         # Вызвать событие on_trade_enter у агентов
         self.recipient.on_trade_enter(contragent=self.initiator, time=event.time, is_init=True)
@@ -336,6 +341,9 @@ class Barter(object):
         SuccessBarterMessage(agent=self.initiator, barter=self, time=event.time).post()
         SuccessBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
 
+        BarterLogMessage(agent=self.initiator, time=event.time, action="end", apponent=self.recipient).post()
+        BarterLogMessage(agent=self.recipient, time=event.time, action="end", apponent=self.initiator).post()
+
         # Удалить бартер
         self.state = 'success'
         self.done(time=event.time)
@@ -353,6 +361,9 @@ class Barter(object):
             # Отправить сообщения о закрытии окон
             CancelBarterMessage(agent=self.initiator, barter=self, time=event.time).post()
             CancelBarterMessage(agent=self.recipient, barter=self, time=event.time).post()
+
+            BarterLogMessage(agent=self.initiator, time=event.time, action="end", apponent=self.recipient).post()
+            BarterLogMessage(agent=self.recipient, time=event.time, action="end", apponent=self.initiator).post()
 
         # Удалить бартер
         self.done(time=event.time)
