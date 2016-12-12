@@ -150,3 +150,22 @@ class TransactionHangarLogMessage(Message):
             action=self.action,
         )
         return d
+
+
+class TransactionParkingLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, car, action, price, **kw):
+        super(TransactionParkingLogMessage, self).__init__(**kw)
+        self.car = car
+        self.price = price
+        self.action = action
+
+    def as_dict(self):
+        d = super(TransactionParkingLogMessage, self).as_dict()
+        d.update(
+            car=self.car.title,
+            price=self.price,
+            action=self.action,
+        )
+        return d

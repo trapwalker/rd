@@ -703,6 +703,12 @@ var ViewMessengerGlass = (function () {
                     if (msg.action == "buy")
                         this.addMessageToLog('Куплена машина - ' + msg.car + ', потрачено ' + msg.price + 'nc.');
                     break;
+                case "TransactionParkingLogMessage":
+                    if (msg.action == "select")
+                        this.addMessageToLog('Вы забрали машину - ' + msg.car + ' со стоянки, потрачено ' + msg.price + 'nc.');
+                    if (msg.action == "leave")
+                        this.addMessageToLog('Вы оставили машину - ' + msg.car + ' на стоянке.');
+                    break;
             }
         }
         return true;
