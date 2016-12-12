@@ -17,6 +17,7 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
+from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage, TransactionHangarLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -278,6 +279,7 @@ class TransactionGasStation(TransactionTownNPC):
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
 
         # Далее заправляем канистры
+        tank_list_log = []
         old_inventory = ex_car.inventory.items[:]
         ex_car.inventory.items = []
         for item in old_inventory:
@@ -286,6 +288,7 @@ class TransactionGasStation(TransactionTownNPC):
                 yield new_tank.load_references()
                 new_tank.position = item.position
                 ex_car.inventory.items.append(new_tank)
+                tank_list_log.append(new_tank)
             else:
                 ex_car.inventory.items.append(item)
 
@@ -304,16 +307,15 @@ class TransactionGasStation(TransactionTownNPC):
         info_string = u'{}: Заправка {}NC'.format(date_str, str(sum_fuel))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionGasStationLogMessage(agent=agent, time=self.time, d_fuel=self.fuel, tank_list=tank_list_log).post()
 
 
 class TransactionHangarSell(TransactionTownNPC):
     def on_perform(self):
         super(TransactionHangarSell, self).on_perform()
-
         npc = self.get_npc_available_transaction(npc_type='hangar')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         # Отправка сообщения о транзакции
@@ -324,11 +326,12 @@ class TransactionHangarSell(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
+        log_car = self.agent.example.car
         self.agent.example.set_balance(time=self.time, delta=self.agent.example.car.price)
         self.agent.example.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
-
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+        TransactionHangarLogMessage(agent=self.agent, time=self.time, car=log_car, price=log_car.price, action="sell").post()
 
 
 class TransactionHangarBuy(TransactionTownNPC):
@@ -365,6 +368,8 @@ class TransactionHangarBuy(TransactionTownNPC):
             if self.agent.example.car:
                 info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
                                                                str(car_proto.price - self.agent.example.car.price))
+                TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.car,
+                                            price=self.agent.example.car.price, action="sell").post()
             else:
                 info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-car_proto.price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
@@ -381,7 +386,7 @@ class TransactionHangarBuy(TransactionTownNPC):
 
             # Эвент квестов
             self.agent.example.on_event(event=self, cls=quest_events.OnBuyCar)
-
+            TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
