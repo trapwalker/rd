@@ -171,7 +171,7 @@ class TransactionGasStationLogMessage(Message):
         d = super(TransactionGasStationLogMessage, self).as_dict()
         d.update(
             d_fuel=self.d_fuel,
-            tank_list=[tank.value_fuel for tank in self.tank_list],
+            tank_list=[tank.title for tank in self.tank_list],
         )
         return d
 
@@ -286,5 +286,24 @@ class TransactionTunerLogMessage(Message):
             pont_point=self.pont_point,
             setup_list=[item.title for item in self.setup_list],
             remove_list=[item.title for item in self.remove_list],
+        )
+        return d
+
+
+class TransactionTraderLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, buy_list, sell_list, price, **kw):
+        super(TransactionTraderLogMessage, self).__init__(**kw)
+        self.buy_list = buy_list
+        self.sell_list = sell_list
+        self.price = price
+
+    def as_dict(self):
+        d = super(TransactionTraderLogMessage, self).as_dict()
+        d.update(
+            price=self.price,
+            buy_list=[item.title for item in self.buy_list],
+            sell_list=[item.title for item in self.sell_list],
         )
         return d
