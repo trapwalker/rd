@@ -4,16 +4,16 @@
     color: #31c811;
     font: 11pt Nouveau_IBM;
 }
-.map-teaching-window-main.cruise_speed { height: 250px; width: 450px; }
-.map-teaching-window-main.cruise_zone { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_speed         { height: 220px; width: 410px; }
+.map-teaching-window-main.cruise_zone          { height: 250px; width: 450px; }
 .map-teaching-window-main.cruise_speed_control { height: 250px; width: 450px; }
-.map-teaching-window-main.cruise_speed_btn { height: 250px; width: 450px; }
-.map-teaching-window-main.driving_control { height: 250px; width: 450px; }
-.map-teaching-window-main.cruise_radial { height: 250px; width: 450px; }
-.map-teaching-window-main.zoom_slider { height: 250px; width: 450px; }
-.map-teaching-window-main.discharge_shooting { height: 250px; width: 450px; }
-.map-teaching-window-main.auto_shooting { height: 250px; width: 450px; }
-.map-teaching-window-main.try_kill { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_speed_btn     { height: 250px; width: 450px; }
+.map-teaching-window-main.driving_control      { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_radial        { height: 250px; width: 450px; }
+.map-teaching-window-main.zoom_slider          { height: 250px; width: 450px; }
+.map-teaching-window-main.discharge_shooting   { height: 250px; width: 450px; }
+.map-teaching-window-main.auto_shooting        { height: 250px; width: 450px; }
+.map-teaching-window-main.try_kill             { height: 250px; width: 450px; }
 
 .map-teaching-content-wrap {
     position: relative;
@@ -27,11 +27,13 @@
 .map-teaching-text-block {
     position: relative;
     width: 100%;
-    height: calc(100% - 40px);
-    padding: 10px;
+    height: calc(100% - 124px);
+    padding: 0px 10px 10px 10px;
     overflow-x: hidden;
     overflow-y: auto;
     box-sizing: border-box;
+    font-family: "Free Pixel";
+    font-size: 12pt;
 }
 
 .map-teaching-btn-block {
@@ -49,11 +51,13 @@
     background-color: #082801;
     box-sizing: border-box;
 }
+
 .map-teaching-btn:hover {
     background-color: #0c4b00;
     color: #2ffa00;
     border-color: #31c811;
 }
+
 .map-teaching-btn.btn-next, .map-teaching-btn.btn-back {
     position: relative;
     width: 130px;
@@ -61,10 +65,46 @@
     line-height: 25px;
     margin: 0 auto;
 }
-.map-teaching-btn.group-btn { margin: 0; float: left; }
-.btn-back.group-btn { margin-right: 20px; }
+
+.map-teaching-btn.group-btn {
+    margin: 0;
+    float: left;
+}
+
+.btn-back.group-btn {
+    margin-right: 20px;
+}
 
 .group-btn-wrap {
     width: 280px;
     margin: 0 auto;
+}
+
+.map-teaching-digits-block {
+    width: 67px;
+    height: 75px;
+    background: transparent url('/static/img/cruise/dgigits_back_glow.png') 100% 100% no-repeat;
+    background-position: center;
+    color: #2afd0a;
+    font-family: Gruppo-Regular;
+    position: relative;
+    left: 162px;
+    background-size: cover;
+}
+
+.map-teaching-digits-block-left {
+    float: left;
+    font-size: 20pt;
+    font-weight: bold;
+    position: relative;
+    top: 26px;
+    left: 23px;
+}
+
+.map-teaching-digits-block-right {
+    font-size: 16pt;
+    font-weight: bold;
+    position: relative;
+    top: 30px;
+    left: 23px;
 }
