@@ -730,6 +730,20 @@ var ViewMessengerGlass = (function () {
                     break;
                 case 'TransactionMechanicRepairLogMessage':
                     this.addMessageToLog('Механиком восстановлено - ' + Math.trunc(msg.hp) + ' очков прочности, потрачено - ' + msg.price + ' nc.');
+                    break;
+                case 'TransactionTunerLogMessage':
+                    for (var i = 0; i < msg.remove_list.length; i++)
+                        this.addMessageToLog('Тюнером демонтировано оборудование - ' + msg.remove_list[i] + '.');
+                    for (var i = 0; i < msg.setup_list.length; i++)
+                        this.addMessageToLog('Тюнером установлено оборудование - ' + msg.setup_list[i] + '.');
+                    if (msg.pont_point != 0)
+                        if (pont_point > 0)
+                            this.addMessageToLog('Получено - ' + Math.trunc(msg.pont_point) + ' очков крутости.');
+                        else
+                            this.addMessageToLog('Потеряно - ' + Math.trunc(-msg.pont_point) + ' очков крутости.');
+                    if (msg.price > 0)
+                        this.addMessageToLog('На оплату работы тюнера потрачено - ' + msg.price + 'nc.');
+                    break;
             }
         }
         return true;
