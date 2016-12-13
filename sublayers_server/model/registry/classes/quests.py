@@ -553,10 +553,11 @@ class Quest(Root):
     def give_items(self, items, event):
         if not self.can_give_items(items=items, event=event):
             return False
+        total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
         for item in items:
             self.agent.car.inventory.items.append(item)
         if self.agent._agent_model:
-            self.agent._agent_model.reload_inventory(time=event.time, save=False)
+            self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def can_take_items(self, items, event):
@@ -578,10 +579,11 @@ class Quest(Root):
     def take_items(self, items, event):
         if not self.can_take_items(items=items, event=event):
             return False
+        total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
         for item in items:
             self.agent.car.inventory.del_item(item=item, count=item.amount)
         if self.agent._agent_model:
-            self.agent._agent_model.reload_inventory(time=event.time, save=False)
+            self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def npc_replica(self, npc, replica, event):
