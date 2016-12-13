@@ -671,10 +671,16 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog('Завершен бартер с игроком - ' + msg.apponent + '.');
                     break;
                 case "ExpLogMessage":
-                    this.addMessageToLog('Вы получили ' + msg.d_exp + ' очков опыта.');
+                    this.addMessageToLog('Получено ' + msg.d_exp + ' очков опыта.');
                     break;
                 case "LvlLogMessage":
-                    this.addMessageToLog('Вы получили ' + msg.lvl + ' уровень.');
+                    this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.');
+                    break;
+                case 'QuestStartStopLogMessage':
+                    if (msg.action)
+                        this.addMessageToLog('Получен квест: ' + msg.quest_caption + '.');
+                    else
+                        this.addMessageToLog('Выполнен квест: ' + msg.quest_caption + '.');
                     break;
                 case 'InventoryChangeLogMessage':
                     // console.log('InventoryChangeLogMessage', msg);

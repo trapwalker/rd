@@ -14,6 +14,8 @@ from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
 )
 from sublayers_server.model.vectors import Point
+from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
+
 
 from functools import partial, wraps
 import random
@@ -427,6 +429,8 @@ class Quest(Root):
         assert new_state
         assert not self.abstract
 
+        old_status = self.status
+
         if isinstance(new_state, QuestState):
             new_state_id = new_state.id
         elif isinstance(new_state, basestring):
@@ -451,6 +455,11 @@ class Quest(Root):
         agent_model = self.agent and self.agent._agent_model
         if agent_model:
             QuestUpdateMessage(agent=agent_model, time=event.time, quest=self).post()
+            if self.status == 'active' and old_status is None:  # quest started
+                QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=True).post()
+            if self.status == 'end' and old_status == 'active':  # quest finished
+                QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
+
 
     def make_global_context(self):
         ctx = dict(

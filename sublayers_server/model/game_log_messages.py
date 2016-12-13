@@ -40,6 +40,21 @@ class BarterLogMessage(Message):
         return d
 
 
+class QuestStartStopLogMessage(Message):
+    def __init__(self, action, quest, **kw):
+        super(QuestStartStopLogMessage, self).__init__(**kw)
+        self.action = action  # True = start quest
+        self.quest = quest
+
+    def as_dict(self):
+        d = super(QuestStartStopLogMessage, self).as_dict()
+        d.update(
+            action=self.action,
+            quest_caption=self.quest.caption,
+        )
+        return d
+
+
 class ExpLogMessage(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
