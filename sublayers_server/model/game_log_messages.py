@@ -322,3 +322,24 @@ class TransactionTraderLogMessage(Message):
             sell_list=[item.title for item in self.sell_list],
         )
         return d
+
+
+class TransactionTrainerLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, skill_count, buy_skill_count, perk_count, price, **kw):
+        super(TransactionTrainerLogMessage, self).__init__(**kw)
+        self.skill_count = skill_count
+        self.buy_skill_count = buy_skill_count
+        self.perk_count = perk_count
+        self.price = price
+
+    def as_dict(self):
+        d = super(TransactionTrainerLogMessage, self).as_dict()
+        d.update(
+            price=self.price,
+            skill_count=self.skill_count,
+            buy_skill_count=self.buy_skill_count,
+            perk_count=self.perk_count,
+        )
+        return d
