@@ -29,7 +29,8 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionMechanicLogMessage,
                                                       TransactionMechanicRepairLogMessage,
                                                       TransactionTunerLogMessage,
-                                                      TransactionTraderLogMessage)
+                                                      TransactionTraderLogMessage,
+                                                      TransactionTrainerLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -1013,6 +1014,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
             return
         agent = self.agent
+        buy_skill_count = 0
+        perk_count = 0
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.example.exp)
@@ -1063,11 +1066,13 @@ class TransactionSetRPGState(TransactionTownNPC):
         price = 0
 
         # Проверка факта сброса скилов
+        old_sp = 0
         for skill_name in self.skills:
             if hasattr(agent.example, skill_name):
                 ex_skill = getattr(agent.example, skill_name, None)
                 need_value = ex_skill.value + (self.buy_skills[u'buy_' + skill_name] -
                                                getattr(self.agent.example, 'buy_' + skill_name).value)
+                old_sp += ex_skill.value
                 if self.skills[skill_name] < need_value:
                     price += npc.drop_price
                     break
@@ -1084,7 +1089,8 @@ class TransactionSetRPGState(TransactionTownNPC):
             if hasattr(agent.example, buy_skill_name):
                 buy_skill = getattr(agent.example, buy_skill_name, None)
                 for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
-                    price += buy_skill.price[val]
+                    price += buy_skill.price[val].price
+                    buy_skill_count += 1
 
         if price > agent.balance:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -1112,6 +1118,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             if perk_rec[u'state']:
                 if perk_rec['perk'] not in agent.example.perks:
                     agent.example.perks.append(perk_rec['perk'])
+                    perk_count += 1
             else:
                 if perk_rec['perk'] in agent.example.perks:
                     agent.example.perks.remove(perk_rec['perk'])
@@ -1125,6 +1132,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionTrainerLogMessage(agent=self.agent, time=self.time, skill_count=cur_sp - old_sp,
+                                     buy_skill_count=buy_skill_count, perk_count=perk_count, price=price).post()
 
 
 class BagExchangeStartEvent(TransactionTownNPC):

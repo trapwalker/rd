@@ -773,6 +773,16 @@ var ViewMessengerGlass = (function () {
                         else
                             this.addMessageToLog('От торговца получено - ' + Math.trunc(-msg.price) + 'nc.');
                     break;
+                case 'TransactionTrainerLogMessage':
+                    if (msg.buy_skill_count > 0)
+                        this.addMessageToLog('Очков навыков приобретено: ' + msg.buy_skill_count + '.');
+                    if (msg.skill_count > 0)
+                        this.addMessageToLog('Очков навыков распределено: ' + msg.skill_count + '.');
+                    if (msg.perk_count > 0)
+                        this.addMessageToLog('Очков перков распределено: ' + msg.perk_count + '.');
+                    if (msg.price > 0)
+                        this.addMessageToLog('На оплату работы тренера потрачено - ' + msg.price + 'nc.');
+                    break;
             }
         }
         return true;
