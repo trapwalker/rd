@@ -84,8 +84,8 @@ class ServerAPI(API):
                 )
                 yield agent_exemplar.load_references()
                 yield agent_exemplar.save(upsert=True)
-                role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
+                role_class_list = self.server.reg['world_settings'].role_class_order
+                agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
                 agent_exemplar.quick_flag = True
                 agent_exemplar.teaching_flag = False
                 yield agent_exemplar.save(upsert=True)
@@ -99,6 +99,10 @@ class ServerAPI(API):
             )
         else:
             agent.user = user  # Обновить юзера
+
+        # Установить рандомную аватарку
+        avatar_list = self.server.reg['world_settings'].avatar_list
+        user.avatar_link = avatar_list[randint(0, len(avatar_list) - 1)]
 
         log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
@@ -121,6 +125,7 @@ class ServerAPI(API):
             # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), teaching_flag=True)
             agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=True).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
+            # todo: Для агента, проходящего обучение нужно забрать класс из уже созданного ранее агента
             if agent_exemplar is None:
                 # log.warning('Agent not found {}'.format(user.name))
                 agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
@@ -131,8 +136,8 @@ class ServerAPI(API):
                     fixtured=False,
                 )
                 yield agent_exemplar.load_references()
-                role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
+                role_class_list = self.server.reg['world_settings'].role_class_order
+                agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
                 agent_exemplar.teaching_flag = True
                 agent_exemplar.quick_flag = False
                 yield agent_exemplar.save()
