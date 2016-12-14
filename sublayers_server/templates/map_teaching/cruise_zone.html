@@ -1,8 +1,19 @@
-{% set window_caption = 'Обучение/Шаг 2 из 10' %}
+{% set window_caption = 'Nuke:\Обучение\Шаг_2_из_10>' %}
 <div class="map-teaching-window-main cruise_zone">
     {% include ../drag_close_header.html %}
     <div class="map-teaching-content-wrap">
-        <div class="map-teaching-text-block">Это лимиты местности. Уровень шкалы круиз-контрола, на котором загорелся значок местности, показывает лимит скорости управляемого транспорта на данной местности. Например, у внедорожника лимит скорости по бездорожью загорится гораздо выше, чем у городской машины. (Слово Limits и все значки в горизонтальном расположении)</div>
+        <div class="map-teaching-limits-block">
+            <div class="map-teaching-limits-block-left">LIMITS:</div>
+            <div class="map-teaching-limits-block-zone map-teaching-limits-block-zone-dirt"></div>
+            <div class="map-teaching-limits-block-zone map-teaching-limits-block-zone-wood"></div>
+            <div class="map-teaching-limits-block-zone map-teaching-limits-block-zone-road"></div>
+            <div class="map-teaching-limits-block-zone map-teaching-limits-block-zone-water"></div>
+            <div class="map-teaching-limits-block-zone map-teaching-limits-block-zone-slope"></div>
+        </div>
+        <div class="map-teaching-text-block">Это лимиты местности. Уровень шкалы круиз-контроля, на котором загорелся
+            значок типа местности, показывает лимит скорости управляемого транспортного средства. Например, у
+            внедорожника лимит скорости на бездорожье гораздо выше, чем у легковой машины.
+        </div>
         <div class="map-teaching-btn-block">
             <div class="group-btn-wrap">
                 <div class="map-teaching-btn btn-back group-btn">Назад</div>

@@ -5,7 +5,7 @@
     font: 11pt Nouveau_IBM;
 }
 .map-teaching-window-main.cruise_speed         { height: 220px; width: 410px; }
-.map-teaching-window-main.cruise_zone          { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_zone          { height: 245px; width: 434px; }
 .map-teaching-window-main.cruise_speed_control { height: 250px; width: 450px; }
 .map-teaching-window-main.cruise_speed_btn     { height: 250px; width: 450px; }
 .map-teaching-window-main.driving_control      { height: 250px; width: 450px; }
@@ -27,7 +27,6 @@
 .map-teaching-text-block {
     position: relative;
     width: 100%;
-    height: calc(100% - 124px);
     padding: 0px 10px 10px 10px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -108,3 +107,32 @@
     top: 30px;
     left: 23px;
 }
+
+.map-teaching-limits-block {
+    margin: 15px 0px 15px 80px;
+    float: left;
+}
+
+.map-teaching-limits-block-left {
+    float: left;
+    white-space: nowrap;
+    font: 8pt MICRADI;
+    color: rgba(42, 253, 10, 0.50);
+    height: 15px;
+    line-height: 15px;
+    margin-right: 10px;
+}
+
+.map-teaching-limits-block-zone {
+    width: 45px;
+    height: 15px;
+    float: left;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.map-teaching-limits-block-zone-dirt  { background-image: url('/static/img/cruise/limit_dirt.png'); }
+.map-teaching-limits-block-zone-wood  { background-image: url('/static/img/cruise/limit_wood.png'); }
+.map-teaching-limits-block-zone-road  { background-image: url('/static/img/cruise/limit_road.png'); }
+.map-teaching-limits-block-zone-water { background-image: url('/static/img/cruise/limit_water.png'); }
+.map-teaching-limits-block-zone-slope { background-image: url('/static/img/cruise/limit_slope.png'); }
