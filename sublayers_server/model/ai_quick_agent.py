@@ -25,11 +25,9 @@ class InitAIQuickCar(Event):
 
 
 class AIQuickAgent(AI):
-    def __init__(self, time, **kw):
+    def __init__(self, time, car_proto, **kw):
         super(AIQuickAgent, self).__init__(time=time, **kw)
-        car_proto_list = self.server.quick_game_bot_cars_proto
-        self._car_proto = car_proto_list[random.randint(0, len(car_proto_list) - 1)]
-
+        self._car_proto = car_proto
         self.create_ai_quest(time=time)
         self._quick_bot_kills = 0
         self._quick_bot_deaths = 0

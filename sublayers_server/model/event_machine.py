@@ -202,6 +202,9 @@ class Server(object):
         if not bot_count:
             bot_count = 0
         # Создать ботов
+        car_proto_list = self.quick_game_bot_cars_proto
+        car_proto_list_len = len(car_proto_list)
+        current_machine_index = 0
         for i in range(1, bot_count + 1):
             # Найти или создать профиль
             name = 'quick_bot_{}'.format(i)
@@ -228,12 +231,16 @@ class Server(object):
                 yield agent_exemplar.save(upsert=True)
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
-            AIQuickAgent(
+            car_proto = car_proto_list[current_machine_index % car_proto_list_len]
+            current_machine_index += 1
+            ai_agent = AIQuickAgent(
                 server=self,
                 user=user,
                 time=self.get_time(),
                 example=agent_exemplar,
+                car_proto=car_proto
             )
+
 
     def post_message(self, message):
         """
