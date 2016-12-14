@@ -624,7 +624,6 @@ class QuickUser(User):
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
-        self.user.car_index = None
 
     def drop_car(self, car, time, **kw):
         if car is self.car:
