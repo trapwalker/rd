@@ -50,7 +50,6 @@ var CharacterManager = (function () {
         if (quick_mode) {
             var no_active_perks = true;
             var perks = user.example_agent.rpg_info.perks;
-            console.log(perks);
             for (var i=0; i < perks.length && no_active_perks; i++)
                 if (perks[i].active) no_active_perks = false;
             if (no_active_perks) {

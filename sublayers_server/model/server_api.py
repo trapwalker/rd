@@ -133,6 +133,8 @@ class ServerAPI(API):
             # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), teaching_flag=True)
             agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=True).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
+            main_agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=False).find_all()
+            main_agent_exemplar = main_agent_exemplar and main_agent_exemplar[0] or None
             # todo: Для агента, проходящего обучение нужно забрать класс из уже созданного ранее агента
             if agent_exemplar is None:
                 # log.warning('Agent not found {}'.format(user.name))
@@ -148,6 +150,21 @@ class ServerAPI(API):
                 agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
                 agent_exemplar.teaching_flag = True
                 agent_exemplar.quick_flag = False
+
+                # Если был найден агент из основной игры, то скопировать всю информацию из него
+                if main_agent_exemplar:
+                    # review: возможно нужно каждый отдельно реинстанцировать
+                    agent_exemplar.driving = main_agent_exemplar.driving
+                    agent_exemplar.shooting = main_agent_exemplar.shooting
+                    agent_exemplar.masking = main_agent_exemplar.masking
+                    agent_exemplar.leading = main_agent_exemplar.leading
+                    agent_exemplar.trading = main_agent_exemplar.trading
+                    agent_exemplar.engineering = main_agent_exemplar.engineering
+                    agent_exemplar.perks = main_agent_exemplar.perks
+                    agent_exemplar.role_class = main_agent_exemplar.role_class
+                else:
+                    log.warning('Agent from main server not founded for user: {}'.format(user.name))
+
                 yield agent_exemplar.save()
             else:
                 log.warning('Agent founded {}'.format(user.name))
