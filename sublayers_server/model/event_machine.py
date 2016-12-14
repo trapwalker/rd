@@ -232,6 +232,12 @@ class Server(object):
                 agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
                 agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
                 agent_exemplar.set_exp(time=self.get_time(), value=1005)
+                agent_exemplar.driving.value = random.randint(20, 40)
+                agent_exemplar.shooting.value = random.randint(20, 40)
+                agent_exemplar.masking.value = random.randint(20, 40)
+                agent_exemplar.leading.value = random.randint(20, 40)
+                agent_exemplar.trading.value = random.randint(20, 40)
+                agent_exemplar.engineering.value = random.randint(20, 40)
                 yield agent_exemplar.save(upsert=True)
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
