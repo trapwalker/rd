@@ -103,7 +103,7 @@
             <div class="kills">Убийств</div>
             <div class="deaths">Смертей</div>
             <div class="time">Время</div>
-            <div class="life-time">Макс.Время</div>
+            <div class="life-time">Сред.Время</div>
             <div class="bot-type">Бот</div>
             <div class="car">Машинка</div>
         </div>
@@ -119,7 +119,7 @@
             <div class="kills">{{ bot._quick_bot_kills }}</div>
             <div class="deaths">{{ bot._quick_bot_deaths }}</div>
             <div class="time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time))) }}</div>
-            <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_max_lt))) }}</div>
+            <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time / bot._quick_bot_deaths))) }}</div>
             <div class="bot-type">{{ bot.example.parent.uri.replace('reg:///registry/agents/user/', '') }}</div>
             <div class="car">{{ bot._car_proto.name_car }}</div>
         </div>
