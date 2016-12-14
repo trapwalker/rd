@@ -9,8 +9,8 @@ var CharacterManager = (function () {
         var self = characterManager;
         if (jq_main_div)
             self.jq_main_div = $(jq_main_div).first();
-
-        // ��������� ������� ����� ����
+        var quick_mode = $('#settings_server_mode').text() == 'quick';
+        // Заполняем верхнюю часть окна
         self.jq_main_div.find('.character-window-avatar').first()
             .css('background', 'transparent url(' + user.avatar_link + ') 100% 100% no-repeat');
         if (user.quick)
@@ -22,7 +22,7 @@ var CharacterManager = (function () {
         self.jq_main_div.find('.character-window-about-line.karma span').text(getKarmaNameWithoutNorm(user.example_agent.karma));
         self.jq_main_div.find('.character-window-about-area').first().find('textarea').first().text(user.example_agent.about_self);
 
-        // ����� �����
+        // Шкала опыта
         self.jq_main_div.find('.cur-exp').first().text(user.example_agent.rpg_info.cur_exp);
         self.jq_main_div.find('.total-exp').first().text(user.example_agent.rpg_info.next_lvl_exp);
         var progress = (user.example_agent.rpg_info.cur_exp - user.example_agent.rpg_info.cur_lvl_exp) /
@@ -31,15 +31,41 @@ var CharacterManager = (function () {
         progress = progress > 1 ? 1 : progress;
         self.jq_main_div.find('.character-window-exp').first().css('width', Math.round(100 * progress) + '%');
 
-        // ��������� ����
-        self.jq_main_div.find('.free-perks').first().text(Math.max(0, LocationTrainerNPC._getFreePerkPointsReal()));
-        self.jq_main_div.find('.free-skills').first().text(Math.max(0, LocationTrainerNPC._getFreeSkillPointsReal()));
+        // Свободные очки
+        if (quick_mode) {
+            self.jq_main_div.find('.free-perks').first().text(0);
+            self.jq_main_div.find('.free-skills').first().text(0);
+        }
+        else {
+            self.jq_main_div.find('.free-perks').first().text(Math.max(0, LocationTrainerNPC._getFreePerkPointsReal()));
+            self.jq_main_div.find('.free-skills').first().text(Math.max(0, LocationTrainerNPC._getFreeSkillPointsReal()));
+        }
 
-        // ���������� ������
+        // Добавление перков
         var jq_perks = self.jq_main_div.find('.character-window-ttx-center.perks').first();
         jq_perks.empty();
         var class_light = 'trainer-dark-back';
         var perk_list = user.example_agent.rpg_info.perks;
+
+        if (quick_mode) {
+            var no_active_perks = true;
+            var perks = user.example_agent.rpg_info.perks;
+            console.log(perks);
+            for (var i=0; i < perks.length && no_active_perks; i++)
+                if (perks[i].active) no_active_perks = false;
+            if (no_active_perks) {
+                var p = {
+                    active: true,
+                    perk: {
+                        title: 'Не доступно',
+                        description: 'Перки не доступны в данном режме игры.'
+                    },
+                    perk_req: []
+                };
+                user.example_agent.rpg_info.perks = [p];
+            }
+        }
+
         for (var i = 0; i < perk_list.length; i++) {
             var perk_rec = perk_list[i];
             if (perk_rec.active) {
@@ -48,14 +74,14 @@ var CharacterManager = (function () {
             }
         }
 
-        // ���������� ������
+        // Добавление скилов
         var skill_names = ['driving', 'engineering', 'leading', 'masking', 'shooting', 'trading'];
         for (var  i = 0; i < skill_names.length; i++) {
             var skill_name = skill_names[i];
             self.jq_main_div.find('.character-window-ttx-value.' + skill_name).first().text(LocationTrainerNPC._getSkillValueReal(skill_name));
         }
 
-        // ������ ����� �� ������ ����
+        // Вешаем клики на нижнее меню
         self.jq_main_div.find('.character-window-bottom-menu-item').click(function() {
             var data = $(this).data('page');
             characterManager.jq_main_div.find('.character-window-bottom-menu-item').removeClass('active');
@@ -65,13 +91,22 @@ var CharacterManager = (function () {
         });
         self.jq_main_div.find('.character-window-bottom-menu-item').first().click();
 
-        // ����� ���������
+        // Вывод подсказок
         self.jq_main_div.find('.character-window-ttx-center.perks').find('.character-window-ttx-item')
             .mouseenter({mng: self}, CharacterManager.perks_event_mouseenter)
             .mouseleave({mng: self}, CharacterManager.event_mouseleave);
         self.jq_main_div.find('.character-window-ttx-center.skills').find('.character-window-ttx-item')
             .mouseenter({mng: self}, CharacterManager.skills_event_mouseenter)
             .mouseleave({mng: self}, CharacterManager.event_mouseleave);
+
+
+        // Работа с квестовым инвентарём (Пока там просто всегда пусто)
+        self.jq_main_div.find('.character-window-page.pers_inventory')
+            .mouseenter(function(){
+                self.jq_main_div.find('.character-window-hint-text').text('Квестовый инвентарь не доступен в данном режиме игры');
+            })
+            .mouseleave({mng: self}, CharacterManager.event_mouseleave);
+
     };
 
     CharacterManager.perks_event_mouseenter = function (event) {
