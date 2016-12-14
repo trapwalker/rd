@@ -50,19 +50,18 @@ class InstantReferenceField(ReferenceField):
             not self.dbref and
             not isinstance(value, (DBRef, Document, EmbeddedDocument))
         ):
-            # TODO: support hash overrided URI objects descriptions
             if isinstance(value, basestring):
+                # TODO: support hash overrided URI objects descriptions
                 collection = self.document_type._get_collection_name()
                 value = DBRef(collection, self.document_type.id.to_python(value))
             elif isinstance(value, dict):
                 assert issubclass(self.document_type_obj, Node), 'InstantReferenceField is not Node: %r' % self.document_type_obj
-                value = self.document_type_obj._from_son(value)
+                value = self.document_type_obj._from_son(value, created=True)
                 value.is_instant = True
-                value.save(force_insert=True)
+                value.save()
             else:
                 raise AssertionError("InstantReferenceField has unsupported type: %r" % value)
         return value
-
 
 
 class Node(Document):
@@ -110,16 +109,24 @@ class Node(Document):
         uri = base_uri.replace(path=base_uri.path + (self.name or str(self.uid),))
         return str(uri)
 
+    @classmethod
+    def _get_inheritable_field_names(cls):
+        return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
+
     def __init__(self, **kw):
-        noninheritable = [name for name, field in self._fields.iteritems() if not getattr(field, 'not_inherited', False)]
-        only_fields = set(kw.pop('__only_fields', [])) | set(noninheritable)
+        inheritable = self.__class__._get_inheritable_field_names()
+        only_fields = set(kw.pop('__only_fields', [])) | set(inheritable)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
         self._subnodes = set()  #WeakSet()  # TODO: Сделать кэширование и заменить set -> WeakSet иначе дети в мусор
         if self.name is None:
             self.name = str(self.uid)
 
         if 'uri' not in kw:
+            _created_flag_backup = kw.get('_created', None)
             self.uri = self.make_uri()
+            # При присвоении первичного колюча сбрасывается флаг `_created`. Восстанавливаем его, если он был задан.
+            if _created_flag_backup is not None:
+                self._created = _created_flag_backup
 
         if self.owner:
             self.owner._subnodes.add(self)
@@ -200,10 +207,7 @@ class Node(Document):
         return lst
 
     def _instantiaite_field(self, new_instance, field, name):
-        if getattr(field, 'reinst', None):
-            if name in self._data:
-                pass
-
+        if getattr(field, 'reinst', None) and name not in self._data:
             value = getattr(self, name)
             if value is not None:
                 if isinstance(field, EmbeddedDocumentField):
@@ -217,8 +221,9 @@ class Node(Document):
                 elif isinstance(field, ListField):
                     setattr(new_instance, name, self._reinst_list(field, value))
                 elif isinstance(field, ReferenceField):
-                    # todo: mark node as instant_linked
-                    setattr(new_instance, name, value.instantiate(fixtured=self.fixtured).save())
+                    new_value = value.instantiate(fixtured=self.fixtured, is_instant=True)
+                    new_value.save()
+                    setattr(new_instance, name, new_value)
 
     def reinst_fields(self):
         for name, field in self._fields.items():
@@ -228,13 +233,19 @@ class Node(Document):
         # todo: Сделать поиск ссылок в параметрах URI
         params = {}
         parent = self
-        if not self.uri:  # todo: "Если инстанцируется embedded документ" - откорректировать условие
+        if self.is_instant:  # todo: "Если инстанцируется embedded документ" - откорректировать условие
             parent = self.parent
-            params.update(self._data)
+            # TODO: solve case with different classes between self and parent
+            inheritable = set(self._get_inheritable_field_names())
+            params.update({k: v for k, v in self._data.items() if k in inheritable})
 
+        if name:
+            params.update(name=name)
         params.update(parent=parent)
         params.update(kw)
-        inst = self.__class__(**params)
+        #inst = self.__class__(**params)
+        inst = self._from_son(params, created=True)
+
         inst.reinst_fields()
         # todo: Разобраться с abstract при реинстанцированиях
         # todo: Сделать поиск ссылок в параметрах URI
@@ -342,7 +353,13 @@ class Node(Document):
         attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
         attrs.setdefault('fixtured', True)
 
-        node = cls._from_son(attrs)
+        parent = attrs['parent']
+        _cls = cls
+        if parent:
+            assert isinstance(parent, Node)
+            node = parent.instantiate(**attrs)
+        else:
+            node = cls._from_son(attrs, created=True)
         return node
 
     @classmethod
@@ -355,6 +372,8 @@ class Node(Document):
                 pth, owner = stack.pop()
                 node = cls._load_node_from_fs(pth, owner)
                 if node:
+                    node.save()
+
                     all_nodes.append(node)
                     #node.to_cache()  # TODO: cache objects
                     if owner is None:
@@ -366,11 +385,6 @@ class Node(Document):
 
 
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), timer.duration))
-
-        for node in all_nodes:
-            node.reinst_fields()
-            node.save(force_insert=True, cascade=True)
-
         return root
 
 
@@ -381,6 +395,7 @@ class A(Node):
     x = IntField(null=True)
     y = IntField(null=True)
     z = IntField(null=True)
+    k = InstantReferenceField(document_type=Node, reinst=True)
     l = ListField(InstantReferenceField(document_type=Node, reinst=True), reinst=True)
 
 
@@ -424,8 +439,10 @@ def test2():
     # pp(list(root.iter_childs(deep=True)))
     # print('Total count nodes:', Node.objects.count())
     # pp(list(Node.objects.all()))
+
     a = root.get_child('a')
     aa = a.get_child('aa')
+
     # #a.save(cascade=True, force_insert=True)
 
     print('Well DONE!')
@@ -434,6 +451,7 @@ def test2():
 
 if __name__ == '__main__':
     db = connect(db='test_me')
+    log.info('Use `test_me` db')
 
     #test1()
     test2()
