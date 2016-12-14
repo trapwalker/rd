@@ -126,6 +126,8 @@ var WFireController = (function (_super) {
             4: $('<div id="fireControlQuickBtn4" class="fire-controll-quick-btn-block" data-index="4"></div>')
         };
 
+        this.quick_signal_timers = {1: null, 2: null, 3: null, 4: null};
+
         // Области блокирующие пробрасывание на карту
         this.fCT.append('<div class="fire-control-undroppable-area left"></div>');
         this.fCT.append('<div class="fire-control-undroppable-area right"></div>');
@@ -139,7 +141,9 @@ var WFireController = (function (_super) {
                 jq_wrap.append(jq_slot);
                 this.fCT.append(jq_wrap);
                 this.jq_quick_btns[key].on('click', function () {
-                    clientManager.sendActivateQuickItem($(this).data('index'), user.userCar.ID)
+                    var index = $(this).data('index');
+                    clientManager.sendActivateQuickItem(index, user.userCar.ID);
+                    wFireController.signalQuickConsumerPanel(index);
                 });
             }
 
@@ -205,6 +209,17 @@ var WFireController = (function (_super) {
     WFireController.prototype.switchOffConsumerPanel = function() {
         //console.log("WFireController.prototype.switchOffConsumerPanel");
         wFireController.fCT.find('.fire-control-btn-bg').removeClass('active');
+    };
+
+    WFireController.prototype.signalQuickConsumerPanel = function(index) {
+        if (! this.quick_signal_timers.hasOwnProperty(index)) return;
+        if(this.quick_signal_timers[index]) return;
+        var self = this;
+        this.quick_signal_timers[index] = setTimeout(function(){
+            self.quick_signal_timers[index] = null;
+            $('#fireControlQuickBtn' + index + 'BG').removeClass('signal');
+        }, 150);
+        $('#fireControlQuickBtn' + index + 'BG').addClass('signal');
     };
 
     WFireController.prototype.initRadarCircles = function() {

@@ -155,15 +155,19 @@ function onKeyDownMap(event) {
             break;
         case 49:  // 1
             clientManager.sendActivateQuickItem(1, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(1);
             break;
         case 50:  // 2
             clientManager.sendActivateQuickItem(2, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(2);
             break;
         case 51:  // 3
             clientManager.sendActivateQuickItem(3, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(3);
             break;
         case 52:  // 4
             clientManager.sendActivateQuickItem(4, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(4);
             break;
         case 32:  // Space / Пробел
             clientManager.sendStopCar();
