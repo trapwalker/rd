@@ -298,4 +298,79 @@ class SubscriptionList(WeakSet):
             pass
 
 
+KARMA_NAMES = [u'Новая надежда', u'Мессия', u'Спаситель', u'Святой', u'Герой', u'Страж', u'Борец', u'Спасатель',
+    u'Защитник', u'Друг людей', u'Правильный', u'Честный парень', u'Партнер', u'Славный малый', u'Поселенец',
+    u'Человек простой', u'Странник', u'Наблюдатель', u'Выживальщик', u'Авантюрист', u'Равнодушный', u'Циник', u'Хулиган',
+    u'Жулик', u'Изгой', u'Мошенник', u'Грабитель', u'Захватчик', u'Убийца', u'Псих', u'Больной ублюдок', u'Маньяк', u'Антихрист']
+
+def getKarmaName(karma):
+    if karma >= 1:
+        return KARMA_NAMES[0]
+    if karma >= 0.85:
+        return KARMA_NAMES[1]
+    if karma >= 0.75:
+        return KARMA_NAMES[2]
+    if karma >= 0.65:
+        return KARMA_NAMES[3]
+    if karma >= 0.6:
+        return KARMA_NAMES[4]
+    if karma >= 0.55:
+        return KARMA_NAMES[5]
+    if karma >= 0.5:
+        return KARMA_NAMES[6]
+    if karma >= 0.45:
+        return KARMA_NAMES[7]
+    if karma >= 0.4:
+        return KARMA_NAMES[8]
+    if karma >= 0.35:
+        return KARMA_NAMES[9]
+    if karma >= 0.3:
+        return KARMA_NAMES[10]
+    if karma >= 0.25:
+        return KARMA_NAMES[11]
+    if karma >= 0.2:
+        return KARMA_NAMES[12]
+    if karma >= 0.15:
+        return KARMA_NAMES[13]
+    if karma >= 0.1:
+        return KARMA_NAMES[14]
+    if karma >= 0.05:
+        return KARMA_NAMES[15]    
+    if karma >= -0.05:
+        return KARMA_NAMES[16]
+    if karma >= -0.1:
+        return KARMA_NAMES[17]
+    if karma >= -0.15:
+        return KARMA_NAMES[18]
+    if karma >= -0.2:
+        return KARMA_NAMES[19]
+    if karma >= -0.25:
+        return KARMA_NAMES[20]
+    if karma >= -0.3:
+        return KARMA_NAMES[21]
+    if karma >= -0.35:
+        return KARMA_NAMES[22]
+    if karma >= -0.4:
+        return KARMA_NAMES[23]
+    if karma >= -0.45:
+        return KARMA_NAMES[24]
+    if karma >= -0.5:
+        return KARMA_NAMES[25]
+    if karma >= -0.55:
+        return KARMA_NAMES[26]
+    if karma >= -0.6:
+        return KARMA_NAMES[27]
+    if karma >= -0.65:
+        return KARMA_NAMES[28]
+    if karma >= -0.75:
+        return KARMA_NAMES[29]
+    if karma >= -0.85:
+        return KARMA_NAMES[30]
+    if karma >= -1:
+        return KARMA_NAMES[31]
+    return KARMA_NAMES[32]
+
+
+
+
 __all__ = [get_uid, get_time, TimelineQueue]

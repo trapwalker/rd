@@ -19,6 +19,7 @@ var CharacterManager = (function () {
             self.jq_main_div.find('.character-window-name').first().text(user.login);
         self.jq_main_div.find('.character-window-about-line.lvl span').text(user.example_agent.rpg_info.cur_lvl);
         self.jq_main_div.find('.character-window-about-line.role-class span').text(user.example_agent.role_class);
+        self.jq_main_div.find('.character-window-about-line.karma span').text(getKarmaNameWithoutNorm(user.example_agent.karma));
         self.jq_main_div.find('.character-window-about-area').first().find('textarea').first().text(user.example_agent.about_self);
 
         // Шкала опыта
@@ -31,8 +32,8 @@ var CharacterManager = (function () {
         self.jq_main_div.find('.character-window-exp').first().css('width', Math.round(100 * progress) + '%');
 
         // Свободные очки
-        self.jq_main_div.find('.free-perks').first().text(LocationTrainerNPC._getFreePerkPointsReal());
-        self.jq_main_div.find('.free-skills').first().text(LocationTrainerNPC._getFreeSkillPointsReal());
+        self.jq_main_div.find('.free-perks').first().text(Math.max(0, LocationTrainerNPC._getFreePerkPointsReal()));
+        self.jq_main_div.find('.free-skills').first().text(Math.max(0, LocationTrainerNPC._getFreeSkillPointsReal()));
 
         // Добавление перков
         var jq_perks = self.jq_main_div.find('.character-window-ttx-center.perks').first();

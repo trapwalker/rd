@@ -230,6 +230,8 @@ class Server(object):
                 yield agent_exemplar.load_references()
 
                 agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
+                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
+                agent_exemplar.set_exp(time=self.get_time(), value=1005)
                 yield agent_exemplar.save(upsert=True)
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)

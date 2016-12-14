@@ -86,6 +86,8 @@ class ServerAPI(API):
                 yield agent_exemplar.save(upsert=True)
                 role_class_list = self.server.reg['world_settings'].role_class_order
                 agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
+                agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
+                agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
                 agent_exemplar.quick_flag = True
                 agent_exemplar.teaching_flag = False
                 yield agent_exemplar.save(upsert=True)
