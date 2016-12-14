@@ -61,9 +61,14 @@ var WInventoryItem = (function (_super) {
             infoWindow.data('item_pos', self.item.position);
 
             // настройка кнопки активации
-            var activateBtn = inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate');
-            activateBtn.data('inv_id', self.item.inventory.owner_id);
-            activateBtn.data('item_pos', self.item.position);
+            if (self.item.example.activate_type != 'none') {
+                var activateBtn = inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate');
+                activateBtn.data('inv_id', self.item.inventory.owner_id);
+                activateBtn.data('item_pos', self.item.position);
+                activateBtn.css('display', 'block');
+            }
+            else
+                activateBtn.css('display', 'none');
         });
     };
 
