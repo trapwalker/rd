@@ -23,15 +23,15 @@ from copy import copy
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from collections import deque, Callable
-from mongoengine import connect, Document, QuerySet, EmbeddedDocument
+from mongoengine import connect, Document, EmbeddedDocument
 from bson import DBRef
 from mongoengine.base import get_document
-from mongoengine.dereference import DeReference
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, DictField, EmbeddedDocumentField,
     GenericReferenceField,
 )
+
 
 
 class RegistryError(Exception):
@@ -402,6 +402,8 @@ class Node(Document):
 
 ## TESTING CODE ########################################################################################################
 
+from sublayers_server.model.registry_me.odm_position import PositionField, Point
+
 
 class A(Node):
     x = IntField(null=True)
@@ -410,6 +412,8 @@ class A(Node):
     k = InstantReferenceField(document_type=Node, reinst=True)
     l = ListField(field=InstantReferenceField(document_type=Node, reinst=True), reinst=True)
     d = DictField(field=InstantReferenceField(document_type=Node, reinst=True), reinst=True)
+
+    p = PositionField()
 
 
 class A2(A):
@@ -456,6 +460,9 @@ def test2():
     a = root.get_child('a')
     aa = a.get_child('aa')
     b = root.get_child('b')
+
+    p= Point(3, 15)
+    a.p = p
 
     # #a.save(cascade=True, force_insert=True)
 
