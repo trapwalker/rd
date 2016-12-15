@@ -9,11 +9,11 @@ from mongoengine import EmbeddedDocument, EmbeddedDocumentField, FloatField
 
 
 class PositionField(EmbeddedDocumentField):
-    def __init__(self, reinst=True, *args, **kw):
-        super(PositionField, self).__init__(document_type=Position, reinst=reinst, *args, **kw)
+    def __init__(self, reinst=True, **kw):
+        super(PositionField, self).__init__(document_type=Position, reinst=reinst, **kw)
 
     def __set__(self, instance, value):
-        if not isinstance(value, Position):
+        if value is not None and not isinstance(value, Position):
             value = Position(value)
 
         super(PositionField, self).__set__(instance, value)

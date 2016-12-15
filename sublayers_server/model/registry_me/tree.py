@@ -33,7 +33,6 @@ from mongoengine.fields import (
 )
 
 
-
 class RegistryError(Exception):
     pass
 
