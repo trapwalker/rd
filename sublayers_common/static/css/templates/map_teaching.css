@@ -6,7 +6,7 @@
 }
 .map-teaching-window-main.cruise_speed         { height: 220px; width: 410px; }
 .map-teaching-window-main.cruise_zone          { height: 245px; width: 434px; }
-.map-teaching-window-main.cruise_speed_control { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_speed_control { height: 265px; width: 434px; }
 .map-teaching-window-main.cruise_speed_btn     { height: 250px; width: 450px; }
 .map-teaching-window-main.driving_control      { height: 250px; width: 450px; }
 .map-teaching-window-main.cruise_radial        { height: 250px; width: 450px; }
@@ -136,3 +136,37 @@
 .map-teaching-limits-block-zone-road  { background-image: url('/static/img/cruise/limit_road.png'); }
 .map-teaching-limits-block-zone-water { background-image: url('/static/img/cruise/limit_water.png'); }
 .map-teaching-limits-block-zone-slope { background-image: url('/static/img/cruise/limit_slope.png'); }
+
+.map-teaching-img-block-cursor {
+    width: 140px;
+    height: 100px;
+    float: left;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-image: url('/static/img/cruise/speed_mark.png');
+}
+
+.map-teaching-img-block-scale {
+    width: 30px;
+    height: 100px;
+    float: left;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/cruise/scale_cut.png');
+}
+
+.map-teaching-img-block-inputs {
+    width: 200px;
+    height: 100px;
+    float: left;
+    text-align: center;
+    line-height: 100px;
+    font-size: 14pt;
+}
+
+.map-teaching-img-block-cursor-digits-block {
+    color: #2afd0a;
+    font-family: Gruppo-Regular;
+    margin-top: 10px;
+    margin-left: 70px;
+}
