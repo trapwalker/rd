@@ -29,7 +29,7 @@ from mongoengine.base import get_document
 from mongoengine.dereference import DeReference
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
-    ListField, EmbeddedDocumentField,
+    ListField, DictField, EmbeddedDocumentField,
     GenericReferenceField,
 )
 
@@ -56,6 +56,7 @@ class InstantReferenceField(ReferenceField):
                 value = DBRef(collection, self.document_type.id.to_python(value))
             elif isinstance(value, dict):
                 assert issubclass(self.document_type_obj, Node), 'InstantReferenceField is not Node: %r' % self.document_type_obj
+                # parent = value.get('parent', None)  # TODO: make support overiding by parent without _cls
                 value = self.document_type_obj._from_son(value, created=True)
                 value.is_instant = True
                 value.save()
@@ -79,7 +80,6 @@ class Node(Document):
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     parent = ReferenceField(document_type='self', not_inherited=True)
     # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
-    # todo: Убедиться, что fixtured не наследуется.
     fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
     is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декаларации объекта")
     title = StringField(caption=u"Название", tags={"client"})
@@ -187,24 +187,23 @@ class Node(Document):
         else:
             super(Node, self).__delattr__(*args, **kwargs)
 
-    def _reinst_list(self, field, lst):
-        lst = copy(lst)
+    def _reinst_container(self, field, data):
+        data = copy(data)
         subfield = field.field
-        for i, item in enumerate(lst):
+        for i, item in data.items() if hasattr(data, 'item') else enumerate(data):
             if item is not None:
-                if isinstance(subfield, ListField):
-                    lst[i] = self._reinst_list(subfield, copy(item))
-                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):
-                    lst[i] = item.instantiate()
+                if isinstance(subfield, (ListField, DictField)):
+                    data[i] = self._reinst_container(subfield, copy(item))
+                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):  # TODO: deprecated
+                    data[i] = item.instantiate()
                 elif isinstance(subfield, ReferenceField):
                     if getattr(subfield, 'reinst', None):
                         # TODO: mark node as instant_linked
                         # TODO: may be use cascade saving?
-                        lst[i] = item.instantiate(fixtured=self.fixtured).save()
-                # todo: make support of dict fields
+                        data[i] = item.instantiate(fixtured=self.fixtured).save()
                 else:
-                    lst[i] = copy(item)
-        return lst
+                    data[i] = copy(item)
+        return data
 
     def _instantiaite_field(self, new_instance, field, name):
         if getattr(field, 'reinst', None) and name not in self._data:
@@ -219,7 +218,7 @@ class Node(Document):
 
                     setattr(new_instance, name, value.instantiate())
                 elif isinstance(field, ListField):
-                    setattr(new_instance, name, self._reinst_list(field, value))
+                    setattr(new_instance, name, self._reinst_container(field, value))
                 elif isinstance(field, ReferenceField):
                     new_value = value.instantiate(fixtured=self.fixtured, is_instant=True)
                     new_value.save()
@@ -396,7 +395,8 @@ class A(Node):
     y = IntField(null=True)
     z = IntField(null=True)
     k = InstantReferenceField(document_type=Node, reinst=True)
-    l = ListField(InstantReferenceField(document_type=Node, reinst=True), reinst=True)
+    l = ListField(field=InstantReferenceField(document_type=Node, reinst=True), reinst=True)
+    d = DictField(field=InstantReferenceField(document_type=Node, reinst=True), reinst=True)
 
 
 class A2(A):
@@ -442,6 +442,7 @@ def test2():
 
     a = root.get_child('a')
     aa = a.get_child('aa')
+    b = root.get_child('b')
 
     # #a.save(cascade=True, force_insert=True)
 
