@@ -386,6 +386,19 @@ class Node(Document):
         log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), timer.duration))
         return root
 
+    def is_ancestor(self, parent_candidate):
+        return self.get_ancestor_level(parent_candidate) >= 0
+
+    def get_ancestor_level(self, parent_candidate):
+        h = parent_candidate.node_hash()
+        i = 0
+        obj = self
+        while obj and obj.node_hash() != h:
+            i += 1
+            obj = obj.parent
+
+        return i if obj else -1
+
 
 ## TESTING CODE ########################################################################################################
 
