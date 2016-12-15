@@ -381,8 +381,7 @@ class Node(Document):
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
 
-
-        log.info('Registry loading DONE: {} nodes ({:.0f}s).'.format(len(all_nodes), timer.duration))
+        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
         return root
 
     def is_ancestor(self, parent_candidate):
