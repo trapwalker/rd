@@ -17,7 +17,7 @@ var TrainerTeachingNote = (function (_super) {
         this.skill_coord = new Point(1113, 350);
         this.buy_btn = new Point(325, 608);
 
-        chat.addMessageToLog('Выполнив свое первое задание вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.');
+        chat.addMessageToLog('Выполнив свое первое задание вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.', true);
     }
 
     TrainerTeachingNote.prototype.on_enter_location = function() {

@@ -107,6 +107,10 @@ var LocationManager = (function () {
             $('#btn_screen_location_pressed').css('display', 'none');
             $('#btn_screen_chat_pressed').css('display', 'none');
             $('#btn_screen_menu_pressed').css('display', 'none');
+
+            if (screenName == 'chat_screen')
+                $('#btn_screen_chat_hover').attr('class', '');
+
             if (location) {
                 if (btn_id)
                     $('#' + btn_id).css('display', 'block');
@@ -399,7 +403,6 @@ var LocationManager = (function () {
         console.warn('Relation for npc not found: ', npc_node_hash, this.npc_relations);
         return null;
     };
-
 
     // Обработчик событий мышки в зданиях, при наведении на НПЦ
     LocationManager.prototype.handler_npc_mouseover = function(npc_node_hash, build_type) {

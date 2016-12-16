@@ -25,5 +25,13 @@ var LocationPlaceChat = (function (_super) {
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
+    LocationPlaceChat.prototype.get_important_msg = function () {
+        if ($('#btn_screen_chat_pressed').css('display') == 'none') {
+            var jq_btn = $('#btn_screen_chat_hover');
+            jq_btn.css('display', 'block');
+            jq_btn.attr('class', 'wait');
+        }
+    };
+
     return LocationPlaceChat;
 })(LocationPlace);
