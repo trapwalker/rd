@@ -40,16 +40,40 @@ var WInventoryItem = (function (_super) {
         });
         this.change();
 
-        itemDiv.on('click', function (event) {
+        itemDiv.on('click', {item: this, action: true, inventoryDiv: inventoryDiv}, function (event) {
             // снимаем выделение у всех итемов
+            var inventoryDiv = event.data.inventoryDiv;
             $(inventoryDiv).find(".mainCarInfoWindow-body-trunk-body-right-item-wrap").removeClass('active');
-
             // выделяем текущий итем
             $(event.target).parent().addClass('active');
 
-            // настраиваем информационное окно инвентаря
-            //var inv_parent =  $(inventoryDiv).parent();
+            // настройка кнопки активации
             var inv_parent =  $(inventoryDiv).parents('.mainDivWindow');
+            var activateBtn = inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate');
+            activateBtn.data('inv_id', self.item.inventory.owner_id);
+            activateBtn.data('item_pos', self.item.position);
+
+            self.redraw_info_for_window(true, inventoryDiv);
+
+        });
+
+        itemDiv.on('mouseenter', {item: this, action: true, inventoryDiv: inventoryDiv}, this._redraw_info_for_window_handler);
+        itemDiv.on('mouseleave', {item: this, action: false, inventoryDiv: inventoryDiv}, this._redraw_info_for_window_handler);
+    };
+
+    // Классовый метод!
+    WInventoryItem.prototype._redraw_info_for_window_handler = function(event) {
+        var self = event.data.item;
+        var action = event.data.action;
+        var inventoryDiv = event.data.inventoryDiv;
+        self.redraw_info_for_window( action, inventoryDiv);
+    };
+
+    WInventoryItem.prototype.redraw_info_for_window = function(action, inventoryDiv) {
+        var self = this;
+        var inv_parent =  $(inventoryDiv).parents('.mainDivWindow');
+        if (action) {
+            // отобразить текущий итем
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
                     'transparent url(http://' + $('#settings_host_name').text() + '/' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").text(self.item.example.title);
@@ -61,15 +85,42 @@ var WInventoryItem = (function (_super) {
             infoWindow.data('item_pos', self.item.position);
 
             // настройка кнопки активации
-            if (self.item.example.activate_type != 'none') {
-                var activateBtn = inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate');
-                activateBtn.data('inv_id', self.item.inventory.owner_id);
-                activateBtn.data('item_pos', self.item.position);
+            var activateBtn = inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate');
+            if (self.item.example.activate_type != 'none')
                 activateBtn.css('display', 'block');
-            }
             else
                 activateBtn.css('display', 'none');
-        });
+        }
+        else {
+            // вернуть старый
+            var activateBtn = inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate');
+            var inv_id = activateBtn.data('inv_id');
+            var item_pos = activateBtn.data('item_pos');
+            if ((item_pos < 0) || (inv_id < 0)) {self.clear_info_for_window(inventoryDiv); return};
+            var inventory = inventoryList.getInventory(inv_id);
+            if (!inventory) {self.clear_info_for_window(inventoryDiv); return};
+            var item = inventory.getItem(item_pos);
+            if (!item) {self.clear_info_for_window(inventoryDiv); return};
+            item.widget.redraw_info_for_window(true, inventoryDiv);
+        }
+    };
+
+
+    WInventoryItem.prototype.clear_info_for_window = function(inventoryDiv) {
+        var self = this;
+        var inv_parent =  $(inventoryDiv).parents('.mainDivWindow');
+        // отобразить текущий итем
+        inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
+                'transparent no-repeat 100% 100%');
+        inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").text('');
+        inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-description").text('');
+
+        // добавляем поисковый класс для выделенных левых частей инвентаря
+        var infoWindow = inv_parent.find(".mainCarInfoWindow-body-trunk-body-left");
+        infoWindow.data('inv_id', '');
+        infoWindow.data('item_pos', '');
+        // настройка кнопки активации
+        inv_parent.find('.mainCarInfoWindow-body-trunk-body-left-activate').css('display', 'none');
     };
 
     WInventoryItem.prototype.visibleViewForInvDiv = function(inventoryDiv, visible) {
