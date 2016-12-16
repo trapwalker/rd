@@ -286,27 +286,6 @@ var MapManager = (function(_super) {
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
 
-        // Отображение квадрата всей карты
-        // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
-        //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
-        //L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
-
-
-        // Рисовалка на канвасе
-        //var canvasTiles = L.tileLayer.canvas();
-        //canvasTiles.drawTile = function (canvas, tilePoint, zoom) {
-        //    var ctx = canvas.getContext('2d');
-        //    //ctx.fillText(tilePoint.toString(), 50, 50);
-        //    ctx.globalAlpha = 1;
-        //    var l = 0, s = 255;
-        //    //ctx.fillStyle = 'transparent';
-        //    ctx.strokeStyle = "rgba(42, 253, 10, 0.15)";
-        //    ctx.strokeRect(0, 0, 255, 0);
-        //    ctx.strokeRect(255, 0, 255, 255);
-        //};
-        //canvasTiles.addTo(map);
-
-
         /*
             Карта является глобальным droppabl'ом в качестве мусорки
             P.S.
@@ -320,15 +299,10 @@ var MapManager = (function(_super) {
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
-                    var item = null;
-                    try {
-                        item = inventoryList.getInventory(ui.draggable.data('owner_id')).getItem(ui.draggable.data('pos'));
-                    }
-                    catch (e){
-                        console.warn('Не найден инвентерь или итем в инвентаре:', ui.draggable);
-                        item = null;
-                    }
-
+                    var inventory = inventoryList.getInventory(ui.draggable.data('owner_id'));
+                    if (!inventory) return;
+                    var item = inventory.getItem(ui.draggable.data('pos'));
+                    if (!item) return;
                     modalWindow.modalDialogAnswerShow({
                         caption: 'Inventory Operation',
                         header: 'Выбросить?',
@@ -338,7 +312,6 @@ var MapManager = (function(_super) {
                                 ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);
                         }
                     });
-
                 }
                 if (ui.draggable.hasClass('fire-controll-quick-btn-block'))
                     clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
