@@ -7,7 +7,7 @@
 .map-teaching-window-main.cruise_speed         { height: 220px; width: 410px; }
 .map-teaching-window-main.cruise_zone          { height: 245px; width: 434px; }
 .map-teaching-window-main.cruise_speed_control { height: 265px; width: 434px; }
-.map-teaching-window-main.cruise_speed_btn     { height: 250px; width: 450px; }
+.map-teaching-window-main.cruise_speed_btn     { height: 300px; width: 442px; }
 .map-teaching-window-main.driving_control      { height: 250px; width: 450px; }
 .map-teaching-window-main.cruise_radial        { height: 250px; width: 450px; }
 .map-teaching-window-main.zoom_slider          { height: 250px; width: 450px; }
@@ -169,4 +169,31 @@
     font-family: Gruppo-Regular;
     margin-top: 10px;
     margin-left: 70px;
+}
+
+.map-teaching-cc-reverse {
+    margin-top: 22px;
+    margin-left: 80px;
+    width: 33px;
+    height: 32px;
+    background: transparent url('/static/img/cruise/r_btn.png') 100% 100% no-repeat;
+    float: left;
+}
+
+.map-teaching-cc-stop {
+    margin-top: 15px;
+    margin-left: 10px;
+    width: 70px;
+    height: 39px;
+    background: transparent url('/static/img/cruise/stop_btn.png') 100% 100% no-repeat;
+    float: left;
+}
+
+.map-teaching-cc-inputs {
+    width: 200px;
+    height: 70px;
+    float: left;
+    text-align: center;
+    line-height: 70px;
+    font-size: 14pt;
 }
