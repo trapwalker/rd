@@ -40,6 +40,11 @@ var NoActionTeachingMapNote = (function (_super) {
             this.old_z_index = $('#' + this.elem_id_str).css('z-index');
             $('#' + this.elem_id_str).css('z-index', '2000');
         }
+        this.set_game_log_text(window.mainDiv);
+    };
+
+    NoActionTeachingMapNote.prototype.set_game_log_text = function(jq_window) {
+        chat.addMessageToLog(jq_window.find('.map-teaching-text-block').text(), true);
     };
 
     NoActionTeachingMapNote.prototype.on_close_note_window = function() {

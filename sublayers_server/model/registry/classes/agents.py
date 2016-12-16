@@ -13,6 +13,7 @@ from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
 from sublayers_server.model.game_log_messages import LvlLogMessage, ExpLogMessage
+from sublayers_server.model.utils import getKarmaName
 
 from itertools import chain
 
@@ -47,7 +48,7 @@ class Agent(Root):
     quick_flag = BooleanField(caption=u'Является ли этот агент агентом быстрой игры')
 
     # Карма и отношения
-    karma = FloatField(default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
+    karma = FloatField(default=0, caption=u"Значение кармы игрока", tags='client')  # значения от -100 до 100 имеют влияние
     npc_rel_list = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=RelationshipRec),
         caption=u'Список взаимоотношений игрока с NPCs',
@@ -217,6 +218,10 @@ class Agent(Root):
     @property
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
+
+    @property
+    def karma_name(self):
+        return getKarmaName(self.karma_norm)
 
     @property
     def quests(self):

@@ -1098,7 +1098,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfRPGMessage = function(event) {
-        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_agent.rpg_info = event.rpg_info;
         characterManager.redraw();
         locationManager.update();

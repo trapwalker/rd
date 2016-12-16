@@ -4,6 +4,13 @@
         cursor: url('/static/img/cursors/hyper.png'), pointer;
     }
 
+    #btn_screen_chat_hover.wait {
+        animation: location-btn-blink 1s steps(2, start) infinite;
+        -webkit-animation: location-btn-blink 1s steps(2, start) infinite;
+    }
+    @keyframes location-btn-blink { to { opacity: 0; } }
+    @-webkit-keyframes location-btn-blink { to { opacity: 0; } }
+
     .highlight-buildings { cursor: url('/static/img/cursors/hyper.png'), pointer; }
 
     .highlight-logo { cursor: url('/static/img/cursors/hyper.png'), pointer; }
@@ -234,7 +241,8 @@
                         id = id.replace('_area', '');
 
                         // Это необходимо сделать вне зависимости от активности кнопки
-                        $('#' + id + '_hover').css('display', 'none');
+                        if ($('#' + id + '_hover').attr('class') != 'wait')
+                            $('#' + id + '_hover').css('display', 'none');
 {#                        $('#' + id + '_pressed').css('display', 'none');#}
                         $('#' + id + '_text').removeClass('hover pressed');
 {#                        $('#' + id + '_text').removeClass('pressed');#}

@@ -425,6 +425,18 @@ function main() {
             audioManager.play('button_screen_hover');
         });
 
+
+    // Сохранение в куки значения аудиоплеера при уходе со страницы
+    window.onbeforeunload = function (e) {
+        radioPlayer.save_setting_to_cookie();
+    };
+}
+
+function getCookie(name) {
+  var matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
 function init_site_sound() {

@@ -28,7 +28,9 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateMineLogMessage,
                                                       TransactionMechanicLogMessage,
                                                       TransactionMechanicRepairLogMessage,
-                                                      TransactionTunerLogMessage)
+                                                      TransactionTunerLogMessage,
+                                                      TransactionTraderLogMessage,
+                                                      TransactionTrainerLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -404,7 +406,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             self.agent.example.set_balance(time=self.time, delta=-car_proto.price)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
@@ -462,7 +464,7 @@ class TransactionParkingSelect(TransactionTownNPC):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -503,7 +505,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
-        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -868,7 +870,8 @@ class TransactionTraderApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='trader')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
+        buy_list = []
+        sell_list = []
         agent = self.agent
         ex_car = agent.example.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -901,6 +904,7 @@ class TransactionTraderApply(TransactionTownNPC):
                 return
             item_sale_price = price.get_price(item=item_ex, agent=agent)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
+            sell_list.append(item_ex)
 
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
             tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item_ex.title, str(int(item_sale_price))))
@@ -927,6 +931,7 @@ class TransactionTraderApply(TransactionTownNPC):
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
             item_buy_price = price.get_price(item=price.item, agent=agent)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
             buy_price += item_buy_price
+            buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
             tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, price.item.title, str(int(item_buy_price))))
 
@@ -968,6 +973,8 @@ class TransactionTraderApply(TransactionTownNPC):
                                            info_string=msg).post()
         # Мессадж завершения транзакции
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        TransactionTraderLogMessage(agent=agent, time=self.time, buy_list=buy_list, sell_list=sell_list,
+                                    price=(buy_price - sale_price)).post()
 
         # Эвент для квестов
         self.agent.example.on_event(event=self, cls=quest_events.OnTraderTransaction)
@@ -1007,6 +1014,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
             return
         agent = self.agent
+        buy_skill_count = 0
+        perk_count = 0
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.example.exp)
@@ -1057,11 +1066,13 @@ class TransactionSetRPGState(TransactionTownNPC):
         price = 0
 
         # Проверка факта сброса скилов
+        old_sp = 0
         for skill_name in self.skills:
             if hasattr(agent.example, skill_name):
                 ex_skill = getattr(agent.example, skill_name, None)
                 need_value = ex_skill.value + (self.buy_skills[u'buy_' + skill_name] -
                                                getattr(self.agent.example, 'buy_' + skill_name).value)
+                old_sp += ex_skill.value
                 if self.skills[skill_name] < need_value:
                     price += npc.drop_price
                     break
@@ -1078,7 +1089,8 @@ class TransactionSetRPGState(TransactionTownNPC):
             if hasattr(agent.example, buy_skill_name):
                 buy_skill = getattr(agent.example, buy_skill_name, None)
                 for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
-                    price += buy_skill.price[val]
+                    price += buy_skill.price[val].price
+                    buy_skill_count += 1
 
         if price > agent.balance:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -1106,6 +1118,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             if perk_rec[u'state']:
                 if perk_rec['perk'] not in agent.example.perks:
                     agent.example.perks.append(perk_rec['perk'])
+                    perk_count += 1
             else:
                 if perk_rec['perk'] in agent.example.perks:
                     agent.example.perks.remove(perk_rec['perk'])
@@ -1119,6 +1132,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionTrainerLogMessage(agent=self.agent, time=self.time, skill_count=cur_sp - old_sp,
+                                     buy_skill_count=buy_skill_count, perk_count=perk_count, price=price).post()
 
 
 class BagExchangeStartEvent(TransactionTownNPC):

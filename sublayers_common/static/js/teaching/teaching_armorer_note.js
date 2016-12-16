@@ -20,6 +20,8 @@ var ArmorerTeachingNote = (function (_super) {
         this.need_rose_activate = true;  // Повернули ли мы хоть какой-то пулемёт
 
         this.last_item_direction = null;
+
+        chat.addMessageToLog('Все специалисты по модификации ТС находятся в здании “Сервис”.', true);
     }
 
     ArmorerTeachingNote.prototype.on_enter_location = function() {

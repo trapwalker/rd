@@ -40,6 +40,21 @@ class BarterLogMessage(Message):
         return d
 
 
+class QuestStartStopLogMessage(Message):
+    def __init__(self, action, quest, **kw):
+        super(QuestStartStopLogMessage, self).__init__(**kw)
+        self.action = action  # True = start quest
+        self.quest = quest
+
+    def as_dict(self):
+        d = super(QuestStartStopLogMessage, self).as_dict()
+        d.update(
+            action=self.action,
+            quest_caption=self.quest.caption,
+        )
+        return d
+
+
 class ExpLogMessage(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
@@ -64,6 +79,36 @@ class LvlLogMessage(Message):
         d = super(LvlLogMessage, self).as_dict()
         d.update(
             lvl=self.lvl
+        )
+        return d
+
+
+class InventoryChangeLogMessage(Message):
+    def __init__(self, incomings, outgoings, **kw):
+        super(InventoryChangeLogMessage, self).__init__(**kw)
+        self.incomings = incomings
+        self.outgoings = outgoings
+        items_info = dict()
+        agent_inventory_info = None if self.agent.inventory is None else self.agent.inventory.example.items_by_node_hash()
+        registry = self.agent.server.reg
+        for node_hash in set(outgoings.keys() + incomings.keys()):
+            if items_info.get(node_hash, None) is None:
+                if agent_inventory_info and agent_inventory_info.get(node_hash, None):
+                    items_info[node_hash] = agent_inventory_info[node_hash]
+                else:
+                    items_info[node_hash] = registry[node_hash.replace('reg:///registry/', '')]  # todo: ##migration
+        self.items_info = items_info
+        # print 'incomings ', incomings
+        # print 'outgoings ', outgoings
+        # for key, value in items_info.items():
+        #     print key, 'None' if value is None else value.title
+
+    def as_dict(self):
+        d = super(InventoryChangeLogMessage, self).as_dict()
+        items_info = self.items_info
+        d.update(
+            incomings=[dict(item_title=items_info[node_hash].title, value=value) for node_hash, value in self.incomings.items()],
+            outgoings=[dict(item_title=items_info[node_hash].title, value=value) for node_hash, value in self.outgoings.items()],
         )
         return d
 
@@ -141,7 +186,7 @@ class TransactionGasStationLogMessage(Message):
         d = super(TransactionGasStationLogMessage, self).as_dict()
         d.update(
             d_fuel=self.d_fuel,
-            tank_list=[tank.value_fuel for tank in self.tank_list],
+            tank_list=[tank.title for tank in self.tank_list],
         )
         return d
 
@@ -256,5 +301,45 @@ class TransactionTunerLogMessage(Message):
             pont_point=self.pont_point,
             setup_list=[item.title for item in self.setup_list],
             remove_list=[item.title for item in self.remove_list],
+        )
+        return d
+
+
+class TransactionTraderLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, buy_list, sell_list, price, **kw):
+        super(TransactionTraderLogMessage, self).__init__(**kw)
+        self.buy_list = buy_list
+        self.sell_list = sell_list
+        self.price = price
+
+    def as_dict(self):
+        d = super(TransactionTraderLogMessage, self).as_dict()
+        d.update(
+            price=self.price,
+            buy_list=[item.title for item in self.buy_list],
+            sell_list=[item.title for item in self.sell_list],
+        )
+        return d
+
+
+class TransactionTrainerLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, skill_count, buy_skill_count, perk_count, price, **kw):
+        super(TransactionTrainerLogMessage, self).__init__(**kw)
+        self.skill_count = skill_count
+        self.buy_skill_count = buy_skill_count
+        self.perk_count = perk_count
+        self.price = price
+
+    def as_dict(self):
+        d = super(TransactionTrainerLogMessage, self).as_dict()
+        d.update(
+            price=self.price,
+            skill_count=self.skill_count,
+            buy_skill_count=self.buy_skill_count,
+            perk_count=self.perk_count,
         )
         return d

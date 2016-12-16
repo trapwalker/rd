@@ -25,8 +25,9 @@ class InitAIQuickCar(Event):
 
 
 class AIQuickAgent(AI):
-    def __init__(self, time, **kw):
+    def __init__(self, time, car_proto, **kw):
         super(AIQuickAgent, self).__init__(time=time, **kw)
+        self._car_proto = car_proto
         self.create_ai_quest(time=time)
         self._quick_bot_kills = 0
         self._quick_bot_deaths = 0
@@ -54,8 +55,7 @@ class AIQuickAgent(AI):
     def on_timer_restart_car(self, event):
         if len(self.server.app.clients) < self.server.reg['world_settings'].quick_game_bot_count:
             # Добавить свою машинку на карту
-            car_proto_list = self.server.quick_game_bot_cars_proto
-            self.example.car = car_proto_list[random.randint(0, len(car_proto_list) - 1)].instantiate(fixtured=False)
+            self.example.car = self._car_proto.instantiate(fixtured=False)
             yield self.example.car.load_references()
             self.example.current_location = None
             self.current_location = None

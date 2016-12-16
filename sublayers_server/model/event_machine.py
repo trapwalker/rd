@@ -202,12 +202,18 @@ class Server(object):
         if not bot_count:
             bot_count = 0
         # Создать ботов
+        avatar_list = self.reg['world_settings'].avatar_list
+        role_class_list = self.reg['world_settings'].role_class_order
+        car_proto_list = self.quick_game_bot_cars_proto
+        car_proto_list_len = len(car_proto_list)
+        current_machine_index = 0
         for i in range(1, bot_count + 1):
             # Найти или создать профиль
             name = 'quick_bot_{}'.format(i)
             user = yield UserProfile.get_by_name(name=name)
             if user is None:
                 user = UserProfile(name=name, email='quick_bot_{}@1'.format(i), raw_password='1')
+                user.avatar_link = avatar_list[random.randint(0, len(avatar_list) - 1)]
                 yield user.save()
 
             # Создать AIQuickAgent
@@ -223,17 +229,28 @@ class Server(object):
                 )
                 yield agent_exemplar.load_references()
 
-                role_class_ex = self.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
+                agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
+                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
+                agent_exemplar.set_exp(time=self.get_time(), value=1005)
+                agent_exemplar.driving.value = random.randint(20, 40)
+                agent_exemplar.shooting.value = random.randint(20, 40)
+                agent_exemplar.masking.value = random.randint(20, 40)
+                agent_exemplar.leading.value = random.randint(20, 40)
+                agent_exemplar.trading.value = random.randint(20, 40)
+                agent_exemplar.engineering.value = random.randint(20, 40)
                 yield agent_exemplar.save(upsert=True)
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
-            AIQuickAgent(
+            car_proto = car_proto_list[current_machine_index % car_proto_list_len]
+            current_machine_index += 1
+            ai_agent = AIQuickAgent(
                 server=self,
                 user=user,
                 time=self.get_time(),
                 example=agent_exemplar,
+                car_proto=car_proto
             )
+
 
     def post_message(self, message):
         """

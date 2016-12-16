@@ -34,7 +34,9 @@ var WCanvasTargetPoint = (function (_super) {
             ctx.lineCap = 'round';
             ctx.setLineDash([8, 5]);
             ctx.lineWidth = 2;
-
+            // чтобы линия не наезжала на крестик
+            tp_ctx = summVector(tp_ctx, normVector(tp_ctx, -10));
+            // Отрисовка линии
             ctx.beginPath();
             ctx.moveTo(tp_ctx.x, tp_ctx.y);
             ctx.lineTo(0, 0);
@@ -46,6 +48,7 @@ var WCanvasTargetPoint = (function (_super) {
         ctx.save();
         var ctx_car_pos = mulScalVector(subVector(this.target_point, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        ctx.globalAlpha = 0.2;
         ctx.drawImage(this.icon_target_obj.img, -this.icon_target_obj.iconSize[0] >> 1, -this.icon_target_obj.iconSize[1] >> 1);
         ctx.restore();
 

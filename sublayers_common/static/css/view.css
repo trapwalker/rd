@@ -304,6 +304,10 @@ input:focus {
     pointer-events: auto;
 }
 
+.main-menu-btn-up:first-letter {
+    text-decoration: underline;
+}
+
 .main-menu-btn-up:hover {
     color: rgb(42, 253, 10);
 }

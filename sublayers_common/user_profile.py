@@ -47,7 +47,7 @@ class User(Document):
     car_index = IntField(default=None)
     ordinal_number = IntField(default=None)
     date_created = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)
-    avatar_link = StringField(default='/static/content/default_images/default_avatar_170_146.png', max_length=255)
+    avatar_link = StringField(default='/static/content/avatars/dog_def.png', max_length=255)
     teaching_state = StringField(default="", max_length=30)  # "" - не известно, "cancel" - отменено, "done" - завершено, "map" - карта, "city" - город
 
     def __init__(self, raw_password=None, email=None, **kw):
