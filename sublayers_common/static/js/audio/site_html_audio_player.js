@@ -528,9 +528,15 @@ var RadioPlayer = (function () {
         radioPlayer.current_channel_pointer_number = channel_index;
         radioPlayer.current_quality = quality_index;
         radioPlayer.set_volume(volume, true);
-        if (play) {
+        if (play == '1') {
             radioPlayer.click_power();
         }
+    };
+
+    RadioPlayer.prototype.save_setting_to_cookie = function() {
+        var value = (this.power_on ? '1':'0') + '_' + this.current_channel_pointer_number + '_' +
+            radioPlayer.current_quality + '_' + this.current_volume;
+        document.cookie = 'radio_player' + "=" + value;
     };
 
     return RadioPlayer;
