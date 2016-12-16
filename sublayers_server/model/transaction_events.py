@@ -17,6 +17,20 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
+from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage,
+                                                      TransactionHangarLogMessage,
+                                                      TransactionArmorerLogMessage,
+                                                      TransactionActivateTankLogMessage,
+                                                      TransactionParkingLogMessage,
+                                                      TransactionActivateRebuildSetLogMessage,
+                                                      TransactionActivateAmmoBulletsLogMessage,
+                                                      TransactionActivateRocketLogMessage,
+                                                      TransactionActivateMineLogMessage,
+                                                      TransactionMechanicLogMessage,
+                                                      TransactionMechanicRepairLogMessage,
+                                                      TransactionTunerLogMessage,
+                                                      TransactionTraderLogMessage,
+                                                      TransactionTrainerLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -76,7 +90,8 @@ class TransactionActivateTank(TransactionActivateItem):
         # замена полной канистры на пустую
         position = inventory.get_position(item=item)
         item.set_inventory(time=self.time, inventory=None)
-
+        # Отправить сообщение в игровой лог об активации Канистры
+        TransactionActivateTankLogMessage(agent=self.agent, time=self.time, item=item.example).post()
         # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
         tank_proto = item.example.post_activate_item
         if tank_proto:
@@ -113,6 +128,9 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
         # Починили машинку на нужное значение хп
         obj.set_hp(dhp=-item.example.build_points, time=self.time)
 
+        # Отправить сообщение в игровой лог
+        TransactionActivateRebuildSetLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+
 
 class TransactionActivateMine(TransactionActivateItem):
     def on_perform(self):
@@ -137,6 +155,9 @@ class TransactionActivateMine(TransactionActivateItem):
 
         # Поставить мину на карту
         SlowMineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
+
+        # Отправка сообщения в игровой лог
+        TransactionActivateMineLogMessage(agent=self.agent, time=self.time, item=item.example).post()
 
 
 class TransactionActivateRocket(TransactionActivateItem):
@@ -163,6 +184,9 @@ class TransactionActivateRocket(TransactionActivateItem):
         # запуск
         RocketStartEvent(starter=obj, time=self.time, example_rocket=item.example.generate_obj).post()
 
+        # Отправка сообщения в игровой лог
+        TransactionActivateRocketLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):
     # Активация патронов - пройти по всем орудиям и зарядиться в подходящие
@@ -186,6 +210,9 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
         for weapon in obj.weapon_list():
             if item.example.parent in weapon.items_cls_list:
                 weapon.set_item(item=item, time=self.time)
+
+        # Отправка сообщения о зарядке патроново # если нужно отправлять в какие оружия заряжены, то список можно сформировать в цикле выше
+        TransactionActivateAmmoBulletsLogMessage(agent=self.agent, time=self.time, item=item.example).post()
 
 
 class TransactionTownNPC(TransactionEvent):
@@ -278,6 +305,7 @@ class TransactionGasStation(TransactionTownNPC):
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
 
         # Далее заправляем канистры
+        tank_list_log = []
         old_inventory = ex_car.inventory.items[:]
         ex_car.inventory.items = []
         for item in old_inventory:
@@ -286,6 +314,7 @@ class TransactionGasStation(TransactionTownNPC):
                 yield new_tank.load_references()
                 new_tank.position = item.position
                 ex_car.inventory.items.append(new_tank)
+                tank_list_log.append(new_tank)
             else:
                 ex_car.inventory.items.append(item)
 
@@ -304,16 +333,15 @@ class TransactionGasStation(TransactionTownNPC):
         info_string = u'{}: Заправка {}NC'.format(date_str, str(sum_fuel))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionGasStationLogMessage(agent=agent, time=self.time, d_fuel=self.fuel, tank_list=tank_list_log).post()
 
 
 class TransactionHangarSell(TransactionTownNPC):
     def on_perform(self):
         super(TransactionHangarSell, self).on_perform()
-
         npc = self.get_npc_available_transaction(npc_type='hangar')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
         # Отправка сообщения о транзакции
@@ -324,11 +352,12 @@ class TransactionHangarSell(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
+        log_car = self.agent.example.car
         self.agent.example.set_balance(time=self.time, delta=self.agent.example.car.price)
         self.agent.example.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
-
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+        TransactionHangarLogMessage(agent=self.agent, time=self.time, car=log_car, price=log_car.price, action="sell").post()
 
 
 class TransactionHangarBuy(TransactionTownNPC):
@@ -365,6 +394,8 @@ class TransactionHangarBuy(TransactionTownNPC):
             if self.agent.example.car:
                 info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
                                                                str(car_proto.price - self.agent.example.car.price))
+                TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.car,
+                                            price=self.agent.example.car.price, action="sell").post()
             else:
                 info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-car_proto.price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
@@ -375,13 +406,13 @@ class TransactionHangarBuy(TransactionTownNPC):
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.car = car_example
-            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             self.agent.example.set_balance(time=self.time, delta=-car_proto.price)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
             # Эвент квестов
             self.agent.example.on_event(event=self, cls=quest_events.OnBuyCar)
-
+            TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -422,6 +453,7 @@ class TransactionParkingSelect(TransactionTownNPC):
             # todo: translate
             if agent_ex.car:
                 info_string = u'{}: Обмен на {}, -{}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
+                TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.car, price=0, action="leave").post()
             else:
                 info_string = u'{}: Забрал {}, {}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
@@ -432,7 +464,7 @@ class TransactionParkingSelect(TransactionTownNPC):
                 agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
                 agent_ex.car_list.append(agent_ex.car)
             agent_ex.car = car_list[self.car_number]
-            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+            self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
@@ -441,6 +473,8 @@ class TransactionParkingSelect(TransactionTownNPC):
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+
+            TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.car, price=summ_for_paying, action="select").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -467,14 +501,17 @@ class TransactionParkingLeave(TransactionTownNPC):
         agent_ex.car.last_parking_npc = npc.node_hash()
         # todo: сделать через обычный тип Date
 
+        car_example = agent_ex.car
         agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
         agent_ex.car_list.append(agent_ex.car)
         agent_ex.car = None
-        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
+        self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        TransactionParkingLogMessage(agent=self.agent, time=self.time, car=car_example, price=0,
+                                     action="leave").post()
 
 
 class TransactionArmorerApply(TransactionTownNPC):
@@ -488,7 +525,8 @@ class TransactionArmorerApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='armorer')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
+        setup_list = []
+        remove_list = []
         get_flags = '{}_f'.format
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -509,6 +547,7 @@ class TransactionArmorerApply(TransactionTownNPC):
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
                 # todo: добавить стоимость демонтажа итема
                 armorer_buffer.append(slot_value)
+                remove_list.append(slot_value)
                 setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по armorer_slots и обработка всех ситуаций)
@@ -544,6 +583,7 @@ class TransactionArmorerApply(TransactionTownNPC):
                         armorer_buffer.remove(search_item)
                         search_item.direction = self.armorer_slots[slot_name]['direction']
                         setattr(ex_car, slot_name, search_item)
+                        setup_list.append(search_item)
                     else:
                         log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s', item_weight,
                                     slot_name, slot_weight)
@@ -569,6 +609,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
 
 
 class TransactionMechanicApply(TransactionTownNPC):
@@ -582,6 +623,8 @@ class TransactionMechanicApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='mechanic')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
+        setup_list = []
+        remove_list = []
 
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -621,6 +664,7 @@ class TransactionMechanicApply(TransactionTownNPC):
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
                 # todo: добавить стоимость демонтажа итема
                 mechanic_buffer.append(slot_value)
+                remove_list.append(slot_value)
                 setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по mechanic_slots и обработка всех ситуаций)
@@ -643,6 +687,7 @@ class TransactionMechanicApply(TransactionTownNPC):
                     # todo: добавить стоимость монтажа итема
                     mechanic_buffer.remove(search_item)
                     setattr(ex_car, slot_name, search_item)
+                    setup_list.append(search_item)
 
         # Закидываем буффер в инвентарь
         position = 0
@@ -662,6 +707,7 @@ class TransactionMechanicApply(TransactionTownNPC):
         info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionMechanicLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
 
 
 class TransactionMechanicRepairApply(TransactionTownNPC):
@@ -708,6 +754,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         info_string = u'{}: Оставил {}, 0NC'.format(date_str, ex_car.title)
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionMechanicRepairLogMessage(agent=self.agent, time=self.time, hp=self.hp, price=repair_cost).post()
 
 
 class TransactionTunerApply(TransactionTownNPC):
@@ -721,6 +768,8 @@ class TransactionTunerApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='tuner')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
+        setup_list = []
+        remove_list = []
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
@@ -760,6 +809,7 @@ class TransactionTunerApply(TransactionTownNPC):
                 # todo: добавить стоимость демонтажа итема
                 tuner_buffer.append(slot_value)
                 setattr(ex_car, slot_name, None)
+                remove_list.append(slot_value)
 
         # Проход 2: устанавливаем новые итемы (проход по tuner_slots и обработка всех ситуаций)
         for slot_name in self.tuner_slots.keys():
@@ -781,6 +831,7 @@ class TransactionTunerApply(TransactionTownNPC):
                     # todo: добавить стоимость монтажа итема
                     tuner_buffer.remove(search_item)
                     setattr(ex_car, slot_name, search_item)
+                    setup_list.append(search_item)
 
         # Закидываем буффер в инвентарь
         position = 0
@@ -801,6 +852,8 @@ class TransactionTunerApply(TransactionTownNPC):
         info_string = info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionTunerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list,
+                                   price=0, pont_point=0).post()
 
 
 class TransactionTraderApply(TransactionTownNPC):
@@ -817,7 +870,8 @@ class TransactionTraderApply(TransactionTownNPC):
         npc = self.get_npc_available_transaction(npc_type='trader')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
-
+        buy_list = []
+        sell_list = []
         agent = self.agent
         ex_car = agent.example.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
@@ -850,6 +904,7 @@ class TransactionTraderApply(TransactionTownNPC):
                 return
             item_sale_price = price.get_price(item=item_ex, agent=agent)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
+            sell_list.append(item_ex)
 
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
             tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item_ex.title, str(int(item_sale_price))))
@@ -876,6 +931,7 @@ class TransactionTraderApply(TransactionTownNPC):
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
             item_buy_price = price.get_price(item=price.item, agent=agent)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
             buy_price += item_buy_price
+            buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
             tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, price.item.title, str(int(item_buy_price))))
 
@@ -917,6 +973,8 @@ class TransactionTraderApply(TransactionTownNPC):
                                            info_string=msg).post()
         # Мессадж завершения транзакции
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
+        TransactionTraderLogMessage(agent=agent, time=self.time, buy_list=buy_list, sell_list=sell_list,
+                                    price=(buy_price - sale_price)).post()
 
         # Эвент для квестов
         self.agent.example.on_event(event=self, cls=quest_events.OnTraderTransaction)
@@ -956,6 +1014,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
             return
         agent = self.agent
+        buy_skill_count = 0
+        perk_count = 0
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.example.exp)
@@ -1006,11 +1066,13 @@ class TransactionSetRPGState(TransactionTownNPC):
         price = 0
 
         # Проверка факта сброса скилов
+        old_sp = 0
         for skill_name in self.skills:
             if hasattr(agent.example, skill_name):
                 ex_skill = getattr(agent.example, skill_name, None)
                 need_value = ex_skill.value + (self.buy_skills[u'buy_' + skill_name] -
                                                getattr(self.agent.example, 'buy_' + skill_name).value)
+                old_sp += ex_skill.value
                 if self.skills[skill_name] < need_value:
                     price += npc.drop_price
                     break
@@ -1027,7 +1089,8 @@ class TransactionSetRPGState(TransactionTownNPC):
             if hasattr(agent.example, buy_skill_name):
                 buy_skill = getattr(agent.example, buy_skill_name, None)
                 for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
-                    price += buy_skill.price[val]
+                    price += buy_skill.price[val].price
+                    buy_skill_count += 1
 
         if price > agent.balance:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -1055,6 +1118,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             if perk_rec[u'state']:
                 if perk_rec['perk'] not in agent.example.perks:
                     agent.example.perks.append(perk_rec['perk'])
+                    perk_count += 1
             else:
                 if perk_rec['perk'] in agent.example.perks:
                     agent.example.perks.remove(perk_rec['perk'])
@@ -1068,6 +1132,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        TransactionTrainerLogMessage(agent=self.agent, time=self.time, skill_count=cur_sp - old_sp,
+                                     buy_skill_count=buy_skill_count, perk_count=perk_count, price=price).post()
 
 
 class BagExchangeStartEvent(TransactionTownNPC):

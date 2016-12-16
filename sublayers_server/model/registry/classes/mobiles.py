@@ -243,7 +243,7 @@ class Mobile(Root):
     def exp(self):
         return self._exp
 
-    def set_exp(self, value=None, dvalue=None):
+    def set_exp(self, time, value=None, dvalue=None):
         if value is not None:
             self._exp = value
         if dvalue is not None:

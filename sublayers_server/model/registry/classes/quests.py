@@ -14,6 +14,8 @@ from sublayers_server.model.registry.odm.fields import (
     UniReferenceField, StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
 )
 from sublayers_server.model.vectors import Point
+from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
+
 
 from functools import partial, wraps
 import random
@@ -427,6 +429,8 @@ class Quest(Root):
         assert new_state
         assert not self.abstract
 
+        old_status = self.status
+
         if isinstance(new_state, QuestState):
             new_state_id = new_state.id
         elif isinstance(new_state, basestring):
@@ -451,6 +455,11 @@ class Quest(Root):
         agent_model = self.agent and self.agent._agent_model
         if agent_model:
             QuestUpdateMessage(agent=agent_model, time=event.time, quest=self).post()
+            if self.status == 'active' and old_status is None:  # quest started
+                QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=True).post()
+            if self.status == 'end' and old_status == 'active':  # quest finished
+                QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
+
 
     def make_global_context(self):
         ctx = dict(
@@ -553,10 +562,11 @@ class Quest(Root):
     def give_items(self, items, event):
         if not self.can_give_items(items=items, event=event):
             return False
+        total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
         for item in items:
             self.agent.car.inventory.items.append(item)
         if self.agent._agent_model:
-            self.agent._agent_model.reload_inventory(time=event.time, save=False)
+            self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def can_take_items(self, items, event):
@@ -578,10 +588,11 @@ class Quest(Root):
     def take_items(self, items, event):
         if not self.can_take_items(items=items, event=event):
             return False
+        total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
         for item in items:
             self.agent.car.inventory.del_item(item=item, count=item.amount)
         if self.agent._agent_model:
-            self.agent._agent_model.reload_inventory(time=event.time, save=False)
+            self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def npc_replica(self, npc, replica, event):

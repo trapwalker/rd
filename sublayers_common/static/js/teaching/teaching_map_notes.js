@@ -40,6 +40,11 @@ var NoActionTeachingMapNote = (function (_super) {
             this.old_z_index = $('#' + this.elem_id_str).css('z-index');
             $('#' + this.elem_id_str).css('z-index', '2000');
         }
+        this.set_game_log_text(window.mainDiv);
+    };
+
+    NoActionTeachingMapNote.prototype.set_game_log_text = function(jq_window) {
+        chat.addMessageToLog(jq_window.find('.map-teaching-text-block').text(), true);
     };
 
     NoActionTeachingMapNote.prototype.on_close_note_window = function() {
@@ -93,9 +98,9 @@ var CruiseZoneTeachingMapNote = (function (_super) {
 
     CruiseZoneTeachingMapNote.prototype.redraw = function() {
         if (interface_scale_big)
-            this.draw_arrow(teachingMapManager.context, new Point(-65, -150), 0);
+            this.draw_arrow(teachingMapManager.context, new Point(-65, -110), 0);
         else
-            this.draw_arrow(teachingMapManager.context, new Point(-50, -115), 0);
+            this.draw_arrow(teachingMapManager.context, new Point(-50, -85), 0);
     };
 
     return CruiseZoneTeachingMapNote;

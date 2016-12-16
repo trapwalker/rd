@@ -52,8 +52,8 @@ class Skill(Root):
 
 
 class SkillPriceItem(Subdoc):
-    count = IntField(caption=u"Количество")
-    price = FloatField(caption=u"Цена")
+    count = IntField(caption=u"Количество", tags='client')
+    price = FloatField(caption=u"Цена", tags='client')
 
 
 class BuySkill(Root):

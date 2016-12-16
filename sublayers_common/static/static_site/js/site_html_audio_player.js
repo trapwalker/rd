@@ -334,6 +334,34 @@ var RadioPlayer = (function () {
         this.set_channel_carrete(scale_length_new * carrete_pos / scale_length_old);
     };
 
+    // не работает! потому что это сайт! потому что много вёрстки!
+    RadioPlayer.prototype.set_state = function (play, channel_index, quality_index, volume) {
+        //console.log('RadioPlayer.prototype.set_state', play, channel_index, quality_index, volume);
+        radioPlayer.current_channel_pointer_number = channel_index;
+
+        if (this.jq_quality_btn) {
+            if (quality_index == '1') {
+                this.jq_quality_btn.removeClass('high-quality');
+                this.jq_quality_btn.addClass('super-quality');
+            }
+            else {
+                this.jq_quality_btn.removeClass('super-quality');
+                this.jq_quality_btn.addClass('high-quality');
+            }
+        }
+
+        radioPlayer.set_volume(volume, true);
+        if (play == '1') {
+            radioPlayer.click_power();
+        }
+    };
+
+    RadioPlayer.prototype.save_setting_to_cookie = function() {
+        var value = (this.power_on ? '1':'0') + '_' + this.current_channel_pointer_number + '_' +
+            (this.jq_quality_btn.hasClass('high-quality') ? '0':'1') + '_' + this.current_volume;
+        document.cookie = 'radio_player' + "=" + value;
+    };
+
     return RadioPlayer;
 })();
 

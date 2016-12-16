@@ -46,6 +46,7 @@ $(document).ready(function () {
 
     window.onbeforeunload = function (e) {
         cookieStorage.save();
+        radioPlayer.save_setting_to_cookie();
     };
 
     chat.setActivePage(chat.page_global);
@@ -139,6 +140,24 @@ $(document).ready(function () {
 
     // Установка размеров экрана города
     resizeWindowHandler();
+
+    // Работа со звуком
+    init_site_sound();
+    initRadioPlayer();
+
+    setTimeout(function() {
+        var radio_settings = cookieStorage.getCookie('radio_player');
+        if (radio_settings){
+            try {
+                var settings = radio_settings.split('_');
+                radioPlayer.set_state(settings[0], parseInt(settings[1]), parseInt(settings[2]), parseFloat(settings[3]));
+            }
+            catch (err) {
+                console.error('Incorrect RadioPlayer settings: ', radio_settings);
+            }
+        }
+        //radioPlayer.set_state(true, 0, 1, 0.85);
+    }, 1000);
 });
 
 var index_notes_test = 0;
@@ -214,22 +233,8 @@ function addTestNotes() {
 
 function init_site_sound() {
     audioManager.gain_all(1.0);
-
-    //audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
-    //audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.5);
-    //audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'}, null, null, 0.5);
-    //audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'}, null, null, 0.65);
-    //audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'}, null, null, 1.0);
     audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
-    //audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 1.0);
-    //audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.8);
-    //audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.6);
     audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
-    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.2);
-
-    // audioKeyboard = new AudioKeyboard([
-    //     audioManager.get('key_cl_1')
-    // ]);
 }
 
 var interface_scale_big = true;
@@ -240,9 +245,9 @@ var img = [];
 var img1;
 var window_scaled_prc = 1.0;
 
-init_site_sound();
 
-initRadioPlayer();
+
+
 
 function returnFocusToMap() {
     document.getElementById('map').focus();

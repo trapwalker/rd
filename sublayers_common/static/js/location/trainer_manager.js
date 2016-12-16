@@ -138,7 +138,7 @@ var LocationTrainerNPC = (function (_super) {
             if (this.buy_skills.hasOwnProperty(buy_skill_name)) {
                 var buy_skill = this.buy_skills[buy_skill_name];
                 for (var val = buy_skill.value; val > buy_skill.start_value; val--)
-                    price += buy_skill.price[val];
+                    price += buy_skill.price[val].price;
             }
 
         return price;
@@ -373,7 +373,7 @@ var LocationTrainerNPC = (function (_super) {
                 var buy_skill = this.buy_skills[buy_skill_name];
                 if (!buy_skill.select) continue;
                 if (buy_skill.price.hasOwnProperty(buy_skill.value + 1))
-                    update_price += buy_skill.price[(buy_skill.value + 1)];
+                    update_price += buy_skill.price[(buy_skill.value + 1)].price;
                 else
                     console.warn('Ошибка вычисления цены апдейта');
             }

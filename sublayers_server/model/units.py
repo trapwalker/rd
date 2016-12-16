@@ -364,7 +364,7 @@ class Unit(Observer):
         # Начисление опыта и фрага машинке
         self.example.set_frag(dvalue=1)  # начисляем фраг машинке
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
-        self.example.set_exp(dvalue=d_car_exp) # начисляем опыт машинке
+        self.example.set_exp(dvalue=d_car_exp, time=event.time) # начисляем опыт машинке
 
 
 class Mobile(Unit):

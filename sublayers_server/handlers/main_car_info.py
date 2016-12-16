@@ -34,7 +34,7 @@ class PersonInfoHandler(BaseHandler):
         agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         person = None
         if person_name:
-            log.debug('Person Name is %s', person_name)
+            # log.debug('Person Name is %s', person_name)
             person = self.application.srv.agents_by_name.get(str(person_name), None)
         if agent is None or person is None:
             log.warning('Agent not found in database')

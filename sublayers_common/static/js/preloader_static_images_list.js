@@ -61,7 +61,7 @@
         '/static/img/cruise/limit_wood.png?' + random_str(),
         '/static/img/cruise/limit_road.png?' + random_str(),
         '/static/img/cruise/limit_water.png?' + random_str(),
-        '/static/img/cruise/limit_mountains.png?' + random_str(),
+        '/static/img/cruise/limit_slope.png?' + random_str(),
         '/static/img/cruise/r_btn.png?' + random_str(),
         '/static/img/cruise/r_btn_over.png?' + random_str(),
         '/static/img/cruise/r_btn_pressed.png?' + random_str(),
