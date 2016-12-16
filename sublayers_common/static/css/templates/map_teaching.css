@@ -8,12 +8,12 @@
 .map-teaching-window-main.cruise_zone          { height: 245px; width: 434px; }
 .map-teaching-window-main.cruise_speed_control { height: 265px; width: 434px; }
 .map-teaching-window-main.cruise_speed_btn     { height: 300px; width: 442px; }
-.map-teaching-window-main.driving_control      { height: 250px; width: 450px; }
-.map-teaching-window-main.cruise_radial        { height: 250px; width: 450px; }
-.map-teaching-window-main.zoom_slider          { height: 250px; width: 450px; }
-.map-teaching-window-main.discharge_shooting   { height: 250px; width: 450px; }
-.map-teaching-window-main.auto_shooting        { height: 250px; width: 450px; }
-.map-teaching-window-main.try_kill             { height: 250px; width: 450px; }
+.map-teaching-window-main.driving_control      { height: 275px; width: 450px; }
+.map-teaching-window-main.cruise_radial        { height: 330px; width: 458px; }
+.map-teaching-window-main.zoom_slider          { height: 230px; width: 450px; }
+.map-teaching-window-main.discharge_shooting   { height: 275px; width: 458px; }
+.map-teaching-window-main.auto_shooting        { height: 275px; width: 458px; }
+.map-teaching-window-main.try_kill             { height: 275px; width: 458px; }
 
 .map-teaching-content-wrap {
     position: relative;
@@ -196,4 +196,85 @@
     text-align: center;
     line-height: 70px;
     font-size: 14pt;
+}
+
+.map-teaching-img-block-inputs-other {
+    width: 245px;
+    height: 100px;
+    float: left;
+    text-align: center;
+    line-height: 100px;
+    font-size: 14pt;
+}
+
+.map-teaching-img-block-cursor-other {
+    width: 120px;
+    height: 100px;
+    float: left;
+    background-repeat: no-repeat;
+    background-position: right;
+    background-image: url('/static/img/cruise/speed_mark.png');
+}
+
+.map-teaching-img-block-cursor-digits-block-other {
+    color: #2afd0a;
+    font-family: Gruppo-Regular;
+    margin-top: 10px;
+    margin-left: 50px;
+}
+
+.map-teaching-indicators {
+    width: 452px;
+    height: 135px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/cruise/indicators_cut.png');
+}
+
+.map-teaching-zoom {
+    margin: 20px 0px 15px 170px;
+    float: left;
+}
+
+.map-teaching-zoom-minus {
+    width: 35px;
+    color: lime;
+    border: 1px #00ff55 solid;
+    border-radius: 1px;
+    background-color: rgba(0, 255, 85, 0.10);
+    float: left;
+    text-align: center;
+    font-size: 16pt;
+    line-height: 15px;
+}
+
+.map-teaching-zoom-plus {
+    font-family: Arial;
+    margin-right: 30px;
+}
+
+.map-teaching-sector {
+    width: 452px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/sector_1.png');
+}
+
+.map-teaching-sector-auto {
+    width: 452px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/sector_2.png');
+}
+
+.map-teaching-img {
+    width: 452px;
+    height: 75px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('/static/img/img.png');
+    line-height: 75px;
+    text-align: center;
 }
