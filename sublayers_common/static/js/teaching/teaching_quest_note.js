@@ -14,7 +14,7 @@ var GetQuestTeachingNote = (function (_super) {
         this.first_quest = new Point(850, 370);
         this.buy_btn = new Point(325, 608);
 
-        chat.addMessageToLog('Теперь Вы готовы к выполнению первой работы. Посмотреть предлагаемые задания можно в любом здании. Например у мэра.');
+        chat.addMessageToLog('Теперь Вы готовы к выполнению первой работы. Посмотреть предлагаемые задания можно в любом здании. Например у мэра.', true);
     }
 
     GetQuestTeachingNote.prototype.on_enter_location = function() {

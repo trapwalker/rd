@@ -291,6 +291,8 @@ var ViewMessengerGlass = (function () {
 
     // Добавление сообщений в окно чата
     ViewMessengerGlass.prototype.addMessageByJID = function (room_jid, aUser, aText, time) {
+        //console.log('ViewMessengerGlass.prototype.addMessageByJID');
+
         // Найти чат для добавления в него сообщения
         var chat = this._getChatByJID(room_jid);
         if(! chat) {
@@ -321,8 +323,15 @@ var ViewMessengerGlass = (function () {
         // Проверить, если своё сообщение, то добавить к спану класс совего сообщения
         if (aUser.login == user.login)
             mesDiv.addClass("my-user");
-        if (aText.indexOf('@' + user.login) >= 0)
+        if (aText.indexOf('@' + user.login) >= 0) {
             mesDiv.addClass("for-my-user");
+            var jq_page = $(chat.page_selector);
+            if ((jq_page) && (!jq_page.hasClass('active')))
+                $(jq_page.selector).addClass('wait');
+            if (locationManager.location_chat)
+                locationManager.location_chat.get_important_msg();
+        }
+        // Мигание вкладки чата
         if ((this.activeChat != chat) && (chat.pageButton))
             chat.pageButton.addClass('wait');
         // Показать сообщение, опустив скрол дива
@@ -357,6 +366,7 @@ var ViewMessengerGlass = (function () {
             if (page == aPage) {
                 aPage.pageArea.addClass('VMGChatOutAreaActive');
                 aPage.pageButton.addClass('active');
+                aPage.pageButton.removeClass('wait');
             }
             else {
                 page.pageArea.removeClass('VMGChatOutAreaActive');
@@ -489,7 +499,8 @@ var ViewMessengerGlass = (function () {
             chatArea: $('<div id="_charArea' + room_jid + '" class="VMGChatOutArea VMGChatAreaScroll"></div>'),
             pageButton: pageButton,
             mesList: [],
-            mesCount: 0
+            mesCount: 0,
+            page_selector: '#pageButtonGlobal'
         };
 
         this.page_global.chatArea.append(chat.chatArea);
@@ -664,7 +675,7 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "BarterLogMessage":
                     if (msg.action == "invite")
-                        this.addMessageToLog('Игрок - ' + msg.apponent + ' приглашает вас в бартер.');
+                        this.addMessageToLog('Игрок - ' + msg.apponent + ' приглашает вас в бартер.', true);
                     if (msg.action == "start")
                         this.addMessageToLog('Активирован бартер с игроком - ' + msg.apponent + '.');
                     if (msg.action == "end")
@@ -674,13 +685,13 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog('Получено ' + msg.d_exp + ' очков опыта.');
                     break;
                 case "LvlLogMessage":
-                    this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.');
+                    this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.', true);
                     break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action)
                         this.addMessageToLog('Получен квест: ' + msg.quest_caption + '.');
                     else
-                        this.addMessageToLog('Выполнен квест: ' + msg.quest_caption + '.');
+                        this.addMessageToLog('Выполнен квест: ' + msg.quest_caption + '.', true);
                     break;
                 case 'InventoryChangeLogMessage':
                     // console.log('InventoryChangeLogMessage', msg);
@@ -692,7 +703,6 @@ var ViewMessengerGlass = (function () {
                         s = s.substr(0, s.length - 1) + '.';
                         this.addMessageToLog(s);
                     }
-
                     if (msg.incomings && msg.incomings.length) {
                         var s = 'Получено: ';
                         for (var i = 0; i < msg.incomings.length; i++) {
@@ -701,10 +711,9 @@ var ViewMessengerGlass = (function () {
                         s = s.substr(0, s.length - 1) + '.';
                         this.addMessageToLog(s);
                     }
-
                     break;
                 case "WeaponAmmoFinishedLogMessage":
-                    this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.');
+                    this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.', true);
                     break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
@@ -823,7 +832,8 @@ var ViewMessengerGlass = (function () {
             room_jid: null,
             chatArea: $('<div id="textAreaParty" class="VMGPartytextOutArea"></div>'),
             mesList: [],
-            mesCount: 0
+            mesCount: 0,
+            page_selector: '#pageButtonParty'
         };
 
         var page = {
@@ -1047,7 +1057,7 @@ var ViewMessengerGlass = (function () {
         return true;
     };
 
-    ViewMessengerGlass.prototype.addMessageToLog = function (aText) {
+    ViewMessengerGlass.prototype.addMessageToLog = function (aText, aImportant) {
         // Найти чат для добавления в него сообщения
         var chat = this.page_log.log_chat;
         if(! chat) {
@@ -1067,6 +1077,14 @@ var ViewMessengerGlass = (function () {
         chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanText);
+        // Если важное то подсветить сообщение и включить мигание кнопки страницы если она не активна
+        if (aImportant) {
+            mesDiv.addClass("for-my-user");
+            var jq_page_btn = $('#pageButtonLog');
+            if (!jq_page_btn.hasClass('active')) jq_page_btn.addClass('wait');
+            if (locationManager.location_chat)
+                locationManager.location_chat.get_important_msg();
+        }
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat
@@ -1124,6 +1142,11 @@ var ViewMessengerGlass = (function () {
         chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanText);
+        // Все системные сообщения важные потому подсвечиваем кнопку страницы
+        var jq_page_btn = $('#pageButtonSys');
+        if (!jq_page_btn.hasClass('active')) jq_page_btn.addClass('wait');
+        if (locationManager.location_chat)
+            locationManager.location_chat.get_important_msg();
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast',function() {chat.chatArea.scrollTop(99999999)});
         // Добавить mesDiv и spanUser в mesList для этого chat

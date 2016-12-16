@@ -21,7 +21,7 @@ var ArmorerTeachingNote = (function (_super) {
 
         this.last_item_direction = null;
 
-        chat.addMessageToLog('Все специалисты по модификации ТС находятся в здании “Сервис”.');
+        chat.addMessageToLog('Все специалисты по модификации ТС находятся в здании “Сервис”.', true);
     }
 
     ArmorerTeachingNote.prototype.on_enter_location = function() {

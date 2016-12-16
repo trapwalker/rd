@@ -44,7 +44,7 @@ var NoActionTeachingMapNote = (function (_super) {
     };
 
     NoActionTeachingMapNote.prototype.set_game_log_text = function(jq_window) {
-        chat.addMessageToLog(jq_window.find('.map-teaching-text-block').text());
+        chat.addMessageToLog(jq_window.find('.map-teaching-text-block').text(), true);
     };
 
     NoActionTeachingMapNote.prototype.on_close_note_window = function() {

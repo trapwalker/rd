@@ -13,7 +13,7 @@ var JournalTeachingNote = (function (_super) {
         this.active_groupe_btn = new Point(700, 330);
         this.quest_btn = new Point(695, 343);
 
-        chat.addMessageToLog('Зайдите в журнал.');
+        chat.addMessageToLog('Зайдите в журнал.', true);
     }
 
     JournalTeachingNote.prototype.redraw = function() {

@@ -17,7 +17,7 @@ var NukoilTeachingNote = (function (_super) {
         this.gas_coord = new Point(943, 318);
         this.buy_btn = new Point(325, 608);
 
-        chat.addMessageToLog('Транспорт без топлива бесполезен. Нукойны - электронная валюта Корпорации Нукойл. За 1 нукойн можно купить 1 литр топлива.');
+        chat.addMessageToLog('Транспорт без топлива бесполезен. Нукойны - электронная валюта Корпорации Нукойл. За 1 нукойн можно купить 1 литр топлива.', true);
     }
 
     NukoilTeachingNote.prototype.on_enter_location = function() {
