@@ -42,8 +42,6 @@ var RadioPlayer = (function () {
 
         this.news_text = 'ЗДЕСЬ МОГЛА БЫТЬ ВАША РЕКЛАМА! ТЕЛ. 555-555-555';
 
-        this.volume_level = 25;
-
         // timeout на загрузку радио при старте проигрывания
         this.timer_for_buffer = null;
 
@@ -76,9 +74,6 @@ var RadioPlayer = (function () {
             var x2 = event.clientX;
             self.set_channel_carrete(x2 - x1 - constHtmlSize[currentSiteSize].offset_click_scale);
         });
-
-        // Дисплей и работа с ним
-        this.jq_display = $('.radio-screen-content').first();
 
         // Работа с громкостью
         this.jq_volume_indicator = $('.radio-volume-indicator-block').first();
@@ -131,7 +126,6 @@ var RadioPlayer = (function () {
         this.current_volume = 0.5;
 
         // Инициализация при старте (всё выключено)
-        this.jq_display.css('display', 'none');
         this.jq_volume_indicator.css('display', 'none');
 
         // Эвенты на воспроизведение
@@ -236,12 +230,6 @@ var RadioPlayer = (function () {
         //
         this.play_started = true;
 
-        //this.jq_btn_stop.css({display: 'block'});
-        //this.jq_btn_play.css({display: 'none'});
-
-        //this.jq_station_name.text(this.channels[this.get_channel_key()].name);
-        this.jq_display.removeClass('scan');
-        this.jq_display.addClass(this.channels[this.get_channel_key()].screen_class);
     };
 
     RadioPlayer.prototype.load_buffer_timeout = function () {
@@ -267,11 +255,11 @@ var RadioPlayer = (function () {
             return;
         }
         var new_scr = this.channels[radio_key].link;
-        this.jq_current_channel.text(this.channels[radio_key].name);
-        this.radio_window_header_channel.text(this.channels[radio_key].name);
+        if (this.jq_current_channel) this.jq_current_channel.text(this.channels[radio_key].name);
+        if (this.radio_window_header_channel) this.radio_window_header_channel.text(this.channels[radio_key].name);
 
         var logo_url_str = "url('" + this.channels[radio_key].logo_url + "')";
-        this.radio_window_header_logo.css('background-image', logo_url_str);
+        if (this.radio_window_header_logo) this.radio_window_header_logo.css('background-image', logo_url_str);
 
         if (this.playing && this.audio.src == new_scr) {
             console.warn('Нет смысла нажимать play для неизменившегося source', radio_key);
@@ -289,10 +277,6 @@ var RadioPlayer = (function () {
 
         // Запуск шума в цикле
         audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 35);
-        // Смена названия радиостанции на "поиск"
-        //this.jq_station_name.text(RadioNameSwitchText);
-        this.jq_display.removeClass('junk maddog rrn town vigilante');
-        this.jq_display.addClass('scan');
     };
 
     RadioPlayer.prototype.click_stop = function (event) {
@@ -309,25 +293,29 @@ var RadioPlayer = (function () {
     RadioPlayer.prototype.click_power = function (event) {
         if (this.power_on) {
             this.click_stop();
-            this.jq_power_btn.removeClass('active');
-            this.jq_power_btn.text('ВЫКЛ');
-            this.jq_quality_btn.removeClass('active');
-            this.jq_display.css('display', 'none');
-            this.jq_volume_indicator.css('display', 'none');
+            if (this.jq_power_btn && this.jq_quality_btn && this.jq_volume_indicator) {
+                this.jq_power_btn.removeClass('active');
+                this.jq_power_btn.text('ВЫКЛ');
+                this.jq_quality_btn.removeClass('active');
+                this.jq_volume_indicator.css('display', 'none');
+            }
             this.power_on = false;
             audioManager.stop('radio_noise_switch');
             this.ticker_destroy();
-            this.jq_current_channel.text('...');
-            this.radio_window_header_channel.text('...');
-            this.radio_window_header_logo.css('background-image', 'url("/static/img/radio/no_logo.png")');
+            if (this.jq_current_channel && this.radio_window_header_channel && this.radio_window_header_logo) {
+                this.jq_current_channel.text('...');
+                this.radio_window_header_channel.text('...');
+                this.radio_window_header_logo.css('background-image', 'url("/static/img/radio/no_logo.png")');
+            }
         }
         else {
             this.click_play();
-            this.jq_power_btn.addClass('active');
-            this.jq_power_btn.text('ВКЛ');
-            this.jq_quality_btn.addClass('active');
-            this.jq_display.css('display', 'block');
-            this.jq_volume_indicator.css('display', 'block');
+            if (this.jq_power_btn && this.jq_quality_btn && this.jq_volume_indicator) {
+                this.jq_power_btn.addClass('active');
+                this.jq_power_btn.text('ВКЛ');
+                this.jq_quality_btn.addClass('active');
+                this.jq_volume_indicator.css('display', 'block');
+            }
             this.power_on = true;
             // Отстроить звук
             this.set_volume(this.current_volume, true);
@@ -386,6 +374,7 @@ var RadioPlayer = (function () {
 
     // СОЗДАНИЕ И ОБНОВЛЕНИЕ БЕГУЩЕЙ СТРОКИ
     RadioPlayer.prototype.ticker_create = function (ticker_string) {
+        if (! this.radio_window_header_ticker) return;
         this.radio_window_header_ticker.css({"overflow": "hidden", "width": "100%"});
         this.radio_window_header_ticker.text(ticker_string);
 
@@ -413,12 +402,14 @@ var RadioPlayer = (function () {
 
     // УНИЧТОЖЕНИЕ БЕГУЩЕЙ СТРОКИ
     RadioPlayer.prototype.ticker_destroy = function () {
+        if (! this.radio_window_header_ticker) return;
         this.radio_window_header_ticker.empty();
         this.radio_window_header_ticker.text('...');
         this.radio_window_header_ticker_displayed = false;
     };
 
     RadioPlayer.prototype.update = function () {
+        //console.log('RadioPlayer.prototype.update', this);
         var self = this;
 
         this.radio_window_header_channel = $('.radio-window-header-channel').first();
@@ -453,9 +444,8 @@ var RadioPlayer = (function () {
                 $('.radio-volume-scale-hover').width(val * width_orig);
                 self.set_volume(val.toFixed(2));
                 var volume_text = val * 100;
-                self.volume_level = volume_text;
                 self.radio_window_header_ticker.text('Volume : ' + volume_text.toFixed(0));
-                this.radio_window_header_ticker_displayed = false;
+                self.radio_window_header_ticker_displayed = false;
             }
         });
 
@@ -471,9 +461,8 @@ var RadioPlayer = (function () {
                     $('.radio-volume-scale-hover').width(val * width_orig);
                     self.set_volume(val.toFixed(2));
                     var volume_text = val * 100;
-                    self.volume_level = volume_text;
                     self.radio_window_header_ticker.text('Volume : ' + volume_text.toFixed(0));
-                    this.radio_window_header_ticker_displayed = false;
+                    self.radio_window_header_ticker_displayed = false;
                 }
             }
         });
@@ -481,20 +470,20 @@ var RadioPlayer = (function () {
         this.jq_volume_disc.mouseleave(function () {
             self.volume_disc_active = false;
 
-            if (this.radio_window_header_ticker_displayed == false) {
+            if (self.radio_window_header_ticker_displayed == false) {
                 self.ticker_destroy();
                 self.ticker_create(self.news_text);
-                this.radio_window_header_ticker_displayed = true;
+                self.radio_window_header_ticker_displayed = true;
             }
         });
 
         this.jq_volume_disc.mouseup(function () {
             self.volume_disc_active = false;
 
-            if (this.radio_window_header_ticker_displayed == false) {
+            if (self.radio_window_header_ticker_displayed == false) {
                 self.ticker_destroy();
                 self.ticker_create(self.news_text);
-                this.radio_window_header_ticker_displayed = true;
+                self.radio_window_header_ticker_displayed = true;
             }
         });
 
@@ -523,17 +512,25 @@ var RadioPlayer = (function () {
                 this.jq_quality_btn.text('128');
             }
 
-            var radio_key = this.get_channel_key();
+            radio_key = this.get_channel_key();
             this.radio_window_header_channel.text(this.channels[radio_key].name);
             var logo_url_str = "url('" + this.channels[radio_key].logo_url + "')";
             this.radio_window_header_logo.css('background-image', logo_url_str);
 
-            var value = this.volume_level / 100;
-            var width_orig = $('.radio-volume-scale').width();
-            var val = value * width_orig;
-            $('.radio-volume-scale-hover').width(val);
+            // Установка текущего уровня громкости
+            $('.radio-volume-scale-hover').width(this.current_volume * $('.radio-volume-scale').width());
         }
 
+    };
+
+    RadioPlayer.prototype.set_state = function (play, channel_index, quality_index, volume) {
+        //console.log('RadioPlayer.prototype.set_state', play, channel_index, quality_index, volume);
+        radioPlayer.current_channel_pointer_number = channel_index;
+        radioPlayer.current_quality = quality_index;
+        radioPlayer.set_volume(volume, true);
+        if (play) {
+            radioPlayer.click_power();
+        }
     };
 
     return RadioPlayer;
@@ -543,8 +540,6 @@ var radioPlayer;
 
 function initRadioPlayer() {
     //console.log('initRadioPlayer !');
-    context = audioManager.get_ctx();
-
     radioPlayer = new RadioPlayer({
         name: 'p1',
         channels: {
