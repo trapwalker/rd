@@ -1175,3 +1175,63 @@ var ViewMessengerGlass = (function () {
 
     return ViewMessengerGlass;
 })();
+
+
+
+function fakeChat() {
+    chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Hell_Raizer98'},                                                                            // Отправитель
+        'hurt m3 pl3nty bitch >:o',                                                                        // Текст сообщения
+        new Date(2016, 7, 30, 12, 0, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+    chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Antihero'},                                                                            // Отправитель
+        'Hi my little piretes!))',                                                                     // Текст сообщения
+        new Date(2016, 7, 30, 12, 1, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+    chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Antihero'},                                                                            // Отправитель
+        'go fight with Mad_Dog',                                                                      // Текст сообщения
+        new Date(2016, 7, 30, 12, 2, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+	chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Hell_Raizer98'},                                                                            // Отправитель
+        'go fuck ur anus slavshit',                                                                     // Текст сообщения
+        new Date(2016, 7, 30, 12, 3, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+	chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Antihero'},                                                                            // Отправитель
+        'capital field miracle !',                                                                      // Текст сообщения
+        new Date(2016, 7, 30, 12, 4, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+	chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Hell_Raizer98'},                                                                            // Отправитель
+        'london is gone bout 80 yers ago',                                                                     // Текст сообщения
+        new Date(2016, 7, 30, 12, 5, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+	chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Flying_Legend'},                                                                            // Отправитель
+        'and where it is London? what is it?',                                                                     // Текст сообщения
+        new Date(2016, 7, 30, 12, 6, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+
+	chat.addMessageByJID(
+        'Radio_on_seven_hills',                                                                                     // Название радиовышки
+        {login: 'Hell_Raizer98'},                                                                            // Отправитель
+        'Putin are takes care bout it',                                                                     // Текст сообщения
+        new Date(2016, 7, 30, 12, 7, 0, 0).getTime()                                                    // Дата отправления (year, month, date, hours, minutes, seconds, ms)
+    );
+    }

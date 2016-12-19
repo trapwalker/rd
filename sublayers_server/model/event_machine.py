@@ -207,9 +207,10 @@ class Server(object):
         car_proto_list = self.quick_game_bot_cars_proto
         car_proto_list_len = len(car_proto_list)
         current_machine_index = 0
-        for i in range(1, bot_count + 1):
+        bots_names = self.reg['world_settings'].quick_game_bots_nick
+        for i in range(0, bot_count):
             # Найти или создать профиль
-            name = 'quick_bot_{}'.format(i)
+            name = 'quick_bot_{}'.format(i) if i >= len(bots_names) else bots_names[i]
             user = yield UserProfile.get_by_name(name=name)
             if user is None:
                 user = UserProfile(name=name, email='quick_bot_{}@1'.format(i), raw_password='1')
