@@ -2,11 +2,52 @@
 
 # Общее
 
-# Окно регистрации и авторизации  site_window_reg.html
-"Registration": "Registration"
-"Password": "PASSWORD>"
-"sign up": "Sign up"
-"Authorisation": "Authorisation"
-"Log In_1": "Enter"
-"Log In_2": "to system"
-"Repair Password": "Repair Password"
+# Окно регистрации и авторизации  site_window_reg.html  # swr
+swr_Registration: "Registration"
+swr_Password: "PASSWORD>"
+swr_sign up: "Sign up"
+swr_Authorisation: "Authorisation"
+swr_Log In_1: "Enter"
+swr_Log In_2: "to system"
+swr_Repair Password: "Repair Password"
+swr_1. enter_with_VK : 1. Enter VK
+swr_2. enter_with_FB : 2. Enter FB
+swr_3. enter_with_OK : 3. Enter OK
+swr_4. enter_with_G+ : 4. Enter G+
+
+
+# Окно регистрации  site_window_reg_1.html   # swr1
+swr1_nick and avatar : Nick and Avatar
+swr1_nick : NICK
+swr1_class : Class
+swr1_back : Back
+swr1_next : Next
+
+
+# Окно регистрации  site_window_reg_2.html   # swr2
+swr2_skills : Skills
+swr2_driving : Driving
+swr2_shooting : Shooting
+swr2_masking : Masking
+swr2_engineering : Engineering
+swr2_trading : Trading
+swr2_leading : Leading
+swr2_free_skills : "Free skills:"
+swr2_perks : Perks
+swr2_free_perks : "Free perks:"
+swr2_back : Back
+swr2_next : Next
+
+
+# Окно регистрации  site_window_reg_3.html   # swr3
+swr3_class : "Class:"
+swr3_date : "Date:"
+swr3_balance : "Balance:"
+swr3_skills : "Skills:"
+swr3_driving : "Driving:"
+swr3_shooting : "Shooting:"
+swr3_masking : "Masking:"
+swr3_engineering : "Engineering:"
+swr3_trading : "Trading:"
+swr3_leading : "Leading:"
+swr3_perks : "Perks:"
