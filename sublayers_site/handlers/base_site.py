@@ -12,7 +12,10 @@ from tornado.options import options
 import tornado.template
 from tornado.httpclient import AsyncHTTPClient
 from bson.objectid import ObjectId, InvalidId
-import json
+from functools import partial
+
+from sublayers_site.site_locale import locale
+
 
 
 class BaseSiteHandler(BaseHandler):
@@ -80,3 +83,16 @@ class BaseSiteHandler(BaseHandler):
             html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
+
+    def get_template_namespace(self):
+        namespace = super(BaseSiteHandler, self).get_template_namespace()
+        namespace.update(
+            _=partial(locale, self.user_lang)
+        )
+        return namespace
+
+    @tornado.gen.coroutine
+    def prepare(self):
+        yield super(BaseSiteHandler, self).prepare()
+        user_lang = self.get_cookie('lang', 'en')
+        self.user_lang = user_lang

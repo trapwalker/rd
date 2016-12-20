@@ -666,6 +666,34 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     background: transparent url(/static/static_site/img/site_sound_btn/sound_off_pressed.png) no-repeat 100% 100%;
 }
 
+.language-switch {
+    position: absolute;
+    width: 44px;
+    height: 14px;
+    right: 10px;
+    top: 0px;
+    overflow: hidden;
+    border: 1px solid #31c811;
+    border-radius: 0 0 4px 4px;
+    font-size: 10pt;
+    line-height: 14px;
+    text-align: center;
+}
+
+.language-switch div {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 100%;
+    color: #2ffa00;
+}
+
+.language-switch div.active {
+    color: #030f00;
+    background-color: #31c811;
+}
+
+
 /* RADIO !!!  */
 .radio-block {
     position: absolute;

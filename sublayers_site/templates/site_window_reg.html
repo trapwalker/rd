@@ -5,7 +5,7 @@
         <div class="window-reg-path">
             <div class="reg-path-up-header-block-header-block">
                 <div class="reg-path-up-header-block-back interlacing">
-                    <div class="reg-path-up-header-block-header buttons-and-headers">Регистрация</div>
+                    <div class="reg-path-up-header-block-header buttons-and-headers">{{ _("Registration") }}</div>
                 </div>
             </div>
             <div class="reg-path-up-text-input-block">
@@ -13,17 +13,17 @@
                 <input type="email" id="reg_email" autocomplete="off" onclick="RegEmailClick()">
             </div>
             <div class="reg-path-up-text-input-block">
-                <div class="reg-path-label">ПАРОЛЬ></div>
+                <div class="reg-path-label">{{ _('Password') }}</div>
                 <input type="password" id="reg_password" autocomplete="off" name="password" onclick="RegPasswordClick()">
             </div>
             <div class="window-reg-up-btn-block">
-                <div class="reg-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RegisterBtnClick();">Зарегистрироваться</div>
+                <div class="reg-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RegisterBtnClick();">{{ _('sign up') }}</div>
             </div>
         </div>
         <div class="window-reg-path right">
             <div class="reg-path-up-header-block-header-block">
                 <div class="reg-path-up-header-block-back interlacing">
-                    <div class="reg-path-up-header-block-header buttons-and-headers">Авторизация</div>
+                    <div class="reg-path-up-header-block-header buttons-and-headers">{{ _('Authorisation') }}</div>
                 </div>
             </div>
             <div class="reg-path-up-text-input-block">
@@ -31,12 +31,12 @@
                 <input type="email" id="auth_email" autocomplete="off" onclick="AuthEmailClick()">
             </div>
             <div class="reg-path-up-text-input-block">
-                <div class="reg-path-label">ПАРОЛЬ></div>
+                <div class="reg-path-label">{{ _('Password') }}</div>
                 <input type="password" id="auth_password" autocomplete="off" onclick="AuthPasswordClick()">
             </div>
             <div class="window-reg-up-btn-block">
-                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="AuthorisationBtnClick()"><span>Войти</span><span>в систему</span></div>
-                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RestorePasswordBtnClick()">Восстановить пароль</div>
+                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="AuthorisationBtnClick()"><span>{{ _('Log In_1') }}</span><span>{{ _('Log In_2') }}</span></div>
+                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RestorePasswordBtnClick()">{{ _('Repair Password') }}</div>
             </div>
         </div>
         <div class="window-reg-console-wrap">
