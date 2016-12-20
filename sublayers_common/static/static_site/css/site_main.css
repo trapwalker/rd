@@ -686,6 +686,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     width: 50%;
     height: 100%;
     color: #2ffa00;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 
 .language-switch div.active {
