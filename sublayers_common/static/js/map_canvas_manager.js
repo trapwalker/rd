@@ -21,8 +21,9 @@ var ParentCanvasManager = (function(_super){
     ParentCanvasManager.prototype.init_canvas = function() {
         this.canvas = document.getElementById(this.canvas_id);
         this.context = this.canvas.getContext("2d");
-        this.canvas.width = 1920;
-        this.canvas.height = 1080;
+        var a = map.getSize();
+        this.canvas.width = a.x;
+        this.canvas.height = a.y;
     };
 
     ParentCanvasManager.prototype.add_vobj = function(vobj, priority) {
@@ -115,8 +116,9 @@ var MapCanvasManager = (function(_super){
 
     MapCanvasManager.prototype.redraw = function(time) {
         if(! this.is_canvas_render) return;
+        var a = map.getSize();
         //console.log('MapCanvasManager.prototype.redraw', time);
-        this.context.clearRect(0, 0, 1920, 1080);
+        this.context.clearRect(0, 0, a.x, a.y);
 
         this._mouse_focus_widget = this.mouse_test();
 

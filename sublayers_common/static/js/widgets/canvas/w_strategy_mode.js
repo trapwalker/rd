@@ -61,7 +61,8 @@ var WStrategyModeManager = (function () {
         ctx.save();
         ctx.globalCompositeOperation = "xor";
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, 0, 1920, 1080);
+        var a = map.getSize();
+        ctx.fillRect(0, 0, a.x, a.y);
         ctx.restore();
 
         // Шум
@@ -157,7 +158,8 @@ var WStrategyModeManager = (function () {
         grad2.addColorStop(0.5, "rgba(0,0,0,1)");
         grad2.addColorStop(1, "rgba(0,0,0,1)");
         ctx.fillStyle = grad2;
-        ctx.fillRect(0, 0, 1920, 1080);
+        var a = map.getSize();
+        ctx.fillRect(0, 0, a.x, a.y);
 
 
         ctx.restore();  // Возврат транслейта
