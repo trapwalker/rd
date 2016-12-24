@@ -1,0 +1,149 @@
+/* =============================== site_main.css */
+.site-main-all-block .microwawe {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_microwave_body_003.png) no-repeat 100% 100%;
+}
+
+.btn-1 {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn1_normal.png) no-repeat 100% 100%;
+}
+.btn-1:hover {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn1_over.png) no-repeat 100% 100%;
+}
+.btn-1:active, .btn-1.active {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn1_pressed.png) no-repeat 100% 100%;
+}
+
+.btn-2 {   
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn2_normal.png) no-repeat 100% 100%;
+}
+.btn-2:hover {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn2_over.png) no-repeat 100% 100%;
+}
+.btn-2:active, .btn-2.active {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn2_pressed.png) no-repeat 100% 100%;
+}
+
+.btn-3 {   
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn3_normal.png) no-repeat 100% 100%;
+}
+.btn-3:hover {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn3_over.png) no-repeat 100% 100%;
+}
+.btn-3:active, .btn-3.active {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn3_pressed.png) no-repeat 100% 100%;
+}
+
+.btn-4 {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn4_normal.png) no-repeat 100% 100%;
+}
+.btn-4:hover {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn4_over.png) no-repeat 100% 100%;
+}
+.btn-4:active, .btn-4.active {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn4_pressed.png) no-repeat 100% 100%;
+}
+
+.btn-5 {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn5_normal.png) no-repeat 100% 100%;
+}
+.btn-5:hover {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn5_over.png) no-repeat 100% 100%;
+}
+.btn-5:active, .btn-5.active {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn5_pressed.png) no-repeat 100% 100%;
+}
+
+.btn-6 {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn6_normal.png) no-repeat 100% 100%;
+}
+.btn-6:hover {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn6_over.png) no-repeat 100% 100%;
+}
+.btn-6:active, .btn-6.active {
+    background: transparent url(/static/static_site/img/1366_june/ru/768_btn6_pressed.png) no-repeat 100% 100%;
+}
+
+
+@media screen and (min-width: 1367px) and (min-height: 801px) {
+    .site-main-all-block .microwawe {       
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_microwave_body_002.png) no-repeat 100% 100%;
+    }
+       
+    .btn-1 {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn1_normal.png) no-repeat 100% 100%;
+    }
+    .btn-1:hover {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn1_over.png) no-repeat 100% 100%;
+    }
+    .btn-1:active, .btn-1.active {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn1_pressed.png) no-repeat 100% 100%;
+    }
+   
+    .btn-2 {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn2_normal.png) no-repeat 100% 100%;
+    }
+    .btn-2:hover {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn2_over.png) no-repeat 100% 100%;
+    }
+    .btn-2:active, .btn-2.active {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn2_pressed.png) no-repeat 100% 100%;
+    }
+
+    .btn-3 {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn3_normal.png) no-repeat 100% 100%;
+    }
+    .btn-3:hover {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn3_over.png) no-repeat 100% 100%;
+    }
+    .btn-3:active, .btn-3.active {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn3_pressed.png) no-repeat 100% 100%;
+    }
+
+    .btn-4 {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn4_normal.png) no-repeat 100% 100%;
+    }
+    .btn-4:hover {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn4_over.png) no-repeat 100% 100%;
+    }
+    .btn-4:active, .btn-4.active {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn4_pressed.png) no-repeat 100% 100%;
+    }
+
+    .btn-5 {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn5_normal.png) no-repeat 100% 100%;
+    }
+    .btn-5:hover {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn5_over.png) no-repeat 100% 100%;
+    }
+    .btn-5:active, .btn-5.active {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn5_pressed.png) no-repeat 100% 100%;
+    }
+    
+    .btn-6 {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn6_normal.png) no-repeat 100% 100%;
+    }
+    .btn-6:hover {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn6_over.png) no-repeat 100% 100%;
+    }
+    .btn-6:active, .btn-6.active {
+        background: transparent url(/static/static_site/img/09-06-16/ru/1080_btn6_pressed.png) no-repeat 100% 100%;
+    }
+}
+
+
+/* =============================== site_window_reg_3.css */
+.reg3-btn.reg3-school { background: transparent url('/static/static_site/img/chip_buttons/ru/school.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/school_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-school:active {background: transparent url('/static/static_site/img/chip_buttons/ru/school_press.png') 100% 100% no-repeat;}
+
+.reg3-btn.reg3-novice {background: transparent url('/static/static_site/img/chip_buttons/ru/noob.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/noob_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-novice:active {background: transparent url('/static/static_site/img/chip_buttons/ru/noob_press.png') 100% 100% no-repeat;}
+
+.reg3-btn.reg3-back { background: transparent url('/static/static_site/img/chip_buttons/ru/back.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/back_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-back:active {background: transparent url('/static/static_site/img/chip_buttons/ru/back_press.png') 100% 100% no-repeat;}
+
+.reg3-btn.reg3-finish { background: transparent url('/static/static_site/img/chip_buttons/ru/start.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/start_over.png') 100% 100% no-repeat;}
+.reg3-btn.reg3-finish:active {background: transparent url('/static/static_site/img/chip_buttons/ru/start_press.png') 100% 100% no-repeat;}
