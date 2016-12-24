@@ -425,31 +425,31 @@ var ConsolePreloader = (function (_super) {
         this.max_load_data_number = 0;
         textConsoleManager.add(this);
 
-        this.add_message('user', 'Загрузка системы.');
-        this.add_message('system', 'Источник загрузки идентифицирован.');
-        this.add_message('user', 'Дешифровка загрузочного сектора.');
-        this.add_message('system', 'Успешно.');
-        this.add_message('user', 'Локализация сигнала.');
-        this.add_message('system', 'Местоположение определено.');
-        this.add_message('user', 'Фишинг спутников.');
-        this.add_message('system', 'Соединение со спутником установлено.');
+        this.add_message('user', _('con_pre_1'));
+        this.add_message('system', _('con_pre_2'));
+        this.add_message('user', _('con_pre_3'));
+        this.add_message('system', _('con_pre_4'));
+        this.add_message('user', _('con_pre_5'));
+        this.add_message('system', _('con_pre_6'));
+        this.add_message('user', _('con_pre_7'));
+        this.add_message('system', _('con_pre_8'));
         this.add_message(
             'system',
             '\n       ================================================\n' +
             '       >                                              <\n' +
-            '       >        Нюк Коммандер вер. ' + version + '         <\n' +
+            '       >        ' + _('con_pre_9') + version + '         <\n' +
             '       >                                              <\n' +
-            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
+            '       >         ' + _('con_pre_10') + '        <\n' +
             '       >                                              <\n' +
             '       ================================================\n'
         );
-        this.add_message('system', 'Статус сервера: \n' +
-            'Пользователей обнаружено: ' + all_users_registered);
+        this.add_message('system', _('con_pre_11') + '\n' +
+            _('con_pre_12') + all_users_registered);
 
-        this.add_message('system', 'Последняя новость:\n' +
+        this.add_message('system', _('con_pre_13') + '\n' +
             $('.window-news-news-content-block').children().first().text());
 
-        this.add_message('system', 'Загрузка данных:');
+        this.add_message('system', _('con_pre_14'));
         this.start();
 
     }

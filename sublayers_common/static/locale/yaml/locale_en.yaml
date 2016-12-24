@@ -125,3 +125,20 @@ con_wpi_2_3: "Ваш баланс:"  # translate
 con_wpi_2_4: "Ваши координаты:"  # translate
 con_wpi_2_5: "Ваша страховка:"  # translate
 con_wpi_2_6: "Активных заданий:"  # translate
+
+
+# Заполнение консоли: consoleWPI  # con_pre
+con_pre_1 : Load System.  # translate
+con_pre_2 : Источник загрузки идентифицирован.  # translate
+con_pre_3 : Дешифровка загрузочного сектора.  # translate
+con_pre_4 : Успешно.  # translate
+con_pre_5 : Локализация сигнала.  # translate
+con_pre_6 : Местоположение определено.  # translate
+con_pre_7 : Фишинг спутников.  # translate
+con_pre_8 : Соединение со спутником установлено.  # translate
+con_pre_9: Nuke Commander ver.  # translate
+con_pre_10: Корпорация (К) Нукойл 2084 г.  # translate
+con_pre_11: "Статус сервера: "  # translate
+con_pre_12: "Пользователей обнаружено: "  # translate
+con_pre_13: "Последняя новость: "  # translate
+con_pre_14: "Загрузка данных: "  # translate
