@@ -115,3 +115,13 @@ tpsi_masking : "Masking:"
 tpsi_engineering : "Engineering:"
 tpsi_trading : "Trading:"
 tpsi_leading : "Leading:"
+
+
+# Заполнение консоли: consoleWPI  # con_wpi
+con_wpi_1: Загрузка системы навигации.  # translate
+con_wpi_2_1: Success.  # translate
+con_wpi_2_2: "Welcome, "  # translate
+con_wpi_2_3: "Ваш баланс:"  # translate
+con_wpi_2_4: "Ваши координаты:"  # translate
+con_wpi_2_5: "Ваша страховка:"  # translate
+con_wpi_2_6: "Активных заданий:"  # translate
