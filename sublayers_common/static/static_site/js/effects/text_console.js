@@ -341,38 +341,26 @@ var ConsoleWReg = (function (_super) {
             placeholder: function() { return ''; }
         };
 
-
         this.add_message(
             'welcome',
             '\n       ================================================\n' +
             '       >                                              <\n' +
-            '       >        Нюк Коммандер вер. ' + version + '         <\n' +
+            '       >        ' + _('con_pre_9') + version + '         <\n' +
             '       >                                              <\n' +
-            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
+            '       >         ' + _('con_pre_10') + '        <\n' +
             '       >                                              <\n' +
-            '       ================================================'
+            '       ================================================\n'
         );
-        this.add_message('user', 'Загрузка системы навигации.');
-        this.add_message('system', 'Ошибка доступа.');
-        this.add_message('user', 'Загрузка протокола учета водителей.');
-        this.add_message(
-            'system',
-            'Загружено.\n\n' +
-            '--------------------------------------------------------------\n' +
-            'Для регистрации нового водителя в системе введите свою электронную почту и пароль или подключитесь через одну из внешних сетей.\n\n' +
-            'Если вы зарегистированный водитель, войдите в систему через меню авторизации или подключитесь через одну из внешних сетей.\n\n' +
-            'Нажмите <1> для vk.com\n' +
-            'Нажмите <2> для facebook.com\n' +
-            'Нажмите <3> для ok.ru\n' +
-            'Нажмите <4> для plus.google.com\n' +
-            '--------------------------------------------------------------'
-        );
+        //this.add_message('welcome', _('con_wreg_msg1_part1') + version + _('con_wreg_msg1_part2'));
+        this.add_message('user', _('con_wreg_msg2'));
+        this.add_message('system', _('con_wreg_msg3'));
+        this.add_message('user', _('con_wreg_msg4'));
+        this.add_message('system', _('con_wreg_msg5'));
 
         textConsoleManager.add(this);
     }
 
     ConsoleWReg.prototype.update_visible = function() {
-
     };
 
     return ConsoleWReg;

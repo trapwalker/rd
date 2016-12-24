@@ -113,12 +113,9 @@
     // Кнопки Вперед/Назад
     function Reg2NextBtnClick() {
         if ((reg2_skill_point != 0) || (reg2_perk_point != 0)) {
-            consoleWReg2.add_message('user', 'Создание образа карточки Нукойл.');
-            consoleWReg2.add_message('system',
-                    '> Ошибка. Обнаружены нераспределенные очки.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Распределите все свободные очки.\n' +
-                    '--------------------------------------------------------------');
+            consoleWReg2.add_message('user', _('con_wreg_msg48'));
+            consoleWReg2.add_message('system', _('con_wreg_msg49'));
+            'Распределите все свободные очки.\n' +
             audioManager.play('error_1');
             return;
         }
@@ -129,16 +126,16 @@
                 action: 'next'
             },
             success: function(data) {
-                consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
+                consoleWReg2.add_message('user', _('con_wreg_msg50'));
                 if (data.status == 'success') {
-                    consoleWReg2.add_message('system', 'Успешно.');
+                    consoleWReg2.add_message('system', _('con_wreg_msg51'));
                     GetUserInfo();
                     audioManager.play('button_screen_press');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
-                consoleWReg2.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                consoleWReg2.add_message('user', _('con_wreg_msg52'));
+                consoleWReg2.add_message('system', _('con_wreg_msg53'));
                 audioManager.play('error_1');
             }
         });
@@ -151,8 +148,8 @@
             data: { action: 'back' },
             success: function(data) { GetUserInfo(); audioManager.play('button_screen_press'); },
             error: function (jqXHR, textStatus, errorThrown) {
-                consoleWReg2.add_message('user', ' Активация процедуры регистрации.');
-                consoleWReg2.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                consoleWReg2.add_message('user', _('con_wreg_msg54'));
+                consoleWReg2.add_message('system', _('con_wreg_msg55'));
                 audioManager.play('error_1');
             }
         });
@@ -163,55 +160,25 @@
         var skill_name = $(this).data('skill_name');
         console.log(skill_name);
         if (skill_name)
-            consoleWReg2.add_message('user', 'Загрузка навыка:', true);
+            consoleWReg2.add_message('user', _('con_wreg_msg56'), true);
         switch (skill_name) {
             case 'driving':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Вождение.\n' +
-                    'Увеличивает максимальную скорость и маневренность управляемого транспорта. Сложный в управлении транспорт имеет свои требования к навыку вождения.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg57'));
                 break;
             case 'shooting':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Стрельба.\n' +
-                    'Увеличивает повреждения в секунду, наносимые автоматическими орудиями и повреждения от залповых. Сложные оружейные системы имеют свои требования к навыку стрельбы.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg58'));
                 break;
             case 'masking':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Скрытность.\n' +
-                    'Уменьшает дистанцию обнаружения транспорта персонажа другими игроками и защитными системами поселений. От навыка скрытности зависит заметность оборудованных персонажем схронов.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg59'));
                 break;
             case 'engineering':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Механика.\n' +
-                    'Снижает скорость износа транспорта персонажа, увеличивает эффективность полевого ремонта. От навыка механки зависит скорость установки схронов и опасность защитных ловушек.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg60'));
                 break;
             case 'trading':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Торговля.\n' +
-                    'Уменьшает цену товаров и услуг, оказываемых игровыми персонажами. Увеличивает награды за задания.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg61'));
                 break;
             case 'leading':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Лидерство.\n' +
-                    'Определяет максимальное количество игроков, которые могут присоединиться к пати персонажа. У игровых персонажей, дающих групповые задания, есть свои требования к навыку лидерства.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg62'));
                 break;
         }
     });
@@ -219,23 +186,13 @@
     // Подсказки на клики по скилам
     $('#RDSiteWReg2').find('.window-qg-content-header').click(function() {
         var block_name = $(this).data('block_name');
-        consoleWReg2.add_message('user', 'Загрузка характеристик:', true);
+        consoleWReg2.add_message('user', _('con_wreg_msg63'), true);
         switch (block_name) {
             case 'skills':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Навыки.\n' +
-                    'Свободные очки навыков появляются с опытом персонажа. Игрок может распределять их по своему желанию. Каждые 10 очков навыка увеличивают уровень персонажа.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg64'));
                 break;
             case 'perks':
-                consoleWReg2.add_message('system',
-                    'Успешно.\n\n' +
-                    '--------------------------------------------------------------\n' +
-                    'Способности.\n' +
-                    'Каждый новый уровень персонажа дает одно очко способностей. Способности появляются в зависимости от игрового класса, навыков и уже имеющихся способностей персонажа.\n' +
-                    '--------------------------------------------------------------');
+                consoleWReg2.add_message('system', _('con_wreg_msg65'));
                 break;
         }
     })

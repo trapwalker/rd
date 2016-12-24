@@ -686,13 +686,9 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         jq_perk.find('.reg2-perk-table-label').click(function() {
                             var title = $(this).data('title');
                             var description = $(this).data('description');
-                            consoleWReg2.add_message('user', 'Загрузка перка:', true);
-                            consoleWReg2.add_message('system',
-                                'Успешно.\n\n' +
-                                '--------------------------------------------------------------\n' +
-                                title + '.\n' +
-                                description + '.\n' +
-                                '--------------------------------------------------------------');
+                            consoleWReg2.add_message('user', _('con_wreg_msg46'), true);
+                            consoleWReg2.add_message('system', _('con_wreg_msg47') + title + '.\n' +
+                                description + '.\n' + '--------------------------------------------------------------');
                         });
                         if (perk_rec.active) {
                             var jq_perk_chip = $(

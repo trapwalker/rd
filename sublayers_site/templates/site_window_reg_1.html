@@ -93,13 +93,9 @@
         for (var i = 0; i < line_list.length; i++)
             multi_line = multi_line + line_list[i] + '\n';
 
-        consoleWReg1.add_message('user', 'Загрузка класса.', reg1_first_interrupt);
-        consoleWReg1.add_message('system',
-            'Успешно.\n\n' +
-            '--------------------------------------------------------------\n' +
-            multi_line +
-            '--------------------------------------------------------------'
-        );
+        consoleWReg1.add_message('user', _('con_wreg_msg35'), reg1_first_interrupt);
+        consoleWReg1.add_message('system', _('con_wreg_msg36') + multi_line +
+                                 '--------------------------------------------------------------');
 
         reg1_first_interrupt = true;
     }
@@ -109,16 +105,8 @@
 
     function Reg1NicknameClick() {
         if ((reg1_last_input_click != 'Reg1NicknameClick') && (consoleWReg1)) {
-            consoleWReg1.add_message('user', 'Запрос на ввод данных в базу системы навигации.', true);
-            consoleWReg1.add_message('system',
-                'Успешно.\n\n' +
-                '--------------------------------------------------------------\n' +
-                'Введите имя. Разрешенные символы:\n' +
-                'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n' +
-                '0 1 2 3 4 5 6 7 8 9\n' +
-                '_ - = ! ? “ ” ‘ ; # % ^ & * \ | / [ ] ( ) < > . , +\n' +
-                'Пробелы запрещены.\n' +
-                '--------------------------------------------------------------');
+            consoleWReg1.add_message('user', _('con_wreg_msg37'), true);
+            consoleWReg1.add_message('system', _('con_wreg_msg38'));
             reg1_last_input_click = 'Reg1NicknameClick';
         }
     }
@@ -138,34 +126,25 @@
             },
             success: function(data) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
+                consoleWReg1.add_message('user', _('con_wreg_msg39'), true);
                 if (data.status == 'success') {
-                    consoleWReg1.add_message('system', 'Успешно.');
+                    consoleWReg1.add_message('system', _('con_wreg_msg29'));
                     GetUserInfo();
                     audioManager.play('button_screen_press');
                     return;
                 }
                 audioManager.play('error_1');
                 if (data.status == 'fail_wrong_input') {
-                    consoleWReg1.add_message('system',
-                            'Ошибка приема данных.\n\n' +
-                            'Введен некорректный ник, класс или фото персонажа.\n\n' +
-                            '--------------------------------------------------------------\n' +
-                            'Введите корректный ник.\n' +
-                            'Выберите аватар персонажа.\n' +
-                            'Выберите класс персонажа.\n' +
-                            '--------------------------------------------------------------');
+                    consoleWReg1.add_message('system', _('con_wreg_msg40'));
                 }
                 if (data.status == 'fail_exist_nickname') {
-                    consoleWReg1.add_message('system',
-                            'Ошибка приема данных.\n\n' +
-                            'Пользователь с таким ником уже существует.');
+                    consoleWReg1.add_message('system', _('con_wreg_msg41'));
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
-                consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                consoleWReg1.add_message('user', _('con_wreg_msg42'), true);
+                consoleWReg1.add_message('system', _('con_wreg_msg43'));
                 audioManager.play('error_1');
             }
         });
@@ -183,8 +162,8 @@
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 reg1_last_input_click = null;
-                consoleWReg1.add_message('user', ' Активация процедуры регистрации.', true);
-                consoleWReg1.add_message('system', 'Система не отвечает. Повторите попытку позже.');
+                consoleWReg1.add_message('user', _('con_wreg_msg44'), true);
+                consoleWReg1.add_message('system', _('con_wreg_msg45'));
                 audioManager.play('error_1');
             }
         });
