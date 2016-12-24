@@ -103,3 +103,15 @@ sr_villain_descr: Соотношение наинизшей кармы за вс
 sr_leaders_descr: Количество опыта и лута, выбитого участниками пати, управляемых данным персонажем. # translate
 sr_warriors_descr: Количество боевого опыта и уничтоженного транспорта под управлением персонажей, близких к уровню данного персонажа. # translate
 sr_adventures_descr: Соотношение выполненных и проваленных заданий, их уровня, а так же разнообразия квестодателей. # translate
+
+
+# Шаблон персональной информации person_site_info.html  # tpsi
+tpsi_lvl : Level
+tpsi_class : "Class:"
+tpsi_karma : "Karma:"
+tpsi_driving : "Driving:"
+tpsi_shooting : "Shooting:"
+tpsi_masking : "Masking:"
+tpsi_engineering : "Engineering:"
+tpsi_trading : "Trading:"
+tpsi_leading : "Leading:"
