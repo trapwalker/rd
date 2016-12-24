@@ -31,8 +31,7 @@ class SiteMainHandler(BaseSiteHandler):
 
 class GetUserLocaleJSONHandler(BaseSiteHandler):
     def get(self):
-        user_lang = self.get_cookie('lang', 'en')
-        if locale_objects.get(user_lang, None):
-            self.finish(locale_objects[user_lang])
+        if locale_objects.get(self.user_lang, None):
+            self.finish(locale_objects[self.user_lang])
         else:
             self.send_error(status_code=404)
