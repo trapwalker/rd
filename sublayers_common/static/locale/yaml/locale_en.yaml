@@ -2,6 +2,11 @@
 
 # Общее
 
+# Главный шаблон - Описания сайта # sm
+sm_title: Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец  # translate
+sm_description: Официальный сайт игры Road Dogs. Сражения на машинах постапокалиптической пустоши в стиле Безумного Макса. # translate
+
+
 # Окно регистрации и авторизации  site_window_reg.html  # swr
 swr_Registration: "Registration"
 swr_Password: "PASSWORD>"
@@ -51,3 +56,50 @@ swr3_engineering : "Engineering:"
 swr3_trading : "Trading:"
 swr3_leading : "Leading:"
 swr3_perks : "Perks:"
+
+
+# Окно персональной информации site_personal_info.html
+spi_enter : Enter in System  # translate
+spi_out : Покинуть систему  # translate
+
+
+# Окно быстрой игры site_quick_game.html  # sqg
+sqg_header : Quick Game
+sqg_nickname : NICKNAME
+sqg_game : Start Game!
+sqg_records : Records
+sqg_points : Points
+sqg_gamer_name : Name
+
+
+# Окно новостей site_news.html   # sn
+sn_news: News
+
+
+# Окно рейтингов site_ratings.html  # sr
+sr_traders : Traders
+sr_looters : Грабители # translate
+sr_heroes : Герои # translate
+sr_villain : Злодеи # translate
+sr_leaders : Лидеры # translate
+sr_warriors : Войны # translate
+sr_adventures : Авантюристы # translate
+
+sr_traders_small_descr: Traders Rating # translate
+sr_looters_small_descr: Рейтинг грабителей  # translate
+sr_heroes_small_descr: Рейтинг героев  # translate
+sr_villain_small_descr: Рейтинг злодеев  # translate
+sr_leaders_small_descr: Рейтинг лидеров  # translate
+sr_warriors_small_descr: Рейтинг войнов  # translate
+sr_adventures_small_descr: Рейтинг авантюристов  # translate
+
+sr_name: Имя # translate
+sr_score: Очки # translate
+sr_rating_descr: Описание рейтинга # translate
+sr_traders_descr: Сумма нукойнов, заработанных с помощью навыка торговли, а так же количество купленного экспортного товара и проданного импортного. # translate
+sr_looters_descr: Соотношение стоимости лута, выбитого из других персонажей и потерянного данным персонажем. # translate
+sr_heroes_descr: Соотношение наивысшей кармы за всю историю персонажа и актуальной на данный момент. # translate
+sr_villain_descr: Соотношение наинизшей кармы за всю историю персонажа и актуальной на данный момент. # translate
+sr_leaders_descr: Количество опыта и лута, выбитого участниками пати, управляемых данным персонажем. # translate
+sr_warriors_descr: Количество боевого опыта и уничтоженного транспорта под управлением персонажей, близких к уровню данного персонажа. # translate
+sr_adventures_descr: Соотношение выполненных и проваленных заданий, их уровня, а так же разнообразия квестодателей. # translate
