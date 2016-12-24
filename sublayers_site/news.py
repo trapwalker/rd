@@ -46,3 +46,24 @@ class NewsManager(object):
             cmp = news1['iso_date'] > news2['iso_date']
             return -1 if cmp else 1
         self.news_list.sort(cmp=compare_news_date)
+
+    def news_by_locale(self, locale):
+        news = []
+        for new_rec in self.news_list:
+            header = new_rec.get('header', None)
+            content = new_rec.get('content', None)
+            if header:
+                header = header.get(locale, None)
+            if content:
+                content = content.get(locale, None)
+            if header and content:
+                news.append(
+                    dict(
+                        header=header,
+                        content=content,
+                        iso_date_str=new_rec['iso_date_str'],
+                        link=new_rec['link'],
+                        date=new_rec['date'],
+                    )
+                )
+        return news

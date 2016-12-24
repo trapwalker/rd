@@ -18,7 +18,7 @@ class SiteMainHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def get(self):
         # Подготовка списка новостей
-        news_list = self.application.news_manager.news_list
+        news_list = self.application.news_manager.news_by_locale(locale=self.user_lang)
         # Узнать количество пользователей (онлайн пока не делаем, так как не хотим делать запрос к серверу)
         users_count = yield User.objects.count()
 
