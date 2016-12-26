@@ -98,9 +98,9 @@ class BaseSiteHandler(BaseHandler):
         # если cookie с языком не задана, то смотреть на host
         if user_lang is None:
             host = self.request.host
-            if host == 'roaddogs.online' or host == '192.168.1.105':
+            if host == 'roaddogs.online':
                 user_lang = 'en'
-            elif host == 'roaddogs.ru' or host == '192.168.1.104':
+            elif host == 'roaddogs.ru':
                 user_lang = 'ru'
             else:
                 user_lang = 'en'

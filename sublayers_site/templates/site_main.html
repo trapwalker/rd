@@ -376,10 +376,12 @@
             </div>
         </div>
         <div class="site-sound-switch"></div>
+        {% if user_lang == 'ru' %}
         <div class="language-switch">
             <div class="{{ 'active' if user_lang == 'ru' else '' }}" onclick="changeLanguage(this);">ru</div>
             <div class="{{ 'active' if user_lang == 'en' else '' }}" onclick="changeLanguage(this);">en</div>
         </div>
+        {% end %}
     </div>
     <div id="preloaderBlock">
         <div id="consolePreloader"></div>
