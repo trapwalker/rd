@@ -147,3 +147,7 @@
 .reg3-btn.reg3-finish { background: transparent url('/static/static_site/img/chip_buttons/ru/start.png') 100% 100% no-repeat;}
 .reg3-btn.reg3-finish:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/start_over.png') 100% 100% no-repeat;}
 .reg3-btn.reg3-finish:active {background: transparent url('/static/static_site/img/chip_buttons/ru/start_press.png') 100% 100% no-repeat;}
+
+
+/* =============================== site_windw_personal_info css */
+.window-pi-content-block.insurance {background: transparent url(/static/static_site/img/temp_insurance_ru.png) no-repeat; background-size: 100% 100%;}

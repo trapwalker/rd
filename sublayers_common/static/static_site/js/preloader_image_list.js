@@ -141,7 +141,7 @@ function init_preload_images() {
     }
 
     // Ќаполнение сайта (внутри микроволновки)
-    preloaderImage.add('/static/static_site/img/temp_insurance.png');
+    preloaderImage.add('/static/static_site/img/temp_insurance_' + locale + '.png');
     preloaderImage.add('/static/content/avatars/dog_def.png');
     preloaderImage.add('/static/static_site/img/chip_buttons/' + locale + '/school.png');
     preloaderImage.add('/static/static_site/img/chip_buttons/' + locale + '/school_over.png');
