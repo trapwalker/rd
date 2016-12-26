@@ -78,7 +78,7 @@
             <div class="person-info-chat-person-up-right-info">
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_lvl') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">[5]</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">[{{ agent_example.get_lvl() }}]</div>
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_class') }}</div>
@@ -86,7 +86,7 @@
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_karma') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">-100</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.karma_name }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_driving') }}</div>

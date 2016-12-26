@@ -43,8 +43,8 @@ class BaseSiteHandler(BaseHandler):
             user_info['class'] = '' if agent_example.role_class is None else agent_example.role_class.description
 
             # todo: научиться получать эти параметры
-            user_info['lvl'] = '0'
-            user_info['karma'] = '0'
+            user_info['lvl'] = agent_example.get_lvl()
+            user_info['karma'] = agent_example.karma_name
             # Не формировать темплейт пользователя, пока не установлен ролевой класс
             if agent_example.role_class:
                 template_agent_info = tornado.template.Loader(
