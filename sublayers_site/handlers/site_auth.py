@@ -109,8 +109,15 @@ class StandardLoginHandler(BaseSiteHandler):
             if quick_user and quick_user.name == nickname:
                 quick_user.car_index = qg_car_index
                 yield quick_user.save()
-                self.finish({'status': 'Такой пользователь существует'})
+                self.finish({'status': u'Такой пользователь существует'})
                 return
+
+        try:
+            str(nickname)
+        except UnicodeEncodeError:
+            log.warning('None ascii character in nickname: %r', nickname)
+            self.send_error(403)
+            return
 
         if not nickname or (len(nickname) > 100):  # todo: Вынести лимиты в константы
             # self.finish({'status': 'Некорректные входные данные'})
@@ -120,22 +127,22 @@ class StandardLoginHandler(BaseSiteHandler):
         # todo: Проверять введенный username, а, если занят, предлагать рандомизированный пока не будет введен
         # укниальный среди быстрых игроков.
         login_free = False
-        email = ''
+        email = u''
         password = str(randint(0,999999))
-        username = '{}_{}'.format(nickname, str(randint(0, 999999)))
+        username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
         while not login_free:
-            email = username + '@' + username  # todo: Предотвратить заполнение email заведомо ложной информацией
+            email = u'{}@{}'.format(username, username)  # todo: Предотвратить заполнение email заведомо ложной информацией
             login_free = ((yield User.get_by_email(email=email)) is None) and \
                          ((yield User.get_by_name(name=username)) is None)
             if not login_free:
-                username = '{}_{}'.format(nickname, str(randint(0, 999999)))
+                username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
 
         user = User(name=username, email=email, raw_password=password, car_index=qg_car_index, quick=True)
         result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
-        self.finish({'status': 'Временный пользователь создан'})
+        self.finish({'status': u'Временный пользователь создан'})
 
     @tornado.gen.coroutine
     def _forum_setup(self, data):
