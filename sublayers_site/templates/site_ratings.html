@@ -3,26 +3,26 @@
     <div class="window-header buttons-and-headers">Nuke Commander v{{ version }}</div>
     <div class="window-ratings-main">
         <div class="window-ratings-header">
-            <div class="window-ratings-header-path middle" data-rating="Traders" data-rating_note="Рейтинг торговцев">
-                <div class="window-ratings-header-path-content buttons-and-headers">Торговцы</div>
+            <div class="window-ratings-header-path middle" data-rating="Traders" data-rating_note="{{ _('sr_traders_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_traders') }}</div>
             </div>
-            <div class="window-ratings-header-path middle" data-rating="Looters" data-rating_note="Рейтинг грабителей">
-                <div class="window-ratings-header-path-content buttons-and-headers">Грабители</div>
+            <div class="window-ratings-header-path middle" data-rating="Looters" data-rating_note="{{ _('sr_looters_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_looters') }}</div>
             </div>
-            <div class="window-ratings-header-path small" data-rating="Heroes" data-rating_note="Рейтинг героев">
-                <div class="window-ratings-header-path-content buttons-and-headers">Герои</div>
+            <div class="window-ratings-header-path small" data-rating="Heroes" data-rating_note="{{ _('sr_heroes_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_heroes') }}</div>
             </div>
-            <div class="window-ratings-header-path" data-rating="Villain" data-rating_note="Рейтинг злодеев">
-                <div class="window-ratings-header-path-content buttons-and-headers">Злодеи</div>
+            <div class="window-ratings-header-path" data-rating="Villain" data-rating_note="{{ _('sr_villain_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_villain') }}</div>
             </div>
-            <div class="window-ratings-header-path" data-rating="Leaders" data-rating_note="Рейтинг лидеров">
-                <div class="window-ratings-header-path-content buttons-and-headers">Лидеры</div>
+            <div class="window-ratings-header-path" data-rating="Leaders" data-rating_note="{{ _('sr_leaders_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_leaders') }}</div>
             </div>
-            <div class="window-ratings-header-path small" data-rating="Warriors" data-rating_note="Рейтинг войнов">
-                <div class="window-ratings-header-path-content buttons-and-headers">Войны</div>
+            <div class="window-ratings-header-path small" data-rating="Warriors" data-rating_note="{{ _('sr_warriors_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_warriors') }}</div>
             </div>
-            <div class="window-ratings-header-path long" data-rating="Adventurers" data-rating_note="Рейтинг авантюристов">
-                <div class="window-ratings-header-path-content buttons-and-headers">Авантюристы</div>
+            <div class="window-ratings-header-path long" data-rating="Adventurers" data-rating_note="{{ _('sr_adventures_small_descr') }}">
+                <div class="window-ratings-header-path-content buttons-and-headers">{{ _('sr_adventures') }}</div>
             </div>
         </div>
 
@@ -30,8 +30,8 @@
 
             <div class="window-ratings-line first-line">
                 <div class="window-ratings-line-path rate-number">#</div>
-                <div class="window-ratings-line-path nickname">Имя</div>
-                <div class="window-ratings-line-path numbers">Очки</div>
+                <div class="window-ratings-line-path nickname">{{ _('sr_name') }}</div>
+                <div class="window-ratings-line-path numbers">{{ _('sr_score') }}</div>
             </div>
 
             <div id="RDSiteRating_Traders" class="window-ratings-board">
@@ -79,33 +79,33 @@
 
         <div class="window-ratings-right-path">
             <div class="window-ratings-right-path-top">
-                <div id="RDSiteRatingNotesName" class="window-ratings-right-path-top-header">Описание рейтинга</div>
+                <div id="RDSiteRatingNotesName" class="window-ratings-right-path-top-header">{{ _('sr_rating_descr') }}</div>
                 <div id="RDSiteRatingNotes_Traders" class="window-ratings-right-path-top-content">
-                    Сумма нукойнов, заработанных с помощью навыка торговли, а так же количество купленного экспортного товара и проданного импортного.
+                    {{ _('sr_traders_descr') }}
                 </div>
                 <div id="RDSiteRatingNotes_Looters" class="window-ratings-right-path-top-content">
-                    Соотношение стоимости лута, выбитого из других персонажей и потерянного данным персонажем.
+                    {{ _('sr_looters_descr') }}
                 </div>
                 <div id="RDSiteRatingNotes_Heroes" class="window-ratings-right-path-top-content">
-                    Соотношение наивысшей кармы за всю историю персонажа и актуальной на данный момент.
+                    {{ _('sr_heroes_descr') }}
                 </div>
                 <div id="RDSiteRatingNotes_Villain" class="window-ratings-right-path-top-content">
-                    Соотношение наинизшей кармы за всю историю персонажа и актуальной на данный момент.
+                    {{ _('sr_villain_descr') }}
                 </div>
                 <div id="RDSiteRatingNotes_Leaders" class="window-ratings-right-path-top-content">
-                    Количество опыта и лута, выбитого участниками пати, управляемых данным персонажем.
+                    {{ _('sr_leaders_descr') }}
                 </div>
                 <div id="RDSiteRatingNotes_Warriors" class="window-ratings-right-path-top-content">
-                    Количество боевого опыта и уничтоженного транспорта под управлением персонажей, близких к уровню данного персонажа.
+                    {{ _('sr_warriors_descr') }}
                 </div>
                 <div id="RDSiteRatingNotes_Adventurers" class="window-ratings-right-path-top-content">
-                    Соотношение выполненных и проваленных заданий, их уровня, а так же разнообразия квестодателей.
+                    {{ _('sr_adventures_descr') }}
                 </div>
             </div>
             <div class="window-ratings-right-path-bottom">
                 <div class="window-ratings-right-path-header-block-header-block">
                     <div class="window-ratings-right-path-header-block-back">
-                        <div id="RDSiteRatingUserName" class="window-ratings-right-path-header-block-header buttons-and-headers">Новость</div>
+                        <div id="RDSiteRatingUserName" class="window-ratings-right-path-header-block-header buttons-and-headers"></div>
                     </div>
                 </div>
                 <div class="window-ratings-right-path-content-block">

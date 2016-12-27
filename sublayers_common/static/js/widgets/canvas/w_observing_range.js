@@ -49,7 +49,8 @@ var WObservingRange = (function (_super) {
 
         ctx.globalCompositeOperation = "xor";
         ctx.fillStyle = "rgba(0,0,0,0.85)";
-        ctx.fillRect(0, 0, 1920, 1080);
+        var a = map.getSize();
+        ctx.fillRect(0, 0, a.x, a.y);
         ctx.restore();
     };
 

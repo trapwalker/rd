@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец</title>
+    <title>{{ _('sm_title') }}</title>
 
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <meta name="description" content="Официальный сайт игры Road Dogs. Сражения на машинах постапокалиптической пустоши в стиле Безумного Макса.">
+    <meta name="description" content="{{ _('sm_description') }}">
     <meta name="keywords" content="RoadDogs, mmorpg, post-apocalyptic, nuclear, madmax, fallout, road war, retro, 80s, oldschool, cyberpunk, cars, new">
     <meta http-equiv="content-language" content="ru">
     <meta name="robots" content="all">
@@ -20,8 +20,8 @@
     <!-- Meta Twitter -->
     <meta name="twitter:card" content="summary"/>
     <meta name="twitter:site" content="RoadDogs"/>
-    <meta name="twitter:title" content="Road Dogs - бесплатная онлайн игра в жанре грабитель/торговец">
-    <meta name="twitter:description" content="Официальный сайт игры. Сражения на машинах постапокалиптической пустоши в стиле Безумного Макса."/>
+    <meta name="twitter:title" content="{{ _('sm_title') }}">
+    <meta name="twitter:description" content="{{ _('sm_description') }}"/>
     <meta name="twitter:creator" content="Teletower Studios"/>
     <meta name="twitter:image:src" content="http://roaddogs.ru/static/static_site/img/main_logo.jpg"/>
     <meta name="twitter:domain" content="http://roaddogs.ru"/>
@@ -29,8 +29,8 @@
     <!-- Meta Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="http://roaddogs.ru">
-    <meta property="og:title" content="Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец">
-    <meta property="og:description" content="Официальный сайт игры Road Dogs. Сражения на машинах постапокалиптической пустоши в стиле Безумного Макса.">
+    <meta property="og:title" content="{{ _('sm_title') }}">
+    <meta property="og:description" content="{{ _('sm_description') }}">
     <meta property="og:image" content="http://roaddogs.ru/static/static_site/img/main_logo.jpg">
 
     <link rel="icon" type="image/png" href="http://roaddogs.ru/favicon.png" sizes="16x16" />
@@ -65,11 +65,13 @@
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_quick_game.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_news.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_ratings.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('locale/css/locale_{}.css'.format(user_lang)) }}"/>
 
     <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
+    <script src="{{ static_url('locale/locale.js') }}"></script>
     <script src="{{ static_url('static_site/js/main.js') }}"></script>
     <script src="{{ static_url('static_site/js/preloader_image.js') }}"></script>
     <script src="{{ static_url('static_site/js/preloader_image_list.js') }}"></script>
@@ -98,7 +100,7 @@
 
         <div itemscope itemtype="http://schema.org/VideoGame">
             <div itemprop="name">Road Dogs</div>
-            <div itemprop="description"><h1>Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец</h1></div>
+            <div itemprop="description"><h1>{{ _('sm_title') }}</h1></div>
             <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                 Статус программы: <span itemprop="price">0</span> Бесплатная
             </div>
@@ -158,7 +160,7 @@
                     "name": "Road Dogs",
                     "url": "http://roaddogs.ru",
                     "image": "/static/static_site/img/main_logo.jpg",
-                    "description": "Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец",
+                    "description": "{{ _('sm_title') }}",
                     "inLanguage":["Russian","English"],
                     "author":{
                           "@type":"Organization",
@@ -270,8 +272,8 @@
 
         <div itemscope itemtype="http://schema.org/ImageObject">
             <h2 itemprop="name">Road Dogs</h2>
-            <img itemprop="contentUrl" src="/static/static_site/img/main_logo.jpg" alt="Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец">
-            <span itemprop="description">Road Dogs - бесплатная онлайн игра в жанре Грабитель/Торговец</span>
+            <img itemprop="contentUrl" src="/static/static_site/img/main_logo.jpg" alt="{{ _('sm_title') }}">
+            <span itemprop="description">{{ _('sm_title') }}</span>
         </div>
 
     </header>
@@ -311,7 +313,11 @@
                         <a id="RDbtn_news" class="btn-page btn btn-4" href="/#news" alt="Новости" data-window_id="RDSiteNews">Новости</a>
                         <a id="RDbtn_ratings" class="btn-page btn btn-5" href="/#ratings"
                            data-window_id="RDSiteWRatings" alt="Рейтинги">Рейтинги</a>
+                        {% if user_lang == 'ru' %}
                         <a class="btn btn-6" href="http://vk.com/road_dogs" target="_blank"></a>
+                        {% else %}
+                        <a class="btn btn-6" href="http://steamcommunity.com/sharedfiles/filedetails/?id=826071994" target="_blank"></a>
+                        {% end %}
 
                         <div class="radio-block">
                             <div class="radio-screen">
@@ -370,6 +376,12 @@
             </div>
         </div>
         <div class="site-sound-switch"></div>
+        {% if user_lang == 'ru' %}
+        <div class="language-switch">
+            <div class="{{ 'active' if user_lang == 'ru' else '' }}" onclick="changeLanguage(this);">ru</div>
+            <div class="{{ 'active' if user_lang == 'en' else '' }}" onclick="changeLanguage(this);">en</div>
+        </div>
+        {% end %}
     </div>
     <div id="preloaderBlock">
         <div id="consolePreloader"></div>
@@ -380,8 +392,9 @@
     var version = '{{ version }}';
     var all_users_registered = '{{ all_users_registered }}';
     var GlobalGeneralSiteGain = 1.0;
+
     $(document).ready(function () {
-        main();
+        loadLocale(main);
     });
 </script>
 </html>

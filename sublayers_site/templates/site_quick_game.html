@@ -5,11 +5,11 @@
         <div class="window-qg-content-block">
             <div class="window-qg-content-header-block">
                 <div class=" window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Быстрый бой</div>
+                    <div class="window-qg-content-header buttons-and-headers">{{ _('sqg_header') }}</div>
                 </div>
             </div>
             <div class="window-qg-content-nickname-block">
-                <div class="window-qg-content-nickname-label">НИКНЕЙМ></div>
+                <div class="window-qg-content-nickname-label">{{ _('sqg_nickname') }}></div>
                 <input class="window-qg-content-nickname-input" type="text" id="quick_game_nickname" autocomplete="off"
                        {% if current_user %}
                            {% set quick_game_user = current_user if current_user.quick else None %}
@@ -30,19 +30,19 @@
                 <div class="slide-arrow left" onclick="SlideLeftQuickCars()"></div>
                 <div class="slide-arrow right" onclick="SlideRightQuickCars()"></div>
             </div>
-            <div class="window-qg-content-play-btn window-qg-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="StartQuickGame()">Играть!</div>
+            <div class="window-qg-content-play-btn window-qg-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="StartQuickGame()">{{ _('sqg_game') }}</div>
         </div>
         <div class="window-qg-content-block not-first">
 
             <div class="window-qg-content-header-block">
                 <div class=" window-qg-content-back">
-                    <div class="window-qg-content-header buttons-and-headers">Рекорды</div>
+                    <div class="window-qg-content-header buttons-and-headers">{{ _('sqg_records') }}</div>
                 </div>
             </div>
             <div class="window-qg-content-rating-line-block header">
                 <div class="window-qg-content-rating-column col-number buttons-and-headers">#</div>
-                <div class="window-qg-content-rating-column col-points buttons-and-headers">Очки</div>
-                <div class="window-qg-content-rating-column col-nick buttons-and-headers">Имя</div>
+                <div class="window-qg-content-rating-column col-points buttons-and-headers">{{ _('sqg_points') }}</div>
+                <div class="window-qg-content-rating-column col-nick buttons-and-headers">{{ _('sqg_gamer_name') }}</div>
             </div>
 
             <div id="RDSiteQuickGameRatingsTable"></div>

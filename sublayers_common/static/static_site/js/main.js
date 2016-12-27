@@ -439,6 +439,12 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
+function changeLanguage(elem) {
+    if ($(elem).hasClass('active')) return;
+    document.cookie = 'lang' + "=" + $(elem).text();
+    window.location.reload();
+}
+
 function init_site_sound() {
     audioManager.gain_all(0.0);
 
@@ -530,16 +536,16 @@ function GetUserInfo() {
                     pos_y = data.position[1].toFixed(0);
                 }
                 consoleWPI.clear();
-                consoleWPI.add_message('user', 'Загрузка системы навигации.');
+                consoleWPI.add_message('user', _('con_wpi_1'));
                 consoleWPI.add_message(
                     'system',
-                    'Успешно.\n' +
+                    _('con_wpi_2_1') + '\n' +
                     '-----------------------------\n' +
-                    'Добро пожаловать, ' + data.user_name + '!\n' +
-                    'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
-                    'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
-                    'Ваша страховка: _\n' +
-                    'Активных заданий: _\n' +
+                    _('con_wpi_2_2') + data.user_name + '!\n' +
+                    _('con_wpi_2_3') + data.user_balance + ' NC\n' +
+                    _('con_wpi_2_4') + 'x' + pos_x + ':y' + pos_y + '\n' +
+                    _('con_wpi_2_5')+ '_\n' +
+                    _('con_wpi_2_6') + '_\n' +
                     '-----------------------------'
                 );
 
@@ -680,13 +686,9 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         jq_perk.find('.reg2-perk-table-label').click(function() {
                             var title = $(this).data('title');
                             var description = $(this).data('description');
-                            consoleWReg2.add_message('user', 'Загрузка перка:', true);
-                            consoleWReg2.add_message('system',
-                                'Успешно.\n\n' +
-                                '--------------------------------------------------------------\n' +
-                                title + '.\n' +
-                                description + '.\n' +
-                                '--------------------------------------------------------------');
+                            consoleWReg2.add_message('user', _('con_wreg_msg46'), true);
+                            consoleWReg2.add_message('system', _('con_wreg_msg47') + title + '.\n' +
+                                description + '.\n' + '--------------------------------------------------------------');
                         });
                         if (perk_rec.active) {
                             var jq_perk_chip = $(

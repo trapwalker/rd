@@ -12,7 +12,10 @@ from tornado.options import options
 import tornado.template
 from tornado.httpclient import AsyncHTTPClient
 from bson.objectid import ObjectId, InvalidId
-import json
+from functools import partial
+
+from sublayers_site.site_locale import locale
+
 
 
 class BaseSiteHandler(BaseHandler):
@@ -40,8 +43,8 @@ class BaseSiteHandler(BaseHandler):
             user_info['class'] = '' if agent_example.role_class is None else agent_example.role_class.description
 
             # todo: научиться получать эти параметры
-            user_info['lvl'] = '0'
-            user_info['karma'] = '0'
+            user_info['lvl'] = agent_example.get_lvl()
+            user_info['karma'] = agent_example.karma_name
             # Не формировать темплейт пользователя, пока не установлен ролевой класс
             if agent_example.role_class:
                 template_agent_info = tornado.template.Loader(
@@ -80,3 +83,25 @@ class BaseSiteHandler(BaseHandler):
             html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
+
+    def get_template_namespace(self):
+        namespace = super(BaseSiteHandler, self).get_template_namespace()
+        namespace.update(
+            _=partial(locale, self.user_lang)
+        )
+        return namespace
+
+    @tornado.gen.coroutine
+    def prepare(self):
+        yield super(BaseSiteHandler, self).prepare()
+        user_lang = self.get_cookie('lang', None)
+        # если cookie с языком не задана, то смотреть на host
+        if user_lang is None:
+            host = self.request.host
+            if host == 'roaddogs.online':
+                user_lang = 'en'
+            elif host == 'roaddogs.ru':
+                user_lang = 'ru'
+            else:
+                user_lang = 'en'
+        self.user_lang = user_lang
