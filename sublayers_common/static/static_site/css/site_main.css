@@ -703,7 +703,8 @@ position: absolute;
     font-family: Nouveau_IBM;
     text-shadow: none;
     font-weight: normal;
-    font-size: 8pt;
+    font-size: 7pt;
+    opacity: 0.5;
 }
 .change-language { text-decoration: underline; cursor: url('/static/img/cursors/hyper.png'), pointer; }
 .change-language:hover { color: #2ffa00; }
