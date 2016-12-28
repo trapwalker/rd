@@ -1,4 +1,3 @@
-
 var ArmorerTeachingNote = (function (_super) {
     __extends(ArmorerTeachingNote, _super);
 

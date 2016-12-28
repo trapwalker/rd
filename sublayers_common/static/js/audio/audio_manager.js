@@ -7,6 +7,14 @@ var AudioManager = (function () {
     }
 
     // Воспроизведение
+    /* name - имя звукового объекта
+    *  time - задержка перед стартом
+    *  gain - уровень громкости
+    *  callback - ...
+    *  loop - повторение звука
+    *  offset - смещение от начала звука
+    *  duration - продолжительность проигрывания
+    * */
     AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration) {
         //console.log(name, gain, this.general_gain);
         //if (!preloaderImage || preloaderImage.ready_images == false) return;
@@ -25,10 +33,10 @@ var AudioManager = (function () {
         return audio_obj.play(time, gain ? gain : this.general_gain, callback, loop, offset, duration);
     };
 
-    AudioManager.prototype.stop = function (name, time) {
+    AudioManager.prototype.stop = function (name, time, play_object) {
         var audio_obj = this.get(name);
         if (!audio_obj) return false;
-        return audio_obj.stop(time);
+        return audio_obj.stop(time, play_object);
     };
 
     AudioManager.prototype.gain = function (name, value) {
@@ -63,8 +71,32 @@ var AudioManager = (function () {
         return this.audio_context;
     };
 
-
     return AudioManager;
 })();
 
+
 var audioManager = new AudioManager();
+
+
+function init_sound() {
+    audioManager.gain_all(1.0);
+    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
+    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
+
+    // Тестовые звуки от димона
+    audioManager.load('engine_01_1', {url: '/static/audio/test/engine_01_1.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('engine_01_2', {url: '/static/audio/test/engine_01_2.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('engine_01_3', {url: '/static/audio/test/engine_01_3.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('engine_01_4', {url: '/static/audio/test/engine_01_4.wav'}, null, GameAudioObject, 1.0);
+
+    audioManager.load('engine_02', {url: '/static/audio/test/engine_02.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('engine_03', {url: '/static/audio/test/engine_03.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('engine_04', {url: '/static/audio/test/engine_04.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, null, GameAudioObject, 1.0);
+
+    audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, null, null, 1.0);
+    audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, null, null, 1.0);
+    audioManager.load('shot_03', {url: '/static/audio/test/shot_03.wav'}, null, null, 1.0);
+
+    audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, null, null, 1.0);
+}
