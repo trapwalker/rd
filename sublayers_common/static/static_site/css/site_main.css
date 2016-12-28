@@ -97,7 +97,6 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     outline: none;
 }
 
-
 #preloaderBlock {
     position: absolute;
     top: 0;
@@ -296,6 +295,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     left: 0;
     right: -50px;
     overflow-y: scroll;
+    font-family: Nouveau_IBM;
 }
 
 .scroll-block {
@@ -694,6 +694,19 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     background-color: #31c811;
 }
 
+.copyright-block {
+position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 10px;
+    color: #31c811;
+    font-family: Nouveau_IBM;
+    text-shadow: none;
+    font-weight: normal;
+    font-size: 8pt;
+}
+.change-language { text-decoration: underline; cursor: url('/static/img/cursors/hyper.png'), pointer; }
+.change-language:hover { color: #2ffa00; }
 
 /* RADIO !!!  */
 .radio-block {
