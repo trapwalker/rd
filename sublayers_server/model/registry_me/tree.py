@@ -410,6 +410,10 @@ class Node(Document, DocMixin):
         return i if obj else -1
 
 
+class Root(Node):
+    pass
+
+
 ## TESTING CODE ########################################################################################################
 
 from sublayers_server.model.registry_me.odm_position import PositionField, Point
