@@ -30,7 +30,11 @@ class GetRPGInfoHandler(BaseSiteHandler):
         for role_class in self.application.reg['world_settings'].role_class_order:
             class_list.append(dict(
                 description=role_class.description,
+                description__en=role_class.description__en,
+                description__ru=role_class.description__ru,
                 console_description=role_class.console_description,
+                console_description__en=role_class.console_description__en,
+                console_description__ru=role_class.console_description__ru,
                 title=role_class.title,
                 fp_skills=role_class.start_free_point_skills,
                 fp_perks=role_class.start_free_point_perks,

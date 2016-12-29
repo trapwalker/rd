@@ -678,7 +678,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         var perk_rec = data.perks[i];
                         var jq_perk = $(
                             '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '">' +
-                            '<div class="reg2-perk-table-label" data-title="' + perk_rec.perk.title + '" data-description="' + perk_rec.perk.description + '">' + perk_rec.perk.title + '</div>' +
+                            '<div class="reg2-perk-table-label" data-title="' + perk_rec.perk['title__' + locale_object.locale] + '" data-description="' + perk_rec.perk['description__' + locale_object.locale] + '">' + perk_rec.perk['title__' + locale_object.locale] + '</div>' +
                             '<div class="reg2-perk-table-checkbox-block" onclick="Reg2PerkClick(`' + perk_rec.perk.uri + '`)">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
                             '</div>');
                         jq_perk_table.append(jq_perk);
@@ -692,7 +692,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         if (perk_rec.active) {
                             var jq_perk_chip = $(
                                 '<div class="site-chip-content-line shift">' +
-                                '<div class="site-chip-content-line-text left">' + perk_rec.perk.title + '</div>' +
+                                '<div class="site-chip-content-line-text left">' + perk_rec.perk['title__' + locale_object.locale] + '</div>' +
                                 '</div>'
                             );
                             jq_perk_chip_perk_list.append(jq_perk_chip);

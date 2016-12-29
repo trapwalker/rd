@@ -85,10 +85,10 @@
 
         if (!role_class_list_info.length) return;
 
-        var name = role_class_list_info.length ? role_class_list_info[reg1_current_class].description : '';
+        var name = role_class_list_info.length ?  role_class_list_info[reg1_current_class].description__{{ user_lang }} : '';
         $('#reg1_class_name_text').text(name);
 
-        var line_list = role_class_list_info[reg1_current_class].console_description.split('\\n');
+        var line_list = role_class_list_info[reg1_current_class].console_description__{{ user_lang }}.split('\\n');
         var multi_line = '';
         for (var i = 0; i < line_list.length; i++)
             multi_line = multi_line + line_list[i] + '\n';
