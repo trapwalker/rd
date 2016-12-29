@@ -70,6 +70,20 @@ class DocMixin(BaseDocument):
     def _get_inheritable_field_names(cls):
         return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
 
+    def to_string(self, indent=0, indent_size=4):
+        return '{self.__class__.__name__}(\n{params})'.format(
+            self=self,
+            params=''.join([
+                               '\t{}={!r},\n'.format(k, v)
+                               for k, v in sorted(self.to_mongo().items())
+                               ]),
+        )
+
+    def __repr__(self):
+        return self.to_string()
+
+    __str__ = __repr__
+
 
 class Node(Document, DocMixin):
     u"""
@@ -132,11 +146,6 @@ class Node(Document, DocMixin):
 
         if self.owner:
             self.owner._subnodes.add(self)
-
-    def __repr__(self):
-        return self.to_json()
-
-    __str__ = __repr__
 
     def __eq__(self, other):
         return self.pk == other.pk
