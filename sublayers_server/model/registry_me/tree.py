@@ -26,6 +26,7 @@ from collections import deque, Callable
 from mongoengine import connect, Document, EmbeddedDocument
 from bson import DBRef
 from mongoengine.base import get_document
+from mongoengine.base import BaseDocument
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, DictField, EmbeddedDocumentField,
@@ -64,7 +65,13 @@ class InstantReferenceField(ReferenceField):
         return value
 
 
-class Node(Document):
+class DocMixin(BaseDocument):
+    @classmethod
+    def _get_inheritable_field_names(cls):
+        return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
+
+
+class Node(Document, DocMixin):
     u"""
     Правила работы с узлами реестра:
     - # todo: вложенные объекты (Embedded, list, dict), полученные по наследству или по умолчанию модифицировать нельзя
@@ -80,7 +87,7 @@ class Node(Document):
     parent = ReferenceField(document_type='self', not_inherited=True)
     # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
     fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
-    is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декаларации объекта")
+    is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
     title = StringField(caption=u"Название", tags={"client"})
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
 
@@ -107,10 +114,6 @@ class Node(Document):
 
         uri = base_uri.replace(path=base_uri.path + (self.name or str(self.uid),))
         return str(uri)
-
-    @classmethod
-    def _get_inheritable_field_names(cls):
-        return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
 
     def __init__(self, **kw):
         inheritable = self.__class__._get_inheritable_field_names()
