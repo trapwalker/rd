@@ -12,7 +12,11 @@ class RoleClass(Root):
     icon = StringField(caption=u'Пиктограмма класса', tags='client')  # todo: use specific field type
     emblem = StringField(caption=u'Эмблема класса', tags='client')
     description = StringField(caption=u'Расширенное описание класса', tags='client')
+    description__en = StringField(caption=u'Расширенное описание класса', tags='client')
+    description__ru = StringField(caption=u'Расширенное описание класса', tags='client')
     console_description = StringField(caption=u'Расширенное описание класса', tags='client')
+    console_description__en = StringField(caption=u'Расширенное описание класса', tags='client')
+    console_description__ru = StringField(caption=u'Расширенное описание класса', tags='client')
 
     class_skills = ListField(
         caption=u"Список классовых навыков",

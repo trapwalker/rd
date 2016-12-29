@@ -130,6 +130,13 @@
     }
 }
 
+/* =============================== site_window_reg_1.css */
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
+    .auth-path-up-btn {
+        padding: 0;
+        line-height: 31px;
+    }
+}
 
 /* =============================== site_window_reg_3.css */
 .reg3-btn.reg3-school { background: transparent url('/static/static_site/img/chip_buttons/en/school.png') 100% 100% no-repeat;}

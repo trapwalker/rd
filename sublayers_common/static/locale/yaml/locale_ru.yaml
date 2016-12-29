@@ -12,8 +12,8 @@ swr_Registration: "Регистрация"
 swr_Password: "ПАРОЛЬ>"
 swr_sign up: "Зарегистрироваться"
 swr_Authorisation: "Авторизация"
-swr_Log In_1: "Войти"
-swr_Log In_2: "в систему"
+swr_Log_In_1: "Войти"
+swr_Log_In_2: "в систему"
 swr_Repair Password: "Восстановить пароль"
 swr_1. enter_with_VK : 1. Вход через VK
 swr_2. enter_with_FB : 2. Вход через FB
@@ -117,6 +117,8 @@ tpsi_engineering : "Механик:"
 tpsi_trading : "Торговля:"
 tpsi_leading : "Лидерство:"
 
+
+con_int: Прервано.
 
 # Заполнение консоли: consoleWPI  # con_wpi
 con_wpi_1: Загрузка системы навигации.
