@@ -108,7 +108,7 @@ var TextConsole = (function(){
         }
 
         if ((this._cur_message) && (this._cur_message.message))
-            this._messages.push({ sender: 'system', message: 'Прервано.'});
+            this._messages.push({ sender: 'system', message: _('con_int')});
     };
 
     TextConsole.prototype._scroll_top = function() {
@@ -291,7 +291,7 @@ var TextConsoleAudio = (function (_super) {
             this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
         }
         if ((this._cur_message) && (this._cur_message.message)) {
-            this._messages.push({sender: 'interrupt', message: 'Прервано.'});
+            this._messages.push({sender: 'interrupt', message: _('con_int')});
         }
     };
 

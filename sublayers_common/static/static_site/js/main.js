@@ -439,9 +439,8 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-function changeLanguage(elem) {
-    if ($(elem).hasClass('active')) return;
-    document.cookie = 'lang' + "=" + $(elem).text();
+function changeLanguage(lang) {
+    document.cookie = 'lang' + "=" + lang;
     window.location.reload();
 }
 

@@ -35,7 +35,7 @@
                 <input type="password" id="auth_password" autocomplete="off" onclick="AuthPasswordClick()">
             </div>
             <div class="window-reg-up-btn-block">
-                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="AuthorisationBtnClick()"><span>{{ _('swr_Log In_1') }}</span><span>{{ _('swr_Log In_2') }}</span></div>
+                <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="AuthorisationBtnClick()"><span>{{ _('swr_Log_In_1') }}</span>{% if user_lang == 'ru' %}<span>{{ _('swr_Log_In_2') }}</span>{% end %}</div>
                 <div class="auth-path-up-btn window-reg-up-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="RestorePasswordBtnClick()">{{ _('swr_Repair Password') }}</div>
             </div>
         </div>

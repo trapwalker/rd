@@ -135,14 +135,11 @@ $(document).ready(function () {
 
     //ws_connector.connect(); // вызывается лишь тогда, когда всё будет загружено и проинициализировано
 
-
-
-
     // Установка размеров экрана города
     resizeWindowHandler();
 
     // Работа со звуком
-    init_site_sound();
+    init_sound();
     initRadioPlayer();
 
     setTimeout(function() {
@@ -231,12 +228,6 @@ function addTestNotes() {
 }
 
 
-function init_site_sound() {
-    audioManager.gain_all(1.0);
-    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
-    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
-}
-
 var interface_scale_big = true;
 var b_canvas;
 var b_context;
@@ -244,9 +235,6 @@ var pat;
 var img = [];
 var img1;
 var window_scaled_prc = 1.0;
-
-
-
 
 
 function returnFocusToMap() {
