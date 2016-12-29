@@ -51,7 +51,8 @@ class BaseSiteHandler(BaseHandler):
                     "../sublayers_server/templates/person",
                     namespace=self.get_template_namespace()
                 ).load("person_site_info.html")
-                html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user)
+                html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user,
+                                                          user_lang=self.user_lang)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent_example.car

@@ -6,7 +6,7 @@
             <div id="RDSitePIConsole" class="console-block"></div>
         </div>
         <div class="window-pi-content-block btn-block">
-            <div class="window-qg-btn window-pi-btn window-pi-start-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="window.location = '/play';">{{ _('spi_enter') }}</div>
+            <div class="window-qg-btn window-pi-btn window-pi-start-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="StartGame()">{{ _('spi_enter') }}</div>
             <div class="window-qg-btn window-pi-btn window-pi-logout-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="Logout()">{{ _('spi_out') }}</div>
         </div>
         <div class="window-pi-content-block game-info">
@@ -19,6 +19,14 @@
 </div>
 
 <script>
+    function StartGame() {
+        audioManager.play('error_1');
+        consoleWPI.add_message('system', _('con_wreg_msg7'));
+        return;
+
+        window.location = '/play';
+    }
+
     function Logout() {
         $.ajax({
             url: location.protocol + '//' + location.host + '/logout',

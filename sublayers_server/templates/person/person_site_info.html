@@ -82,7 +82,13 @@
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_class') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.role_class.description }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">
+                        {% if user_lang == 'en' %}
+                            {{ agent_example.role_class.description__en }}
+                        {% else %}
+                            {{ agent_example.role_class.description__ru }}
+                        {% end %}
+                    </div>
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_karma') }}</div>
