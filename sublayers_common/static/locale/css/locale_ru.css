@@ -63,7 +63,6 @@
     background: transparent url(/static/static_site/img/1366_june/ru/768_btn6_pressed.png) no-repeat 100% 100%;
 }
 
-
 @media screen and (min-width: 1367px) and (min-height: 801px) {
     .site-main-all-block .microwawe {       
         background: transparent url(/static/static_site/img/09-06-16/ru/1080_microwave_body_002.png) no-repeat 100% 100%;
@@ -130,7 +129,6 @@
     }
 }
 
-
 /* =============================== site_window_reg_3.css */
 .reg3-btn.reg3-school { background: transparent url('/static/static_site/img/chip_buttons/ru/school.png') 100% 100% no-repeat;}
 .reg3-btn.reg3-school:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/school_over.png') 100% 100% no-repeat;}
@@ -147,7 +145,6 @@
 .reg3-btn.reg3-finish { background: transparent url('/static/static_site/img/chip_buttons/ru/start.png') 100% 100% no-repeat;}
 .reg3-btn.reg3-finish:hover {background: transparent url('/static/static_site/img/chip_buttons/ru/start_over.png') 100% 100% no-repeat;}
 .reg3-btn.reg3-finish:active {background: transparent url('/static/static_site/img/chip_buttons/ru/start_press.png') 100% 100% no-repeat;}
-
 
 /* =============================== site_windw_personal_info css */
 .window-pi-content-block.insurance {background: transparent url(/static/static_site/img/temp_insurance_ru.png) no-repeat; background-size: 100% 100%;}
