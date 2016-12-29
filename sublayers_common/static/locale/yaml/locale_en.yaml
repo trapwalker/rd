@@ -138,8 +138,8 @@ con_pre_5 : Signal localize.
 con_pre_6 : Location determined.
 con_pre_7 : Satellite phishing.
 con_pre_8 : Satellite connection is established.
-con_pre_9: Nuke Commander  v.
-con_pre_10: Nukeoil corp. 2084.
+con_pre_9: " Nuke Commander  v."
+con_pre_10: "     Nukeoil corp. 2084.     "
 con_pre_11: "Server status: "
 con_pre_12: "Drivers found: "
 con_pre_13: "Latest news: "
@@ -154,7 +154,7 @@ con_wreg_msg1_part1: |
 con_wreg_msg1_part2: |
   <
   >                                              <
-  >         NukeOil Corporation 2084        <
+  >           NukeOil Corporation 20841               <
   >                                              <
   ================================================
 con_wreg_msg2: |
