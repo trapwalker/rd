@@ -70,13 +70,36 @@ class DocMixin(BaseDocument):
     def _get_inheritable_field_names(cls):
         return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
 
-    def to_string(self, indent=0, indent_size=4):
+    def to_string(self, indent=0, indent_size=4, keys_alignment=True):
+        d = self.to_mongo()
+        keys_width = max(map(len, d.keys())) if d and keys_alignment else 1
+
+        def prepare_value(value):
+            if isinstance(value, DocMixin):
+                value = value.to_string(
+                    indent=indent + 1,
+                    indent_size=indent_size,
+                    keys_alignment=keys_alignment,
+                )
+            else:
+                value = repr(value)
+
+            if isinstance(value, basestring) and '\n' in value:
+                value = (u'\n' + u' ' * (indent + 2) * indent_size).join(value.split('\n'))
+
+            return value
+
         return '{self.__class__.__name__}(\n{params})'.format(
             self=self,
             params=''.join([
-                               '\t{}={!r},\n'.format(k, v)
-                               for k, v in sorted(self.to_mongo().items())
-                               ]),
+                '\t{k:{w}}{eq_space}={eq_space}{v},\n'.format(
+                    k=k,
+                    v=prepare_value(v),
+                    w=keys_width,
+                    eq_space=' ' if keys_width > 1 else '',
+                )
+                for k, v in sorted(d.items())
+            ]),
         )
 
     def __repr__(self):
