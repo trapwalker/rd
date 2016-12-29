@@ -100,7 +100,8 @@ class APIGetUserInfoHandler(BaseHandler):
                     "templates/person",
                     namespace=self.get_template_namespace()
             ).load("person_site_info.html")
-            html_agent = template_agent_info.generate(agent_example=agent.example, with_css=False, curr_user=user)
+            html_agent = template_agent_info.generate(agent_example=agent.example, with_css=False, curr_user=user,
+                                                      user_lang=self.user_lang)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent.example.car
@@ -138,7 +139,8 @@ class APIGetUserInfoHandler2(BaseHandler):
             self.send_error(404)
             raise tornado.gen.Return()
 
-        self.render('person/person_site_info.html', agent_example=agent.example, with_css=True)
+        self.render('person/person_site_info.html', agent_example=agent.example, with_css=True,
+                    user_lang=self.user_lang)
 
 
 class APIGetQuickGameCarsHandler(BaseHandler):

@@ -78,7 +78,7 @@ sn_news: Новости
 
 
 # Окно рейтингов site_ratings.html  # sr
-sr_traders : Traders
+sr_traders : Торговцы
 sr_looters : Грабители
 sr_heroes : Герои
 sr_villain : Злодеи
@@ -86,7 +86,7 @@ sr_leaders : Лидеры
 sr_warriors : Войны
 sr_adventures : Авантюристы
 
-sr_traders_small_descr: Traders Rating
+sr_traders_small_descr: Рейтинг торговцев
 sr_looters_small_descr: Рейтинг грабителей
 sr_heroes_small_descr: Рейтинг героев
 sr_villain_small_descr: Рейтинг злодеев
