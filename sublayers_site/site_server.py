@@ -76,7 +76,8 @@ class Application(BaseApplication):
         def load_registry_done_callback(all_registry_items):
             self.reg = Root.objects.get_cached('reg:///registry')
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
-            print 'Road Dogs Site load !'
+            from datetime import datetime
+            print('Road Dogs Site load !', str(datetime.now()))
             log.info('Site server READY')
 
         Root.objects.filter(uri={'$ne': None}).find_all(callback=load_registry_done_callback)
