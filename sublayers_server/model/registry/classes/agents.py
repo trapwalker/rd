@@ -219,9 +219,8 @@ class Agent(Root):
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
 
-    @property
-    def karma_name(self):
-        return getKarmaName(self.karma_norm)
+    def karma_name(self, lang='ru'):
+        return getKarmaName(self.karma_norm, lang)
 
     @property
     def quests(self):
@@ -321,7 +320,6 @@ class Agent(Root):
             lvl = self.get_lvl()
             if lvl > old_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
-
 
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:

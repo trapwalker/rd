@@ -48,6 +48,8 @@ class GetRatingInfo(BaseSiteHandler):
             return
         cmp_func = None
 
+        log.debug('GetRatingInfo: %s', rating_name)
+
         if rating_name == 'Traiders':
             cmp_func = compare_function_for_traiders
         elif rating_name == 'Looters':
@@ -68,11 +70,15 @@ class GetRatingInfo(BaseSiteHandler):
         # todo: load agents for all users
         # agent_exemplar = self.server.reg_agents.get([str(user._id)])
 
+        log.debug('GetRatingInfo len of rate_users: %s', len(rate_users))
+
         if cmp_func:
             rate_users.sort(cmp=cmp_func)
-        # print rate_users[0]
-        # # todo: Вывод их через шаблон, + отправка их количества, чтобы можно было как-то обработать на клиенте
+
+        log.debug('GetRatingInfo sorting done')
+        # todo: Вывод их через шаблон, + отправка их количества, чтобы можно было как-то обработать на клиенте
         self.render('table_ratings.html', rate_users=rate_users)
+        log.debug('GetRatingInfo render done')
 
 
 class GetQuickGameRecords(BaseSiteHandler):
