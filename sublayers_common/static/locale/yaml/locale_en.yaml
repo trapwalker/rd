@@ -376,16 +376,16 @@ con_wreg_msg62: |
 con_wreg_msg63: |
   Загрузка характеристик:
 con_wreg_msg64: |
-  Успешно.
+  Done.
 
   --------------------------------------------------------------
-  Навыки.
-  Свободные очки навыков появляются с опытом персонажа. Игрок может распределять их по своему желанию. Каждые 10 очков навыка увеличивают уровень персонажа.
+  Skills.
+  Free skill points are generated along with the character’s experience. A player is free to distribute them. Every 10 skill points level up the character.
   --------------------------------------------------------------
 con_wreg_msg65: |
-  Успешно.
+  Done.
 
   --------------------------------------------------------------
-  Способности.
-  Каждый новый уровень персонажа дает одно очко способностей. Способности появляются в зависимости от игрового класса, навыков и уже имеющихся способностей персонажа.
+  Perks.
+  Every new character level gives one perk point. The appearing talents depend on the class, skills, and the existing talents of the character.
   --------------------------------------------------------------
