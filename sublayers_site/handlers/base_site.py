@@ -44,7 +44,7 @@ class BaseSiteHandler(BaseHandler):
 
             # todo: научиться получать эти параметры
             user_info['lvl'] = agent_example.get_lvl()
-            user_info['karma'] = agent_example.karma_name
+            user_info['karma'] = agent_example.karma_name(lang=self.user_lang)
             # Не формировать темплейт пользователя, пока не установлен ролевой класс
             if agent_example.role_class:
                 template_agent_info = tornado.template.Loader(
