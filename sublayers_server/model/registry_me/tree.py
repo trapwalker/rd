@@ -66,6 +66,17 @@ class InstantReferenceField(ReferenceField):
 
 
 class DocMixin(BaseDocument):
+    uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
+    parent = ReferenceField(document_type='Node', not_inherited=True)
+    fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
+    is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
+    abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
+    title = StringField(caption=u"Название", tags={"client"})
+    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
+    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
+    doc = StringField(caption=u"Описание узла реестра")
+    tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
+
     @classmethod
     def _get_inheritable_field_names(cls):
         return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
@@ -107,6 +118,171 @@ class DocMixin(BaseDocument):
 
     __str__ = __repr__
 
+    @property
+    def tag_set(self):
+        tags = set(self.tags or [])
+        if self.parent:
+            tags.update(self.parent.tag_set)
+        return tags
+
+    def iter_attrs(self, tags=None, classes=None):
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
+
+        for name, attr in self._fields.items():
+            field_tags = getattr(attr, 'tags', None)
+            if (
+                (tags is None or field_tags is not None and field_tags & tags) and
+                (classes is None or isinstance(attr, classes))
+            ):
+                getter = lambda: getattr(self, name)
+                yield name, attr, getter
+
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = {}
+        for name, attr, getter in self.iter_attrs(tags='client'):
+            value = getter()
+            if isinstance(value, Node):
+                value = value.as_client_dict()
+            d[name] = value
+
+        d.update(
+            id=self.id,  # todo: Возможно в качестве идентификатора передавать UID?
+            node_hash=self.node_hash(),
+            html_hash=self.node_html(),
+            tags=list(self.tag_set),
+        )
+        return d
+
+    def node_hash(self):  # todo: (!) rename to proto_uri
+        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        # todo: Пороверять абстрактность без uri
+        if self.uri:
+            return self.uri
+        elif self.parent:
+            return self.parent.node_hash()
+
+        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
+
+    def node_html(self):  # todo: rename
+        return self.node_hash().replace('://', '-').replace('/', '-')
+
+    def is_ancestor(self, parent_candidate):
+        return self.get_ancestor_level(parent_candidate) >= 0
+
+    def get_ancestor_level(self, parent_candidate):
+        h = parent_candidate.node_hash()
+        i = 0
+        obj = self
+        while obj and obj.node_hash() != h:
+            i += 1
+            obj = obj.parent
+
+        return i if obj else -1
+
+    def __getattribute__(self, name):
+        """Implementation of inheritance by registry parent line"""
+        if (
+            name not in {
+                'parent', 'uri', 'uid', 'make_uri',
+                '_fields', '_dynamic_fields', '_fields_ordered', '_changed_fields', '_data',
+                '_db_field_map', '_reverse_db_field_map', '_BaseDocument__set_field_display',
+                '__class__', '_created', '_initialised', '__slots__', '_is_document', '_meta', 'STRICT',
+                '_dynamic', '_dynamic_lock', '_class_name',
+            }
+        ):
+            if self._initialised:
+                field = self._fields.get(name) or self._dynamic_fields.get(name)
+                if field and name not in self._data:
+                    if getattr(field, 'not_inherited', False):
+                        value = field.default
+                        value = value() if callable(value) else value
+                        return value
+
+                    parent = self.parent
+                    if parent and hasattr(parent, name):
+                        return getattr(parent, name)
+                    else:
+                        value = field.default
+                        value = value() if callable(value) else value
+                        return value
+
+        return super(DocMixin, self).__getattribute__(name)
+
+    def __delattr__(self, *args, **kwargs):
+        """Handle deletions of fields"""
+        field_name = args[0]
+        field = self._fields.get(field_name) or self._dynamic_fields.get(field_name)
+        if field:
+            self._data.pop(field_name, None)
+        else:
+            super(DocMixin, self).__delattr__(*args, **kwargs)
+
+    def _reinst_container(self, field, data):
+        data = copy(data)
+        subfield = field.field
+        for i, item in data.items() if hasattr(data, 'item') else enumerate(data):
+            if item is not None:
+                if isinstance(subfield, (ListField, DictField)):
+                    data[i] = self._reinst_container(subfield, copy(item))
+                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):  # TODO: deprecated
+                    data[i] = item.instantiate()
+                elif isinstance(subfield, ReferenceField):
+                    if getattr(subfield, 'reinst', None):
+                        # TODO: mark node as instant_linked
+                        # TODO: may be use cascade saving?
+                        data[i] = item.instantiate(fixtured=self.fixtured).save()
+                else:
+                    data[i] = copy(item)
+        return data
+
+    def _instantiaite_field(self, new_instance, field, name):
+        if getattr(field, 'reinst', None) and name not in self._data:
+            value = getattr(self, name)
+            if value is not None:
+                if isinstance(field, EmbeddedDocumentField):
+                    assert not isinstance(value, basestring), (
+                        'Embeded fields, described by string ({value!r}) is not supported yet'.format(value=value)
+                    )
+                    if isinstance(value, basestring):
+                        value = URI(value)  # todo: handle exceptions
+
+                    setattr(new_instance, name, value.instantiate())
+                elif isinstance(field, ListField):
+                    setattr(new_instance, name, self._reinst_container(field, value))
+                elif isinstance(field, ReferenceField):
+                    new_value = value.instantiate(fixtured=self.fixtured, is_instant=True)
+                    new_value.save()
+                    setattr(new_instance, name, new_value)
+
+    def reinst_fields(self):
+        for name, field in self._fields.items():
+            self._instantiaite_field(self, field, name)
+
+
+class ENode(EmbeddedDocument, DocMixin):
+    def instantiate(self, name=None, storage=None, **kw):
+        # todo: Сделать поиск ссылок в параметрах URI
+        params = {}
+        parent = self.parent
+        # TODO: solve case with different classes between self and parent
+        inheritable = set(self._get_inheritable_field_names())
+        params.update({k: v for k, v in self._data.items() if k in inheritable})
+
+        if name:
+            params.update(name=name)
+        params.update(parent=parent)
+        params.update(kw)
+        #inst = self.__class__(**params)
+        inst = self._from_son(params, created=True)
+
+        inst.reinst_fields()
+        # todo: Разобраться с abstract при реинстанцированиях
+        # todo: Сделать поиск ссылок в параметрах URI
+        return inst
+
 
 class Node(Document, DocMixin):
     u"""
@@ -119,27 +295,9 @@ class Node(Document, DocMixin):
         allow_inheritance=True,
         #queryset_class=CachedQuerySet,
     )
-    uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
-    uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
-    parent = ReferenceField(document_type='self', not_inherited=True)
     # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
-    fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
-    is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
-    title = StringField(caption=u"Название", tags={"client"})
-    abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
-
+    uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
     owner = ReferenceField(document_type='self', not_inherited=True)
-    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
-    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
-    doc = StringField(caption=u"Описание узла реестра")
-    tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
-
-    @property
-    def tag_set(self):
-        tags = set(self.tags or [])
-        if self.parent:
-            tags.update(self.parent.tag_set)
-        return tags
 
     def make_uri(self):
         owner = self.owner
@@ -183,85 +341,6 @@ class Node(Document, DocMixin):
     #         if parent:
     #             return parent.___hasvalue___(name)
 
-    def __getattribute__(self, name):
-        """Implementation of inheritance by registry parent line"""
-        if (
-            name not in {
-                'parent', 'uri', 'uid', 'make_uri',
-                '_fields', '_dynamic_fields', '_fields_ordered', '_changed_fields', '_data',
-                '_db_field_map', '_reverse_db_field_map', '_BaseDocument__set_field_display',
-                '__class__', '_created', '_initialised', '__slots__', '_is_document', '_meta', 'STRICT',
-                '_dynamic', '_dynamic_lock', '_class_name',
-            }
-        ):
-            if self._initialised:
-                field = self._fields.get(name) or self._dynamic_fields.get(name)
-                if field and name not in self._data:
-                    if getattr(field, 'not_inherited', False):
-                        value = field.default
-                        value = value() if callable(value) else value
-                        return value
-
-                    parent = self.parent
-                    if parent and hasattr(parent, name):
-                        return getattr(parent, name)
-                    else:
-                        value = field.default
-                        value = value() if callable(value) else value
-                        return value
-
-        return super(Node, self).__getattribute__(name)
-
-    def __delattr__(self, *args, **kwargs):
-        """Handle deletions of fields"""
-        field_name = args[0]
-        field = self._fields.get(field_name) or self._dynamic_fields.get(field_name)
-        if field:
-            self._data.pop(field_name, None)
-        else:
-            super(Node, self).__delattr__(*args, **kwargs)
-
-    def _reinst_container(self, field, data):
-        data = copy(data)
-        subfield = field.field
-        for i, item in data.items() if hasattr(data, 'item') else enumerate(data):
-            if item is not None:
-                if isinstance(subfield, (ListField, DictField)):
-                    data[i] = self._reinst_container(subfield, copy(item))
-                elif isinstance(subfield, EmbeddedDocumentField) and isinstance(item, Node):  # TODO: deprecated
-                    data[i] = item.instantiate()
-                elif isinstance(subfield, ReferenceField):
-                    if getattr(subfield, 'reinst', None):
-                        # TODO: mark node as instant_linked
-                        # TODO: may be use cascade saving?
-                        data[i] = item.instantiate(fixtured=self.fixtured).save()
-                else:
-                    data[i] = copy(item)
-        return data
-
-    def _instantiaite_field(self, new_instance, field, name):
-        if getattr(field, 'reinst', None) and name not in self._data:
-            value = getattr(self, name)
-            if value is not None:
-                if isinstance(field, EmbeddedDocumentField):
-                    assert not isinstance(value, basestring), (
-                        'Embeded fields, described by string ({value!r}) is not supported yet'.format(value=value)
-                    )
-                    if isinstance(value, basestring):
-                        value = URI(value)  # todo: handle exceptions
-
-                    setattr(new_instance, name, value.instantiate())
-                elif isinstance(field, ListField):
-                    setattr(new_instance, name, self._reinst_container(field, value))
-                elif isinstance(field, ReferenceField):
-                    new_value = value.instantiate(fixtured=self.fixtured, is_instant=True)
-                    new_value.save()
-                    setattr(new_instance, name, new_value)
-
-    def reinst_fields(self):
-        for name, field in self._fields.items():
-            self._instantiaite_field(self, field, name)
-
     def instantiate(self, name=None, storage=None, **kw):
         # todo: Сделать поиск ссылок в параметрах URI
         params = {}
@@ -283,37 +362,6 @@ class Node(Document, DocMixin):
         # todo: Разобраться с abstract при реинстанцированиях
         # todo: Сделать поиск ссылок в параметрах URI
         return inst
-
-    def iter_attrs(self, tags=None, classes=None):
-        if isinstance(tags, basestring):
-            tags = set(tags.split())
-        elif tags is not None:
-            tags = set(tags)
-
-        for name, attr in self._fields.items():
-            field_tags = getattr(attr, 'tags', None)
-            if (
-                (tags is None or field_tags is not None and field_tags & tags) and
-                (classes is None or isinstance(attr, classes))
-            ):
-                getter = lambda: getattr(self, name)
-                yield name, attr, getter
-
-    def as_client_dict(self):  # todo: rename to 'to_son_client'
-        d = {}
-        for name, attr, getter in self.iter_attrs(tags='client'):
-            value = getter()
-            if isinstance(value, Node):
-                value = value.as_client_dict()
-            d[name] = value
-
-        d.update(
-            id=self.id,  # todo: Возможно в качестве идентификатора передавать UID?
-            node_hash=self.node_hash(),
-            html_hash=self.node_html(),
-            tags=list(self.tag_set),
-        )
-        return d
 
     # TODO: Найти и убрать вызовы метода deep_iter (заменить на iter_childs)
     def iter_childs(self, reject_abstract=False, deep=False, self_include=False):
@@ -347,19 +395,6 @@ class Node(Document, DocMixin):
                     return node.get_child(path[1:])
         else:
             return self
-
-    def node_hash(self):  # todo: (!) rename to proto_uri
-        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
-        # todo: Пороверять абстрактность без uri
-        if self.uri:
-            return self.uri
-        elif self.parent:
-            return self.parent.node_hash()
-
-        raise Exception('try to get node hash in wrong node: {!r}'.format(self))  # todo: exception specify
-
-    def node_html(self):  # todo: rename
-        return self.node_hash().replace('://', '-').replace('/', '-')
 
     # todo: rename to calls: _load_node -> _load_node_from_fs
     @classmethod
@@ -418,19 +453,6 @@ class Node(Document, DocMixin):
 
         log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
         return root
-
-    def is_ancestor(self, parent_candidate):
-        return self.get_ancestor_level(parent_candidate) >= 0
-
-    def get_ancestor_level(self, parent_candidate):
-        h = parent_candidate.node_hash()
-        i = 0
-        obj = self
-        while obj and obj.node_hash() != h:
-            i += 1
-            obj = obj.parent
-
-        return i if obj else -1
 
 
 class Root(Node):
