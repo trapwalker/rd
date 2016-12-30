@@ -374,7 +374,7 @@ con_wreg_msg62: |
   Determines the maximum number of players who can join the character’s party. The characters issuing group missions have set leadership skill requirements.
   --------------------------------------------------------------
 con_wreg_msg63: |
-  Загрузка характеристик:
+  Stat loading:
 con_wreg_msg64: |
   Done.
 
