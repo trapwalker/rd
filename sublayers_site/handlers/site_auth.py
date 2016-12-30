@@ -197,7 +197,9 @@ class StandardLoginHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def _next_reg_step(self):
         user = self.current_user
-
+        if user is None or not isinstance(user, User):
+            self.finish({'status': 'fail_wrong_input'})
+            return
         # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
             username = self.get_argument('username', None)
@@ -284,7 +286,9 @@ class StandardLoginHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def _back_reg_step(self):
         user = self.current_user
-
+        if user is None or not isinstance(user, User):
+            self.finish({'status': 'fail_wrong_input'})
+            return
         # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
             # todo: Вариант1: с таким статусом нельзя нажать назад.
