@@ -47,6 +47,7 @@ class GetUserInfoHandler(BaseSiteHandler):
             'ordinal_number': user.ordinal_number,
             'created': created,
             'avatar_link': user.avatar_link,
+            'is_tester': user.is_tester,
         })
 
 

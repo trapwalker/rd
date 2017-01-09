@@ -526,6 +526,7 @@ function GetUserInfo() {
         method: 'POST',
         data: {},
         success: function (data) {
+            console.log(data);
             registration_status = data.user_status;
             if (registration_status == 'register') {
                 var pos_x = '';

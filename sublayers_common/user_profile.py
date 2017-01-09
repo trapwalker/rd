@@ -38,12 +38,14 @@ class User(Document):
         standard = EmbeddedDocumentField(AuthStandard, default=AuthStandard)
         # todo: add social auth attributes
 
+
     __collection__ = 'profiles'
     name = StringField(max_length=64)
     registration_status = StringField(max_length=64)
     auth = EmbeddedDocumentField(AuthData, default=AuthData)
 
     quick = BooleanField(default=False)
+    is_tester = BooleanField(default=False)
     car_index = IntField(default=None)
     ordinal_number = IntField(default=None)
     date_created = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)
