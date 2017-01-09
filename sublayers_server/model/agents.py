@@ -669,7 +669,11 @@ class QuickUser(User):
         self.current_location = None
 
     def print_login(self):
-        return '_'.join(self.user.name.split('_')[:-1])
+        str_list = self.user.name.split('_')
+        if len(str_list) > 1:
+            return '_'.join(str_list[:-1])
+        else:
+            return self.user.name
 
 
 class TeachingUser(QuickUser):

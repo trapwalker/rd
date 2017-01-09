@@ -49,7 +49,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
             if not user.quick:
                 agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
         elif options.mode == 'quick':
-            if user.quick:
+            if user.quick or user.is_tester:
                 agent = yield srv.api.get_agent_quick_game(user, do_disconnect=True)
             else:
                 agent = yield srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False

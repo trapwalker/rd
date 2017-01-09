@@ -104,13 +104,27 @@ class StandardLoginHandler(BaseSiteHandler):
     def _quick_registration(self):
         qg_car_index = self.get_argument('qg_car_index', 0)
         nickname = self.get_argument('username', None)
+
         if self.current_user:
-            quick_user = self.current_user if self.current_user.quick else None
-            if quick_user and quick_user.name == nickname:
-                quick_user.car_index = qg_car_index
-                yield quick_user.save()
-                self.finish({'status': u'Такой пользователь существует'})
-                return
+            quick_user = self.current_user if (self.current_user.quick or self.current_user.is_tester) else None
+            if quick_user:
+                if quick_user.quick:
+                    if quick_user.name == nickname:
+                        quick_user.car_index = qg_car_index
+                        yield quick_user.save()
+                        self.finish({'status': u'Такой пользователь существует'})
+                        return
+                else:
+                    quick_user.car_index = qg_car_index
+                    yield quick_user.save()
+                    self.finish({'status': u'Такой пользователь существует'})
+                    return
+
+        # todo: убрать по завершении тестирования
+        if quick_user is None:
+            log.warning('Quick game is closed for %r', nickname)
+            self.send_error(403)
+            return
 
         try:
             str(nickname)
@@ -166,9 +180,9 @@ class StandardLoginHandler(BaseSiteHandler):
             raise tornado.gen.Return(res.get('u_id'))
 
     def _forum_cookie_setup(self, username):
-        cookie_format = "{}|{}".format
-        for_hash_str = "{}{}".format(username, options.forum_cookie_secret)
-        hash = hashlib.md5(for_hash_str).hexdigest()
+        cookie_format = u"{}|{}".format
+        for_hash_str = u"{}{}".format(username, options.forum_cookie_secret)
+        hash = hashlib.md5(for_hash_str.encode('utf-8')).hexdigest()
         return cookie_format(username, hash)
 
     @tornado.gen.coroutine

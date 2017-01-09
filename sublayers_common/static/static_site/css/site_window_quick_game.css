@@ -111,6 +111,14 @@
     font-size: 16pt;
 }
 
+.window-qg-content-play-btn.disabled {
+    pointer-events: none;
+    background-color: #030f00;
+    border-color: #082801;
+    color: #0e4b00;
+    text-shadow: none;
+}
+
 .window-qg-content-rating-line-block {
     position: relative;
     width: calc(100% - 16px);
