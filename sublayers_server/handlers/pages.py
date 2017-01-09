@@ -29,7 +29,7 @@ class PlayHandler(BaseHandler):
                     self.redirect(self.get_login_url())
 
             if options.mode == 'quick':
-                if not user.quick:
+                if not user.quick and not user.is_tester:
                     # todo: сделать проверку, чтобы пользователи с уже пройденным обучением не попадали на этот сервер
                     if user.teaching_state == "map":
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,

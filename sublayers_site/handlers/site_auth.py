@@ -107,17 +107,18 @@ class StandardLoginHandler(BaseSiteHandler):
 
         if self.current_user:
             quick_user = self.current_user if (self.current_user.quick or self.current_user.is_tester) else None
-            if quick_user.quick:
-                if quick_user and quick_user.name == nickname:
+            if quick_user:
+                if quick_user.quick:
+                    if quick_user.name == nickname:
+                        quick_user.car_index = qg_car_index
+                        yield quick_user.save()
+                        self.finish({'status': u'Такой пользователь существует'})
+                        return
+                else:
                     quick_user.car_index = qg_car_index
                     yield quick_user.save()
                     self.finish({'status': u'Такой пользователь существует'})
                     return
-            else:
-                quick_user.car_index = qg_car_index
-                yield quick_user.save()
-                self.finish({'status': u'Такой пользователь существует'})
-                return
 
         # todo: убрать по завершении тестирования
         if quick_user is None:

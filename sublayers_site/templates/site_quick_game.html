@@ -30,7 +30,7 @@
                 <div class="slide-arrow left" onclick="SlideLeftQuickCars()"></div>
                 <div class="slide-arrow right" onclick="SlideRightQuickCars()"></div>
             </div>
-            <div class="window-qg-content-play-btn window-qg-btn buttons-and-headers box-shadow box-shadow-non-active" onclick="StartQuickGame()">{{ _('sqg_game') }}</div>
+            <div class="window-qg-content-play-btn window-qg-btn buttons-and-headers box-shadow box-shadow-non-active disabled" onclick="StartQuickGame()">{{ _('sqg_game') }}</div>
         </div>
         <div class="window-qg-content-block not-first">
 
@@ -56,8 +56,11 @@
     SetQuickGameCarIndex();
 
     function StartQuickGame() {
-{#        audioManager.play('error_1');#}
-{#        return;#}
+        // todo: удалить после завершения тестирования
+        if ($('.window-qg-content-play-btn').first().hasClass('disabled')) {
+            audioManager.play('error_1');
+            return
+        }
 
         var username = document.getElementById('quick_game_nickname').value;
         if (username.length == 0) return;
@@ -100,5 +103,15 @@
     function SetQuickGameCarIndex() {
         $('.window-qg-content-car-wrap').css('display', 'none');
         $('#QuickGameCar' + qg_car_index).css('display', 'block');
+    }
+
+    function SetQuickGameBtnEnable(enable){
+        var jq_btn = $('.window-qg-content-play-btn').first();
+        if (enable) {
+            jq_btn.removeClass('disabled');
+        }
+        else {
+            jq_btn.addClass('disabled');
+        }
     }
 </script>

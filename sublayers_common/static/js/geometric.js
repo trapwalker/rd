@@ -249,6 +249,6 @@ function getKarmaNameWithoutNorm(karma) {
 
 function getQuickUserLogin(login) {
     var parts = login.split('_');
-    parts.pop();
+    if (parts.length > 1) parts.pop();
     return parts.join('_');
 }

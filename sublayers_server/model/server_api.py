@@ -68,7 +68,7 @@ class ServerAPI(API):
     @tornado.gen.coroutine
     def get_agent_quick_game(self, user, do_disconnect=False):
         # User здесь обязательно QuickUser
-        assert user.quick
+        assert user.quick or user.is_tester
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
             # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=True)

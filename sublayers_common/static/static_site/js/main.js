@@ -526,7 +526,10 @@ function GetUserInfo() {
         method: 'POST',
         data: {},
         success: function (data) {
-            console.log(data);
+
+            // todo: убрать после тестирования
+            SetQuickGameBtnEnable(data.is_tester);
+
             registration_status = data.user_status;
             if (registration_status == 'register') {
                 var pos_x = '';

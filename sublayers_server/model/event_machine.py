@@ -154,6 +154,10 @@ class Server(object):
             # Создание AIQuickBot'ов
             self.ioloop.add_callback(callback=self.load_ai_quick_bots)
 
+            # Создание Тестовых аккаунтов
+            self.ioloop.add_callback(callback=self.load_test_accounts)
+
+
         print('Load world complete !')
 
     def on_load_poi(self, event):
@@ -251,6 +255,67 @@ class Server(object):
                 example=agent_exemplar,
                 car_proto=car_proto
             )
+
+    @tornado.gen.coroutine
+    def load_test_accounts(self):
+        from sublayers_server.model.registry.classes.agents import Agent
+        from sublayers_server.model.ai_quick_agent import AIQuickAgent
+        import os
+        from os.path import isfile, join
+        import yaml
+
+        file_name = join(os.getcwd(), 'account_test.yaml')
+        if isfile(file_name):
+            with open(file_name) as data_file:
+                data = yaml.load(data_file)
+                if data.get('accounts', None) and len(data['accounts']):
+                    tester_accounts = data['accounts']
+                else:
+                    log.warning('Tester Accounts not found in file account_test.yaml')
+                    return
+        else:
+            log.warning('File account_test.yaml not found: {}')
+            return
+
+        tester_count = len(tester_accounts)
+        # Создать ботов
+        avatar_list = self.reg['world_settings'].avatar_list
+        role_class_list = self.reg['world_settings'].role_class_order
+        for i in range(0, tester_count):
+            # Найти или создать профиль
+            name = tester_accounts[i]['nickname']
+            user = yield UserProfile.get_by_name(name=name)
+            if user is None:
+                user = UserProfile(name=name, email=tester_accounts[i]['login'], raw_password=str(tester_accounts[i]['password']))
+                user.avatar_link = avatar_list[random.randint(0, len(avatar_list) - 1)]
+                user.registration_status = 'register'
+                user.is_tester = True
+                yield user.save()
+                log.info('Test account created: %s %s', tester_accounts[i]['login'], str(tester_accounts[i]['password']))
+
+            # Создать AIQuickAgent
+            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            if agent_exemplar is None:
+                agent_exemplar = self.reg['agents/user/quick'].instantiate(
+                    login=user.name,
+                    profile_id=str(user._id),
+                    name=str(user._id),
+                    fixtured=False,
+                )
+                yield agent_exemplar.load_references()
+                yield agent_exemplar.save(upsert=True)
+                agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
+                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
+                agent_exemplar.set_exp(time=self.get_time(), value=1005)
+                agent_exemplar.driving.value = 20
+                agent_exemplar.shooting.value = 20
+                agent_exemplar.masking.value = 20
+                agent_exemplar.leading.value = 20
+                agent_exemplar.trading.value = 20
+                agent_exemplar.engineering.value = 20
+                agent_exemplar.quick_flag = True
+                agent_exemplar.teaching_flag = False
+                yield agent_exemplar.save(upsert=True)
 
 
     def post_message(self, message):
