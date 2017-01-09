@@ -125,7 +125,6 @@
     function RegisterBtnClick() {
         var email = document.getElementById('reg_email').value;
         var password = document.getElementById('reg_password').value;
-        console.log('RegisterBtnClick: ', email, password);
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
