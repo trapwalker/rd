@@ -166,9 +166,9 @@ class StandardLoginHandler(BaseSiteHandler):
             raise tornado.gen.Return(res.get('u_id'))
 
     def _forum_cookie_setup(self, username):
-        cookie_format = "{}|{}".format
-        for_hash_str = "{}{}".format(username, options.forum_cookie_secret)
-        hash = hashlib.md5(for_hash_str).hexdigest()
+        cookie_format = u"{}|{}".format
+        for_hash_str = u"{}{}".format(username, options.forum_cookie_secret)
+        hash = hashlib.md5(for_hash_str.encode('utf-8')).hexdigest()
         return cookie_format(username, hash)
 
     @tornado.gen.coroutine
