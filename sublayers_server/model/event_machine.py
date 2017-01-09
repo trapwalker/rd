@@ -274,7 +274,7 @@ class Server(object):
                     log.warning('Tester Accounts not found in file account_test.yaml')
                     return
         else:
-            log.warning('File account_test.yaml not found: {}')
+            log.warning('File account_test.yaml not found.')
             return
 
         tester_count = len(tester_accounts)
