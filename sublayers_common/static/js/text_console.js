@@ -574,6 +574,97 @@ var ConsoleFirstEnter = (function (_super) {
 })(TextConsole);
 
 
+var ConsoleFirstEnterQuick = (function (_super) {
+    __extends(ConsoleFirstEnterQuick, _super);
+
+    function ConsoleFirstEnterQuick() {
+        _super.call(this);
+
+        this.target_div = textConsoleManager.jq_main_div;
+
+        this.add_message(
+            'welcome',
+            '\n       ================================================\n' +
+            '       >                                              <\n' +
+            '       >        Нюк Коммандер вер. ' + textConsoleManager.app_version + '         <\n' +
+            '       >                                              <\n' +
+            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
+            '       >                                              <\n' +
+            '       ================================================'
+        );
+        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message(
+            'system',
+            'Базовая страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
+            '--------------------------------------------------------------\n' +
+            'Уважаемый, ' + textConsoleManager.user_name + '! Поздравляем вас с успешной регистрацией в системе Nuke Commander и получением корпоративных водительских прав. Финансовый отдел корпорации Нукойл одобрил оформление авто-кредита и аренду клиентского оборудования системы Nuke Navigator.\n\n' +
+            'Наша компания приветствует квалифицированных пользователей и предлагает плату за прохождение обучения. Желаете пройти обучение за бонус в 150nc + 100exp?\n\n' +
+            'Y - Yes\n' +
+            'N - No\n' +
+            '--------------------------------------------------------------'
+        );
+        this.add_message('user_input', ' ');
+
+        textConsoleManager.add(this, 'first_enter_quick');
+    }
+
+    ConsoleFirstEnterQuick.prototype.user_input = function(event) {
+        switch (event.keyCode) {
+            case 89:
+                this.teaching_answer_value = true;
+                this.add_message('user', 'Активация системы обучения.');
+                this.add_message(
+                    'system',
+                    'Демонстрационный скрипт запущен. Следуйте дальнейшим инструкциям.'
+                );
+                this.teaching_answer(true);
+                this.target_div.off("keydown");
+                this._cur_message = null;
+                this.first_input = false;
+                this._wait_input = false;
+                break;
+            case 78:
+                this.teaching_answer_value = false;
+                this.add_message('user', 'Деактивация системы обучения.');
+                this.add_message(
+                    'system',
+                    'Запуск демонстрационного скрипта отменен.'
+                );
+
+                this.teaching_answer(false);
+                this.target_div.off("keydown");
+                this._cur_message = null;
+                this.first_input = false;
+                this._wait_input = false;
+                break;
+        }
+    };
+
+    ConsoleFirstEnterQuick.prototype.start = function() {
+        console.log('ConsoleFirstEnterQuick.prototype.start', this);
+        if (!this._is_started) {
+            resourceLoadManager.add(this);  // todo: обсудить
+            _super.prototype.start.call(this);
+        }
+    };
+
+    ConsoleFirstEnterQuick.prototype.teaching_answer = function(teach) {
+        var self = this;
+        $.ajax({
+            url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/tca',
+            data: {answer: teach},
+            success:
+                // Сервер принял сообщение об обучении, поэтому коннект по ws
+                function(data) {
+                    resourceLoadManager.del(self);
+                }
+        });
+    };
+
+    return ConsoleFirstEnterQuick;
+})(TextConsole);
+
+
 var ConsoleEnter = (function (_super) {
     __extends(ConsoleEnter, _super);
 
@@ -592,7 +683,6 @@ var ConsoleEnter = (function (_super) {
             '       >                                              <\n' +
             '       ================================================'
         );
-
         this.add_message('user', 'Запрос статуса активной страховки.');
         this.add_message('system', 'Страховка активна для ' + textConsoleManager.user_name + '.');
         this.add_message('user', 'Запрос актуальных координат.');
@@ -766,6 +856,7 @@ var textConsoleManager;
 function initConsoles() {
     textConsoleManager = new TextConsoleManager();
     new ConsoleFirstEnter();
+    new ConsoleFirstEnterQuick();
     new ConsoleEnter();
     new ConsoleEnterToLocation();
     new ConsoleEnterToMap();

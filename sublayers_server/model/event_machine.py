@@ -317,7 +317,6 @@ class Server(object):
                 agent_exemplar.teaching_flag = False
                 yield agent_exemplar.save(upsert=True)
 
-
     def post_message(self, message):
         """
         @param sublayers_server.model.messages.Message message: message to sent
