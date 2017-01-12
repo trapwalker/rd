@@ -65,7 +65,7 @@ class InstantReferenceField(ReferenceField):
         return value
 
 
-class DocMixin(BaseDocument):
+class NodeMixin(BaseDocument):
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     parent = ReferenceField(document_type='Node', not_inherited=True)
     fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
@@ -86,7 +86,7 @@ class DocMixin(BaseDocument):
         keys_width = max(map(len, d.keys())) if d and keys_alignment else 1
 
         def prepare_value(value):
-            if isinstance(value, DocMixin):
+            if isinstance(value, NodeMixin):
                 value = value.to_string(
                     indent=indent + 1,
                     indent_size=indent_size,
@@ -209,7 +209,7 @@ class DocMixin(BaseDocument):
                         value = value() if callable(value) else value
                         return value
 
-        return super(DocMixin, self).__getattribute__(name)
+        return super(NodeMixin, self).__getattribute__(name)
 
     def __delattr__(self, *args, **kwargs):
         """Handle deletions of fields"""
@@ -218,7 +218,7 @@ class DocMixin(BaseDocument):
         if field:
             self._data.pop(field_name, None)
         else:
-            super(DocMixin, self).__delattr__(*args, **kwargs)
+            super(NodeMixin, self).__delattr__(*args, **kwargs)
 
     def _reinst_container(self, field, data):
         data = copy(data)
@@ -262,7 +262,7 @@ class DocMixin(BaseDocument):
             self._instantiaite_field(self, field, name)
 
 
-class ENode(EmbeddedDocument, DocMixin):
+class ENode(EmbeddedDocument, NodeMixin):
     def instantiate(self, name=None, storage=None, **kw):
         # todo: Сделать поиск ссылок в параметрах URI
         params = {}
@@ -284,7 +284,7 @@ class ENode(EmbeddedDocument, DocMixin):
         return inst
 
 
-class Node(Document, DocMixin):
+class Node(Document, NodeMixin):
     u"""
     Правила работы с узлами реестра:
     - # todo: вложенные объекты (Embedded, list, dict), полученные по наследству или по умолчанию модифицировать нельзя
@@ -295,6 +295,7 @@ class Node(Document, DocMixin):
         allow_inheritance=True,
         #queryset_class=CachedQuerySet,
     )
+    instant_class = ENode
     # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
     uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
     owner = ReferenceField(document_type='self', not_inherited=True)
@@ -341,7 +342,7 @@ class Node(Document, DocMixin):
     #         if parent:
     #             return parent.___hasvalue___(name)
 
-    def instantiate(self, name=None, storage=None, **kw):
+    def instantiate(self, name=None, storage=None, is_instant=True, **kw):
         # todo: Сделать поиск ссылок в параметрах URI
         params = {}
         parent = self
