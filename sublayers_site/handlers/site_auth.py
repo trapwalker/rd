@@ -111,11 +111,13 @@ class StandardLoginHandler(BaseSiteHandler):
                 if quick_user.quick:
                     if quick_user.name == nickname:
                         quick_user.car_index = qg_car_index
+                        quick_user.teaching_state == ''
                         yield quick_user.save()
                         self.finish({'status': u'Такой пользователь существует'})
                         return
                 else:
                     quick_user.car_index = qg_car_index
+                    quick_user.teaching_state == ''
                     yield quick_user.save()
                     self.finish({'status': u'Такой пользователь существует'})
                     return

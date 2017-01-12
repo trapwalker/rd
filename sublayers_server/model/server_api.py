@@ -86,6 +86,7 @@ class ServerAPI(API):
                 yield agent_exemplar.save(upsert=True)
                 role_class_list = self.server.reg['world_settings'].role_class_order
                 agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
+
                 agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
                 agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
                 agent_exemplar.driving.value = 20
@@ -125,21 +126,19 @@ class ServerAPI(API):
 
     @tornado.gen.coroutine
     def get_agent_teaching(self, user, do_disconnect=False):
-        assert not user.quick
-        assert user.teaching_state == 'map'
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
+
         if not agent:
             # Если нет подключённого агента, то мы не ищем в базе, а просто создаём нового!
-            # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), teaching_flag=True)
-            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=True).find_all()
+            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=True).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
-            main_agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=False).find_all()
+
+            main_agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False).find_all()
             main_agent_exemplar = main_agent_exemplar and main_agent_exemplar[0] or None
+
             # todo: Для агента, проходящего обучение нужно забрать класс из уже созданного ранее агента
             if agent_exemplar is None:
-                # log.warning('Agent not found {}'.format(user.name))
                 agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
-                    #storage=self.application.reg_agents,
                     login=user.name,
                     profile_id=str(user._id),
                     name=str(user._id),
@@ -148,8 +147,6 @@ class ServerAPI(API):
                 yield agent_exemplar.load_references()
                 role_class_list = self.server.reg['world_settings'].role_class_order
                 agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
-                agent_exemplar.teaching_flag = True
-                agent_exemplar.quick_flag = False
 
                 # Если был найден агент из основной игры, то скопировать всю информацию из него
                 if main_agent_exemplar:
@@ -163,24 +160,47 @@ class ServerAPI(API):
                     agent_exemplar.perks = main_agent_exemplar.perks
                     agent_exemplar.role_class = main_agent_exemplar.role_class
                 else:
-                    log.warning('Agent from main server not founded for user: {}'.format(user.name))
+                    # todo: убрать тут is_tester
+                    if not user.quick and not user.is_tester:
+                        log.warning('Agent from main server not founded for user: {}'.format(user.name))
+                    agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
+                    agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
+                    agent_exemplar.driving.value = 20
+                    agent_exemplar.shooting.value = 20
+                    agent_exemplar.masking.value = 20
+                    agent_exemplar.leading.value = 20
+                    agent_exemplar.trading.value = 20
+                    agent_exemplar.engineering.value = 20
 
-                yield agent_exemplar.save()
+                    # Если пользователь из быстрой игры то установить рандомную аватарку
+                    if agent_exemplar.quick_flag:
+                        avatar_list = self.server.reg['world_settings'].avatar_list
+                        user.avatar_link = avatar_list[randint(0, len(avatar_list) - 1)]
             else:
                 log.warning('Agent founded {}'.format(user.name))
 
-            log.debug('TeachingUser agent exemplar: %s', agent_exemplar)
-            agent = TeachingUser(
-                server=self.server,
-                user=user,
-                time=self.server.get_time(),
-                example=agent_exemplar,
-            )
+            agent_exemplar.quick_flag = True
+            agent_exemplar.teaching_flag = user.teaching_state == 'map'
+            yield agent_exemplar.save()
+
+            if agent_exemplar.teaching_flag:
+                agent = TeachingUser(
+                    server=self.server,
+                    user=user,
+                    time=self.server.get_time(),
+                    example=agent_exemplar,
+                )
+            else:
+                agent = QuickUser(
+                    server=self.server,
+                    user=user,
+                    time=self.server.get_time(),
+                    example=agent_exemplar,
+                )
         else:
             agent.user = user  # Обновить юзера
 
-        log.info('TeachingUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
-
+        log.info('User INFO: %s [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
         if agent.example.car is None or agent.car is None:
             yield agent.init_example_car()
         else:
