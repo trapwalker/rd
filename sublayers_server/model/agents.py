@@ -735,8 +735,8 @@ class TeachingUser(QuickUser):
 
         super(TeachingUser, self).append_car(time=time, **kw)
 
-        if self.user.teaching_state == '':  # Если юзер ещё не ответил на вопрос про обучение
-            self.armory_shield_on(Event(server=self.server, time=time))
+        # if self.user.teaching_state == '':  # Если юзер ещё не ответил на вопрос про обучение
+        #     self.armory_shield_on(Event(server=self.server, time=time))
 
     def armory_shield_on(self, event):
         if self.car and not self.armory_shield_status:
