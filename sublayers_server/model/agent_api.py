@@ -908,6 +908,7 @@ class AgentAPI(API):
     def quick_teaching_answer(self, teaching):
         if teaching:
             assert self.agent.example.quick_flag
-            self.agent.create_teaching_quest(time=self.agent.server.get_time())
+            self.agent.create_teaching_quest_map(time=self.agent.server.get_time())
         else:
             self.agent.user.teaching_state = 'cancel'
+            self.agent.armory_shield_off(Event(server=self.agent.server, time=self.agent.server.get_time()))
