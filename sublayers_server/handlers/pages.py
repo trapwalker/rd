@@ -23,7 +23,7 @@ class PlayHandler(BaseHandler):
                     if user.teaching_state != "map":
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
                                     server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
-                                    first_enter=first_enter, quick_user=False)
+                                    first_enter=first_enter)
                     else:
                         log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
                         self.redirect('/quick/play')
@@ -32,19 +32,13 @@ class PlayHandler(BaseHandler):
 
             if options.mode == 'quick':
                 # todo: убрать все что касается is_tester
-                if not user.quick and not user.is_tester:
-                    if user.teaching_state == "map":
-                        self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
-                                    server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
-                                    first_enter=False, quick_user=False)
-                    else:
-                        log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
-                        self.redirect('/play')
-                else:
-                    first_enter = user.teaching_state == ""
-                    self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
-                                server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
-                                first_enter=first_enter, quick_user=True)
+                if (not user.quick and not user.is_tester) and (user.teaching_state != "map"):
+                    log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
+                    self.redirect('/play')
+                    return
+                self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
+                            server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
+                            first_enter=False)
         else:
             self.redirect(self.get_login_url())
 

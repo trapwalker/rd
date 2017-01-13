@@ -16,7 +16,7 @@ from sublayers_server.model.registry.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -679,17 +679,29 @@ class QuickUser(User):
 class TeachingUser(QuickUser):
     def __init__(self, time, **kw):
         super(TeachingUser, self).__init__(time=time, **kw)
-        self.create_teaching_quest(time=time)
         self.armory_shield_status = False
+        # todo: убрать is_tester
+        if not self.user.quick and not self.user.is_tester:
+            assert self.user.teaching_state == 'map'
+            self.create_teaching_quest(time=time)
+
+    def on_connect(self, **kw):
+        super(TeachingUser, self).on_connect(**kw)
+        if self.user.teaching_state == '':
+            StartQuickGame(agent=self, time=self.server.get_time()).post()
 
     @event_deco
     def create_teaching_quest(self, event):
+
         quest_parent = self.server.reg['quests/teaching_map']
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
         new_quest.agent = self.example
         if new_quest.generate(event=event):
             self.example.add_quest(quest=new_quest, time=event.time)
             self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+            if self.user.quick or self.user.is_tester:
+                self.user.teaching_state = 'map'
+                self.example.teaching_flag = True
         else:
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
@@ -703,8 +715,9 @@ class TeachingUser(QuickUser):
         else:
             log.warning('Try to use API method without API')
 
-    def send_die_message(self, event, unit):
-        pass
+    def send_die_message(self, **kw):
+        if not self.example.teaching_flag
+            super(TeachingUser, self).send_die_message(**kw)
 
     def on_die(self, event, **kw):
         super(TeachingUser, self).on_die(event=event, **kw)

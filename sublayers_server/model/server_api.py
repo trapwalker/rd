@@ -136,7 +136,6 @@ class ServerAPI(API):
             main_agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False).find_all()
             main_agent_exemplar = main_agent_exemplar and main_agent_exemplar[0] or None
 
-            # todo: Для агента, проходящего обучение нужно забрать класс из уже созданного ранее агента
             if agent_exemplar is None:
                 agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     login=user.name,
@@ -180,23 +179,13 @@ class ServerAPI(API):
                 log.warning('Agent founded {}'.format(user.name))
 
             agent_exemplar.quick_flag = True
-            agent_exemplar.teaching_flag = user.teaching_state == 'map'
             yield agent_exemplar.save()
-
-            if agent_exemplar.teaching_flag:
-                agent = TeachingUser(
-                    server=self.server,
-                    user=user,
-                    time=self.server.get_time(),
-                    example=agent_exemplar,
-                )
-            else:
-                agent = QuickUser(
-                    server=self.server,
-                    user=user,
-                    time=self.server.get_time(),
-                    example=agent_exemplar,
-                )
+            agent = TeachingUser(
+                server=self.server,
+                user=user,
+                time=self.server.get_time(),
+                example=agent_exemplar,
+            )
         else:
             agent.user = user  # Обновить юзера
 

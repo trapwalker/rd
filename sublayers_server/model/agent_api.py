@@ -904,3 +904,10 @@ class AgentAPI(API):
             return
         tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
 
+    @public_method
+    def quick_teaching_answer(self, teaching):
+        if teaching:
+            assert self.agent.example.quick_flag
+            self.agent.create_teaching_quest(time=self.agent.server.get_time())
+        else:
+            self.agent.user.teaching_state = 'cancel'

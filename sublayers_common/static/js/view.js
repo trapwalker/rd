@@ -1,10 +1,7 @@
 $(document).ready(function () {
     initConsoles();
     if ($('#settings_first_enter').text() == 'True')
-        if ($('#settings_quick_user').text() == 'True')
-            textConsoleManager.start('first_enter_quick');
-        else
-            textConsoleManager.start('first_enter');
+        textConsoleManager.start('first_enter');
     else
         textConsoleManager.start('enter');
 
