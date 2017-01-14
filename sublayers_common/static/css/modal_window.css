@@ -566,3 +566,29 @@
     height: 26px;
     line-height: 26px;
 }
+
+
+/* Окно запроса на прохождение обучения в быстрой игре */
+#modalQuickGameMapTeachingPage {
+    width: 540px;
+    height: 174px;
+    margin-left: -170px;
+}
+
+#quickGameMapTeachingPageBtnOK {
+    position: relative;
+    float: left;
+    margin-left: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}
+
+#quickGameMapTeachingPageBtnCancel {
+    position: relative;
+    float: right;
+    margin-right: 7%;
+    width: 40%;
+    height: 26px;
+    line-height: 26px;
+}

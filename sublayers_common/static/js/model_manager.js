@@ -645,17 +645,12 @@ var ClientManager = (function () {
 
     ClientManager.prototype.StartQuickGame = function(event) {
         console.log('ClientManager.prototype.StartQuickGame', event);
-        modalWindow.modalQuickGamePointsPageShow({
-            caption: 'aaaasaasda',
-            header: 'gfasdadasdasd!',
-            body_text: 'Text!',
+        modalWindow.modalQuickGameMapTeachingPageShow({
             callback_ok: function () {
                 clientManager.sendQuickTeachingAnswer(true);
-                modalWindow.modalQuickGamePointsPageHide();
             },
             callback_cancel: function() {
                 clientManager.sendQuickTeachingAnswer(false);
-                modalWindow.modalQuickGamePointsPageHide();
             }
         });
     };
