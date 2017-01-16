@@ -627,12 +627,12 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
-        // console.log('ClientManager.prototype.QuickGameDie');
-        //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        //console.log('ClientManager.prototype.QuickGameDie', event);
         modalWindow.modalQuickGamePointsPageShow({
             caption: 'Car Crash',
             header: 'Крушение!',
             body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
+            quick_users: event.quick_users,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();

@@ -118,9 +118,11 @@ class QuickGameDie(Message):
 
     def as_dict(self):
         d = super(QuickGameDie, self).as_dict()
+        quick_users = self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(15)
         d.update(
             points=self.agent.get_quick_game_points(time=self.time),
             object=self.obj.as_dict(time=self.time),
+            quick_users=[dict(points=rec['points'], name=rec['name']) for rec in quick_users],
         )
         return d
 

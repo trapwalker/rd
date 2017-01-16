@@ -491,6 +491,13 @@ var ModalWindow = (function () {
         if (options.header) header.text(options.header); else header.text('');
         if (options.body_text) body_text.text(options.body_text); else body_text.text('');
 
+        // Вывод High Score
+        var quick_users = options.quick_users;
+        for(var i = 0; i < quick_users.length; i++) {
+            var qu = quick_users[i];
+            console.log(qu);
+        }
+
         // Повесить новый эвент
         var btn_ok = this.modalQuickGamePoints.find('#quickGamePointsPageBtnOK');
         var btn_cancel = this.modalQuickGamePoints.find('#quickGamePointsPageBtnCancel');

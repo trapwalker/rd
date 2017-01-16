@@ -567,8 +567,8 @@ class Agent(Object):
         user = self.user
         def callback(*kw):
             log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
-        self.user.teaching_state = state
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=callback)
+        user.teaching_state = state
+        tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -706,7 +706,7 @@ class TeachingUser(QuickUser):
             self.example.add_quest(quest=new_quest, time=event.time)
             self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
             if self.user.quick or self.user.is_tester:
-                self.user.teaching_state = 'map'
+                self.set_teaching_state('map')
         else:
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
