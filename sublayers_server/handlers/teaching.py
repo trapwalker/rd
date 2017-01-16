@@ -68,7 +68,6 @@ class ResetTeachingHandler(BaseHandler):
             last_state = user.teaching_state
             user.teaching_state = ""
             yield user.save()
-            print 'reset'
             self.finish('OK! last state = {}'.format(last_state))
         else:
             self.finish('Not Authorized')

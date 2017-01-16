@@ -643,6 +643,18 @@ var ClientManager = (function () {
         });
     };
 
+    ClientManager.prototype.StartQuickGame = function(event) {
+        console.log('ClientManager.prototype.StartQuickGame', event);
+        modalWindow.modalQuickGameMapTeachingPageShow({
+            callback_ok: function () {
+                clientManager.sendQuickTeachingAnswer(true);
+            },
+            callback_cancel: function() {
+                clientManager.sendQuickTeachingAnswer(false);
+            }
+        });
+    };
+
     ClientManager.prototype.Chat = function (event){
         //console.log('ClientManager.prototype.Chat', event);
         //chat.addMessageByID(-1, getOwner(event.author), event.text);
@@ -2181,12 +2193,24 @@ var ClientManager = (function () {
     };
 
     // Быстрая игра (играть еще раз)
-     ClientManager.prototype.sendQuickPlayAgain = function () {
+    ClientManager.prototype.sendQuickPlayAgain = function () {
         //console.log('ClientManager.prototype.sendQuickPlayAgain');
         var mes = {
             call: "quick_play_again",
             rpc_call_id: rpcCallList.getID(),
             params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Быстрая игра: пройти обучение
+    ClientManager.prototype.sendQuickTeachingAnswer = function (result) {
+        //console.log('ClientManager.prototype.sendQuickTeachingAnswer');
+        var mes = {
+            call: "quick_teaching_answer",
+            rpc_call_id: rpcCallList.getID(),
+            params: {teaching: result}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

@@ -17,7 +17,6 @@ from functools import partial
 from sublayers_site.site_locale import locale
 
 
-
 class BaseSiteHandler(BaseHandler):
     @tornado.gen.coroutine
     def _get_car(self, user):

@@ -1189,3 +1189,7 @@ class ChangeAgentKarma(Message):
         d = super(ChangeAgentKarma, self).as_dict()
         d.update(relations=relations)
         return d
+
+
+class StartQuickGame(Message):
+    pass

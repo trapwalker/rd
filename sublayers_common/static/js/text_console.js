@@ -592,7 +592,6 @@ var ConsoleEnter = (function (_super) {
             '       >                                              <\n' +
             '       ================================================'
         );
-
         this.add_message('user', 'Запрос статуса активной страховки.');
         this.add_message('system', 'Страховка активна для ' + textConsoleManager.user_name + '.');
         this.add_message('user', 'Запрос актуальных координат.');
