@@ -158,3 +158,10 @@
 
 /* =============================== site_windw_personal_info css */
 .window-pi-content-block.insurance {background: transparent url(/static/static_site/img/temp_insurance_en.png) no-repeat; background-size: 100% 100%;}
+
+
+/* =============================== site_ratings.html */
+@media screen and (max-width: 1366px), screen and (max-height: 800px) {
+    .ratings-looters.middle { width: 12%; }
+    .ratings-warriors.small { width: 15%; }
+}
