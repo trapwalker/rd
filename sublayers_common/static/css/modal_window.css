@@ -570,25 +570,82 @@
 
 /* Окно запроса на прохождение обучения в быстрой игре */
 #modalQuickGameMapTeachingPage {
-    width: 540px;
-    height: 174px;
-    margin-left: -170px;
+    width: 840px;
+    height: 380px;
+    margin-left: -420px;
+}
+
+#modalQuickGameMapTeachingPage .modal-window-wrap {
+    padding: 0;
+    height: calc(100% - 26px);
+    border: none;
+    margin: 0;
+    font-family: FreePixel;
+    font-size: 16px
+}
+
+
+#modalQuickGameMapTeachingPage .left-path {
+    position: relative;
+    float: left;
+    width: 230px;
+    height: 100%;
+    padding: 5px 0 0 13px;
+    text-align: left;
+    box-sizing: border-box;
+    line-height: 22px;
+    font-weight: bold;
+}
+
+#modalQuickGameMapTeachingPage .question{
+    position: absolute;
+    bottom: 12px;
+}
+
+#modalQuickGameMapTeachingPage .right-path {
+    position: relative;
+    float: left;
+    width: calc(100% - 230px);
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#modalQuickGameMapTeachingPage .start-qg-logo {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    margin: 0 auto;
+    background: transparent url('/static/img/modal_window_image/start_qg.png') 100% 100% no-repeat;
+}
+
+#modalQuickGameMapTeachingPage .footer {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 300px);
+    /*margin-top: 10px;*/
+    padding-top: 8px;
+    box-sizing: border-box;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    font: 18px Nouveau_IBM;
 }
 
 #quickGameMapTeachingPageBtnOK {
     position: relative;
     float: left;
-    margin-left: 7%;
-    width: 40%;
-    height: 26px;
-    line-height: 26px;
+    margin-left: 30px;
+    width: 210px;
+    height: 30px;
+    line-height: 30px;
 }
 
 #quickGameMapTeachingPageBtnCancel {
     position: relative;
     float: right;
-    margin-right: 7%;
-    width: 40%;
-    height: 26px;
-    line-height: 26px;
+    margin-right: 30px;
+    width: 210px;
+    height: 30px;
+    line-height: 30px;
 }
