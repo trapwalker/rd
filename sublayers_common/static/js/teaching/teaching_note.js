@@ -117,6 +117,9 @@ var TeachingMapNote = (function (_super) {
         this.arrow_color = 'rgb(192, 255, 0)';
         this.window_name = '';
         this.window_uri = '';
+
+        this.arrow_img = new Image();
+        this.arrow_img.src = '/static/img/teaching/arrow_big.png';
     }
 
     TeachingMapNote.prototype.draw_arrow = function(ctx, point, angle) {
@@ -128,23 +131,28 @@ var TeachingMapNote = (function (_super) {
         if (point.x < 0) point.x = width + point.x;
         if (point.y < 0) point.y = height + point.y;
 
+        point.x = point.x - this.arrow_img.width + 15;
+        point.y = point.y - Math.round(this.arrow_img.height / 2);
+
         ctx.save();
         ctx.translate(point.x, point.y);
         ctx.rotate(angle);
 
-        ctx.fillStyle = this.arrow_color;
-        ctx.strokeStyle = this.arrow_color;
-        ctx.lineWidth = 0;
+        ctx.drawImage(this.arrow_img, 0, 0);
 
-        ctx.beginPath();
-        ctx.lineTo(-this.single_length * 6, -this.single_length * 6);
-        ctx.lineTo(-this.single_length * 6, -this.single_length * 2);
-        ctx.lineTo(-this.single_length * 15, -this.single_length * 2);
-        ctx.lineTo(-this.single_length * 15, this.single_length * 2);
-        ctx.lineTo(-this.single_length * 6, this.single_length * 2);
-        ctx.lineTo(-this.single_length * 6, this.single_length * 6);
-        ctx.lineTo(0, 0);
-        ctx.fill();
+        //ctx.fillStyle = this.arrow_color;
+        //ctx.strokeStyle = this.arrow_color;
+        //ctx.lineWidth = 0;
+        //
+        //ctx.beginPath();
+        //ctx.lineTo(-this.single_length * 6, -this.single_length * 6);
+        //ctx.lineTo(-this.single_length * 6, -this.single_length * 2);
+        //ctx.lineTo(-this.single_length * 15, -this.single_length * 2);
+        //ctx.lineTo(-this.single_length * 15, this.single_length * 2);
+        //ctx.lineTo(-this.single_length * 6, this.single_length * 2);
+        //ctx.lineTo(-this.single_length * 6, this.single_length * 6);
+        //ctx.lineTo(0, 0);
+        //ctx.fill();
 
         ctx.restore();
     };
