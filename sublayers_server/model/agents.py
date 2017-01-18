@@ -570,6 +570,9 @@ class Agent(Object):
         user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
 
+    def logging_agent(self, message):
+        pass
+
 # todo: Переименовать в UserAgent
 class User(Agent):
     def __init__(self, time, **kw):
@@ -749,3 +752,23 @@ class TeachingUser(QuickUser):
             self.car.params.get('p_armor').current -= 100
             self.car.restart_weapons(time=event.time)
             self.armory_shield_status = False
+
+
+class TeachingUserLog(TeachingUser):
+    def __init__(self, **kw):
+        super(TeachingUserLog, self).__init__(**kw)
+        logger_name = 'agent_{}'.format(self.user.name)
+        self.logger = self.setup_logger(logger_name=logger_name, log_file='log/agents/{}.log'.format(logger_name))
+        self.logging_agent('Agent Created')
+
+    def setup_logger(self, logger_name, log_file, level=logging.INFO):
+        l = logging.getLogger(logger_name)
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
+
+    def logging_agent(self, message):
+        self.logger.info(message)

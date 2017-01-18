@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import User, QuickUser, TeachingUser
+from sublayers_server.model.agents import User, QuickUser, TeachingUser, TeachingUserLog
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.vectors import Point
@@ -181,7 +181,8 @@ class ServerAPI(API):
                 log.warning('Agent founded {}'.format(user.name))
 
             yield agent_exemplar.save()
-            agent = TeachingUser(
+            agent = TeachingUserLog(
+                # agent=TeachingUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),
