@@ -94,9 +94,71 @@ function init_sound() {
     audioManager.load('engine_04', {url: '/static/audio/test/engine_04.wav'}, null, GameAudioObject, 1.0);
     audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, null, GameAudioObject, 1.0);
 
-    audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, null, null, 1.0);
-    audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, null, null, 1.0);
-    audioManager.load('shot_03', {url: '/static/audio/test/shot_03.wav'}, null, null, 1.0);
+    audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, null, GameAudioObject, 1.0);
+    audioManager.load('shot_03', {url: '/static/audio/test/shot_03.wav'}, null, GameAudioObject, 1.0);
 
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, null, null, 1.0);
+}
+
+
+function randomInterval(a, b) {return Math.random() * (b - a) + a;}
+
+
+function scene(){
+    var a1 = audioManager.play('engine_05', 0.0, 0.3, null, true);
+
+    var razgon = null;
+    var razgon_znak = 1.0;
+
+    setInterval(function() {
+        if (Math.random() > 0.95) {
+            var a21 = audioManager.play('shot_01', 0.0, randomInterval(0.05, 0.3), null, true, 0.0, Math.random() * 3.0);
+            a21.source_node.playbackRate.value = 5.0
+        }
+
+        if (Math.random() > 0.95) {
+            var a22 = audioManager.play('shot_02', 0.0, randomInterval(0.05, 0.4), null, true, 0.0, Math.random() * 3.0);
+            a22.source_node.playbackRate.value = 3.0
+        }
+
+        if (Math.random() > 0.95) {
+            var a23 = audioManager.play('shot_03', 0.0, randomInterval(0.05, 0.3), null, true, 0.0, Math.random() * 3.0);
+            a23.source_node.playbackRate.value = 3.5
+        }
+
+
+        if (Math.random() > 0.97) {
+            audioManager.play('shot_01', 0.0, randomInterval(0.3, 0.5), null, false);
+        }
+        if (Math.random() > 0.97) {
+            audioManager.play('shot_02', 0.0, randomInterval(0.3, 0.5), null, false);
+        }
+        if (Math.random() > 0.97) {
+            audioManager.play('shot_03', 0.0, randomInterval(0.2, 0.5), null, false);
+        }
+
+        // разгон или торможение
+        if (Math.random() > 0.8) {
+            if (razgon) {clearInterval(razgon); razgon=null;}
+            if (Math.random() > 0.8) {
+                razgon_znak = Math.random() > 0.5 ? 1.0 : -1.0;
+                razgon = setInterval(function () {
+                    a1.source_node.playbackRate.value += 0.02 * razgon_znak;
+                    if (a1.source_node.playbackRate.value < 0.35)
+                        a1.source_node.playbackRate.value = 0.35;
+                    if (a1.source_node.playbackRate.value > 1.9)
+                        a1.source_node.playbackRate.value = 1.9;
+                }, 130);
+            }
+        }
+
+
+    }, 200)
+
+
+
+
+
+
 }
