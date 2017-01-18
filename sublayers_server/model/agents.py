@@ -772,3 +772,23 @@ class TeachingUserLog(TeachingUser):
 
     def logging_agent(self, message):
         self.logger.info(message)
+
+    def on_connect(self, **kw):
+        super(TeachingUserLog, self).on_connect(**kw)
+        self.logging_agent('on_connect')
+
+    def on_disconnect(self, connection):
+        super(TeachingUserLog, self).on_disconnect(connection)
+        self.logging_agent('on_disconnect')
+
+    def append_car(self, **kw):
+        super(TeachingUserLog, self).append_car(**kw)
+        self.logging_agent('append_car')
+
+    def drop_car(self, **kw):
+        super(TeachingUserLog, self).drop_car(**kw)
+        self.logging_agent('drop_car')
+
+    def on_die(self, **kw):
+        super(TeachingUserLog, self).on_die(**kw)
+        self.logging_agent('on_die')
