@@ -107,12 +107,14 @@ var TeachingMapManager = (function(){
         this.active = true;
 
         this.timer_blink = setInterval(function() {
-            teachingMapManager.currentOpacity += teachingMapManager.currentOpacityDiff;
-            if(teachingMapManager.currentOpacity > 1.01 || teachingMapManager.currentOpacity < 0.5) {
-                teachingMapManager.currentOpacityDiff = -teachingMapManager.currentOpacityDiff;
-            }
+            teachingMapManager.currentOpacity = teachingMapManager.currentOpacity == 1.0 ? 0.0 : 1.0;
             teachingMapManager.jq_canvas.css('opacity', teachingMapManager.currentOpacity);
-        }, 80);
+            //teachingMapManager.currentOpacity += teachingMapManager.currentOpacityDiff;
+            //if(teachingMapManager.currentOpacity > 1.01 || teachingMapManager.currentOpacity < 0.5) {
+            //    teachingMapManager.currentOpacityDiff = -teachingMapManager.currentOpacityDiff;
+            //}
+            //teachingMapManager.jq_canvas.css('opacity', teachingMapManager.currentOpacity);
+        }, 500);
     };
 
     TeachingMapManager.prototype.deactivate = function() {
