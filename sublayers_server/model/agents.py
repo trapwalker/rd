@@ -763,6 +763,7 @@ class TeachingUserLog(TeachingUser):
 
     def setup_logger(self, logger_name, log_file, level=logging.INFO):
         l = logging.getLogger(logger_name)
+        l.propagate = 0
         formatter = logging.Formatter('%(asctime)s : %(message)s')
         fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
         fileHandler.setFormatter(formatter)
