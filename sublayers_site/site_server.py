@@ -61,6 +61,7 @@ class Application(BaseApplication):
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
             (r"/site_api/locale", GetUserLocaleJSONHandler),
+            (r"/site_api/join_news_group", tornado.web.RedirectHandler, {"url": options.join_news_group_link}),
             (r"/site_api/get_user_info", GetUserInfoHandler),
             (r"/site_api/get_rpg_info", GetRPGInfoHandler),
             (r"/site_api/get_user_rpg_info", GetUserRPGInfoHandler),
