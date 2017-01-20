@@ -492,6 +492,7 @@ var ModalWindow = (function () {
         var color_class = 'qg-pp-light-back';
         var quick_users = options.quick_users;
         var jq_table = this.modalQuickGamePoints.find('.qg-pp-block-left-table').first();
+        jq_table.empty();
         for(var i = 0; i < quick_users.length; i++) {
             color_class = color_class == 'qg-pp-light-back' ? 'qg-pp-dark-back' : 'qg-pp-light-back';
             var qu = quick_users[i];
