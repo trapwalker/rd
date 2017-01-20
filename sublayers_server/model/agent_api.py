@@ -499,6 +499,7 @@ class AgentAPI(API):
 
     @public_method
     def send_rocket(self):
+        return
         self.agent.logging_agent("send_rocket")
         if self.car.limbo or not self.car.is_alive:
             return
@@ -512,6 +513,7 @@ class AgentAPI(API):
 
     @public_method
     def send_slow_mine(self):
+        return
         self.agent.logging_agent("send_slow_mine")
         if self.car.limbo or not self.car.is_alive:
             return
@@ -519,6 +521,7 @@ class AgentAPI(API):
 
     @public_method
     def send_stationary_turret(self):
+        return
         self.agent.logging_agent("send_stationary_turret")
         if self.car.limbo or not self.car.is_alive:
             return
@@ -908,6 +911,7 @@ class AgentAPI(API):
 
     @public_method
     def teleport(self, x, y):
+        return
         self.agent.logging_agent('teleport x={}, y={}'.format(x, y))
         if (self.agent.car):
             self.agent.save(time=self.agent.server.get_time())
