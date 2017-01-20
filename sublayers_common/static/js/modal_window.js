@@ -17,7 +17,7 @@ var ModalWindow = (function () {
         this.modalAnswerInfo = $('#modalAnswerPage');
         this.modalItemDivision = $('#modalItemDivisionPage');
         this.modalQuickGamePoints = $('#modalQuickGamePointsPage');
-        this.modalQuickGameMapTeachingPage = $('#modalQuickGameMapTeachingPage');
+        this.modalQuickGameMapTeaching = $('#modalQuickGameMapTeachingPage');
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -30,7 +30,7 @@ var ModalWindow = (function () {
         this.modalAnswerInfo.addClass('modal-window-hide');
         this.modalItemDivision.addClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-hide');
-        this.modalQuickGameMapTeachingPage.addClass('modal-window-hide');
+        this.modalQuickGameMapTeaching.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
@@ -534,7 +534,7 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalQuickGameMapTeachingPageLoad = function () {
         // Загрузить информацию из документа в див
-        this.modalQuickGameMapTeachingPage.load('/static/modal_window/modalQuickGameMapTeachingPage.html', function(){});
+        this.modalQuickGameMapTeaching.load('/static/modal_window/modalQuickGameMapTeachingPage.html', function(){});
     };
 
     ModalWindow.prototype.modalQuickGameMapTeachingPageShow = function (options) {
@@ -542,12 +542,12 @@ var ModalWindow = (function () {
         this._modalBackShow();
         options = options || {};
         // включить модальное окно modalOptions
-        this.modalQuickGameMapTeachingPage.removeClass('modal-window-hide');
-        this.modalQuickGameMapTeachingPage.addClass('modal-window-show');
+        this.modalQuickGameMapTeaching.removeClass('modal-window-hide');
+        this.modalQuickGameMapTeaching.addClass('modal-window-show');
 
         // Повесить новый эвент
-        var btn_ok = this.modalQuickGameMapTeachingPage.find('#quickGameMapTeachingPageBtnOK');
-        var btn_cancel = this.modalQuickGameMapTeachingPage.find('#quickGameMapTeachingPageBtnCancel');
+        var btn_ok = this.modalQuickGameMapTeaching.find('#quickGameMapTeachingPageBtnOK');
+        var btn_cancel = this.modalQuickGameMapTeaching.find('#quickGameMapTeachingPageBtnCancel');
         btn_ok.off('click');
         btn_cancel.off('click');
         btn_ok.on('click', function(event) {
@@ -567,8 +567,8 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalQuickGameMapTeachingPageHide = function() {
         this._modalBackHide();
-        this.modalQuickGameMapTeachingPage.removeClass('modal-window-show');
-        this.modalQuickGameMapTeachingPage.addClass('modal-window-hide');
+        this.modalQuickGameMapTeaching.removeClass('modal-window-show');
+        this.modalQuickGameMapTeaching.addClass('modal-window-hide');
     };
 
     return ModalWindow;

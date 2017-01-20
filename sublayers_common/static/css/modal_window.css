@@ -159,8 +159,6 @@
     opacity: 0.95;
 }
 
-
-
 .dialogBtnOK {
     position: relative;
     float: left;
@@ -707,81 +705,68 @@
 
 /* Окно запроса на прохождение обучения в быстрой игре */
 #modalQuickGameMapTeachingPage {
-    width: 840px;
-    height: 380px;
-    margin-left: -420px;
+    width: 1200px;
+    height: 654px;
+    margin-left: -600px;
+    background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;
 }
 
-#modalQuickGameMapTeachingPage .modal-window-wrap {
-    padding: 0;
-    height: calc(100% - 26px);
-    border: none;
-    margin: 0;
-    font-family: FreePixel;
-    font-size: 16px
-}
-
-#modalQuickGameMapTeachingPage .left-path {
-    position: relative;
-    float: left;
-    width: 230px;
-    height: 100%;
-    padding: 5px 0 0 13px;
-    text-align: left;
-    box-sizing: border-box;
-    line-height: 22px;
-    font-weight: bold;
-}
-
-#modalQuickGameMapTeachingPage .question{
+.qg-mt-graphic-wrap {
     position: absolute;
-    bottom: 12px;
+    width: 826px;
+    height: 504px;
+    top: 57px;
+    left: 137px;
 }
 
-#modalQuickGameMapTeachingPage .right-path {
-    position: relative;
-    float: left;
-    width: calc(100% - 230px);
-    height: 100%;
-    box-sizing: border-box;
+.qg-mt-fight-btn {
+    position: absolute;
+    width: 138px;
+    height: 53px;
+    left: 982px;
+    top: 57px;
+    background: transparent url('/static/img/modal_window_image/btn1_start_active.png') 100% 100% no-repeat;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.qg-mt-fight-btn:hover {
+    background: transparent url('/static/img/modal_window_image/btn1_start_hover.png') 100% 100% no-repeat;
+}
+.qg-mt-fight-btn:active, .qg-pp-site-btn.active {
+    background: transparent url('/static/img/modal_window_image/btn1_start_press.png') 100% 100% no-repeat;
 }
 
-#modalQuickGameMapTeachingPage .start-qg-logo {
+.qg-mt-teaching-btn {
+    position: absolute;
+    width: 138px;
+    height: 53px;
+    left: 982px;
+    top: 110px;
+    background: transparent url('/static/img/modal_window_image/btn2_start_active.png') 100% 100% no-repeat;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.qg-mt-teaching-btn:hover {
+    background: transparent url('/static/img/modal_window_image/btn2_start_hover.png') 100% 100% no-repeat;
+}
+.qg-mt-teaching-btn:active, .qg-pp-again-btn.active {
+    background: transparent url('/static/img/modal_window_image/btn2_start_press.png') 100% 100% no-repeat;
+}
+
+.start-qg-logo {
     position: relative;
-    width: 600px;
-    height: 300px;
+    width: 704px;
+    height: 343px;
     margin: 0 auto;
     background: transparent url('/static/img/modal_window_image/start_qg.png') 100% 100% no-repeat;
-}
-
-#modalQuickGameMapTeachingPage .footer {
-    position: relative;
-    width: 100%;
-    height: calc(100% - 300px);
-    /*margin-top: 10px;*/
-    padding-top: 8px;
-    box-sizing: border-box;
-    border-width: 1px 0 0 0;
+    border-width: 0 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
     border-image-slice: 1;
-    font: 18px Nouveau_IBM;
+    box-sizing: border-box;
 }
 
-#quickGameMapTeachingPageBtnOK {
+.start-qg-text {
     position: relative;
-    float: left;
-    margin-left: 30px;
-    width: 210px;
-    height: 30px;
-    line-height: 30px;
-}
-
-#quickGameMapTeachingPageBtnCancel {
-    position: relative;
-    float: right;
-    margin-right: 30px;
-    width: 210px;
-    height: 30px;
-    line-height: 30px;
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
 }
