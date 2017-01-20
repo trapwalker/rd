@@ -29,6 +29,25 @@ class BaseSiteHandler(BaseHandler):
         if agent_example:
             agent_example.un_cache()
             agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
+        else:
+            # info: создание пустого агента для отображения на сайте
+            agent_example = self.application.reg['agents/user'].instantiate(
+                name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id),
+                abstract=False,
+            )
+            yield agent_example.load_references()
+            yield agent_example.save(upsert=True)
+            role_class_ex = self.application.reg['rpg_settings/role_class/chosen_one']
+            agent_example.role_class = role_class_ex
+
+            for class_skill in role_class_ex.class_skills:
+                # todo: Перебирать объекты реестра
+                if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
+                    skill = getattr(agent_example, class_skill.target)
+                    skill.mod = class_skill
+
+            yield agent_example.save(upsert=True)
+
         ex_car = None
         if agent_example:
             user_info['driving'] = agent_example.driving.value

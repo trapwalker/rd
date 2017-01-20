@@ -79,6 +79,7 @@ var MapCanvasManager = (function(_super){
         this.map_tl = null;  // Игровые координаты, которые соответствуют 0,0 на канвасе (Map Top Left)
         this.cur_map_size = new Point(0, 0); // Текущие размеры карты
         this.cur_ctx_car_pos = new Point(0, 0); // Текущее положение userCar
+        this.called_reinit_canvas = false; // Для медленных машин
 
         this._mouse_focus_widget = null;
         this._mouse_look = false;
@@ -138,7 +139,13 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype.on_new_map_size = function() {
+        //console.log('MapCanvasManager.prototype.on_new_map_size');
         this.cur_map_size = new Point(0, 0);
+
+        if (! this.called_reinit_canvas) {
+            this.called_reinit_canvas = true;
+            setTimeout(function(){mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 200);
+        }
     };
 
 

@@ -256,6 +256,7 @@ function resizeWindowHandler() {
         window_scaled_prc = scale_prc;
     }
     if (teachingMapManager) teachingMapManager.redraw();
+    if (mapCanvasManager) mapCanvasManager.on_new_map_size();
 }
 
 

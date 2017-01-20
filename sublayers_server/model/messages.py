@@ -120,14 +120,16 @@ class QuickGameDie(Message):
         d = super(QuickGameDie, self).as_dict()
         quick_users = list(self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(1000))
 
-        record_index = -1
-        for index in range(len(quick_users)):
-            if str(quick_users[index].get(u'_id')) == str(self.agent.record_id):
-                record_index = index
-                break
+        # record_index = -1
+        # for index in range(len(quick_users)):
+        #     if str(quick_users[index].get(u'_id')) == str(self.agent.record_id):
+        #         record_index = index
+        #         break
+        points = self.agent.get_quick_game_points(time=self.time)
+        record_index = self.agent.server.app.db.quick_game_records.find({"points": {"$gte": points}, "time": {"$lte": self.time}}).count()
 
         d.update(
-            points=self.agent.get_quick_game_points(time=self.time),
+            points=points,
             record_index=record_index + 1,
             object=self.obj.as_dict(time=self.time),
             quick_users=[dict(points=rec['points'], name=rec['name']) for rec in quick_users],

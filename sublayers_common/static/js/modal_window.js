@@ -484,9 +484,9 @@ var ModalWindow = (function () {
 
         // Вывод очков
         if (options.record_index >= 0)
-            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').text('Очков набрано - ' + options.points + '! Место - ' + options.record_index + '!');
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html('Набрано: ' + options.points + '<br>Место: ' + options.record_index);
         else
-            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').text('Очков набрано - ' + options.points + '!');
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html('Набрано: ' + options.points);
 
         // Вывод High Score
         var color_class = 'qg-pp-light-back';
@@ -496,14 +496,23 @@ var ModalWindow = (function () {
         for(var i = 0; i < quick_users.length; i++) {
             color_class = color_class == 'qg-pp-light-back' ? 'qg-pp-dark-back' : 'qg-pp-light-back';
             var qu = quick_users[i];
+            var my_record_str = options.record_index == i + 1 ? "my-record" : "";
             var jq_line = $(
-                '<div class="qg-pp-block-left-table-line">' +
+                '<div class="qg-pp-block-left-table-line ' + my_record_str + '">' +
                     '<div class="qg-pp-table-col place ' + color_class + '">' + (i + 1) + '</div>' +
                     '<div class="qg-pp-table-col name ' + color_class + '">' + qu.name + '</div>' +
                     '<div class="qg-pp-table-col score ' + color_class + '">' + qu.points + '</div>' +
                 '</div>'
             );
             jq_table.append(jq_line);
+        }
+
+        // Запуск анимации для скроллинга к своему рекорду
+        jq_table.scrollTop(0);
+        if (options.record_index >= 0 && options.record_index <= quick_users.length) {
+            jq_table.animate({
+                scrollTop: $(".qg-pp-block-left-table-line.my-record").first().offset().top - 400
+            }, 2000);
         }
 
         // Повесить новый эвент

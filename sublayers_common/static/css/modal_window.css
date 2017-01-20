@@ -646,6 +646,19 @@
     margin-bottom: 2px;
 }
 
+.qg-pp-block-left-table-line.my-record {
+    font-weight: bold;
+    animation: qg_my_record_animate 1s infinite linear;
+}
+
+@keyframes qg_my_record_animate {
+    0% { color: #2ffa00; }
+    49% {color: #2ffa00;}
+    50% {color: rgba(47, 250, 0, 0);}
+    100% {color: rgba(47, 250, 0, 0);}
+}
+
+
 .qg-pp-block-right {
     position: relative;
     width: 100%;
@@ -682,7 +695,7 @@
 
 .qg-pp-block-right-bottom-label {
     position: relative;
-    width: 80%;
+    width: 100%;
     margin: 0 auto;
     line-height: 25px;
 }
