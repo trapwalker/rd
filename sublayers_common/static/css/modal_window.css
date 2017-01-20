@@ -751,22 +751,34 @@
     background: transparent url('/static/img/modal_window_image/btn2_start_press.png') 100% 100% no-repeat;
 }
 
+.qg-mt-block {
+    position: relative;
+    float: left;
+    margin: 2px 0 0 2px;
+    height: calc(100% - 30px);
+    width: calc(100% - 4px);
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
+}
+
 .start-qg-logo {
     position: relative;
     width: 704px;
     height: 343px;
     margin: 0 auto;
     background: transparent url('/static/img/modal_window_image/start_qg.png') 100% 100% no-repeat;
-    border-width: 0 0 1px 0;
-    border-style: solid;
-    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
-    border-image-slice: 1;
-    box-sizing: border-box;
 }
 
 .start-qg-text {
     position: relative;
-    width: 80%;
-    margin: 20px auto;
+    width: 100%;
+    margin: 10px auto;
+    padding: 14px 30px;
     text-align: center;
+    color: #2ffa00;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
 }
