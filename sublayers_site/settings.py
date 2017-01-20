@@ -46,5 +46,5 @@ define("world_path", default='../sublayers_world', help="Path to world data", ty
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)
 
-define("join_news_group_link", default="https://t.me/joinchat/AAAAAD_pGB5RvSqsOAmcZw", help="path to static files", type=str)
+define("join_news_group_link", default="https://t.me/joinchat/AAAAAD_pGB7aHkah39E2-Q", help="path to static files", type=str)
 
