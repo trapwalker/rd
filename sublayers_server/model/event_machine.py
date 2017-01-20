@@ -291,7 +291,7 @@ class Server(object):
                 user.registration_status = 'register'
                 user.is_tester = True
                 yield user.save()
-                log.info('Test account created: %s %s', tester_accounts[i]['login'], str(tester_accounts[i]['password']))
+                log.info('Test account created: %s', tester_accounts[i]['login'])
 
             # Создать AIQuickAgent
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
