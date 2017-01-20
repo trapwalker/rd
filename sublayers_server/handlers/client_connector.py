@@ -56,6 +56,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
             return
         self.agent = agent
         agent.on_connect(connection=self)
+        agent.logging_agent(self.request.headers["User-Agent"])
         self._do_ping()
 
     def on_close(self):

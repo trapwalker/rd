@@ -567,8 +567,11 @@ class Agent(Object):
         user = self.user
         def callback(*kw):
             log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
-        self.user.teaching_state = state
-        tornado.gen.IOLoop.instance().add_future(self.user.save(), callback=callback)
+        user.teaching_state = state
+        tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
+
+    def logging_agent(self, message):
+        pass
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -606,10 +609,11 @@ class QuickUser(User):
         self.time_quick_game_start = None
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
+        self.record_id = None
 
     def _add_quick_game_record(self, time):
         # pymongo add to quick_game_records
-        self.server.app.db.quick_game_records.insert(
+        self.record_id = self.server.app.db.quick_game_records.insert(
             {
                 'name': self.print_login(),
                 'user_uid': self.user.id,
@@ -626,14 +630,15 @@ class QuickUser(User):
         self.quick_game_bot_kills = 0
 
     def drop_car(self, car, time, **kw):
-        if car is self.car:
-            self._add_quick_game_record(time=time)
+        # if car is self.car:
+        #     self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):
         return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
 
     def send_die_message(self, event, unit):
+        self._add_quick_game_record(time=event.time)
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
@@ -706,7 +711,7 @@ class TeachingUser(QuickUser):
             self.example.add_quest(quest=new_quest, time=event.time)
             self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
             if self.user.quick or self.user.is_tester:
-                self.user.teaching_state = 'map'
+                self.set_teaching_state('map')
         else:
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
@@ -749,3 +754,44 @@ class TeachingUser(QuickUser):
             self.car.params.get('p_armor').current -= 100
             self.car.restart_weapons(time=event.time)
             self.armory_shield_status = False
+
+
+class TeachingUserLog(TeachingUser):
+    def __init__(self, **kw):
+        super(TeachingUserLog, self).__init__(**kw)
+        logger_name = 'agent_{}'.format(self.user.name)
+        self.logger = self.setup_logger(logger_name=logger_name, log_file='log/agents/{}.log'.format(logger_name))
+        self.logging_agent('Agent Created')
+
+    def setup_logger(self, logger_name, log_file, level=logging.INFO):
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
+
+    def logging_agent(self, message):
+        self.logger.info(message)
+
+    def on_connect(self, **kw):
+        super(TeachingUserLog, self).on_connect(**kw)
+        self.logging_agent('on_connect')
+
+    def on_disconnect(self, connection):
+        super(TeachingUserLog, self).on_disconnect(connection)
+        self.logging_agent('on_disconnect')
+
+    def append_car(self, **kw):
+        super(TeachingUserLog, self).append_car(**kw)
+        self.logging_agent('append_car')
+
+    def drop_car(self, **kw):
+        super(TeachingUserLog, self).drop_car(**kw)
+        self.logging_agent('drop_car')
+
+    def on_die(self, **kw):
+        super(TeachingUserLog, self).on_die(**kw)
+        self.logging_agent('on_die')

@@ -324,6 +324,9 @@ var RadioPlayer = (function () {
 
         // Звук кнопки сети
         audioManager.play('tumbler');
+
+        // Сохранить в cookie
+        this.save_setting_to_cookie(false);
     };
 
     RadioPlayer.prototype.set_volume = function (volume, not_ignore_equals) {
@@ -523,8 +526,9 @@ var RadioPlayer = (function () {
 
     };
 
-    RadioPlayer.prototype.set_state = function (play, channel_index, quality_index, volume) {
+    RadioPlayer.prototype.set_state = function (play, channel_index, quality_index, volume, out_from_page) {
         //console.log('RadioPlayer.prototype.set_state', play, channel_index, quality_index, volume);
+        if (! out_from_page) return; // Значит радио активно на другой странице браузера
         radioPlayer.current_channel_pointer_number = channel_index;
         radioPlayer.current_quality = quality_index;
         radioPlayer.set_volume(volume, true);
@@ -533,10 +537,11 @@ var RadioPlayer = (function () {
         }
     };
 
-    RadioPlayer.prototype.save_setting_to_cookie = function() {
+    RadioPlayer.prototype.save_setting_to_cookie = function(out_from_page) {
+        var ofp = out_from_page ? '1' : '0';
         var value = (this.power_on ? '1':'0') + '_' + this.current_channel_pointer_number + '_' +
-            radioPlayer.current_quality + '_' + this.current_volume;
-        document.cookie = 'radio_player' + "=" + value;
+            radioPlayer.current_quality + '_' + this.current_volume + '_' + ofp;
+        document.cookie = "radio_player=" + value + " ;path=/;";
     };
 
     return RadioPlayer;

@@ -73,6 +73,7 @@ var WInventoryItem = (function (_super) {
         var self = this;
         var inv_parent =  $(inventoryDiv).parents('.mainDivWindow');
         if (action) {
+            if (! self.item || ! self.item.example) {self.clear_info_for_window(inventoryDiv); return}
             // отобразить текущий итем
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
                     'transparent url(http://' + $('#settings_host_name').text() + '/' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');

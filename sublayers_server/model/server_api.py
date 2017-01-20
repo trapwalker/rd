@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import User, QuickUser, TeachingUser
+from sublayers_server.model.agents import User, QuickUser, TeachingUser, TeachingUserLog
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.vectors import Point
@@ -146,6 +146,8 @@ class ServerAPI(API):
                 yield agent_exemplar.load_references()
                 role_class_list = self.server.reg['world_settings'].role_class_order
                 agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
+                # todo: убрать тут is_tester
+                agent_exemplar.quick_flag = user.quick or user.is_tester
 
                 # Если был найден агент из основной игры, то скопировать всю информацию из него
                 if main_agent_exemplar:
@@ -178,9 +180,9 @@ class ServerAPI(API):
             else:
                 log.warning('Agent founded {}'.format(user.name))
 
-            agent_exemplar.quick_flag = True
             yield agent_exemplar.save()
-            agent = TeachingUser(
+            agent = TeachingUserLog(
+                # agent=TeachingUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),

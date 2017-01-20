@@ -46,7 +46,7 @@ $(document).ready(function () {
 
     window.onbeforeunload = function (e) {
         cookieStorage.save();
-        radioPlayer.save_setting_to_cookie();
+        radioPlayer.save_setting_to_cookie(true);
     };
 
     chat.setActivePage(chat.page_global);
@@ -147,13 +147,12 @@ $(document).ready(function () {
         if (radio_settings){
             try {
                 var settings = radio_settings.split('_');
-                radioPlayer.set_state(settings[0], parseInt(settings[1]), parseInt(settings[2]), parseFloat(settings[3]));
+                radioPlayer.set_state(settings[0], parseInt(settings[1]), parseInt(settings[2]), parseFloat(settings[3]), parseInt(settings[4]));
             }
             catch (err) {
                 console.error('Incorrect RadioPlayer settings: ', radio_settings);
             }
         }
-        //radioPlayer.set_state(true, 0, 1, 0.85);
     }, 1000);
 });
 

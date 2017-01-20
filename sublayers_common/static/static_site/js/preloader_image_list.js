@@ -196,5 +196,5 @@ function after_preload_load_images() {
 
     audioManager.gain_all(1.0);
 
-    radioPlayer.set_volume(0.3);
+    //radioPlayer.set_volume(0.3);
 }

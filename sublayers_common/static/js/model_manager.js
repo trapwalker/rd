@@ -69,11 +69,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser" || data.cls === "TeachingUserLog") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser" || data.cls === "TeachingUserLog"));
                 return ownerList.add(owner);
             }
         return null;
@@ -382,11 +382,11 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser" || event.agent.cls === "TeachingUserLog") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
-            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser");
+            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser") || (event.agent.cls === "TeachingUserLog");
 
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
@@ -627,18 +627,17 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
-        // console.log('ClientManager.prototype.QuickGameDie');
-        //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        //console.log('ClientManager.prototype.QuickGameDie', event);
         modalWindow.modalQuickGamePointsPageShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
+            quick_users: event.quick_users,
+            points: event.points,
+            record_index: event.record_index,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();
             },
             callback_cancel: function() {
-                window.location = '/#quick';
+                window.location = '/#start';
             }
         });
     };
@@ -1110,7 +1109,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleSelfRPGMessage = function(event) {
-        console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
+        //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_agent.rpg_info = event.rpg_info;
         characterManager.redraw();
         locationManager.update();

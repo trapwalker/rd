@@ -346,8 +346,20 @@ function main() {
     if (hash_url && hash_url.length && hash_url.indexOf('about') == 0) {
         // Ничего не делать с радио
     } else { // Включить радио
-        radioPlayer.click_power();
-        radioPlayer.set_volume(0.0);
+        var radio_settings = getCookie('radio_player');
+        if (radio_settings){
+            try {
+                var settings = radio_settings.split('_');
+                radioPlayer.set_state(settings[0], parseInt(settings[1]), parseInt(settings[2]), parseFloat(settings[3]), parseInt(settings[4]));
+            }
+            catch (err) {
+                console.error('Incorrect RadioPlayer settings: ', radio_settings);
+            }
+        }
+        else {
+            radioPlayer.click_power();
+            radioPlayer.set_volume(0.15);
+        }
     }
 
     var img_start_page_1080 = new Image();
@@ -428,7 +440,7 @@ function main() {
 
     // Сохранение в куки значения аудиоплеера при уходе со страницы
     window.onbeforeunload = function (e) {
-        radioPlayer.save_setting_to_cookie();
+        radioPlayer.save_setting_to_cookie(true);
     };
 }
 
