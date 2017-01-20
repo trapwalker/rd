@@ -358,7 +358,7 @@ function main() {
         }
         else {
             radioPlayer.click_power();
-            radioPlayer.set_volume(0.3);
+            radioPlayer.set_volume(0.15);
         }
     }
 
