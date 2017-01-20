@@ -609,10 +609,11 @@ class QuickUser(User):
         self.time_quick_game_start = None
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
+        self.record_id = None
 
     def _add_quick_game_record(self, time):
         # pymongo add to quick_game_records
-        self.server.app.db.quick_game_records.insert(
+        self.record_id = self.server.app.db.quick_game_records.insert(
             {
                 'name': self.print_login(),
                 'user_uid': self.user.id,
@@ -629,14 +630,15 @@ class QuickUser(User):
         self.quick_game_bot_kills = 0
 
     def drop_car(self, car, time, **kw):
-        if car is self.car:
-            self._add_quick_game_record(time=time)
+        # if car is self.car:
+        #     self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):
         return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
 
     def send_die_message(self, event, unit):
+        self._add_quick_game_record(time=event.time)
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):

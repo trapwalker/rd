@@ -629,16 +629,15 @@ var ClientManager = (function () {
     ClientManager.prototype.QuickGameDie = function (event) {
         //console.log('ClientManager.prototype.QuickGameDie', event);
         modalWindow.modalQuickGamePointsPageShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
             quick_users: event.quick_users,
+            points: event.points,
+            record_index: event.record_index,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();
             },
             callback_cancel: function() {
-                window.location = '/#quick';
+                window.location = '/#start';
             }
         });
     };

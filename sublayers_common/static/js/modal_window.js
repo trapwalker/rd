@@ -482,20 +482,27 @@ var ModalWindow = (function () {
         this.modalQuickGamePoints.removeClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-show');
 
-        // Повесить новый текст
-        var caption = this.modalQuickGamePoints.find('.windowDragCloseHeader-caption span').first();
-        var header = this.modalQuickGamePoints.find('.modal-window-wrap .modal-header').first();
-        var body_text = this.modalQuickGamePoints.find('.modal-window-wrap span').first();
-
-        if (options.caption) caption.text(options.caption);
-        if (options.header) header.text(options.header); else header.text('');
-        if (options.body_text) body_text.text(options.body_text); else body_text.text('');
+        // Вывод очков
+        if (options.record_index >= 0)
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').text('Очков набрано - ' + options.points + '! Место - ' + options.record_index + '!');
+        else
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').text('Очков набрано - ' + options.points + '!');
 
         // Вывод High Score
+        var color_class = 'qg-pp-light-back';
         var quick_users = options.quick_users;
+        var jq_table = this.modalQuickGamePoints.find('.qg-pp-block-left-table').first();
         for(var i = 0; i < quick_users.length; i++) {
+            color_class = color_class == 'qg-pp-light-back' ? 'qg-pp-dark-back' : 'qg-pp-light-back';
             var qu = quick_users[i];
-            console.log(qu);
+            var jq_line = $(
+                '<div class="qg-pp-block-left-table-line">' +
+                    '<div class="qg-pp-table-col place ' + color_class + '">' + (i + 1) + '</div>' +
+                    '<div class="qg-pp-table-col name ' + color_class + '">' + qu.name + '</div>' +
+                    '<div class="qg-pp-table-col score ' + color_class + '">' + qu.points + '</div>' +
+                '</div>'
+            );
+            jq_table.append(jq_line);
         }
 
         // Повесить новый эвент
@@ -523,7 +530,6 @@ var ModalWindow = (function () {
         this.modalQuickGamePoints.removeClass('modal-window-show');
         this.modalQuickGamePoints.addClass('modal-window-hide');
     };
-
 
 
     ModalWindow.prototype.modalQuickGameMapTeachingPageLoad = function () {

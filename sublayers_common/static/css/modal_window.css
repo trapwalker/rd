@@ -358,12 +358,12 @@
 
 .modal-window-wrap {
     position: relative;
+    margin: 2px auto;
     width: calc(100% - 6px);
     height: calc(100% - 26px - 40px - 6px);
     border: 1px solid #0e4b00;
     box-sizing: border-box;
     padding: 10px;
-    margin: 3px auto;
     text-align: center;
 }
 
@@ -544,29 +544,166 @@
 
 /* Окно завершения быстрой игры */
 #modalQuickGamePointsPage {
-    width: 340px;
-    height: 174px;
-    margin-left: -170px;
+    width: 1200px;
+    height: 654px;
+    margin-left: -600px;
+    background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;
 }
 
-#quickGamePointsPageBtnOK {
+.qg-pp-graphic-wrap {
+    position: absolute;
+    width: 826px;
+    height: 504px;
+    top: 57px;
+    left: 137px;
+}
+
+.qg-pp-again-btn {
+    position: absolute;
+    width: 138px;
+    height: 53px;
+    left: 982px;
+    top: 57px;
+    background: transparent url('/static/img/modal_window_image/btn1_active.png') 100% 100% no-repeat;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.qg-pp-again-btn:hover {
+    background: transparent url('/static/img/modal_window_image/btn1_hover.png') 100% 100% no-repeat;
+}
+.qg-pp-again-btn:active, .qg-pp-again-btn.active {
+    background: transparent url('/static/img/modal_window_image/btn1_press.png') 100% 100% no-repeat;
+}
+
+.qg-pp-site-btn {
+    position: absolute;
+    width: 138px;
+    height: 53px;
+    left: 982px;
+    top: 110px;
+    background: transparent url('/static/img/modal_window_image/btn2_active.png') 100% 100% no-repeat;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.qg-pp-site-btn:hover {
+    background: transparent url('/static/img/modal_window_image/btn2_hover.png') 100% 100% no-repeat;
+}
+.qg-pp-site-btn:active, .qg-pp-site-btn.active {
+    background: transparent url('/static/img/modal_window_image/btn2_press.png') 100% 100% no-repeat;
+}
+
+.qg-pp-block {
     position: relative;
     float: left;
-    margin-left: 7%;
-    width: 40%;
-    height: 26px;
-    line-height: 26px;
+    margin: 2px 0 0 2px;
+    height: calc(100% - 30px);
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
 }
+.qg-pp-block.left {
+    width: calc(100% - 246px);
+    padding: 4px 8px;
+    overflow: hidden;
 
-#quickGamePointsPageBtnCancel {
+}
+.qg-pp-block.right { width: 240px; }
+
+.qg-pp-block-left-header {
     position: relative;
-    float: right;
-    margin-right: 7%;
-    width: 40%;
+    width: 100%;
     height: 26px;
-    line-height: 26px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+    font-size: 18px;
+    line-height: 25px;
 }
 
+.qg-pp-table-col {
+    position: relative;
+    float: left;
+    height: 100%;
+    margin-right: 4px;
+    text-align: center;
+}
+.qg-pp-table-col.place { width: 78px; }
+.qg-pp-table-col.name { width: 298px; }
+.qg-pp-table-col.score { width: 158px; }
+
+.qg-pp-block-left-table {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 26px);
+    padding-top: 4px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.qg-pp-block-left-table-line {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    line-height: 24px;
+    margin-bottom: 2px;
+}
+
+.qg-pp-block-right {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 18px;
+}
+.qg-pp-block-right.top {
+    height: 330px;
+    padding-top: 28px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+}
+.qg-pp-block-right.bottom {
+    height: calc(100% - 330px);
+    padding-top: 40px;
+}
+
+.qg-pp-block-right-top-scull {
+    position: relative;
+    width: 164px;
+    height: 184px;
+    margin: 0 auto;
+    background: transparent url('/static/img/modal_window_image/skull.png') 100% 100% no-repeat;
+}
+
+.qg-pp-block-right-top-label {
+    position: relative;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.qg-pp-block-right-bottom-label {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+    line-height: 25px;
+}
+
+.qg-pp-dark-back {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+                      linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.qg-pp-light-back {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03),
+                      linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
 
 /* Окно запроса на прохождение обучения в быстрой игре */
 #modalQuickGameMapTeachingPage {
@@ -583,7 +720,6 @@
     font-family: FreePixel;
     font-size: 16px
 }
-
 
 #modalQuickGameMapTeachingPage .left-path {
     position: relative;
