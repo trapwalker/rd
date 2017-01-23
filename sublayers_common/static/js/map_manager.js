@@ -136,12 +136,8 @@ function onKeyDownMap(event) {
             */
             break;
         case 81:  // Q
-            /*
-            clientManager.sendFireAutoEnable('front', false);
-            clientManager.sendFireAutoEnable('back', false);
-            clientManager.sendFireAutoEnable('right', false);
-            clientManager.sendFireAutoEnable('left', false);
-            */
+            if (wFireController && wFireController.allFire)
+                wFireController.allFire.click();
             break;
         case 77:  // M
             if (map.dragging._enabled)

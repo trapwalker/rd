@@ -43,12 +43,12 @@ class Item(Root):
     def activate(cls):
         pass
 
-    def split(self, count):
-        # count - Сколько отнять от текущего и сколько будет в новом
-        temp_amount = self.amount - count
-        assert temp_amount > 0, 'Item dont split. new amount on splited item = {}'.format(self.amount)
-        assert not self.uri, 'Item has URI {!r} and cannot splited'.format(self.uri)
-        return self.instantiate(amount=count)
+    # def split(self, count):
+    #     # count - Сколько отнять от текущего и сколько будет в новом
+    #     temp_amount = self.amount - count
+    #     assert temp_amount >= 0, 'Item dont split. new amount on splited item = {}'.format(self.amount)
+    #     assert not self.uri, 'Item has URI {!r} and cannot splited'.format(self.uri)
+    #     return self.instantiate(amount=count)
 
     def instantiate(self, **kw):
         inst = super(Item, self).instantiate(**kw)
