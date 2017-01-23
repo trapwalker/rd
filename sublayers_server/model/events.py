@@ -447,6 +447,8 @@ class ItemActionInventoryEvent(Event):
 
         # Пытаемся получить инвентари и итемы
         start_obj = self.server.objects.get(self.start_owner_id)
+        if start_obj is None:
+            return 
         start_inventory = start_obj.inventory
         start_item = start_inventory.get_item(position=self.start_pos)
         if start_item is None:
