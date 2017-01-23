@@ -340,7 +340,8 @@ class Server(object):
         st = self.stat_log
         return dict(
             s_agents_all=st.get_metric('s_agents_all'),
-            s_agents_on=st.get_metric('s_agents_on'),
+            # s_agents_on=st.get_metric('s_agents_on'),
+            s_agents_on=len(self.app.clients),
             s_units_all=st.get_metric('s_units_all'),
             s_units_on=st.get_metric('s_units_on'),
             s_events_all=st.get_metric('s_events_all'),

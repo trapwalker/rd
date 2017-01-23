@@ -111,6 +111,8 @@ class WeaponAuto(Weapon):
 
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
+        owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+        assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.targets.append(car)
         self.dps_list[car.id] = dps
