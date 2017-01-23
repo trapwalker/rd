@@ -493,7 +493,7 @@ class AgentAPI(API):
 
     @public_method
     def chat_message(self, room_name, msg):
-        self.agent.logging_agent("chat_message room_name={}  msg={!r}".format(room_name, msg))
+        self.agent.logging_agent("chat_message room_name={!r}  msg={!r}".format(room_name, msg))
         ChatRoomMessageEvent(room_name=room_name, agent=self.agent, msg=msg,
                              time=self.agent.server.get_time()).post()
 
