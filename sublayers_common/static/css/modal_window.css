@@ -442,7 +442,6 @@
 #modalItemDivisionPage {
     width: 340px;
     height: 196px;
-    margin-left: -170px;
 }
 
 #modalItemDivisionPage .modal-window-wrap {
@@ -544,7 +543,6 @@
 #modalQuickGamePointsPage {
     width: 1200px;
     height: 654px;
-    margin-left: -600px;
     background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;
 }
 
@@ -720,7 +718,6 @@
 #modalQuickGameMapTeachingPage {
     width: 1200px;
     height: 654px;
-    margin-left: -600px;
     background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;
 }
 
