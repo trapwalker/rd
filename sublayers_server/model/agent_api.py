@@ -493,7 +493,7 @@ class AgentAPI(API):
 
     @public_method
     def chat_message(self, room_name, msg):
-        self.agent.logging_agent("chat_message room_name={}  msg={}".format(room_name, msg))
+        self.agent.logging_agent("chat_message room_name={}  msg={!r}".format(room_name, msg))
         ChatRoomMessageEvent(room_name=room_name, agent=self.agent, msg=msg,
                              time=self.agent.server.get_time()).post()
 
@@ -556,7 +556,7 @@ class AgentAPI(API):
     @public_method
     def console_cmd(self, cmd):
         log.debug('Agent %r cmd: %r', self.agent.user.name, cmd)
-        self.agent.logging_agent('Agent {} cmd: {}'.format(self.agent.user.name, cmd))
+        self.agent.logging_agent('Agent {} cmd: {!r}'.format(self.agent.user.name, cmd))
         self.console.on_cmd(cmd.lstrip('/'))
 
     @basic_mode
@@ -757,14 +757,14 @@ class AgentAPI(API):
     # Бартер
     @public_method
     def init_barter(self, recipient_login):
-        self.agent.logging_agent('init_barter recipient_login={}'.format(recipient_login))
+        self.agent.logging_agent('init_barter recipient_login={!r}'.format(recipient_login))
         log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
         InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
                         time=self.agent.server.get_time()).post()
 
     @public_method
     def out_barter_range(self, recipient_login):
-        self.agent.logging_agent('out_barter_range recipient_login={}'.format(recipient_login))
+        self.agent.logging_agent('out_barter_range recipient_login={!r}'.format(recipient_login))
         recipient = self.agent.server.agents_by_name.get(str(recipient_login), None)
         if not recipient:
             return
@@ -795,7 +795,7 @@ class AgentAPI(API):
 
     @public_method
     def cancel_barter(self, barter_id, recipient_login):
-        self.agent.logging_agent('cancel_barter barter_id={} recipient_login={}'.format(barter_id, recipient_login))
+        self.agent.logging_agent('cancel_barter barter_id={} recipient_login={!r}'.format(barter_id, recipient_login))
         barter = Barter.get_barter(agent=self.agent, barter_id=barter_id, recipient_login=recipient_login)
         if barter:
             barter.cancel(time=self.agent.server.get_time())
@@ -829,7 +829,7 @@ class AgentAPI(API):
 
     @public_method
     def set_about_self(self, text):
-        self.agent.logging_agent('set_about_self text={}'.format(text))
+        self.agent.logging_agent('set_about_self text={!r}'.format(text))
         self.agent.example.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
@@ -865,7 +865,7 @@ class AgentAPI(API):
 
     @public_method
     def get_interaction_info(self, player_nick):
-        self.agent.logging_agent('get_interaction_info player_nick={}'.format(player_nick))
+        self.agent.logging_agent('get_interaction_info player_nick={!r}'.format(player_nick))
         messages.InteractionInfoMessage(time=self.agent.server.get_time(),
                                         agent=self.agent,
                                         player_nick=player_nick).post()
