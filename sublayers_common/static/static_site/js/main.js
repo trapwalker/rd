@@ -17,7 +17,7 @@ var glitchEffectStartPage1080 = null;
 
 var videoPlayer;
 var videoPlayerReadyState = false;
-var lastRadioPlayerVolumeBeforeVideoActive = 0.3;
+var lastRadioPlayerVolumeBeforeVideoActive = 0.15;
 
 
 function SetImageOnLoad(img, onLoadHandler) {
@@ -358,7 +358,7 @@ function main() {
         }
         else {
             radioPlayer.click_power();
-            radioPlayer.set_volume(0.15);
+            radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
         }
     }
 
