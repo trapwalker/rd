@@ -414,8 +414,8 @@ class ShowInventoryEvent(Event):
     def on_perform(self):
         super(ShowInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
-        assert (obj is not None) and (obj.inventory is not None)
-        if obj is self.agent.car or obj.is_available(agent=self.agent):
+        # assert (obj is not None) and (obj.inventory is not None)
+        if obj is not None and obj.inventory is not None and (obj is self.agent.car or obj.is_available(agent=self.agent)):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
@@ -447,6 +447,8 @@ class ItemActionInventoryEvent(Event):
 
         # Пытаемся получить инвентари и итемы
         start_obj = self.server.objects.get(self.start_owner_id)
+        if start_obj is None:
+            return 
         start_inventory = start_obj.inventory
         start_item = start_inventory.get_item(position=self.start_pos)
         if start_item is None:

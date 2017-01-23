@@ -101,7 +101,8 @@ class TransactionActivateTank(TransactionActivateItem):
             ItemState(server=self.server, time=self.time, example=tank_ex).set_inventory(
                 time=self.time, inventory=inventory, position=position)
         else:
-            log.warning('Warning! post_activate_item dont set')
+            pass
+            # log.warning('Warning! post_activate_item dont set')
 
 
 class TransactionActivateRebuildSet(TransactionActivateItem):

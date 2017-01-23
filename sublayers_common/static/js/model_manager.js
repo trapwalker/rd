@@ -683,7 +683,7 @@ var ClientManager = (function () {
             user.userCar.altitude = event.altitude;
         }
         else
-            console.error('Error! Пришла высота на неизветную машинку!')
+            console.warn('Error! Пришла высота на неизветную машинку!')
     };
 
     ClientManager.prototype.ChangeRadiation = function(event){
@@ -692,7 +692,7 @@ var ClientManager = (function () {
             user.userCar.radiation_dps += event.radiation_dps;
         }
         else
-            console.error('Error! Пришла радиация на неизветную машинку!')
+            console.warn('Warning! Пришла радиация на неизветную машинку!')
     };
 
     ClientManager.prototype.UpdateObservingRange = function (event) {
@@ -718,10 +718,10 @@ var ClientManager = (function () {
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
         if ((event.time > clock.getClientTime()) && (etime > clock.getCurrentTime())) {
-            console.error('Серверное время больше клиентского при выстреле.');
-            console.error('server event time = ', etime);
-            console.error('client pure  time = ', clock.getClientTime() / 1000.);
-            console.error('clnt with dt time = ', clock.getCurrentTime());
+            console.warn('Серверное время больше клиентского при выстреле.');
+            //console.error('server event time = ', etime);
+            //console.error('client pure  time = ', clock.getClientTime() / 1000.);
+            //console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime, event.t_rch);

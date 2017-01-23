@@ -420,7 +420,7 @@ class Agent(Object):
 
     def on_kill(self, event, obj):
         # log.debug('%s:: on_kill(%s)', self, obj)
-
+        self.logging_agent('{}:: on_kill {}'.format(self, obj))
         # todo: party
         # todo: registry fix?
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
@@ -565,8 +565,10 @@ class Agent(Object):
 
     def set_teaching_state(self, state):
         user = self.user
+        agent = self
         def callback(*kw):
-            log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
+            # log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
+            agent.logging_agent('teaching test for user <{!r}> changed: {!r}'.format(user.name, state))
         user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
 
@@ -642,7 +644,7 @@ class QuickUser(User):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
-        log.debug('%s:: on_kill(%s)', self, obj)
+        # log.debug('%s:: on_kill(%s)', self, obj)
         if obj.owner and isinstance(obj.owner, AI):
             self.quick_game_bot_kills += 1
         else:
@@ -654,7 +656,8 @@ class QuickUser(User):
     @tornado.gen.coroutine
     def init_example_car(self):
         user = self.user
-        log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
+        # log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
+        self.logging_agent('QuickGameUser Try get new car: {!r}  [car_index={}]'.format(user.name, user.car_index))
         # Создание "быстрой" машинки
         try:
             user.car_index = int(user.car_index)

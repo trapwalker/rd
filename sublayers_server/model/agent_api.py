@@ -645,7 +645,7 @@ class AgentAPI(API):
 
     @public_method
     def activate_item(self, owner_id, position, target_id):
-        log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
+        # log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
         self.agent.logging_agent('activate_item owner_id={} position={} target_id={}'.format(owner_id, position, target_id))
         ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
                             time=self.agent.server.get_time()).post()
@@ -838,7 +838,7 @@ class AgentAPI(API):
     @public_method
     def quest_note_action(self, uid, result):
         self.agent.logging_agent('quest_note_action uid={} result={}'.format(uid, result))
-        log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
+        # log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
         uid = UUID(uid)
 
