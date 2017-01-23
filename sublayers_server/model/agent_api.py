@@ -884,24 +884,28 @@ class AgentAPI(API):
     @public_method
     def set_quick_item(self, index, position):
         self.agent.logging_agent('set_quick_item index={}, position={}'.format(index, position))
-        self.agent.car.quick_consumer_panel.set_item(index=index, position=position, time=self.agent.server.get_time())
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            self.agent.car.quick_consumer_panel.set_item(index=index, position=position, time=self.agent.server.get_time())
 
     @public_method
     def activate_quick_item(self, index, target_id):
         self.agent.logging_agent('activate_quick_item index={}, target_id={}'.format(index, target_id))
-        self.agent.car.quick_consumer_panel.activate_item(index=index, target_id=target_id,
-                                                          time=self.agent.server.get_time())
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            self.agent.car.quick_consumer_panel.activate_item(index=index, target_id=target_id,
+                                                              time=self.agent.server.get_time())
 
     @public_method
     def swap_quick_items(self, index1, index2):
         self.agent.logging_agent('swap_quick_items index1={}, index2={}'.format(index1, index2))
-        self.agent.car.quick_consumer_panel.swap_items(index1=index1, index2=index2, time=self.agent.server.get_time())
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            self.agent.car.quick_consumer_panel.swap_items(index1=index1, index2=index2, time=self.agent.server.get_time())
 
     @public_method
     def get_quick_item_info(self):
         self.agent.logging_agent('get_quick_item_info')
         from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
-        QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
 
     # Запрос объектов в стратегическом режиме
     @basic_mode
