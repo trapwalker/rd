@@ -112,7 +112,12 @@ class WeaponAuto(Weapon):
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
-        assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
+        # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
+        if car in self.targets:
+            log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent))
+            old_dps = self.dps_list.get(car.id, None)
+            assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
+
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.targets.append(car)
         self.dps_list[car.id] = dps
@@ -124,8 +129,11 @@ class WeaponAuto(Weapon):
     def _stop_fire_to_car(self, car, time):
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
-        del self.dps_list[car.id]
         self.targets.remove(car)
+        if car not in self.targets:
+            del self.dps_list[car.id]
+        else:
+            log.warning('Error: Delete car<{}> from targets<{}>, but car in targets'.format(car, self.targets))
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
 
