@@ -57,3 +57,4 @@ _apk/*.apk
 *.rej
 sublayers_server/account_test.yaml
 
+tmp
