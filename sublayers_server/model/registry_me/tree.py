@@ -23,8 +23,8 @@ from copy import copy
 from pprint import pprint as pp
 from uuid import uuid1 as get_uuid
 from collections import deque, Callable
-from mongoengine import connect, Document, EmbeddedDocument
 from bson import DBRef
+from mongoengine import connect, Document, EmbeddedDocument
 from mongoengine.base import get_document
 from mongoengine.base import BaseDocument
 from mongoengine.fields import (
@@ -42,30 +42,10 @@ class RegistryNodeFormatError(RegistryError):
     pass
 
 
-class InstantReferenceField(ReferenceField):
-    def to_python(self, value):
-        """Convert a MongoDB-compatible type to a Python type.
-        """
-        if (
-            not self.dbref and
-            not isinstance(value, (DBRef, Document, EmbeddedDocument))
-        ):
-            if isinstance(value, basestring):
-                # TODO: support hash overrided URI objects descriptions
-                collection = self.document_type._get_collection_name()
-                value = DBRef(collection, self.document_type.id.to_python(value))
-            elif isinstance(value, dict):
-                assert issubclass(self.document_type_obj, Node), 'InstantReferenceField is not Node: %r' % self.document_type_obj
-                # parent = value.get('parent', None)  # TODO: make support overiding by parent without _cls
-                value = self.document_type_obj._from_son(value, created=True)
-                value.is_instant = True
-                value.save()
-            else:
-                raise AssertionError("InstantReferenceField has unsupported type: %r" % value)
-        return value
+class Node(EmbeddedDocument):
+    uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
+    #owner = ReferenceField(document_type='self', not_inherited=True)  # todo: make it property
 
-
-class NodeMixin(BaseDocument):
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     parent = ReferenceField(document_type='Node', not_inherited=True)
     fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
@@ -76,6 +56,17 @@ class NodeMixin(BaseDocument):
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
+
+    def make_uri(self):
+        owner = self.owner
+
+        if owner and owner.uri:
+            base_uri = URI(owner.uri)
+        else:
+            base_uri = URI(scheme='reg', storage='', path=())
+
+        uri = base_uri.replace(path=base_uri.path + (self.name or str(self.uid),))
+        return str(uri)
 
     @classmethod
     def _get_inheritable_field_names(cls):
@@ -209,7 +200,7 @@ class NodeMixin(BaseDocument):
                         value = value() if callable(value) else value
                         return value
 
-        return super(NodeMixin, self).__getattribute__(name)
+        return super(Node, self).__getattribute__(name)
 
     def __delattr__(self, *args, **kwargs):
         """Handle deletions of fields"""
@@ -262,26 +253,26 @@ class NodeMixin(BaseDocument):
             self._instantiaite_field(self, field, name)
 
 
-class ENode(EmbeddedDocument, NodeMixin):
-    def instantiate(self, name=None, storage=None, **kw):
-        # todo: Сделать поиск ссылок в параметрах URI
-        params = {}
-        parent = self.parent
-        # TODO: solve case with different classes between self and parent
-        inheritable = set(self._get_inheritable_field_names())
-        params.update({k: v for k, v in self._data.items() if k in inheritable})
-
-        if name:
-            params.update(name=name)
-        params.update(parent=parent)
-        params.update(kw)
-        #inst = self.__class__(**params)
-        inst = self._from_son(params, created=True)
-
-        inst.reinst_fields()
-        # todo: Разобраться с abstract при реинстанцированиях
-        # todo: Сделать поиск ссылок в параметрах URI
-        return inst
+# class ENode(EmbeddedDocument, NodeMixin):
+#     def instantiate(self, name=None, storage=None, **kw):
+#         # todo: Сделать поиск ссылок в параметрах URI
+#         params = {}
+#         parent = self.parent
+#         # TODO: solve case with different classes between self and parent
+#         inheritable = set(self._get_inheritable_field_names())
+#         params.update({k: v for k, v in self._data.items() if k in inheritable})
+#
+#         if name:
+#             params.update(name=name)
+#         params.update(parent=parent)
+#         params.update(kw)
+#         #inst = self.__class__(**params)
+#         inst = self._from_son(params, created=True)
+#
+#         inst.reinst_fields()
+#         # todo: Разобраться с abstract при реинстанцированиях
+#         # todo: Сделать поиск ссылок в параметрах URI
+#         return inst
 
 
 class Node(Document, NodeMixin):
@@ -297,19 +288,7 @@ class Node(Document, NodeMixin):
     )
     instant_class = ENode
     # todo: ВНИМАНИЕ! Необходимо реинстанцирование вложенных документов, списков и словарей
-    uri = StringField(unique=True, primary_key=True, null=True, not_inherited=True)
-    owner = ReferenceField(document_type='self', not_inherited=True)
 
-    def make_uri(self):
-        owner = self.owner
-
-        if owner and owner.uri:
-            base_uri = URI(owner.uri)
-        else:
-            base_uri = URI(scheme='reg', storage='', path=())
-
-        uri = base_uri.replace(path=base_uri.path + (self.name or str(self.uid),))
-        return str(uri)
 
     def __init__(self, **kw):
         inheritable = self.__class__._get_inheritable_field_names()
@@ -430,30 +409,6 @@ class Node(Document, NodeMixin):
         else:
             node = cls._from_son(attrs, created=True)
         return node
-
-    @classmethod
-    def load(cls, path, mongo_store=True):
-        all_nodes = []
-        root = None
-        stack = deque([(path, None)])
-        with Timer(name='registryFS loader', logger=log) as timer:
-            while stack:
-                pth, owner = stack.pop()
-                node = cls._load_node_from_fs(pth, owner)
-                if node:
-                    node.save()
-
-                    all_nodes.append(node)
-                    #node.to_cache()  # TODO: cache objects
-                    if owner is None:
-                        root = node  # todo: optimize
-                    for f in os.listdir(pth):
-                        next_path = os.path.join(pth, f)
-                        if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
-                            stack.append((next_path, node))
-
-        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
-        return root
 
 
 class Root(Node):

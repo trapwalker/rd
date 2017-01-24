@@ -1,0 +1,31 @@
+﻿# -*- coding: utf-8 -*-
+
+import logging
+log = logging.getLogger(__name__)
+
+from sublayers_server.model.registry_me.classes.item import ArmorerItem, Item
+from sublayers_server.model.registry_me.tree import InstantReferenceField
+
+from mongoengine.fields import StringField, FloatField
+
+
+class Weapon(ArmorerItem):
+    ammo = InstantReferenceField(caption=u'Боеприпас', document_type=Item,)  # todo: store set of ammo types
+    direction = StringField(caption=u'Направление (FBRL)', tags='client')
+    ammo_per_shot = FloatField(caption=u'Расход патронов за выстрел (< 0)')
+    ammo_per_second = FloatField(caption=u'Расход патронов в секунду')
+    radius = FloatField(caption=u'Дальность стрельбы (м)')
+    width = FloatField(caption=u'Ширина сектора стрельбы (град)')
+    power_penetration = FloatField(caption=u'Мощность оружия (пробитие)')
+
+
+class Cannon(Weapon):
+    is_auto = False
+    dmg = FloatField(caption=u'Урон за выстрел')
+    area_dmg = FloatField(caption=u'Урон за выстрел')
+    time_recharge = FloatField(caption=u'Время перезарядки (с)')
+
+
+class MachineGun(Weapon):
+    is_auto = True
+    dps = FloatField(caption=u'Урон в секунду')
