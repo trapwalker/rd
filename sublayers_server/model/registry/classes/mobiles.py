@@ -248,6 +248,7 @@ class Mobile(Root):
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+        assert self._exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     @property
     def frag(self):
