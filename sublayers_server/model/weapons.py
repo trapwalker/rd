@@ -127,6 +127,8 @@ class WeaponAuto(Weapon):
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
+        assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
+
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
         self.targets.remove(car)

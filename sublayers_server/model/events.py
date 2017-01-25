@@ -523,6 +523,8 @@ class ItemActivationEvent(Event):
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
+        if obj is None:
+            return 
         inventory = obj.inventory
         item = inventory.get_item(position=self.position)
         if item is None:

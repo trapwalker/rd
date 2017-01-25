@@ -12,6 +12,8 @@ from sublayers_server.model.agents import AI
 
 class ServerStatisticsHandler(BaseHandler):
     def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+
         server_stat = self.application.srv.get_server_stat()
         quick_game_bot_info = []
         if options.mode == 'quick':
@@ -21,10 +23,21 @@ class ServerStatisticsHandler(BaseHandler):
 
         self.render("module_entry_server_stats.html", server_stat=server_stat, quick_game_bot_info=quick_game_bot_info)
 
-
-class ServerStatisticsRefreshHandler(BaseHandler):
-    def get(self):
-        self.write(self.application.srv.get_server_stat())
+    def post(self):
+        action = self.get_argument('action', None)
+        if action == 'bot_change':
+            bot_name = self.get_argument('bot_name', "")
+            ai_bot = self.application.srv.agents_by_name.get(bot_name, None)
+            if not ai_bot:
+                self.send_error(status_code=504)
+                return
+            ai_bot.worked = not ai_bot.worked
+            log.info('Change worked flag for agent<{}>'.format(ai_bot))
+            self.finish('ok')
+            return
+        if action == 'bot_refresh':
+            self.finish(self.application.srv.get_server_stat())
+            return
 
 
 class ServerStatForSite(BaseHandler):

@@ -154,6 +154,13 @@ $(document).ready(function () {
             }
         }
     }, 1000);
+
+
+    // Интервал запроса пинга
+    setInterval(function(){
+        if (ws_connector.isConnected)
+            clientManager.get_ping_set_fps();
+    }, 25000);
 });
 
 var index_notes_test = 0;

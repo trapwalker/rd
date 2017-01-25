@@ -320,6 +320,7 @@ class Agent(Root):
             lvl = self.get_lvl()
             if lvl > old_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
+        assert self._exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:
