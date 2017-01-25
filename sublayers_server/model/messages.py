@@ -1205,3 +1205,11 @@ class ChangeAgentKarma(Message):
 
 class StartQuickGame(Message):
     pass
+
+
+class PingInfoMessage(Message):
+    def as_dict(self):
+        d = super(PingInfoMessage, self).as_dict()
+        if self.agent.connection:
+            d.update(ping=self.agent.connection._current_ping)
+        return d

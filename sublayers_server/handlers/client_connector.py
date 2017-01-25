@@ -19,7 +19,7 @@ from random import randint
 from sublayers_common.user_profile import User
 
 
-WS_PING_INTERVAL = 29  # (сек.) интервал пинга клиента через веб-сокет.
+WS_PING_INTERVAL = 25  # (сек.) интервал пинга клиента через веб-сокет.
 
 
 class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
@@ -39,6 +39,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         print 'new connect open !!!'
         self._ping_timeout_handle = None
         self.ping_number = 0
+        self._current_ping = 0
         self.agent = None
         user = self.current_user
         assert user
@@ -104,3 +105,10 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         self.ping(json.dumps(dict(time=t, number=self.ping_number)))
         self.ping_number += 1
         self._ping_timeout_handle = tornado.ioloop.IOLoop.instance().call_later(WS_PING_INTERVAL, self._do_ping)
+
+    def on_pong(self, data):
+        t = self.application.srv.get_time()
+        d = json.loads(data)
+        if d['number'] == self.ping_number - 1:
+            self._current_ping = round((t - d['time']) * 1000, 0)
+            assert self._current_ping >= 0, 'current_time={}  ping_time={} ping={} number={}'.format(t, d['time'], self._current_ping, d['number'])

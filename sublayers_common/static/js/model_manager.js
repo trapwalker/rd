@@ -1226,6 +1226,12 @@ var ClientManager = (function () {
         wStrategyModeManager.update(event.objects);
     };
 
+    // PingInfoMessage
+    ClientManager.prototype.PingInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.PingInfoMessage', event);
+        $('#PingSpan').text(event.ping);
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -2210,6 +2216,18 @@ var ClientManager = (function () {
             call: "quick_teaching_answer",
             rpc_call_id: rpcCallList.getID(),
             params: {teaching: result}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Запросить с сервера текущий пинг и отправить серверу FPS
+    ClientManager.prototype.get_ping_set_fps = function () {
+        //console.log('ClientManager.prototype.sendQuickTeachingAnswer');
+        var mes = {
+            call: "get_ping_set_fps",
+            rpc_call_id: rpcCallList.getID(),
+            params: {fps: timeManager.FPS}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

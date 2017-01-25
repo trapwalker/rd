@@ -951,3 +951,10 @@ class AgentAPI(API):
         else:
             self.agent.set_teaching_state('cancel')
             # self.agent.armory_shield_off(Event(server=self.agent.server, time=self.agent.server.get_time()))
+
+    @public_method
+    def get_ping_set_fps(self, fps):
+        messages.PingInfoMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        current_ping = None if self.agent.connection is None else self.agent.connection._current_ping
+        self.agent.logging_agent('FPS = {!r}   Ping = {!r}'.format(fps, current_ping))
+
