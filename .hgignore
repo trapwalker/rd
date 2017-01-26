@@ -55,3 +55,4 @@ env_*
 _apk/*.apk
 *.track
 *.rej
+tmp
