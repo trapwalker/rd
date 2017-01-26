@@ -69,6 +69,9 @@ function sendRandGoTo(){
 function onKeyDownMap(event) {
     //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
+        case 13:
+            chat.get_current_input().focus();
+            break;
         case 37:
             if (!pressedArrowLeft) {
                 pressedArrowLeft = true;
