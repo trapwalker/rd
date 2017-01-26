@@ -789,7 +789,7 @@ class TeachingUserLog(TeachingUser):
 
     def append_car(self, **kw):
         super(TeachingUserLog, self).append_car(**kw)
-        self.logging_agent('append_car')
+        self.logging_agent('append_car {}'.format(self.car))
 
     def drop_car(self, **kw):
         super(TeachingUserLog, self).drop_car(**kw)
