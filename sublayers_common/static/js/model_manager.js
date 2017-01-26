@@ -2233,6 +2233,20 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Залогировать в лог агента какую-либо информацию
+    ClientManager.prototype.sendAgentLog = function (message) {
+        //console.log('ClientManager.prototype.sendAgentLog');
+        var mes = {
+            call: "agent_log",
+            rpc_call_id: rpcCallList.getID(),
+            params: {message: message}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+
     return ClientManager;
 })();
 
