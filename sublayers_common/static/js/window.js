@@ -151,6 +151,19 @@ var WindowTemplateManager = (function () {
         this.z_index_list = {};
     }
 
+    WindowTemplateManager.prototype.closeActiveWindow = function (win_name) {
+        //console.log("WindowTemplateManager.prototype.setActiveWindow", win_name);
+        var win_name = '';
+        var z_val = -1;
+        for (var key in this.z_index_list)
+            if (this.z_index_list.hasOwnProperty(key) && this.z_index_list[key] > z_val) {
+                win_name = key;
+                z_val = this.z_index_list[key];
+            }
+        if (z_val >= 0)
+            this.closeUniqueWindow(win_name);
+    };
+
     WindowTemplateManager.prototype.setActiveWindow = function (win_name) {
         //console.log("WindowTemplateManager.prototype.setActiveWindow", win_name);
 

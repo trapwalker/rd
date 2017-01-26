@@ -97,6 +97,12 @@ var ModalWindow = (function () {
         returnFocusToMap();
     };
 
+    ModalWindow.prototype.closeEscWindows = function() {
+        //console.log('ModalWindow.prototype.closeEscWindows');
+        if (this.modalItemDivision.hasClass('modal-window-show'))
+            this.modalItemDivisionHide();
+    };
+
 
     ModalWindow.prototype.modalWelcomeShow = function () {
         // включить фон
@@ -335,6 +341,9 @@ var ModalWindow = (function () {
         // Загрузить информацию из документа в див
         var self = this;
         this.modalDialogInfo.load('/static/modal_window/dialogInfoPage.html', function(){});
+        this.modalDialogInfo.keydown(function(event) {
+            if (event.keyCode == 27) modalWindow.closeEscWindows();
+        });
     };
 
 
@@ -388,6 +397,9 @@ var ModalWindow = (function () {
     ModalWindow.prototype.modalDialogAnswerLoad = function () {
         // Загрузить информацию из документа в див
         this.modalAnswerInfo.load('/static/modal_window/dialogAnswerPage.html', function(){});
+        this.modalAnswerInfo.keydown(function(event) {
+            if (event.keyCode == 27) modalWindow.closeEscWindows();
+        });
     };
 
 
@@ -510,6 +522,9 @@ var ModalWindow = (function () {
                 handle: self.modalItemDivision.find('.windowDragCloseHeader-main').first(),
                 containment: "parent"
             });
+        });
+        this.modalItemDivision.keydown(function(event) {
+            if (event.keyCode == 27) modalWindow.closeEscWindows();
         });
     };
 
