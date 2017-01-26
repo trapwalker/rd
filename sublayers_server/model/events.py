@@ -546,3 +546,47 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
+
+
+class AgentTestEvent(Event):
+    def __init__(self, agent, **kw):
+        super(AgentTestEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(AgentTestEvent, self).on_perform()
+        agent = self.agent
+        car = agent.car
+        AgentTestEvent(agent=agent, time=self.time + 2.0).post()
+        if car:
+            # Определить, есть ли у машинки в авто-секторах цели, есть ли цели в оружиях
+            sector_targets = []
+            weapon_targets = []
+            for sector in car.fire_sectors:
+                if sector.is_auto():
+                    sector_targets = sector_targets + sector.target_list
+                    for weapon in sector.weapon_list:
+                        weapon_targets = weapon_targets + weapon.targets
+
+            # Определить, тратятся ли патроны из инвентаря
+            changed_items = []
+            for item in car.inventory.get_items():
+                if item.dvs != 0.0:
+                    changed_items.append(item)
+
+            len_ch_item = len(changed_items)
+            len_weapons_t = len(weapon_targets)
+            len_sectors_t = len(sector_targets)
+
+            # Теперь проверки и логирование
+            if len_weapons_t != len_sectors_t:
+                agent.logging_agent('Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
+
+            if ((len_weapons_t > 0 or len_sectors_t > 0) and len_ch_item == 0) or ((len_weapons_t == 0 or len_sectors_t == 0) and len_ch_item > 0):
+                agent.logging_agent('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+
+            if len_ch_item:
+                if len_weapons_t == 0 or len_sectors_t == 0:
+                    agent.logging_agent('Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+
+            # agent.logging_agent('Error! end!!! sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))

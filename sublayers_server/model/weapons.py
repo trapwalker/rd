@@ -114,7 +114,7 @@ class WeaponAuto(Weapon):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
         # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
         if car in self.targets:
-            log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent))
+            log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             old_dps = self.dps_list.get(car.id, None)
             assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
 
@@ -135,7 +135,7 @@ class WeaponAuto(Weapon):
         if car not in self.targets:
             del self.dps_list[car.id]
         else:
-            log.warning('Error: Delete car<{}> from targets<{}>, but car in targets'.format(car, self.targets))
+            log.warning('Error: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
 
