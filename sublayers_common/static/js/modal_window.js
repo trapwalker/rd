@@ -64,6 +64,7 @@ var ModalWindow = (function () {
         jq_window.css('left', screen_width / 2 - win_width / 2);
     };
 
+
     ModalWindow.prototype.modalWelcomeShow = function () {
         // включить фон
         this._modalBackShow();
@@ -79,7 +80,7 @@ var ModalWindow = (function () {
         // выключить модальное окно Welcome
         this.modalWelcome.removeClass('modal-window-welcome-show');
         this.modalWelcome.addClass('modal-window-hide');
-
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalWelcomeLoad = function () {
@@ -169,6 +170,7 @@ var ModalWindow = (function () {
             cookieStorage.optionsShowID = optionsShowID.checked ? true : false;
             */
         }
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalOptionsLoad = function () {
@@ -203,7 +205,7 @@ var ModalWindow = (function () {
         // выключить модальное окно Death
         this.modalDeath.removeClass('modal-window-death-show');
         this.modalDeath.addClass('modal-window-hide');
-
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalDeathLoad = function () {
@@ -238,7 +240,7 @@ var ModalWindow = (function () {
         // выключить модальное окно Death
         this.modalRestart.removeClass('modal-window-restart-show');
         this.modalRestart.addClass('modal-window-hide');
-
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalRestartLoad = function () {
@@ -294,7 +296,7 @@ var ModalWindow = (function () {
         // выключить модальное окно Death
         this.modalDialogInfo.removeClass('modal-window-show');
         this.modalDialogInfo.addClass('modal-window-hide');
-
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalDialogInfoLoad = function () {
@@ -348,7 +350,7 @@ var ModalWindow = (function () {
         // выключить модальное окно Death
         this.modalAnswerInfo.removeClass('modal-window-show');
         this.modalAnswerInfo.addClass('modal-window-hide');
-
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalDialogAnswerLoad = function () {
@@ -424,6 +426,7 @@ var ModalWindow = (function () {
         this._modalBackHide();
         this.modalItemDivision.removeClass('modal-window-show');
         this.modalItemDivision.addClass('modal-window-hide');
+        returnFocusToMap();
     };
 
     ModalWindow.prototype.modalItemDivisionLoad = function () {
@@ -554,6 +557,7 @@ var ModalWindow = (function () {
         this._modalBackHide();
         this.modalQuickGamePoints.removeClass('modal-window-show');
         this.modalQuickGamePoints.addClass('modal-window-hide');
+        returnFocusToMap();
     };
 
 
@@ -599,6 +603,7 @@ var ModalWindow = (function () {
         this._modalBackHide();
         this.modalQuickGameMapTeaching.removeClass('modal-window-show');
         this.modalQuickGameMapTeaching.addClass('modal-window-hide');
+        returnFocusToMap();
     };
 
     return ModalWindow;

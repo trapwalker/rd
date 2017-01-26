@@ -215,6 +215,9 @@ function TileLaterSet() {
         map.removeLayer(mapManager.tileLayer);
 }
 
+function returnFocusToMap() {
+    document.getElementById('map').focus();
+}
 
 var MapManager = (function(_super) {
     __extends(MapManager, _super);

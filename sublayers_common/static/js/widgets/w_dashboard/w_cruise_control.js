@@ -229,7 +229,7 @@ var WCruiseControl = (function (_super) {
     WCruiseControl.prototype._onClickChangeVisible = function (event) {
         //console.log('WCruiseControl.prototype._onClickChangeVisible');
         event.data.changeVisible(!event.data.visible);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WCruiseControl.prototype.changeVisible = function (visible) {
@@ -326,7 +326,7 @@ var WCruiseControl = (function (_super) {
         var currentSpeed = event.data._getCurrentMaxSpeed() * prc;
         event.data.speedHandlePrc = prc;
         clientManager.sendSetSpeed(currentSpeed);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WCruiseControl.prototype._onClickScaleArea = function (event) {
@@ -337,14 +337,14 @@ var WCruiseControl = (function (_super) {
         prc /= event.data.constScaleHeight;
         event.data.setSpeedHandleValue(prc);
         clientManager.sendSetSpeed(event.data._getCurrentMaxSpeed() * prc);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
         //console.log('WCruiseControl.prototype._onClickStop');
         clientManager.sendStopCar();
         event.data.setSpeedHandleValue(0);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WCruiseControl.prototype._onClickR = function (event) {
@@ -353,7 +353,7 @@ var WCruiseControl = (function (_super) {
         var currentSpeed = event.data._getCurrentMaxSpeed() * event.data.speedHandlePrc;
         event.data._setSpeedHandleText(event.data.speedHandlePrc);
         clientManager.sendSetSpeed(currentSpeed);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WCruiseControl.prototype.changeReverse = function (reverse) {

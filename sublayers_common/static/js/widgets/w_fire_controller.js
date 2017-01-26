@@ -81,9 +81,7 @@ var WFireController = (function (_super) {
         this.backgroundCircle.setAttribute('cx', this.center.x);
         this.backgroundCircle.setAttribute('cy', this.center.y);
         this.SVG.appendChild(this.backgroundCircle);
-        $(this.backgroundCircle).on('click', function(){
-            document.getElementById('map').focus();
-        });
+        $(this.backgroundCircle).on('click', function() { returnFocusToMap(); });
 
         this.fCT.append($('<div class="fire-control-all sublayers-clickable"></div>'));
         this.allFire = this.fCT.find('.fire-control-all').first();
@@ -144,6 +142,7 @@ var WFireController = (function (_super) {
                     var index = $(this).data('index');
                     clientManager.sendActivateQuickItem(index, user.userCar.ID);
                     wFireController.signalQuickConsumerPanel(index);
+                    returnFocusToMap();
                 });
             }
 
@@ -340,7 +339,7 @@ var WFireController = (function (_super) {
                 self._setAutoShootingEnable(self.autoShoot);
             }
         });
-        document.getElementById('map').focus();
+        returnFocusToMap();
         var is_show_central = !this.visible && (map.getZoom() >= 14);
         if (mapManager.widget_fire_radial_grid)
             mapManager.widget_fire_radial_grid.setVisible(is_show_central);
@@ -376,7 +375,7 @@ var WFireController = (function (_super) {
             self._setAutoShootingEnable(true);
             self.allFire.addClass('fire-control-all-active');
         }
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {
@@ -589,7 +588,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.shootBySide = function(event) {
         clientManager.sendFireDischarge(event.data.side.side.sideStr);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WFireController.prototype.addModelObject = function (mobj) {

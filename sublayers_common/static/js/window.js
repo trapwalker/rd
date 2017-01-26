@@ -105,9 +105,11 @@ var Window = (function () {
 
     // Скрыть окно
     Window.prototype.hideWindow = function () {
+        //console.log('Window.prototype.hideWindow');
         if (this.options.isModal)
             this.modalDiv.css('display', 'none');
         else this.mainDiv.css('display', 'none');
+
     };
 
     Window.prototype.setNewSize = function (height, width) {
@@ -248,6 +250,7 @@ var WindowTemplateManager = (function () {
             this.count--;
 
             this._reSortWindow();
+            returnFocusToMap();
         }
     };
 
