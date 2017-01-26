@@ -616,6 +616,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Die = function (event) {
         //console.log('ClientManager.prototype.Die');
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalDialogInfoShow({
             caption: 'Car Crash',
             header: 'Крушение!',
@@ -628,6 +630,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.QuickGameDie = function (event) {
         //console.log('ClientManager.prototype.QuickGameDie', event);
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalQuickGamePointsPageShow({
             quick_users: event.quick_users,
             points: event.points,

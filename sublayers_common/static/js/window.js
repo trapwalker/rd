@@ -213,6 +213,7 @@ var WindowTemplateManager = (function () {
     };
 
     WindowTemplateManager.prototype.openWindow = function (win_url, win_data, is_modal) {
+        //console.log('WindowTemplateManager.prototype.openWindow');
         $.ajax({
             url: "http://" + location.host + win_url,
             data: win_data,
