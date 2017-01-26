@@ -18,8 +18,70 @@ from mongoengine import connect, Document, EmbeddedDocument
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, DictField, EmbeddedDocumentField,
-    GenericReferenceField,
+    GenericReferenceField, BaseField,
 )
+
+
+class RegistryLinkField(BaseField):
+    # def __init__(self, **kwargs):
+    #     super(RegistryLinkField, self).__init__(**kwargs)
+
+    def __get__(self, instance, owner):
+        """Descriptor to allow lazy dereferencing."""
+        if instance is None:  # Document class being used rather than a document object
+            return self
+
+        # Get value from document instance if available
+        value = instance._data.get(self.name)
+
+        return super(RegistryLinkField, self).__get__(instance, owner)
+
+    def to_mongo(self, document):
+        if document is None:
+            return
+
+        elif isinstance(document, basestring):
+            # todo: normalize URI
+            return document
+
+        elif isinstance(document, Node):
+            assert document.uri, 'Registry node do not has URI to link them: {!r}'.format(document)
+            return document.uri
+
+        else:
+            raise TypeError('Linked node type is not supported: {!r}'.format(document))
+
+
+    def to_python(self, value):
+        """Convert a MongoDB-compatible type to a Python type."""
+        # todo: realization
+        return value
+
+    def prepare_query_value(self, op, value):
+        if value is None:
+            return None
+        super(RegistryLinkField, self).prepare_query_value(op, value)
+        return self.to_mongo(value)
+
+    def validate(self, value):
+
+        if not isinstance(value, (self.document_type, DBRef)):
+            self.error('A ReferenceField only accepts DBRef or documents')
+
+        if isinstance(value, Document) and value.id is None:
+            self.error('You can only reference documents once they have been '
+                       'saved to the database')
+
+        if self.document_type._meta.get('abstract') and \
+                not isinstance(value, self.document_type):
+            self.error(
+                '%s is not an instance of abstract reference type %s' % (
+                    self.document_type._class_name)
+            )
+
+    def lookup_member(self, member_name):
+        return self.document_type._fields.get(member_name)
+
 
 
 class Node(EmbeddedDocument):
@@ -125,9 +187,8 @@ class Node(EmbeddedDocument):
             d[name] = value
 
         d.update(
-            id=self.id,  # todo: Возможно в качестве идентификатора передавать UID?
-            node_hash=self.node_hash(),
-            html_hash=self.node_html(),
+            #node_hash=self.node_hash(),  # todo: REALIZE and uncomment this
+            #html_hash=self.node_html(),
             tags=list(self.tag_set),
         )
         return d
@@ -138,6 +199,7 @@ class A(Node):
     x = IntField(null=True)
     y = IntField(null=True)
     z = IntField(null=True)
+    e = EmbeddedDocumentField(document_type=Node)
 
 
 class A2(A):
@@ -151,7 +213,8 @@ class B(Node):
 
 def test1():
     r = Node(name='registry')
-    a = A(name='a', x=3, y=7)
+    a = A(name='_a', x=3, y=7)
+    a2 = A(name='_a2', x=31, y=71, e=a)
 
     globals().update(locals())
 
