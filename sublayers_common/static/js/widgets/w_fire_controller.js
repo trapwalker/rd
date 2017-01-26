@@ -186,6 +186,18 @@ var WFireController = (function (_super) {
         });
     };
 
+    WFireController.prototype.updateStateAutoShooting = function(auto_fire_state) {
+        //console.log("WFireController.prototype.updateStateAutoShooting", auto_fire_state);
+        if (auto_fire_state) {
+            this.autoShoot = true;
+            this.allFire.addClass('fire-control-all-active');
+        }
+        else {
+            this.autoShoot = false;
+            this.allFire.removeClass('fire-control-all-active');
+        }
+    };
+
     WFireController.prototype.updateQuickConsumerPanel = function(panel_info) {
         //console.log("WFireController.prototype.updateQuickConsumerPanel", panel_info);
         for (var i = 0; i < panel_info.items.length; i++) {
