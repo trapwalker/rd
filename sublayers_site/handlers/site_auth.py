@@ -105,6 +105,7 @@ class StandardLoginHandler(BaseSiteHandler):
         qg_car_index = self.get_argument('qg_car_index', 0)
         nickname = self.get_argument('username', None)
 
+        quick_user = None
         if self.current_user:
             quick_user = self.current_user if (self.current_user.quick or self.current_user.is_tester) else None
             if quick_user:
