@@ -455,6 +455,7 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             wFireController.updateQuickConsumerPanel(event.car.quick_consumer_panel);
+            wFireController.updateStateAutoShooting(event.auto_shooting_state);
             mapManager.widget_target_point = new WCanvasTargetPoint(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
@@ -616,6 +617,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Die = function (event) {
         //console.log('ClientManager.prototype.Die');
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalDialogInfoShow({
             caption: 'Car Crash',
             header: 'Крушение!',
@@ -628,6 +631,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.QuickGameDie = function (event) {
         //console.log('ClientManager.prototype.QuickGameDie', event);
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalQuickGamePointsPageShow({
             quick_users: event.quick_users,
             points: event.points,
@@ -2232,6 +2237,20 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    // Залогировать в лог агента какую-либо информацию
+    ClientManager.prototype.sendAgentLog = function (message) {
+        //console.log('ClientManager.prototype.sendAgentLog');
+        var mes = {
+            call: "agent_log",
+            rpc_call_id: rpcCallList.getID(),
+            params: {message: message}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
 
     return ClientManager;
 })();

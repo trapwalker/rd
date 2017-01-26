@@ -966,7 +966,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.btnHideReaction = function(event) {
         var self = event.data.self;
         self.changeVisible(!self.chat_visible);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     ViewMessengerGlass.prototype.setVisible = function (aVisible) {

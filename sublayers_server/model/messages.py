@@ -97,6 +97,7 @@ class InitCar(Message):
         d = super(InitCar, self).as_dict()
         d.update(
             car=self.agent.car.as_dict(time=self.time),
+            auto_shooting_state=self.agent.car.turn_on_auto_fire,
         )
         return d
 

@@ -958,3 +958,7 @@ class AgentAPI(API):
         current_ping = None if self.agent.connection is None else self.agent.connection._current_ping
         self.agent.logging_agent('FPS = {!r}   Ping = {!r}'.format(fps, current_ping))
 
+    @public_method
+    def agent_log(self, message):
+        self.agent.logging_agent('agent_log: {!r}'.format(message))
+

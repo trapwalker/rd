@@ -105,9 +105,11 @@ var Window = (function () {
 
     // Скрыть окно
     Window.prototype.hideWindow = function () {
+        //console.log('Window.prototype.hideWindow');
         if (this.options.isModal)
             this.modalDiv.css('display', 'none');
         else this.mainDiv.css('display', 'none');
+
     };
 
     Window.prototype.setNewSize = function (height, width) {
@@ -211,6 +213,7 @@ var WindowTemplateManager = (function () {
     };
 
     WindowTemplateManager.prototype.openWindow = function (win_url, win_data, is_modal) {
+        //console.log('WindowTemplateManager.prototype.openWindow');
         $.ajax({
             url: "http://" + location.host + win_url,
             data: win_data,
@@ -248,6 +251,7 @@ var WindowTemplateManager = (function () {
             this.count--;
 
             this._reSortWindow();
+            returnFocusToMap();
         }
     };
 

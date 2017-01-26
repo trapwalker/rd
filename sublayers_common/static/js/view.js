@@ -43,7 +43,6 @@ $(document).ready(function () {
         stream_mes: message_stream
     });
 
-
     window.onbeforeunload = function (e) {
         cookieStorage.save();
         radioPlayer.save_setting_to_cookie(true);
@@ -51,7 +50,7 @@ $(document).ready(function () {
 
     chat.setActivePage(chat.page_global);
 
-    document.getElementById('map').focus();
+    returnFocusToMap();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
         windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
@@ -243,9 +242,6 @@ var img1;
 var window_scaled_prc = 1.0;
 
 
-function returnFocusToMap() {
-    document.getElementById('map').focus();
-}
 
 
 $(window).resize(resizeWindowHandler);
