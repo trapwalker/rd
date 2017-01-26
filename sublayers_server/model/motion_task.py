@@ -175,11 +175,11 @@ class MotionTask(TaskSingleton):
         is_moving_before = state.is_moving
 
         # работа с метрикой
-        s = state.s(t=event.time)
-        owner.example.set_way(dvalue=s)
+        way = state.way(t=event.time)
+        owner.example.set_way(dvalue=way)
         if owner.example.k_way_exp is None:
             log.warning('Exp by riding rate is None: owner.example.k_way_exp')
-        owner.example.set_exp(dvalue=s * (owner.example.k_way_exp or 0), time=event.time)
+        owner.example.set_exp(dvalue=way * (owner.example.k_way_exp or 0), time=event.time)
 
         state.update(t=event.time, cc=event.cc, turn=event.turn, stop_a=event.stop_a)
         is_moving_after = state.is_moving
