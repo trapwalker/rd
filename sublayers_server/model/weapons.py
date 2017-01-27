@@ -74,7 +74,6 @@ class Weapon(Consumer):
 class WeaponAuto(Weapon):
     def __init__(self, dps, **kw):
         super(WeaponAuto, self).__init__(**kw)
-        self.targets = []
         self.dps_list = {}
         self.dps = dps
         self.is_enable = False
@@ -108,23 +107,22 @@ class WeaponAuto(Weapon):
             self._stop_fire_to_car(car=car, time=time)
 
     def restart_fire_to_car(self, car, time):
-        self._stop_fire_to_car(car, time=time)
-        self._start_fire_to_car(car, time=time)
+        pass
+        # self._stop_fire_to_car(car, time=time)
+        # self._start_fire_to_car(car, time=time)
 
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
-        # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
-        if car in self.targets:
-            log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+        if self.dps_list.get(car.id, None):
+            log.warning('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             if owner:
-                owner.logging_agent('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+                owner.logging_agent('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             log.debug(''.join(traceback.format_stack()))
             old_dps = self.dps_list.get(car.id, None)
             assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
 
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
-        self.targets.append(car)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
@@ -132,19 +130,17 @@ class WeaponAuto(Weapon):
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
-        assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
+        if not self.dps_list.get(car.id, None):
+            log.warning('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list time={}'.format(car, self.dps_list.keys(), time))
+            owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+            if owner:
+                owner.logging_agent('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list time={}'.format(car, self.dps_list.keys(), time))
+            log.debug(''.join(traceback.format_stack()))
+            return
 
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
-        self.targets.remove(car)
-        if car not in self.targets:
-            del self.dps_list[car.id]
-        else:
-            log.warning('Error: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
-            owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
-            if owner:
-                owner.logging_agent('Error: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
-            log.debug(''.join(traceback.format_stack()))
+        del self.dps_list[car.id]
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
 
@@ -154,10 +150,15 @@ class WeaponAuto(Weapon):
             self._start_fire_to_car(car=car, time=time)
 
     def on_stop(self, item, time):
+        if not self.is_started:
+            log.warning('second call on_stop')
+            return
         super(WeaponAuto, self).on_stop(item=item, time=time)
-        targets = self.targets[:]
-        for car in targets:
+        for car in self.sector.target_list:
             self._stop_fire_to_car(car=car, time=time)
+        # targets = self.targets[:]
+        # for car in targets:
+        #     self._stop_fire_to_car(car=car, time=time)
 
     def set_enable(self, time, enable):
         if self.is_enable == enable:
