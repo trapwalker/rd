@@ -637,7 +637,7 @@ class QuickUser(User):
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):
-        return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
+        return round((time - self.time_quick_game_start) / 10.0) + self.quick_game_kills * 30 + self.quick_game_bot_kills * 10
 
     def send_die_message(self, event, unit):
         self._add_quick_game_record(time=event.time)
