@@ -23,8 +23,10 @@ from mongoengine.fields import (
 
 
 class RegistryLinkField(BaseField):
-    # def __init__(self, **kwargs):
-    #     super(RegistryLinkField, self).__init__(**kwargs)
+    def __init__(self, document_type=None, **kwargs):
+        document_type = document_type or Node
+        super(RegistryLinkField, self).__init__(**kwargs)
+        self.document_type = document_type
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -33,8 +35,11 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
+        if value:
+            from sublayers_server.model.registry_me.reg import REG
+            return REG[value]
 
-        return super(RegistryLinkField, self).__get__(instance, owner)
+        #return super(RegistryLinkField, self).__get__(instance, owner)
 
     def to_mongo(self, document):
         if document is None:
@@ -52,10 +57,10 @@ class RegistryLinkField(BaseField):
             raise TypeError('Linked node type is not supported: {!r}'.format(document))
 
 
-    def to_python(self, value):
-        """Convert a MongoDB-compatible type to a Python type."""
-        # todo: realization
-        return value
+    # def to_python(self, value):
+    #     """Convert a MongoDB-compatible type to a Python type."""
+    #     # todo: realization
+    #     return value
 
     def prepare_query_value(self, op, value):
         if value is None:
@@ -63,25 +68,20 @@ class RegistryLinkField(BaseField):
         super(RegistryLinkField, self).prepare_query_value(op, value)
         return self.to_mongo(value)
 
-    def validate(self, value):
+    def validate(self, value, **kw):
 
-        if not isinstance(value, (self.document_type, DBRef)):
-            self.error('A ReferenceField only accepts DBRef or documents')
+        if isinstance(value, basestring):
+            # todo: validate registry URI
+            pass
 
-        if isinstance(value, Document) and value.id is None:
-            self.error('You can only reference documents once they have been '
-                       'saved to the database')
+        elif not isinstance(value, self.document_type):
+            self.error('A RegistryLinkField only accepts URI or Node ({})'.format(self.document_type))
 
-        if self.document_type._meta.get('abstract') and \
-                not isinstance(value, self.document_type):
-            self.error(
-                '%s is not an instance of abstract reference type %s' % (
-                    self.document_type._class_name)
-            )
+        if isinstance(value, Node) and value.uri is None:
+            self.error('You can only reference nodes once they has an URI')
 
     def lookup_member(self, member_name):
         return self.document_type._fields.get(member_name)
-
 
 
 class Node(EmbeddedDocument):
@@ -212,12 +212,10 @@ class B(Node):
 
 
 def test1():
-    r = Node(name='registry')
     a = A(name='_a', x=3, y=7)
     a2 = A(name='_a2', x=31, y=71, e=a)
 
     globals().update(locals())
-
 
 
 if __name__ == '__main__':
