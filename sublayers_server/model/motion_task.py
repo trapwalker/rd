@@ -60,9 +60,7 @@ class MotionTask(TaskSingleton):
 
         # Шаг 0: Прекратить ускорение/замедление
         if st.t_max is not None:
-            # log.debug('_calc_goto  cc=%s,  v0=%s', self.cc, st.v0)
-            # log.debug('============================== 0 %s %s', self.owner, time)
-            self.debug_comments.append('0 {} {}'.format(owner, time))
+            self.debug_comments.append('0 {} {} t_max={}'.format(owner, time, st.t_max))
             old_v0 = st.v0
             cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
             st.update(t=time, cc=cur_cc, stop_a=True)
@@ -71,8 +69,7 @@ class MotionTask(TaskSingleton):
 
         # Шаг 1: Синхронизация знаков сс и текущей скорости
         if (self.cc * st.v(time)) < 0:
-            # log.debug('============================== 1 %s %s', self.owner, time)
-            self.debug_comments.append('1 {} {}'.format(owner, time))
+            self.debug_comments.append('1 {} {} cc={}'.format(owner, time, self.cc))
             MotionTaskEvent(time=time, task=self, cc=0.0, turn=0.0).post()
             time = st.update(t=time, cc=0.0, turn=0.0)
             assert time is not None
@@ -80,29 +77,28 @@ class MotionTask(TaskSingleton):
         # Шаг 2: Если скорость 0 то необходимо разогнаться
         if abs(st.v(t=time)) < EPS:
             min_cc = min(abs(self.cc), abs(owner.params.get('p_cc').original * 0.1)) * (1 if self.cc >= 0.0 else -1)
-            # log.debug('============================== 2 %s %s', self.owner, time)
-            self.debug_comments.append('2 {} {}'.format(owner, time))
+            self.debug_comments.append('2 {} {} min_cc={}'.format(owner, time, min_cc))
             MotionTaskEvent(time=time, task=self, cc=min_cc, turn=0.0).post()
             time = st.update(t=time, cc=min_cc, turn=0.0)
             assert time is not None
 
-        # Шаг 3: Замедлиться при необходимости
-        if abs(st.get_max_v_by_cc(cc=self.cc) * abs(self.cc) - st.v0) > EPS:
-            # log.debug('============================== 3 %s %s', self.owner, time)
-            self.debug_comments.append('3 {} {}'.format(owner, time))
+        # Шаг 3: Достигнуть целевого сс
+        __target_v = st.get_max_v_by_cc(cc=self.cc) * abs(self.cc)
+        if abs(__target_v - st.v0) > EPS:
+            self.debug_comments.append('3 {} {}  st.v0={} __target_v={}'.format(owner, time, st.v0, __target_v))
             temp_t = time
             MotionTaskEvent(time=time, task=self, cc=self.cc, turn=0.0).post()
             time = st.update(t=time, cc=self.cc, turn=0.0)
             if time is None:
+                self.debug_comments.append('3.1 {} {} '.format(owner, time))
                 time = temp_t
 
         # Шаг 4: Расчет поворота
         st.update(t=time)
         assert st.t_max is None, 't_max={:.6f} t0={:.6f}  v0={}  a={}'.format(st.t_max, st.t0, st.v0, st.a)
         if st._need_turn(target_point=target_point):  # если мы не направлены в сторону
-            # log.debug('============================== 4 %s %s', self.owner, time)
-            self.debug_comments.append('4 {} {}'.format(owner, time))
             dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
+            self.debug_comments.append('4 {} {} dist={}'.format(owner, time, dist))
             # Если target_point слишком близко, то проехать некоторое расстояние вперед
             if dist <= 0.0:
                 v_dir = Point.polar(r=1, fi=st.fi0)
@@ -111,20 +107,22 @@ class MotionTask(TaskSingleton):
                 if target_v < EPS:
                     target_v = min(5.0, st.get_max_v_by_cc(self.cc) * self.cc)
                 target_cc = target_v / st.get_max_v_by_cc(self.cc)
-
+                self.debug_comments.append('4.0 {} {} target_v={} target_cc={} min_dist={}'.format(owner, time, target_v, target_cc, min_dist))
                 if abs(target_v - st.v(t=time)) > EPS:
-                    # log.debug('============================== 4.1 %s %s', self.owner, time)
-                    self.debug_comments.append('4.1 {} {}'.format(owner, time))
+                    self.debug_comments.append('4.1 {} {}  v0={}'.format(owner, time, st.v(t=time)))
+                    temp_t = time
                     MotionTaskEvent(time=time, task=self, cc=target_cc, turn=0.0).post()
                     time = st.update(t=time, cc=target_cc, turn=0.0)
+                    if time is None:
+                        self.debug_comments.append('4.1.1 {} {}'.format(owner, time))
+                        time = temp_t
 
                 # Если мы близко, то проехать 2 радиуса
                 st.update(t=time)
                 dist = st.p0.distance(target_point) - 2 * st.r(st.t0)
                 if not (dist > EPS):
                     dist = 4.1 * st.r(st.t0)  # расстояние которое надо проехать
-                    # log.debug('============================== 4.2 %s %s', self.owner, time)
-                    self.debug_comments.append('4.2 {} {}'.format(owner, time))
+                    self.debug_comments.append('4.2 {} {}  dist={}'.format(owner, time, dist))
                     MotionTaskEvent(time=time, task=self, turn=0.0).post()
                     st.update(t=time, turn=0.0)
                     time += abs(dist / st.v0)
@@ -199,7 +197,7 @@ class MotionTask(TaskSingleton):
             last_owner_position = self.owner.state.p0
             log.debug('on_perform_update_state error for %s %s cc=%s turn=%s tp=%s', self.owner, event.time, self.cc, self.turn, self.target_point)
             for line in self.debug_comments:
-                    log.debug(line)
+                log.debug(line)
             log.exception(e)
             if self.owner.main_agent:
                 self.owner.main_agent.logging_agent('on_perform_update_state error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
