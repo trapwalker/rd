@@ -286,16 +286,19 @@ class StandardLoginHandler(BaseSiteHandler):
             user.registration_status = 'register'
 
             # регистрация на форуме
-            # forum_id = yield self._forum_setup({
-            #     'user_email': email,
-            #     'username': username,
-            #     'user_password': password,
-            # })
-            # if not forum_id:
-            #     self.finish({'status': 'Ошибка регистрации на форуме.'})
-            #     log.info('User <{}> not registered on forum!'.format(username))
-            #     return
-            # self.set_cookie("forum_user", self._forum_cookie_setup(username))
+            email = user.auth.email
+            username = user.name
+            password = user.auth.raw_password
+            forum_id = yield self._forum_setup({
+                'user_email': email,
+                'username': username,
+                'user_password': password,
+            })
+            if not forum_id:
+                self.finish({'status': 'Ошибка регистрации на форуме.'})
+                log.info('User <{}> not registered on forum!'.format(username))
+                return
+            self.set_cookie("forum_user", self._forum_cookie_setup(username))
 
             yield user.save()
             self.finish({'status': 'success'})
