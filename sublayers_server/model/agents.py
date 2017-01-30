@@ -52,6 +52,7 @@ class Agent(Object):
         self.user = user
         self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
         self.server.agents_by_name[user.name] = self
+        self._logger = self.setup_logger()
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -78,6 +79,8 @@ class Agent(Object):
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
+
+        self.log.info('Agent Created %s', self)
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -106,9 +109,19 @@ class Agent(Object):
         # todo: ##realize ##quest
         pass
 
-    def log(self, time, text, dest, position=None):
-        # todo: ##realize ##quest
-        pass
+    @property
+    def log(self):
+        return self._logger
+
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        handler = logging.NullHandler()
+        l.setLevel(level)
+        l.addHandler(handler)
+        return l
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -197,6 +210,7 @@ class Agent(Object):
         return d
 
     def append_obj(self, obj, time):
+        self.log.info('append_obj {}'.format(obj))
         if obj not in self.slave_objects:
             self.slave_objects.append(obj)
             self.add_observer(observer=obj, time=time)
@@ -211,6 +225,7 @@ class Agent(Object):
             self.slave_objects.remove(obj)
 
     def append_car(self, car, time):  # specific
+        self.log.info('append_car {}'.format(car))
         if not self.car:
             self.car = car
             car.owner = self
@@ -227,6 +242,7 @@ class Agent(Object):
                 self.inventory.add_change_call_back(self.on_change_inventory_cb)
 
     def drop_car(self, car, time, drop_owner=True):
+        self.log.info('drop_car {}  time={}'.format(car, time))
         if car is self.car:
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь убран с карты
@@ -241,6 +257,7 @@ class Agent(Object):
                 self.inventory = None
 
     def on_connect(self, connection):
+        self.log.info('on_connect {}'.format(connection))
         self.connection = connection
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
@@ -259,6 +276,7 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
+        self.log.info('on_disconnect {}'.format(connection))
         timeout = options.disconnect_timeout
         log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
         # todo: Измерять длительность подключения ##defend ##realize
@@ -420,7 +438,7 @@ class Agent(Object):
 
     def on_kill(self, event, obj):
         # log.debug('%s:: on_kill(%s)', self, obj)
-        self.logging_agent('{}:: on_kill {}'.format(self, obj))
+        self.log.info('{}:: on_kill {}'.format(self, obj))
         # todo: party
         # todo: registry fix?
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
@@ -526,6 +544,7 @@ class Agent(Object):
 
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
+        self.log.info('on_die unit={}'.format(unit))
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
@@ -568,12 +587,10 @@ class Agent(Object):
         agent = self
         def callback(*kw):
             # log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
-            agent.logging_agent('teaching test for user <{!r}> changed: {!r}'.format(user.name, state))
+            agent.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
         user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
 
-    def logging_agent(self, message):
-        pass
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -600,9 +617,32 @@ class User(Agent):
         d['avatar_link'] = self.user.avatar_link
         return d
 
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
+
 
 class AI(Agent):
     pass
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/bot_{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
 
 
 class QuickUser(User):
@@ -657,7 +697,7 @@ class QuickUser(User):
     def init_example_car(self):
         user = self.user
         # log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
-        self.logging_agent('QuickGameUser Try get new car: {!r}  [car_index={}]'.format(user.name, user.car_index))
+        self.log.info('QuickGameUser Try get new car: {!r}  [car_index={}]'.format(user.name, user.car_index))
         # Создание "быстрой" машинки
         try:
             user.car_index = int(user.car_index)
@@ -760,44 +800,3 @@ class TeachingUser(QuickUser):
             self.car.params.get('p_armor').current -= 100
             self.car.restart_weapons(time=event.time)
             self.armory_shield_status = False
-
-
-class TeachingUserLog(TeachingUser):
-    def __init__(self, **kw):
-        super(TeachingUserLog, self).__init__(**kw)
-        logger_name = 'agent_{}'.format(self.user.name)
-        self.logger = self.setup_logger(logger_name=logger_name, log_file='log/agents/{}.log'.format(logger_name))
-        self.logging_agent('Agent Created')
-
-    def setup_logger(self, logger_name, log_file, level=logging.INFO):
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        formatter = logging.Formatter('%(asctime)s : %(message)s')
-        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
-        fileHandler.setFormatter(formatter)
-        l.setLevel(level)
-        l.addHandler(fileHandler)
-        return l
-
-    def logging_agent(self, message):
-        self.logger.info(message)
-
-    def on_connect(self, **kw):
-        super(TeachingUserLog, self).on_connect(**kw)
-        self.logging_agent('on_connect')
-
-    def on_disconnect(self, connection):
-        super(TeachingUserLog, self).on_disconnect(connection)
-        self.logging_agent('on_disconnect')
-
-    def append_car(self, **kw):
-        super(TeachingUserLog, self).append_car(**kw)
-        self.logging_agent('append_car {}'.format(self.car))
-
-    def drop_car(self, **kw):
-        super(TeachingUserLog, self).drop_car(**kw)
-        self.logging_agent('drop_car')
-
-    def on_die(self, **kw):
-        super(TeachingUserLog, self).on_die(**kw)
-        self.logging_agent('on_die')

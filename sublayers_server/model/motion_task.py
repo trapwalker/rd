@@ -200,7 +200,7 @@ class MotionTask(TaskSingleton):
                 log.debug(line)
             log.exception(e)
             if self.owner.main_agent:
-                self.owner.main_agent.logging_agent('on_perform_update_state error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
+                self.owner.main_agent.log.info('on_perform_update_state error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
             self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
             self.owner.state.p0 = last_owner_position
             self.owner.set_motion(cc=0.0, time=event.time)
@@ -233,7 +233,7 @@ class MotionTask(TaskSingleton):
                     log.debug(line)
                 log.exception(e)
                 if owner.main_agent:
-                    owner.main_agent.logging_agent('_calc_goto error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
+                    owner.main_agent.log.info('_calc_goto error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
                 self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
                 self.owner.state.p0 = owner_position
                 self.owner.set_motion(cc=0.0, time=event.time)

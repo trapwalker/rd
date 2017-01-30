@@ -580,13 +580,13 @@ class AgentTestEvent(Event):
 
             # Теперь проверки и логирование
             if len_weapons_t != len_sectors_t:
-                agent.logging_agent('Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
+                agent.log.info('Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
 
             if ((len_weapons_t > 0 or len_sectors_t > 0) and len_ch_item == 0) or ((len_weapons_t == 0 or len_sectors_t == 0) and len_ch_item > 0):
-                agent.logging_agent('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+                agent.log.info('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
 
             if len_ch_item:
                 if len_weapons_t == 0 or len_sectors_t == 0:
-                    agent.logging_agent('Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+                    agent.log.info('Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
 
-            # agent.logging_agent('Error! end!!! sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+            # agent.log.info('Error! end!!! sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
