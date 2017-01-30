@@ -12,21 +12,35 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 
+from sublayers_common.ctx_timer import Timer
+
+import six
 from uuid import uuid1 as get_uuid
+from collections import deque
 
 from mongoengine import connect, Document, EmbeddedDocument
+from mongoengine.base import get_document
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, DictField, EmbeddedDocumentField,
-    GenericReferenceField, BaseField,
+    GenericReferenceField, BaseField, MapField,
+    RECURSIVE_REFERENCE_CONSTANT,
 )
 
 
 class RegistryLinkField(BaseField):
     def __init__(self, document_type=None, **kwargs):
-        document_type = document_type or Node
         super(RegistryLinkField, self).__init__(**kwargs)
-        self.document_type = document_type
+        self.document_type_obj = document_type
+
+    @property
+    def document_type(self):
+        if isinstance(self.document_type_obj, six.string_types):
+            if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
+                self.document_type_obj = self.owner_document
+            else:
+                self.document_type_obj = get_document(self.document_type_obj)
+        return self.document_type_obj
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -35,10 +49,10 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        if value:
-            from sublayers_server.model.registry_me.reg import REG
+        if isinstance(value, six.string_types):
             return REG[value]
 
+        return value
         #return super(RegistryLinkField, self).__get__(instance, owner)
 
     def to_mongo(self, document):
@@ -91,7 +105,8 @@ class Node(EmbeddedDocument):
     uri = StringField(unique=True, null=True, not_inherited=True)
     #owner = ReferenceField(document_type='self', not_inherited=True)  # todo: make it property
     #parent = ReferenceField(document_type='Node', not_inherited=True)
-    parent = StringField()
+    parent = RegistryLinkField()
+    owner = RegistryLinkField()
     # todo: make `owner` property
 
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
@@ -193,6 +208,56 @@ class Node(EmbeddedDocument):
         )
         return d
 
+
+class Registry(Document):
+    tree = MapField(field=EmbeddedDocumentField(document_type=Node))
+
+    # def __init__(self, **kw):
+    #     super(Registry, self).__init__(**kw)
+
+    def _put(self, node, uri=None):
+        uri = uri or node.uri
+        added_node = self.tree.setdefault(uri, node)
+        assert added_node is node, (
+            'Registry already has same node: {added_node!r} by uri {uri!r}. Fail to put: {node!r}'.format(
+                **locals())
+        )
+
+    def get(self, uri, default=None):
+        # tod4o: support alternative path notations (list, relative, parametrized)
+        return self.tree.get(uri, default)
+
+    def __getitem__(self, uri):
+        # tod4o: support alternative path notations (list, relative, parametrized)
+        return self.tree[uri]
+
+    @classmethod
+    def load(cls, path, mongo_store=True):
+        all_nodes = []
+        root = None
+        stack = deque([(path, None)])
+        with Timer(name='registryFS loader', logger=log) as timer:
+            while stack:
+                pth, owner = stack.pop()
+                node = cls._load_node_from_fs(pth, owner)
+                if node:
+                    node.save()
+
+                    all_nodes.append(node)
+                    # node.to_cache()  # TODO: cache objects
+                    if owner is None:
+                        root = node  # todo: optimize
+                    for f in os.listdir(pth):
+                        next_path = os.path.join(pth, f)
+                        if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
+                            stack.append((next_path, node))
+
+        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
+        return root
+
+REG = Registry()
+
+
 ###############################################################################################
 
 class A(Node):
@@ -212,8 +277,14 @@ class B(Node):
 
 
 def test1():
-    a = A(name='_a', x=3, y=7)
-    a2 = A(name='_a2', x=31, y=71, e=a)
+    a   = A(name='_a'   , x= 3, y= 7,       uri='a',        )
+    aa  = A(name='_aa'  , x=31, y=71, e= a, uri='a/aa',     owner=a.uri, )
+    aaa = A(name='_aaa' , x=31, y=71, e=aa, uri='a/aa/aaa', owner=aa.uri,)
+    ab  = A(name='_ab'  , x=31, y=71, e= a, uri='a/ab',     owner=a.uri, )
+
+    map(REG._put, (v for v in locals().values() if isinstance(v, Node)))
+
+    print(aa.owner)
 
     globals().update(locals())
 
