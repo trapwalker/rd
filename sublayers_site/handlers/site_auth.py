@@ -286,9 +286,9 @@ class StandardLoginHandler(BaseSiteHandler):
             user.registration_status = 'register'
 
             # регистрация на форуме
-            email = user.auth.email
+            email = user.auth.standard.email
             username = user.name
-            password = user.auth.raw_password
+            password = user.auth.standard.raw_password
             forum_id = yield self._forum_setup({
                 'user_email': email,
                 'username': username,
