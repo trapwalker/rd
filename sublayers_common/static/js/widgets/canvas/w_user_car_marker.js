@@ -102,7 +102,7 @@ var WCanvasCarMarker = (function (_super) {
         this.last_direction = car_direction;
 
         ctx.save(); // для возврата от поворота
-        ctx.rotate(car_direction);
+        //ctx.rotate(car_direction);
         //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
         ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
         ctx.restore(); // Возврат после поворота
