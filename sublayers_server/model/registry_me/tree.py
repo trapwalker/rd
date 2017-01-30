@@ -105,8 +105,8 @@ class Node(EmbeddedDocument):
     uri = StringField(unique=True, null=True, not_inherited=True)
     #owner = ReferenceField(document_type='self', not_inherited=True)  # todo: make it property
     #parent = ReferenceField(document_type='Node', not_inherited=True)
-    parent = RegistryLinkField()
-    owner = RegistryLinkField()
+    parent = RegistryLinkField(not_inherited=True)
+    owner = RegistryLinkField(not_inherited=True)
     # todo: make `owner` property
 
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
@@ -118,6 +118,29 @@ class Node(EmbeddedDocument):
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
+
+    def __init__(self, name=None, owner=None, parent=None, uri=None, __autoregister=True, **kw):
+        if parent:
+            if not isinstance(parent, Node):
+                parent = REG[parent]
+
+            # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
+            _ingeritable = set(self._get_inheritable_field_names())
+            d = {k: v for k, v in parent._data.items() if k in _ingeritable}
+            d.update(kw)
+            kw = d
+
+        if owner:
+            if not isinstance(owner, Node):
+                owner = REG[owner]
+
+        if uri is None and name is not None:
+            uri = '/'.join((owner and owner.uri and [owner.uri] or []) + [name])
+
+        super(Node, self).__init__(name=name, owner=owner, parent=parent, uri=uri, **kw)
+
+        if uri and __autoregister:
+            REG._put(self)
 
     # def make_uri(self):
     #     owner = self.owner
@@ -277,12 +300,12 @@ class B(Node):
 
 
 def test1():
-    a   = A(name='_a'   , x= 3, y= 7,       uri='a',        )
-    aa  = A(name='_aa'  , x=31, y=71, e= a, uri='a/aa',     owner=a.uri, )
-    aaa = A(name='_aaa' , x=31, y=71, e=aa, uri='a/aa/aaa', owner=aa.uri,)
-    ab  = A(name='_ab'  , x=31, y=71, e= a, uri='a/ab',     owner=a.uri, )
+    a   = A(name='a'   , x= 3, y= 7,       )
+    aa  = A(name='aa'  , x=31, y=71, e= a, owner=a.uri, )
+    aaa = A(name='aaa' , x=31,       e=aa, owner=aa.uri, parent=aa,)
+    ab  = A(name='ab'  , x=31, y=71, e= a, owner=a.uri, )
 
-    map(REG._put, (v for v in locals().values() if isinstance(v, Node)))
+    #map(REG._put, (v for v in locals().values() if isinstance(v, Node)))
 
     print(aa.owner)
 
