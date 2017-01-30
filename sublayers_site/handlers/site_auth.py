@@ -289,6 +289,9 @@ class StandardLoginHandler(BaseSiteHandler):
             email = user.auth.standard.email
             username = user.name
             password = user.auth.standard.password
+            if isinstance(password, unicode):
+                password = password.encode('utf-8')
+
             forum_id = yield self._forum_setup({
                 'user_email': email,
                 'username': username,
