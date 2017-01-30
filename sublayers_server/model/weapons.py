@@ -79,6 +79,8 @@ class WeaponAuto(Weapon):
         self.is_enable = False
         self.current_dps = 0
 
+        self.___agent = self.owner.main_agent
+
     def as_dict(self, **kw):
         d = super(WeaponAuto, self).as_dict(**kw)
         d.update(
@@ -108,8 +110,8 @@ class WeaponAuto(Weapon):
 
     def restart_fire_to_car(self, car, time):
         pass
-        # self._stop_fire_to_car(car, time=time)
-        # self._start_fire_to_car(car, time=time)
+        self._stop_fire_to_car(car, time=time)
+        self._start_fire_to_car(car, time=time)
 
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
@@ -118,6 +120,9 @@ class WeaponAuto(Weapon):
             log.warning('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             if owner:
                 owner.logging_agent('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+            else:
+                log.warning('Weapon Owner is NONE: agent= {} agent.car={}'.format(self.___agent, self.___agent.car))
+
             log.debug(''.join(traceback.format_stack()))
             old_dps = self.dps_list.get(car.id, None)
             assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
@@ -131,10 +136,12 @@ class WeaponAuto(Weapon):
 
     def _stop_fire_to_car(self, car, time):
         if not self.dps_list.get(car.id, None):
-            log.warning('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list time={}'.format(car, self.dps_list.keys(), time))
             owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+            log.warning('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list weapon_owner={} weapon_car=  car_owner={}  time={}'.format(car, self.dps_list.keys(), owner, self.owner, car.main_agent, time))
             if owner:
                 owner.logging_agent('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list time={}'.format(car, self.dps_list.keys(), time))
+            else:
+                log.warning('Weapon Owner is NONE: agent= {} agent.car={}'.format(self.___agent, self.___agent.car))
             log.debug(''.join(traceback.format_stack()))
             return
 
