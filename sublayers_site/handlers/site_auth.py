@@ -295,15 +295,15 @@ class StandardLoginHandler(BaseSiteHandler):
             if isinstance(password, unicode):
                 password = password.encode('utf-8')
 
-            forum_id = yield self._forum_setup({
-                'user_email': email,
-                'username': username,
-                'user_password': password,
-            })
-            if not forum_id:
-                self.finish({'status': 'Ошибка регистрации на форуме.'})
-                log.info('User <{}> not registered on forum!'.format(username))
-                return
+            # forum_id = yield self._forum_setup({
+            #     'user_email': email,
+            #     'username': username,
+            #     'user_password': password,
+            # })
+            # if not forum_id:
+            #     self.finish({'status': 'Ошибка регистрации на форуме.'})
+            #     log.info('User <{}> not registered on forum!'.format(username))
+            #     return
             self.set_cookie("forum_user", self._forum_cookie_setup(username))
 
             yield user.save()
