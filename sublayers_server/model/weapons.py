@@ -102,9 +102,10 @@ class WeaponAuto(Weapon):
                         self.start(time=time)
 
     def del_car(self, car, time):
-        if self.is_started:
+        if self.is_started or self.is_call_start:
             if len(self.sector.target_list) == 0:
                 self.stop(time=time)
+        if self.is_started:
             self._stop_fire_to_car(car=car, time=time)
 
     def restart_fire_to_car(self, car, time):
