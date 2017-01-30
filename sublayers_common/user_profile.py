@@ -23,7 +23,6 @@ class User(Document):
         class AuthStandard(Document):
             email = StringField()
             password = StringField()
-            raw_password = StringField()  # password: Временное решение! переделать регистрацию на форуме, тогда будет хорошо!
 
             def __init__(self, raw_password=None, **kw):
                 Document.__init__(self, **kw)
@@ -35,7 +34,6 @@ class User(Document):
 
             def set_password(self, new_password):
                 self.password = hash_pass(new_password)
-                self.raw_password = new_password
 
         standard = EmbeddedDocumentField(AuthStandard, default=AuthStandard)
         # todo: add social auth attributes
