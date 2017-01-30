@@ -29,6 +29,9 @@ class LogoutHandler(BaseSiteHandler):
     def post(self):
         clear_all_cookie(self)
 
+    def get(self):
+        clear_all_cookie(self)
+        self.redirect('/')
 
 # class BaseLoginHandler(BaseSiteHandler):
 #     def login_error_redirect(self, doseq=0, **kw):
@@ -323,3 +326,28 @@ class StandardLoginHandler(BaseSiteHandler):
         elif user.registration_status == 'chip':
             user.registration_status = 'settings'
             yield user.save()
+
+
+class RegisterOldUsersOnForum(StandardLoginHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        users = yield User.objects.filter({}).find_all()
+        count_regs = 0
+        for user in users:
+            # регистрация на форуме
+            email = user.auth.standard.email
+            username = user.name
+            password = user.auth.standard.password
+            if isinstance(password, unicode):
+                password = password.encode('utf-8')
+
+            forum_id = yield self._forum_setup({
+                'user_email': email,
+                'username': username,
+                'user_password': password,
+            })
+            if forum_id:
+                self.write("{}  register<br>".format(str(user.name)))
+                count_regs += 1
+
+        self.finish('done! {} users registered on forum'.format(count_regs))
