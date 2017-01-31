@@ -567,8 +567,6 @@ class Consumer(object):
 
     def use(self, time):
         if self.item is not None:
-
-
             self.item.change(consumer=self, dv=self.dv, ddvs=None, time=time)
             self.on_use(time=time)
 
