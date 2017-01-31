@@ -296,8 +296,6 @@ class ItemTask(TaskSingleton):
         self.dv = dv
         self.ddvs = ddvs
         self.consumer = consumer
-        # assert (((consumer is None) and (action is None)) or ((consumer is not None) and (action is not None))) and \
-        #        ((action is None) or (action in ['on_use', 'on_start', 'on_stop'])), 'consumer = {}, action = {}'.format(consumer, action)
         self.action = action
 
     def on_perform(self, event):
@@ -309,7 +307,6 @@ class ItemTask(TaskSingleton):
         item = self.owner
         time = event.time
         t_empty = None
-        #log.debug('ItemTask:: on_start --> item = %s (%s, %s)', item, self.dv, self.ddvs)
         if (self.dv is not None) and (self.dv < 0.0) and (item.val(t=time) < -self.dv):
             # отправить потребителю месагу о том, что итем кончился
             if self.consumer is not None:
@@ -366,7 +363,6 @@ class ItemState(object):
 
     @assert_time_in_items
     def update_item_state(self, t=None, dt=0.0, dv=None, ddvs=None):
-        # log.debug('ItemState<%s>.update_item_state() t=%s, dt=%s, dv=%s, ddvs=%s  cur_dvs=%s', self._id, t, dt, dv, ddvs, self.dvs)
         self._fix_item_state(t=t, dt=dt)
         self.t_empty = None
         if dv:
@@ -525,11 +521,6 @@ class ItemState(object):
         if (consumer is None) or (consumer in self.consumers):
             if not self.limbo:
                 ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
-            else:
-                pass
-                # assert action == 'on_stop'
-                # if consumer:
-                #     consumer.on_stop(time=time)
 
 
 class Consumer(object):
@@ -567,8 +558,7 @@ class Consumer(object):
 
     def use(self, time):
         if self.item is not None:
-            self.item.change(consumer=self, dv=self.dv, ddvs=None, time=time)
-            self.on_use(time=time)
+            self.item.change(consumer=self, dv=self.dv, ddvs=None, time=time, action="on_use")
 
     def start(self, time):
         assert not self.is_started
@@ -614,9 +604,9 @@ class Consumer(object):
             if started:
                 self.start(time=time)
 
-            # # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
-            # if action == 'on_use':  # так устроено, страдаем все
-            #     self.use(time=time)
+            # если была попытка списать разово итем, но не вышло, то снова пытаемся списать из нового итема
+            if action == 'on_use':  # так устроено, страдаем все
+                self.use(time=time)
 
     def on_empty_item(self, item, time, action):
         new_item = item.inventory.get_item_by_cls(balance_cls_list=[item.example.parent], time=time, min_value=-self.dv)

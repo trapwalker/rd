@@ -110,17 +110,7 @@ class WeaponAuto(Weapon):
 
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
-        owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
-        if self.dps_list.get(car.id, None):
-            log.warning('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
-            if owner:
-                owner.logging_agent('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
-            else:
-                log.warning('Weapon Owner is NONE: agent= {} agent.car={}'.format(self.___agent, self.___agent.car))
-            log.debug(''.join(traceback.format_stack()))
-            old_dps = self.dps_list.get(car.id, None)
-            assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
-            return
+        assert car.id not in self.dps_list
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
@@ -129,15 +119,7 @@ class WeaponAuto(Weapon):
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
-        if not self.dps_list.get(car.id, None):
-            owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
-            log.warning('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list weapon_owner={} weapon_car=  car_owner={}  time={}'.format(car, self.dps_list.keys(), owner, self.owner, car.main_agent, time))
-            if owner:
-                owner.logging_agent('Error: Delete car<{}> from dps_list<{}>, but car not in dps_list time={}'.format(car, self.dps_list.keys(), time))
-            else:
-                log.warning('Weapon Owner is NONE: agent= {} agent.car={}'.format(self.___agent, self.___agent.car))
-            log.debug(''.join(traceback.format_stack()))
-            return
+        assert car.id in self.dps_list
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
         del self.dps_list[car.id]
