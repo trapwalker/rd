@@ -12,5 +12,5 @@ class MenuCharacterHandler(BaseHandler):
         if self.current_user:
             agent = self.application.srv.agents.get(str(self.current_user._id), None)
             if agent:
-                agent.logging_agent('open character_window')
+                agent.log.info('open character_window')
         self.render("menu/character_window.html")
