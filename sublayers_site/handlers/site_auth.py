@@ -351,3 +351,13 @@ class RegisterOldUsersOnForum(StandardLoginHandler):
                 count_regs += 1
 
         self.finish('done! {} users registered on forum'.format(count_regs))
+
+
+class SetForumUserAuth(StandardLoginHandler):
+    def get(self):
+        user = self.current_user
+        if user and user.name:
+            self._forum_cookie_setup(user.name)
+            self.finish("OK")
+        else:
+            self.finish("Not auth")

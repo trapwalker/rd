@@ -27,7 +27,7 @@ from tornado.options import options
 import settings
 
 import sublayers_site.handlers.site_auth
-from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler, RegisterOldUsersOnForum
+from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler, RegisterOldUsersOnForum, SetForumUserAuth
 from sublayers_site.handlers.site import SiteMainHandler, GetUserLocaleJSONHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
@@ -70,6 +70,7 @@ class Application(BaseApplication):
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),
             (r"/site_api/audio1", GetAudioTest),
             (r"/site_api/forum_reg", RegisterOldUsersOnForum),
+            (r"/site_api/forum_auth", SetForumUserAuth),
         ])
 
         tornado.ioloop.IOLoop.instance().add_callback(self.on_init_site_structure)
