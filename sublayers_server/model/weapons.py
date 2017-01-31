@@ -150,7 +150,7 @@ class WeaponAuto(Weapon):
                 owner.log.info('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car not in dps_list time={}'.format(car, self.targets, time))
             return
 
-        if car not in self.targets and self.dps_list.get(car.id, None):
+        if car not in self.targets and self.dps_list.get(car.id, None) is not None:
             log.debug(''.join(traceback.format_stack()))
             log.warning('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car in dps_list time={}'.format(car, self.targets, time))
             if owner:
