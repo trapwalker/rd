@@ -318,7 +318,7 @@ class ItemTask(TaskSingleton):
             item.on_update(time=time)
             if self.action is not None:
                 # отправить сообщение consumer'у с учётом экшена
-                self.consumer.__getattribute__(self.action)(item=item, time=time)
+                self.consumer.__getattribute__(self.action)(time=time)
 
         if t_empty is not None:
             if t_empty > time:
