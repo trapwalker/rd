@@ -13,7 +13,7 @@ class MenuCarHandler(BaseHandler):
         if self.current_user:
             agent = self.application.srv.agents.get(str(self.current_user._id), None)
             if agent:
-                agent.logging_agent('open car_window')
+                agent.log.info('open car_window')
         self.set_header("Access-Control-Allow-Origin", "*")
         self.render("menu/car_window.html")
 
@@ -45,7 +45,7 @@ class PersonInfoHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        agent.logging_agent('open PersonInfoHandler for person_name={}'.format(person_name))
+        agent.log.info('open PersonInfoHandler for person_name={}'.format(person_name))
         if mode == 'city':
             self.render("person_info_chat.html", agent=person)
         elif mode == 'map':

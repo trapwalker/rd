@@ -18,7 +18,7 @@ class MainInventoryHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        agent.logging_agent('open inventory_info_window car_id={}'.format(agent.api.car.uid))
+        agent.log.info('open inventory_info_window car_id={}'.format(agent.api.car.uid))
         self.render("inventory_info_window.html", car_id=agent.api.car.uid, car=agent.api.car)
 
 
@@ -34,7 +34,7 @@ class ContainerInventoryHandler(BaseHandler):
         container = None
         if container_id:
             container = self.application.srv.objects.get(long(container_id))
-        agent.logging_agent('open container container_id={}'.format(container_id))
+        agent.log.info('open container container_id={}'.format(container_id))
         if isinstance(container, POIContainer) and container.is_available(agent=agent):
             self.render("inventory_container_window.html", car_id=agent.api.car.uid, container_id=container_id)
 
@@ -67,7 +67,7 @@ class BarterInventoryHandler(BaseHandler):
             other_table_id = barter.initiator_table_obj.uid
 
         barter_name = '{!r} <=> {!r}'.format(barter.initiator.print_login(), barter.recipient.print_login())  # todo: use unicode
-        agent.logging_agent('open barter barter_name={!r}'.format(barter_name))
+        agent.log.info('open barter barter_name={!r}'.format(barter_name))
         if agent.current_location is None:
             self.render("inventory_barter_window.html", agent=agent, inv_id=inv_id, barter=barter,
                         my_table_id=my_table_id, other_table_id=other_table_id, barter_name=barter_name, in_location=False)
