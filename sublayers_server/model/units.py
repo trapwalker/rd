@@ -547,14 +547,14 @@ class Bot(Mobile):
             self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
 
         # Включение стартовой неуязвимости:
-        # if self.example.start_shield_time > 0:
-        #     self.params.get('p_radiation_armor').current += 100
-        #     self.params.get('p_armor').current += 100
-        #     self.restart_weapons(time=event.time)
-        #     # todo: use event_deco
-        #     self.start_shield_event = Event(server=self.server, time=event.time + self.example.start_shield_time,
-        #                                     callback_after=self.start_shield_off)
-        #     self.start_shield_event.post()
+        if self.example.start_shield_time > 0:
+            self.params.get('p_radiation_armor').current += 100
+            self.params.get('p_armor').current += 100
+            self.restart_weapons(time=event.time)
+            # todo: use event_deco
+            self.start_shield_event = Event(server=self.server, time=event.time + self.example.start_shield_time,
+                                            callback_after=self.start_shield_off)
+            self.start_shield_event.post()
 
     def on_fire_discharge(self, event):
         super(Bot, self).on_fire_discharge(event=event)

@@ -142,6 +142,9 @@ class FireSector(Sector):
 
     def add_car(self, target, time):
         if target not in self.target_list:
+            owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
+            if owner:
+                owner.log.info('Sector {} Add Target {} car_owner={}  time={}'.format(self, target, owner, time))
             self.target_list.append(target)
             for w in self.weapon_list:
                 if isinstance(w, WeaponAuto):

@@ -111,10 +111,6 @@ class WeaponAuto(Weapon):
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
         assert car.id not in self.dps_list
-
-        if owner:
-            owner.log.info('_start_fire_to_car: car<{}> time={}'.format(car, time))
-
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
