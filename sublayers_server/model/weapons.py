@@ -117,7 +117,7 @@ class WeaponAuto(Weapon):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
 
         if owner:
-            owner.log.info('_start_fire_to_car: car<{}> but car not in dps_list time={}'.format(car, time))
+            owner.log.info('_start_fire_to_car: car<{}> time={}'.format(car, time))
 
         # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
         if car in self.targets:
@@ -141,7 +141,7 @@ class WeaponAuto(Weapon):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
 
         if owner:
-            owner.log.info('_stop_fire_to_car: car<{}> but car not in dps_list time={}'.format(car, time))
+            owner.log.info('_stop_fire_to_car: car<{}> time={}'.format(car, time))
 
         if car not in self.targets and self.dps_list.get(car.id, None) is None:
             log.debug(''.join(traceback.format_stack()))
