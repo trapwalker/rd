@@ -547,7 +547,7 @@ class StrategyModeInfoObjectsEvent(Event):
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
 
-
+# данный эвент сейчас не доступен !
 class AgentTestEvent(Event):
     def __init__(self, agent, **kw):
         super(AgentTestEvent, self).__init__(server=agent.server, **kw)
