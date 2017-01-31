@@ -78,7 +78,6 @@ class WeaponAuto(Weapon):
         self.dps = dps
         self.is_enable = False
         self.current_dps = 0
-
         self.___agent = self.owner.main_agent
 
     def as_dict(self, **kw):
@@ -94,23 +93,18 @@ class WeaponAuto(Weapon):
 
     def add_car(self, car, time):
         if self.is_enable:  # если оружию разрешено вести стрельбу
-            if not self.is_call_start:  # если ещё не вызывался старт ведения стрельбы
-                if not self.is_started:  # если стрельба ещё не началась
-                    self.start(time=time)  # вызвать начало стрельбы по всем таргетам в таргет листе
-                else:
-                    self._start_fire_to_car(car=car, time=time)  # вызвать начало стрельбы по данному таргету
-                    if self.is_call_stop:
-                        self.start(time=time)
+            if self.is_started:  # если стрельба идёт
+                self._start_fire_to_car(car=car, time=time)  # вызвать начало стрельбы по данному таргету
+            else:
+                self.start(time=time)  # вызвать начало стрельбы по всем таргетам в таргет листе
 
     def del_car(self, car, time):
-        if self.is_started or self.is_call_start:
-            if len(self.sector.target_list) == 0:
-                self.stop(time=time)
         if self.is_started:
             self._stop_fire_to_car(car=car, time=time)
+            if len(self.sector.target_list) == 0:
+                self.stop(time=time)
 
     def restart_fire_to_car(self, car, time):
-        pass
         self._stop_fire_to_car(car, time=time)
         self._start_fire_to_car(car, time=time)
 
@@ -123,11 +117,10 @@ class WeaponAuto(Weapon):
                 owner.logging_agent('Error ! {} in weapon.dps_list weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             else:
                 log.warning('Weapon Owner is NONE: agent= {} agent.car={}'.format(self.___agent, self.___agent.car))
-
             log.debug(''.join(traceback.format_stack()))
             old_dps = self.dps_list.get(car.id, None)
             assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
-
+            return
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
@@ -145,28 +138,21 @@ class WeaponAuto(Weapon):
                 log.warning('Weapon Owner is NONE: agent= {} agent.car={}'.format(self.___agent, self.___agent.car))
             log.debug(''.join(traceback.format_stack()))
             return
-
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
         del self.dps_list[car.id]
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
 
-    def on_start(self, item, time):
-        super(WeaponAuto, self).on_start(item=item, time=time)
+    def on_start(self, time):
+        super(WeaponAuto, self).on_start(time=time)
         for car in self.sector.target_list:
             self._start_fire_to_car(car=car, time=time)
 
-    def on_stop(self, item, time):
-        if not self.is_started:
-            log.warning('second call on_stop')
-            return
-        super(WeaponAuto, self).on_stop(item=item, time=time)
+    def on_stop(self, time):
+        super(WeaponAuto, self).on_stop(time=time)
         for car in self.sector.target_list:
             self._stop_fire_to_car(car=car, time=time)
-        # targets = self.targets[:]
-        # for car in targets:
-        #     self._stop_fire_to_car(car=car, time=time)
 
     def set_enable(self, time, enable):
         if self.is_enable == enable:
@@ -220,8 +206,8 @@ class WeaponDischarge(Weapon):
         if self.can_fire(time=time):
             self.use(time=time)
 
-    def on_use(self, item, time):
-        super(WeaponDischarge, self).on_use(item=item, time=time)
+    def on_use(self, time):
+        super(WeaponDischarge, self).on_use(time=time)
         if self.owner.limbo or not self.owner.is_alive:
             log.debug('Rare Situation! {} try fire_discharge in limbo'.format(self.owner))
             return
