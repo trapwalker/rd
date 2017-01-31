@@ -115,11 +115,15 @@ class WeaponAuto(Weapon):
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+
+        if owner:
+            owner.log.info('_start_fire_to_car: car<{}> but car not in dps_list time={}'.format(car, time))
+
         # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
         if car in self.targets:
             log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             if owner:
-                owner.logging_agent('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+                owner.log.info('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             log.debug(''.join(traceback.format_stack()))
             old_dps = self.dps_list.get(car.id, None)
             assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
@@ -133,7 +137,27 @@ class WeaponAuto(Weapon):
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
-        assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
+        # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
+        owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+
+        if owner:
+            owner.log.info('_stop_fire_to_car: car<{}> but car not in dps_list time={}'.format(car, time))
+
+        if car not in self.targets and self.dps_list.get(car.id, None) is None:
+            log.debug(''.join(traceback.format_stack()))
+            log.warning('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car not in dps_list time={}'.format(car, self.targets, time))
+            if owner:
+                owner.log.info('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car not in dps_list time={}'.format(car, self.targets, time))
+            return
+
+        if car not in self.targets and self.dps_list.get(car.id, None):
+            log.debug(''.join(traceback.format_stack()))
+            log.warning('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car in dps_list time={}'.format(car, self.targets, time))
+            if owner:
+                owner.log.info('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car in dps_list time={}'.format(car, self.targets, time))
+            if not car.is_died(time=time):  # Просто снять дамаг
+                car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
+            return
 
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
@@ -141,10 +165,9 @@ class WeaponAuto(Weapon):
         if car not in self.targets:
             del self.dps_list[car.id]
         else:
-            log.warning('Error: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
-            owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+            log.warning('Error _stop_fire_to_car: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
             if owner:
-                owner.logging_agent('Error: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
+                owner.log.info('Error _stop_fire_to_car: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
             log.debug(''.join(traceback.format_stack()))
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()

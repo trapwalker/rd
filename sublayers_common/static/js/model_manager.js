@@ -69,11 +69,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser" || data.cls === "TeachingUserLog") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser" || data.cls === "TeachingUserLog"));
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
                 return ownerList.add(owner);
             }
         return null;
@@ -382,11 +382,11 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser" || event.agent.cls === "TeachingUserLog") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
-            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser") || (event.agent.cls === "TeachingUserLog");
+            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser");
 
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
