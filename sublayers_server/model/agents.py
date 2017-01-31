@@ -734,7 +734,7 @@ class TeachingUser(QuickUser):
             self.create_teaching_quest_map(time=time)
 
         # Тест Авто Стрельбы
-        AgentTestEvent(agent=self, time=time + 1.0).post()
+        # AgentTestEvent(agent=self, time=time + 1.0).post()
 
     def on_connect(self, **kw):
         super(TeachingUser, self).on_connect(**kw)
