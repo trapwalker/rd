@@ -121,9 +121,7 @@ class FireSector(Sector):
             self.out_car(target=target, time=time)
         for target in target_list:
             if self._test_target_in_sector(target=target, time=time):
-                if target not in self.target_list:
-                    self.target_list.append(target)
-                    self._fire_auto_start(target=target, time=time)
+                self.add_car(target=target, time=time)
             else:
                 self.out_car(target=target, time=time)
 
@@ -154,8 +152,19 @@ class FireSector(Sector):
 
     def out_car(self, target, time):
         if target in self.target_list:
+            owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
+            if owner:
+                owner.log.info('Sector {} Del Target {} car_owner={}  time={}'.format(self, target, owner, time))
             self.target_list.remove(target)
             self._fire_auto_end(target=target, time=time)
+
+    def add_car(self, target, time):
+        if target not in self.target_list:
+            owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
+            if owner:
+                owner.log.info('Sector {} Add Target {} car_owner={}  time={}'.format(self, target, owner, time))
+            self.target_list.append(target)
+            self._fire_auto_start(target=target, time=time)
 
     def can_discharge_fire(self, time):
         for wp in self.weapon_list:

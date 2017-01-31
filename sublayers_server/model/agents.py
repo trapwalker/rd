@@ -632,17 +632,17 @@ class User(Agent):
 
 class AI(Agent):
     pass
-    def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self.user.name)
-        log_file = 'log/agents/bot_{}.log'.format(logger_name)
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        formatter = logging.Formatter('%(asctime)s : %(message)s')
-        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
-        fileHandler.setFormatter(formatter)
-        l.setLevel(level)
-        l.addHandler(fileHandler)
-        return l
+    # def setup_logger(self, level=logging.INFO):
+    #     logger_name = 'agent_{}'.format(self.user.name)
+    #     log_file = 'log/agents/bot_{}.log'.format(logger_name)
+    #     l = logging.getLogger(logger_name)
+    #     l.propagate = 0
+    #     formatter = logging.Formatter('%(asctime)s : %(message)s')
+    #     fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+    #     fileHandler.setFormatter(formatter)
+    #     l.setLevel(level)
+    #     l.addHandler(fileHandler)
+    #     return l
 
 
 class QuickUser(User):
@@ -734,7 +734,7 @@ class TeachingUser(QuickUser):
             self.create_teaching_quest_map(time=time)
 
         # Тест Авто Стрельбы
-        AgentTestEvent(agent=self, time=time + 1.0).post()
+        # AgentTestEvent(agent=self, time=time + 1.0).post()
 
     def on_connect(self, **kw):
         super(TeachingUser, self).on_connect(**kw)
