@@ -71,6 +71,7 @@ var GameAudioObject = (function () {
         try {
             offset = offset === undefined ? null : offset;
             var t = context.currentTime + (time === undefined ? 0 : time);
+            duration = duration ? duration : undefined;
             if (typeof(current_source.start) == 'function') // Если это нормальный браузер
                 current_source.start(t, offset, duration);
             else // Если это сафари

@@ -471,6 +471,8 @@ var MapManager = (function(_super) {
         mapManager.inZoomChange = true;
         mapManager.oldZoomForCalcZoom = map.getZoom();
         mapManager.startZoomChangeTime = clock.getCurrentTime();
+
+        audioManager.play('zoom_01', 0, 0.1, null, false, 0, null, 0.5);
     };
 
     MapManager.prototype.onZoomEnd = function (event) {

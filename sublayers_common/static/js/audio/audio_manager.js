@@ -14,13 +14,13 @@ var AudioManager = (function () {
     *  offset - смещение от начала звука
     *  duration - продолжительность проигрывания
     * */
-    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration) {
+    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate) {
         var audio_obj = this.get(name);
         if (!audio_obj) {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
-        return audio_obj.play(time, gain ? gain : 1.0, callback, loop, offset, duration);
+        return audio_obj.play(time, gain ? gain : 1.0, callback, loop, offset, duration, playbackRate);
     };
 
     AudioManager.prototype.stop = function (name, time, play_object) {
