@@ -125,5 +125,16 @@ var GameAudioObject = (function () {
         return true;
     };
 
+    GameAudioObject.prototype.general_gain = function (old_value) {
+        for (var key in this.current_objects_playing)
+            if (this.current_objects_playing.hasOwnProperty(key)) {
+                var value = this.current_objects_playing[key].gain_node.gain.value;
+                value /= old_value * this.start_relative_gain;
+                this.gain(this.current_objects_playing[key].gain_node, value);
+            }
+        return true;
+    };
+
     return GameAudioObject;
 })();
+

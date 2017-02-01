@@ -29,17 +29,18 @@ var AudioManager = (function () {
         return audio_obj.stop(time, play_object);
     };
 
-    AudioManager.prototype.gain = function (name, value, play_object) {
+    AudioManager.prototype.set_gain = function (name, value, play_object) {
         var audio_obj = this.get(name);
         if (!audio_obj) return false;
         return audio_obj.gain(value, play_object);
     };
 
-    AudioManager.prototype.general_gain = function (value) {
+    AudioManager.prototype.set_general_gain = function (value) {
+        var old_gain = this.general_gain;
         this.general_gain = value;
         for (var key in this.audio_objects)
             if (this.audio_objects.hasOwnProperty(key))
-                this.audio_objects[key].general_gain(value);
+                this.audio_objects[key].general_gain(old_gain);
     };
 
     // Загрузка
@@ -79,7 +80,7 @@ function init_sound() {
     audioManager.load('engine_02', {url: '/static/audio/test/engine_02.wav'}, 1.0);
     audioManager.load('engine_03', {url: '/static/audio/test/engine_03.wav'}, 1.0);
     audioManager.load('engine_04', {url: '/static/audio/test/engine_04.wav'}, 1.0);
-    audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, 1.0);
+    audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, 0.3);
 
     audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, 1.0);
     audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, 1.0);
