@@ -75,12 +75,14 @@ var WCanvasCarMarker = (function (_super) {
 
             var diff_vec = subVector(car_pos_real, this.last_position);
             var diff_vec_abs = diff_vec.abs();
-            if (diff_vec_abs > ConstMaxLengthToMoveMarker) {  // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
-                car_pos = summVector(this.last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs))
-            }
-            else {
+
+            // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
+            // Но если сильно отстаёт или не отстаёт, то сдвинуть сразу
+            if (diff_vec_abs > ConstMaxLengthToMoveMarker && diff_vec_abs < 3 * ConstMaxLengthToMoveMarker)
+                car_pos = summVector(this.last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs));
+            else
                 car_pos = car_pos_real;
-            }
+
             this.last_position = car_pos;
             var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
             ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
@@ -100,7 +102,7 @@ var WCanvasCarMarker = (function (_super) {
         this.last_direction = car_direction;
 
         ctx.save(); // для возврата от поворота
-        ctx.rotate(car_direction);
+        //ctx.rotate(car_direction);
         //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
         ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
         ctx.restore(); // Возврат после поворота

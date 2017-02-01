@@ -560,6 +560,10 @@ var ViewMessengerGlass = (function () {
         }
     };
 
+    ViewMessengerGlass.prototype.get_current_input = function () {
+        return (chat.chat_visible || chat.in_town) ? chat.main_input : chat.compact_input;
+    };
+
     // Удаление произвольной чат-комнаты
     ViewMessengerGlass.prototype.removeChat = function (room_jid) {
         //console.log('ViewMessengerGlass.prototype.removeChat');
@@ -618,7 +622,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.sendMessage = function() {
         //console.log('ViewMessengerGlass.prototype.sendMessage');
 
-        var jq_input = (chat.chat_visible || chat.in_town) ? chat.main_input : chat.compact_input;
+        var jq_input = chat.get_current_input();
 
         var str = jq_input.val();
         if (str.length) {
@@ -652,10 +656,13 @@ var ViewMessengerGlass = (function () {
                 else
                     console.warn('Вы не можете отправить сообщение в неактивный чат');
             }
-        }
 
-        //фокус на поле ввода
-        jq_input.focus();
+            //фокус на поле ввода
+            jq_input.focus();
+        }
+        else {
+            returnFocusToMap();
+        }
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
@@ -966,7 +973,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.btnHideReaction = function(event) {
         var self = event.data.self;
         self.changeVisible(!self.chat_visible);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     ViewMessengerGlass.prototype.setVisible = function (aVisible) {

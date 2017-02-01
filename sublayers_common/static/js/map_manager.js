@@ -69,6 +69,12 @@ function sendRandGoTo(){
 function onKeyDownMap(event) {
     //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
+        case 27:
+            windowTemplateManager.closeActiveWindow();
+            break;
+        case 13:
+            chat.get_current_input().focus();
+            break;
         case 37:
             if (!pressedArrowLeft) {
                 pressedArrowLeft = true;
@@ -136,12 +142,8 @@ function onKeyDownMap(event) {
             */
             break;
         case 81:  // Q
-            /*
-            clientManager.sendFireAutoEnable('front', false);
-            clientManager.sendFireAutoEnable('back', false);
-            clientManager.sendFireAutoEnable('right', false);
-            clientManager.sendFireAutoEnable('left', false);
-            */
+            if (wFireController && wFireController.allFire)
+                wFireController.allFire.click();
             break;
         case 77:  // M
             if (map.dragging._enabled)
@@ -154,18 +156,22 @@ function onKeyDownMap(event) {
             //console.log('Was pressed: Z');
             break;
         case 49:  // 1
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(1, user.userCar.ID);
             wFireController.signalQuickConsumerPanel(1);
             break;
         case 50:  // 2
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(2, user.userCar.ID);
             wFireController.signalQuickConsumerPanel(2);
             break;
         case 51:  // 3
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(3, user.userCar.ID);
             wFireController.signalQuickConsumerPanel(3);
             break;
         case 52:  // 4
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(4, user.userCar.ID);
             wFireController.signalQuickConsumerPanel(4);
             break;
@@ -215,6 +221,9 @@ function TileLaterSet() {
         map.removeLayer(mapManager.tileLayer);
 }
 
+function returnFocusToMap() {
+    document.getElementById('map').focus();
+}
 
 var MapManager = (function(_super) {
     __extends(MapManager, _super);

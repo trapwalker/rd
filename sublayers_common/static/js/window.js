@@ -105,9 +105,11 @@ var Window = (function () {
 
     // Скрыть окно
     Window.prototype.hideWindow = function () {
+        //console.log('Window.prototype.hideWindow');
         if (this.options.isModal)
             this.modalDiv.css('display', 'none');
         else this.mainDiv.css('display', 'none');
+
     };
 
     Window.prototype.setNewSize = function (height, width) {
@@ -148,6 +150,19 @@ var WindowTemplateManager = (function () {
         this.unique = {}; // ассоциативный массив для уникальных окон, имеющих имя
         this.z_index_list = {};
     }
+
+    WindowTemplateManager.prototype.closeActiveWindow = function (win_name) {
+        //console.log("WindowTemplateManager.prototype.setActiveWindow", win_name);
+        var win_name = '';
+        var z_val = -1;
+        for (var key in this.z_index_list)
+            if (this.z_index_list.hasOwnProperty(key) && this.z_index_list[key] > z_val) {
+                win_name = key;
+                z_val = this.z_index_list[key];
+            }
+        if (z_val >= 0)
+            this.closeUniqueWindow(win_name);
+    };
 
     WindowTemplateManager.prototype.setActiveWindow = function (win_name) {
         //console.log("WindowTemplateManager.prototype.setActiveWindow", win_name);
@@ -211,6 +226,7 @@ var WindowTemplateManager = (function () {
     };
 
     WindowTemplateManager.prototype.openWindow = function (win_url, win_data, is_modal) {
+        //console.log('WindowTemplateManager.prototype.openWindow');
         $.ajax({
             url: "http://" + location.host + win_url,
             data: win_data,
@@ -248,6 +264,7 @@ var WindowTemplateManager = (function () {
             this.count--;
 
             this._reSortWindow();
+            returnFocusToMap();
         }
     };
 

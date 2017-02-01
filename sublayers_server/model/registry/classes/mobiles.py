@@ -244,10 +244,13 @@ class Mobile(Root):
         return self._exp
 
     def set_exp(self, time, value=None, dvalue=None):
+        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
         if value is not None:
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+        assert self._exp >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
 
     @property
     def frag(self):

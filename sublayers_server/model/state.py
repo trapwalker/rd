@@ -81,6 +81,9 @@ class BaseMotionState(object):
         dt = t - self.t0
         return self.v0 * dt + 0.5 * self.a * (dt ** 2)
 
+    def way(self, t):
+        return abs(self.s(t))
+
     def v(self, t):
         dt = t - self.t0
         temp_v = self.v0 + self.a * dt

@@ -291,7 +291,7 @@ class Server(object):
                 user.registration_status = 'register'
                 user.is_tester = True
                 yield user.save()
-                log.info('Test account created: %s %s', tester_accounts[i]['login'], str(tester_accounts[i]['password']))
+                log.info('Test account created: %s', tester_accounts[i]['login'])
 
             # Создать AIQuickAgent
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
@@ -340,7 +340,8 @@ class Server(object):
         st = self.stat_log
         return dict(
             s_agents_all=st.get_metric('s_agents_all'),
-            s_agents_on=st.get_metric('s_agents_on'),
+            # s_agents_on=st.get_metric('s_agents_on'),
+            s_agents_on=len(self.app.clients),
             s_units_all=st.get_metric('s_units_all'),
             s_units_on=st.get_metric('s_units_on'),
             s_events_all=st.get_metric('s_events_all'),

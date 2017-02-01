@@ -69,11 +69,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser" || data.cls === "TeachingUserLog") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser" || data.cls === "TeachingUserLog"));
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
                 return ownerList.add(owner);
             }
         return null;
@@ -382,11 +382,11 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser" || event.agent.cls === "TeachingUserLog") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
-            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser") || (event.agent.cls === "TeachingUserLog");
+            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser");
 
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
@@ -455,6 +455,7 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             wFireController.updateQuickConsumerPanel(event.car.quick_consumer_panel);
+            wFireController.updateStateAutoShooting(event.auto_shooting_state);
             mapManager.widget_target_point = new WCanvasTargetPoint(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
@@ -616,6 +617,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Die = function (event) {
         //console.log('ClientManager.prototype.Die');
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalDialogInfoShow({
             caption: 'Car Crash',
             header: 'Крушение!',
@@ -628,17 +631,18 @@ var ClientManager = (function () {
 
     ClientManager.prototype.QuickGameDie = function (event) {
         //console.log('ClientManager.prototype.QuickGameDie', event);
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalQuickGamePointsPageShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
             quick_users: event.quick_users,
+            points: event.points,
+            record_index: event.record_index,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();
             },
             callback_cancel: function() {
-                window.location = '/#quick';
+                window.location = '/#start';
             }
         });
     };
@@ -684,7 +688,7 @@ var ClientManager = (function () {
             user.userCar.altitude = event.altitude;
         }
         else
-            console.error('Error! Пришла высота на неизветную машинку!')
+            console.warn('Error! Пришла высота на неизветную машинку!')
     };
 
     ClientManager.prototype.ChangeRadiation = function(event){
@@ -693,7 +697,7 @@ var ClientManager = (function () {
             user.userCar.radiation_dps += event.radiation_dps;
         }
         else
-            console.error('Error! Пришла радиация на неизветную машинку!')
+            console.warn('Warning! Пришла радиация на неизветную машинку!')
     };
 
     ClientManager.prototype.UpdateObservingRange = function (event) {
@@ -719,10 +723,10 @@ var ClientManager = (function () {
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
         if ((event.time > clock.getClientTime()) && (etime > clock.getCurrentTime())) {
-            console.error('Серверное время больше клиентского при выстреле.');
-            console.error('server event time = ', etime);
-            console.error('client pure  time = ', clock.getClientTime() / 1000.);
-            console.error('clnt with dt time = ', clock.getCurrentTime());
+            console.warn('Серверное время больше клиентского при выстреле.');
+            //console.error('server event time = ', etime);
+            //console.error('client pure  time = ', clock.getClientTime() / 1000.);
+            //console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime, event.t_rch);
@@ -1225,6 +1229,12 @@ var ClientManager = (function () {
     ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
         //console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
+    };
+
+    // PingInfoMessage
+    ClientManager.prototype.PingInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.PingInfoMessage', event);
+        $('#PingSpan').text(event.ping);
     };
 
     // Исходящие сообщения
@@ -2215,6 +2225,32 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    // Запросить с сервера текущий пинг и отправить серверу FPS
+    ClientManager.prototype.get_ping_set_fps = function () {
+        //console.log('ClientManager.prototype.sendQuickTeachingAnswer');
+        var mes = {
+            call: "get_ping_set_fps",
+            rpc_call_id: rpcCallList.getID(),
+            params: {fps: timeManager.FPS}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Залогировать в лог агента какую-либо информацию
+    ClientManager.prototype.sendAgentLog = function (message) {
+        //console.log('ClientManager.prototype.sendAgentLog');
+        var mes = {
+            call: "agent_log",
+            rpc_call_id: rpcCallList.getID(),
+            params: {message: message}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
 
     return ClientManager;
 })();

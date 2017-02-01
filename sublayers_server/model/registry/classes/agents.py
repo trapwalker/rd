@@ -310,6 +310,8 @@ class Agent(Root):
         return self._exp
 
     def set_exp(self, time, value=None, dvalue=None):
+        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
         old_lvl = self.get_lvl()
         if value is not None:
             self._exp = value
@@ -320,6 +322,7 @@ class Agent(Root):
             lvl = self.get_lvl()
             if lvl > old_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
+        assert self._exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:

@@ -163,6 +163,13 @@ var DrivingControlTeachingMapNote = (function (_super) {
             _super.prototype.send_activate_note.call(this, result);
     };
 
+    DrivingControlTeachingMapNote.prototype.redraw = function() {
+        if (interface_scale_big)
+            this.draw_arrow(teachingMapManager.context, new Point(-155, -85), 0);
+        else
+            this.draw_arrow(teachingMapManager.context, new Point(-120, -63), 0);
+    };
+
     return DrivingControlTeachingMapNote;
 })(NoActionTeachingMapNote);
 
@@ -313,6 +320,17 @@ var TryKillTeachingMapNote = (function (_super) {
         this.window_name = 'try_kill';
         this.window_uri = '/map_teaching';
     }
+
+    TryKillTeachingMapNote.prototype.redraw = function() {
+        if (interface_scale_big) {
+            var x = Math.round($('#bodydiv').width() / 2.0) - 100;
+            this.draw_arrow(teachingMapManager.context, new Point(x, -115), 0);
+        }
+        else {
+            var x = Math.round($('#bodydiv').width() / 2.0) - 70;
+            this.draw_arrow(teachingMapManager.context, new Point(x, -90), 0);
+        }
+    };
 
     return TryKillTeachingMapNote;
 })(NoActionTeachingMapNote);

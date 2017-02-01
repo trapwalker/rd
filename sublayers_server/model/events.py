@@ -414,8 +414,8 @@ class ShowInventoryEvent(Event):
     def on_perform(self):
         super(ShowInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
-        assert (obj is not None) and (obj.inventory is not None)
-        if obj is self.agent.car or obj.is_available(agent=self.agent):
+        # assert (obj is not None) and (obj.inventory is not None)
+        if obj is not None and obj.inventory is not None and (obj is self.agent.car or obj.is_available(agent=self.agent)):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
@@ -447,6 +447,8 @@ class ItemActionInventoryEvent(Event):
 
         # Пытаемся получить инвентари и итемы
         start_obj = self.server.objects.get(self.start_owner_id)
+        if start_obj is None:
+            return 
         start_inventory = start_obj.inventory
         start_item = start_inventory.get_item(position=self.start_pos)
         if start_item is None:
@@ -521,6 +523,8 @@ class ItemActivationEvent(Event):
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
+        if obj is None:
+            return 
         inventory = obj.inventory
         item = inventory.get_item(position=self.position)
         if item is None:
@@ -542,3 +546,47 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
+
+# данный эвент сейчас не доступен !
+class AgentTestEvent(Event):
+    def __init__(self, agent, **kw):
+        super(AgentTestEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(AgentTestEvent, self).on_perform()
+        agent = self.agent
+        car = agent.car
+        AgentTestEvent(agent=agent, time=self.time + 2.0).post()
+        if car:
+            # Определить, есть ли у машинки в авто-секторах цели, есть ли цели в оружиях
+            sector_targets = []
+            weapon_targets = []
+            for sector in car.fire_sectors:
+                if sector.is_auto():
+                    sector_targets = sector_targets + sector.target_list
+                    for weapon in sector.weapon_list:
+                        weapon_targets = weapon_targets + weapon.targets
+
+            # Определить, тратятся ли патроны из инвентаря
+            changed_items = []
+            for item in car.inventory.get_items():
+                if item.dvs != 0.0:
+                    changed_items.append(item)
+
+            len_ch_item = len(changed_items)
+            len_weapons_t = len(weapon_targets)
+            len_sectors_t = len(sector_targets)
+
+            # Теперь проверки и логирование
+            if len_weapons_t != len_sectors_t:
+                agent.log.info('Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
+
+            if ((len_weapons_t > 0 or len_sectors_t > 0) and len_ch_item == 0) or ((len_weapons_t == 0 or len_sectors_t == 0) and len_ch_item > 0):
+                agent.log.info('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+
+            if len_ch_item:
+                if len_weapons_t == 0 or len_sectors_t == 0:
+                    agent.log.info('Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+
+            # agent.log.info('Error! end!!! sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))

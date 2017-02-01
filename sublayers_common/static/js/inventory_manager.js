@@ -377,7 +377,7 @@ var InventoryList = (function () {
         if (inv)
             inv.showInvByFilter(inventory_div, filter);
         else
-            console.error('showInvByFilter:: Инвентарь <', owner_id ,'>  не найден');
+            console.warn('showInvByFilter:: Инвентарь <', owner_id ,'>  не найден');
     };
 
     return InventoryList;

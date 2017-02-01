@@ -29,6 +29,9 @@ class LogoutHandler(BaseSiteHandler):
     def post(self):
         clear_all_cookie(self)
 
+    def get(self):
+        clear_all_cookie(self)
+        self.redirect('/')
 
 # class BaseLoginHandler(BaseSiteHandler):
 #     def login_error_redirect(self, doseq=0, **kw):
@@ -105,6 +108,7 @@ class StandardLoginHandler(BaseSiteHandler):
         qg_car_index = self.get_argument('qg_car_index', 0)
         nickname = self.get_argument('username', None)
 
+        quick_user = None
         if self.current_user:
             quick_user = self.current_user if (self.current_user.quick or self.current_user.is_tester) else None
             if quick_user:
@@ -285,6 +289,12 @@ class StandardLoginHandler(BaseSiteHandler):
             user.registration_status = 'register'
 
             # регистрация на форуме
+            email = user.auth.standard.email
+            username = user.name
+            password = user.auth.standard.password
+            if isinstance(password, unicode):
+                password = password.encode('utf-8')
+
             # forum_id = yield self._forum_setup({
             #     'user_email': email,
             #     'username': username,
@@ -294,7 +304,7 @@ class StandardLoginHandler(BaseSiteHandler):
             #     self.finish({'status': 'Ошибка регистрации на форуме.'})
             #     log.info('User <{}> not registered on forum!'.format(username))
             #     return
-            # self.set_cookie("forum_user", self._forum_cookie_setup(username))
+            self.set_cookie("forum_user", self._forum_cookie_setup(username))
 
             yield user.save()
             self.finish({'status': 'success'})
@@ -316,3 +326,38 @@ class StandardLoginHandler(BaseSiteHandler):
         elif user.registration_status == 'chip':
             user.registration_status = 'settings'
             yield user.save()
+
+
+class RegisterOldUsersOnForum(StandardLoginHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        users = yield User.objects.filter({}).find_all()
+        count_regs = 0
+        for user in users:
+            # регистрация на форуме
+            email = user.auth.standard.email
+            username = user.name
+            password = user.auth.standard.password
+            if isinstance(password, unicode):
+                password = password.encode('utf-8')
+
+            forum_id = yield self._forum_setup({
+                'user_email': email,
+                'username': username,
+                'user_password': password,
+            })
+            if forum_id:
+                self.write("{}  register<br>".format(str(user.name)))
+                count_regs += 1
+
+        self.finish('done! {} users registered on forum'.format(count_regs))
+
+
+class SetForumUserAuth(StandardLoginHandler):
+    def get(self):
+        user = self.current_user
+        if user and user.name:
+            self._forum_cookie_setup(user.name)
+            self.finish("OK")
+        else:
+            self.finish("Not auth")
