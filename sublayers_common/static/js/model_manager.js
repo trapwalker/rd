@@ -730,7 +730,6 @@ var ClientManager = (function () {
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime, event.t_rch);
-
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
@@ -754,7 +753,8 @@ var ClientManager = (function () {
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
             targets: event.targets,
-            fake_position: event.fake_position
+            fake_position: event.fake_position,
+            self_shot: event.self_shot
         });
     };
 

@@ -269,7 +269,7 @@ class FireDischargeEffectEvent(Objective):
         fake_position = Point.polar(max_radius, self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
             FireDischargeEffect(agent=agent, pos_subj=subj_position, targets=targets, fake_position=fake_position,
-                                time=self.time).post()
+                                time=self.time, self_shot=(agent is self.obj.main_agent)).post()
 
 
 class FireAutoEnableEvent(Objective):

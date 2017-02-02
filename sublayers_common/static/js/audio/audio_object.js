@@ -5,7 +5,6 @@ var GameAudioObject = (function () {
         this.ready_to_play = false;
         this.audio_buffer = null;
         this.start_relative_gain = gain === undefined ? 1.0 : gain;
-
         this.load(source);
     }
 
@@ -109,7 +108,7 @@ var GameAudioObject = (function () {
         if ((index_playing >= 0) && (event.target === audio_object.source_node)) {
             this.current_objects_playing.splice(index_playing, 1);
             if (typeof(audio_object.ended_cb) === 'function')
-                audio_object.ended_callback()
+                audio_object.ended_cb()
         }
         else
             console.warn('Неизвестный аудио объект', audio_object);

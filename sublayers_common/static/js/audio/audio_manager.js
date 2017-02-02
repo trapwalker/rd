@@ -89,7 +89,6 @@ function init_sound() {
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
 }
 
-
 function randomInterval(a, b) {return Math.random() * (b - a) + a;}
 
 
