@@ -15,8 +15,10 @@ if __name__ == '__main__':
 from sublayers_common.ctx_timer import Timer
 
 import six
+import yaml
 from uuid import uuid1 as get_uuid
 from collections import deque
+from fnmatch import fnmatch
 
 from mongoengine import connect, Document, EmbeddedDocument
 from mongoengine.base import get_document
@@ -26,6 +28,14 @@ from mongoengine.fields import (
     GenericReferenceField, BaseField, MapField,
     RECURSIVE_REFERENCE_CONSTANT,
 )
+
+
+class RegistryError(Exception):
+    pass
+
+
+class RegistryNodeFormatError(RegistryError):
+    pass
 
 
 class RegistryLinkField(BaseField):
@@ -96,6 +106,19 @@ class RegistryLinkField(BaseField):
 
     def lookup_member(self, member_name):
         return self.document_type._fields.get(member_name)
+
+
+class EmbeddedNodeField(EmbeddedDocumentField):
+    def to_python(self, value):
+        if isinstance(value, basestring):
+            parent = REG[value]
+            node = parent.__class__()
+
+            return node
+
+        if not isinstance(value, self.document_type):
+            return self.document_type._from_son(value, _auto_dereference=self._auto_dereference)
+        return value
 
 
 class Node(EmbeddedDocument):
@@ -231,6 +254,39 @@ class Node(EmbeddedDocument):
         )
         return d
 
+    @classmethod
+    def _load_node_from_fs(cls, path, owner=None):
+        assert isinstance(path, unicode), '{}._load_node: path is not unicode, but: {!r}'.format(cls, path)
+        attrs = {}
+        for f in sorted(os.listdir(path)):
+            assert isinstance(f, unicode), '{}._load_node: listdir returns non unicode value'.format(cls)
+            # f = f.decode(sys.getfilesystemencoding())
+            p = os.path.join(path, f)
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
+                with open(p) as attr_file:
+                    try:
+                        d = yaml.load(attr_file) or {}
+                    except yaml.YAMLError as e:
+                        raise RegistryNodeFormatError(e)
+                    assert isinstance(d, dict), 'Yaml content is not object, but: {!r}'.format(d)
+                    attrs.update(d.items())
+
+        attrs.update(owner=owner)
+        attrs.setdefault('name', os.path.basename(path.strip('\/')))
+        attrs.setdefault('parent', owner)
+        attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
+        attrs.setdefault('fixtured', True)
+
+        parent = attrs['parent']
+        _cls = cls
+        if parent:
+            assert isinstance(parent, Node)
+            node = parent.instantiate(**attrs)
+        else:
+            node = cls._from_son(attrs, created=True)
+        return node
+
 
 class Registry(Document):
     tree = MapField(field=EmbeddedDocumentField(document_type=Node))
@@ -254,29 +310,22 @@ class Registry(Document):
         # tod4o: support alternative path notations (list, relative, parametrized)
         return self.tree[uri]
 
-    @classmethod
-    def load(cls, path, mongo_store=True):
-        all_nodes = []
-        root = None
+    def load(self, path, mongo_store=True):
+        count = 0
         stack = deque([(path, None)])
         with Timer(name='registryFS loader', logger=log) as timer:
             while stack:
                 pth, owner = stack.pop()
-                node = cls._load_node_from_fs(pth, owner)
+                node = Node._load_node_from_fs(pth, owner)
                 if node:
-                    node.save()
-
-                    all_nodes.append(node)
-                    # node.to_cache()  # TODO: cache objects
-                    if owner is None:
-                        root = node  # todo: optimize
+                    count += 1
+                    self._put(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
 
-        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
-        return root
+        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(count, timer.duration))
 
 REG = Registry()
 
@@ -287,7 +336,7 @@ class A(Node):
     x = IntField(null=True)
     y = IntField(null=True)
     z = IntField(null=True)
-    e = EmbeddedDocumentField(document_type=Node)
+    e = EmbeddedNodeField(document_type=Node)
 
 
 class A2(A):
@@ -300,12 +349,12 @@ class B(Node):
 
 
 def test1():
-    a   = A(name='a'   , x= 3, y= 7,       )
-    aa  = A(name='aa'  , x=31, y=71, e= a, owner=a.uri, )
-    aaa = A(name='aaa' , x=31,       e=aa, owner=aa.uri, parent=aa,)
-    ab  = A(name='ab'  , x=31, y=71, e= a, owner=a.uri, )
+    a   = A(name='a'   , x= 3, y= 7, e=None, )
+    aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, )
+    aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,)
+    ab  = A(name='ab'  , x=31, y=71, e='a/aa', owner=a.uri, )
 
-    #map(REG._put, (v for v in locals().values() if isinstance(v, Node)))
+    # aa.e = ab.uri
 
     print(aa.owner)
 
