@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
+from sublayers_server.model.weapon_objects.mine_bang import BangMine
 from counterset import CounterSet
 from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
@@ -218,6 +219,7 @@ class Agent(Object):
                 self.party.add_observer_to_party(observer=obj, time=time)
 
     def drop_obj(self, obj, time):
+        self.log.info('drop_obj {}'.format(obj))
         if obj in self.slave_objects:
             if self.party:
                 self.party.drop_observer_from_party(observer=obj, time=time)
@@ -376,6 +378,12 @@ class Agent(Object):
 
     def is_target(self, target):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
+            return False
+
+        if isinstance(target, BangMine):  # если этот объект является миной
+            # todo: Определение таргета должно быть в 3 этапа: спрашиваем у агента, спрашиваем у оружия, спрашиваем у самого таргета
+            # всё это прогонять через example и нужно для того, чтобы можно было делать интересные механики, например, пушки для разминирования
+            # или разминирования только в том случае, если прокачано что-то.
             return False
 
         t_agent = target.main_agent
@@ -684,7 +692,7 @@ class QuickUser(User):
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
     def on_kill(self, event, obj):
-        # log.debug('%s:: on_kill(%s)', self, obj)
+        self.log.info('{}:: on_kill {}'.format(self, obj))
         if obj.owner and isinstance(obj.owner, AI):
             self.quick_game_bot_kills += 1
         else:
