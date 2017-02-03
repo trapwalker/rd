@@ -186,6 +186,7 @@ function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
     switch (event.keyCode) {
         case 37:
+            if (! user.userCar) return;
             pressedArrowLeft = false;
             var turn = 0;
             if (pressedArrowLeft) turn++;
@@ -193,11 +194,13 @@ function onKeyUpMap(event) {
             clientManager.sendTurn(turn);
             break;
         case 38:
+            if (! user.userCar) return;
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowUp = false;
             break;
         case 39:
+            if (! user.userCar) return;
             pressedArrowRight = false;
             var turn = 0;
             if (pressedArrowLeft) turn++;
@@ -205,6 +208,7 @@ function onKeyUpMap(event) {
             clientManager.sendTurn(turn);
             break;
         case 40:
+            if (! user.userCar) return;
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowDown = false;

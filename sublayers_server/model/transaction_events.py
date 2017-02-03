@@ -14,7 +14,7 @@ from uuid import UUID
 from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
-from sublayers_server.model.weapon_objects.effect_mine import SlowMineStartEvent
+from sublayers_server.model.weapon_objects.effect_mine import MineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
 from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage,
@@ -142,7 +142,6 @@ class TransactionActivateMine(TransactionActivateItem):
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.target)
-        inventory = self.inventory
         item = self.item
 
         # проверка входных параметров
@@ -155,7 +154,7 @@ class TransactionActivateMine(TransactionActivateItem):
         item._div_item(count=1, time=self.time)
 
         # Поставить мину на карту
-        SlowMineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
+        MineStartEvent(starter=obj, time=self.time, example_mine=item.example.generate_obj).post()
 
         # Отправка сообщения в игровой лог
         TransactionActivateMineLogMessage(agent=self.agent, time=self.time, item=item.example).post()
