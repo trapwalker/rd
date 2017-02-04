@@ -684,9 +684,18 @@ var ClientManager = (function () {
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang', event);
-        new ECanvasHeavyBangPNG_2(new Point(event.position.x, event.position.y)).start();
-        //new Bang(new Point(event.position.x, event.position.y),
-        //         event.bang_power, event.duration, event.end_duration).start();
+        var bang_position = new Point(event.position.x, event.position.y);
+        new ECanvasHeavyBangPNG_3(bang_position).start();
+
+        // Звук
+        var distance = user.userCar ? distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), bang_position) : 2000;
+        if (distance <= 2000) {
+            // 0.2/1.0 - минимальная/максимальная громкость звука
+            var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
+            // 0.35/0.6 - границы рэйта
+            var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
+            audioManager.play('shot_03', 0.0, gain, null, false, 0, 0, rate);
+        }
     };
 
     ClientManager.prototype.ChangeAltitude = function(event){
@@ -737,7 +746,6 @@ var ClientManager = (function () {
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime, event.t_rch);
-
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
@@ -761,7 +769,8 @@ var ClientManager = (function () {
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
             targets: event.targets,
-            fake_position: event.fake_position
+            fake_position: event.fake_position,
+            self_shot: event.self_shot
         });
     };
 

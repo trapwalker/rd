@@ -28,6 +28,9 @@ var EffectPNGLoader = (function(){
         this.load_new_image('effect-heavy-bang-oriented-png-1', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png', [107, 107], 12);
         this.load_new_image('effect-heavy-bang-oriented-png-2', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png', [107, 107], 12);
         this.load_new_image('effect-tracer-png', '/static/img/fire_effects/shoots/light_tracer.png', [7, 14], 1);
+
+        this.load_new_image('effect-bang-png-1', '/static/img/fire_effects/bangs/mine-bang-png-1.png', [115, 115], 12);
+
     }
 
     EffectPNGLoader.prototype.getImage = function(name){
@@ -93,14 +96,12 @@ var FireEffectManager = (function () {
                 ctrl: new FireAutoEffectController(options),
                 count: 1
             });
-
         if (options.side && options.subj) {
             if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
                 this.muzzle_flashs[options.subj + options.side].update(1);
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
-
     };
 
     FireEffectManager.prototype.delController = function (options) {
@@ -145,6 +146,25 @@ var FireEffectManager = (function () {
             new ECanvasHeavyBangPNG_1(getRadialRandomPoint(summVector(mulScalVector(vekt, i * temp + temp * Math.random()), options.pos_subj),
                 ConstRangeFireDischargeFlashlight))
                 .start(i * tempDuration + tempDuration * Math.random());
+
+        // Звук выстрела
+        if (options.self_shot) {
+            // 0.6/0.8 - границы рандома рэйта
+            var rate = 0.6 + (0.6 - 0.8) * Math.random();
+            audioManager.play("shot_01", 0, 0.8, null, false, 0, 0, rate);
+        }
+        else {
+            var distance = 2000;
+            if (user.userCar)
+                var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+            if (distance <= 2000) {
+                // 0.05/0.4 - минимальная/максимальная громкость звука
+                var gain = 0.05 + (0.4 - 0.05) * (1 - distance/2000);
+                // 0.2/0.4 - границы рандома рэйта
+                var rate = 0.2 + (0.4 - 0.2) * Math.random();
+                audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate);
+            }
+        }
     };
 
     FireEffectManager.prototype.perform = function () {
@@ -155,6 +175,25 @@ var FireEffectManager = (function () {
     return FireEffectManager;
 })();
 
+var self_audio = {
+    name: 'shot_01',
+    gain: 0.1,
+    count: 0,
+    audio_obj1: null,
+    audio_obj2: null,
+    audio_obj3: null,
+    audio_obj4: null
+};
+
+var other_audio = {
+    name: 'shot_02',
+    gain: 0.03,
+    count: 0,
+    audio_obj1: null,
+    audio_obj2: null,
+    audio_obj3: null,
+    audio_obj4: null
+};
 
 var FireAutoEffectController = (function () {
     function FireAutoEffectController(options) {
@@ -163,6 +202,18 @@ var FireAutoEffectController = (function () {
         this.d_time_t = 1. / ConstCountTracerPerSecond;
         this.d_time_fl = 1. / ConstCountFlashlightPerSecond;
         this.muzzle_flash = null;
+
+        // Настройки звука
+        this.audio_self = (this.subj && (this.subj == user.userCar.ID));
+        var audio_container = this.audio_self ? self_audio : other_audio;
+        audio_container.count++;
+        if (audio_container.count == 1) {
+            var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
+            audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0,             audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
+        }
     }
 
     FireAutoEffectController.prototype.change = function () {
@@ -212,6 +263,15 @@ var FireAutoEffectController = (function () {
     FireAutoEffectController.prototype.finish = function (options) {
         if (this.muzzle_flash)
             this.muzzle_flash.finish();
+
+        var audio_container = this.audio_self ? self_audio : other_audio;
+        audio_container.count--;
+        if (audio_container.count == 0) {
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj1);
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
+        }
     };
 
     return FireAutoEffectController;
