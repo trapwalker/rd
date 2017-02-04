@@ -685,7 +685,7 @@ var ClientManager = (function () {
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang', event);
         var bang_position = new Point(event.position.x, event.position.y);
-        new ECanvasHeavyBangPNG_2(bang_position).start();
+        new ECanvasHeavyBangPNG_3(bang_position).start();
 
         // Звук
         var distance = user.userCar ? distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), bang_position) : 2000;
