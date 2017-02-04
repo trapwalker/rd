@@ -96,6 +96,8 @@ var LeafletIconManager = (function(){
 
         this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
 
+        this.load_new_icon('mine_001', '/static/img/map_icons/mine.png', [24, 17], this.max_id++);
+
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
@@ -296,7 +298,7 @@ var LeafletIconManager = (function(){
             id: this.max_id++
         };
 
-        icons['mine_001'] = {
+        icons['mine_002'] = {
             icon: new L.icon({
                 iconUrl: '/static/img/map_icons/mine_5.png',
                 iconSize: [24, 17]
