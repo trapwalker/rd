@@ -184,6 +184,25 @@ var ECanvasHeavyBangPNG_2 = (function (_super) {
 })(ECanvasAnimationPNG);
 
 
+var ECanvasHeavyBangPNG_3 = (function (_super) {
+    __extends(ECanvasHeavyBangPNG_3, _super);
+
+    function ECanvasHeavyBangPNG_3(position){
+        _super.call(this, position, 2 * Math.random() * Math.PI);
+        this.duration = 1200;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-bang-png-1");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    }
+
+    return ECanvasHeavyBangPNG_3
+})(ECanvasAnimationPNG);
+
+
 var ECanvasLightBangPNG_1 = (function (_super) {
     __extends(ECanvasLightBangPNG_1, _super);
 

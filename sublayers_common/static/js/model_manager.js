@@ -684,7 +684,7 @@ var ClientManager = (function () {
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang', event);
-        new ECanvasHeavyBangPNG_2(new Point(event.position.x, event.position.y)).start();
+        new ECanvasHeavyBangPNG_3(new Point(event.position.x, event.position.y)).start();
         //new Bang(new Point(event.position.x, event.position.y),
         //         event.bang_power, event.duration, event.end_duration).start();
     };
