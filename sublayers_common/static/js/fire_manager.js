@@ -182,32 +182,34 @@ var FireAutoEffectController = (function () {
         this.muzzle_flash = null;
 
         // Настройки звука
-        this.audio_obj = null;
-        //this.audio_info = [{name: 'shot_01', rate: 3.0, gain: 0.05},
-        //                   {name: 'shot_02', rate: 3.0, gain: 0.05},
-        //                   {name: 'shot_03', rate: 3.0, gain: 0.05}][Math.floor(Math.random() * 3)];
+        this.audio_obj1 = null;
+        this.audio_obj2 = null;
+        this.audio_obj3 = null;
+        this.audio_obj4 = null;
+        this.audio_name = '';
         if (this.subj && (this.subj == user.userCar.ID)) {
-            this.audio_info = { name: 'shot_01', rate: 5, gain: 0.05 };
-            this.audio_info.gain = 0.5;
+            this.audio_name = 'shot_01';
+            this.audio_obj1 = audioManager.play('shot_01', 0.0,      0.2, null, true, 0, 0, 1);
+            this.audio_obj2 = audioManager.play('shot_01', 0.164925, 0.2, null, true, 0, 0, 1);
+            this.audio_obj3 = audioManager.play('shot_01', 0.32985,  0.2, null, true, 0, 0, 1);
+            this.audio_obj4 = audioManager.play('shot_01', 0.494775, 0.2, null, true, 0, 0, 1);
         }
         else {
-            this.audio_info = { name: 'shot_03', rate: 5, gain: 0.05 };
-            this.audio_info.gain = 0.05;
+            this.audio_name = 'shot_01';
+            this.audio_obj1 = audioManager.play('shot_01', 0.0,      0.01, null, true, 0, 0, 1);
+            this.audio_obj2 = audioManager.play('shot_01', 0.164925, 0.01, null, true, 0, 0, 1);
+            this.audio_obj3 = audioManager.play('shot_01', 0.32985,  0.01, null, true, 0, 0, 1);
+            this.audio_obj4 = audioManager.play('shot_01', 0.494775, 0.01, null, true, 0, 0, 1);
         }
-        this.audio_obj = audioManager.play(
-            this.audio_info.name, 0.0, this.audio_info.gain,
-            null,
-            true, 0, null, this.audio_info.rate);
-        //this.restart_audio();
     }
 
-    FireAutoEffectController.prototype.restart_audio = function () {
-        var self = this;
-        this.audio_obj = audioManager.play(
-            this.audio_info.name, 0.5 + Math.random() * 0.5, this.audio_info.gain,
-            function() { self.restart_audio() },
-            true, 0, 0.5 + Math.random() * 1.5, this.audio_info.rate);
-    };
+    //FireAutoEffectController.prototype.restart_audio = function () {
+    //    var self = this;
+    //    this.audio_obj = audioManager.play(
+    //        this.audio_info.name, 0.5 + Math.random() * 0.5, this.audio_info.gain,
+    //        function() { self.restart_audio() },
+    //        true, 0, 0.5 + Math.random() * 1.5, this.audio_info.rate);
+    //};
 
     FireAutoEffectController.prototype.change = function () {
         var time = clock.getCurrentTime();
@@ -256,10 +258,10 @@ var FireAutoEffectController = (function () {
     FireAutoEffectController.prototype.finish = function (options) {
         if (this.muzzle_flash)
             this.muzzle_flash.finish();
-        if (this.audio_obj) {
-            this.audio_obj.ended_cb = null;
-            audioManager.stop(this.audio_info.name, 0, this.audio_obj);
-        }
+        if (this.audio_obj1) audioManager.stop(this.audio_name, 0, this.audio_obj1);
+        if (this.audio_obj2) audioManager.stop(this.audio_name, 0, this.audio_obj2);
+        if (this.audio_obj3) audioManager.stop(this.audio_name, 0, this.audio_obj3);
+        if (this.audio_obj4) audioManager.stop(this.audio_name, 0, this.audio_obj4);
     };
 
     return FireAutoEffectController;
