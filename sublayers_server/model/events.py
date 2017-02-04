@@ -313,7 +313,8 @@ class BangEvent(Event):
         for obj in objects:
             if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
                 if isinstance(obj, Unit):
-                    if abs(self.center - obj.position(time=self.time)) < self.radius:
+                    dist = abs(self.center - obj.position(time=self.time))
+                    if dist < self.radius:
                         obj.set_hp(dhp=self.damage, shooter=self.starter, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
