@@ -195,8 +195,14 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             //new WCarMarker(car);                 // виджет маркера
-            var t = new WCanvasCarMarker(car);
-            new WCanvasHPCarMarker(car, t);
+            if (car.cls == "Bot") {
+                var t = new WCanvasCarMarker(car);
+                new WCanvasHPCarMarker(car, t);
+            }
+            if (car.cls == "SlowMine" || car.cls == "BangMine") {
+                new WCarMarker(car);
+            }
+
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
@@ -558,6 +564,7 @@ var ClientManager = (function () {
             case 'ScoutDroid':
             case 'StationaryTurret':
             case 'SlowMine':
+            case 'BangMine':
             case 'Mobile':
                 this._contactBot(event);
                 break;

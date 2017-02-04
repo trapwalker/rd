@@ -5,24 +5,26 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.units import UnitWeapon
 from sublayers_server.model.events  import Event
+from sublayers_server.model.weapon_objects.mine_bang import BangMine
 import sublayers_server.model.tags as tags
 
 
-class SlowMineStartEvent(Event):
+class MineStartEvent(Event):
     def __init__(self, starter, example_mine, **kw):
-        super(SlowMineStartEvent, self).__init__(server=starter.server, **kw)
+        super(MineStartEvent, self).__init__(server=starter.server, **kw)
         self.starter = starter
         self.example_mine = example_mine
 
     def on_perform(self):
-        super(SlowMineStartEvent, self).on_perform()
-        # todo: забирать названия эффектов из экзампла  self.example_mine.effects (использовать URI эффекта)
-        ef = self.server.reg['effects/weapon/mines/effect_mine_cc']
-        SlowMine(time=self.time, starter=self.starter, example=self.example_mine, effects=[ef] if ef else [])
+        super(MineStartEvent, self).on_perform()
+        if self.example_mine.__cls__ == u"MapWeaponEffectMine":
+            SlowMine(time=self.time, starter=self.starter, example=self.example_mine)
+        elif self.example_mine.__cls__ == u"MapWeaponBangMine":
+            BangMine(time=self.time, starter=self.starter, example=self.example_mine)
 
 
 class SlowMine(UnitWeapon):
-    def __init__(self, time, starter, effects, **kw):
+    def __init__(self, time, starter, **kw):
         # todo: docstring required
         # взять позицию и направление выпустившего ракету
         super(SlowMine, self).__init__(time=time,
@@ -31,7 +33,7 @@ class SlowMine(UnitWeapon):
                                        server=starter.server,
                                        **kw)
         self.targets = []
-        self.effects = effects  # todo: забирать названия эффектов из экзампла
+        self.effects = self.example.effects
 
     def on_init(self, event):
         super(SlowMine, self).on_init(event)

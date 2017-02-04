@@ -461,7 +461,15 @@ class MapWeaponEffectMine(MobileWeapon):
     )
 
 
-class MapWeaponRocket(MobileWeapon):
+class MapBangWeapon(MobileWeapon):
     radius_damage = FloatField(caption=u"Радиус взрыва ракеты")
     damage = FloatField(caption=u"Дамаг в радиусе взрыва")
     life_time = FloatField(caption=u"Время жизни ракеты")
+
+
+class MapWeaponRocket(MapBangWeapon):
+    pass
+
+
+class MapWeaponBangMine(MapBangWeapon):
+    pass
