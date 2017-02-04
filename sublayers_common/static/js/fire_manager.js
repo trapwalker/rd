@@ -175,6 +175,25 @@ var FireEffectManager = (function () {
     return FireEffectManager;
 })();
 
+var self_audio = {
+    name: 'shot_01',
+    gain: 0.1,
+    count: 0,
+    audio_obj1: null,
+    audio_obj2: null,
+    audio_obj3: null,
+    audio_obj4: null
+};
+
+var other_audio = {
+    name: 'shot_02',
+    gain: 0.03,
+    count: 0,
+    audio_obj1: null,
+    audio_obj2: null,
+    audio_obj3: null,
+    audio_obj4: null
+};
 
 var FireAutoEffectController = (function () {
     function FireAutoEffectController(options) {
@@ -185,34 +204,17 @@ var FireAutoEffectController = (function () {
         this.muzzle_flash = null;
 
         // Настройки звука
-        this.audio_obj1 = null;
-        this.audio_obj2 = null;
-        this.audio_obj3 = null;
-        this.audio_obj4 = null;
-        this.audio_name = '';
-        if (this.subj && (this.subj == user.userCar.ID)) {
-            this.audio_name = 'shot_01';
-            this.audio_obj1 = audioManager.play('shot_01', 0.0,      0.2, null, true, 0, 0, 1);
-            this.audio_obj2 = audioManager.play('shot_01', 0.164925, 0.2, null, true, 0, 0, 1);
-            this.audio_obj3 = audioManager.play('shot_01', 0.32985,  0.2, null, true, 0, 0, 1);
-            this.audio_obj4 = audioManager.play('shot_01', 0.494775, 0.2, null, true, 0, 0, 1);
-        }
-        else {
-            this.audio_name = 'shot_01';
-            this.audio_obj1 = audioManager.play('shot_01', 0.0,      0.01, null, true, 0, 0, 1);
-            this.audio_obj2 = audioManager.play('shot_01', 0.164925, 0.01, null, true, 0, 0, 1);
-            this.audio_obj3 = audioManager.play('shot_01', 0.32985,  0.01, null, true, 0, 0, 1);
-            this.audio_obj4 = audioManager.play('shot_01', 0.494775, 0.01, null, true, 0, 0, 1);
+        this.audio_self = (this.subj && (this.subj == user.userCar.ID));
+        var audio_container = this.audio_self ? self_audio : other_audio;
+        audio_container.count++;
+        if (audio_container.count == 1) {
+            var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
+            audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0,             audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
         }
     }
-
-    //FireAutoEffectController.prototype.restart_audio = function () {
-    //    var self = this;
-    //    this.audio_obj = audioManager.play(
-    //        this.audio_info.name, 0.5 + Math.random() * 0.5, this.audio_info.gain,
-    //        function() { self.restart_audio() },
-    //        true, 0, 0.5 + Math.random() * 1.5, this.audio_info.rate);
-    //};
 
     FireAutoEffectController.prototype.change = function () {
         var time = clock.getCurrentTime();
@@ -261,10 +263,15 @@ var FireAutoEffectController = (function () {
     FireAutoEffectController.prototype.finish = function (options) {
         if (this.muzzle_flash)
             this.muzzle_flash.finish();
-        if (this.audio_obj1) audioManager.stop(this.audio_name, 0, this.audio_obj1);
-        if (this.audio_obj2) audioManager.stop(this.audio_name, 0, this.audio_obj2);
-        if (this.audio_obj3) audioManager.stop(this.audio_name, 0, this.audio_obj3);
-        if (this.audio_obj4) audioManager.stop(this.audio_name, 0, this.audio_obj4);
+
+        var audio_container = this.audio_self ? self_audio : other_audio;
+        audio_container.count--;
+        if (audio_container.count == 0) {
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj1);
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
+             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
+        }
     };
 
     return FireAutoEffectController;
