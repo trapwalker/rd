@@ -17,6 +17,7 @@ from sublayers_site.site_locale import locale, locale_objects
 class SiteMainHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
         # Подготовка списка новостей
         news_list = self.application.news_manager.news_by_locale(locale=self.user_lang)
         # Узнать количество пользователей (онлайн пока не делаем, так как не хотим делать запрос к серверу)

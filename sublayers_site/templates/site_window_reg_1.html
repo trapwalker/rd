@@ -122,7 +122,8 @@
                 username: username,
                 avatar_index: reg1_current_avatar,
                 class_index: reg1_current_class,
-                class_node_hash: role_class_list_info[reg1_current_class].node_hash
+                class_node_hash: role_class_list_info[reg1_current_class].node_hash,
+                _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
                 reg1_last_input_click = null;
@@ -154,7 +155,7 @@
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
-            data: { action: 'back' },
+            data: { action: 'back', _xsrf: getCookie('_xsrf') },
             success: function(data) {
                 reg1_last_input_click = null;
                 GetUserInfo();

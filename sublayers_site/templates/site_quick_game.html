@@ -73,7 +73,8 @@
             data: {
                 username: username,
                 qg_car_index: qg_car_index,
-                action: 'quick_reg'
+                action: 'quick_reg',
+                _xsrf: getCookie('_xsrf')
             },
             success: function() {
                 audioManager.play('button_screen_press');

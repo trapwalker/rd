@@ -122,7 +122,8 @@
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: {
-                action: 'next'
+                action: 'next',
+                _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
                 consoleWReg2.add_message('user', _('con_wreg_msg50'));
@@ -144,7 +145,7 @@
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
-            data: { action: 'back' },
+            data: { action: 'back', _xsrf: getCookie('_xsrf')},
             success: function(data) { GetUserInfo(); audioManager.play('button_screen_press'); },
             error: function (jqXHR, textStatus, errorThrown) {
                 consoleWReg2.add_message('user', _('con_wreg_msg54'));
