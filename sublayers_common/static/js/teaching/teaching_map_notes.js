@@ -214,8 +214,8 @@ var ZoomSliderTeachingMapNote = (function (_super) {
 
     ZoomSliderTeachingMapNote.prototype.redraw = function() {
         if (interface_scale_big) {
-            this.draw_arrow(teachingMapManager.context, new Point(245, 190), 180);
-            this.draw_arrow(teachingMapManager.context, new Point(245, 390), 180);
+            this.draw_arrow(teachingMapManager.context, new Point(375, 230), 180);
+            this.draw_arrow(teachingMapManager.context, new Point(375, 430), 180);
         }
         else {
             this.draw_arrow(teachingMapManager.context, new Point(225, 160), 180);
