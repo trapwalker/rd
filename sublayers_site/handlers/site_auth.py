@@ -25,6 +25,13 @@ def clear_all_cookie(handler):
     handler.clear_cookie("user")
 
 
+def get_forum_cookie_str(username):
+    cookie_format = u"{}|{}".format
+    for_hash_str = u"{}{}".format(username, options.forum_cookie_secret)
+    hash = hashlib.md5(for_hash_str.encode('utf-8')).hexdigest()
+    return cookie_format(username, hash)
+
+
 class LogoutHandler(BaseSiteHandler):
     def post(self):
         clear_all_cookie(self)
@@ -185,12 +192,6 @@ class StandardLoginHandler(BaseSiteHandler):
         else:
             raise tornado.gen.Return(res.get('u_id'))
 
-    def _forum_cookie_setup(self, username):
-        cookie_format = u"{}|{}".format
-        for_hash_str = u"{}{}".format(username, options.forum_cookie_secret)
-        hash = hashlib.md5(for_hash_str.encode('utf-8')).hexdigest()
-        return cookie_format(username, hash)
-
     @tornado.gen.coroutine
     def _authorisation(self):
         clear_all_cookie(self)
@@ -210,7 +211,7 @@ class StandardLoginHandler(BaseSiteHandler):
             return
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
-        self.set_cookie("forum_user", self._forum_cookie_setup(user.name))
+        self.set_cookie("forum_user", get_forum_cookie_str(user.name))
         # return self.redirect("/")
         self.finish({'status': 'success'})
 
@@ -304,7 +305,7 @@ class StandardLoginHandler(BaseSiteHandler):
             #     self.finish({'status': 'Ошибка регистрации на форуме.'})
             #     log.info('User <{}> not registered on forum!'.format(username))
             #     return
-            self.set_cookie("forum_user", self._forum_cookie_setup(username))
+            self.set_cookie("forum_user", get_forum_cookie_str(username))
 
             yield user.save()
             self.finish({'status': 'success'})
@@ -357,7 +358,7 @@ class SetForumUserAuth(StandardLoginHandler):
     def get(self):
         user = self.current_user
         if user and user.name:
-            self._forum_cookie_setup(user.name)
+            self.set_cookie("forum_user", get_forum_cookie_str(user.name))
             self.finish("OK")
         else:
             self.finish("Not auth")
