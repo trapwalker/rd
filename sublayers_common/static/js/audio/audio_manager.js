@@ -32,7 +32,7 @@ var AudioManager = (function () {
     AudioManager.prototype.set_gain = function (name, value, play_object) {
         var audio_obj = this.get(name);
         if (!audio_obj) return false;
-        return audio_obj.gain(value, play_object);
+        return audio_obj.gain(play_object.gain_node, value);
     };
 
     AudioManager.prototype.set_general_gain = function (value) {
