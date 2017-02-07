@@ -132,7 +132,7 @@ class WeaponAuto(Weapon):
         self.targets.append(car)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, sector=self.sector, action=True, time=time).post()
         # todo: пробросить сюда Ивент
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
@@ -170,7 +170,7 @@ class WeaponAuto(Weapon):
                 owner.log.info('Error _stop_fire_to_car: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
             log.debug(''.join(traceback.format_stack()))
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, sector=self.sector, action=False, time=time).post()
 
     def on_start(self, item, time):
         super(WeaponAuto, self).on_start(item=item, time=time)

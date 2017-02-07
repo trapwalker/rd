@@ -746,13 +746,17 @@ var ClientManager = (function () {
             fireEffectManager.addController({
                 subj: event.subj,
                 obj: event.obj,
-                side: event.side
+                side: event.side,
+                weapon_animation: event.weapon_animation,
+                animation_tracer_rate: event.animation_tracer_rate
             });
         else
             fireEffectManager.delController({
                 subj: event.subj,
                 obj: event.obj,
-                side: event.side
+                side: event.side,
+                weapon_animation: event.weapon_animation,
+                animation_tracer_rate: event.animation_tracer_rate
             });
     };
 
