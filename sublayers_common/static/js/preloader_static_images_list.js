@@ -14,6 +14,7 @@
 
     preloaderImage.add_list([
         '/static/img/teaching/arrow_big.png',
+        '/static/img/teaching/arrow_big_big.png',
         '/static/img/cursors/hyper.png?' + random_str(),
         '/static/img/cursors/main.png?' + random_str(),
         '/static/img/cursors/main.png?' + random_str(),

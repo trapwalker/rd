@@ -131,7 +131,8 @@
             data: {
                 email: email,
                 password: password,
-                action: 'reg'
+                action: 'reg',
+                _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
                 consoleWReg.add_message('user', _('con_wreg_msg22'), true);
@@ -169,7 +170,8 @@
             data: {
                 email: email,
                 password: password,
-                action: 'auth'
+                action: 'auth',
+                _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
                 consoleWReg.add_message('user', _('con_wreg_msg28'), true);

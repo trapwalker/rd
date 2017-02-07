@@ -31,7 +31,7 @@
         $.ajax({
             url: location.protocol + '//' + location.host + '/logout',
             method: 'POST',
-            data: {},
+            data: {_xsrf: getCookie('_xsrf')},
             success: function() {
                 registration_status = 'not_register';
                 $('#RDbtn_start').click();

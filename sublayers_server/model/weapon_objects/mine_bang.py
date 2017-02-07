@@ -43,7 +43,7 @@ class BangMine(Slave):
         self.delete(time=time)
 
     def on_contact_in(self, time, obj, **kw):
-        log.info('mine on_contact_in %s', obj)
+        # log.info('mine on_contact_in %s', obj)
         super(BangMine, self).on_contact_in(time=time, obj=obj)
         if self.is_target(target=obj):
             self._on_bang(time=time)
