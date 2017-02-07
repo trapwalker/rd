@@ -13,6 +13,7 @@ if __name__ == '__main__':
 
 
 from sublayers_common.ctx_timer import Timer
+from sublayers_server.model.registry_me.uri import URI
 
 import six
 import yaml
@@ -112,7 +113,7 @@ class EmbeddedNodeField(EmbeddedDocumentField):
     def to_python(self, value):
         if isinstance(value, basestring):
             parent = REG[value]
-            node = parent.__class__()
+            node = parent.__class__(parent=parent)
 
             return node
 
@@ -122,6 +123,7 @@ class EmbeddedNodeField(EmbeddedDocumentField):
 
 
 class Node(EmbeddedDocument):
+    _dynamic = True
     meta = dict(
         allow_inheritance=True,
     )
@@ -142,7 +144,7 @@ class Node(EmbeddedDocument):
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
-    def __init__(self, name=None, owner=None, parent=None, uri=None, __autoregister=True, **kw):
+    def __init__(self, name=None, owner=None, parent=None, uri=None, **kw):
         if parent:
             if not isinstance(parent, Node):
                 parent = REG[parent]
@@ -158,12 +160,10 @@ class Node(EmbeddedDocument):
                 owner = REG[owner]
 
         if uri is None and name is not None:
-            uri = '/'.join((owner and owner.uri and [owner.uri] or []) + [name])
+            owner_uri = owner and owner.uri and URI(owner.uri) or URI('reg://')
+            uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
 
         super(Node, self).__init__(name=name, owner=owner, parent=parent, uri=uri, **kw)
-
-        if uri and __autoregister:
-            REG._put(self)
 
     # def make_uri(self):
     #     owner = self.owner
@@ -254,39 +254,6 @@ class Node(EmbeddedDocument):
         )
         return d
 
-    @classmethod
-    def _load_node_from_fs(cls, path, owner=None):
-        assert isinstance(path, unicode), '{}._load_node: path is not unicode, but: {!r}'.format(cls, path)
-        attrs = {}
-        for f in sorted(os.listdir(path)):
-            assert isinstance(f, unicode), '{}._load_node: listdir returns non unicode value'.format(cls)
-            # f = f.decode(sys.getfilesystemencoding())
-            p = os.path.join(path, f)
-            # todo: need to centralization of filtering
-            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
-                with open(p) as attr_file:
-                    try:
-                        d = yaml.load(attr_file) or {}
-                    except yaml.YAMLError as e:
-                        raise RegistryNodeFormatError(e)
-                    assert isinstance(d, dict), 'Yaml content is not object, but: {!r}'.format(d)
-                    attrs.update(d.items())
-
-        attrs.update(owner=owner)
-        attrs.setdefault('name', os.path.basename(path.strip('\/')))
-        attrs.setdefault('parent', owner)
-        attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
-        attrs.setdefault('fixtured', True)
-
-        parent = attrs['parent']
-        _cls = cls
-        if parent:
-            assert isinstance(parent, Node)
-            node = parent.instantiate(**attrs)
-        else:
-            node = cls._from_son(attrs, created=True)
-        return node
-
 
 class Registry(Document):
     tree = MapField(field=EmbeddedDocumentField(document_type=Node))
@@ -316,16 +283,57 @@ class Registry(Document):
         with Timer(name='registryFS loader', logger=log) as timer:
             while stack:
                 pth, owner = stack.pop()
-                node = Node._load_node_from_fs(pth, owner)
+                node = self._load_node_from_fs(pth, owner)
                 if node:
                     count += 1
-                    self._put(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
 
+            # todo: resolve EmbeddedNodeField's
+            for node in self.tree.values():
+                for field_name, field in node._fields.items():
+                    if isinstance(field, EmbeddedNodeField):
+                        value = node._data.get(field_name, None)
+                        if value and not isinstance(value, Node):
+                            node._data[field_name] = field.to_python(value)
+
+
         log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(count, timer.duration))
+
+    def _load_node_from_fs(self, path, owner=None):
+        assert isinstance(path, unicode), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
+        attrs = {}
+        for f in sorted(os.listdir(path)):
+            assert isinstance(f, unicode), 'listdir returns non unicode value: {!r}'.format(f)
+            # f = f.decode(sys.getfilesystemencoding())
+            p = os.path.join(path, f)
+            # todo: need to centralization of filtering
+            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
+                with open(p) as attr_file:
+                    try:
+                        d = yaml.load(attr_file) or {}
+                    except yaml.YAMLError as e:
+                        raise RegistryNodeFormatError(e)
+                    assert isinstance(d, dict), 'Yaml content is not object, but: {!r}'.format(d)
+                    attrs.update(d.items())
+
+        attrs.update(owner=owner)
+        attrs.setdefault('name', os.path.basename(path.strip('\/')))
+        attrs.setdefault('parent', owner)
+        attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
+        #attrs.setdefault('fixtured', True)
+        parent = attrs.get('parent', None)
+        if parent:
+            attrs.setdefault('_cls', parent._cls)
+
+        class_name = attrs.get('_cls', Node._class_name)
+        cls = get_document(class_name)
+
+        node = cls(__auto_convert=False, _created=False, **attrs)
+        self._put(node)
+        return node
 
 REG = Registry()
 
@@ -337,6 +345,7 @@ class A(Node):
     y = IntField(null=True)
     z = IntField(null=True)
     e = EmbeddedNodeField(document_type=Node)
+    #k = RegistryLinkField
 
 
 class A2(A):
@@ -352,7 +361,7 @@ def test1():
     a   = A(name='a'   , x= 3, y= 7, e=None, )
     aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, )
     aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,)
-    ab  = A(name='ab'  , x=31, y=71, e='a/aa', owner=a.uri, )
+    ab  = A(name='ab'  , x=31, y=71, e='reg:///a/aa', owner=a.uri, )
 
     # aa.e = ab.uri
 
@@ -361,8 +370,15 @@ def test1():
     globals().update(locals())
 
 
+def test2():
+    REG.load(u'../../../tmp/reg')
+    globals().update(locals())
+
+
 if __name__ == '__main__':
+    from pprint import pprint as pp
     db = connect(db='test_me')
     log.info('Use `test_me` db')
 
-    test1()
+    #test1()
+    test2()
