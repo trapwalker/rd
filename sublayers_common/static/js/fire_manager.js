@@ -176,8 +176,8 @@ var FireEffectManager = (function () {
 })();
 
 var self_audio = {
-    name: 'shot_01',
-    gain: 0.1,
+    name: 'auto_self_3',
+    gain: 1,
     count: 0,
     audio_obj1: null,
     audio_obj2: null,
@@ -186,8 +186,8 @@ var self_audio = {
 };
 
 var other_audio = {
-    name: 'shot_02',
-    gain: 0.03,
+    name: 'auto_other_2',
+    gain: 1,
     count: 0,
     audio_obj1: null,
     audio_obj2: null,
@@ -210,9 +210,9 @@ var FireAutoEffectController = (function () {
         if (audio_container.count == 1) {
             var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
             audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0,             audio_container.gain, null, true, 0, 0, 1);
-            audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
-            audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
-            audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
+            //audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
+            //audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
+            //audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
         }
     }
 
@@ -268,9 +268,9 @@ var FireAutoEffectController = (function () {
         audio_container.count--;
         if (audio_container.count == 0) {
              audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj1);
-             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
-             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
-             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
+             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
+             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
+             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
         }
     };
 
