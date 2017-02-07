@@ -16,6 +16,7 @@ var ModalWindow = (function () {
         this.modalDialogInfo = $('#modalInfoPage');
         this.modalAnswerInfo = $('#modalAnswerPage');
         this.modalItemDivision = $('#modalItemDivisionPage');
+        this.modalItemActivation = $('#modalItemActivationPage');
         this.modalQuickGamePoints = $('#modalQuickGamePointsPage');
         this.modalQuickGameMapTeaching = $('#modalQuickGameMapTeachingPage');
 
@@ -29,6 +30,7 @@ var ModalWindow = (function () {
         this.modalDialogInfo.addClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-hide');
         this.modalItemDivision.addClass('modal-window-hide');
+        this.modalItemActivation.addClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-hide');
         this.modalQuickGameMapTeaching.addClass('modal-window-hide');
 
@@ -40,6 +42,7 @@ var ModalWindow = (function () {
         this.modalDialogInfoLoad();
         this.modalDialogAnswerLoad();
         this.modalItemDivisionLoad();
+        this.modalItemActivationLoad();
         this.modalQuickGamePointsPageLoad();
         this.modalQuickGameMapTeachingPageLoad();
     }
@@ -88,6 +91,9 @@ var ModalWindow = (function () {
         this.modalItemDivision.removeClass('modal-window-show');
         this.modalItemDivision.addClass('modal-window-hide');
 
+        this.modalItemActivation.removeClass('modal-window-show');
+        this.modalItemActivation.addClass('modal-window-hide');
+
         this.modalQuickGamePoints.removeClass('modal-window-show');
         this.modalQuickGamePoints.addClass('modal-window-hide');
 
@@ -101,6 +107,9 @@ var ModalWindow = (function () {
         //console.log('ModalWindow.prototype.closeEscWindows');
         if (this.modalItemDivision.hasClass('modal-window-show'))
             this.modalItemDivisionHide();
+
+        if (this.modalItemActivation.hasClass('modal-window-show'))
+            this.modalItemActivationHide();
     };
 
 
@@ -524,6 +533,46 @@ var ModalWindow = (function () {
             });
         });
         this.modalItemDivision.keydown(function(event) {
+            if (event.keyCode == 27) modalWindow.closeEscWindows();
+        });
+    };
+
+
+    ModalWindow.prototype.modalItemActivationShow = function (options) {
+        var self = this;
+        options = options || {};
+
+        this.modalItemActivation.removeClass('modal-window-hide');
+        this.modalItemActivation.addClass('modal-window-show');
+        this.setupWindowAtScreenCenter(this.modalItemActivation);
+
+        this.act_item_all = options.activate_time * 1000;
+        this.act_item_start = clock.getClientTime();
+        this.act_item_load_bar = this.modalItemActivation.find('.mw_ia_progress_bar_load').first();
+        this.act_item_load_text = this.modalItemActivation.find('.mw_ia_progress_bar_text').first();
+        this.act_item_interval = setInterval(function() {
+            var d_progress = Math.floor((clock.getClientTime() - self.act_item_start) * 100 / self.act_item_all);
+            self.act_item_load_bar.css('width', d_progress + '%');
+            self.act_item_load_text.text(d_progress + '% complete');
+        }, 100);
+        this.act_item_timeout = setTimeout(function() {
+            if (self.act_item_interval) clearInterval(self.act_item_interval);
+        }, this.act_item_all);
+
+        var btn_cancel = this.modalItemDivision.find('#activationItemBtnCancel');
+        btn_cancel.on('click', function(event) { model_manager.sendCancelActivationItem(); });
+    };
+
+    ModalWindow.prototype.modalItemActivationHide = function(){
+        this.modalItemActivation.removeClass('modal-window-show');
+        this.modalItemActivation.addClass('modal-window-hide');
+        returnFocusToMap();
+    };
+
+    ModalWindow.prototype.modalItemActivationLoad = function () {
+        var self = this;
+        this.modalItemActivation.load('/static/modal_window/itemActivation.html', null);
+        this.modalItemActivation.keydown(function(event) {
             if (event.keyCode == 27) modalWindow.closeEscWindows();
         });
     };

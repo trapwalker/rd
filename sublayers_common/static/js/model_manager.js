@@ -1248,6 +1248,19 @@ var ClientManager = (function () {
         $('#PingSpan').text(event.ping);
     };
 
+    // Активация итема
+
+    ClientManager.prototype.StartActivateItem = function (event) {
+        console.log('ClientManager.prototype.StartActivateItem', event);
+        if (event.activate_time > 0)
+            modalWindow.modalItemActivationShow({activate_time: event.activate_time, item: event.item});
+    };
+
+    ClientManager.prototype.StopActivateItem = function (event) {
+        console.log('ClientManager.prototype.StopActivateItem', event);
+        modalWindow.modalItemActivationHide({});
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
@@ -1685,8 +1698,17 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    // Сообщения локаций
+    ClientManager.prototype.sendCancelActivationItem = function() {
+        var mes = {
+            call: "cancel_activation_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
+    // Сообщения локаций
     ClientManager.prototype.sendEnterToNPC = function (npc) {
         //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
         var mes = {

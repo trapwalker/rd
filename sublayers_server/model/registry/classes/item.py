@@ -30,6 +30,7 @@ class Item(Root):
     inv_icon_supersmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
+    activate_time = FloatField(caption=u'Время активации итема')
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
@@ -42,6 +43,12 @@ class Item(Root):
     @classmethod
     def activate(cls):
         pass
+
+    def get_activate_time(self, agent=None):
+        return self.activate_time
+
+    def can_activate(self, agent=None):
+        return True
 
     # def split(self, count):
     #     # count - Сколько отнять от текущего и сколько будет в новом

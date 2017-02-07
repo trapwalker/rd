@@ -504,6 +504,11 @@ class Bot(Mobile):
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
         self.start_shield_event = None
 
+        # self.current_item_action ивент для активации итемов, единовременно игрок (а точнее его машинка) может
+        # активировать только один итем (активация может потребовать некоторое время). Любое действие в этот момент
+        # приведет к отмене текущей активации, итем при этом не должен быть потерян.
+        self.current_item_action = None
+
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
         d.update(quick_consumer_panel=self.quick_consumer_panel.as_dict(time=time))

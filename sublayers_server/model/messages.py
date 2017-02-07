@@ -1225,3 +1225,29 @@ class PingInfoMessage(Message):
         if self.agent.connection:
             d.update(ping=self.agent.connection._current_ping)
         return d
+
+
+class StartActivateItem(Message):
+    def __init__(self, item, activate_time, **kw):
+        super(StartActivateItem, self).__init__(**kw)
+        self.item = item
+        self.activate_time = activate_time
+
+    def as_dict(self):
+        d = super(StartActivateItem, self).as_dict()
+        d.update(
+            item=self.item.example.as_client_dict(),
+            activate_time=self.activate_time,
+        )
+        return d
+
+
+class StopActivateItem(Message):
+    def __init__(self, item, **kw):
+        super(StopActivateItem, self).__init__(**kw)
+        self.item = item
+
+    def as_dict(self):
+        d = super(StopActivateItem, self).as_dict()
+        d.update(item=self.item.example.as_client_dict())
+        return d
