@@ -40,7 +40,7 @@ class RegistryNodeFormatError(RegistryError):
 
 
 class RegistryLinkField(BaseField):
-    def __init__(self, document_type=None, **kwargs):
+    def __init__(self, document_type='Node', **kwargs):
         super(RegistryLinkField, self).__init__(**kwargs)
         self.document_type_obj = document_type
 
@@ -130,8 +130,8 @@ class Node(EmbeddedDocument):
     uri = StringField(unique=True, null=True, not_inherited=True)
     #owner = ReferenceField(document_type='self', not_inherited=True)  # todo: make it property
     #parent = ReferenceField(document_type='Node', not_inherited=True)
-    parent = RegistryLinkField(not_inherited=True)
-    owner = RegistryLinkField(not_inherited=True)
+    parent = RegistryLinkField(document_type='self', not_inherited=True)
+    owner = RegistryLinkField(document_type='self', not_inherited=True)
     # todo: make `owner` property
 
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
@@ -297,7 +297,7 @@ class Registry(Document):
                     if isinstance(field, EmbeddedNodeField):
                         value = node._data.get(field_name, None)
                         if value and not isinstance(value, Node):
-                            node._data[field_name] = field.to_python(value)
+                            setattr(node, field_name, field.to_python(value))
 
 
         log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(count, timer.duration))
@@ -372,6 +372,13 @@ def test1():
 
 def test2():
     REG.load(u'../../../tmp/reg')
+    REG.save()
+    globals().update(locals())
+
+
+def test3():
+    #REG.load(u'../../../tmp/reg')
+    reg = Registry.objects.first()
     globals().update(locals())
 
 
@@ -382,3 +389,4 @@ if __name__ == '__main__':
 
     #test1()
     test2()
+    #test3()
