@@ -807,6 +807,7 @@
     width: 460px;
     height: 160px;
 }
+#modalItemActivationPage:focus { outline: 0px solid transparent; }
 
 .mw_ia_top_block {
     position: relative;

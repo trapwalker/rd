@@ -69,15 +69,15 @@ class Event(object):
         self.server.stat_log.s_events_on(time=self.time, delta=1.0)
         return self
 
-    def cancel(self):
+    def cancel(self, time=None):
         if self.actual:
-            self.on_cancel()
+            self.on_cancel(time=time)
             self.actual = False
             log.debug('CANCEL %s', self)
         else:
             log.warning('Double cancelling event: %s', self)
 
-    def on_cancel(self):
+    def on_cancel(self, time=None):
         self.server.stat_log.s_events_on(time=self.time, delta=-1.0)
 
     def __hash__(self):
@@ -159,8 +159,8 @@ class Objective(Event):
         super(Objective, self).on_perform()
         self.obj.events.remove(self)
 
-    def on_cancel(self):
-        super(Objective, self).on_cancel()
+    def on_cancel(self, **kw):
+        super(Objective, self).on_cancel(**kw)
         self.obj.events.remove(self)
 
 
@@ -539,7 +539,7 @@ class ItemPreActivationEvent(Event):
             if not item.example.can_activate(agent=self.agent):
                 return
             if obj.current_item_action:
-                obj.current_item_action.cancel()
+                obj.current_item_action.cancel(time=self.time)
             activate_time = item.example.get_activate_time(agent=self.agent)
             StartActivateItem(agent=self.agent, time=self.time, item=item, activate_time=activate_time).post()
             obj.current_item_action = ItemActivationEvent(agent=self.agent,
@@ -563,9 +563,7 @@ class ItemActivationEvent(Event):
     def on_perform(self):
         super(ItemActivationEvent, self).on_perform()
 
-        StopActivateItem(agent=self.agent, time=self.time, item=self.item).post()
-
-        # пытаемся получить инвентарь и итем
+        # Пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
         if obj is None:
             return
@@ -573,6 +571,11 @@ class ItemActivationEvent(Event):
         item = inventory.get_item(position=self.position)
         if item is None:
             return
+
+        # Отключаем процесс активвации
+        StopActivateItem(agent=self.agent, time=self.time, item=self.item).post()
+        obj.current_item_action = None
+
         # Если это не тот итем который мы начинали активировать то ниче не делать
         if (self.item is not None) and not (self.item is item):
             return
@@ -581,9 +584,12 @@ class ItemActivationEvent(Event):
         if event_cls:
             event_cls(agent=self.agent, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
 
-    def on_cancel(self):
-        super(ItemActivationEvent, self).on_cancel()
-        StopActivateItem(agent=self.agent, time=self.time, item=self.item).post()
+    def on_cancel(self, time):
+        super(ItemActivationEvent, self).on_cancel(time)
+        obj = self.server.objects.get(self.owner_id)
+        if obj is not None:
+            obj.current_item_action = None
+        StopActivateItem(agent=self.agent, time=time, item=self.item).post()
 
 
 class StrategyModeInfoObjectsEvent(Event):

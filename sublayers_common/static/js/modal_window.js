@@ -108,8 +108,8 @@ var ModalWindow = (function () {
         if (this.modalItemDivision.hasClass('modal-window-show'))
             this.modalItemDivisionHide();
 
-        if (this.modalItemActivation.hasClass('modal-window-show'))
-            this.modalItemActivationHide();
+        //if (this.modalItemActivation.hasClass('modal-window-show'))
+        //    this.modalItemActivationHide();
     };
 
 
@@ -545,11 +545,10 @@ var ModalWindow = (function () {
         this.modalItemActivation.removeClass('modal-window-hide');
         this.modalItemActivation.addClass('modal-window-show');
         this.setupWindowAtScreenCenter(this.modalItemActivation);
+        document.getElementById('modalItemActivationPage').focus();
 
         this.act_item_all = options.activate_time * 1000;
         this.act_item_start = clock.getClientTime();
-        this.act_item_load_bar = this.modalItemActivation.find('.mw_ia_progress_bar_load').first();
-        this.act_item_load_text = this.modalItemActivation.find('.mw_ia_progress_bar_text').first();
         this.act_item_interval = setInterval(function() {
             var d_progress = Math.floor((clock.getClientTime() - self.act_item_start) * 100 / self.act_item_all);
             self.act_item_load_bar.css('width', d_progress + '%');
@@ -557,13 +556,17 @@ var ModalWindow = (function () {
         }, 100);
         this.act_item_timeout = setTimeout(function() {
             if (self.act_item_interval) clearInterval(self.act_item_interval);
+            self.act_item_load_bar.css('width', '0%');
+            self.act_item_load_text.text('0% complete');
         }, this.act_item_all);
-
-        var btn_cancel = this.modalItemDivision.find('#activationItemBtnCancel');
-        btn_cancel.on('click', function(event) { model_manager.sendCancelActivationItem(); });
     };
 
-    ModalWindow.prototype.modalItemActivationHide = function(){
+    ModalWindow.prototype.modalItemActivationHide = function() {
+        //console.log('ModalWindow.prototype.modalItemActivationHide');
+        clearTimeout(this.act_item_timeout);
+        clearInterval(this.act_item_interval);
+        this.act_item_load_bar.css('width', '0');
+        this.act_item_load_text.text('0% complete');
         this.modalItemActivation.removeClass('modal-window-show');
         this.modalItemActivation.addClass('modal-window-hide');
         returnFocusToMap();
@@ -571,9 +574,14 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalItemActivationLoad = function () {
         var self = this;
-        this.modalItemActivation.load('/static/modal_window/itemActivation.html', null);
-        this.modalItemActivation.keydown(function(event) {
-            if (event.keyCode == 27) modalWindow.closeEscWindows();
+        this.modalItemActivation.load('/static/modal_window/itemActivation.html', function() {
+            var btn_cancel = self.modalItemActivation.find('#activationItemBtnCancel');
+            btn_cancel.on('click', function(event) { clientManager.sendCancelActivationItem(); });
+            self.act_item_load_bar = self.modalItemActivation.find('.mw_ia_progress_bar_load').first();
+            self.act_item_load_text = self.modalItemActivation.find('.mw_ia_progress_bar_text').first();
+        });
+        self.modalItemActivation.keydown(function(event) {
+            if (event.keyCode == 27) clientManager.sendCancelActivationItem();
         });
     };
 
