@@ -207,6 +207,9 @@ class VisibleObject(PointObject):
     def del_from_chat(self, chat, time):
         pass
 
+    def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
+        return True
+
 
 class Observer(VisibleObject):
     def __init__(self, **kw):
@@ -261,3 +264,16 @@ class Observer(VisibleObject):
 
     def upd_observing_range(self, time):
         pass
+
+    def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
+        obj_pos = obj_pos or self.position(time)
+        subj_pos = subj_pos or subj.position(time)
+        # 1 - (1 - v) * (1 - z)
+        visibility = self.get_visibility(time=time)
+        vigilance = subj.params.get('p_vigilance').value
+        vis = visibility + vigilance - visibility * vigilance
+        res = (subj.get_observing_range(time=time) * vis) >= abs(obj_pos - subj_pos)
+        return res and super(Observer, self).can_see_me(subj=subj, time=time, obj_pos=None, subj_pos=None)
+
+    def can_i_see(self, obj, time, obj_pos=None, subj_pos=None):
+        return True
