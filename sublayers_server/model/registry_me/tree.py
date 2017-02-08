@@ -61,7 +61,10 @@ class RegistryLinkField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         if isinstance(value, six.string_types):
-            return REG[value]
+            reg = instance.root_instance
+            node = reg[value]
+            instance._data[value] = node  # Caching
+            return node
 
         return value
         #return super(RegistryLinkField, self).__get__(instance, owner)
@@ -80,7 +83,6 @@ class RegistryLinkField(BaseField):
 
         else:
             raise TypeError('Linked node type is not supported: {!r}'.format(document))
-
 
     # def to_python(self, value):
     #     """Convert a MongoDB-compatible type to a Python type."""
@@ -123,11 +125,39 @@ class EmbeddedNodeField(EmbeddedDocumentField):
 
 
 class Node(EmbeddedDocument):
+    #__slots__ = ('_uri',)
     _dynamic = True
     meta = dict(
         allow_inheritance=True,
     )
-    uri = StringField(unique=True, null=True, not_inherited=True)
+
+    @property
+    def uri(self):
+        # todo: cache it
+        # if hasattr(self, '_uri'):
+        #     return self._uri
+        uri = None
+        owner = self.owner
+        assert owner is None or isinstance(owner, Node), 'Node owner is not Node: {!r}'.format(owner)
+        name = self.name
+        if name is not None:
+            owner_uri = owner and owner.uri
+            owner_uri = URI(owner.uri) if owner_uri else URI('reg://')
+            uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
+        # self._uri = uri
+        return uri
+
+    @property
+    def root_instance(self):
+        # todo: cache it
+        instance = self._instance
+        next_instance = instance
+        while next_instance and hasattr(next_instance, '_instance'):
+            instance = next_instance
+            next_instance = instance._instance
+        return next_instance or instance
+
+    #uri = StringField(unique=True, null=True, not_inherited=True)
     #owner = ReferenceField(document_type='self', not_inherited=True)  # todo: make it property
     #parent = ReferenceField(document_type='Node', not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
@@ -144,26 +174,18 @@ class Node(EmbeddedDocument):
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
-    def __init__(self, name=None, owner=None, parent=None, uri=None, **kw):
-        if parent:
-            if not isinstance(parent, Node):
-                parent = REG[parent]
+    def __init__(self, name=None, parent=None, **kw):
+        # if parent:
+        #     if not isinstance(parent, Node):
+        #         parent = REG[parent]
+        #
+        #     # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
+        #     _ingeritable = set(self._get_inheritable_field_names())
+        #     d = {k: v for k, v in parent._data.items() if k in _ingeritable}
+        #     d.update(kw)
+        #     kw = d
 
-            # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
-            _ingeritable = set(self._get_inheritable_field_names())
-            d = {k: v for k, v in parent._data.items() if k in _ingeritable}
-            d.update(kw)
-            kw = d
-
-        if owner:
-            if not isinstance(owner, Node):
-                owner = REG[owner]
-
-        if uri is None and name is not None:
-            owner_uri = owner and owner.uri and URI(owner.uri) or URI('reg://')
-            uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
-
-        super(Node, self).__init__(name=name, owner=owner, parent=parent, uri=uri, **kw)
+        super(Node, self).__init__(name=name, parent=parent, **kw)
 
     # def make_uri(self):
     #     owner = self.owner
@@ -269,9 +291,12 @@ class Registry(Document):
                 **locals())
         )
 
-    def get(self, uri, default=None):
+    def get_node_by_uri(self, uri, default=None):
         # tod4o: support alternative path notations (list, relative, parametrized)
         return self.tree.get(uri, default)
+
+
+    get = get_node_by_uri
 
     def __getitem__(self, uri):
         # tod4o: support alternative path notations (list, relative, parametrized)
@@ -373,6 +398,7 @@ def test1():
 def test2():
     REG.load(u'../../../tmp/reg')
     REG.save()
+    print(REG['reg:///reg/a/ab'].e.root_instance)
     globals().update(locals())
 
 
@@ -387,6 +413,6 @@ if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
 
-    #test1()
-    test2()
+    test1()
+    #test2()
     #test3()
