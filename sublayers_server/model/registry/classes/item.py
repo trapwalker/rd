@@ -1,13 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 
 import logging
-log = logging.getLogger(__name__)
 
+log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm.fields import (
     IntField, StringField, FloatField, UniReferenceField, EmbeddedDocumentField, ListField,
 )
+
 
 # from sublayers_server.model.transaction_events import (
 #     TransactionActivateTank, TransactionActivateAmmoBullets,
@@ -31,6 +32,7 @@ class Item(Root):
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
     activate_time = FloatField(caption=u'Время активации итема')
+    activate_disable_comment = StringField(caption=u'Опсиание условий активации', tags='client')
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
@@ -44,11 +46,11 @@ class Item(Root):
     def activate(cls):
         pass
 
-    def get_activate_time(self, agent=None):
+    def get_activate_time(self, agent_model=None):
         return self.activate_time
 
-    def can_activate(self, agent=None):
-        return True
+    def can_activate(self, time, agent_model=None):
+        return False
 
     # def split(self, count):
     #     # count - Сколько отнять от текущего и сколько будет в новом
@@ -60,12 +62,13 @@ class Item(Root):
     def instantiate(self, **kw):
         inst = super(Item, self).instantiate(**kw)
         if inst.amount > inst.stack_size:
-            log.warning('Item stack owerflow truncated: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=inst))
+            log.warning(
+                'Item stack owerflow truncated: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=inst))
             inst.amount = inst.stack_size
         return inst
 
-    # def __str__(self):
-    #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
+        # def __str__(self):
+        #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
 
 
 class ItemUsable(Item):
@@ -83,10 +86,15 @@ class TankFull(Tank):
         from sublayers_server.model.transaction_events import TransactionActivateTank
         return TransactionActivateTank
 
+    def can_activate(self, time, agent_model=None):
+        return (agent_model is not None) and \
+               (agent_model.car is not None) and \
+               (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
+
 
 class TankEmpty(Tank):
     full_tank = UniReferenceField(caption=u'Ссылка на полную канистру, получаемую заправкой этой пустой канистры',
-                                       reference_document_type="sublayers_server.model.registry.classes.item.TankFull")
+                                  reference_document_type="sublayers_server.model.registry.classes.item.TankFull")
 
 
 class BuildSet(ItemUsable):
@@ -96,6 +104,11 @@ class BuildSet(ItemUsable):
     def activate(cls):
         from sublayers_server.model.transaction_events import TransactionActivateRebuildSet
         return TransactionActivateRebuildSet
+
+    def can_activate(self, time, agent_model=None):
+        return (agent_model is not None) and \
+               (agent_model.car is not None) and \
+               (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
 
 
 class AmmoBullets(ItemUsable):
@@ -125,6 +138,11 @@ class MapWeaponMineItem(MapWeaponItem):
     def activate(cls):
         from sublayers_server.model.transaction_events import TransactionActivateMine
         return TransactionActivateMine
+
+    def can_activate(self, time, agent_model=None):
+        return (agent_model is not None) and \
+               (agent_model.car is not None) and \
+               (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
 
 
 class MapWeaponRocketItem(MapWeaponItem):
@@ -157,7 +175,6 @@ class TunerItem(SlotItem):
             link = StringField(caption=u"Ссылка на картинку", tags='client')
             z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags='client')
 
-
         car = UniReferenceField(
             caption=u"Автомобиль, для которого указаны данные параметры",
             reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'
@@ -169,7 +186,6 @@ class TunerItem(SlotItem):
             d = super(TunerItem.TunerImage, self).as_client_dict()
             d['car'] = self.car and self.car.node_hash()
             return d
-
 
     pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags='client')
     images = ListField(
@@ -200,7 +216,6 @@ class ArmorerItem(SlotItem):
         small = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
         middle = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
         big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
-
 
     weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags='client')
     armorer_images = EmbeddedDocumentField(

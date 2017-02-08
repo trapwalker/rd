@@ -7,7 +7,8 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.utils import time_log_format
 from sublayers_server.model.messages import (FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance,
                                              StartActivateItem, StopActivateItem)
-
+from sublayers_server.model.game_log_messages import (TransactionCancelActivateItemLogMessage,
+                                                      TransactionDisableActivateItemLogMessage)
 from functools import total_ordering, wraps, partial
 
 
@@ -536,11 +537,12 @@ class ItemPreActivationEvent(Event):
             return
         event_cls = item.example.activate()
         if event_cls:
-            if not item.example.can_activate(agent=self.agent):
+            if not item.example.can_activate(time=self.time, agent_model=self.agent):
+                TransactionDisableActivateItemLogMessage(agent=self.agent, time=self.time, item=item.example).post()
                 return
             if obj.current_item_action:
                 obj.current_item_action.cancel(time=self.time)
-            activate_time = item.example.get_activate_time(agent=self.agent)
+            activate_time = item.example.get_activate_time(agent_model=self.agent)
             StartActivateItem(agent=self.agent, time=self.time, item=item, activate_time=activate_time).post()
             obj.current_item_action = ItemActivationEvent(agent=self.agent,
                                                           owner_id=self.owner_id,
@@ -587,9 +589,16 @@ class ItemActivationEvent(Event):
     def on_cancel(self, time):
         super(ItemActivationEvent, self).on_cancel(time)
         obj = self.server.objects.get(self.owner_id)
+        item = self.item
         if obj is not None:
             obj.current_item_action = None
+            if item is None:
+                inventory = obj.inventory
+                item = inventory.get_item(position=self.position)
+
         StopActivateItem(agent=self.agent, time=time, item=self.item).post()
+        if item is not None:
+            TransactionCancelActivateItemLogMessage(agent=self.agent, time=time, item=item.example).post()
 
 
 class StrategyModeInfoObjectsEvent(Event):

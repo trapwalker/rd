@@ -479,6 +479,9 @@ class Mobile(Unit):
     def v(self, time):
         return self.state.v(t=time)
 
+    def a(self):
+        return self.state.a
+
     def position(self, time):
         return self.state.p(t=time)
 
