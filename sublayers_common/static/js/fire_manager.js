@@ -38,6 +38,8 @@ var EffectPNGLoader = (function(){
 
         this.load_new_image('effect-bang-png-1', '/static/img/fire_effects/bangs/mine-bang-png-1.png', [115, 115], 12);
 
+        this.load_new_image('effect-power-up-off', '/static/img/fire_effects/bangs/power_up_bloop.png', [67, 67], 4);
+
     }
 
     EffectPNGLoader.prototype.getImage = function(name){

@@ -243,8 +243,8 @@ var ClientManager = (function () {
                 case 'QuickGamePowerUpFullFuel':
                 case 'QuickGamePowerUpEffect':
                 case 'QuickGamePowerUpShield':
-                    //console.log("МЫ Видим ", obj);
-                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    obj.direction = 0;
+                    new WCanvasAnimateMarkerPowerUp(obj);
                     break;
                 case 'RadioPoint':
                     obj.direction = 0.5 * Math.PI;

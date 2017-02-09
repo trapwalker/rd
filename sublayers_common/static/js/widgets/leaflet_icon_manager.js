@@ -98,6 +98,8 @@ var LeafletIconManager = (function(){
 
         this.load_new_icon('mine_001', '/static/img/map_icons/mine.png', [24, 17], this.max_id++);
 
+        this.load_new_icon('power-up-1', '/static/img/map_icons/power_up/power_up_stay.png', [52, 53], this.max_id++, null, 17);
+
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
@@ -327,7 +329,8 @@ var LeafletIconManager = (function(){
         }
     };
 
-    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor){
+    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor, frames){
+        frames = frames || 1;
         var img = new Image();
         this.count_loading_img++;
         img.onload = function() {
@@ -339,7 +342,9 @@ var LeafletIconManager = (function(){
                 }),
                 canvas_icon: {
                     img: img,
-                    iconSize: [this.width, this.height]
+                    iconSize: [this.width, this.height],
+                    size: icon_size,
+                    frames: frames
                 },
                 id: icon_id
             };
