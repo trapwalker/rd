@@ -34,6 +34,9 @@ class SlowMine(UnitWeapon):
         self.targets = []
         self.effects = self.example.effects
 
+    def can_see_me(self, subj, **kw):
+        return subj is self.starter or super(SlowMine, self).can_see_me(subj=subj, **kw)
+
     def on_init(self, event):
         super(SlowMine, self).on_init(event)
         self.delete(time=event.time + 30.0)
@@ -79,7 +82,7 @@ class MineBangActivateEvent(Objective):
         self.obj.activate(self)
 
 
-class BangMine(Slave):
+class BangMine(UnitWeapon):
     def __init__(self, time, starter, **kw):
         super(BangMine, self).__init__(time=time,
                                        starter=starter,
@@ -88,6 +91,9 @@ class BangMine(Slave):
                                        **kw)
         self._activated_event = MineBangActivateEvent(obj=self, time=time + 4.0).post()
         self._mine_is_active = False
+
+    def can_see_me(self, subj, **kw):
+        return subj is self.starter or super(BangMine, self).can_see_me(subj=subj, **kw)
 
     def on_init(self, event):
         super(BangMine, self).on_init(event)

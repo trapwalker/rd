@@ -10,7 +10,7 @@ from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
-from sublayers_server.model.map_location import RadioPoint, Town, GasStation
+from sublayers_server.model.map_location import RadioPoint, Town, GasStation, MapRespawn
 from sublayers_server.model.radiation import StationaryRadiation
 from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
@@ -196,6 +196,11 @@ class Server(object):
             quick_rad.p_observing_range = self.quick_game_play_radius
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
+
+        # Установка точек-респаунов
+        respawns_root = self.reg['poi/quick_game_poi/quick_game_respawn']
+        for rs_exm in respawns_root:
+            MapRespawn(time=event.time, example=rs_exm, server=self)
 
     @tornado.gen.coroutine
     def load_ai_quick_bots(self):

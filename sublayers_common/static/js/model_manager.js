@@ -212,7 +212,6 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._contactStaticObject', event);
         if (event.is_first) {
             var uid = event.object.uid;
-            var p_observing_range = event.object.p_observing_range;
             var obj_marker;
 
             // Проверка: нет ли уже такого объекта.
@@ -221,50 +220,41 @@ var ClientManager = (function () {
                 // todo: оптимизировать это: либо удалять объекты при раздеплое машинки, либо вынести этот if вниз
                 if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
                 return;
-            };
-
-            // Установка поворота маркера
-            var direction = null;
-            switch (event.object.cls) {
-                case 'GasStation':
-                case 'Town':
-                    direction = - 2 * Math.PI;
-                    break;
-                case 'RadioPoint':
-                    direction = 0.5 * Math.PI;
-                    break;
-                case 'POICorpse':
-                    direction = event.object.car_direction + Math.PI / 2.;
-                    break;
             }
 
-            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
+            // Создание и настройка маркера
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), 0);
             obj.cls = event.object.cls;
             obj.example = event.object.example;
-            obj.p_observing_range = p_observing_range;
+            obj.p_observing_range = event.object.p_observing_range;
+
             if (event.object.hasOwnProperty('sub_class_car')) {
                 obj.sub_class_car = event.object.sub_class_car;
             }
 
-            // Установка надписи над статическим объектом
-            if (obj.cls == 'Town') {
-                obj.title = event.object.example.title;
+            switch (obj.cls) {
+                case 'GasStation':
+                case 'Town':
+                    obj.title = event.object.example.title || 'GasStation';
+                    obj.direction = - 2 * Math.PI;
+                    obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                    break;
+                case 'QuickGamePowerUpFullHeal':
+                case 'QuickGamePowerUpFullFuel':
+                case 'QuickGamePowerUpSimpleEffect':
+                    console.log("МЫ Видим ", obj);
+                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    break;
+                case 'RadioPoint':
+                    obj.direction = 0.5 * Math.PI;
+                    break;
+                case 'POICorpse':
+                    obj.direction = event.object.car_direction + Math.PI / 2.;
+                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    break;
+                default:
+                    obj_marker = new WCarMarker(obj); // виджет маркера
             }
-            if (obj.cls == 'GasStation') {
-                obj.title = 'GasStation';
-            }
-            if (obj.cls == 'RadioPoint')
-                obj_marker.updateLabel('Radio Point');
-            if (obj.cls == 'POIStash')
-                obj_marker.updateLabel('loot');
-
-            // Создание/инициализация виджетов
-            if (obj.cls == 'Town' || obj.cls == 'GasStation') {
-                obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
-                //obj_marker = new WStaticObjectMarker(obj);
-            }
-            else
-                obj_marker = new WCarMarker(obj); // виджет маркера
 
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
@@ -578,6 +568,11 @@ var ClientManager = (function () {
             case 'POIContainer':
             case 'POICorpse':
             case 'GasStation':
+                this._contactStaticObject(event);
+                break;
+            case 'QuickGamePowerUpFullHeal':
+            case 'QuickGamePowerUpFullFuel':
+            case 'QuickGamePowerUpSimpleEffect':
                 this._contactStaticObject(event);
                 break;
             default:

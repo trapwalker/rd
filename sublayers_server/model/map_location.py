@@ -10,12 +10,14 @@ from sublayers_server.model.messages import (
 )
 from sublayers_server.model.game_log_messages import LocationLogMessage
 from sublayers_server.model.registry.uri import URI
-from sublayers_server.model.events import ActivateLocationChats, Event
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.events import ActivateLocationChats, Event, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
 
 from tornado.options import options
+import random
 
 
 class RadioPoint(Observer):
@@ -195,3 +197,33 @@ class GasStation(Town):
         for location in cls.locations:
             if isinstance(location, GasStation):
                 yield location
+
+
+class MapRespawn(Observer):
+    def on_init(self, event):
+        super(MapRespawn, self).on_init(event)
+        self.respawn(time=event.time)
+
+    def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
+        return False
+
+    def get_respawn_cls(self, name):
+        # todo: сделать правильное получение класса по имени, возможно через реестровые объекты
+        import sublayers_server.model.quick_game_power_up as PowerUps
+        res = getattr(PowerUps, name, None)
+        assert res is not None
+        return res
+
+    @event_deco  # если в итоге не подойдёт, то сделать @event_deco_obj и создавать там Objective event
+    def respawn(self, event):
+        self.respawn(time=event.time + self.example.respawn_time)  # сразу создать эвент на новый респавн
+        respawn_objects = self.example.respawn_objects
+        if not respawn_objects:
+            return
+        resp_object_proto = respawn_objects[random.randint(0, len(respawn_objects) - 1)]
+        pos = Point.random_point(self.position(event.time), self.example.respawn_radius)
+        # resp_object_ex = resp_object_proto.instantiate(fixtured=False)
+        # yield resp_object_ex.load_references()
+        log.info('respawn [%s] %s %s %s', self, event.time, resp_object_proto.model_class_name, pos)
+        klass = self.get_respawn_cls(resp_object_proto.model_class_name)
+        klass(time=event.time, example=resp_object_proto, server=self.server, position=pos)
