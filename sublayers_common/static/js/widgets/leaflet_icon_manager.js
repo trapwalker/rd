@@ -102,7 +102,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-power-up-fuel', '/static/img/map_icons/power_up/power_up_oil_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-shield', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
 
-        this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_vision_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-vis', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
 
         this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
