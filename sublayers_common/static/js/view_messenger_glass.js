@@ -722,6 +722,12 @@ var ViewMessengerGlass = (function () {
                 case "WeaponAmmoFinishedLogMessage":
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.', true);
                     break;
+                case "TransactionCancelActivateItemLogMessage":
+                    this.addMessageToLog('Отмена активации итема: ' + msg.item_title + '.');
+                    break;
+                case "TransactionDisableActivateItemLogMessage":
+                    this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Необходимо выполнение следующих условий: ' + msg.activate_comment + '.');
+                    break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
                     break;

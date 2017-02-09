@@ -118,41 +118,33 @@ var TeachingMapNote = (function (_super) {
         this.window_name = '';
         this.window_uri = '';
 
+        this.arrow_img_big = new Image();
+        this.arrow_img_big.src = '/static/img/teaching/arrow_big.png';
+
         this.arrow_img = new Image();
-        this.arrow_img.src = '/static/img/teaching/arrow_big.png';
+        this.arrow_img.src = '/static/img/teaching/arrow_big_big.png';
     }
 
     TeachingMapNote.prototype.draw_arrow = function(ctx, point, angle) {
         //console.log("TeachingMapNote.prototype.draw_arrow");
         angle = gradToRad(angle);
 
+        var arrow = this.arrow_img;
+        if (!interface_scale_big) arrow = this.arrow_img_big;
+
         var width = $('#bodydiv').width();
         var height = $('#bodydiv').height();
         if (point.x < 0) point.x = width + point.x;
         if (point.y < 0) point.y = height + point.y;
 
-        point.x = point.x - this.arrow_img.width + 15;
-        point.y = point.y - Math.round(this.arrow_img.height / 2);
+        point.x = point.x - arrow.width + 15;
+        point.y = point.y - Math.round(arrow.height / 2);
 
         ctx.save();
         ctx.translate(point.x, point.y);
         ctx.rotate(angle);
 
-        ctx.drawImage(this.arrow_img, 0, 0);
-
-        //ctx.fillStyle = this.arrow_color;
-        //ctx.strokeStyle = this.arrow_color;
-        //ctx.lineWidth = 0;
-        //
-        //ctx.beginPath();
-        //ctx.lineTo(-this.single_length * 6, -this.single_length * 6);
-        //ctx.lineTo(-this.single_length * 6, -this.single_length * 2);
-        //ctx.lineTo(-this.single_length * 15, -this.single_length * 2);
-        //ctx.lineTo(-this.single_length * 15, this.single_length * 2);
-        //ctx.lineTo(-this.single_length * 6, this.single_length * 2);
-        //ctx.lineTo(-this.single_length * 6, this.single_length * 6);
-        //ctx.lineTo(0, 0);
-        //ctx.fill();
+        ctx.drawImage(arrow, 0, 0);
 
         ctx.restore();
     };

@@ -86,6 +86,12 @@ function init_sound() {
     audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, 1.0);
     audioManager.load('shot_03', {url: '/static/audio/test/shot_03.wav'}, 1.0);
 
+    audioManager.load('auto_self_1', {url: '/static/audio/test/auto_self_1.wav'}, 1.0);
+    audioManager.load('auto_self_2', {url: '/static/audio/test/auto_self_2.wav'}, 1.0);
+    audioManager.load('auto_self_3', {url: '/static/audio/test/auto_self_3.wav'}, 1.0);
+    audioManager.load('auto_other_1', {url: '/static/audio/test/auto_other_1.wav'}, 1.0);
+    audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 1.0);
+
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
 }
 

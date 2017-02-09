@@ -181,13 +181,14 @@
         $.ajax({
             url: location.protocol + '//' + location.host + '/site_api/get_user_info_by_id',
             method: 'POST',
-            data: {user_id: user_id},
+            data: {user_id: user_id, _xsrf: getCookie('_xsrf')},
             success: function (data) {
                 updateRatingUserInfo(data);
                 // Записать в кеш
                 rating_users_info_list[user_id] = {
                     time: timeManager.getTime(),
-                    user_info: data
+                    user_info: data,
+                    _xsrf: getCookie('_xsrf')
                 }
 
             },

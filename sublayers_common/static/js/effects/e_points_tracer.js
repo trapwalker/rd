@@ -6,198 +6,11 @@
 var ConstStartDistance = 20; // Расстояние от центра машинки до начальной точки трассера (px)
 
 
-var EPointsTracer = (function(){
-    function EPointsTracer(p1, p2, speed, length, call_back){
-        console.log('Не используемый код !!!!');
-        // получим вектор-направление движения трассера и дистанцию
-        var track_vect = subVector(p2, p1);
-        var dist_track = track_vect.abs();
-        if(dist_track < 20) return; // todo не рисовать, если очень близко. можно сразу рисовать вспышки
-        // на сколько нужно сдвинутся по вектору (сейчас lenght / 2.)
-        var d_vect = ConstStartDistance; // можно изменить, чтобы трассер начинался не из машинки, а рядом
-        this.length = length;
-        // расчёт начальной точки
-        var p11 = summVector(mulScalVector(track_vect, d_vect / dist_track), p1);
-        track_vect = subVector(p2, p11);
-        // вычислим направление движения трассера
-        this.direction = angleVectorRadCCW(track_vect);
-        // вычислим время движения между точками
-        this.duration = track_vect.abs() / speed;
-
-        this.svg_params = {
-            stroke_width: 1.3,
-            stroke_color: '#0f0',
-            stroke_opacity: 1.0
-        };
-        // создание маркера
-        this.div_id = 'EPointsTracer' + (-generator_ID.getID());
-        var myIcon = L.divIcon({
-            className: 'my-effect-icon',
-            iconSize: [length, length],
-            iconAnchor: [length / 2., length / 2.],
-            html: '<div id="' + this.div_id + '"></div>'
-        });
-        this.marker = L.marker(mapManager.unproject([p11.x, p11.y], mapManager.getMaxZoom()),
-            {
-                icon: myIcon,
-                zIndexOffset: 10,
-                clickable: false
-            });
-
-        // сохраняем параметры движения трассера
-        this.x0 = p11.x;
-        this.y0 = p11.y;
-        this.t0 = clock.getCurrentTime();
-        this.kx = (p2.x - p11.x) / this.duration;
-        this.ky = (p2.y - p11.y) / this.duration;
-
-        // сохраняем call_back и p2 для него
-        this.cb = call_back;
-        this.p2 = p2;
-    }
-
-    EPointsTracer.prototype.get_position = function (time) {
-        return new Point(
-            this.x0 + this.kx * (time - this.t0),
-            this.y0 + this.ky * (time - this.t0)
-        )
-    };
-
-    EPointsTracer.prototype.change = function (time) {
-        var pos = this.get_position(time);
-        var tempLatLng = mapManager.unproject([pos.x, pos.y], mapManager.getMaxZoom());
-        this.marker.setLatLng(tempLatLng);
-    };
-
-    EPointsTracer.prototype.on_start = function () {
-        var draw = SVG(this.div_id);
-        var l2 = this.length / 2.;
-        draw.line(0, 0, this.length, 0)
-            .center(l2, l2)
-            .transform({rotation: radToGrad(this.direction), cx: l2, cy: l2})
-            .stroke({
-                width: this.svg_params.stroke_width,
-                color: this.svg_params.stroke_color,
-                opacity: this.svg_params.stroke_opacity
-            })
-            .attr('stroke-linecap', 'round');
-        draw.circle(0).radius(1)
-            .center(l2, l2)
-            .dmove(l2, 0)
-            .transform({rotation: radToGrad(this.direction), cx: l2, cy: l2})
-            .stroke({
-                width: this.svg_params.stroke_width,
-                color: this.svg_params.stroke_color,
-                opacity: this.svg_params.stroke_opacity
-            })
-            .fill(this.svg_params.stroke_color)
-    };
-
-    EPointsTracer.prototype.start = function () {
-        if (this.marker) {
-            this.marker.addTo(map);
-            this.on_start();
-            timeManager.addTimeoutEvent(this, 'finish', this.duration * 1000.);
-            timeManager.addTimerEvent(this, 'change');
-        }
-    };
-
-    EPointsTracer.prototype.finish = function () {
-        timeManager.delTimerEvent(this, 'change');
-        map.removeLayer(this.marker);
-        if(typeof (this.cb) === 'function')
-            this.cb(this.p2);
-    };
-
-    return EPointsTracer
-})();
-
-
-var EPointsTracerPNG = (function(){
-    function EPointsTracerPNG(p1, p2, speed, call_back){
-        console.log('Не используемый код !!!!');
-        // получим вектор-направление движения трассера и дистанцию
-        var track_vect = subVector(p2, p1);
-        var dist_track = track_vect.abs();
-        if(dist_track < 20) return; // todo не рисовать, если очень близко. можно сразу рисовать вспышки
-        // расчёт начальной точки
-        var p11 = summVector(mulScalVector(track_vect, ConstStartDistance / dist_track), p1);
-        track_vect = subVector(p2, p11);
-        // вычислим направление движения трассера
-        this.direction = angleVectorRadCCW(track_vect);
-        // вычислим время движения между точками
-        this.duration = track_vect.abs() / speed;
-        this.old_position = {x: 0, y: 0};
-
-        // создание маркера
-        this.div_id = 'EPointsTracerPNG' + (-generator_ID.getID());
-        var myIcon = L.divIcon({
-            className: 'my-effect-icon',
-            iconSize: [14, 7],
-            iconAnchor: [14 / 2., 7 / 2.],
-            html: '<div id="' + this.div_id + '" class="effect-tracer-png"></div>'
-        });
-        this.marker = L.rotatedMarker(mapManager.unproject([p11.x, p11.y], mapManager.getMaxZoom()),
-            {
-                icon: myIcon,
-                zIndexOffset: -999,
-                clickable: false
-            });
-
-        this.marker.options.angle = this.direction;
-
-        // сохраняем параметры движения трассера
-        this.x0 = p11.x;
-        this.y0 = p11.y;
-        this.t0 = clock.getCurrentTime();
-        this.kx = (p2.x - p11.x) / this.duration;
-        this.ky = (p2.y - p11.y) / this.duration;
-
-        // сохраняем call_back и p2 для него
-        this.cb = call_back;
-        this.p2 = p2;
-    }
-
-    EPointsTracerPNG.prototype.get_position = function (time) {
-        return new Point(
-            this.x0 + this.kx * (time - this.t0),
-            this.y0 + this.ky * (time - this.t0)
-        )
-    };
-
-    EPointsTracerPNG.prototype.change = function (time) {
-        if (mapManager.inZoomChange) return;
-        var tempPoint = this.get_position(time);
-        if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
-            this.old_position = tempPoint;
-            var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
-            this.marker.setLatLng(tempLatLng);
-        }
-    };
-
-    EPointsTracerPNG.prototype.start = function () {
-        if (this.marker) {
-            this.marker.addTo(map);
-            timeManager.addTimeoutEvent(this, 'finish', this.duration * 1000.);
-            timeManager.addTimerEvent(this, 'change');
-        }
-    };
-
-    EPointsTracerPNG.prototype.finish = function () {
-        timeManager.delTimerEvent(this, 'change');
-        map.removeLayer(this.marker);
-        if(typeof (this.cb) === 'function')
-            this.cb(this.p2);
-    };
-
-    return EPointsTracerPNG
-})();
-
-
 var ECanvasPointsTracerPNG = (function () {
-    function ECanvasPointsTracerPNG(p1, p2, speed, call_back) {
+    function ECanvasPointsTracerPNG(p1, p2, speed, call_back, image_name) {
         // получим вектор-направление движения трассера и дистанцию
-        this.image_obj = effectPNGLoader.getImage("effect-tracer-png");
+        this.image_obj = effectPNGLoader.getImage(image_name);
+        if (! this.image_obj) {console.log('Image not found! name = ', image_name); return; }
         var track_vect = subVector(p2, p1);
         var dist_track = track_vect.abs();
         if (dist_track < 20) return; // todo не рисовать, если очень близко. можно сразу рисовать вспышки
@@ -258,3 +71,119 @@ var ECanvasPointsTracerPNG = (function () {
 
     return ECanvasPointsTracerPNG
 })();
+
+
+var ECanvasPointsTracerAnimation = (function (_super) {
+    __extends(ECanvasPointsTracerAnimation, _super);
+
+    function ECanvasPointsTracerAnimation(p1, p2, speed, call_back, image_name, time_of_frame) {
+        _super.call(this, p1, p2, speed, call_back, image_name);
+        if (! this.image_obj) {console.log('Image not found! name = ', image_name); return; }
+        this.start_time = null;
+        this.time_of_frame = time_of_frame || 300;
+        this.frame_count = this.image_obj.frames;
+        this.start_time = 0;
+        this.frame_height = this.image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.image_obj.size[1]; // размер одного кадра
+        this.offset_x = 1.0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = 1.0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    }
+
+    ECanvasPointsTracerAnimation.prototype.start = function () {
+        _super.prototype.start.call(this);
+        this.start_time = clock.getCurrentTime();
+    };
+
+    ECanvasPointsTracerAnimation.prototype._get_frame_num = function (time) {
+        var time_off = time - this.start_time; // время, прошедшее сначала анимации
+        time_off = time_off < 0 ? 0 : time_off;
+        return Math.floor(time_off * 1000 / this.time_of_frame) % this.frame_count;
+    };
+
+    ECanvasPointsTracerAnimation.prototype.redraw = function (ctx, time) {
+        ctx.save();
+        var pos = this.get_position(time);
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+        ctx.rotate(this.direction);
+        var img_obj = this.image_obj;
+        if (img_obj) {
+            var frame = this._get_frame_num(time);
+            //console.log(frame, this.frame_width, this.frame_height, )
+            ctx.drawImage(img_obj.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+                this.offset_x * img_obj.size[1], this.offset_y * img_obj.size[0], this.frame_width, this.frame_height);
+        }
+        else {
+            console.warn('Странная ошибка! Говорит, что не смог найти картинку. Странно это. Очень странно!');
+        }
+        ctx.restore();
+    };
+
+    return ECanvasPointsTracerAnimation;
+})(ECanvasPointsTracerPNG);
+
+
+var ECanvasPointsTracerSimple = (function (_super) {
+    __extends(ECanvasPointsTracerSimple, _super);
+
+    function ECanvasPointsTracerSimple(p1, p2, call_back) {
+        _super.call(this, p1, p2, 120, call_back, "effect-tracer-png-simple");
+    }
+
+    return ECanvasPointsTracerSimple;
+})(ECanvasPointsTracerPNG);
+
+
+var ECanvasPointsTracerDbl1 = (function (_super) {
+    __extends(ECanvasPointsTracerDbl1, _super);
+
+    function ECanvasPointsTracerDbl1(p1, p2, call_back) {
+        _super.call(this, p1, p2, 100, call_back, "effect-tracer-png-dbl-1");
+    }
+
+    return ECanvasPointsTracerDbl1;
+})(ECanvasPointsTracerPNG);
+
+
+var ECanvasPointsTracerDbl2 = (function (_super) {
+    __extends(ECanvasPointsTracerDbl2, _super);
+
+    function ECanvasPointsTracerDbl2(p1, p2, call_back) {
+        _super.call(this, p1, p2, 110, call_back, "effect-tracer-png-dbl-2");
+    }
+
+    return ECanvasPointsTracerDbl2;
+})(ECanvasPointsTracerPNG);
+
+
+var ECanvasPointsTracerPNG_MG_15 = (function (_super) {
+    __extends(ECanvasPointsTracerPNG_MG_15, _super);
+
+    function ECanvasPointsTracerPNG_MG_15(p1, p2, call_back) {
+        _super.call(this, p1, p2, 100, call_back, "light_tracer_MG_15");
+    }
+
+    return ECanvasPointsTracerPNG_MG_15;
+})(ECanvasPointsTracerPNG);
+
+
+var ECanvasPointsTracerAnimation_1 = (function (_super) {
+    __extends(ECanvasPointsTracerAnimation_1, _super);
+
+    function ECanvasPointsTracerAnimation_1(p1, p2, call_back) {
+        _super.call(this, p1, p2, 140, call_back, "light_tracer_animation_1", 80);
+    }
+
+    return ECanvasPointsTracerAnimation_1;
+})(ECanvasPointsTracerAnimation);
+
+
+var ECanvasPointsTracerAnimation_2 = (function (_super) {
+    __extends(ECanvasPointsTracerAnimation_2, _super);
+
+    function ECanvasPointsTracerAnimation_2(p1, p2, call_back) {
+        _super.call(this, p1, p2, 110, call_back, "light_tracer_animation_2", 80);
+    }
+
+    return ECanvasPointsTracerAnimation_2;
+})(ECanvasPointsTracerAnimation);

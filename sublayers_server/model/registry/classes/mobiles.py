@@ -86,6 +86,12 @@ class Mobile(Root):
     r_cc_mine              = FloatField(caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist param_aggregate')
     r_cc_fuel_empty        = FloatField(caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist param_aggregate')
 
+    # Резисты и модификаторы PowerUps
+    r_observing_range_qg_pu = FloatField(caption=u"Резист к модификатору дальности обзора PowerUp", tags='parameter p_resist param_aggregate')
+    m_observing_range_qg_pu = FloatField(caption=u"Модификатор к дальности обзора PowerUp", tags='parameter p_modifier param_aggregate')
+    r_visibility_qg_pu = FloatField(caption=u"Резист к модификатору заметности PowerUp", tags='parameter p_resist param_aggregate')
+    m_visibility_qg_pu = FloatField(caption=u"Модификатор к заметности PowerUp", tags='parameter p_modifier param_aggregate')
+
     # атрибуты от Unit
     p_defence            = FloatField(caption=u"Броня", tags='parameter param_aggregate')
     max_hp               = FloatField(caption=u"Максимальное значение HP", tags='param_aggregate client')

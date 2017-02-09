@@ -114,7 +114,7 @@ class WeaponAuto(Weapon):
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, sector=self.sector, action=True, time=time).post()
         # todo: пробросить сюда Ивент
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
@@ -124,7 +124,7 @@ class WeaponAuto(Weapon):
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
         del self.dps_list[car.id]
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, sector=self.sector, action=False, time=time).post()
 
     def on_start(self, time):
         super(WeaponAuto, self).on_start(time=time)

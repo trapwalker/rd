@@ -70,7 +70,8 @@
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
             data: {
-                action: 'next'
+                action: 'next',
+                _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
                 if (data.status == 'success') {
@@ -89,7 +90,7 @@
         $.ajax({
             url: location.protocol + '//' + location.host + '/login',
             method: 'POST',
-            data: { action: 'back' },
+            data: { action: 'back', _xsrf: getCookie('_xsrf') },
             success: function(data) { GetUserInfo(); audioManager.play('button_screen_press');},
             error: function (jqXHR, textStatus, errorThrown) {
                 console.warn('Reg3BackBtnClick ajax error');

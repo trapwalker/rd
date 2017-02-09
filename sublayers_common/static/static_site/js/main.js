@@ -480,7 +480,7 @@ function GetQuickGameRecords() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_quick_game_records',
         method: 'POST',
-        data: {},
+        data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
             $('#RDSiteQuickGameRatingsTable').empty();
             $('#RDSiteQuickGameRatingsTable').append(data);
@@ -498,7 +498,7 @@ function GetRatingInfo(rating_name) {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rating_info',
         method: 'POST',
-        data: {rating_name: rating_name},
+        data: {rating_name: rating_name, _xsrf: getCookie('_xsrf')},
         success: function (data) {
             jq_elem.empty();
             jq_elem.append(data);
@@ -536,7 +536,7 @@ function GetUserInfo() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_user_info',
         method: 'POST',
-        data: {},
+        data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
 
             // todo: убрать после тестирования
@@ -621,7 +621,7 @@ function GetRPGInfo() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
         method: 'POST',
-        data: {},
+        data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
             //console.log(data);
             // Установка аватаров:
@@ -655,11 +655,12 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
         data: {
             action: action,
             skill_name: skill_name,
-            perk_node: perk_node
+            perk_node: perk_node,
+            _xsrf: getCookie('_xsrf')
         },
         success: function (data_str) {
             //console.log(data);
-            var data = JSON.parse(data_str)
+            var data = JSON.parse(data_str);
             if (data.status == 'success') {
                 // Отобразить show_skills в вёрстку
                 for (var key in data.show_skills)

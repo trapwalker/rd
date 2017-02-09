@@ -38,7 +38,6 @@ class TileContactSearchEvent(Event):
                 del vis_mng.tiles[tid]
 
 
-
 class VisibilityManager(object):
     def __init__(self, server, z=14, max_z=26, min_z=10, interval=BALANCE.interval_refresh):
         self.server = server
@@ -80,10 +79,8 @@ class VisibilityManager(object):
         assert False
 
     def _can_see(self, time, obj, subj, obj_pos, subj_pos):
-        # 1 - (1 - v) * (1 - z)
-        vis = obj.get_visibility(time=time) + subj.params.get('p_vigilance').value + \
-              obj.get_visibility(time=time) * subj.params.get('p_vigilance').value
-        return (subj.get_observing_range(time=time) * vis) >= abs(obj_pos - subj_pos)
+        # если субъект может увидеть объект и объект может быть увиден субъектом вернуть True
+        return obj.can_see_me(subj=subj, time=time, obj_pos=obj_pos, subj_pos=subj_pos) and subj.can_i_see(obj=obj, time=time, obj_pos=obj_pos, subj_pos=subj_pos)
 
     def add_object(self, obj, time):
         p = obj.position(time=time)
