@@ -35,7 +35,8 @@ class QuickGamePowerUpSimple(Observer):
 
     def power_up(self, target, time):
         self._can_use = False
-        # log.info("%s activated for %s", self, target)
+        target.main_agent.log.info("%s activated for %s", self, target)
+
 
     def on_contact_in(self, time, obj, **kw):
         super(QuickGamePowerUpSimple, self).on_contact_in(time=time, obj=obj)
