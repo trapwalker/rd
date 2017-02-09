@@ -244,6 +244,7 @@ var ClientManager = (function () {
                 case 'QuickGamePowerUpEffect':
                 case 'QuickGamePowerUpShield':
                     obj.direction = 0;
+                    obj._icon_name = event.object.icon_name || "icon-power-up-random";
                     new WCanvasAnimateMarkerPowerUp(obj);
                     break;
                 case 'RadioPoint':

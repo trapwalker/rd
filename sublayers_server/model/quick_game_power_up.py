@@ -8,6 +8,7 @@ from sublayers_server.model.units import Bot
 from sublayers_server.model.agents import TeachingUser
 import sublayers_server.model.tags as tags
 from sublayers_server.model.events import Objective
+import random
 
 
 class QuickGamePowerUpSimple(Observer):
@@ -16,6 +17,9 @@ class QuickGamePowerUpSimple(Observer):
     def __init__(self, **kw):
         super(QuickGamePowerUpSimple, self).__init__(**kw)
         self._can_use = True
+        self.icon_name = self.example.icon_name
+        if random.random() > 0.85:
+            self.icon_name = "icon-power-up-random"
 
     def can_see_me(self, subj, **kw):
         return True
@@ -23,6 +27,11 @@ class QuickGamePowerUpSimple(Observer):
     def on_init(self, event):
         super(QuickGamePowerUpSimple, self).on_init(event)
         self.delete(time=event.time + self.example.life_time)
+
+    def as_dict(self, time):
+        d = super(QuickGamePowerUpSimple, self).as_dict(time=time)
+        d.update(icon_name=self.icon_name)
+        return d
 
     def power_up(self, target, time):
         self._can_use = False
