@@ -613,18 +613,3 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
-
-
-                agent.log.info(
-                    'Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
-
-                agent.log.info('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t,
-                                                                                                         len_weapons_t,
-                                                                                                         len_ch_item))
-
-            if len_ch_item:
-                if len_weapons_t == 0 or len_sectors_t == 0:
-                    agent.log.info(
-                        'Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t,
-                                                                                                  len_weapons_t,
-                                                                                                  len_ch_item))
