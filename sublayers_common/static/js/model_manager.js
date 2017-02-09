@@ -1248,13 +1248,13 @@ var ClientManager = (function () {
     // Активация итема
 
     ClientManager.prototype.StartActivateItem = function (event) {
-        console.log('ClientManager.prototype.StartActivateItem', event);
+        //console.log('ClientManager.prototype.StartActivateItem', event);
         if (event.activate_time > 0)
             modalWindow.modalItemActivationShow({activate_time: event.activate_time, item: event.item});
     };
 
     ClientManager.prototype.StopActivateItem = function (event) {
-        console.log('ClientManager.prototype.StopActivateItem', event);
+        //console.log('ClientManager.prototype.StopActivateItem', event);
         modalWindow.modalItemActivationHide({});
     };
 
@@ -1696,6 +1696,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendCancelActivationItem = function() {
+        //console.log("ClientManager.prototype.sendCancelActivationItem");
         var mes = {
             call: "cancel_activation_item",
             rpc_call_id: rpcCallList.getID(),
@@ -1706,6 +1707,7 @@ var ClientManager = (function () {
     };
 
     // Сообщения локаций
+
     ClientManager.prototype.sendEnterToNPC = function (npc) {
         //console.log('ClientManager.prototype.sendEnterToNPC', npc_type);
         var mes = {
@@ -1759,7 +1761,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     // Оружейник
 
@@ -2279,7 +2280,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
 
     return ClientManager;

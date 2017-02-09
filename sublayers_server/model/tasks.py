@@ -33,9 +33,9 @@ class TaskPerformEvent(events.Event):
             self.task.on_perform(self)
             self._del_event_from_task()
 
-    def on_cancel(self):
+    def on_cancel(self, **kw):
         self._del_event_from_task()
-        super(TaskPerformEvent, self).on_cancel()
+        super(TaskPerformEvent, self).on_cancel(**kw)
 
 
 class TaskInitEvent(events.Event):

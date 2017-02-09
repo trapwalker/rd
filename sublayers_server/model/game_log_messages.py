@@ -139,6 +139,19 @@ class TransactionActivateItemLogMessage(Message):
         return d
 
 
+class TransactionCancelActivateItemLogMessage(TransactionActivateItemLogMessage):
+    pass
+
+
+class TransactionDisableActivateItemLogMessage(TransactionActivateItemLogMessage):
+    def as_dict(self):
+        d = super(TransactionDisableActivateItemLogMessage, self).as_dict()
+        d.update(
+            activate_comment=self.item.activate_disable_comment,
+        )
+        return d
+
+
 class TransactionActivateTankLogMessage(TransactionActivateItemLogMessage):
     def as_dict(self):
         d = super(TransactionActivateTankLogMessage, self).as_dict()
