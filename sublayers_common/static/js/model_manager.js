@@ -241,8 +241,9 @@ var ClientManager = (function () {
                     break;
                 case 'QuickGamePowerUpFullHeal':
                 case 'QuickGamePowerUpFullFuel':
-                case 'QuickGamePowerUpSimpleEffect':
-                    console.log("МЫ Видим ", obj);
+                case 'QuickGamePowerUpEffect':
+                case 'QuickGamePowerUpShield':
+                    //console.log("МЫ Видим ", obj);
                     obj_marker = new WCarMarker(obj); // виджет маркера
                     break;
                 case 'RadioPoint':
@@ -572,7 +573,8 @@ var ClientManager = (function () {
                 break;
             case 'QuickGamePowerUpFullHeal':
             case 'QuickGamePowerUpFullFuel':
-            case 'QuickGamePowerUpSimpleEffect':
+            case 'QuickGamePowerUpEffect':
+            case 'QuickGamePowerUpShield':
                 this._contactStaticObject(event);
                 break;
             default:

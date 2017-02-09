@@ -75,6 +75,9 @@ class MapPowerUpEffects(MapPowerUp):
     effect_time = FloatField(caption=u"Время действия эффектов")
 
 
+class MapPowerUpShield(MapPowerUp):
+    duration_time = FloatField(caption=u"Время действия щита")
+
 
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл

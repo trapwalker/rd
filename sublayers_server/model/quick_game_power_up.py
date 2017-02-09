@@ -7,6 +7,7 @@ from sublayers_server.model.base import Observer
 from sublayers_server.model.units import Bot
 from sublayers_server.model.agents import TeachingUser
 import sublayers_server.model.tags as tags
+from sublayers_server.model.events import Objective
 
 
 class QuickGamePowerUpSimple(Observer):
@@ -25,7 +26,7 @@ class QuickGamePowerUpSimple(Observer):
 
     def power_up(self, target, time):
         self._can_use = False
-        log.info("%s activated for %s", self, target)
+        # log.info("%s activated for %s", self, target)
 
     def on_contact_in(self, time, obj, **kw):
         super(QuickGamePowerUpSimple, self).on_contact_in(time=time, obj=obj)
@@ -50,11 +51,27 @@ class QuickGamePowerUpFullFuel(QuickGamePowerUpSimple):
         self.delete(time=time)
 
 
-class QuickGamePowerUpSimpleEffect(QuickGamePowerUpSimple):
+class QuickGamePowerUpEffect(QuickGamePowerUpSimple):
     def power_up(self, target, time):
-        super(QuickGamePowerUpSimpleEffect, self).power_up(time=time, target=target)
+        super(QuickGamePowerUpEffect, self).power_up(time=time, target=target)
         efs = self.example.effects
         for ef in efs:
             ef.start(owner=target, time=time)
             ef.done(owner=target, time=time + self.example.effect_time)
+        self.delete(time=time)
+
+
+class QuickGamePowerUpShield(QuickGamePowerUpSimple):
+    def power_up(self, target, time):
+        super(QuickGamePowerUpShield, self).power_up(time=time, target=target)
+
+        def disable_shield(event):
+            target.params.get('p_armor').current -= 100
+            target.restart_weapons(time=event.time)
+
+        target.params.get('p_armor').current += 100
+        target.restart_weapons(time=time)
+
+        Objective(obj=target, time=time + self.example.duration_time, callback_after=disable_shield).post()
+
         self.delete(time=time)

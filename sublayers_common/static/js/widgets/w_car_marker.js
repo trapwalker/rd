@@ -148,7 +148,7 @@ var WCarMarker = (function (_super) {
             }
         }
 
-        if (car.cls == 'QuickGamePowerUpFullHeal' || car.cls ==  'QuickGamePowerUpFullFuel' || car.cls ==  'QuickGamePowerUpSimpleEffect') {
+        if (car.cls == 'QuickGamePowerUpFullHeal' || car.cls ==  'QuickGamePowerUpFullFuel' || car.cls ==  'QuickGamePowerUpEffect' || car.cls == 'QuickGamePowerUpShield') {
             marker.setIcon(iconsLeaflet.getIcon('icon_station'));
         }
 
