@@ -277,3 +277,22 @@ var ECanvasHeavyBangOrientedPNG_2 = (function (_super) {
 
     return ECanvasHeavyBangOrientedPNG_2
 })(ECanvasAnimationPNG);
+
+
+var ECanvasPowerUpHide = (function (_super) {
+    __extends(ECanvasPowerUpHide, _super);
+
+    function ECanvasPowerUpHide(position) {
+        _super.call(this, position, 0);
+        this.duration = 300;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-power-up-off");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -1.0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    }
+
+    return ECanvasPowerUpHide
+})(ECanvasAnimationPNG);

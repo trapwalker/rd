@@ -16,8 +16,8 @@ from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGet
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
-    StrategyModeInfoObjectsEvent)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent,
+    LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
@@ -646,9 +646,14 @@ class AgentAPI(API):
     @public_method
     def activate_item(self, owner_id, position, target_id):
         # log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
-        self.agent.log.info('activate_item owner_id={} position={} target_id={}'.format(owner_id, position, target_id))
-        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
-                            time=self.agent.server.get_time()).post()
+        # self.agent.log.info('activate_item owner_id={} position={} target_id={}'.format(owner_id, position, target_id))
+        ItemPreActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
+                               time=self.agent.server.get_time()).post()
+
+    @public_method
+    def cancel_activation_item(self):
+        if self.agent.car.current_item_action:
+            self.agent.car.current_item_action.cancel(time=self.agent.server.get_time())
 
     @basic_mode
     @public_method
@@ -961,4 +966,3 @@ class AgentAPI(API):
     @public_method
     def agent_log(self, message):
         self.agent.log.info('agent_log: {!r}'.format(message))
-

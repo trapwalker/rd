@@ -27,9 +27,18 @@ var EffectPNGLoader = (function(){
         this.load_new_image('effect-light-bang-png-2', '/static/img/fire_effects/bangs/light_damage_right_stripe_3frames.png', [22, 22], 3);
         this.load_new_image('effect-heavy-bang-oriented-png-1', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_resized_stripe_12frames.png', [107, 107], 12);
         this.load_new_image('effect-heavy-bang-oriented-png-2', '/static/img/fire_effects/bangs/heavy_damage_right_side_003_wave_resized_stripe_12frames.png', [107, 107], 12);
-        this.load_new_image('effect-tracer-png', '/static/img/fire_effects/shoots/light_tracer.png', [7, 14], 1);
+        this.load_new_image('effect-tracer-png-simple', '/static/img/fire_effects/shoots/light_tracer.png', [7, 14], 1);
+        this.load_new_image('effect-tracer-png-dbl-1', '/static/img/fire_effects/shoots/light_tracer_3.png', [11, 14], 1);
+        this.load_new_image('effect-tracer-png-dbl-2', '/static/img/fire_effects/shoots/light_tracer_2.png', [14, 14], 1);
+        this.load_new_image('light_tracer_MG_15', '/static/img/fire_effects/shoots/light_tracer_MG_15.png', [9, 15], 1);
+
+        this.load_new_image('light_tracer_animation_1', '/static/img/fire_effects/shoots/light_tracer_2_frames.png', [7, 14], 2);
+        this.load_new_image('light_tracer_animation_2', '/static/img/fire_effects/shoots/light_tracer_3_frames.png', [7, 14], 3);
+
 
         this.load_new_image('effect-bang-png-1', '/static/img/fire_effects/bangs/mine-bang-png-1.png', [115, 115], 12);
+
+        this.load_new_image('effect-power-up-off', '/static/img/fire_effects/bangs/power_up_bloop.png', [67, 67], 4);
 
     }
 
@@ -87,21 +96,25 @@ var FireEffectManager = (function () {
 
     FireEffectManager.prototype.addController = function (options) {
         var index = this._findController(options);
+
         if (index != null) {
-            this.controllers_list[index].count++;
-            this.controllers_list[index].ctrl.update(options);
+            var controller = this.controllers_list[index];
+            controller.count++;
+            controller.ctrl.update(options, true);
         }
         else
             this.controllers_list.push({
                 ctrl: new FireAutoEffectController(options),
                 count: 1
             });
+
         if (options.side && options.subj) {
             if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
                 this.muzzle_flashs[options.subj + options.side].update(1);
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
+
     };
 
     FireEffectManager.prototype.delController = function (options) {
@@ -111,6 +124,9 @@ var FireEffectManager = (function () {
             if (this.controllers_list[index].count == 0) {
                 this.controllers_list[index].ctrl.finish();
                 this.controllers_list.splice(index, 1);
+            }
+            else {
+                this.controllers_list[index].ctrl.update(options, false);
             }
         }
         else
@@ -199,13 +215,16 @@ var FireAutoEffectController = (function () {
     function FireAutoEffectController(options) {
         setOptions(options, this);
         this.last_time = 0;
-        this.d_time_t = 1. / ConstCountTracerPerSecond;
+        this.d_time_t = 1. / options.animation_tracer_rate;
         this.d_time_fl = 1. / ConstCountFlashlightPerSecond;
         this.muzzle_flash = null;
 
         // Настройки звука
         this.audio_self = (this.subj && (this.subj == user.userCar.ID));
         var audio_container = this.audio_self ? self_audio : other_audio;
+        this.weapon_animation = [];
+        this.set_weapon_animation(options.weapon_animation);
+        this.weapon_animation = this.weapon_animation || [ECanvasPointsTracerSimple];
         audio_container.count++;
         if (audio_container.count == 1) {
             var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
@@ -220,27 +239,23 @@ var FireAutoEffectController = (function () {
         var time = clock.getCurrentTime();
         var subj = visualManager.getModelObject(this.subj);
         var obj = visualManager.getModelObject(this.obj);
-/*
-        if (subj) {
-            if (!this.muzzle_flash && this.side)
-                this.muzzle_flash = new EAutoFirePNG(subj, this.side).start();
-        }
-        else if (this.muzzle_flash)
-            this.muzzle_flash.finish();
-*/
+
         if (subj && obj)
             if ((time - this.last_time) > this.d_time_t) {
                 this.last_time = time;
                 var p_subj = subj.getCurrentCoord(time);
                 var p2 = obj.getCurrentCoord(time);
                 var p_obj = getRadialRandomPoint(p2, ConstFlashlightPrecision);
+
+                var ECanvasPointsTracer_type = this.weapon_animation[Math.floor(Math.random() * this.weapon_animation.length)];
+
                 if (distancePoints(p2, p_obj) > ConstFlashlightOrientedRadius)
-                    new ECanvasPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
+                    new ECanvasPointsTracer_type(p_subj, p_obj, function (pos) {
                         new ECanvasLightBangPNG_1(pos).start();
                     }).start();
                 else {
                     var dir = angleVectorRadCCW(subVector(p_subj, p_obj)) + Math.PI;
-                    new ECanvasPointsTracerPNG(p_subj, p_obj, ConstTracerSpeed, function (pos) {
+                    new ECanvasPointsTracer_type(p_subj, p_obj, function (pos) {
                         new ECanvasLightBangPNG_2(pos, dir).start();
                     }).start();
                 }
@@ -255,9 +270,44 @@ var FireAutoEffectController = (function () {
             }
     };
 
-    FireAutoEffectController.prototype.update = function (options) {
+    FireAutoEffectController.prototype.set_weapon_animation = function (weapon_animation) {
+        for (var i = 0; i < weapon_animation.length; i++)
+            if (typeof window[weapon_animation[i]] === "function")
+                this.weapon_animation.push(window[weapon_animation[i]]);
+    };
+
+    FireAutoEffectController.prototype.del_weapon_animation = function (weapon_animation) {
+        for (var i = 0; i < weapon_animation.length; i++){
+            var f = window[weapon_animation[i]];
+            if (typeof f === "function") {
+                var index = this.weapon_animation.indexOf(f);
+                if (index >= 0)
+                    this.weapon_animation.splice(index, 1);
+            }
+        }
+        this.weapon_animation = this.weapon_animation || [ECanvasPointsTracerSimple];
+    };
+
+    FireAutoEffectController.prototype.update = function (options, added) {
         if (options.side)
             this.side = options.side;
+
+        if (added) {  // Если нужно добавить скорости или
+            if (options.weapon_animation)
+                this.set_weapon_animation(options.weapon_animation);
+            if (options.animation_tracer_rate) {
+                this.animation_tracer_rate += options.animation_tracer_rate;
+                this.d_time_t = 1. / this.animation_tracer_rate;
+            }
+        }
+        else {
+            if (options.weapon_animation)
+                this.del_weapon_animation(options.weapon_animation);
+            if (options.animation_tracer_rate) {
+                this.animation_tracer_rate -= options.animation_tracer_rate;
+                this.d_time_t = 1. / this.animation_tracer_rate;
+            }
+        }
     };
 
     FireAutoEffectController.prototype.finish = function (options) {

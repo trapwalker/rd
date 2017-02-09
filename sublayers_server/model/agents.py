@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
-from sublayers_server.model.weapon_objects.mine_bang import BangMine
+from sublayers_server.model.weapon_objects.mine import BangMine
 from counterset import CounterSet
 from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI

@@ -31,7 +31,8 @@ class SiteMainHandler(BaseSiteHandler):
             self.set_cookie("forum_user", get_forum_cookie_str(self.current_user.name))
 
         self.render('site_main.html', news_list=news_list, quick_game_cars=quick_game_info.get('quick_cars', []),
-                    all_users_registered=users_count, user_lang=self.user_lang)
+                    all_users_registered=users_count, user_lang=self.user_lang,
+                    community_link_en=options.community_link_en, community_link_ru=options.community_link_ru)
 
 
 class GetUserLocaleJSONHandler(BaseSiteHandler):

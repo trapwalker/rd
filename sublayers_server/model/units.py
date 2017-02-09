@@ -233,7 +233,7 @@ class Unit(Observer):
                 if isinstance(weapon, WeaponAuto):
                     for target in weapon.targets:
                         messages.FireAutoEffect(
-                            agent=agent, subj=self, obj=target, action=action, side=sector.side, time=time,
+                            agent=agent, subj=self, obj=target, action=action, sector=sector, time=time,
                         ).post()
 
     def on_die(self, event):
@@ -479,6 +479,9 @@ class Mobile(Unit):
     def v(self, time):
         return self.state.v(t=time)
 
+    def a(self):
+        return self.state.a
+
     def position(self, time):
         return self.state.p(t=time)
 
@@ -503,6 +506,11 @@ class Bot(Mobile):
         super(Bot, self).__init__(time=time, **kw)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
         self.start_shield_event = None
+
+        # self.current_item_action ивент для активации итемов, единовременно игрок (а точнее его машинка) может
+        # активировать только один итем (активация может потребовать некоторое время). Любое действие в этот момент
+        # приведет к отмене текущей активации, итем при этом не должен быть потерян.
+        self.current_item_action = None
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)

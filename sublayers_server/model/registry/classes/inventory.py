@@ -89,6 +89,12 @@ class Inventory(Subdoc):
                 self.items.append(add_item)
         return count == 0
     
+    def get_item_by_uid(self, uid):
+        # todo: optimize
+        for item in self.items or []:
+            if item.uid == uid:
+                return item
+
     def placing(self):
         u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
         changes = []
@@ -105,12 +111,6 @@ class Inventory(Subdoc):
                     positions[item.position] = 1
                     changes.append(item)
         return changes
-
-    def get_item_by_uid(self, uid):
-        # todo: optimize
-        for item in self.items or []:
-            if item.uid == uid:
-                return item
 
     def create_model(self, server, time, owner=None):
         self.placing()

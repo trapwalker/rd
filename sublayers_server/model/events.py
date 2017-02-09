@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.utils import time_log_format
-from sublayers_server.model.messages import FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance
-
+from sublayers_server.model.messages import (FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance,
+                                             StartActivateItem, StopActivateItem)
+from sublayers_server.model.game_log_messages import (TransactionCancelActivateItemLogMessage,
+                                                      TransactionDisableActivateItemLogMessage)
 from functools import total_ordering, wraps, partial
 
 
@@ -19,7 +22,7 @@ def event_deco(func):
             getattr(kw.get('agent', None), 'server', None)
         )
         assert server, 'event_deco decorated method called without `server` source'
-        #time = kw.pop('time', server.get_time())
+        # time = kw.pop('time', server.get_time())
         event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
         event.post()
         return event
@@ -67,15 +70,15 @@ class Event(object):
         self.server.stat_log.s_events_on(time=self.time, delta=1.0)
         return self
 
-    def cancel(self):
+    def cancel(self, time=None):
         if self.actual:
-            self.on_cancel()
+            self.on_cancel(time=time)
             self.actual = False
             log.debug('CANCEL %s', self)
         else:
             log.warning('Double cancelling event: %s', self)
 
-    def on_cancel(self):
+    def on_cancel(self, time=None):
         self.server.stat_log.s_events_on(time=self.time, delta=-1.0)
 
     def __hash__(self):
@@ -132,7 +135,7 @@ class Event(object):
         if self.callback_after is not None:
             self.callback_after(event=self)
 
-        # todo: set metrics #self.server.get_time() - perform_start_time
+            # todo: set metrics #self.server.get_time() - perform_start_time
 
     def on_perform(self):
         pass
@@ -157,8 +160,8 @@ class Objective(Event):
         super(Objective, self).on_perform()
         self.obj.events.remove(self)
 
-    def on_cancel(self):
-        super(Objective, self).on_cancel()
+    def on_cancel(self, **kw):
+        super(Objective, self).on_cancel(**kw)
         self.obj.events.remove(self)
 
 
@@ -191,7 +194,6 @@ class Save(Objective):
 
 
 class SearchZones(Objective):
-
     def on_perform(self):
         super(SearchZones, self).on_perform()
         obj = self.obj
@@ -266,7 +268,8 @@ class FireDischargeEffectEvent(Objective):
 
         # todo: добавить гео-позиционный фильтр агентов
         subj_position = self.obj.position(time=self.time)
-        fake_position = Point.polar(max_radius, self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
+        fake_position = Point.polar(max_radius,
+                                    self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
             FireDischargeEffect(agent=agent, pos_subj=subj_position, targets=targets, fake_position=fake_position,
                                 time=self.time, self_shot=(agent is self.obj.main_agent)).post()
@@ -416,7 +419,8 @@ class ShowInventoryEvent(Event):
         super(ShowInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
         # assert (obj is not None) and (obj.inventory is not None)
-        if obj is not None and obj.inventory is not None and (obj is self.agent.car or obj.is_available(agent=self.agent)):
+        if obj is not None and obj.inventory is not None and (
+                obj is self.agent.car or obj.is_available(agent=self.agent)):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
@@ -449,7 +453,7 @@ class ItemActionInventoryEvent(Event):
         # Пытаемся получить инвентари и итемы
         start_obj = self.server.objects.get(self.start_owner_id)
         if start_obj is None:
-            return 
+            return
         start_inventory = start_obj.inventory
         start_item = start_inventory.get_item(position=self.start_pos)
         if start_item is None:
@@ -479,7 +483,8 @@ class ItemActionInventoryEvent(Event):
                 if self.count < 0 or start_item.val(t=self.time) <= self.count:
                     start_item.set_inventory(time=self.time, inventory=end_inventory, position=self.end_pos)
                 else:
-                    start_item.div_item(count=self.count, time=self.time, inventory=end_inventory, position=self.end_pos)
+                    start_item.div_item(count=self.count, time=self.time, inventory=end_inventory,
+                                        position=self.end_pos)
             else:  # выбрасывание на карту
                 drop_item = start_item if self.count < 0 else start_item._div_item(count=self.count, time=self.time)
                 start_obj.drop_item_to_map(item=drop_item, time=self.time)
@@ -511,28 +516,89 @@ class LootPickEvent(Event):
             stash.delete(self.time)
 
 
-class ItemActivationEvent(Event):
+class ItemPreActivationEvent(Event):
     def __init__(self, agent, owner_id, position, target_id, **kw):
-        super(ItemActivationEvent, self).__init__(server=agent.server, **kw)
+        super(ItemPreActivationEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.owner_id = owner_id
         self.position = position
         self.target_id = target_id
 
     def on_perform(self):
-        super(ItemActivationEvent, self).on_perform()
+        super(ItemPreActivationEvent, self).on_perform()
 
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
         if obj is None:
-            return 
+            return
         inventory = obj.inventory
         item = inventory.get_item(position=self.position)
         if item is None:
             return
         event_cls = item.example.activate()
         if event_cls:
+            if not item.example.can_activate(time=self.time, agent_model=self.agent):
+                TransactionDisableActivateItemLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+                return
+            if obj.current_item_action:
+                obj.current_item_action.cancel(time=self.time)
+            activate_time = item.example.get_activate_time(agent_model=self.agent)
+            StartActivateItem(agent=self.agent, time=self.time, item=item, activate_time=activate_time).post()
+            obj.current_item_action = ItemActivationEvent(agent=self.agent,
+                                                          owner_id=self.owner_id,
+                                                          position=self.position,
+                                                          target_id=self.target_id,
+                                                          item=item,
+                                                          time=self.time + activate_time)
+            obj.current_item_action.post()
+
+
+class ItemActivationEvent(Event):
+    def __init__(self, agent, owner_id, position, target_id, item=None, **kw):
+        super(ItemActivationEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+        self.position = position
+        self.target_id = target_id
+        self.item = item
+
+    def on_perform(self):
+        super(ItemActivationEvent, self).on_perform()
+
+        # Пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.owner_id)
+        if obj is None:
+            return
+        inventory = obj.inventory
+        item = inventory.get_item(position=self.position)
+        if item is None:
+            return
+
+        # Отключаем процесс активвации
+        StopActivateItem(agent=self.agent, time=self.time, item=self.item).post()
+        obj.current_item_action = None
+
+        # Если это не тот итем который мы начинали активировать то ниче не делать
+        if (self.item is not None) and not (self.item is item):
+            return
+
+        event_cls = item.example.activate()
+        if event_cls:
             event_cls(agent=self.agent, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
+
+    def on_cancel(self, time):
+        super(ItemActivationEvent, self).on_cancel(time)
+        obj = self.server.objects.get(self.owner_id)
+        item = self.item
+        if obj is not None:
+            obj.current_item_action = None
+            if item is None:
+                inventory = obj.inventory
+                item = inventory.get_item(position=self.position)
+
+        StopActivateItem(agent=self.agent, time=time, item=self.item).post()
+        if item is not None:
+            TransactionCancelActivateItemLogMessage(agent=self.agent, time=time, item=item.example).post()
 
 
 class StrategyModeInfoObjectsEvent(Event):
@@ -547,6 +613,7 @@ class StrategyModeInfoObjectsEvent(Event):
             objects = self.server.visibility_mng.get_global_around_objects(pos=car.position(time=self.time),
                                                                            time=self.time)
             StrategyModeInfoObjectsMessage(agent=self.agent, objects=objects, time=self.time).post()
+
 
 # данный эвент сейчас не доступен !
 class AgentTestEvent(Event):
@@ -581,13 +648,20 @@ class AgentTestEvent(Event):
 
             # Теперь проверки и логирование
             if len_weapons_t != len_sectors_t:
-                agent.log.info('Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
+                agent.log.info(
+                    'Error! 1 sector_targets len {}  !=  weapon targets len {}'.format(len_sectors_t, len_weapons_t))
 
-            if ((len_weapons_t > 0 or len_sectors_t > 0) and len_ch_item == 0) or ((len_weapons_t == 0 or len_sectors_t == 0) and len_ch_item > 0):
-                agent.log.info('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+            if ((len_weapons_t > 0 or len_sectors_t > 0) and len_ch_item == 0) or (
+                (len_weapons_t == 0 or len_sectors_t == 0) and len_ch_item > 0):
+                agent.log.info('Error! 2 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t,
+                                                                                                         len_weapons_t,
+                                                                                                         len_ch_item))
 
             if len_ch_item:
                 if len_weapons_t == 0 or len_sectors_t == 0:
-                    agent.log.info('Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+                    agent.log.info(
+                        'Error! 3 sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t,
+                                                                                                  len_weapons_t,
+                                                                                                  len_ch_item))
 
-            # agent.log.info('Error! end!!! sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))
+                    # agent.log.info('Error! end!!! sector_targets<{}> weapon_targets<{}> changed_items<{}>'.format(len_sectors_t, len_weapons_t, len_ch_item))

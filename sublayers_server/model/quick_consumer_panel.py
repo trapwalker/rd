@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.inventory import Consumer
-from sublayers_server.model.events import Event, event_deco
+from sublayers_server.model.events import Event, ItemPreActivationEvent, event_deco
 from sublayers_server.model.messages import Message
 
 
@@ -105,10 +105,15 @@ class QuickConsumerPanel(object):
             item = self.quick_items[index].item
             if item is None:
                 return
-            event_cls = item.example.activate()
-            if event_cls:
-                event_cls(agent=self.owner.owner, time=event.time, item=item,
-                          inventory=self.owner.inventory, target=target_id).post()
+            ItemPreActivationEvent(agent=self.owner.owner,
+                                   owner_id=self.owner.id,
+                                   position=self.owner.inventory.get_position(item),
+                                   target_id=self.owner.id,
+                                   time=event.time).post()
+            # event_cls = item.example.activate()
+            # if event_cls:
+            #     event_cls(agent=self.owner.owner, time=event.time, item=item,
+            #               inventory=self.owner.inventory, target=target_id).post()
             QuickConsumerPanelMessageEvent(owner=self, time=event.time + 0.1).post()
 
     @event_deco

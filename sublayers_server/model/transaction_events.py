@@ -14,7 +14,7 @@ from uuid import UUID
 from sublayers_server.model.events import Event
 from sublayers_server.model.units import Mobile
 from sublayers_server.model.inventory import ItemState
-from sublayers_server.model.weapon_objects.effect_mine import MineStartEvent
+from sublayers_server.model.weapon_objects.mine import MineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 import sublayers_server.model.messages as messages
 from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage,
