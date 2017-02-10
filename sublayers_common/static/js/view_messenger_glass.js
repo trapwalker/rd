@@ -727,6 +727,8 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "TransactionDisableActivateItemLogMessage":
                     this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Необходимо выполнение следующих условий: ' + msg.activate_comment + '.');
+                    // TODO: вынести в model_manager
+                    audioManager.play('error_1', 0.0, 1, null, false, 0, 0, 1);
                     break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
