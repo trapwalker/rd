@@ -566,9 +566,15 @@ class Bot(Mobile):
 
     def on_fire_discharge(self, event):
         super(Bot, self).on_fire_discharge(event=event)
+
+        # Снимаем щиты
         if self.start_shield_event:
             self.start_shield_event.cancel()
             self.start_shield_off(event=event)
+
+        # Отключаем активацию итема
+        if self.current_item_action:
+            self.current_item_action.cancel(time=event.time)
 
     def on_fire_auto_enable(self, event=None, **kw):
         super(Bot, self).on_fire_auto_enable(event=event, **kw)
@@ -578,12 +584,18 @@ class Bot(Mobile):
 
     def on_start(self, event):
         super(Bot, self).on_start(event=event)
-        # todo: убедиться, что отрицательное значение - хорошая идея
+
+        # Пассивный хил при остановке (от перков скилы и т.д.)
         self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'])
 
+        # Снимаем щиты
         if self.start_shield_event:
             self.start_shield_event.cancel()
             self.start_shield_off(event=event)
+
+        # Отключаем активацию итема
+        if self.current_item_action:
+            self.current_item_action.cancel(time=event.time)
 
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)
