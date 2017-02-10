@@ -13,6 +13,7 @@ var constRadarMinOpacity = 0;                   // конечная прозра
 var constRadarMaxWidth = 1;                     // начальная ширина радарного круга (в частях от всей ширины радара)
 var constRadarMinWidth = 0.2;                   // конечная ширина радарного круга (в частях от всей ширины радара)
 
+
 var WFireController = (function (_super) {
     __extends(WFireController, _super);
 
@@ -652,5 +653,6 @@ var WFireController = (function (_super) {
 
     return WFireController;
 }) (VisualObject);
+
 
 var wFireController;

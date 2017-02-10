@@ -832,6 +832,8 @@ var ViewMessengerGlass = (function () {
                     if (msg.price > 0)
                         this.addMessageToLog('На оплату работы тренера потрачено - ' + msg.price + 'nc.');
                     break;
+                case 'PowerUPLogMessage':
+                    this.addMessageToLog('Активирован бонус: ' + msg.comment + '.');
             }
         }
         return true;
@@ -1188,7 +1190,6 @@ var ViewMessengerGlass = (function () {
 
     return ViewMessengerGlass;
 })();
-
 
 
 function fakeChat() {
