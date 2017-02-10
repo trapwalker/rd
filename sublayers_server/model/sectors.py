@@ -77,6 +77,16 @@ class FireSector(Sector):
         )
         return d
 
+    def _fire_auto_start(self, target, time):
+        for w in self.weapon_list:
+            if isinstance(w, WeaponAuto):
+                w.add_car(car=target, time=time)
+
+    def _fire_auto_end(self, target, time):
+        for w in self.weapon_list:
+            if isinstance(w, WeaponAuto):
+                w.del_car(car=target, time=time)
+
     def add_weapon(self, weapon):
         assert not (weapon in self.weapon_list)
         self.weapon_list.append(weapon)
@@ -140,25 +150,21 @@ class FireSector(Sector):
             if isinstance(wp, WeaponDischarge):
                 wp.fire(time=time)
 
-    def add_car(self, target, time):
-        if target not in self.target_list:
-            owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
-            if owner:
-                owner.log.info('Sector {} Add Target {} car_owner={}  time={}'.format(self, target, owner, time))
-            self.target_list.append(target)
-            for w in self.weapon_list:
-                if isinstance(w, WeaponAuto):
-                    w.add_car(car=target, time=time)
-
     def out_car(self, target, time):
         if target in self.target_list:
             owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
             if owner:
                 owner.log.info('Sector {} Del Target {} car_owner={}  time={}'.format(self, target, owner, time))
             self.target_list.remove(target)
-            for w in self.weapon_list:
-                if isinstance(w, WeaponAuto):
-                    w.del_car(car=target, time=time)
+            self._fire_auto_end(target=target, time=time)
+
+    def add_car(self, target, time):
+        if target not in self.target_list:
+            owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
+            if owner:
+                owner.log.info('Sector {} Add Target {} car_owner={}  time={}'.format(self, target, owner, time))
+            self.target_list.append(target)
+            self._fire_auto_start(target=target, time=time)
 
     def can_discharge_fire(self, time):
         for wp in self.weapon_list:
@@ -169,9 +175,8 @@ class FireSector(Sector):
 
     def enable_auto_fire(self, time, enable):
         # log.debug('%s  enable auto_fire: %s    on side: %s', self.owner.uid, enable, self.side)
-        if not enable:
-            for target in self.target_list:
-                self.out_car(target=target, time=time)
+        if enable:
+            self.target_list = []
         for w in self.weapon_list:
             if isinstance(w, WeaponAuto):
                 w.set_enable(enable=enable, time=time)

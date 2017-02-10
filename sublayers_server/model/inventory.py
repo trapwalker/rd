@@ -296,6 +296,8 @@ class ItemTask(TaskSingleton):
         self.dv = dv
         self.ddvs = ddvs
         self.consumer = consumer
+        assert (((consumer is None) and (action is None)) or ((consumer is not None) and (action is not None))) and (
+            (action is None) or (action in ['on_use', 'on_start', 'on_stop']))
         self.action = action
 
     def on_perform(self, event):
@@ -307,6 +309,7 @@ class ItemTask(TaskSingleton):
         item = self.owner
         time = event.time
         t_empty = None
+        #log.debug('ItemTask:: on_start --> item = %s (%s, %s)', item, self.dv, self.ddvs)
         if (self.dv is not None) and (self.dv < 0.0) and (item.val(t=time) < -self.dv):
             # отправить потребителю месагу о том, что итем кончился
             if self.consumer is not None:
@@ -318,7 +321,7 @@ class ItemTask(TaskSingleton):
             item.on_update(time=time)
             if self.action is not None:
                 # отправить сообщение consumer'у с учётом экшена
-                self.consumer.__getattribute__(self.action)(time=time)
+                self.consumer.__getattribute__(self.action)(item=item, time=time)
 
         if t_empty is not None:
             if t_empty > time:
@@ -363,6 +366,7 @@ class ItemState(object):
 
     @assert_time_in_items
     def update_item_state(self, t=None, dt=0.0, dv=None, ddvs=None):
+        # log.debug('ItemState<%s>.update_item_state() t=%s, dt=%s, dv=%s, ddvs=%s  cur_dvs=%s', self._id, t, dt, dv, ddvs, self.dvs)
         self._fix_item_state(t=t, dt=dt)
         self.t_empty = None
         if dv:
@@ -517,9 +521,13 @@ class ItemState(object):
             self.consumers.remove(consumer)
             consumer.item = None
 
-    def change(self, consumer, dv, ddvs, time, action=None):
+    def change(self, consumer, dv, ddvs, action, time):
         if (consumer is None) or (consumer in self.consumers):
-            if not self.limbo:
+            if self.limbo:
+                assert action == 'on_stop'
+                if consumer:
+                    consumer.on_stop(item=self, time=time)
+            else:
                 ItemTask(consumer=consumer, owner=self, dv=dv, ddvs=ddvs, action=action).start(time=time)
 
 
@@ -529,6 +537,8 @@ class Consumer(object):
         self.item = None
         self.dv = dv
         self.ddvs = ddvs
+        self.is_call_start = False
+        self.is_call_stop = False
         self.is_started = False
         self._id = id(self)
 
@@ -558,43 +568,50 @@ class Consumer(object):
 
     def use(self, time):
         if self.item is not None:
-            self.item.change(consumer=self, dv=self.dv, ddvs=None, time=time, action="on_use")
+            self.item.change(consumer=self, dv=self.dv, ddvs=None, action='on_use', time=time)
 
     def start(self, time):
-        assert not self.is_started
+        if self.is_call_start:
+            return False
         if self.item is not None:
-            self.item.change(consumer=self, dv=None, ddvs=self.ddvs, time=time)
-            self.on_start(time=time)
+            self.is_call_start = True
+            self.item.change(consumer=self, dv=None, ddvs=self.ddvs, action='on_start', time=time)
             return True
         return False
 
     def stop(self, time):
-        assert self.is_started
+        # log.debug('Consumer<%s>.stop', self._id)
+        if self.is_call_stop:
+            return
         if self.item is not None:
-            self.item.change(consumer=self, dv=None, ddvs=-self.ddvs, time=time)
-            self.on_stop(time=time)
+            self.is_call_stop = True
+            self.item.change(consumer=self, dv=None, ddvs=-self.ddvs, action='on_stop', time=time)
 
-    def on_use(self, time):
+    def on_use(self, item, time):
         pass
 
-    def on_start(self, time):
+    def on_start(self, item, time):
+        self.is_call_start = False
         self.is_started = True
 
-    def on_stop(self, time):
+    def on_stop(self, item, time):
+        self.is_call_stop = False
         self.is_started = False
 
     # при установки итема, если необходимо сменить параметры потребления,
     # то перехватить этот метод и вызвать метод set_item_params
     def set_item(self, item, time, action=None):
         started = self.is_started
-
         # останавливаем использование
-        if started:
+        if started or self.is_call_start:
             self.stop(time=time)
+            self.is_started = False  # перестать стрелять, если что старт потом установит стрельбу
 
         # разряжаем итем
         if self.item is not None:
             self.item.unlinking(consumer=self)
+            self.is_call_start = False
+            self.is_call_stop = False
 
         # пытаемся зарядить итем
         if (item is not None) and self.can_set(item=item):
@@ -611,3 +628,4 @@ class Consumer(object):
     def on_empty_item(self, item, time, action):
         new_item = item.inventory.get_item_by_cls(balance_cls_list=[item.example.parent], time=time, min_value=-self.dv)
         self.set_item(time=time, item=new_item, action=action)
+

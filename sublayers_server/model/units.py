@@ -231,7 +231,7 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             for weapon in sector.weapon_list:
                 if isinstance(weapon, WeaponAuto):
-                    for target in sector.target_list:
+                    for target in weapon.targets:
                         messages.FireAutoEffect(
                             agent=agent, subj=self, obj=target, action=action, sector=sector, time=time,
                         ).post()

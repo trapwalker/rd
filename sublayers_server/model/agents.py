@@ -22,7 +22,7 @@ from sublayers_server.model.messages import (
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
-from sublayers_server.model.events import event_deco, Event
+from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 
@@ -740,6 +740,9 @@ class TeachingUser(QuickUser):
         if not self.user.quick and not self.user.is_tester:
             assert self.user.teaching_state == 'map'
             self.create_teaching_quest_map(time=time)
+
+        # Тест Авто Стрельбы
+        # AgentTestEvent(agent=self, time=time + 1.0).post()
 
     def on_connect(self, **kw):
         super(TeachingUser, self).on_connect(**kw)
