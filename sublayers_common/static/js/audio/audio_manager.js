@@ -72,6 +72,7 @@ function init_sound() {
     audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, 1.0);
 
     // Тестовые звуки от димона
+    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, 0.12);
     audioManager.load('engine_01_1', {url: '/static/audio/test/engine_01_1.wav'}, 1.0);
     audioManager.load('engine_01_2', {url: '/static/audio/test/engine_01_2.wav'}, 1.0);
     audioManager.load('engine_01_3', {url: '/static/audio/test/engine_01_3.wav'}, 1.0);

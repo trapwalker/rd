@@ -65,6 +65,7 @@ class MapRespawn(POIObserver):
 class MapPowerUp(POIObserver):
     model_class_name = StringField(caption=u'Имя модельного класса')
     icon_name = StringField(caption=u'Имя иконки в iconManager')
+    activate_comment = StringField(caption=u'Комментарий для лога')
     life_time = FloatField(caption=u"Время жизни")
 
 

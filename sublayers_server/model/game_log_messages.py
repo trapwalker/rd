@@ -356,3 +356,7 @@ class TransactionTrainerLogMessage(Message):
             perk_count=self.perk_count,
         )
         return d
+
+
+class PowerUPLogMessage(Message):
+    pass
