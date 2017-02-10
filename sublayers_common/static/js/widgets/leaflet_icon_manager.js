@@ -105,7 +105,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_vision_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-vis', '/static/img/map_icons/power_up/power_up_stels_stay.png', [54, 54], this.max_id++, null, 17);
 
-        this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 16);
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
