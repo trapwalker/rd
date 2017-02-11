@@ -117,6 +117,9 @@ class AmmoBullets(ItemUsable):
         from sublayers_server.model.transaction_events import TransactionActivateAmmoBullets
         return TransactionActivateAmmoBullets
 
+    def can_activate(self, time, agent_model=None):
+        return True
+
 
 class SlotItem(Item):
     pass

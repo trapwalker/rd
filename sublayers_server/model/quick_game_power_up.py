@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Observer
 from sublayers_server.model.units import Bot
 from sublayers_server.model.agents import TeachingUser
+from sublayers_server.model.inventory import ItemState
 import sublayers_server.model.tags as tags
 from sublayers_server.model.events import Objective
 from game_log_messages import PowerUPLogMessage
@@ -85,4 +86,15 @@ class QuickGamePowerUpShield(QuickGamePowerUpSimple):
 
         Objective(obj=target, time=time + self.example.duration_time, callback_after=disable_shield).post()
 
+        self.delete(time=time)
+
+
+class QuickGamePowerUpAddItems(QuickGamePowerUpSimple):
+    def power_up(self, target, time):
+        super(QuickGamePowerUpAddItems, self).power_up(time=time, target=target)
+        for item_proto in self.example.items:
+            item_example = item_proto.instantiate(amount=item_proto.stack_size)
+            item_state = ItemState(self.server, time=time, example=item_example, count=item_example.stack_size)
+            item_state.set_inventory(time=time, inventory=target.inventory)
+            # target.inventory.add_item(item=item_state, time=time)
         self.delete(time=time)

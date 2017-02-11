@@ -243,6 +243,7 @@ var ClientManager = (function () {
                 case 'QuickGamePowerUpFullFuel':
                 case 'QuickGamePowerUpEffect':
                 case 'QuickGamePowerUpShield':
+                case 'QuickGamePowerUpAddItems':
                     obj.direction = 0;
                     obj._icon_name = event.object.icon_name || "icon-power-up-random";
                     new WCanvasAnimateMarkerPowerUp(obj);
@@ -576,6 +577,7 @@ var ClientManager = (function () {
             case 'QuickGamePowerUpFullFuel':
             case 'QuickGamePowerUpEffect':
             case 'QuickGamePowerUpShield':
+            case 'QuickGamePowerUpAddItems':
                 this._contactStaticObject(event);
                 break;
             default:
