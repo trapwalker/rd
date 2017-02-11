@@ -763,6 +763,7 @@ var ClientManager = (function () {
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
             targets: event.targets,
+            weapon_animation: event.weapon_animation,
             fake_position: event.fake_position
         });
     };

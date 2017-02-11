@@ -20,6 +20,7 @@ var EffectPNGLoader = (function(){
 
         this.load_new_image('effect-fire-discharge-png-1', '/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png', [40, 40], 5);
         this.load_new_image('effect-fire-discharge-png-2', '/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png', [57, 75], 12);
+        this.load_new_image('effect-fire-discharge-png-3-dbl', '/static/img/fire_effects/shoots/heavygunfireright000_003_resized_stripe_12frames.png', [57, 75], 12);
         this.load_new_image('effect-fire-auto-png', '/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png', [32, 20], 2);
         this.load_new_image('effect-heavy-bang-png-1', '/static/img/fire_effects/bangs/heavy_damage_1000_2_res_stripe.png', [115, 115], 12);
         this.load_new_image('effect-heavy-bang-png-2', '/static/img/fire_effects/bangs/heavy_damage_wave_1000_2_res_stripe.png', [115, 115], 12);
@@ -153,8 +154,12 @@ var FireEffectManager = (function () {
                 new ECanvasHeavyBangOrientedPNG_2(pos_obj, direction).start();
         }
 
-        new ECanvasDischargeFirePNG_1(options.pos_subj, direction).start();
-        //new ECanvasDischargeFirePNG_2(options.pos_subj, direction).start();
+        // Анимация залпа
+        if (options.weapon_animation) {
+            var effect_type_str = options.weapon_animation[Math.floor(Math.random() * options.weapon_animation.length)];
+            if (typeof window[effect_type_str] === "function")
+                new window[effect_type_str](options.pos_subj, direction).start();
+        }
 
         var temp = 1 / ConstCountFireDischargeFlashlight;
         var tempDuration = ConstDelayFireDischargeFlashlight / ConstCountFireDischargeFlashlight;

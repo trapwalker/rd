@@ -70,8 +70,8 @@ var ECanvasDischargeFirePNG_1 = (function (_super) {
 
     function ECanvasDischargeFirePNG_1(position, direction){
         _super.call(this, position, direction);
-        this.duration = 1000;
-        this.effect_image_obj = effectPNGLoader.getImage("effect-fire-discharge-png-2");
+        this.duration = 300;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-fire-discharge-png-1");
         this.frame_count = this.effect_image_obj.frames;
         this.time_of_frame = this.duration / this.frame_count;
         this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
@@ -89,8 +89,8 @@ var ECanvasDischargeFirePNG_2 = (function (_super) {
 
     function ECanvasDischargeFirePNG_2(position, direction){
         _super.call(this, position, direction);
-        this.duration = 300;
-        this.effect_image_obj = effectPNGLoader.getImage("effect-fire-discharge-png-1");
+        this.duration = 1000;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-fire-discharge-png-2");
         this.frame_count = this.effect_image_obj.frames;
         this.time_of_frame = this.duration / this.frame_count;
         this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
@@ -100,6 +100,25 @@ var ECanvasDischargeFirePNG_2 = (function (_super) {
     }
 
     return ECanvasDischargeFirePNG_2
+})(ECanvasAnimationPNG);
+
+
+var ECanvasDischargeFirePNG_3_dbl = (function (_super) {
+    __extends(ECanvasDischargeFirePNG_3_dbl, _super);
+
+    function ECanvasDischargeFirePNG_3_dbl(position, direction){
+        _super.call(this, position, direction);
+        this.duration = 1000;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-fire-discharge-png-3-dbl");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = 0.2; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    }
+
+    return ECanvasDischargeFirePNG_3_dbl
 })(ECanvasAnimationPNG);
 
 

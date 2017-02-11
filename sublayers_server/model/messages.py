@@ -336,7 +336,7 @@ class FireDischarge(Message):
 
 
 class FireDischargeEffect(Message):
-    def __init__(self, pos_subj, targets, fake_position, **kw):
+    def __init__(self, pos_subj, targets, fake_position, weapon_animation, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
         """
@@ -344,7 +344,7 @@ class FireDischargeEffect(Message):
         self.pos_subj = pos_subj
         self.targets = targets
         self.fake_position = fake_position
-
+        self.weapon_animation = weapon_animation
 
     def as_dict(self):
         d = super(FireDischargeEffect, self).as_dict()
@@ -352,6 +352,7 @@ class FireDischargeEffect(Message):
             pos_subj=self.pos_subj,
             targets=self.targets,
             fake_position=self.fake_position,
+            weapon_animation=self.weapon_animation,
         )
         return d
 

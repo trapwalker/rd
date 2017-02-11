@@ -246,9 +246,10 @@ class FireDischargeEvent(Objective):
 
 
 class FireDischargeEffectEvent(Objective):
-    def __init__(self, side, **kw):
+    def __init__(self, side, weapon_example, **kw):
         super(FireDischargeEffectEvent, self).__init__(**kw)
         self.side = side
+        self.weapon_example = weapon_example
 
     def on_perform(self):
         # todo: правильно ли это?
@@ -272,7 +273,7 @@ class FireDischargeEffectEvent(Objective):
                                     self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
             FireDischargeEffect(agent=agent, pos_subj=subj_position, targets=targets, fake_position=fake_position,
-                                time=self.time).post()
+                                time=self.time, weapon_animation=self.weapon_example.weapon_animation).post()
 
 
 class FireAutoEnableEvent(Objective):
