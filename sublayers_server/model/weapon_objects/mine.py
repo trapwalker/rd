@@ -109,7 +109,7 @@ class BangMine(UnitWeapon):
         if not self._mine_is_active:
             return
         self._mine_is_active = False
-        BangEvent(starter=self.main_unit, center=self.position(time=time), radius=self.example.radius_damage,
+        BangEvent(damager=self, center=self.position(time=time), radius=self.example.radius_damage,
                   damage=self.example.damage, time=time).post()
         self.delete(time=time)
 

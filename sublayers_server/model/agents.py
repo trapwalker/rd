@@ -444,29 +444,34 @@ class Agent(Object):
         # todo: delivery for subscribers ##quest
         pass
 
-    def on_kill(self, event, obj):
+    def on_kill(self, event, target, killer):
         # log.debug('%s:: on_kill(%s)', self, obj)
-        self.log.info('{}:: on_kill {}'.format(self, obj))
+        self.log.info('{}:: on_kill {} killer={} time={}'.format(self, target, killer, event.time))
         # todo: party
         # todo: registry fix?
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
 
-        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
-                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
+        if self.car is killer:  # Если убийство сделано текущей машинкой агента
+            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp * \
+                         self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
+        else:
+            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp)
+            self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}'.format(self.car, target, killer))
+
         self.example.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
 
-        if obj.owner_example:
+        if target.owner_example:
             self_lvl = self.example.get_lvl()
-            killed_lvl = obj.owner_example.get_lvl()
+            killed_lvl = target.owner_example.get_lvl()
 
             # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
             # изменение кармы)
-            if ((self_lvl - killed_lvl) >= 3) and (obj.owner_example.karma_norm >= -0.1):
+            if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.karma_norm >= -0.1):
                 self.example.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=event.time).post()
-        self.example.on_event(event=event, cls=quest_events.OnKill, agent=obj.owner_example, unit=obj.example)
+        self.example.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
@@ -639,18 +644,17 @@ class User(Agent):
 
 
 class AI(Agent):
-    pass
-    # def setup_logger(self, level=logging.INFO):
-    #     logger_name = 'agent_{}'.format(self.user.name)
-    #     log_file = 'log/agents/bot_{}.log'.format(logger_name)
-    #     l = logging.getLogger(logger_name)
-    #     l.propagate = 0
-    #     formatter = logging.Formatter('%(asctime)s : %(message)s')
-    #     fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
-    #     fileHandler.setFormatter(formatter)
-    #     l.setLevel(level)
-    #     l.addHandler(fileHandler)
-    #     return l
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/bot_{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
 
 
 class QuickUser(User):
@@ -691,9 +695,9 @@ class QuickUser(User):
         self._add_quick_game_record(time=event.time)
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
-    def on_kill(self, event, obj):
-        self.log.info('{}:: on_kill {}'.format(self, obj))
-        if obj.owner and isinstance(obj.owner, AI):
+    def on_kill(self, event, target, killer):
+        self.log.info('{}:: on_kill {} and killer={}'.format(self, target, killer))
+        if target.owner and isinstance(target.owner, AI):
             self.quick_game_bot_kills += 1
         else:
             self.quick_game_kills += 1

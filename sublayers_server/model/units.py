@@ -539,7 +539,7 @@ class Bot(Mobile):
 
     def on_kill(self, event, obj):
         # Начисление опыта и фрага агенту
-        self.main_agent.on_kill(event=event, obj=obj)
+        self.main_agent.on_kill(event=event, target=obj, killer=self)
         super(Bot, self).on_kill(event=event, obj=obj)
 
     def start_shield_off(self, event):
@@ -626,6 +626,10 @@ class ExtraMobile(Mobile):
             main_agent_login=login,
         )
         return d
+
+    def on_kill(self, event, obj):
+        # Начисление опыта и фрага агенту
+        self.main_agent.on_kill(event=event, target=obj, killer=self)
 
 
 class Slave(ExtraMobile):

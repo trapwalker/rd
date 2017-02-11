@@ -299,10 +299,10 @@ class FireAutoTestEvent(Objective):
 
 
 class BangEvent(Event):
-    def __init__(self, starter, center, radius, damage, **kw):
-        server = starter.server
+    def __init__(self, damager, center, radius, damage, **kw):
+        server = damager.server
         super(BangEvent, self).__init__(server=server, **kw)
-        self.starter = starter
+        self.damager = damager
         self.center = center
         self.radius = radius
         self.damage = damage
@@ -314,11 +314,11 @@ class BangEvent(Event):
 
         objects = self.server.visibility_mng.get_around_objects(pos=self.center, time=self.time)
         for obj in objects:
-            if not obj.limbo and obj.is_alive:  # todo: optimize filtration observers
+            if not obj.limbo and obj.is_alive:
                 if isinstance(obj, Unit):
                     dist = abs(self.center - obj.position(time=self.time))
                     if dist < self.radius:
-                        obj.set_hp(dhp=self.damage, shooter=self.starter, time=self.time)
+                        obj.set_hp(dhp=self.damage, shooter=self.damager, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(
