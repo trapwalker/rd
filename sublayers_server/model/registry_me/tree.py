@@ -189,31 +189,12 @@ class Node(EmbeddedDocument):
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
-    def __init__(self, name=None, owner=None, parent=None, registry=None, **kw):
-        # if parent:
-        #     if not isinstance(parent, Node):
-        #         parent = REG[parent]
-        #
-        #     # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
-        #     _ingeritable = set(self._get_inheritable_field_names())
-        #     d = {k: v for k, v in parent._data.items() if k in _ingeritable}
-        #     d.update(kw)
-        #     kw = d
-        super(Node, self).__init__(name=name, owner=owner, parent=parent, **kw)
-
-    # def make_uri(self):
-    #     owner = self.owner
-    #
-    #     if owner and owner.uri:
-    #         base_uri = URI(owner.uri)
-    #     else:
-    #         base_uri = URI(scheme='reg', storage='', path=())
-    #
-    #     uri = base_uri.replace(path=base_uri.path + (self.name or str(self.uid),))
-    #     return str(uri)
+    # def __init__(self, name=None, owner=None, parent=None, registry=None, **kw):
+    #     super(Node, self).__init__(name=name, owner=owner, parent=parent, **kw)
 
     @classmethod
     def _get_inheritable_field_names(cls):
+        # todo: Закешировать на уровне класса
         return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
 
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
@@ -451,6 +432,8 @@ if __name__ == '__main__':
     test2()
     #test3()
 
+    # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
+    # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
     # todo: Проверить кэширование RegistryLinkField
     # todo: Реализовать кэширование унаследованных атрибутов
     #       - кэшировать в отдельном несериализуемом словаре
