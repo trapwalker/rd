@@ -127,7 +127,7 @@ var ECanvasPointsTracerSimple = (function (_super) {
     __extends(ECanvasPointsTracerSimple, _super);
 
     function ECanvasPointsTracerSimple(p1, p2, call_back) {
-        _super.call(this, p1, p2, 120, call_back, "effect-tracer-png-simple");
+        _super.call(this, p1, p2, 180, call_back, "effect-tracer-png-simple");
     }
 
     return ECanvasPointsTracerSimple;
@@ -138,7 +138,7 @@ var ECanvasPointsTracerDbl1 = (function (_super) {
     __extends(ECanvasPointsTracerDbl1, _super);
 
     function ECanvasPointsTracerDbl1(p1, p2, call_back) {
-        _super.call(this, p1, p2, 100, call_back, "effect-tracer-png-dbl-1");
+        _super.call(this, p1, p2, 150, call_back, "effect-tracer-png-dbl-1");
     }
 
     return ECanvasPointsTracerDbl1;
@@ -149,7 +149,7 @@ var ECanvasPointsTracerDbl2 = (function (_super) {
     __extends(ECanvasPointsTracerDbl2, _super);
 
     function ECanvasPointsTracerDbl2(p1, p2, call_back) {
-        _super.call(this, p1, p2, 110, call_back, "effect-tracer-png-dbl-2");
+        _super.call(this, p1, p2, 155, call_back, "effect-tracer-png-dbl-2");
     }
 
     return ECanvasPointsTracerDbl2;
@@ -160,7 +160,7 @@ var ECanvasPointsTracerPNG_MG_15 = (function (_super) {
     __extends(ECanvasPointsTracerPNG_MG_15, _super);
 
     function ECanvasPointsTracerPNG_MG_15(p1, p2, call_back) {
-        _super.call(this, p1, p2, 100, call_back, "light_tracer_MG_15");
+        _super.call(this, p1, p2, 150, call_back, "light_tracer_MG_15");
     }
 
     return ECanvasPointsTracerPNG_MG_15;
@@ -171,7 +171,7 @@ var ECanvasPointsTracerAnimation_1 = (function (_super) {
     __extends(ECanvasPointsTracerAnimation_1, _super);
 
     function ECanvasPointsTracerAnimation_1(p1, p2, call_back) {
-        _super.call(this, p1, p2, 140, call_back, "light_tracer_animation_1", 80);
+        _super.call(this, p1, p2, 210, call_back, "light_tracer_animation_1", 80);
     }
 
     return ECanvasPointsTracerAnimation_1;
@@ -182,7 +182,7 @@ var ECanvasPointsTracerAnimation_2 = (function (_super) {
     __extends(ECanvasPointsTracerAnimation_2, _super);
 
     function ECanvasPointsTracerAnimation_2(p1, p2, call_back) {
-        _super.call(this, p1, p2, 110, call_back, "light_tracer_animation_2", 80);
+        _super.call(this, p1, p2, 170, call_back, "light_tracer_animation_2", 80);
     }
 
     return ECanvasPointsTracerAnimation_2;

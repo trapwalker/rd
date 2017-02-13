@@ -10,6 +10,7 @@ from tornado.options import options
 
 class MenuPartyHandler(BaseHandler):
     def get(self):
+        # self.render("menu/party_window.html")
         if options.mode == 'basic':
             self.render("menu/party_window.html")
         elif options.mode == 'quick':

@@ -193,7 +193,7 @@ class Server(object):
             StationaryRadiation(time=event.time, example=quick_rad, server=self)
         quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
         if quick_rad_anti:
-            quick_rad.p_observing_range = self.quick_game_play_radius
+            quick_rad_anti.p_observing_range = self.quick_game_play_radius
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
 

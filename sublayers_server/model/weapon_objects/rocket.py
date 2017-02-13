@@ -38,7 +38,7 @@ class Rocket(UnitWeapon):
         self.delete(time=event.time + self.example.life_time)
 
     def on_before_delete(self, event):
-        BangEvent(starter=self.main_unit, center=self.position(time=event.time), radius=self.radius_damage,
+        BangEvent(damager=self, center=self.position(time=event.time), radius=self.radius_damage,
                   damage=self.damage, time=event.time).post()
         super(Rocket, self).on_before_delete(event=event)
 

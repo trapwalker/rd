@@ -81,6 +81,13 @@ class MapPowerUpShield(MapPowerUp):
     duration_time = FloatField(caption=u"Время действия щита")
 
 
+class MapPowerUpAddItems(MapPowerUp):
+    items = ListField(
+        caption=u'Итемы', doc=u'Список итемов, добавляемых при срабатывании PowerUp',
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item'),
+    )
+
+
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
 
