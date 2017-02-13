@@ -216,7 +216,7 @@ class MapRespawn(Observer):
 
     @event_deco  # если в итоге не подойдёт, то сделать @event_deco_obj и создавать там Objective event
     def respawn(self, event):
-        self.respawn(time=event.time + self.example.respawn_time + random.randint(5, 10))  # создать эвент на новый респавн
+        self.respawn(time=event.time + self.example.respawn_time + random.randint(-5, 5))  # создать эвент на новый респавн
         respawn_objects = self.example.respawn_objects
         if not respawn_objects:
             return
