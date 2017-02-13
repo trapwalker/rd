@@ -26,6 +26,7 @@ class Cannon(Weapon):
     dmg = FloatField(caption=u'Урон за выстрел')
     area_dmg = FloatField(caption=u'Урон за выстрел')
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
+    weapon_animation = ListField(caption=u'Типы анимаций', base_field=StringField())
 
 
 class MachineGun(Weapon):

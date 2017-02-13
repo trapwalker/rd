@@ -235,7 +235,9 @@ class PrivateChatRoom(ChatRoom):
                     chat.exclude(agent=agent, time=time)
 
     def __init__(self, agent, recipient, time):
-        super(PrivateChatRoom, self).__init__(time=time, name=(agent.user.name + '->' + recipient.user.name))  # todo: use unicode
+        assert isinstance(agent.user.name, unicode)
+        assert isinstance(recipient.user.name, unicode)
+        super(PrivateChatRoom, self).__init__(time=time, name=(u"{!s} -> {!s}".format(agent.user.name, recipient.user.name)))  # todo: use unicode
         self.include(agent=agent, time=time)
         self.include(agent=recipient, time=time)
 

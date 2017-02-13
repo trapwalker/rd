@@ -243,6 +243,7 @@ var ClientManager = (function () {
                 case 'QuickGamePowerUpFullFuel':
                 case 'QuickGamePowerUpEffect':
                 case 'QuickGamePowerUpShield':
+                case 'QuickGamePowerUpAddItems':
                     obj.direction = 0;
                     obj._icon_name = event.object.icon_name || "icon-power-up-random";
                     new WCanvasAnimateMarkerPowerUp(obj);
@@ -576,6 +577,7 @@ var ClientManager = (function () {
             case 'QuickGamePowerUpFullFuel':
             case 'QuickGamePowerUpEffect':
             case 'QuickGamePowerUpShield':
+            case 'QuickGamePowerUpAddItems':
                 this._contactStaticObject(event);
                 break;
             default:
@@ -772,6 +774,7 @@ var ClientManager = (function () {
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
             targets: event.targets,
             fake_position: event.fake_position,
+            weapon_animation: event.weapon_animation,
             self_shot: event.self_shot
         });
     };
@@ -1431,7 +1434,7 @@ var ClientManager = (function () {
             call: "get_party_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1443,7 +1446,7 @@ var ClientManager = (function () {
             call: "get_party_user_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1455,7 +1458,7 @@ var ClientManager = (function () {
             call: "send_create_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name,
+                name: name && name.toString(),
                 description: description
             }
         };
@@ -1468,7 +1471,7 @@ var ClientManager = (function () {
             call: "send_join_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1487,7 +1490,7 @@ var ClientManager = (function () {
             call: "send_invite",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                username: name
+                username: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1499,7 +1502,7 @@ var ClientManager = (function () {
             call: "send_kick",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                username: name
+                username: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1511,7 +1514,7 @@ var ClientManager = (function () {
         var mes = {
             call: "send_change_category",
             rpc_call_id: rpcCallList.getID(),
-            params: { username: name }
+            params: { username: name && name.toString() }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

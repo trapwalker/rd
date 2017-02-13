@@ -451,7 +451,7 @@ class Mobile(Unit):
 
     def set_motion(self, time, target_point=None, cc=None, turn=None, comment=None):
         if self.limbo or not self.is_alive:
-            log.debug('Error! {} try set_motion in limbo'.format(self))
+            log.warning('{} try set_motion in limbo main_agent={}'.format(self, self.main_agent))
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
@@ -539,7 +539,7 @@ class Bot(Mobile):
 
     def on_kill(self, event, obj):
         # Начисление опыта и фрага агенту
-        self.main_agent.on_kill(event=event, obj=obj)
+        self.main_agent.on_kill(event=event, target=obj, killer=self)
         super(Bot, self).on_kill(event=event, obj=obj)
 
     def start_shield_off(self, event):
@@ -626,6 +626,10 @@ class ExtraMobile(Mobile):
             main_agent_login=login,
         )
         return d
+
+    def on_kill(self, event, obj):
+        # Начисление опыта и фрага агенту
+        self.main_agent.on_kill(event=event, target=obj, killer=self)
 
 
 class Slave(ExtraMobile):

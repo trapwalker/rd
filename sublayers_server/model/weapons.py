@@ -263,7 +263,7 @@ class WeaponDischarge(Weapon):
             pass
 
         # евент залповая стрельба
-        FireDischargeEffectEvent(obj=self.owner, side=self.sector.side, time=time).post()
+        FireDischargeEffectEvent(obj=self.owner, side=self.sector.side, weapon_example=self.example, time=time).post()
 
         # отправка сообщения агентам о перезарядке
         for agent in self.owner.watched_agents:
