@@ -7,6 +7,9 @@ from sublayers_server.model.units import UnitWeapon, Slave
 from sublayers_server.model.events import Event, BangEvent, Objective
 import sublayers_server.model.tags as tags
 
+import random
+
+
 
 class MineStartEvent(Event):
     def __init__(self, starter, example_mine, **kw):
@@ -97,7 +100,14 @@ class BangMine(UnitWeapon):
 
     def on_init(self, event):
         super(BangMine, self).on_init(event)
-        self.delete(time=event.time + self.example.life_time)
+        Objective(obj=self, time=event.time + self.example.life_time, callback_after=self.mine_delete).post()
+
+    def mine_delete(self, event):
+        if self._mine_is_active:
+            if random.random() > 0.5:
+                self._on_bang(event.time)
+            else:
+                Objective(obj=self, time=event.time + self.example.life_time, callback_after=self.mine_delete).post()
 
     def activate(self, event):
         self._mine_is_active = True
