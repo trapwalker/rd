@@ -188,7 +188,7 @@ class InitTimeEvent(Event):
 
 
 class SetPartyEvent(Event):
-    def __init__(self, agent, name=None, description='', **kw):
+    def __init__(self, agent, name=None, description=u'', **kw):
         super(SetPartyEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.name = name
@@ -218,7 +218,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        user = self.agent.server.agents_by_name.get(str(self.username))
+        user = self.agent.server.agents_by_name.get(self.username, None)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
             return
@@ -254,7 +254,7 @@ class SendKickEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
 
-        user = self.agent.server.agents_by_name.get(str(self.username))
+        user = self.agent.server.agents_by_name.get(self.username, None)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
             return
@@ -279,7 +279,7 @@ class SendChangeCategoryEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
             return
 
-        user = self.agent.server.agents_by_name.get(str(self.username))
+        user = self.agent.server.agents_by_name.get(self.username, None)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
@@ -429,52 +429,62 @@ class AgentAPI(API):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
-    @basic_mode
     @public_method
     def send_create_party_from_template(self, name, description):
-        self.set_party(name=unicode(name), description=unicode(description))
+        assert name is None or isinstance(name, unicode)
+        assert description is None or isinstance(description, unicode)
+        self.agent.log.info("send_create_party_from_template name={!r}".format(name))
+        self.set_party(name=name, description=description)
 
-    @basic_mode
     @public_method
     def send_join_party_from_template(self, name):
-        self.set_party(name=unicode(name))
+        assert name is None or isinstance(name, unicode)
+        self.agent.log.info("send_join_party_from_template name={!r}".format(name))
+        self.set_party(name=name)
 
-    @basic_mode
     @public_method
-    def set_party(self, name=None, description=''):
+    def set_party(self, name=None, description=u''):
         # todo: review
-        SetPartyEvent(agent=self.agent, name=unicode(name), description=unicode(description),
+        assert name is None or isinstance(name, unicode)
+        assert description is None or isinstance(description, unicode)
+        self.agent.log.info("set_party name={!r}".format(name))
+        SetPartyEvent(agent=self.agent, name=name, description=description,
                       time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def get_party_info(self, name):
-        PartyGetPartyInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
+        assert name is None or isinstance(name, unicode)
+        self.agent.log.info("get_party_user_info name={!r}".format(name))
+        PartyGetPartyInfoEvent(agent=self.agent, name=name, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def get_party_user_info(self, name):
-        PartyGetPartyUserInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
+        assert name is None or isinstance(name, unicode)
+        self.agent.log.info("get_party_user_info name={!r}".format(name))
+        PartyGetPartyUserInfoEvent(agent=self.agent, name=name, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def send_invite(self, username):
-        SendInviteEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
+        assert username is None or isinstance(username, unicode)
+        self.agent.log.info("send_invite username={!r}".format(username))
+        SendInviteEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def delete_invite(self, invite_id):
+        self.agent.log.info("delete_invite username={}".format(invite_id))
         DeleteInviteEvent(agent=self.agent, invite_id=invite_id, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def send_kick(self, username):
-        SendKickEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
+        assert username is None or isinstance(username, unicode)
+        self.agent.log.info("send_kick username={!r}".format(username))
+        SendKickEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def send_change_category(self, username):
-        SendChangeCategoryEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
+        assert username is None or isinstance(username, unicode)
+        self.agent.log.info("send_change_category username={}".format(username))
+        SendChangeCategoryEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
     @public_method
     def fire_discharge(self, side):

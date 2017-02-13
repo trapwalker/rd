@@ -1425,7 +1425,7 @@ var ClientManager = (function () {
             call: "get_party_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1437,7 +1437,7 @@ var ClientManager = (function () {
             call: "get_party_user_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1449,7 +1449,7 @@ var ClientManager = (function () {
             call: "send_create_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name,
+                name: name && name.toString(),
                 description: description
             }
         };
@@ -1462,7 +1462,7 @@ var ClientManager = (function () {
             call: "send_join_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1481,7 +1481,7 @@ var ClientManager = (function () {
             call: "send_invite",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                username: name
+                username: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1493,7 +1493,7 @@ var ClientManager = (function () {
             call: "send_kick",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                username: name
+                username: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1505,7 +1505,7 @@ var ClientManager = (function () {
         var mes = {
             call: "send_change_category",
             rpc_call_id: rpcCallList.getID(),
-            params: { username: name }
+            params: { username: name && name.toString() }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
