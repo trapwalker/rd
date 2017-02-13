@@ -61,7 +61,8 @@ class RegistryLinkField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         if isinstance(value, six.string_types):
-            reg = instance.root_instance
+            uri = URI(value)
+            reg = get_registry(uri.storage)
             node = reg[value]
             instance._data[value] = node  # Caching
             return node
@@ -112,16 +113,19 @@ class RegistryLinkField(BaseField):
 
 
 class EmbeddedNodeField(EmbeddedDocumentField):
-    def to_python(self, value):
+    def __set__(self, instance, value):
         if isinstance(value, basestring):
-            parent = REG[value]
-            node = parent.__class__(parent=parent)
+            reg = get_registry()  # todo: Избавиться от глобального объекта
+            parent = reg.get_node_by_uri(value)
+            if parent:
+                value = parent.__class__(parent=parent)
+            else:
+                assert not instance._initialised
 
-            return node
-
-        if not isinstance(value, self.document_type):
-            return self.document_type._from_son(value, _auto_dereference=self._auto_dereference)
-        return value
+        # todo: Проверить поддержку инициализации нода из словаря
+        if value and not isinstance(value, Node) and not (isinstance(value, basestring) and not instance._initialised):
+            value = self.to_python(value)
+        super(EmbeddedNodeField, self).__set__(instance, value)
 
 
 class Node(EmbeddedDocument):
@@ -131,18 +135,29 @@ class Node(EmbeddedDocument):
         allow_inheritance=True,
     )
 
+    def put_to(self, reg):
+        get_registry(reg)._put(self)
+        return self
+
     @property
     def uri(self):
         # todo: cache it
         # if hasattr(self, '_uri'):
         #     return self._uri
         uri = None
-        owner = self.owner
-        assert owner is None or isinstance(owner, Node), 'Node owner is not Node: {!r}'.format(owner)
         name = self.name
         if name is not None:
-            owner_uri = owner and owner.uri
-            owner_uri = URI(owner.uri) if owner_uri else URI('reg://')
+            owner = self.owner
+            if isinstance(owner, Node):
+                owner_uri = owner.uri
+                owner_uri = owner_uri and URI(owner_uri)
+            elif isinstance(owner, URI):
+                owner_uri = owner
+            elif owner is None:
+                owner_uri = URI('reg://')
+            else:
+                raise AssertionError('Owner is wrong type: {!r}'.format(owner))
+
             uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
         # self._uri = uri
         return uri
@@ -174,7 +189,7 @@ class Node(EmbeddedDocument):
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
-    def __init__(self, name=None, parent=None, **kw):
+    def __init__(self, name=None, owner=None, parent=None, registry=None, **kw):
         # if parent:
         #     if not isinstance(parent, Node):
         #         parent = REG[parent]
@@ -184,8 +199,7 @@ class Node(EmbeddedDocument):
         #     d = {k: v for k, v in parent._data.items() if k in _ingeritable}
         #     d.update(kw)
         #     kw = d
-
-        super(Node, self).__init__(name=name, parent=parent, **kw)
+        super(Node, self).__init__(name=name, owner=owner, parent=parent, **kw)
 
     # def make_uri(self):
     #     owner = self.owner
@@ -278,6 +292,7 @@ class Node(EmbeddedDocument):
 
 
 class Registry(Document):
+    name = StringField()
     tree = MapField(field=EmbeddedDocumentField(document_type=Node))
 
     # def __init__(self, **kw):
@@ -293,13 +308,16 @@ class Registry(Document):
 
     def get_node_by_uri(self, uri, default=None):
         # tod4o: support alternative path notations (list, relative, parametrized)
+        if not uri.startswith('reg://'):
+            uri = 'reg://{}'.format(uri)
         return self.tree.get(uri, default)
-
 
     get = get_node_by_uri
 
     def __getitem__(self, uri):
         # tod4o: support alternative path notations (list, relative, parametrized)
+        if not uri.startswith('reg://'):
+            uri = 'reg://{}'.format(uri)
         return self.tree[uri]
 
     def load(self, path, mongo_store=True):
@@ -322,8 +340,7 @@ class Registry(Document):
                     if isinstance(field, EmbeddedNodeField):
                         value = node._data.get(field_name, None)
                         if value and not isinstance(value, Node):
-                            setattr(node, field_name, field.to_python(value))
-
+                            setattr(node, field_name, value)
 
         log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(count, timer.duration))
 
@@ -360,7 +377,21 @@ class Registry(Document):
         self._put(node)
         return node
 
-REG = Registry()
+
+REGS = {}
+
+def get_registry(name=None):
+    if isinstance(name, Registry):
+        return name
+    reg = REGS.get(name)
+    if reg is None:
+        reg = Registry.objects.filter(name=name).first()
+
+    if reg is None:
+        reg = Registry(name=name, tree={})
+        REGS[name] = reg
+
+    return reg
 
 
 ###############################################################################################
@@ -383,10 +414,12 @@ class B(Node):
 
 
 def test1():
-    a   = A(name='a'   , x= 3, y= 7, e=None, )
-    aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, )
-    aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,)
-    ab  = A(name='ab'  , x=31, y=71, e='reg:///a/aa', owner=a.uri, )
+    Registry.objects.filter({}).delete()
+    reg = get_registry(None)
+    a   = A(name='a'   , x= 3, y= 7, e=None,).put_to(reg)
+    aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, ).put_to(reg)
+    aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,).put_to(reg)
+    ab  = A(name='ab'  , x=31, y=71, e='reg:///a/aa', owner=a.uri, ).put_to(reg)
 
     # aa.e = ab.uri
 
@@ -396,9 +429,10 @@ def test1():
 
 
 def test2():
-    REG.load(u'../../../tmp/reg')
-    REG.save()
-    print(REG['reg:///reg/a/ab'].e.root_instance)
+    Registry.objects.filter({}).delete()
+    reg = get_registry(None)
+    reg.load(u'../../../tmp/reg')
+    reg.save()
     globals().update(locals())
 
 
@@ -413,19 +447,12 @@ if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
 
-    test1()
-    #test2()
+    #test1()
+    test2()
     #test3()
 
-    # todo: Избавиться от синглтона REG
-    # todo: Определить все случаи, когда EmbeddedNode может быть создан на основе ссылки
-    #       похоже таких случаев всего 2:
-    #           1) при загрузке из FS;
-    #           2) при присвоении полю типа EmbeddedNodeField строки с URI
-    #       в связи с этим возможно стоит сделать инстанцирование URI в методе from_son
     # todo: Проверить кэширование RegistryLinkField
     # todo: Реализовать кэширование унаследованных атрибутов
     #       - кэшировать в отдельном несериализуемом словаре
     #       - проверить возможность перекрытия __getattribute__ на уровне узла вместо подмешивания ко всем типам полей
-    # todo: Реализовать набор тестов для проверки инвариантности к порядку загрузки наборов объектов со ссылками
     # todo: Реализовать кэширование root_instance
