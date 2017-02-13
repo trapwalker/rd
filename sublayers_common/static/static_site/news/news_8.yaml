@@ -1,0 +1,10 @@
+date: '10.02.2017'
+header:
+  ru: 'Обновление v0.130.2834'
+  en: 'Update v0.130.2834'
+link: 'update_v0_130_2834'
+content:
+  ru: '<div style="width: 400px; height: 240px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/power_up_news_site.png"></img></div><div style=" font-size: 9pt; ">- Изменён расчёт видимости объектов.<br>- Исправлен баг с авторизацией на форуме с сайта.<br>- Добавлена стрелка в режиме обучения для больших разрешений экрана.<br>- Изменён механизм генерации трассеров автоматического оружия. Добавлены новые эффекты трассеров.<br>- Добавлен кулдаун активации айтемов.<br>- Ребаланс быстрой игры.<br>- В быструю игру добавлены Power Up’ы.<br><br></div>'
+  en: '<div style="width: 400px; height: 240px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/power_up_news_site.png"></img></div><div style=" font-size: 9pt; ">- Changed the calculation of the visibility of objects.<br>- Fixed a bug with forum authorization with main page.<br>- Added arrow in the training mode for large screen resolutions.<br>- Changed the mechanism of tracers generation. Added new tracer effects.<br>- Added a cooldown of items activation.<br>- "Quick Fight" mode rebalance.<br>- Added Power Up&#39s for a "Quick Fight" mode.<br><br></div>'
+
+

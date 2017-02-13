@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.units import UnitWeapon
-from sublayers_server.model.balance import BALANCE
 from sublayers_server.model.events  import Event, BangEvent
 import sublayers_server.model.tags as tags
 
@@ -39,7 +38,7 @@ class Rocket(UnitWeapon):
         self.delete(time=event.time + self.example.life_time)
 
     def on_before_delete(self, event):
-        BangEvent(starter=self.main_unit, center=self.position(time=event.time), radius=self.radius_damage,
+        BangEvent(damager=self, center=self.position(time=event.time), radius=self.radius_damage,
                   damage=self.damage, time=event.time).post()
         super(Rocket, self).on_before_delete(event=event)
 

@@ -6,8 +6,8 @@
             <div id="RDSitePIConsole" class="console-block"></div>
         </div>
         <div class="window-pi-content-block btn-block">
-            <div class="window-qg-btn window-pi-btn window-pi-start-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="window.location = '/play';">Войти в игру</div>
-            <div class="window-qg-btn window-pi-btn window-pi-logout-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="Logout()">Покинуть систему</div>
+            <div class="window-qg-btn window-pi-btn window-pi-start-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="StartGame()">{{ _('spi_enter') }}</div>
+            <div class="window-qg-btn window-pi-btn window-pi-logout-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="Logout()">{{ _('spi_out') }}</div>
         </div>
         <div class="window-pi-content-block game-info">
             <div id="RDSitePersonalInfoUserInfo" class="window-pi-user-info-table"></div>
@@ -19,16 +19,27 @@
 </div>
 
 <script>
+    function StartGame() {
+        audioManager.play('error_1');
+        consoleWPI.add_message('system', _('con_wreg_msg7'));
+        return;
+
+        window.location = '/play';
+    }
+
     function Logout() {
         $.ajax({
             url: location.protocol + '//' + location.host + '/logout',
             method: 'POST',
-            data: {},
+            data: {_xsrf: getCookie('_xsrf')},
             success: function() {
                 registration_status = 'not_register';
                 $('#RDbtn_start').click();
                 $('#RDSAuthFieldNote').text('');
                 audioManager.play('button_screen_press');
+
+                // todo: убрать после тестирования
+                SetQuickGameBtnEnable(false);
             }
         });
     }

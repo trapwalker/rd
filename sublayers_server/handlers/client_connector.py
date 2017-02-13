@@ -19,6 +19,9 @@ from random import randint
 from sublayers_common.user_profile import User
 
 
+WS_PING_INTERVAL = 25  # (сек.) интервал пинга клиента через веб-сокет.
+
+
 class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def allow_draft76(self):
@@ -36,6 +39,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         print 'new connect open !!!'
         self._ping_timeout_handle = None
         self.ping_number = 0
+        self._current_ping = 0
         self.agent = None
         user = self.current_user
         assert user
@@ -49,29 +53,23 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
             if not user.quick:
                 agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
         elif options.mode == 'quick':
-            if user.quick:
-                agent = yield srv.api.get_agent_quick_game(user, do_disconnect=True)
-            else:
-                agent = yield srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
+            agent = yield srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
 
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit
             return
         self.agent = agent
         agent.on_connect(connection=self)
+        agent.log.info(self.request.headers["User-Agent"])
         self._do_ping()
 
     def on_close(self):
-        if self._ping_timeout_handle:
-            log.debug('Cancel ping for agent {}'.format(self.agent))
-            tornado.ioloop.IOLoop.instance().remove_timeout(self._ping_timeout_handle)
-            self._ping_timeout_handle = None
+        log.info('Socket %r closed (agent=%s)', self, self.agent)
+        self._disable_ping()
 
         if self.agent:
-            log.info('Agent socket %r Closed', self)
             self.agent.on_disconnect(self)
-        else:
-            log.warning('Socket Closed. Socket %r has not agent', self)
+
         self.application.clients.remove(self)
 
     def on_message(self, message):
@@ -88,9 +86,29 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
             log.exception('Fucking scarry deque error (%r) with data=%r', e, data)
             raise e
 
+    def _disable_ping(self):
+        if self._ping_timeout_handle:
+            log.debug('Ping cancel for agent {}'.format(self.agent))
+            tornado.ioloop.IOLoop.instance().remove_timeout(self._ping_timeout_handle)
+            self._ping_timeout_handle = None
+        else:
+            log.warning('Ping already cancelled for agent {}'.format(self.agent))
+
     def _do_ping(self):
         t = self.application.srv.get_time()
         # log.debug('Send ping packet #{self.ping_number} at {t} to {self.agent}'.format(self=self, t=t))
+        if not self.ws_connection:
+            log.warning('Connection lost during ping is active (number=%s, agent=%s)', self.ping_number, self.agent)
+            self._disable_ping()
+            return
+
         self.ping(json.dumps(dict(time=t, number=self.ping_number)))
         self.ping_number += 1
-        self._ping_timeout_handle = tornado.ioloop.IOLoop.instance().call_later(29, self._do_ping)  # todo: const 29
+        self._ping_timeout_handle = tornado.ioloop.IOLoop.instance().call_later(WS_PING_INTERVAL, self._do_ping)
+
+    def on_pong(self, data):
+        t = self.application.srv.get_time()
+        d = json.loads(data)
+        if d['number'] == self.ping_number - 1:
+            self._current_ping = round((t - d['time']) * 1000, 0)
+            assert self._current_ping >= 0, 'current_time={}  ping_time={} ping={} number={}'.format(t, d['time'], self._current_ping, d['number'])

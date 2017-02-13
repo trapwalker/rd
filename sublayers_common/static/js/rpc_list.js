@@ -19,12 +19,14 @@ var RPCCallList = ( function () {
             var rpc = this.calls[aCallID];
             // info: rpc.call === 'название метода в агент апи на сервере'
             delete this.calls[aCallID];
-            this.update_current_ping((clock.getClientTime() - rpc.__time_add).toFixed(0));
+            // info: клиентский ping через RPC, пока что убрали за ненадобностью
+            //this.update_current_ping((clock.getClientTime() - rpc.__time_add).toFixed(0));
         }
     };
 
     RPCCallList.prototype.update_current_ping = function(text) {
         $('.ping-indicator').text(text);
+        console.log(text);
     };
 
 

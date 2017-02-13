@@ -8,13 +8,16 @@ from sublayers_server.model.base import Observer
 from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage, PreEnterToLocation
 )
+from sublayers_server.model.game_log_messages import LocationLogMessage
 from sublayers_server.model.registry.uri import URI
-from sublayers_server.model.events import ActivateLocationChats, Event
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.events import ActivateLocationChats, Event, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
 
 from tornado.options import options
+import random
 
 
 class RadioPoint(Observer):
@@ -80,6 +83,7 @@ class MapLocation(Observer):
             self.inventory.add_visitor(agent=agent, time=event.time)
             self.inventory.add_manager(agent=agent)
         EnterToLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
+        LocationLogMessage(agent=agent, location=self, action='enter', time=event.time).post()
 
         for visitor in self.visitors:  # todo: optimize
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=event.time).post()
@@ -98,8 +102,9 @@ class MapLocation(Observer):
             PreEnterToLocation(agent=agent, location=self, time=event.time).post()
             # todo: review agent.on_enter_location call
             agent.on_enter_location(location=self, event=event)
-
             EnterToLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
+            LocationLogMessage(agent=agent, location=self, action='enter', time=event.time).post()
+
             for visitor in self.visitors:
                 if not visitor is agent:
                     ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=event.time).post()
@@ -121,6 +126,8 @@ class MapLocation(Observer):
             self.inventory.del_manager(agent=agent)
 
         ExitFromLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
+        LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
+
         agent.api.update_agent_api(time=event.time)  # todo: Пробросить event вместо time? ##refactor
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=event.time).post()
@@ -190,3 +197,33 @@ class GasStation(Town):
         for location in cls.locations:
             if isinstance(location, GasStation):
                 yield location
+
+
+class MapRespawn(Observer):
+    def on_init(self, event):
+        super(MapRespawn, self).on_init(event)
+        self.respawn(time=event.time)
+
+    def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
+        return False
+
+    def get_respawn_cls(self, name):
+        # todo: сделать правильное получение класса по имени, возможно через реестровые объекты
+        import sublayers_server.model.quick_game_power_up as PowerUps
+        res = getattr(PowerUps, name, None)
+        assert res is not None
+        return res
+
+    @event_deco  # если в итоге не подойдёт, то сделать @event_deco_obj и создавать там Objective event
+    def respawn(self, event):
+        self.respawn(time=event.time + self.example.respawn_time + random.randint(-5, 5))  # создать эвент на новый респавн
+        respawn_objects = self.example.respawn_objects
+        if not respawn_objects:
+            return
+        resp_object_proto = respawn_objects[random.randint(0, len(respawn_objects) - 1)]
+        pos = Point.random_point(self.position(event.time), self.example.respawn_radius)
+        # resp_object_ex = resp_object_proto.instantiate(fixtured=False)
+        # yield resp_object_ex.load_references()
+        # log.info('respawn [%s] %s %s %s', self, event.time, resp_object_proto.model_class_name, pos)
+        klass = self.get_respawn_cls(resp_object_proto.model_class_name)
+        klass(time=event.time, example=resp_object_proto, server=self.server, position=pos)

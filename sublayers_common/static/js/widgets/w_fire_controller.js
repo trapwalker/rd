@@ -13,6 +13,7 @@ var constRadarMinOpacity = 0;                   // конечная прозра
 var constRadarMaxWidth = 1;                     // начальная ширина радарного круга (в частях от всей ширины радара)
 var constRadarMinWidth = 0.2;                   // конечная ширина радарного круга (в частях от всей ширины радара)
 
+
 var WFireController = (function (_super) {
     __extends(WFireController, _super);
 
@@ -81,9 +82,7 @@ var WFireController = (function (_super) {
         this.backgroundCircle.setAttribute('cx', this.center.x);
         this.backgroundCircle.setAttribute('cy', this.center.y);
         this.SVG.appendChild(this.backgroundCircle);
-        $(this.backgroundCircle).on('click', function(){
-            document.getElementById('map').focus();
-        });
+        $(this.backgroundCircle).on('click', function() { returnFocusToMap(); });
 
         this.fCT.append($('<div class="fire-control-all sublayers-clickable"></div>'));
         this.allFire = this.fCT.find('.fire-control-all').first();
@@ -126,6 +125,8 @@ var WFireController = (function (_super) {
             4: $('<div id="fireControlQuickBtn4" class="fire-controll-quick-btn-block" data-index="4"></div>')
         };
 
+        this.quick_signal_timers = {1: null, 2: null, 3: null, 4: null};
+
         // Области блокирующие пробрасывание на карту
         this.fCT.append('<div class="fire-control-undroppable-area left"></div>');
         this.fCT.append('<div class="fire-control-undroppable-area right"></div>');
@@ -139,7 +140,10 @@ var WFireController = (function (_super) {
                 jq_wrap.append(jq_slot);
                 this.fCT.append(jq_wrap);
                 this.jq_quick_btns[key].on('click', function () {
-                    clientManager.sendActivateQuickItem($(this).data('index'), user.userCar.ID)
+                    var index = $(this).data('index');
+                    clientManager.sendActivateQuickItem(index, user.userCar.ID);
+                    wFireController.signalQuickConsumerPanel(index);
+                    returnFocusToMap();
                 });
             }
 
@@ -183,6 +187,18 @@ var WFireController = (function (_super) {
         });
     };
 
+    WFireController.prototype.updateStateAutoShooting = function(auto_fire_state) {
+        //console.log("WFireController.prototype.updateStateAutoShooting", auto_fire_state);
+        if (auto_fire_state) {
+            this.autoShoot = true;
+            this.allFire.addClass('fire-control-all-active');
+        }
+        else {
+            this.autoShoot = false;
+            this.allFire.removeClass('fire-control-all-active');
+        }
+    };
+
     WFireController.prototype.updateQuickConsumerPanel = function(panel_info) {
         //console.log("WFireController.prototype.updateQuickConsumerPanel", panel_info);
         for (var i = 0; i < panel_info.items.length; i++) {
@@ -205,6 +221,17 @@ var WFireController = (function (_super) {
     WFireController.prototype.switchOffConsumerPanel = function() {
         //console.log("WFireController.prototype.switchOffConsumerPanel");
         wFireController.fCT.find('.fire-control-btn-bg').removeClass('active');
+    };
+
+    WFireController.prototype.signalQuickConsumerPanel = function(index) {
+        if (! this.quick_signal_timers.hasOwnProperty(index)) return;
+        if(this.quick_signal_timers[index]) return;
+        var self = this;
+        this.quick_signal_timers[index] = setTimeout(function(){
+            self.quick_signal_timers[index] = null;
+            $('#fireControlQuickBtn' + index + 'BG').removeClass('signal');
+        }, 150);
+        $('#fireControlQuickBtn' + index + 'BG').addClass('signal');
     };
 
     WFireController.prototype.initRadarCircles = function() {
@@ -325,7 +352,7 @@ var WFireController = (function (_super) {
                 self._setAutoShootingEnable(self.autoShoot);
             }
         });
-        document.getElementById('map').focus();
+        returnFocusToMap();
         var is_show_central = !this.visible && (map.getZoom() >= 14);
         if (mapManager.widget_fire_radial_grid)
             mapManager.widget_fire_radial_grid.setVisible(is_show_central);
@@ -361,7 +388,7 @@ var WFireController = (function (_super) {
             self._setAutoShootingEnable(true);
             self.allFire.addClass('fire-control-all-active');
         }
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {
@@ -574,7 +601,7 @@ var WFireController = (function (_super) {
 
     WFireController.prototype.shootBySide = function(event) {
         clientManager.sendFireDischarge(event.data.side.side.sideStr);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WFireController.prototype.addModelObject = function (mobj) {
@@ -626,5 +653,6 @@ var WFireController = (function (_super) {
 
     return WFireController;
 }) (VisualObject);
+
 
 var wFireController;

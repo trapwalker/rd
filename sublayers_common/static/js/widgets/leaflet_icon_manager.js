@@ -96,6 +96,16 @@ var LeafletIconManager = (function(){
 
         this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
 
+        this.load_new_icon('mine_001', '/static/img/map_icons/mine.png', [24, 17], this.max_id++);
+
+        this.load_new_icon('icon-power-up-build-set', '/static/img/map_icons/power_up/power_up_stay.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-fuel', '/static/img/map_icons/power_up/power_up_oil_stay.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-shield', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
+
+        this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_vision_stay.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-vis', '/static/img/map_icons/power_up/power_up_stels_stay.png', [54, 54], this.max_id++, null, 17);
+
+        this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 16);
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
@@ -296,7 +306,7 @@ var LeafletIconManager = (function(){
             id: this.max_id++
         };
 
-        icons['mine_001'] = {
+        icons['mine_002'] = {
             icon: new L.icon({
                 iconUrl: '/static/img/map_icons/mine_5.png',
                 iconSize: [24, 17]
@@ -325,7 +335,8 @@ var LeafletIconManager = (function(){
         }
     };
 
-    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor){
+    LeafletIconManager.prototype.load_new_icon = function(icon_name, icon_url, icon_size, icon_id, iconAnchor, frames){
+        frames = frames || 1;
         var img = new Image();
         this.count_loading_img++;
         img.onload = function() {
@@ -337,7 +348,9 @@ var LeafletIconManager = (function(){
                 }),
                 canvas_icon: {
                     img: img,
-                    iconSize: [this.width, this.height]
+                    iconSize: [this.width, this.height],
+                    size: icon_size,
+                    frames: frames
                 },
                 id: icon_id
             };

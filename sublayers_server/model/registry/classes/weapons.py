@@ -4,7 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.classes.item import ArmorerItem, Item
-from sublayers_server.model.registry.odm.fields import UniReferenceField, StringField, FloatField
+from sublayers_server.model.registry.odm.fields import UniReferenceField, StringField, FloatField, ListField, \
+    EmbeddedDocumentField
 
 
 class Weapon(ArmorerItem):
@@ -25,8 +26,11 @@ class Cannon(Weapon):
     dmg = FloatField(caption=u'Урон за выстрел')
     area_dmg = FloatField(caption=u'Урон за выстрел')
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
+    weapon_animation = ListField(caption=u'Типы анимаций', base_field=StringField())
 
 
 class MachineGun(Weapon):
     is_auto = True
     dps = FloatField(caption=u'Урон в секунду')
+    animation_tracer_rate = FloatField(caption=u'Количество трассеров отрисовываемых в секунду')
+    weapon_animation = ListField(caption=u'Типы анимаций', base_field=StringField())

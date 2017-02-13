@@ -11,6 +11,9 @@ class Pair(Subdoc):
     k = IntField()
     v = FloatField()
 
+    def __str__(self):
+        return '{}:{}'.format(self.k, self.v)
+
 
 class ExpTable(Root):
     user_exp_table = ListField(
@@ -57,26 +60,26 @@ class ExpTable(Root):
         return 0
 
     def car_lvl_by_exp(self, exp):
-        return self.table_slice(self.car_exp_table or [], exp)[0]
+        lvl = self.table_slice(self.car_exp_table or [], exp)[0]
+        assert lvl is not None and lvl >= 0, 'Lvl = {} exp={}  not found   in table_keys: {}'.format(lvl, exp, self.car_exp_table)
+        return lvl
 
     def agent_skill_points_by_exp(self, exp):
         # Пока что здесь используется user_exp_table. Потом, наверно, будет другая таблица.
-        return self.table_slice(self.user_exp_table or [], exp)[0]
+        skill_points =  self.table_slice(self.user_exp_table or [], exp)[0]
+        assert skill_points is not None and skill_points >= 0, 'skill_points = {} exp={}  not found   in table_keys: {}'.format(skill_points, exp, self.car_exp_table)
+        return skill_points
 
     def car_exp_price_by_exp(self, exp):
         table = {pair.k: pair.v for pair in self.car_exp_price or []}
         lvl = self.car_lvl_by_exp(exp=exp)
-        try:
-            return table[lvl]
-        except:
-            log.exception('Lvl = {}   not found   in table_keys: {}'.format(lvl, table.keys()))
-            return 0
+        res = table.get(lvl, None)
+        assert res is not None and res >= 0, 'Res = {}  Lvl = {} exp={}  table: {}'.format(res, lvl, exp, table)
+        return res
 
     def car_m_exp_by_exp(self, exp):
         table = {pair.k: pair.v for pair in self.car_m_exp or []}
         lvl = self.car_lvl_by_exp(exp=exp)
-        try:
-            return table[lvl]
-        except:
-            log.exception('Lvl = {}   not found   in table_keys: {}'.format(lvl, table.keys()))
-            return 0
+        res = table.get(lvl, None)
+        assert res is not None and res >= 0, 'Res = {}  Lvl = {} exp={}  table: {}'.format(res, lvl, exp, table)
+        return res

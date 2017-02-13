@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-
+from uuid import UUID
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
 
@@ -97,6 +97,7 @@ class InitCar(Message):
         d = super(InitCar, self).as_dict()
         d.update(
             car=self.agent.car.as_dict(time=self.time),
+            auto_shooting_state=self.agent.car.turn_on_auto_fire,
         )
         return d
 
@@ -118,9 +119,21 @@ class QuickGameDie(Message):
 
     def as_dict(self):
         d = super(QuickGameDie, self).as_dict()
+        quick_users = list(self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(1000))
+
+        # record_index = -1
+        # for index in range(len(quick_users)):
+        #     if str(quick_users[index].get(u'_id')) == str(self.agent.record_id):
+        #         record_index = index
+        #         break
+        points = self.agent.get_quick_game_points(time=self.time)
+        record_index = self.agent.server.app.db.quick_game_records.find({"points": {"$gte": points}, "time": {"$lte": self.time}}).count()
+
         d.update(
-            points=self.agent.get_quick_game_points(time=self.time),
+            points=points,
+            record_index=record_index + 1,
             object=self.obj.as_dict(time=self.time),
+            quick_users=[dict(points=rec['points'], name=rec['name']) for rec in quick_users],
         )
         return d
 
@@ -323,7 +336,7 @@ class FireDischarge(Message):
 
 
 class FireDischargeEffect(Message):
-    def __init__(self, pos_subj, targets, fake_position, **kw):
+    def __init__(self, pos_subj, targets, fake_position, weapon_animation, self_shot=False, **kw):
         """
         @param sublayers_server.model.base.VisibleObject obj: Sender of message
         """
@@ -331,7 +344,8 @@ class FireDischargeEffect(Message):
         self.pos_subj = pos_subj
         self.targets = targets
         self.fake_position = fake_position
-
+        self.self_shot = self_shot
+        self.weapon_animation = weapon_animation
 
     def as_dict(self):
         d = super(FireDischargeEffect, self).as_dict()
@@ -339,25 +353,38 @@ class FireDischargeEffect(Message):
             pos_subj=self.pos_subj,
             targets=self.targets,
             fake_position=self.fake_position,
+            self_shot=self.self_shot,
+            weapon_animation=self.weapon_animation,
         )
         return d
 
 
 class FireAutoEffect(Message):
-    def __init__(self, subj, obj, side=None, action=True, **kw):
+    def __init__(self, subj, obj, sector=None, action=True, **kw):
         super(FireAutoEffect, self).__init__(**kw)
         self.subj = subj
         self.obj = obj
-        self.side = side
+        self.sector = sector
         self.action = action
 
     def as_dict(self):
         d = super(FireAutoEffect, self).as_dict()
+        weapon_animation = []
+        animation_tracer_rate = None
+        side = None
+        if self.sector:
+            for w in self.sector.weapon_list:
+                weapon_animation += w.example.weapon_animation
+            animation_tracer_rate = self.sector.weapon_list[0].example.animation_tracer_rate
+            side = self.sector.side
+
         d.update(
             subj=self.subj.uid,
             obj=self.obj.uid,
-            side=self.side,
+            side=side,
             action=self.action,
+            weapon_animation=[item for item in set(weapon_animation)],
+            animation_tracer_rate=animation_tracer_rate,
         )
         return d
 
@@ -962,6 +989,7 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
         return d
 
 
+# todo: Перенести описание класса в модуль квестов
 class QuestsInitMessage(Message):
     u"""Отправка всех квестов агента на клиент"""
     def as_dict(self):
@@ -970,14 +998,14 @@ class QuestsInitMessage(Message):
             quests=[quest.as_client_dict() for quest in self.agent.example.quests],
         )
         q = d['quests'] and d['quests'][0] or None
-        if q and q['hirer'] is None:
-            log.error(
-                '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
-                self.__class__, q,
-                self.agent.example.quests_unstarted,
-                self.agent.example.quests_active,
-                self.agent.example.quests_ended,
-            )
+        #if q and q['hirer'] is None:
+        #    log.error(
+        #        '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
+        #        self.__class__, q,
+        #        self.agent.example.quests_unstarted,
+        #        self.agent.example.quests_active,
+        #        self.agent.example.quests_ended,
+        #    )
         return d
 
 
@@ -1187,4 +1215,42 @@ class ChangeAgentKarma(Message):
                          for npc in self.agent.current_location.example.get_npc_list()]
         d = super(ChangeAgentKarma, self).as_dict()
         d.update(relations=relations)
+        return d
+
+
+class StartQuickGame(Message):
+    pass
+
+
+class PingInfoMessage(Message):
+    def as_dict(self):
+        d = super(PingInfoMessage, self).as_dict()
+        if self.agent.connection:
+            d.update(ping=self.agent.connection._current_ping)
+        return d
+
+
+class StartActivateItem(Message):
+    def __init__(self, item, activate_time, **kw):
+        super(StartActivateItem, self).__init__(**kw)
+        self.item = item
+        self.activate_time = activate_time
+
+    def as_dict(self):
+        d = super(StartActivateItem, self).as_dict()
+        d.update(
+            item=self.item.example.as_client_dict(),
+            activate_time=self.activate_time,
+        )
+        return d
+
+
+class StopActivateItem(Message):
+    def __init__(self, item, **kw):
+        super(StopActivateItem, self).__init__(**kw)
+        self.item = item
+
+    def as_dict(self):
+        d = super(StopActivateItem, self).as_dict()
+        d.update(item=self.item.example.as_client_dict())
         return d

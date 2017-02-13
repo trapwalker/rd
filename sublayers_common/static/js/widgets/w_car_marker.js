@@ -50,10 +50,10 @@ var WCarMarker = (function (_super) {
 
         this.updateLabel();
 
-        if (this.car.direction) {
-            this.marker.options.angle = this.car.direction;
-            this.marker.update();
-        }
+        //if (this.car.direction) {
+        //    this.marker.options.angle = this.car.direction;
+        //    this.marker.update();
+        //}
 
         marker.on('contextmenu', function () {
             var car = visualManager.getModelObject(this.carID);
@@ -77,7 +77,7 @@ var WCarMarker = (function (_super) {
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         var tempLatLng = mapManager.unproject([tempPoint.x, tempPoint.y], mapManager.getMaxZoom());
-        var tempAngle = this.car.getCurrentDirection(time);
+        var tempAngle = 0; //this.car.getCurrentDirection(time); --- так как пока что используется только для трупов
         if (Math.abs(this._lastRotateAngle - tempAngle) > 0.01) {
             this.marker.options.angle = tempAngle;
             this._lastRotateAngle = tempAngle;
@@ -119,8 +119,8 @@ var WCarMarker = (function (_super) {
             marker.setIcon(iconsLeaflet.getIconByID(7));
         }
 
-        if(car.cls == 'SlowMine') {
-            marker.setIcon(iconsLeaflet.getIconByID(31));
+        if(car.cls == 'SlowMine' || car.cls == 'BangMine') {
+            marker.setIcon(iconsLeaflet.getIcon("mine_001"));
         }
 
         if(car.cls == 'RadioPoint') {
@@ -146,6 +146,10 @@ var WCarMarker = (function (_super) {
                 default:
                     marker.setIcon(iconsLeaflet.getIcon('icon_city'));
             }
+        }
+
+        if (car.cls == 'QuickGamePowerUpFullHeal' || car.cls ==  'QuickGamePowerUpFullFuel' || car.cls ==  'QuickGamePowerUpEffect' || car.cls == 'QuickGamePowerUpShield') {
+            marker.setIcon(iconsLeaflet.getIcon('icon_station'));
         }
 
         if(car.cls == 'GasStation') {

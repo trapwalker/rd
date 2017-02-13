@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
+from sublayers_server.model.weapon_objects.mine import BangMine
 from counterset import CounterSet
 from map_location import MapLocation
 from sublayers_server.model.registry.uri import URI
@@ -16,11 +17,12 @@ from sublayers_server.model.registry.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame,
 )
+from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
-from sublayers_server.model.events import event_deco, Event
+from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 
@@ -51,6 +53,7 @@ class Agent(Object):
         self.user = user
         self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
         self.server.agents_by_name[user.name] = self
+        self._logger = self.setup_logger()
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -77,6 +80,8 @@ class Agent(Object):
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
+
+        self.log.info('Agent Created %s', self)
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -105,9 +110,19 @@ class Agent(Object):
         # todo: ##realize ##quest
         pass
 
-    def log(self, time, text, dest, position=None):
-        # todo: ##realize ##quest
-        pass
+    @property
+    def log(self):
+        return self._logger
+
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        handler = logging.NullHandler()
+        l.setLevel(level)
+        l.addHandler(handler)
+        return l
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -196,6 +211,7 @@ class Agent(Object):
         return d
 
     def append_obj(self, obj, time):
+        self.log.info('append_obj {}'.format(obj))
         if obj not in self.slave_objects:
             self.slave_objects.append(obj)
             self.add_observer(observer=obj, time=time)
@@ -203,6 +219,7 @@ class Agent(Object):
                 self.party.add_observer_to_party(observer=obj, time=time)
 
     def drop_obj(self, obj, time):
+        self.log.info('drop_obj {}'.format(obj))
         if obj in self.slave_objects:
             if self.party:
                 self.party.drop_observer_from_party(observer=obj, time=time)
@@ -210,6 +227,7 @@ class Agent(Object):
             self.slave_objects.remove(obj)
 
     def append_car(self, car, time):  # specific
+        self.log.info('append_car {}'.format(car))
         if not self.car:
             self.car = car
             car.owner = self
@@ -220,8 +238,13 @@ class Agent(Object):
             # сообщить квестам, что добавилась машинка
             # todo: refactor this call
             self.example.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAppendCar)
+            # работа с инвентарём агента: просто включить подписку
+            if car.inventory:
+                self.inventory = car.inventory
+                self.inventory.add_change_call_back(self.on_change_inventory_cb)
 
     def drop_car(self, car, time, drop_owner=True):
+        self.log.info('drop_car {}  time={}'.format(car, time))
         if car is self.car:
             if self.party:
                 # сообщить пати, что этот обсёрвер теперь убран с карты
@@ -230,8 +253,13 @@ class Agent(Object):
             if drop_owner:
                 car.owner = None
             self.car = None
+            # работа с инвентарём агента: нужно просто пока что выключить подписку
+            if self.inventory:
+                self.inventory.del_change_call_back(self.on_change_inventory_cb)
+                self.inventory = None
 
     def on_connect(self, connection):
+        self.log.info('on_connect {}'.format(connection))
         self.connection = connection
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
@@ -250,6 +278,7 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
+        self.log.info('on_disconnect {}'.format(connection))
         timeout = options.disconnect_timeout
         log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
         # todo: Измерять длительность подключения ##defend ##realize
@@ -351,6 +380,12 @@ class Agent(Object):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
             return False
 
+        if isinstance(target, BangMine):  # если этот объект является миной
+            # todo: Определение таргета должно быть в 3 этапа: спрашиваем у агента, спрашиваем у оружия, спрашиваем у самого таргета
+            # всё это прогонять через example и нужно для того, чтобы можно было делать интересные механики, например, пушки для разминирования
+            # или разминирования только в том случае, если прокачано что-то.
+            return False
+
         t_agent = target.main_agent
 
         if t_agent is self:
@@ -409,29 +444,34 @@ class Agent(Object):
         # todo: delivery for subscribers ##quest
         pass
 
-    def on_kill(self, event, obj):
+    def on_kill(self, event, target, killer):
         # log.debug('%s:: on_kill(%s)', self, obj)
-
+        self.log.info('{}:: on_kill {} killer={} time={}'.format(self, target, killer, event.time))
         # todo: party
         # todo: registry fix?
         self.example.set_frag(dvalue=1)  # начисляем фраг агенту
 
-        d_user_exp = obj.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp * \
-                     self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
-        self.example.set_exp(dvalue=d_user_exp)   # начисляем опыт агенту
+        if self.car is killer:  # Если убийство сделано текущей машинкой агента
+            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp * \
+                         self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
+        else:
+            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp)
+            self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}'.format(self.car, target, killer))
 
-        if obj.owner_example:
+        self.example.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
+
+        if target.owner_example:
             self_lvl = self.example.get_lvl()
-            killed_lvl = obj.owner_example.get_lvl()
+            killed_lvl = target.owner_example.get_lvl()
 
             # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
             # изменение кармы)
-            if ((self_lvl - killed_lvl) >= 3) and (obj.owner_example.karma_norm >= -0.1):
+            if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.karma_norm >= -0.1):
                 self.example.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=event.time).post()
-        self.example.on_event(event=event, cls=quest_events.OnKill, agent=obj.owner_example, unit=obj.example)
+        self.example.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
@@ -451,9 +491,12 @@ class Agent(Object):
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
             self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
-    def on_inv_change(self, time, diff_inventories):
+    def on_inv_change(self, time, diff_inventories, make_game_log=True):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
+        if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
+            InventoryChangeLogMessage(agent=self, time=time, **diff_inventories).post()
+
         # todo: csll it ##quest
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
@@ -464,7 +507,7 @@ class Agent(Object):
                 return True
         return False
 
-    def reload_inventory(self, time, save=True, total_inventory=None):
+    def reload_inventory(self, time, save=True, total_inventory=None, make_game_log=True):
         if self.inventory:
             if save:
                 self.inventory.save_to_example(time=time)
@@ -472,7 +515,7 @@ class Agent(Object):
             self.inventory = None
         if self.example.car:
             LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, total_inventory=total_inventory,
-                               time=time).post()
+                               time=time, make_game_log=make_game_log).post()
 
     def on_enter_location(self, location, event):
         # Отключить все бартеры (делать нужно до раздеплоя машины)
@@ -484,11 +527,11 @@ class Agent(Object):
         if self.car:  # Вход в город и раздеплой машинки
             self.car.example.last_location = location.example
             self.car.displace(time=event.time)
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
         elif self.example.car and self.inventory:  # Обновление клиента (re-enter)
             self.inventory.send_inventory(agent=self, time=event.time)
         elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01).post()
+            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
 
         # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
 
@@ -514,14 +557,18 @@ class Agent(Object):
 
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
+        self.log.info('on_die unit={}'.format(unit))
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
         for barter in self.barters:
             barter.cancel(time=event.time-0.01)
 
-        Die(agent=self, time=event.time).post()
+        self.send_die_message(event, unit)
         self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+
+    def send_die_message(self, event, unit):
+        Die(agent=self, time=event.time).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -548,17 +595,66 @@ class Agent(Object):
     def print_login(self):
         return self.user.name
 
+    def set_teaching_state(self, state):
+        user = self.user
+        agent = self
+        def callback(*kw):
+            # log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
+            agent.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
+        user.teaching_state = state
+        tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
+
+
 # todo: Переименовать в UserAgent
 class User(Agent):
+    def __init__(self, time, **kw):
+        super(User, self).__init__(time=time, **kw)
+        if self.user.teaching_state == 'city':
+            self.create_teaching_quest(time=time)
+
+    @event_deco
+    def create_teaching_quest(self, event):
+        quest_parent = self.server.reg['quests/teaching']
+        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+        new_quest.agent = self.example
+        if new_quest.generate(event=event):
+            self.example.add_quest(quest=new_quest, time=event.time)
+            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+            del new_quest
+
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
         d['user_name'] = self.user.name
         d['avatar_link'] = self.user.avatar_link
         return d
 
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
+
 
 class AI(Agent):
-    pass
+    def setup_logger(self, level=logging.INFO):
+        logger_name = 'agent_{}'.format(self.user.name)
+        log_file = 'log/agents/bot_{}.log'.format(logger_name)
+        l = logging.getLogger(logger_name)
+        l.propagate = 0
+        formatter = logging.Formatter('%(asctime)s : %(message)s')
+        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+        fileHandler.setFormatter(formatter)
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+        return l
 
 
 class QuickUser(User):
@@ -567,10 +663,11 @@ class QuickUser(User):
         self.time_quick_game_start = None
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
+        self.record_id = None
 
     def _add_quick_game_record(self, time):
         # pymongo add to quick_game_records
-        self.server.app.db.quick_game_records.insert(
+        self.record_id = self.server.app.db.quick_game_records.insert(
             {
                 'name': self.print_login(),
                 'user_uid': self.user.id,
@@ -585,22 +682,22 @@ class QuickUser(User):
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
-        self.user.car_index = None
 
     def drop_car(self, car, time, **kw):
-        if car is self.car:
-            self._add_quick_game_record(time=time)
+        # if car is self.car:
+        #     self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):
-        return round(time - self.time_quick_game_start) + self.quick_game_kills * 100 + self.quick_game_bot_kills * 10
+        return round((time - self.time_quick_game_start) / 10.0) + self.quick_game_kills * 30 + self.quick_game_bot_kills * 10
 
-    def on_die(self, event, unit):
+    def send_die_message(self, event, unit):
+        self._add_quick_game_record(time=event.time)
         QuickGameDie(agent=self, obj=unit, time=event.time).post()
 
-    def on_kill(self, event, obj):
-        log.debug('%s:: on_kill(%s)', self, obj)
-        if obj.owner and isinstance(obj.owner, AI):
+    def on_kill(self, event, target, killer):
+        self.log.info('{}:: on_kill {} and killer={}'.format(self, target, killer))
+        if target.owner and isinstance(target.owner, AI):
             self.quick_game_bot_kills += 1
         else:
             self.quick_game_kills += 1
@@ -611,7 +708,8 @@ class QuickUser(User):
     @tornado.gen.coroutine
     def init_example_car(self):
         user = self.user
-        log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
+        # log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
+        self.log.info('QuickGameUser Try get new car: {!r}  [car_index={}]'.format(user.name, user.car_index))
         # Создание "быстрой" машинки
         try:
             user.car_index = int(user.car_index)
@@ -626,9 +724,91 @@ class QuickUser(User):
         self.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
         yield self.example.car.load_references()
 
-        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
+        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 500) # Радиус появления игроков в быстрой игре
         self.example.current_location = None
         self.current_location = None
 
     def print_login(self):
-        return '_'.join(self.user.name.split('_')[:-1])
+        str_list = self.user.name.split('_')
+        if len(str_list) > 1:
+            return '_'.join(str_list[:-1])
+        else:
+            return self.user.name
+
+
+class TeachingUser(QuickUser):
+    def __init__(self, time, **kw):
+        super(TeachingUser, self).__init__(time=time, **kw)
+        self.armory_shield_status = False
+        # todo: убрать is_tester
+        if not self.user.quick and not self.user.is_tester:
+            assert self.user.teaching_state == 'map'
+            self.create_teaching_quest_map(time=time)
+
+        # Тест Авто Стрельбы
+        # AgentTestEvent(agent=self, time=time + 1.0).post()
+
+    def on_connect(self, **kw):
+        super(TeachingUser, self).on_connect(**kw)
+        if self.user.teaching_state == '' and not self.has_active_teaching_quest():
+            StartQuickGame(agent=self, time=self.server.get_time()).post()
+
+    def has_active_teaching_quest(self):
+        quest_parent = self.server.reg['quests/teaching_map']
+        for q in self.example.quests_active:
+            if q.parent == quest_parent and q.status == 'active':
+                return True
+        return False
+
+    @event_deco
+    def create_teaching_quest_map(self, event):
+        quest_parent = self.server.reg['quests/teaching_map']
+        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+        new_quest.agent = self.example
+        if new_quest.generate(event=event):
+            self.example.add_quest(quest=new_quest, time=event.time)
+            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+            if self.user.quick or self.user.is_tester:
+                self.set_teaching_state('map')
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+            del new_quest
+
+    @event_deco
+    def init_example_car_teaching(self, event):
+        if self.car:
+            return
+        if self.api:
+            self.api.quick_play_again()
+        else:
+            log.warning('Try to use API method without API')
+
+    def send_die_message(self, event, unit):
+        if not self.has_active_teaching_quest():
+            super(TeachingUser, self).send_die_message(event, unit)
+
+    def on_die(self, event, **kw):
+        super(TeachingUser, self).on_die(event=event, **kw)
+        self.armory_shield_status = False
+
+    def append_car(self, time, **kw):
+        if self.has_active_teaching_quest():
+            # todo: пробпросить Event сюда
+            self.armory_shield_on(Event(server=self.server, time=time))
+
+        super(TeachingUser, self).append_car(time=time, **kw)
+
+        # if self.user.teaching_state == '':  # Если юзер ещё не ответил на вопрос про обучение
+        #     self.armory_shield_on(Event(server=self.server, time=time))
+
+    def armory_shield_on(self, event):
+        if self.car and not self.armory_shield_status:
+            self.car.params.get('p_armor').current += 100
+            self.car.restart_weapons(time=event.time)
+            self.armory_shield_status = True
+
+    def armory_shield_off(self, event):
+        if self.car and self.armory_shield_status:
+            self.car.params.get('p_armor').current -= 100
+            self.car.restart_weapons(time=event.time)
+            self.armory_shield_status = False

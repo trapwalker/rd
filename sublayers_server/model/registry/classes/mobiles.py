@@ -86,6 +86,12 @@ class Mobile(Root):
     r_cc_mine              = FloatField(caption=u"Резист к модификатору CC замедляющей мины", tags='parameter p_resist param_aggregate')
     r_cc_fuel_empty        = FloatField(caption=u"Резист к модификатору CC при пустом баке", tags='parameter p_resist param_aggregate')
 
+    # Резисты и модификаторы PowerUps
+    r_observing_range_qg_pu = FloatField(caption=u"Резист к модификатору дальности обзора PowerUp", tags='parameter p_resist param_aggregate')
+    m_observing_range_qg_pu = FloatField(caption=u"Модификатор к дальности обзора PowerUp", tags='parameter p_modifier param_aggregate')
+    r_visibility_qg_pu = FloatField(caption=u"Резист к модификатору заметности PowerUp", tags='parameter p_resist param_aggregate')
+    m_visibility_qg_pu = FloatField(caption=u"Модификатор к заметности PowerUp", tags='parameter p_modifier param_aggregate')
+
     # атрибуты от Unit
     p_defence            = FloatField(caption=u"Броня", tags='parameter param_aggregate')
     max_hp               = FloatField(caption=u"Максимальное значение HP", tags='param_aggregate client')
@@ -243,11 +249,14 @@ class Mobile(Root):
     def exp(self):
         return self._exp
 
-    def set_exp(self, value=None, dvalue=None):
+    def set_exp(self, time, value=None, dvalue=None):
+        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
         if value is not None:
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+        assert self._exp >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
 
     @property
     def frag(self):
@@ -421,6 +430,7 @@ class Car(Mobile):
     slot_m87 = SlotField(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
     slot_m88 = SlotField(caption=u'M1', doc=u'Охлаждение: вентилятор', tags='mechanic cooling fan')
 
+    # Слоты стилиста
     slot_t1 = SlotField(caption=u't2', doc=u'Слот тюнера задний бампер', tags='tuner wheels')
     slot_t2 = SlotField(caption=u't2', doc=u'Слот тюнера заднее крыло', tags='tuner b_fender')
     slot_t3 = SlotField(caption=u't3', doc=u'Слот тюнера glass', tags='tuner glass')
@@ -457,7 +467,15 @@ class MapWeaponEffectMine(MobileWeapon):
     )
 
 
-class MapWeaponRocket(MobileWeapon):
+class MapBangWeapon(MobileWeapon):
     radius_damage = FloatField(caption=u"Радиус взрыва ракеты")
     damage = FloatField(caption=u"Дамаг в радиусе взрыва")
     life_time = FloatField(caption=u"Время жизни ракеты")
+
+
+class MapWeaponRocket(MapBangWeapon):
+    pass
+
+
+class MapWeaponBangMine(MapBangWeapon):
+    pass

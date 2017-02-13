@@ -1,9 +1,9 @@
 $(document).ready(function () {
     initConsoles();
-    //if ($('#settings_first_enter').text() == 'True')
-    //    textConsoleManager.start('first_enter');
-    //else
-    //    textConsoleManager.start('enter');
+    if ($('#settings_first_enter').text() == 'True')
+        textConsoleManager.start('first_enter');
+    else
+        textConsoleManager.start('enter');
 
     // Загрузка Cookie
     cookieStorage = new LocalCookieStorage();
@@ -15,6 +15,7 @@ $(document).ready(function () {
     wStrategyModeManager = new WStrategyModeManager();
 
     teachingManager = new TeachingManager();
+    teachingMapManager = new TeachingMapManager();
 
     // инициализация и показ модальных окон
     modalWindow = new ModalWindow({
@@ -42,14 +43,14 @@ $(document).ready(function () {
         stream_mes: message_stream
     });
 
-
     window.onbeforeunload = function (e) {
         cookieStorage.save();
+        radioPlayer.save_setting_to_cookie(true);
     };
 
     chat.setActivePage(chat.page_global);
 
-    document.getElementById('map').focus();
+    returnFocusToMap();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
         windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
@@ -133,11 +134,32 @@ $(document).ready(function () {
 
     //ws_connector.connect(); // вызывается лишь тогда, когда всё будет загружено и проинициализировано
 
-
-
-
     // Установка размеров экрана города
     resizeWindowHandler();
+
+    // Работа со звуком
+    init_sound();
+    initRadioPlayer();
+
+    setTimeout(function() {
+        var radio_settings = cookieStorage.getCookie('radio_player');
+        if (radio_settings){
+            try {
+                var settings = radio_settings.split('_');
+                radioPlayer.set_state(settings[0], parseInt(settings[1]), parseInt(settings[2]), parseFloat(settings[3]), parseInt(settings[4]));
+            }
+            catch (err) {
+                console.error('Incorrect RadioPlayer settings: ', radio_settings);
+            }
+        }
+    }, 1000);
+
+
+    // Интервал запроса пинга
+    setInterval(function(){
+        if (ws_connector.isConnected)
+            clientManager.get_ping_set_fps();
+    }, 25000);
 });
 
 var index_notes_test = 0;
@@ -211,26 +233,7 @@ function addTestNotes() {
 }
 
 
-function init_site_sound() {
-    audioManager.gain_all(1.0);
-
-    //audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
-    //audioManager.load('microwave_btn_hover', {url: '/static/audio/final_v1_mp3/hover.mp3'}, null, null, 0.5);
-    //audioManager.load('skeleton_hover', {url: '/static/audio/final_v1_mp3/scaner.mp3'}, null, null, 0.5);
-    //audioManager.load('button_screen_hover', {url: '/static/audio/final_v1_mp3/button_screen_hover.mp3'}, null, null, 0.65);
-    //audioManager.load('button_screen_press', {url: '/static/audio/final_v1_mp3/button_screen_press.mp3'}, null, null, 1.0);
-    audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
-    //audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 1.0);
-    //audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.8);
-    //audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.6);
-    audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
-    //audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.2);
-
-    // audioKeyboard = new AudioKeyboard([
-    //     audioManager.get('key_cl_1')
-    // ]);
-}
-
+var interface_scale_big = true;
 var b_canvas;
 var b_context;
 var pat;
@@ -238,13 +241,7 @@ var img = [];
 var img1;
 var window_scaled_prc = 1.0;
 
-init_site_sound();
 
-initRadioPlayer();
-
-function returnFocusToMap() {
-    document.getElementById('map').focus();
-}
 
 
 $(window).resize(resizeWindowHandler);
@@ -252,6 +249,7 @@ $(window).resize(resizeWindowHandler);
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
+    interface_scale_big = $(window).width() > 1366;
     var scale_prc_w_width = $(window).width() / 1920;
     var scale_prc_w_height = $(window).height() / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
@@ -260,6 +258,8 @@ function resizeWindowHandler() {
         $('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
         window_scaled_prc = scale_prc;
     }
+    if (teachingMapManager) teachingMapManager.redraw();
+    if (mapCanvasManager) mapCanvasManager.on_new_map_size();
 }
 
 

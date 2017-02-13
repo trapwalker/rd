@@ -62,7 +62,7 @@
     }
 
     .mainCarInfoWindow-body-trunk-body-left-picture {
-        border: solid 1px #0e4b00;
+        /*border: solid 1px #0e4b00;*/
         height: 100px;
         width: 150px;
         margin: auto;
@@ -114,6 +114,7 @@
         border: 1px solid #0e4b00;
         background-color: #082801;
         box-sizing: border-box;
+        display: none;
     }
     .mainCarInfoWindow-body-trunk-body-left-activate:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
 

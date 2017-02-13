@@ -231,8 +231,7 @@ var WZoomSlider = (function () {
             slider.setZoom(zoom);
 
         // установить фокус на карту
-        document.getElementById('map').focus();
-
+        returnFocusToMap();
     };
 
     WZoomSlider.prototype.fullscr = function (event) {
@@ -253,7 +252,7 @@ var WZoomSlider = (function () {
         }
 
         // установить фокус на карту
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
@@ -262,7 +261,7 @@ var WZoomSlider = (function () {
         if (wCruiseControl) wCruiseControl.changeVisible(false);
         chat.changeVisible(false);
         slider.changeVisible(false);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WZoomSlider.prototype.razverAll = function (event) {
@@ -271,13 +270,13 @@ var WZoomSlider = (function () {
         if (wCruiseControl) wCruiseControl.changeVisible(true);
         chat.changeVisible(true);
         slider.changeVisible(true);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WZoomSlider.prototype.btnHideReaction = function(event) {
         var self = event.data.self;
         self.changeVisible(!self.zoom_visible);
-        document.getElementById('map').focus();
+        returnFocusToMap();
     };
 
     WZoomSlider.prototype.changeVisible = function(visible) {

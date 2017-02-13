@@ -37,7 +37,7 @@ class StationaryRadiation(Observer):
             if obj:
                 # info: можно сделать targets.keys()  и вызывать self.radiation_off
                 obj.set_hp(time=event.time, dps=-dps, del_weapon=self)
-                if obj.main_agent:
+                if obj.main_agent and obj.main_agent.car == obj:
                     ChangeRadiation(agent=obj.main_agent, time=event.time, radiation_dps=dps, obj_id=obj_id).post()
         self.targets = dict()
         super(StationaryRadiation, self).on_before_delete(event=event)
@@ -57,7 +57,7 @@ class StationaryRadiation(Observer):
             dps = self.calc_radiation_dps(obj=obj, time=time)
             self.targets[obj.id] = dps
             obj.set_hp(time=time, dps=dps, add_weapon=self)
-            if obj.main_agent:
+            if obj.main_agent and obj.main_agent.car == obj:
                 ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=dps, obj_id=obj.id).post()
 
     def radiation_off(self, obj, time):
@@ -65,7 +65,7 @@ class StationaryRadiation(Observer):
             dps = self.targets[obj.id]
             del self.targets[obj.id]
             obj.set_hp(time=time, dps=-dps, del_weapon=self)
-            if obj.main_agent:
+            if obj.main_agent and obj.main_agent.car == obj:
                 ChangeRadiation(agent=obj.main_agent, time=time, radiation_dps=-dps, obj_id=obj.id).post()
 
     def on_contact_in(self, time, obj):

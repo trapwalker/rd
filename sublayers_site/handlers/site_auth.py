@@ -25,10 +25,20 @@ def clear_all_cookie(handler):
     handler.clear_cookie("user")
 
 
+def get_forum_cookie_str(username):
+    cookie_format = u"{}|{}".format
+    for_hash_str = u"{}{}".format(username, options.forum_cookie_secret)
+    hash = hashlib.md5(for_hash_str.encode('utf-8')).hexdigest()
+    return cookie_format(username, hash)
+
+
 class LogoutHandler(BaseSiteHandler):
     def post(self):
         clear_all_cookie(self)
 
+    def get(self):
+        clear_all_cookie(self)
+        self.redirect('/')
 
 # class BaseLoginHandler(BaseSiteHandler):
 #     def login_error_redirect(self, doseq=0, **kw):
@@ -89,6 +99,8 @@ class StandardLoginHandler(BaseSiteHandler):
                 fixtured=False,
             )
             yield agent_example.load_references()
+            agent_example.teaching_flag = False
+            agent_example.quick_flag = False
             yield agent_example.save(upsert=True)
 
         clear_all_cookie(self)
@@ -102,13 +114,37 @@ class StandardLoginHandler(BaseSiteHandler):
     def _quick_registration(self):
         qg_car_index = self.get_argument('qg_car_index', 0)
         nickname = self.get_argument('username', None)
+
+        quick_user = None
         if self.current_user:
-            quick_user = self.current_user if self.current_user.quick else None
-            if quick_user and quick_user.name == nickname:
-                quick_user.car_index = qg_car_index
-                yield quick_user.save()
-                self.finish({'status': 'Такой пользователь существует'})
-                return
+            quick_user = self.current_user if (self.current_user.quick or self.current_user.is_tester) else None
+            if quick_user:
+                if quick_user.quick:
+                    if quick_user.name == nickname:
+                        quick_user.car_index = qg_car_index
+                        quick_user.teaching_state = ''
+                        yield quick_user.save()
+                        self.finish({'status': u'Такой пользователь существует'})
+                        return
+                else:
+                    quick_user.car_index = qg_car_index
+                    quick_user.teaching_state = ''
+                    yield quick_user.save()
+                    self.finish({'status': u'Такой пользователь существует'})
+                    return
+
+        # todo: убрать по завершении тестирования
+        if quick_user is None:
+            log.warning('Quick game is closed for %r', nickname)
+            self.send_error(403)
+            return
+
+        try:
+            str(nickname)
+        except UnicodeEncodeError:
+            log.warning('None ascii character in nickname: %r', nickname)
+            self.send_error(403)
+            return
 
         if not nickname or (len(nickname) > 100):  # todo: Вынести лимиты в константы
             # self.finish({'status': 'Некорректные входные данные'})
@@ -118,22 +154,22 @@ class StandardLoginHandler(BaseSiteHandler):
         # todo: Проверять введенный username, а, если занят, предлагать рандомизированный пока не будет введен
         # укниальный среди быстрых игроков.
         login_free = False
-        email = ''
+        email = u''
         password = str(randint(0,999999))
-        username = '{}_{}'.format(nickname, str(randint(0, 999999)))
+        username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
         while not login_free:
-            email = username + '@' + username  # todo: Предотвратить заполнение email заведомо ложной информацией
+            email = u'{}@{}'.format(username, username)  # todo: Предотвратить заполнение email заведомо ложной информацией
             login_free = ((yield User.get_by_email(email=email)) is None) and \
                          ((yield User.get_by_name(name=username)) is None)
             if not login_free:
-                username = '{}_{}'.format(nickname, str(randint(0, 999999)))
+                username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
 
         user = User(name=username, email=email, raw_password=password, car_index=qg_car_index, quick=True)
         result = yield user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
-        self.finish({'status': 'Временный пользователь создан'})
+        self.finish({'status': u'Временный пользователь создан'})
 
     @tornado.gen.coroutine
     def _forum_setup(self, data):
@@ -156,12 +192,6 @@ class StandardLoginHandler(BaseSiteHandler):
         else:
             raise tornado.gen.Return(res.get('u_id'))
 
-    def _forum_cookie_setup(self, username):
-        cookie_format = "{}|{}".format
-        for_hash_str = "{}{}".format(username, options.forum_cookie_secret)
-        hash = hashlib.md5(for_hash_str).hexdigest()
-        return cookie_format(username, hash)
-
     @tornado.gen.coroutine
     def _authorisation(self):
         clear_all_cookie(self)
@@ -181,14 +211,16 @@ class StandardLoginHandler(BaseSiteHandler):
             return
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
-        self.set_cookie("forum_user", self._forum_cookie_setup(user.name))
+        self.set_cookie("forum_user", get_forum_cookie_str(user.name))
         # return self.redirect("/")
         self.finish({'status': 'success'})
 
     @tornado.gen.coroutine
     def _next_reg_step(self):
         user = self.current_user
-
+        if user is None or not isinstance(user, User):
+            self.finish({'status': 'fail_wrong_input'})
+            return
         # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
             username = self.get_argument('username', None)
@@ -258,6 +290,12 @@ class StandardLoginHandler(BaseSiteHandler):
             user.registration_status = 'register'
 
             # регистрация на форуме
+            email = user.auth.standard.email
+            username = user.name
+            password = user.auth.standard.password
+            if isinstance(password, unicode):
+                password = password.encode('utf-8')
+
             # forum_id = yield self._forum_setup({
             #     'user_email': email,
             #     'username': username,
@@ -267,7 +305,7 @@ class StandardLoginHandler(BaseSiteHandler):
             #     self.finish({'status': 'Ошибка регистрации на форуме.'})
             #     log.info('User <{}> not registered on forum!'.format(username))
             #     return
-            # self.set_cookie("forum_user", self._forum_cookie_setup(username))
+            self.set_cookie("forum_user", get_forum_cookie_str(username))
 
             yield user.save()
             self.finish({'status': 'success'})
@@ -275,7 +313,9 @@ class StandardLoginHandler(BaseSiteHandler):
     @tornado.gen.coroutine
     def _back_reg_step(self):
         user = self.current_user
-
+        if user is None or not isinstance(user, User):
+            self.finish({'status': 'fail_wrong_input'})
+            return
         # Cмотреть на статус пользователя, понять что делать и как это обработать
         if user.registration_status == 'nickname':
             # todo: Вариант1: с таким статусом нельзя нажать назад.
@@ -287,3 +327,38 @@ class StandardLoginHandler(BaseSiteHandler):
         elif user.registration_status == 'chip':
             user.registration_status = 'settings'
             yield user.save()
+
+
+class RegisterOldUsersOnForum(StandardLoginHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        users = yield User.objects.filter({}).find_all()
+        count_regs = 0
+        for user in users:
+            # регистрация на форуме
+            email = user.auth.standard.email
+            username = user.name
+            password = user.auth.standard.password
+            if isinstance(password, unicode):
+                password = password.encode('utf-8')
+
+            forum_id = yield self._forum_setup({
+                'user_email': email,
+                'username': username,
+                'user_password': password,
+            })
+            if forum_id:
+                self.write("{}  register<br>".format(str(user.name)))
+                count_regs += 1
+
+        self.finish('done! {} users registered on forum'.format(count_regs))
+
+
+class SetForumUserAuth(StandardLoginHandler):
+    def get(self):
+        user = self.current_user
+        if user and user.name:
+            self.set_cookie("forum_user", get_forum_cookie_str(user.name))
+            self.finish("OK")
+        else:
+            self.finish("Not auth")

@@ -18,6 +18,10 @@
 }
 .window-news-content-block.first { width: calc(40% - 6px); }
 .window-news-content-block.second {width: calc(60% - 5px); margin-left: 6px; }
+.window-news-content-block a {
+    color: #2ffa00;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
 
 .window-news-log-list-block {
     position: relative;

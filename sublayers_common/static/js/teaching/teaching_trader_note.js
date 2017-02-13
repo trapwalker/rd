@@ -15,8 +15,9 @@ var TraderTeachingNote = (function (_super) {
 
         this.buy_area = new Point(1260, 330);
         this.buy_btn = new Point(295, 608);
-
         this.filter = null;
+
+        chat.addMessageToLog('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании рынка.', true);
     }
 
     TraderTeachingNote.prototype.on_enter_location = function() {

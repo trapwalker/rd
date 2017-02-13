@@ -5,10 +5,15 @@ log = logging.getLogger(__name__)
 
 
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
+from sublayers_server.model.game_log_messages import WeaponAmmoFinishedLogMessage
 from sublayers_server.model.inventory import Consumer
-from sublayers_server.model.events import FireDischargeEffectEvent
+from sublayers_server.model.events import Event, FireDischargeEffectEvent
+from sublayers_server.model.quest_events import OnMakeDmg
+
 
 from random import random
+
+import traceback
 
 
 class Weapon(Consumer):
@@ -55,6 +60,9 @@ class Weapon(Consumer):
             balance_cls_list = [item.example.parent]
         new_item = item.inventory.get_item_by_cls(balance_cls_list=balance_cls_list, time=time, min_value=-self.dv)
         self.set_item(time=time, item=new_item, action=action)
+        # Отправить сообщение если можно о том, что закончились патроны
+        if self.item is None and self.owner.owner:
+            WeaponAmmoFinishedLogMessage(agent=self.owner.owner, time=time, weapon=self).post()
 
     def add_car(self, car, time):
         pass
@@ -94,9 +102,10 @@ class WeaponAuto(Weapon):
                         self.start(time=time)
 
     def del_car(self, car, time):
-        if self.is_started:
+        if self.is_started or self.is_call_start:
             if len(self.sector.target_list) == 0:
                 self.stop(time=time)
+        if self.is_started:
             self._stop_fire_to_car(car=car, time=time)
 
     def restart_fire_to_car(self, car, time):
@@ -105,19 +114,63 @@ class WeaponAuto(Weapon):
 
     def _start_fire_to_car(self, car, time):
         dps = self.get_dps(car=car, time=time)
+        owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+
+        if owner:
+            owner.log.info('_start_fire_to_car: car<{}> time={}'.format(car, time))
+
+        # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
+        if car in self.targets:
+            log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+            if owner:
+                owner.log.info('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+            log.debug(''.join(traceback.format_stack()))
+            old_dps = self.dps_list.get(car.id, None)
+            assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
+
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.targets.append(car)
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=True, time=time).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, sector=self.sector, action=True, time=time).post()
+        # todo: пробросить сюда Ивент
+        self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
+        # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
+        owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+
+        if owner:
+            owner.log.info('_stop_fire_to_car: car<{}> time={}'.format(car, time))
+
+        if car not in self.targets and self.dps_list.get(car.id, None) is None:
+            log.debug(''.join(traceback.format_stack()))
+            log.warning('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car not in dps_list time={}'.format(car, self.targets, time))
+            if owner:
+                owner.log.info('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car not in dps_list time={}'.format(car, self.targets, time))
+            return
+
+        if car not in self.targets and self.dps_list.get(car.id, None) is not None:
+            log.debug(''.join(traceback.format_stack()))
+            log.warning('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car in dps_list time={}'.format(car, self.targets, time))
+            if owner:
+                owner.log.info('Error _stop_fire_to_car: car<{}> not in targets<{}>, but car in dps_list time={}'.format(car, self.targets, time))
+            if not car.is_died(time=time):  # Просто снять дамаг
+                car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
+            return
+
         if not car.is_died(time=time):  # если цель мертва, то нет смысла снимать с неё дамаг
             car.set_hp(dps=-self.dps_list[car.id], del_shooter=self.owner, time=time, del_weapon=self)
-        del self.dps_list[car.id]
         self.targets.remove(car)
+        if car not in self.targets:
+            del self.dps_list[car.id]
+        else:
+            log.warning('Error _stop_fire_to_car: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
+            if owner:
+                owner.log.info('Error _stop_fire_to_car: Delete car<{}> from targets<{}>, but car in targets time={}'.format(car, self.targets, time))
+            log.debug(''.join(traceback.format_stack()))
         for agent in self.owner.subscribed_agents:
-            FireAutoEffect(agent=agent, subj=self.owner, obj=car, side=self.sector.side, action=False, time=time).post()
+            FireAutoEffect(agent=agent, subj=self.owner, obj=car, sector=self.sector, action=False, time=time).post()
 
     def on_start(self, item, time):
         super(WeaponAuto, self).on_start(item=item, time=time)
@@ -184,10 +237,17 @@ class WeaponDischarge(Weapon):
 
     def on_use(self, item, time):
         super(WeaponDischarge, self).on_use(item=item, time=time)
-
+        if self.owner.limbo or not self.owner.is_alive:
+            log.debug('Rare Situation! {} try fire_discharge in limbo'.format(self.owner))
+            return
         # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
         self.last_shoot = time
         is_crit = self.calc_is_crit()
+
+        # Засчитывается только урон по видимым целям
+        if len(self.sector.target_list) > 0:
+            # todo: пробросить сюда Ивент
+            self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
         for car in self.sector.target_list:
             dmg = self.calc_dmg(car=car, is_crit=is_crit, time=time)
@@ -203,7 +263,7 @@ class WeaponDischarge(Weapon):
             pass
 
         # евент залповая стрельба
-        FireDischargeEffectEvent(obj=self.owner, side=self.sector.side, time=time).post()
+        FireDischargeEffectEvent(obj=self.owner, side=self.sector.side, weapon_example=self.example, time=time).post()
 
         # отправка сообщения агентам о перезарядке
         for agent in self.owner.watched_agents:

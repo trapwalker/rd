@@ -243,8 +243,12 @@ function getKarmaName(karma) {
     return const_karma_list[32];
 }
 
+function getKarmaNameWithoutNorm(karma) {
+    return getKarmaName(karma / 100.);
+}
+
 function getQuickUserLogin(login) {
     var parts = login.split('_');
-    parts.pop();
+    if (parts.length > 1) parts.pop();
     return parts.join('_');
 }

@@ -3,11 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.agents import User, QuickUser
+from sublayers_server.model.agents import User, QuickUser, TeachingUser
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry.classes.agents import Agent
+
 import tornado.web
 from random import randint
 
@@ -26,9 +27,11 @@ class ServerAPI(API):
         """
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
-            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=False, teaching_flag=False)
+            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=False).find_all()
+            agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
-                # todo: Решить вопрос где должен создаваться агент и при каких условиях (сайт или движок)
+                log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
                 agent_exemplar = self.server.reg['agents/user'].instantiate(
                     name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id),
                     abstract=False,
@@ -45,7 +48,7 @@ class ServerAPI(API):
                         skill.mod = class_skill
 
                 yield agent_exemplar.save(upsert=True)
-                log.debug('Use agent exemplar: %s', agent_exemplar)
+                log.debug('New agent exemplar: %s', agent_exemplar)
 
             # todo: rename User to UserAgent
             agent = User(
@@ -65,11 +68,12 @@ class ServerAPI(API):
     @tornado.gen.coroutine
     def get_agent_quick_game(self, user, do_disconnect=False):
         # User здесь обязательно QuickUser
-        assert user.quick
-        log.info('!!! get_agent_quick_game  !!!!' )
+        assert user.quick or user.is_tester
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
-            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=True)
+            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=True, teaching_flag=False).find_all()
+            agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
                 agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     #storage=self.application.reg_agents,
@@ -79,8 +83,20 @@ class ServerAPI(API):
                     fixtured=False,
                 )
                 yield agent_exemplar.load_references()
-                role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
+                yield agent_exemplar.save(upsert=True)
+                role_class_list = self.server.reg['world_settings'].role_class_order
+                agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
+
+                agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
+                agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
+                agent_exemplar.driving.value = 20
+                agent_exemplar.shooting.value = 20
+                agent_exemplar.masking.value = 20
+                agent_exemplar.leading.value = 20
+                agent_exemplar.trading.value = 20
+                agent_exemplar.engineering.value = 20
+                agent_exemplar.quick_flag = True
+                agent_exemplar.teaching_flag = False
                 yield agent_exemplar.save(upsert=True)
 
             log.debug('QuickUser agent exemplar: %s', agent_exemplar)
@@ -92,6 +108,10 @@ class ServerAPI(API):
             )
         else:
             agent.user = user  # Обновить юзера
+
+        # Установить рандомную аватарку
+        avatar_list = self.server.reg['world_settings'].avatar_list
+        user.avatar_link = avatar_list[randint(0, len(avatar_list) - 1)]
 
         log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
 
@@ -106,27 +126,63 @@ class ServerAPI(API):
 
     @tornado.gen.coroutine
     def get_agent_teaching(self, user, do_disconnect=False):
-        # User здесь обязательно QuickUser
-        assert not user.quick
-        log.info('!!! get_agent_teaching_mode  !!!!')
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
+
         if not agent:
-            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            # Если нет подключённого агента, то мы не ищем в базе, а просто создаём нового!
+            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=True).find_all()
+            agent_exemplar = agent_exemplar and agent_exemplar[0] or None
+
+            main_agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False).find_all()
+            main_agent_exemplar = main_agent_exemplar and main_agent_exemplar[0] or None
+
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['agents/user'].instantiate(
-                    #storage=self.application.reg_agents,
+                agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     login=user.name,
                     profile_id=str(user._id),
                     name=str(user._id),
                     fixtured=False,
                 )
                 yield agent_exemplar.load_references()
-                role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
-                yield agent_exemplar.save(upsert=True)
+                role_class_list = self.server.reg['world_settings'].role_class_order
+                agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
+                # todo: убрать тут is_tester
+                agent_exemplar.quick_flag = user.quick or user.is_tester
 
-            log.debug('User agent exemplar: %s', agent_exemplar)
-            agent = QuickUser(
+                # Если был найден агент из основной игры, то скопировать всю информацию из него
+                if main_agent_exemplar:
+                    # review: возможно нужно каждый отдельно реинстанцировать
+                    agent_exemplar.driving = main_agent_exemplar.driving
+                    agent_exemplar.shooting = main_agent_exemplar.shooting
+                    agent_exemplar.masking = main_agent_exemplar.masking
+                    agent_exemplar.leading = main_agent_exemplar.leading
+                    agent_exemplar.trading = main_agent_exemplar.trading
+                    agent_exemplar.engineering = main_agent_exemplar.engineering
+                    agent_exemplar.perks = main_agent_exemplar.perks
+                    agent_exemplar.role_class = main_agent_exemplar.role_class
+                else:
+                    # todo: убрать тут is_tester
+                    if not user.quick and not user.is_tester:
+                        log.warning('Agent from main server not founded for user: {}'.format(user.name))
+                    agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
+                    agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
+                    agent_exemplar.driving.value = 20
+                    agent_exemplar.shooting.value = 20
+                    agent_exemplar.masking.value = 20
+                    agent_exemplar.leading.value = 20
+                    agent_exemplar.trading.value = 20
+                    agent_exemplar.engineering.value = 20
+
+                    # Если пользователь из быстрой игры то установить рандомную аватарку
+                    if agent_exemplar.quick_flag:
+                        avatar_list = self.server.reg['world_settings'].avatar_list
+                        user.avatar_link = avatar_list[randint(0, len(avatar_list) - 1)]
+            else:
+                log.warning('Agent founded {}'.format(user.name))
+
+            yield agent_exemplar.save()
+            agent = TeachingUser(
+                # agent=TeachingUser(
                 server=self.server,
                 user=user,
                 time=self.server.get_time(),
@@ -135,20 +191,9 @@ class ServerAPI(API):
         else:
             agent.user = user  # Обновить юзера
 
-        user.car_index = randint(0, len(self.server.quick_game_cars_proto) - 1)
-
-        log.info('GameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
-
-        if agent.example.car is None:
-            log.info('Gameuser ws connect: %s    [car_index=%s]', user.name, user.car_index)
-            # Создание "быстрой" машинки
-            agent.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
-            yield agent.example.car.load_references()
-
-            agent.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 100)
-            agent.example.current_location = None
-            agent.current_location = None
-            log.info('Server API: New GameAgent is connected and New Car is Ready !!!!!!: %s', agent)  # todo: fix text
+        log.info('User INFO: %s [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
+        if agent.example.car is None or agent.car is None:
+            yield agent.init_example_car()
         else:
             if agent and do_disconnect:
                 if agent.connection:

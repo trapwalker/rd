@@ -22,6 +22,11 @@ var WCanvasCarMarker = (function (_super) {
         this.last_direction_arrow = this.last_direction;
 
         this._last_car_ctx_pos = new Point(-100, -100); // нужно для кеширования при расчёте теста мышки
+
+        this.audio_object = null;
+        if (car == user.userCar)
+            this.audio_object = audioManager.play(car.engine_audio.name, 0.0, 1.0, null, true, 0.0, null,
+                                                  car.getAudioEngineRate(clock.getCurrentTime()));
     }
 
     WCanvasCarMarker.prototype.mouse_test = function(time) {
@@ -67,7 +72,9 @@ var WCanvasCarMarker = (function (_super) {
         ctx.save();
         if (this.car == user.userCar) {
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
-            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos
+            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos;
+            if (this.audio_object)
+                this.audio_object.source_node.playbackRate.value = this.car.getAudioEngineRate(time);
         }
         else {
             var car_pos_real = this.car.getCurrentCoord(time);
@@ -75,12 +82,14 @@ var WCanvasCarMarker = (function (_super) {
 
             var diff_vec = subVector(car_pos_real, this.last_position);
             var diff_vec_abs = diff_vec.abs();
-            if (diff_vec_abs > ConstMaxLengthToMoveMarker) {  // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
-                car_pos = summVector(this.last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs))
-            }
-            else {
+
+            // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
+            // Но если сильно отстаёт или не отстаёт, то сдвинуть сразу
+            if (diff_vec_abs > ConstMaxLengthToMoveMarker && diff_vec_abs < 3 * ConstMaxLengthToMoveMarker)
+                car_pos = summVector(this.last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs));
+            else
                 car_pos = car_pos_real;
-            }
+
             this.last_position = car_pos;
             var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
             ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
@@ -100,7 +109,7 @@ var WCanvasCarMarker = (function (_super) {
         this.last_direction = car_direction;
 
         ctx.save(); // для возврата от поворота
-        ctx.rotate(car_direction);
+        //ctx.rotate(car_direction);
         //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
         ctx.drawImage(this.icon_obj.img, -this.icon_obj.iconSize[0] >> 1, -this.icon_obj.iconSize[1] >> 1);
         ctx.restore(); // Возврат после поворота
@@ -156,6 +165,8 @@ var WCanvasCarMarker = (function (_super) {
 
     WCanvasCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
+        if (this.audio_object)
+            audioManager.stop(this.car.engine_audio.name, 0.0, this.audio_object);
         this.car = null;
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
@@ -331,7 +342,6 @@ var WCanvasStaticObjectMarker = (function (_super) {
 })(VisualObject);
 
 
-
 var WCanvasHPCarMarker = (function (_super) {
     __extends(WCanvasHPCarMarker, _super);
 
@@ -391,7 +401,8 @@ var WCanvasHPCarMarker = (function (_super) {
         ctx.stroke();
 
         // Рисование заливки
-        var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp / this.car._hp_state.max_hp);
+        hp = Math.min(Math.max(hp / this.car._hp_state.max_hp, 0.0), 1.0);
+        var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp);
         var pp1 = polarPoint(this._radius_big, pp_angle);
         ctx.fillStyle = 'rgba(85, 255, 85, 0.2)';
         ctx.beginPath();
@@ -414,3 +425,134 @@ var WCanvasHPCarMarker = (function (_super) {
 
     return WCanvasHPCarMarker;
 })(VisualObject);
+
+
+var WCanvasAnimateMarker = (function (_super) {
+    __extends(WCanvasAnimateMarker, _super);
+
+    function WCanvasAnimateMarker(mobj) {
+        _super.call(this, [mobj]);
+        this.mobj = mobj;
+
+        this.duration = 0;
+        this.frame_count = 0;
+        this.time_of_frame = 0;
+        this.frame_width = 0; // размер одного кадра
+        this.frame_height = 0; // размер одного кадра
+        this.start_time = clock.getCurrentTime();
+        this.offset_x = 0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = 0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.scale_icon_x = 1.0;
+        this.scale_icon_y = 1.0;
+
+        this.icon_obj = null;
+        this.cm_z_index = 11; // todo: Выбрать правильный приоритет
+        this.updateIcon();
+        mapCanvasManager.add_vobj(this, this.cm_z_index);
+    }
+
+    WCanvasAnimateMarker.prototype.getVisibleState = function (time) {
+        return 1.0;
+    };
+
+    WCanvasAnimateMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasCarMarker.prototype.redraw');
+        var img_obj = this.icon_obj;
+        if (!img_obj) return;
+        var visible_state = this.getVisibleState(time);
+        if (visible_state == 0) return;
+        ctx.save();
+        if (visible_state != 1.) {
+            ctx.globalAlpha = visible_state;
+        }
+        var pos = this.mobj.getCurrentCoord(time);
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+
+        ctx.rotate(this.mobj.getCurrentDirection(time));
+        //ctx.scale(1. / mapCanvasManager.zoom_koeff, 1. / mapCanvasManager.zoom_koeff);
+
+        var frame = this._get_frame_num(time);
+        ctx.drawImage(img_obj.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+            this.offset_x * img_obj.size[0], this.offset_y * img_obj.size[1], this.frame_width * this.scale_icon_x, this.frame_height * this.scale_icon_y);
+
+        ctx.restore();  // Возврат транслейта
+    };
+
+    WCanvasAnimateMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
+        this.mobj = null;
+        mapCanvasManager.del_vobj(this);
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    WCanvasAnimateMarker.prototype.updateIcon = function() {
+        //console.log('WCanvasAnimateMarker.prototype.updateIcon');
+        // Здесь нужно заполнить все эти параметры
+        this.cm_z_index = 11; // todo: Выбрать правильный приоритет
+        this.icon_obj = null;
+        this.duration = 0;
+        this.frame_count = 1;
+        this.time_of_frame = 0;
+        this.frame_width = 0; // размер одного кадра
+        this.frame_height = 0; // размер одного кадра
+        this.offset_x = 0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = 0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    };
+
+    WCanvasAnimateMarker.prototype._get_frame_num = function (time) {
+        var time_off = time - this.start_time; // время, прошедшее сначала анимации
+        time_off = time_off < 0 ? 0 : time_off;
+        return Math.floor(time_off * 1000 / this.time_of_frame) % this.frame_count;
+    };
+
+    return WCanvasAnimateMarker;
+})(VisualObject);
+
+
+var WCanvasAnimateMarkerPowerUp = (function (_super) {
+    __extends(WCanvasAnimateMarkerPowerUp, _super);
+
+    function WCanvasAnimateMarkerPowerUp(mobj) {
+        _super.call(this, mobj);
+        this.position = mobj.getCurrentCoord(clock.getCurrentTime());
+    }
+
+    WCanvasAnimateMarkerPowerUp.prototype.delFromVisualManager = function () {
+        //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
+        new ECanvasPowerUpHide(this.position).start();
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    WCanvasAnimateMarkerPowerUp.prototype.getVisibleState = function (time) {
+        if (user.userCar && user.userCar.getObservingRange(time) <= distancePoints(this.position, user.userCar.getCurrentCoord(time)))
+            return 0.2;
+        else
+            return 1.0;
+    };
+
+    WCanvasAnimateMarkerPowerUp.prototype._get_frame_num = function (time) {
+        if (user.userCar && user.userCar.getObservingRange(time) <= distancePoints(this.position, user.userCar.getCurrentCoord(time)))
+            return 0;
+        else
+            return _super.prototype._get_frame_num.call(this, time);
+    };
+
+    WCanvasAnimateMarkerPowerUp.prototype.updateIcon = function() {
+        //console.log('WCanvasAnimateMarker.prototype.updateIcon');
+        // Здесь нужно заполнить все эти параметры
+        this.cm_z_index = 10; // todo: Выбрать правильный приоритет
+        this.icon_obj = iconsLeaflet.getIcon(this.mobj._icon_name, "canvas_icon");
+        this.duration = 1500;
+        this.frame_count = this.icon_obj.frames;
+        this.time_of_frame = this.duration / this.icon_obj.frames;
+        this.frame_width = this.icon_obj.size[0]; // размер одного кадра
+        this.frame_height = this.icon_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -1; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.scale_icon_x = 0.8;
+        this.scale_icon_y = 0.8;
+    };
+
+    return WCanvasAnimateMarkerPowerUp;
+})(WCanvasAnimateMarker);

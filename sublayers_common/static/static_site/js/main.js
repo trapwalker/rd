@@ -17,7 +17,7 @@ var glitchEffectStartPage1080 = null;
 
 var videoPlayer;
 var videoPlayerReadyState = false;
-var lastRadioPlayerVolumeBeforeVideoActive = 0.3;
+var lastRadioPlayerVolumeBeforeVideoActive = 0.15;
 
 
 function SetImageOnLoad(img, onLoadHandler) {
@@ -346,8 +346,20 @@ function main() {
     if (hash_url && hash_url.length && hash_url.indexOf('about') == 0) {
         // Ничего не делать с радио
     } else { // Включить радио
-        radioPlayer.click_power();
-        radioPlayer.set_volume(0.0);
+        var radio_settings = getCookie('radio_player');
+        if (radio_settings){
+            try {
+                var settings = radio_settings.split('_');
+                radioPlayer.set_state(settings[0], parseInt(settings[1]), parseInt(settings[2]), parseFloat(settings[3]), parseInt(settings[4]));
+            }
+            catch (err) {
+                console.error('Incorrect RadioPlayer settings: ', radio_settings);
+            }
+        }
+        else {
+            radioPlayer.click_power();
+            radioPlayer.set_volume(lastRadioPlayerVolumeBeforeVideoActive);
+        }
     }
 
     var img_start_page_1080 = new Image();
@@ -425,6 +437,23 @@ function main() {
             audioManager.play('button_screen_hover');
         });
 
+
+    // Сохранение в куки значения аудиоплеера при уходе со страницы
+    window.onbeforeunload = function (e) {
+        radioPlayer.save_setting_to_cookie(true);
+    };
+}
+
+function getCookie(name) {
+  var matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function changeLanguage(lang) {
+    document.cookie = 'lang' + "=" + lang;
+    window.location.reload();
 }
 
 function init_site_sound() {
@@ -451,7 +480,7 @@ function GetQuickGameRecords() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_quick_game_records',
         method: 'POST',
-        data: {},
+        data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
             $('#RDSiteQuickGameRatingsTable').empty();
             $('#RDSiteQuickGameRatingsTable').append(data);
@@ -469,7 +498,7 @@ function GetRatingInfo(rating_name) {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rating_info',
         method: 'POST',
-        data: {rating_name: rating_name},
+        data: {rating_name: rating_name, _xsrf: getCookie('_xsrf')},
         success: function (data) {
             jq_elem.empty();
             jq_elem.append(data);
@@ -507,8 +536,12 @@ function GetUserInfo() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_user_info',
         method: 'POST',
-        data: {},
+        data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
+
+            // todo: убрать после тестирования
+            SetQuickGameBtnEnable(data.is_tester);
+
             registration_status = data.user_status;
             if (registration_status == 'register') {
                 var pos_x = '';
@@ -518,16 +551,16 @@ function GetUserInfo() {
                     pos_y = data.position[1].toFixed(0);
                 }
                 consoleWPI.clear();
-                consoleWPI.add_message('user', 'Загрузка системы навигации.');
+                consoleWPI.add_message('user', _('con_wpi_1'));
                 consoleWPI.add_message(
                     'system',
-                    'Успешно.\n' +
+                    _('con_wpi_2_1') + '\n' +
                     '-----------------------------\n' +
-                    'Добро пожаловать, ' + data.user_name + '!\n' +
-                    'Ваш баланс: ' + data.user_balance + ' нукойнов\n' +
-                    'Ваши координаты: x' + pos_x + ':y' + pos_y + '\n' +
-                    'Ваша страховка: _\n' +
-                    'Активных заданий: _\n' +
+                    _('con_wpi_2_2') + data.user_name + '!\n' +
+                    _('con_wpi_2_3') + data.user_balance + ' NC\n' +
+                    _('con_wpi_2_4') + 'x' + pos_x + ':y' + pos_y + '\n' +
+                    _('con_wpi_2_5')+ '_\n' +
+                    _('con_wpi_2_6') + '_\n' +
                     '-----------------------------'
                 );
 
@@ -588,7 +621,7 @@ function GetRPGInfo() {
     $.ajax({
         url: location.protocol + '//' + location.host + '/site_api/get_rpg_info',
         method: 'POST',
-        data: {},
+        data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
             //console.log(data);
             // Установка аватаров:
@@ -622,11 +655,12 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
         data: {
             action: action,
             skill_name: skill_name,
-            perk_node: perk_node
+            perk_node: perk_node,
+            _xsrf: getCookie('_xsrf')
         },
         success: function (data_str) {
             //console.log(data);
-            var data = JSON.parse(data_str)
+            var data = JSON.parse(data_str);
             if (data.status == 'success') {
                 // Отобразить show_skills в вёрстку
                 for (var key in data.show_skills)
@@ -661,25 +695,21 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         var perk_rec = data.perks[i];
                         var jq_perk = $(
                             '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '">' +
-                            '<div class="reg2-perk-table-label" data-title="' + perk_rec.perk.title + '" data-description="' + perk_rec.perk.description + '">' + perk_rec.perk.title + '</div>' +
+                            '<div class="reg2-perk-table-label" data-title="' + perk_rec.perk['title__' + locale_object.locale] + '" data-description="' + perk_rec.perk['description__' + locale_object.locale] + '">' + perk_rec.perk['title__' + locale_object.locale] + '</div>' +
                             '<div class="reg2-perk-table-checkbox-block" onclick="Reg2PerkClick(`' + perk_rec.perk.uri + '`)">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
                             '</div>');
                         jq_perk_table.append(jq_perk);
                         jq_perk.find('.reg2-perk-table-label').click(function() {
                             var title = $(this).data('title');
                             var description = $(this).data('description');
-                            consoleWReg2.add_message('user', 'Загрузка перка:', true);
-                            consoleWReg2.add_message('system',
-                                'Успешно.\n\n' +
-                                '--------------------------------------------------------------\n' +
-                                title + '.\n' +
-                                description + '.\n' +
-                                '--------------------------------------------------------------');
+                            consoleWReg2.add_message('user', _('con_wreg_msg46'), true);
+                            consoleWReg2.add_message('system', _('con_wreg_msg47') + title + '.\n' +
+                                description + '.\n' + '--------------------------------------------------------------');
                         });
                         if (perk_rec.active) {
                             var jq_perk_chip = $(
                                 '<div class="site-chip-content-line shift">' +
-                                '<div class="site-chip-content-line-text left">' + perk_rec.perk.title + '</div>' +
+                                '<div class="site-chip-content-line-text left">' + perk_rec.perk['title__' + locale_object.locale] + '</div>' +
                                 '</div>'
                             );
                             jq_perk_chip_perk_list.append(jq_perk_chip);

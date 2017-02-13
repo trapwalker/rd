@@ -69,7 +69,14 @@ function sendRandGoTo(){
 function onKeyDownMap(event) {
     //console.log('onKeyDownMap', event.keyCode);
     switch (event.keyCode) {
+        case 27:
+            windowTemplateManager.closeActiveWindow();
+            break;
+        case 13:
+            chat.get_current_input().focus();
+            break;
         case 37:
+            if (! user.userCar) return;
             if (!pressedArrowLeft) {
                 pressedArrowLeft = true;
                 var turn = 0;
@@ -79,6 +86,7 @@ function onKeyDownMap(event) {
             }
             break;
         case 38:
+            if (! user.userCar) return;
             if (!pressedArrowUp) {
                 clientManager.sendSetSpeed(user.userCar.v_forward);
                 if (wCruiseControl) wCruiseControl.startKeyboardControl();
@@ -86,6 +94,7 @@ function onKeyDownMap(event) {
             }
             break;
         case 39:
+            if (! user.userCar) return;
             if (!pressedArrowRight) {
                 pressedArrowRight = true;
                 var turn = 0;
@@ -95,6 +104,7 @@ function onKeyDownMap(event) {
             }
             break;
         case 40:
+            if (! user.userCar) return;
             if (!pressedArrowDown) {
                 clientManager.sendSetSpeed(user.userCar.v_backward);
                 if (wCruiseControl) wCruiseControl.startKeyboardControl();
@@ -136,12 +146,8 @@ function onKeyDownMap(event) {
             */
             break;
         case 81:  // Q
-            /*
-            clientManager.sendFireAutoEnable('front', false);
-            clientManager.sendFireAutoEnable('back', false);
-            clientManager.sendFireAutoEnable('right', false);
-            clientManager.sendFireAutoEnable('left', false);
-            */
+            if (wFireController && wFireController.allFire)
+                wFireController.allFire.click();
             break;
         case 77:  // M
             if (map.dragging._enabled)
@@ -154,16 +160,27 @@ function onKeyDownMap(event) {
             //console.log('Was pressed: Z');
             break;
         case 49:  // 1
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(1, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(1);
             break;
         case 50:  // 2
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(2, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(2);
             break;
         case 51:  // 3
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(3, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(3);
             break;
         case 52:  // 4
+            if (! user.userCar) return;
             clientManager.sendActivateQuickItem(4, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(4);
+            break;
+        case 32:  // Space / Пробел
+            clientManager.sendStopCar();
             break;
         //LM=77 N O=79 P=80   Q=81
     }
@@ -173,6 +190,7 @@ function onKeyUpMap(event) {
     //console.log('onKeyUpMap');
     switch (event.keyCode) {
         case 37:
+            if (! user.userCar) return;
             pressedArrowLeft = false;
             var turn = 0;
             if (pressedArrowLeft) turn++;
@@ -180,11 +198,13 @@ function onKeyUpMap(event) {
             clientManager.sendTurn(turn);
             break;
         case 38:
+            if (! user.userCar) return;
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowUp = false;
             break;
         case 39:
+            if (! user.userCar) return;
             pressedArrowRight = false;
             var turn = 0;
             if (pressedArrowLeft) turn++;
@@ -192,6 +212,7 @@ function onKeyUpMap(event) {
             clientManager.sendTurn(turn);
             break;
         case 40:
+            if (! user.userCar) return;
             clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
             if (wCruiseControl) wCruiseControl.stopKeyboardControl();
             pressedArrowDown = false;
@@ -208,6 +229,9 @@ function TileLaterSet() {
         map.removeLayer(mapManager.tileLayer);
 }
 
+function returnFocusToMap() {
+    document.getElementById('map').focus();
+}
 
 var MapManager = (function(_super) {
     __extends(MapManager, _super);
@@ -279,27 +303,6 @@ var MapManager = (function(_super) {
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
 
-        // Отображение квадрата всей карты
-        // todo: если такое оставлять, то оно ЖУТКО лагает!!! ЖУТКО!!! Косяк лиафлета
-        //var bounds = [[33.303547, -113.850131], [31.791908, -112.062069]];
-        //L.rectangle(bounds, {color: "red", weight: 5, fill: false}).addTo(map);
-
-
-        // Рисовалка на канвасе
-        //var canvasTiles = L.tileLayer.canvas();
-        //canvasTiles.drawTile = function (canvas, tilePoint, zoom) {
-        //    var ctx = canvas.getContext('2d');
-        //    //ctx.fillText(tilePoint.toString(), 50, 50);
-        //    ctx.globalAlpha = 1;
-        //    var l = 0, s = 255;
-        //    //ctx.fillStyle = 'transparent';
-        //    ctx.strokeStyle = "rgba(42, 253, 10, 0.15)";
-        //    ctx.strokeRect(0, 0, 255, 0);
-        //    ctx.strokeRect(255, 0, 255, 255);
-        //};
-        //canvasTiles.addTo(map);
-
-
         /*
             Карта является глобальным droppabl'ом в качестве мусорки
             P.S.
@@ -313,15 +316,10 @@ var MapManager = (function(_super) {
             drop: function(event, ui) {
                 // Эта проверка нужна так как таскание окон также порождает событие дропа
                 if (ui.draggable.hasClass('mainCarInfoWindow-body-trunk-body-right-item')) {
-                    var item = null;
-                    try {
-                        item = inventoryList.getInventory(ui.draggable.data('owner_id')).getItem(ui.draggable.data('pos'));
-                    }
-                    catch (e){
-                        console.warn('Не найден инвентерь или итем в инвентаре:', ui.draggable);
-                        item = null;
-                    }
-
+                    var inventory = inventoryList.getInventory(ui.draggable.data('owner_id'));
+                    if (!inventory) return;
+                    var item = inventory.getItem(ui.draggable.data('pos'));
+                    if (!item) return;
                     modalWindow.modalDialogAnswerShow({
                         caption: 'Inventory Operation',
                         header: 'Выбросить?',
@@ -331,7 +329,6 @@ var MapManager = (function(_super) {
                                 ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);
                         }
                     });
-
                 }
                 if (ui.draggable.hasClass('fire-controll-quick-btn-block'))
                     clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
@@ -482,6 +479,8 @@ var MapManager = (function(_super) {
         mapManager.inZoomChange = true;
         mapManager.oldZoomForCalcZoom = map.getZoom();
         mapManager.startZoomChangeTime = clock.getCurrentTime();
+
+        audioManager.play('zoom_01', 0, 0.1, null, false, 0, null, 0.5);
     };
 
     MapManager.prototype.onZoomEnd = function (event) {

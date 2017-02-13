@@ -6,12 +6,14 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry.tree import Root, Subdoc
 from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
-    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField
+    FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
+from sublayers_server.model.game_log_messages import LvlLogMessage, ExpLogMessage
+from sublayers_server.model.utils import getKarmaName
 
 from itertools import chain
 
@@ -42,9 +44,11 @@ class Agent(Root):
     profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
     login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
+    teaching_flag = BooleanField(caption=u'Является ли этот агент агентом обучения')
+    quick_flag = BooleanField(caption=u'Является ли этот агент агентом быстрой игры')
 
     # Карма и отношения
-    karma = FloatField(default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
+    karma = FloatField(default=0, caption=u"Значение кармы игрока", tags='client')  # значения от -100 до 100 имеют влияние
     npc_rel_list = ListField(
         base_field=EmbeddedDocumentField(embedded_document_type=RelationshipRec),
         caption=u'Список взаимоотношений игрока с NPCs',
@@ -215,6 +219,9 @@ class Agent(Root):
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
 
+    def karma_name(self, lang='ru'):
+        return getKarmaName(self.karma_norm, lang)
+
     @property
     def quests(self):
         """
@@ -302,11 +309,20 @@ class Agent(Root):
     def exp(self):
         return self._exp
 
-    def set_exp(self, value=None, dvalue=None):
+    def set_exp(self, time, value=None, dvalue=None):
+        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        old_lvl = self.get_lvl()
         if value is not None:
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+        if self._agent_model:
+            ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
+            lvl = self.get_lvl()
+            if lvl > old_lvl:
+                LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
+        assert self._exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:

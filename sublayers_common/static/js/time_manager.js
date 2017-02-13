@@ -86,6 +86,7 @@ var TimeManager = (function () {
         this._fps_interval = 0;
         this._fps_all_time = 0;
         this._redraw_time  = 0;
+        this.FPS = 0;
 
         this._FPSEvent = null;
         this._FPSCount = 0;
@@ -152,7 +153,11 @@ var TimeManager = (function () {
         timeManager._fps_interval = timeManager._fps_interval + 1;
         if (timeManager._fps_interval == 200) {
             //console.log('FPS = ', (timeManager._fps_interval / timeManager._fps_all_time) * 1000);
-            $('#FPSSpan').text((((timeManager._fps_interval / timeManager._fps_all_time) * 1000) >> 1) << 1);
+            var FPS = (((timeManager._fps_interval / timeManager._fps_all_time) * 1000) >> 1) << 1;
+            if (timeManager.FPS != FPS) {
+                timeManager.FPS = FPS;
+                $('#FPSSpan').text(FPS);
+            }
             timeManager._fps_interval = 0;
             timeManager._fps_all_time = 0;
         }

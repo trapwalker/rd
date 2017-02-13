@@ -27,8 +27,8 @@ from tornado.options import options
 import settings
 
 import sublayers_site.handlers.site_auth
-from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler
-from sublayers_site.handlers.site import SiteMainHandler
+from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler, RegisterOldUsersOnForum, SetForumUserAuth
+from sublayers_site.handlers.site import SiteMainHandler, GetUserLocaleJSONHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
@@ -40,11 +40,11 @@ from sublayers_common.base_application import BaseApplication
 import sublayers_server.model.registry.classes  #autoregistry classes
 from sublayers_server.model.registry.tree import Root
 from sublayers_site.news import NewsManager
+from sublayers_site.site_locale import load_locale_objects
 
 
 class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
-        settings.setdefault('xsrf_cookies', False)  # todo: (!) Починить и убрать эту строчку! По умолчанию True
         settings.setdefault('static_path', options.static_path)
         settings.setdefault('login_url', '/login')
 
@@ -53,11 +53,14 @@ class Application(BaseApplication):
 
         self.reg = None
         self.news_manager = NewsManager()
+        load_locale_objects()  # Загрузка всех локализаций
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
+            (r"/site_api/locale", GetUserLocaleJSONHandler),
+            (r"/site_api/join_news_group", tornado.web.RedirectHandler, {"url": options.join_news_group_link}),
             (r"/site_api/get_user_info", GetUserInfoHandler),
             (r"/site_api/get_rpg_info", GetRPGInfoHandler),
             (r"/site_api/get_user_rpg_info", GetUserRPGInfoHandler),
@@ -65,6 +68,8 @@ class Application(BaseApplication):
             (r"/site_api/get_rating_info", GetRatingInfo),
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),
             (r"/site_api/audio1", GetAudioTest),
+            (r"/site_api/forum_reg", RegisterOldUsersOnForum),
+            (r"/site_api/forum_auth", SetForumUserAuth),
         ])
 
         tornado.ioloop.IOLoop.instance().add_callback(self.on_init_site_structure)
@@ -73,7 +78,8 @@ class Application(BaseApplication):
         def load_registry_done_callback(all_registry_items):
             self.reg = Root.objects.get_cached('reg:///registry')
             log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
-            print 'Road Dogs Site load !'
+            from datetime import datetime
+            print('Road Dogs Site load !', str(datetime.now()))
             log.info('Site server READY')
 
         Root.objects.filter(uri={'$ne': None}).find_all(callback=load_registry_done_callback)

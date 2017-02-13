@@ -69,11 +69,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
-                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser"));
+                var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
                 return ownerList.add(owner);
             }
         return null;
@@ -195,8 +195,14 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             //new WCarMarker(car);                 // виджет маркера
-            var t = new WCanvasCarMarker(car);
-            new WCanvasHPCarMarker(car, t);
+            if (car.cls == "Bot") {
+                var t = new WCanvasCarMarker(car);
+                new WCanvasHPCarMarker(car, t);
+            }
+            if (car.cls == "SlowMine" || car.cls == "BangMine") {
+                new WCarMarker(car);
+            }
+
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
         }
@@ -206,7 +212,6 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype._contactStaticObject', event);
         if (event.is_first) {
             var uid = event.object.uid;
-            var p_observing_range = event.object.p_observing_range;
             var obj_marker;
 
             // Проверка: нет ли уже такого объекта.
@@ -215,50 +220,44 @@ var ClientManager = (function () {
                 // todo: оптимизировать это: либо удалять объекты при раздеплое машинки, либо вынести этот if вниз
                 if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
                 return;
-            };
-
-            // Установка поворота маркера
-            var direction = null;
-            switch (event.object.cls) {
-                case 'GasStation':
-                case 'Town':
-                    direction = - 2 * Math.PI;
-                    break;
-                case 'RadioPoint':
-                    direction = 0.5 * Math.PI;
-                    break;
-                case 'POICorpse':
-                    direction = event.object.car_direction + Math.PI / 2.;
-                    break;
             }
 
-            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), direction);
+            // Создание и настройка маркера
+            obj = new StaticObject(uid, new Point(event.object.position.x, event.object.position.y), 0);
             obj.cls = event.object.cls;
             obj.example = event.object.example;
-            obj.p_observing_range = p_observing_range;
+            obj.p_observing_range = event.object.p_observing_range;
+
             if (event.object.hasOwnProperty('sub_class_car')) {
                 obj.sub_class_car = event.object.sub_class_car;
             }
 
-            // Установка надписи над статическим объектом
-            if (obj.cls == 'Town') {
-                obj.title = event.object.example.title;
+            switch (obj.cls) {
+                case 'GasStation':
+                case 'Town':
+                    obj.title = event.object.example.title || 'GasStation';
+                    obj.direction = - 2 * Math.PI;
+                    obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                    break;
+                case 'QuickGamePowerUpFullHeal':
+                case 'QuickGamePowerUpFullFuel':
+                case 'QuickGamePowerUpEffect':
+                case 'QuickGamePowerUpShield':
+                case 'QuickGamePowerUpAddItems':
+                    obj.direction = 0;
+                    obj._icon_name = event.object.icon_name || "icon-power-up-random";
+                    new WCanvasAnimateMarkerPowerUp(obj);
+                    break;
+                case 'RadioPoint':
+                    obj.direction = 0.5 * Math.PI;
+                    break;
+                case 'POICorpse':
+                    obj.direction = event.object.car_direction + Math.PI / 2.;
+                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    break;
+                default:
+                    obj_marker = new WCarMarker(obj); // виджет маркера
             }
-            if (obj.cls == 'GasStation') {
-                obj.title = 'GasStation';
-            }
-            if (obj.cls == 'RadioPoint')
-                obj_marker.updateLabel('Radio Point');
-            if (obj.cls == 'POIStash')
-                obj_marker.updateLabel('loot');
-
-            // Создание/инициализация виджетов
-            if (obj.cls == 'Town' || obj.cls == 'GasStation') {
-                obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
-                //obj_marker = new WStaticObjectMarker(obj);
-            }
-            else
-                obj_marker = new WCarMarker(obj); // виджет маркера
 
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(obj); // добавить себя в контекстную панель
@@ -339,6 +338,39 @@ var ClientManager = (function () {
             case 'TrainerTeachingNote':
                 teachingManager.update(new TrainerTeachingNote(note));
                 break;
+            case 'CruiseSpeedTeachingMapNote':
+                teachingMapManager.update(new CruiseSpeedTeachingMapNote(note));
+                break;
+            case 'CruiseZoneTeachingMapNote':
+                teachingMapManager.update(new CruiseZoneTeachingMapNote(note));
+                break;
+            case 'CruiseSpeedControlTeachingMapNote':
+                teachingMapManager.update(new CruiseSpeedControlTeachingMapNote(note));
+                break;
+            case 'CruiseSpeedBtnTeachingMapNote':
+                teachingMapManager.update(new CruiseSpeedBtnTeachingMapNote(note));
+                break;
+            case 'DrivingControlTeachingMapNote':
+                teachingMapManager.update(new DrivingControlTeachingMapNote(note));
+                break;
+            case 'CruiseRadialTeachingMapNote':
+                teachingMapManager.update(new CruiseRadialTeachingMapNote(note));
+                break;
+            case 'ZoomSliderTeachingMapNote':
+                teachingMapManager.update(new ZoomSliderTeachingMapNote(note));
+                break;
+            case 'DischargeShootingTeachingMapNote':
+                teachingMapManager.update(new DischargeShootingTeachingMapNote(note));
+                break;
+            case 'AutoShootingTeachingMapNote':
+                teachingMapManager.update(new AutoShootingTeachingMapNote(note));
+                break;
+            case 'TryKillTeachingMapNote':
+                teachingMapManager.update(new TryKillTeachingMapNote(note));
+                break;
+            case 'TryGameTeachingMapNote':
+                teachingMapManager.update(new TryGameTeachingMapNote(note));
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }
@@ -349,11 +381,11 @@ var ClientManager = (function () {
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера
-        if (event.agent.cls == "User" || event.agent.cls == "QuickUser") {
+        if (event.agent.cls == "User" || event.agent.cls == "QuickUser" || event.agent.cls == "TeachingUser") {
             user.login = event.agent.login;
             user.ID = event.agent.uid;
             user.balance = event.agent.balance;
-            user.quick = event.agent.cls == "QuickUser";
+            user.quick = (event.agent.cls == "QuickUser") || (event.agent.cls == "TeachingUser");
 
             if (event.agent.party) {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
@@ -408,7 +440,7 @@ var ClientManager = (function () {
             //new WCarMarker(mcar);    // виджет маркера
             //new WCanvasCarMarker(mcar);
             var t = new WCanvasCarMarker(mcar);
-            new WCanvasHPCarMarker(mcar, t);
+            //new WCanvasHPCarMarker(mcar, t);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз
@@ -422,6 +454,7 @@ var ClientManager = (function () {
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             wFireController.updateQuickConsumerPanel(event.car.quick_consumer_panel);
+            wFireController.updateStateAutoShooting(event.auto_shooting_state);
             mapManager.widget_target_point = new WCanvasTargetPoint(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
 
@@ -524,6 +557,7 @@ var ClientManager = (function () {
             case 'ScoutDroid':
             case 'StationaryTurret':
             case 'SlowMine':
+            case 'BangMine':
             case 'Mobile':
                 this._contactBot(event);
                 break;
@@ -537,6 +571,13 @@ var ClientManager = (function () {
             case 'POIContainer':
             case 'POICorpse':
             case 'GasStation':
+                this._contactStaticObject(event);
+                break;
+            case 'QuickGamePowerUpFullHeal':
+            case 'QuickGamePowerUpFullFuel':
+            case 'QuickGamePowerUpEffect':
+            case 'QuickGamePowerUpShield':
+            case 'QuickGamePowerUpAddItems':
                 this._contactStaticObject(event);
                 break;
             default:
@@ -583,6 +624,8 @@ var ClientManager = (function () {
 
     ClientManager.prototype.Die = function (event) {
         //console.log('ClientManager.prototype.Die');
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalDialogInfoShow({
             caption: 'Car Crash',
             header: 'Крушение!',
@@ -594,18 +637,31 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
-        // console.log('ClientManager.prototype.QuickGameDie');
-        //alert('Ваша машинка потерпела крушение. Можете попробовать ещё.');
+        //console.log('ClientManager.prototype.QuickGameDie', event);
+        modalWindow.closeAllWindows();
+        windowTemplateManager.closeAllWindows();
         modalWindow.modalQuickGamePointsPageShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы набрали очков: ' + event.points,
+            quick_users: event.quick_users,
+            points: event.points,
+            record_index: event.record_index,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();
             },
             callback_cancel: function() {
-                window.location = '/#quick';
+                window.location = '/#start';
+            }
+        });
+    };
+
+    ClientManager.prototype.StartQuickGame = function(event) {
+        console.log('ClientManager.prototype.StartQuickGame', event);
+        modalWindow.modalQuickGameMapTeachingPageShow({
+            callback_ok: function () {
+                clientManager.sendQuickTeachingAnswer(true);
+            },
+            callback_cancel: function() {
+                clientManager.sendQuickTeachingAnswer(false);
             }
         });
     };
@@ -628,9 +684,18 @@ var ClientManager = (function () {
     // todo: эффекты вынести потом в отдельный модуль
     ClientManager.prototype.Bang = function (event){
         //console.log('ClientManager.prototype.Bang', event);
-        new ECanvasHeavyBangPNG_2(new Point(event.position.x, event.position.y)).start();
-        //new Bang(new Point(event.position.x, event.position.y),
-        //         event.bang_power, event.duration, event.end_duration).start();
+        var bang_position = new Point(event.position.x, event.position.y);
+        new ECanvasHeavyBangPNG_3(bang_position).start();
+
+        // Звук
+        var distance = user.userCar ? distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), bang_position) : 2000;
+        if (distance <= 2000) {
+            // 0.2/1.0 - минимальная/максимальная громкость звука
+            var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
+            // 0.35/0.6 - границы рэйта
+            var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
+            audioManager.play('shot_03', 0.0, gain, null, false, 0, 0, rate);
+        }
     };
 
     ClientManager.prototype.ChangeAltitude = function(event){
@@ -639,7 +704,7 @@ var ClientManager = (function () {
             user.userCar.altitude = event.altitude;
         }
         else
-            console.error('Error! Пришла высота на неизветную машинку!')
+            console.warn('Error! Пришла высота на неизветную машинку!')
     };
 
     ClientManager.prototype.ChangeRadiation = function(event){
@@ -648,7 +713,7 @@ var ClientManager = (function () {
             user.userCar.radiation_dps += event.radiation_dps;
         }
         else
-            console.error('Error! Пришла радиация на неизветную машинку!')
+            console.warn('Warning! Пришла радиация на неизветную машинку!')
     };
 
     ClientManager.prototype.UpdateObservingRange = function (event) {
@@ -674,14 +739,13 @@ var ClientManager = (function () {
         var etime = event.time / 1000.;
         // если серверное время больше чистого клиентского и больше подправленного клиентского, то ошибка
         if ((event.time > clock.getClientTime()) && (etime > clock.getCurrentTime())) {
-            console.error('Серверное время больше клиентского при выстреле.');
-            console.error('server event time = ', etime);
-            console.error('client pure  time = ', clock.getClientTime() / 1000.);
-            console.error('clnt with dt time = ', clock.getCurrentTime());
+            console.warn('Серверное время больше клиентского при выстреле.');
+            //console.error('server event time = ', etime);
+            //console.error('client pure  time = ', clock.getClientTime() / 1000.);
+            //console.error('clnt with dt time = ', clock.getCurrentTime());
         }
         // todo: отфильтровать, так как могло прийти не для своей машинки
         user.userCar.setShootTime(event.side, etime, event.t_rch);
-
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
@@ -690,13 +754,17 @@ var ClientManager = (function () {
             fireEffectManager.addController({
                 subj: event.subj,
                 obj: event.obj,
-                side: event.side
+                side: event.side,
+                weapon_animation: event.weapon_animation,
+                animation_tracer_rate: event.animation_tracer_rate
             });
         else
             fireEffectManager.delController({
                 subj: event.subj,
                 obj: event.obj,
-                side: event.side
+                side: event.side,
+                weapon_animation: event.weapon_animation,
+                animation_tracer_rate: event.animation_tracer_rate
             });
     };
 
@@ -705,7 +773,9 @@ var ClientManager = (function () {
         fireEffectManager.fireDischargeEffect({
             pos_subj: new Point(event.pos_subj.x, event.pos_subj.y),
             targets: event.targets,
-            fake_position: event.fake_position
+            fake_position: event.fake_position,
+            weapon_animation: event.weapon_animation,
+            self_shot: event.self_shot
         });
     };
 
@@ -1164,7 +1234,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.DelNoteMessage = function(event) {
-        console.log('ClientManager.prototype.DelNoteMessage', event);
+        //console.log('ClientManager.prototype.DelNoteMessage', event);
         var note = notesManager.get_note(event.note_uid);
         if (note)
             note.delete();
@@ -1180,6 +1250,25 @@ var ClientManager = (function () {
     ClientManager.prototype.StrategyModeInfoObjectsMessage = function (event) {
         //console.log('ClientManager.prototype.StrategyModeInfoObjectsMessage', event);
         wStrategyModeManager.update(event.objects);
+    };
+
+    // PingInfoMessage
+    ClientManager.prototype.PingInfoMessage = function (event) {
+        //console.log('ClientManager.prototype.PingInfoMessage', event);
+        $('#PingSpan').text(event.ping);
+    };
+
+    // Активация итема
+
+    ClientManager.prototype.StartActivateItem = function (event) {
+        //console.log('ClientManager.prototype.StartActivateItem', event);
+        if (event.activate_time > 0)
+            modalWindow.modalItemActivationShow({activate_time: event.activate_time, item: event.item});
+    };
+
+    ClientManager.prototype.StopActivateItem = function (event) {
+        //console.log('ClientManager.prototype.StopActivateItem', event);
+        modalWindow.modalItemActivationHide({});
     };
 
     // Исходящие сообщения
@@ -1345,7 +1434,7 @@ var ClientManager = (function () {
             call: "get_party_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1357,7 +1446,7 @@ var ClientManager = (function () {
             call: "get_party_user_info",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1369,7 +1458,7 @@ var ClientManager = (function () {
             call: "send_create_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name,
+                name: name && name.toString(),
                 description: description
             }
         };
@@ -1382,7 +1471,7 @@ var ClientManager = (function () {
             call: "send_join_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name
+                name: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1401,7 +1490,7 @@ var ClientManager = (function () {
             call: "send_invite",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                username: name
+                username: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1413,7 +1502,7 @@ var ClientManager = (function () {
             call: "send_kick",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                username: name
+                username: name && name.toString()
             }
         };
         rpcCallList.add(mes);
@@ -1425,7 +1514,7 @@ var ClientManager = (function () {
         var mes = {
             call: "send_change_category",
             rpc_call_id: rpcCallList.getID(),
-            params: { username: name }
+            params: { username: name && name.toString() }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -1619,6 +1708,17 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendCancelActivationItem = function() {
+        //console.log("ClientManager.prototype.sendCancelActivationItem");
+        var mes = {
+            call: "cancel_activation_item",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Сообщения локаций
 
     ClientManager.prototype.sendEnterToNPC = function (npc) {
@@ -1674,7 +1774,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
 
     // Оружейник
 
@@ -2148,7 +2247,7 @@ var ClientManager = (function () {
     };
 
     // Быстрая игра (играть еще раз)
-     ClientManager.prototype.sendQuickPlayAgain = function () {
+    ClientManager.prototype.sendQuickPlayAgain = function () {
         //console.log('ClientManager.prototype.sendQuickPlayAgain');
         var mes = {
             call: "quick_play_again",
@@ -2158,6 +2257,43 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    // Быстрая игра: пройти обучение
+    ClientManager.prototype.sendQuickTeachingAnswer = function (result) {
+        //console.log('ClientManager.prototype.sendQuickTeachingAnswer');
+        var mes = {
+            call: "quick_teaching_answer",
+            rpc_call_id: rpcCallList.getID(),
+            params: {teaching: result}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Запросить с сервера текущий пинг и отправить серверу FPS
+    ClientManager.prototype.get_ping_set_fps = function () {
+        //console.log('ClientManager.prototype.sendQuickTeachingAnswer');
+        var mes = {
+            call: "get_ping_set_fps",
+            rpc_call_id: rpcCallList.getID(),
+            params: {fps: timeManager.FPS}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Залогировать в лог агента какую-либо информацию
+    ClientManager.prototype.sendAgentLog = function (message) {
+        //console.log('ClientManager.prototype.sendAgentLog');
+        var mes = {
+            call: "agent_log",
+            rpc_call_id: rpcCallList.getID(),
+            params: {message: message}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
 
     return ClientManager;
 })();

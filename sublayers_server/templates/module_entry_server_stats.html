@@ -41,6 +41,7 @@
 
         .ai-bot-record {
             position: relative;
+            float: left;
             width: 100%;
             height: 30px;
             line-height: 30px;
@@ -54,8 +55,8 @@
             text-align: center;
         }
 
-        .ai-bot-record .name { width: 30%; }
-        .ai-bot-record .online {width: 10%;}
+        .ai-bot-record .name { width: 10%; }
+        .ai-bot-record .online {width: 5%;}
         .ai-bot-record .online .circle {
             position: relative;
             width: 14px;
@@ -66,10 +67,13 @@
             margin-top: 7px;
         }
         .ai-bot-record .online .circle.on {background-color: forestgreen;}
-        .ai-bot-record .kills {width: 10%;}
-        .ai-bot-record .deaths {width: 10%;}
-        .ai-bot-record .time {width: 20%;}
-        .ai-bot-record .life-time {width: 20%;}
+        .ai-bot-record .worked {width: 5%;}
+        .ai-bot-record .kills {width: 5%;}
+        .ai-bot-record .deaths {width: 5%;}
+        .ai-bot-record .time {width: 12%;}
+        .ai-bot-record .life-time {width: 12%;}
+        .ai-bot-record .bot-type {width: 15%;}
+        .ai-bot-record .car {width: 15%;}
 
 
     </style>
@@ -98,10 +102,13 @@
         <div class="ai-bot-record even">
             <div class="name">Имя</div>
             <div class="online">Онлайн</div>
+            <div class="worked">Respawn</div>
             <div class="kills">Убийств</div>
             <div class="deaths">Смертей</div>
             <div class="time">Время</div>
-            <div class="life-time">Макс.Время</div>
+            <div class="life-time">Сред.Время</div>
+            <div class="bot-type">Бот</div>
+            <div class="car">Машинка</div>
         </div>
     {% end %}
     {% import datetime %}
@@ -112,10 +119,15 @@
             <div class="online">
                 <div class="circle {{ 'on' if bot.car else '' }}"></div>
             </div>
+            <div class="worked">
+                <input type="checkbox" {{ "checked" if bot.worked else "" }} onclick="sendChangeWorkedBot('{{ bot.user.name }}')"/>
+            </div>
             <div class="kills">{{ bot._quick_bot_kills }}</div>
             <div class="deaths">{{ bot._quick_bot_deaths }}</div>
             <div class="time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time))) }}</div>
-            <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_max_lt))) }}</div>
+            <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time / (1 if bot._quick_bot_deaths == 0 else bot._quick_bot_deaths)))) }}</div>
+            <div class="bot-type">{{ bot.example.parent.uri.replace('reg:///registry/agents/user/', '') }}</div>
+            <div class="car">{{ bot._car_proto.name_car }}</div>
         </div>
         {% set i += 1 %}
     {% end %}
@@ -127,8 +139,9 @@
     $(document).ready(function () {
         setInterval(function () {
             $.ajax({
-                url: "http://" + location.host + '/server_stat_refresh',
-                data: null,
+                url: location.href,
+                method: 'POST',
+                data: {action: 'bot_refresh', _xsrf: getCookie('_xsrf')},
                 success: function (data) {
                     for(var key in data) {
                         var elem = $('#'+key);
@@ -138,8 +151,27 @@
                     }
                 }
             });
-        }, 3000);
+        }, 10000);
 
-    })
+      setInterval(function () {location.reload();}, 60000);
+
+    });
+
+    function getCookie(name) {
+        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+        return r ? r[1] : undefined;
+    }
+
+    function sendChangeWorkedBot(bot_name) {
+        $.ajax({
+            url: location.href,
+            method: 'POST',
+            data: {action: 'bot_change', bot_name: bot_name, _xsrf: getCookie('_xsrf')},
+            success: function (data) {
+                location.reload();
+            }
+        });
+    }
+
 </script>
 </body>

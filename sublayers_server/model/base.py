@@ -130,10 +130,10 @@ class VisibleObject(PointObject):
 
         Parameter(original=self._param_aggregate['p_visibility_min'],
                   name='p_visibility_min',
-                  owner=self)
+                  owner=self,)  # min_value=0.0, max_value=1.0)
         Parameter(original=self._param_aggregate['p_visibility_max'],
                   name='p_visibility_max',
-                  owner=self)
+                  owner=self,)  # min_value=0.0, max_value=1.0)
 
         self.subscribed_agents = CounterSet()
         self.subscribed_observers = []
@@ -143,8 +143,14 @@ class VisibleObject(PointObject):
         self.set_default_tags()
 
     def get_visibility(self, time):
-        value = (self.params.get('p_visibility_min').value + self.params.get('p_visibility_max').value) / 2.0
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        visibility_min = self.params.get('p_visibility_min').value
+        visibility_max = self.params.get('p_visibility_max').value
+        value = (visibility_min + visibility_max) / 2.0
+        # assert 0 <= value <= 1, 'value={}'.format(value)
+        if not (0 <= value <= 1):
+            log.debug('Error!!! get_visibility !!!')
+            log.debug('value={} vis_min={} vis_max={}, time={} vo={}'.format(value, visibility_min, visibility_max, time, self))
+            self.server.stop()
         return value
 
     def on_init(self, event):
@@ -201,6 +207,9 @@ class VisibleObject(PointObject):
     def del_from_chat(self, chat, time):
         pass
 
+    def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
+        return True
+
 
 class Observer(VisibleObject):
     def __init__(self, **kw):
@@ -255,3 +264,16 @@ class Observer(VisibleObject):
 
     def upd_observing_range(self, time):
         pass
+
+    def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
+        obj_pos = obj_pos or self.position(time)
+        subj_pos = subj_pos or subj.position(time)
+        # 1 - (1 - v) * (1 - z)
+        visibility = self.get_visibility(time=time)
+        vigilance = subj.params.get('p_vigilance').value
+        vis = visibility + vigilance - visibility * vigilance
+        res = (subj.get_observing_range(time=time) * vis) >= abs(obj_pos - subj_pos)
+        return res and super(Observer, self).can_see_me(subj=subj, time=time, obj_pos=None, subj_pos=None)
+
+    def can_i_see(self, obj, time, obj_pos=None, subj_pos=None):
+        return True

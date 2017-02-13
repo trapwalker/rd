@@ -81,6 +81,9 @@ class BaseMotionState(object):
         dt = t - self.t0
         return self.v0 * dt + 0.5 * self.a * (dt ** 2)
 
+    def way(self, t):
+        return abs(self.s(t))
+
     def v(self, t):
         dt = t - self.t0
         temp_v = self.v0 + self.a * dt
@@ -296,7 +299,7 @@ class MotionState(BaseMotionState):
         return self.v_forward if v >= 0.0 else self.v_backward
 
     @assert_time_in_state
-    def update(self, t=None, dt=0.0, cc=None, turn=None):
+    def update(self, t=None, dt=0.0, cc=None, turn=None, stop_a=False):
         self.fix(t=t, dt=dt)
         self.t_max = None
 
@@ -311,6 +314,10 @@ class MotionState(BaseMotionState):
 
         v_max = self.get_max_v_by_cc(cc=self.cc)
         dv = v_max * abs(self.cc) - self.v0
+
+        if stop_a:  # Если нужно резко прекратить замедлене или ускорение, то просто значит dv=0.0
+            dv = 0.0
+
         if abs(dv) > EPS:
             if self.cc == 0.0:
                 self.a = self.a_braking if self.v0 >= 0.0 else -self.a_braking

@@ -105,9 +105,11 @@ var Window = (function () {
 
     // Скрыть окно
     Window.prototype.hideWindow = function () {
+        //console.log('Window.prototype.hideWindow');
         if (this.options.isModal)
             this.modalDiv.css('display', 'none');
         else this.mainDiv.css('display', 'none');
+
     };
 
     Window.prototype.setNewSize = function (height, width) {
@@ -133,7 +135,8 @@ var TemplateWindow = (function (_super) {
         if (options) setOptions(options, this.options);
 
         _super.call(this, {
-            parentDiv: this.options.parentDiv
+            parentDiv: this.options.parentDiv,
+            isModal: options.isModal
         });
     }
 
@@ -147,6 +150,19 @@ var WindowTemplateManager = (function () {
         this.unique = {}; // ассоциативный массив для уникальных окон, имеющих имя
         this.z_index_list = {};
     }
+
+    WindowTemplateManager.prototype.closeActiveWindow = function (win_name) {
+        //console.log("WindowTemplateManager.prototype.setActiveWindow", win_name);
+        var win_name = '';
+        var z_val = -1;
+        for (var key in this.z_index_list)
+            if (this.z_index_list.hasOwnProperty(key) && this.z_index_list[key] > z_val) {
+                win_name = key;
+                z_val = this.z_index_list[key];
+            }
+        if (z_val >= 0)
+            this.closeUniqueWindow(win_name);
+    };
 
     WindowTemplateManager.prototype.setActiveWindow = function (win_name) {
         //console.log("WindowTemplateManager.prototype.setActiveWindow", win_name);
@@ -174,7 +190,7 @@ var WindowTemplateManager = (function () {
                 this.closeUniqueWindow(key);
     };
 
-    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, open_call_back, close_call_back) {
+    WindowTemplateManager.prototype.openUniqueWindow = function (win_name, win_url, win_data, open_call_back, close_call_back, is_modal) {
         //console.log('WindowTemplateManager.prototype.openUniqueWindow');
         var self = this;
         if (this.unique[win_name] != null) this.closeUniqueWindow(win_name);
@@ -188,7 +204,8 @@ var WindowTemplateManager = (function () {
                 var temp_window = new TemplateWindow({
                     parentDiv: 'bodydiv',
                     win_name: win_name,
-                    close_call_back: close_call_back
+                    close_call_back: close_call_back,
+                    isModal: is_modal ? is_modal : false
                 });
                 temp_window.mainDiv.append(data);
                 temp_window.showWindow(true);
@@ -208,13 +225,15 @@ var WindowTemplateManager = (function () {
         });
     };
 
-    WindowTemplateManager.prototype.openWindow = function (win_url, win_data) {
+    WindowTemplateManager.prototype.openWindow = function (win_url, win_data, is_modal) {
+        //console.log('WindowTemplateManager.prototype.openWindow');
         $.ajax({
             url: "http://" + location.host + win_url,
             data: win_data,
             success: function(data){
                 var temp_window = new TemplateWindow({
-                    parentDiv: 'bodydiv'
+                    parentDiv: 'bodydiv',
+                    isModal: is_modal ? is_modal : false
                 });
                 temp_window.mainDiv.append(data);
                 temp_window.showWindow(true);
@@ -245,6 +264,7 @@ var WindowTemplateManager = (function () {
             this.count--;
 
             this._reSortWindow();
+            returnFocusToMap();
         }
     };
 

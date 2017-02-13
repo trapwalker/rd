@@ -233,7 +233,7 @@ class Unit(Observer):
                 if isinstance(weapon, WeaponAuto):
                     for target in weapon.targets:
                         messages.FireAutoEffect(
-                            agent=agent, subj=self, obj=target, action=action, side=sector.side, time=time,
+                            agent=agent, subj=self, obj=target, action=action, sector=sector, time=time,
                         ).post()
 
     def on_die(self, event):
@@ -364,7 +364,7 @@ class Unit(Observer):
         # Начисление опыта и фрага машинке
         self.example.set_frag(dvalue=1)  # начисляем фраг машинке
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
-        self.example.set_exp(dvalue=d_car_exp) # начисляем опыт машинке
+        self.example.set_exp(dvalue=d_car_exp, time=event.time) # начисляем опыт машинке
 
 
 class Mobile(Unit):
@@ -399,7 +399,12 @@ class Mobile(Unit):
         visibility_min = self.params.get('p_visibility_min').value
         visibility_max = self.params.get('p_visibility_max').value
         value = visibility_min + ((visibility_max - visibility_min) * (cur_v / self.max_control_speed))
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        if not (0 <= value <= 1):
+            log.debug('Error!!! get_visibility !!!')
+            log.debug('value={} vis_min={} vis_max={}, cur_v={}, mcs={}, time={} unit={}'.format(value, visibility_min,
+                                                                                visibility_max, cur_v,
+                                                                                self.max_control_speed, time, self))
+            self.server.stop()
         return value
 
     def get_observing_range(self, time):
@@ -409,7 +414,7 @@ class Mobile(Unit):
         value = p_obs_range_rate_min + (
             (p_obs_range_rate_max - p_obs_range_rate_min) * (1 - cur_v / self.max_control_speed)
         )
-        assert 0 <= value <= 1, 'value={}'.format(value)
+        assert 0 <= value <= 1, 'value={} p_obs_r_min={} p_obs_r_max={} cur_v={} max_c_s={}'.format(value, p_obs_range_rate_min, p_obs_range_rate_max, cur_v, self.max_control_speed)
         return self.params.get('p_observing_range').value * value
 
     def init_state_params(self):
@@ -446,7 +451,7 @@ class Mobile(Unit):
 
     def set_motion(self, time, target_point=None, cc=None, turn=None, comment=None):
         if self.limbo or not self.is_alive:
-            log.debug('Error! {} try set_motion in limbo'.format(self))
+            log.warning('{} try set_motion in limbo main_agent={}'.format(self, self.main_agent))
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
@@ -474,6 +479,9 @@ class Mobile(Unit):
     def v(self, time):
         return self.state.v(t=time)
 
+    def a(self):
+        return self.state.a
+
     def position(self, time):
         return self.state.p(t=time)
 
@@ -498,6 +506,11 @@ class Bot(Mobile):
         super(Bot, self).__init__(time=time, **kw)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
         self.start_shield_event = None
+
+        # self.current_item_action ивент для активации итемов, единовременно игрок (а точнее его машинка) может
+        # активировать только один итем (активация может потребовать некоторое время). Любое действие в этот момент
+        # приведет к отмене текущей активации, итем при этом не должен быть потерян.
+        self.current_item_action = None
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
@@ -526,7 +539,7 @@ class Bot(Mobile):
 
     def on_kill(self, event, obj):
         # Начисление опыта и фрага агенту
-        self.main_agent.on_kill(event=event, obj=obj)
+        self.main_agent.on_kill(event=event, target=obj, killer=self)
         super(Bot, self).on_kill(event=event, obj=obj)
 
     def start_shield_off(self, event):
@@ -553,9 +566,15 @@ class Bot(Mobile):
 
     def on_fire_discharge(self, event):
         super(Bot, self).on_fire_discharge(event=event)
+
+        # Снимаем щиты
         if self.start_shield_event:
             self.start_shield_event.cancel()
             self.start_shield_off(event=event)
+
+        # Отключаем активацию итема
+        if self.current_item_action:
+            self.current_item_action.cancel(time=event.time)
 
     def on_fire_auto_enable(self, event=None, **kw):
         super(Bot, self).on_fire_auto_enable(event=event, **kw)
@@ -565,12 +584,18 @@ class Bot(Mobile):
 
     def on_start(self, event):
         super(Bot, self).on_start(event=event)
-        # todo: убедиться, что отрицательное значение - хорошая идея
+
+        # Пассивный хил при остановке (от перков скилы и т.д.)
         self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'])
 
+        # Снимаем щиты
         if self.start_shield_event:
             self.start_shield_event.cancel()
             self.start_shield_off(event=event)
+
+        # Отключаем активацию итема
+        if self.current_item_action:
+            self.current_item_action.cancel(time=event.time)
 
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)
@@ -601,6 +626,10 @@ class ExtraMobile(Mobile):
             main_agent_login=login,
         )
         return d
+
+    def on_kill(self, event, obj):
+        # Начисление опыта и фрага агенту
+        self.main_agent.on_kill(event=event, target=obj, killer=self)
 
 
 class Slave(ExtraMobile):

@@ -54,6 +54,40 @@ class RadiationArea(POIObserver):
     radiation_dps = FloatField(caption=u"DPS зоны радиации")
 
 
+class MapRespawn(POIObserver):
+    respawn_time = FloatField(caption=u"Время респауна следующего объекта")
+    respawn_radius = FloatField(caption=u"Радиус разброса")
+    respawn_objects = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.POIObserver'),
+    )
+
+
+class MapPowerUp(POIObserver):
+    model_class_name = StringField(caption=u'Имя модельного класса')
+    icon_name = StringField(caption=u'Имя иконки в iconManager')
+    activate_comment = StringField(caption=u'Комментарий для лога')
+    life_time = FloatField(caption=u"Время жизни")
+
+
+class MapPowerUpEffects(MapPowerUp):
+    effects = ListField(
+        caption=u'Эффекты', doc=u'Список эффектов (URI), накладываемых при срабатывании PowerUp',
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.effects.Effect'),
+    )
+    effect_time = FloatField(caption=u"Время действия эффектов")
+
+
+class MapPowerUpShield(MapPowerUp):
+    duration_time = FloatField(caption=u"Время действия щита")
+
+
+class MapPowerUpAddItems(MapPowerUp):
+    items = ListField(
+        caption=u'Итемы', doc=u'Список итемов, добавляемых при срабатывании PowerUp',
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item'),
+    )
+
+
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
 

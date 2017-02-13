@@ -203,8 +203,6 @@ var Inventory = (function () {
 
         $(inventoryDiv).append(emptyItemDiv);
 
-
-
         $(inventoryDiv).find('.inventory-wrap-' + this.owner_id + '-pos-' + position + '').droppable({
             greedy: true,
             accept: function (target) {
@@ -221,7 +219,12 @@ var Inventory = (function () {
                 var dragPos = ui.draggable.data('pos');
                 var dropOwnerID = $(event.target).data('owner_id');
                 var dropPos = $(event.target).data('pos');
-                var item = inventoryList.getInventory(dragOwnerID).getItem(dragPos);
+
+                var inventory = inventoryList.getInventory(dragOwnerID);
+                if (!inventory) return;
+                var item = inventory.getItem(dragPos);
+                if (!item) return;
+
                 // Проверим не сами ли в себя мы перемещаемся
                 if ((dragOwnerID != dropOwnerID) || (dragPos != dropPos))
                     if (event.shiftKey)
@@ -374,7 +377,7 @@ var InventoryList = (function () {
         if (inv)
             inv.showInvByFilter(inventory_div, filter);
         else
-            console.error('showInvByFilter:: Инвентарь <', owner_id ,'>  не найден');
+            console.warn('showInvByFilter:: Инвентарь <', owner_id ,'>  не найден');
     };
 
     return InventoryList;

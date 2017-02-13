@@ -10,7 +10,7 @@ from sublayers_server.model.stat_log import StatLogger
 from sublayers_server.model.visibility_manager import VisibilityManager
 from sublayers_server.model import errors
 
-from sublayers_server.model.map_location import RadioPoint, Town, GasStation
+from sublayers_server.model.map_location import RadioPoint, Town, GasStation, MapRespawn
 from sublayers_server.model.radiation import StationaryRadiation
 from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
@@ -76,12 +76,12 @@ class Server(object):
 
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
-            self.poi_loot_objects_life_time = 28  # Время жизни лута на карте для режима быстрой игры
+            self.poi_loot_objects_life_time = 30  # Время жизни лута на карте для режима быстрой игры
             self.quick_game_cars_proto = []
             self.quick_game_bot_cars_proto = []
             self.quick_game_bot_agents_proto = []
-            self.quick_game_start_pos = Point(12468000, 26989000)
-            self.quick_game_play_radius = 1600
+            self.quick_game_start_pos = Point(12484108, 27010266)  # Координаты быстрой игры
+            self.quick_game_play_radius = 2000                     # Радиус быстрой игры
             self.quick_game_death_radius = self.quick_game_play_radius * 20
 
 
@@ -154,6 +154,10 @@ class Server(object):
             # Создание AIQuickBot'ов
             self.ioloop.add_callback(callback=self.load_ai_quick_bots)
 
+            # Создание Тестовых аккаунтов
+            self.ioloop.add_callback(callback=self.load_test_accounts)
+
+
         print('Load world complete !')
 
     def on_load_poi(self, event):
@@ -189,9 +193,14 @@ class Server(object):
             StationaryRadiation(time=event.time, example=quick_rad, server=self)
         quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
         if quick_rad_anti:
-            quick_rad.p_observing_range = self.quick_game_play_radius
+            quick_rad_anti.p_observing_range = self.quick_game_play_radius
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
+
+        # Установка точек-респаунов
+        respawns_root = self.reg['poi/quick_game_poi/quick_game_respawn']
+        for rs_exm in respawns_root:
+            MapRespawn(time=event.time, example=rs_exm, server=self)
 
     @tornado.gen.coroutine
     def load_ai_quick_bots(self):
@@ -202,12 +211,19 @@ class Server(object):
         if not bot_count:
             bot_count = 0
         # Создать ботов
-        for i in range(1, bot_count + 1):
+        avatar_list = self.reg['world_settings'].avatar_list
+        role_class_list = self.reg['world_settings'].role_class_order
+        car_proto_list = self.quick_game_bot_cars_proto
+        car_proto_list_len = len(car_proto_list)
+        current_machine_index = 0
+        bots_names = self.reg['world_settings'].quick_game_bots_nick
+        for i in range(0, bot_count):
             # Найти или создать профиль
-            name = 'quick_bot_{}'.format(i)
+            name = 'quick_bot_{}'.format(i) if i >= len(bots_names) else bots_names[i]
             user = yield UserProfile.get_by_name(name=name)
             if user is None:
                 user = UserProfile(name=name, email='quick_bot_{}@1'.format(i), raw_password='1')
+                user.avatar_link = avatar_list[random.randint(0, len(avatar_list) - 1)]
                 yield user.save()
 
             # Создать AIQuickAgent
@@ -223,17 +239,88 @@ class Server(object):
                 )
                 yield agent_exemplar.load_references()
 
-                role_class_ex = self.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
+                agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
+                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
+                agent_exemplar.set_exp(time=self.get_time(), value=1005)
+                agent_exemplar.driving.value = random.randint(20, 40)
+                agent_exemplar.shooting.value = random.randint(20, 40)
+                agent_exemplar.masking.value = random.randint(20, 40)
+                agent_exemplar.leading.value = random.randint(20, 40)
+                agent_exemplar.trading.value = random.randint(20, 40)
+                agent_exemplar.engineering.value = random.randint(20, 40)
                 yield agent_exemplar.save(upsert=True)
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
-            AIQuickAgent(
+            car_proto = car_proto_list[current_machine_index % car_proto_list_len]
+            current_machine_index += 1
+            ai_agent = AIQuickAgent(
                 server=self,
                 user=user,
                 time=self.get_time(),
                 example=agent_exemplar,
+                car_proto=car_proto
             )
+
+    @tornado.gen.coroutine
+    def load_test_accounts(self):
+        from sublayers_server.model.registry.classes.agents import Agent
+        from sublayers_server.model.ai_quick_agent import AIQuickAgent
+        import os
+        from os.path import isfile, join
+        import yaml
+
+        file_name = join(os.getcwd(), 'account_test.yaml')
+        if isfile(file_name):
+            with open(file_name) as data_file:
+                data = yaml.load(data_file)
+                if data.get('accounts', None) and len(data['accounts']):
+                    tester_accounts = data['accounts']
+                else:
+                    log.warning('Tester Accounts not found in file account_test.yaml')
+                    return
+        else:
+            log.warning('File account_test.yaml not found.')
+            return
+
+        tester_count = len(tester_accounts)
+        # Создать ботов
+        avatar_list = self.reg['world_settings'].avatar_list
+        role_class_list = self.reg['world_settings'].role_class_order
+        for i in range(0, tester_count):
+            # Найти или создать профиль
+            name = tester_accounts[i]['nickname']
+            user = yield UserProfile.get_by_name(name=name)
+            if user is None:
+                user = UserProfile(name=name, email=tester_accounts[i]['login'], raw_password=str(tester_accounts[i]['password']))
+                user.avatar_link = avatar_list[random.randint(0, len(avatar_list) - 1)]
+                user.registration_status = 'register'
+                user.is_tester = True
+                yield user.save()
+                log.info('Test account created: %s', tester_accounts[i]['login'])
+
+            # Создать AIQuickAgent
+            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            if agent_exemplar is None:
+                agent_exemplar = self.reg['agents/user/quick'].instantiate(
+                    login=user.name,
+                    profile_id=str(user._id),
+                    name=str(user._id),
+                    fixtured=False,
+                )
+                yield agent_exemplar.load_references()
+                yield agent_exemplar.save(upsert=True)
+                agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
+                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
+                agent_exemplar.set_exp(time=self.get_time(), value=1005)
+                agent_exemplar.driving.value = 20
+                agent_exemplar.shooting.value = 20
+                agent_exemplar.masking.value = 20
+                agent_exemplar.leading.value = 20
+                agent_exemplar.trading.value = 20
+                agent_exemplar.engineering.value = 20
+                agent_exemplar.quick_flag = True
+                agent_exemplar.teaching_flag = False
+                yield agent_exemplar.save(upsert=True)
 
     def post_message(self, message):
         """
@@ -258,7 +345,8 @@ class Server(object):
         st = self.stat_log
         return dict(
             s_agents_all=st.get_metric('s_agents_all'),
-            s_agents_on=st.get_metric('s_agents_on'),
+            # s_agents_on=st.get_metric('s_agents_on'),
+            s_agents_on=len(self.app.clients),
             s_units_all=st.get_metric('s_units_all'),
             s_units_on=st.get_metric('s_units_on'),
             s_events_all=st.get_metric('s_events_all'),

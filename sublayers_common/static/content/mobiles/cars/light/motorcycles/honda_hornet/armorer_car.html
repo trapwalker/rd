@@ -23,8 +23,11 @@
 
     .shift-for-journal_{{ car.node_html() }} {margin: -158px 0 0 0; }
 
-    .top_slot_FC_{{ car.node_html() }} { top: 60px; left: 190px; }
-    .side_slot_FC_{{ car.node_html() }} { top: 153px; left: 190px; }
+    .top_slot_FC_{{ car.node_html() }} { top: 60px; left: 275px; }
+    .side_slot_FC_{{ car.node_html() }} { top: 170px; left: 275px; }
+
+    .top_slot_BC_{{ car.node_html() }} { top: 93px; left: 120px; }
+    .side_slot_BC_{{ car.node_html() }} { top: 165px; left: 120px; }
 </style>
 
 {% if need_css_only is False %}
@@ -34,5 +37,7 @@
     <div class="town-back-interlacing"></div>
     <div id="top_slot_FC" class="armorer-slot top_slot_FC_{{ car.node_html() }}"></div>
     <div id="side_slot_FC" class="armorer-slot side_slot_FC_{{ car.node_html() }}"></div>
+    <div id="top_slot_BC" class="armorer-slot top_slot_BC_{{ car.node_html() }}"></div>
+    <div id="side_slot_BC" class="armorer-slot side_slot_BC_{{ car.node_html() }}"></div>
 </div>
 {% end %}

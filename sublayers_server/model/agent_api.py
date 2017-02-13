@@ -16,8 +16,8 @@ from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGet
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, LootPickEvent, EnterToNPCEvent,
-    StrategyModeInfoObjectsEvent)
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent,
+    LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
@@ -116,7 +116,7 @@ class AgentConsoleNamespace(Namespace):
         return self.agent.balance
 
     def exp(self, value):
-        self.agent.example.set_exp(dvalue=int(value))
+        self.agent.example.set_exp(dvalue=int(value), time=self.agent.server.get_time())
 
     def param(self, name=None):
         if name and self.agent.car:
@@ -188,7 +188,7 @@ class InitTimeEvent(Event):
 
 
 class SetPartyEvent(Event):
-    def __init__(self, agent, name=None, description='', **kw):
+    def __init__(self, agent, name=None, description=u'', **kw):
         super(SetPartyEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.name = name
@@ -218,7 +218,7 @@ class SendInviteEvent(Event):
     def on_perform(self):
         super(SendInviteEvent, self).on_perform()
         # todo: проблемы с русским языком
-        user = self.agent.server.agents_by_name.get(str(self.username))
+        user = self.agent.server.agents_by_name.get(self.username, None)
         if user is None:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown recipient', time=self.time).post()
             return
@@ -254,7 +254,7 @@ class SendKickEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='Invalid party', time=self.time).post()
             return
 
-        user = self.agent.server.agents_by_name.get(str(self.username))
+        user = self.agent.server.agents_by_name.get(self.username, None)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for kick', time=self.time).post()
             return
@@ -279,7 +279,7 @@ class SendChangeCategoryEvent(Event):
             messages.PartyErrorMessage(agent=self.agent, comment='You do not have permission', time=self.time).post()
             return
 
-        user = self.agent.server.agents_by_name.get(str(self.username))
+        user = self.agent.server.agents_by_name.get(self.username, None)
         if user is None or user not in party:
             messages.PartyErrorMessage(agent=self.agent, comment='Unknown agent for set category',
                                        time=self.time).post()
@@ -389,6 +389,7 @@ class AgentAPI(API):
             InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
 
     def on_update_agent_api(self, time):
+        self.agent.log.info("on_update_agent_api")
         messages.InitAgent(agent=self.agent, time=time).post()
         messages.UserExampleSelfMessage(agent=self.agent, time=time).post()
         messages.QuestsInitMessage(agent=self.agent, time=time).post()
@@ -428,55 +429,66 @@ class AgentAPI(API):
         self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
-    @basic_mode
     @public_method
     def send_create_party_from_template(self, name, description):
-        self.set_party(name=unicode(name), description=unicode(description))
+        assert name is None or isinstance(name, unicode)
+        assert description is None or isinstance(description, unicode)
+        self.agent.log.info("send_create_party_from_template name={!r}".format(name))
+        self.set_party(name=name, description=description)
 
-    @basic_mode
     @public_method
     def send_join_party_from_template(self, name):
-        self.set_party(name=unicode(name))
+        assert name is None or isinstance(name, unicode)
+        self.agent.log.info("send_join_party_from_template name={!r}".format(name))
+        self.set_party(name=name)
 
-    @basic_mode
     @public_method
-    def set_party(self, name=None, description=''):
+    def set_party(self, name=None, description=u''):
         # todo: review
-        SetPartyEvent(agent=self.agent, name=unicode(name), description=unicode(description),
+        assert name is None or isinstance(name, unicode)
+        assert description is None or isinstance(description, unicode)
+        self.agent.log.info("set_party name={!r}".format(name))
+        SetPartyEvent(agent=self.agent, name=name, description=description,
                       time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def get_party_info(self, name):
-        PartyGetPartyInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
+        assert name is None or isinstance(name, unicode)
+        self.agent.log.info("get_party_user_info name={!r}".format(name))
+        PartyGetPartyInfoEvent(agent=self.agent, name=name, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def get_party_user_info(self, name):
-        PartyGetPartyUserInfoEvent(agent=self.agent, name=unicode(name), time=self.agent.server.get_time()).post()
+        assert name is None or isinstance(name, unicode)
+        self.agent.log.info("get_party_user_info name={!r}".format(name))
+        PartyGetPartyUserInfoEvent(agent=self.agent, name=name, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def send_invite(self, username):
-        SendInviteEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
+        assert username is None or isinstance(username, unicode)
+        self.agent.log.info("send_invite username={!r}".format(username))
+        SendInviteEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def delete_invite(self, invite_id):
+        self.agent.log.info("delete_invite username={}".format(invite_id))
         DeleteInviteEvent(agent=self.agent, invite_id=invite_id, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def send_kick(self, username):
-        SendKickEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
+        assert username is None or isinstance(username, unicode)
+        self.agent.log.info("send_kick username={!r}".format(username))
+        SendKickEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
-    @basic_mode
     @public_method
     def send_change_category(self, username):
-        SendChangeCategoryEvent(agent=self.agent, username=unicode(username), time=self.agent.server.get_time()).post()
+        assert username is None or isinstance(username, unicode)
+        self.agent.log.info("send_change_category username={}".format(username))
+        SendChangeCategoryEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
     @public_method
     def fire_discharge(self, side):
+        self.agent.log.info("fire_discharge side={}".format(side))
         if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_discharge(side=side, time=self.agent.server.get_time())
@@ -484,17 +496,21 @@ class AgentAPI(API):
     @public_method
     def fire_auto_enable(self, enable):
         # log.debug('Car - %s, set auto fire - %s', self.car, enable)
+        self.agent.log.info("fire_auto_enable enable={}".format(enable))
         if self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())
 
     @public_method
     def chat_message(self, room_name, msg):
+        self.agent.log.info("chat_message room_name={!r}  msg={!r}".format(room_name, msg))
         ChatRoomMessageEvent(room_name=room_name, agent=self.agent, msg=msg,
                              time=self.agent.server.get_time()).post()
 
     @public_method
     def send_rocket(self):
+        return
+        self.agent.log.info("send_rocket")
         if self.car.limbo or not self.car.is_alive:
             return
         position = None
@@ -507,12 +523,16 @@ class AgentAPI(API):
 
     @public_method
     def send_slow_mine(self):
+        return
+        self.agent.log.info("send_slow_mine")
         if self.car.limbo or not self.car.is_alive:
             return
             # SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_stationary_turret(self):
+        return
+        self.agent.log.info("send_stationary_turret")
         if self.car.limbo or not self.car.is_alive:
             return
             # StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
@@ -528,6 +548,7 @@ class AgentAPI(API):
 
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
+        self.agent.log.info("set_motion x={} y={} cc={} turn={}".format(x, y, cc, turn))
         if self.car.limbo or not self.car.is_alive:
             return
         p = None
@@ -537,6 +558,7 @@ class AgentAPI(API):
 
     @public_method
     def delete_car(self):
+        self.agent.log.info("delete_car")  # todo: узнать что это за метод и где он используется
         if self.car.limbo or not self.car.is_alive:
             return
         self.car.delete(time=self.agent.server.get_time())
@@ -544,6 +566,7 @@ class AgentAPI(API):
     @public_method
     def console_cmd(self, cmd):
         log.debug('Agent %r cmd: %r', self.agent.user.name, cmd)
+        self.agent.log.info('Agent {} cmd: {!r}'.format(self.agent.user.name, cmd))
         self.console.on_cmd(cmd.lstrip('/'))
 
     @basic_mode
@@ -606,16 +629,19 @@ class AgentAPI(API):
 
     @public_method
     def show_inventory(self, owner_id):
+        self.agent.log.info('show_inventory owner_id={}'.format(owner_id))
         # log.info('agent %s want show inventory from %s', self.agent, owner_id)
         ShowInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def hide_inventory(self, owner_id):
+        self.agent.log.info('hide_inventory owner_id={}'.format(owner_id))
         # log.info('agent %s want hide inventory from %s', self.agent, owner_id)
         HideInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
     def item_action_inventory(self, start_owner_id=None, start_pos=None, end_owner_id=None, end_pos=None, count=-1):
+        self.agent.log.info('item_action_inventory start_owner_id={} start_pos={} end_owner_id={} end_pos={} count={}'.format(start_owner_id, start_pos, end_owner_id, end_pos, count))
         ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
                                  end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time(),
                                  count=count).post()
@@ -629,9 +655,15 @@ class AgentAPI(API):
 
     @public_method
     def activate_item(self, owner_id, position, target_id):
-        log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
-        ItemActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
-                            time=self.agent.server.get_time()).post()
+        # log.info('agent %s want activate item in position %s for target_id %s', self.agent, position, target_id)
+        # self.agent.log.info('activate_item owner_id={} position={} target_id={}'.format(owner_id, position, target_id))
+        ItemPreActivationEvent(agent=self.agent, owner_id=owner_id, position=position, target_id=target_id,
+                               time=self.agent.server.get_time()).post()
+
+    @public_method
+    def cancel_activation_item(self):
+        if self.agent.car.current_item_action:
+            self.agent.car.current_item_action.cancel(time=self.agent.server.get_time())
 
     @basic_mode
     @public_method
@@ -643,6 +675,7 @@ class AgentAPI(API):
     @public_method
     def get_loot(self, poi_id):
         log.info('agent %r want loot =%r', self.agent, poi_id)
+        self.agent.log.info('get_loot poi_id={}'.format(poi_id))
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
     # Ангар
@@ -739,12 +772,14 @@ class AgentAPI(API):
     # Бартер
     @public_method
     def init_barter(self, recipient_login):
+        self.agent.log.info('init_barter recipient_login={!r}'.format(recipient_login))
         log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
         InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
                         time=self.agent.server.get_time()).post()
 
     @public_method
     def out_barter_range(self, recipient_login):
+        self.agent.log.info('out_barter_range recipient_login={!r}'.format(recipient_login))
         recipient = self.agent.server.agents_by_name.get(str(recipient_login), None)
         if not recipient:
             return
@@ -754,30 +789,35 @@ class AgentAPI(API):
 
     @public_method
     def activate_barter(self, barter_id):
+        self.agent.log.info('activate_barter barter_id={}'.format(barter_id))
         barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
         if barter:
             barter.activate(recipient=self.agent, time=self.agent.server.get_time())
 
     @public_method
     def lock_barter(self, barter_id):
+        self.agent.log.info('lock_barter barter_id={}'.format(barter_id))
         barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
         if barter:
             barter.lock(agent=self.agent, time=self.agent.server.get_time())
 
     @public_method
     def unlock_barter(self, barter_id):
+        self.agent.log.info('unlock_barter barter_id={}'.format(barter_id))
         barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
         if barter:
             barter.unlock(time=self.agent.server.get_time())
 
     @public_method
     def cancel_barter(self, barter_id, recipient_login):
+        self.agent.log.info('cancel_barter barter_id={} recipient_login={!r}'.format(barter_id, recipient_login))
         barter = Barter.get_barter(agent=self.agent, barter_id=barter_id, recipient_login=recipient_login)
         if barter:
             barter.cancel(time=self.agent.server.get_time())
 
     @public_method
     def table_money_barter(self, barter_id, money):
+        self.agent.log.info('table_money_barter barter_id={} money={}'.format(barter_id, money))
         barter = Barter.get_barter(barter_id=barter_id, agent=self.agent)
         if barter:
             barter.set_money(agent=self.agent, time=self.agent.server.get_time(), money=money)
@@ -799,10 +839,12 @@ class AgentAPI(API):
 
     @public_method
     def get_about_self(self):
+        self.agent.log.info('get_about_self')
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_about_self(self, text):
+        self.agent.log.info('set_about_self text={!r}'.format(text))
         self.agent.example.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
@@ -810,7 +852,8 @@ class AgentAPI(API):
 
     @public_method
     def quest_note_action(self, uid, result):
-        log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
+        self.agent.log.info('quest_note_action uid={} result={}'.format(uid, result))
+        # log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
         uid = UUID(uid)
 
@@ -826,6 +869,7 @@ class AgentAPI(API):
 
     @public_method
     def quest_activate(self, quest_uid):
+        self.agent.log.info('quest_activate quest_uid={}'.format(quest_uid))
         self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
         # todo: данный эвент должен вызываться при смене состояния квеста
         for q in self.agent.example.quests_active:
@@ -836,6 +880,7 @@ class AgentAPI(API):
 
     @public_method
     def get_interaction_info(self, player_nick):
+        self.agent.log.info('get_interaction_info player_nick={!r}'.format(player_nick))
         messages.InteractionInfoMessage(time=self.agent.server.get_time(),
                                         agent=self.agent,
                                         player_nick=player_nick).post()
@@ -843,6 +888,8 @@ class AgentAPI(API):
     # Административные методы
     @public_method
     def get_tiles_admin(self, x, y):
+        self.agent.log.info('get_tiles_admin !!!! Closed!')
+        return
         from sublayers_server.model.tile_archive import get_tiles_admin
         get_tiles_admin(x, y)
         messages.AdminArchiveCompleteMessage(agent=self.agent, time=self.agent.server.get_time()).post()
@@ -851,26 +898,29 @@ class AgentAPI(API):
 
     @public_method
     def set_quick_item(self, index, position):
-        self.agent.car.quick_consumer_panel.set_item(index=index, position=position, time=self.agent.server.get_time())
+        self.agent.log.info('set_quick_item index={}, position={}'.format(index, position))
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            self.agent.car.quick_consumer_panel.set_item(index=index, position=position, time=self.agent.server.get_time())
 
     @public_method
     def activate_quick_item(self, index, target_id):
-        self.agent.car.quick_consumer_panel.activate_item(index=index, target_id=target_id,
-                                                          time=self.agent.server.get_time())
+        self.agent.log.info('activate_quick_item index={}, target_id={}'.format(index, target_id))
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            self.agent.car.quick_consumer_panel.activate_item(index=index, target_id=target_id,
+                                                              time=self.agent.server.get_time())
 
     @public_method
     def swap_quick_items(self, index1, index2):
-        self.agent.car.quick_consumer_panel.swap_items(index1=index1, index2=index2, time=self.agent.server.get_time())
+        self.agent.log.info('swap_quick_items index1={}, index2={}'.format(index1, index2))
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            self.agent.car.quick_consumer_panel.swap_items(index1=index1, index2=index2, time=self.agent.server.get_time())
 
     @public_method
     def get_quick_item_info(self):
+        self.agent.log.info('get_quick_item_info')
         from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
-        QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
-
-    @public_method
-    def get_quick_item_info(self):
-        from sublayers_server.model.quick_consumer_panel import QuickConsumerPanelInfoMessage
-        QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
+        if self.agent.car and self.agent.car.quick_consumer_panel:
+            QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
 
     # Запрос объектов в стратегическом режиме
     @basic_mode
@@ -880,6 +930,8 @@ class AgentAPI(API):
 
     @public_method
     def teleport(self, x, y):
+        return
+        self.agent.log.info('teleport x={}, y={}'.format(x, y))
         if (self.agent.car):
             self.agent.save(time=self.agent.server.get_time())
             ex_car = self.agent.car.example
@@ -894,6 +946,7 @@ class AgentAPI(API):
 
     @public_method
     def quick_play_again(self):
+        self.agent.log.info('quick_play_again')
         def callback(*kw):
             api.update_agent_api(time=api.agent.server.get_time())
 
@@ -904,3 +957,22 @@ class AgentAPI(API):
             return
         tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
 
+    @public_method
+    def quick_teaching_answer(self, teaching):
+        self.agent.log.info('quick_teaching_answer teaching={}'.format(teaching))
+        if teaching:
+            assert self.agent.example.quick_flag
+            self.agent.create_teaching_quest_map(time=self.agent.server.get_time())
+        else:
+            self.agent.set_teaching_state('cancel')
+            # self.agent.armory_shield_off(Event(server=self.agent.server, time=self.agent.server.get_time()))
+
+    @public_method
+    def get_ping_set_fps(self, fps):
+        messages.PingInfoMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        current_ping = None if self.agent.connection is None else self.agent.connection._current_ping
+        self.agent.log.info('FPS = {!r}   Ping = {!r}'.format(fps, current_ping))
+
+    @public_method
+    def agent_log(self, message):
+        self.agent.log.info('agent_log: {!r}'.format(message))

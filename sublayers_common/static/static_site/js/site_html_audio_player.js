@@ -285,10 +285,13 @@ var RadioPlayer = (function () {
 
         // Звук кнопки сети
         audioManager.play('tumbler');
+
+        // Сохранить в cookie
+        this.save_setting_to_cookie(false);
     };
 
     RadioPlayer.prototype.set_volume = function (volume, not_ignore_equals) {
-        //console.log('RadioPlayer.prototype.change_volume', volume);
+        //console.trace('RadioPlayer.prototype.change_volume', volume);
         if (!not_ignore_equals && this.current_volume == volume) return;
         this.current_volume = volume;
         this.audio.volume = this.current_volume;
@@ -332,6 +335,38 @@ var RadioPlayer = (function () {
         var scale_length_new = constHtmlSize[new_size].offset_click_scale;
         var carrete_pos = this.jq_channels_carrete.position().left;
         this.set_channel_carrete(scale_length_new * carrete_pos / scale_length_old);
+    };
+
+    // не работает! потому что это сайт! потому что много вёрстки!
+    RadioPlayer.prototype.set_state = function (play, channel_index, quality_index, volume, out_from_page) {
+        //console.log('RadioPlayer.prototype.set_state', play, channel_index, quality_index, volume);
+        if (! out_from_page) return; // Значит радио активно на другой странице браузера
+
+        radioPlayer.current_channel_pointer_number = channel_index;
+
+        if (this.jq_quality_btn) {
+            if (quality_index == '1') {
+                this.jq_quality_btn.removeClass('high-quality');
+                this.jq_quality_btn.addClass('super-quality');
+            }
+            else {
+                this.jq_quality_btn.removeClass('super-quality');
+                this.jq_quality_btn.addClass('high-quality');
+            }
+        }
+
+        radioPlayer.set_volume(volume, true);
+        if (play == '1') {
+            radioPlayer.click_power();
+        }
+    };
+
+    RadioPlayer.prototype.save_setting_to_cookie = function(out_from_page) {
+        var ofp = out_from_page ? '1' : '0';
+        var value = (this.power_on ? '1':'0') + '_' + this.current_channel_pointer_number + '_' +
+            (this.jq_quality_btn.hasClass('high-quality') ? '0':'1') + '_' + this.current_volume + '_' + ofp;
+        document.cookie = "radio_player=" + value + " ;path=/;";
+
     };
 
     return RadioPlayer;

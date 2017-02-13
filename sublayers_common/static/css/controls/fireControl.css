@@ -36,7 +36,7 @@
     left: 21px;
 }
 #fireControlQuickBtn1BG.active {background-image: url("/static/img/fire_widget_buttons/lup_active.png");}
-#fireControlQuickBtn1BG:hover  {background-image: url("/static/img/fire_widget_buttons/lup_hover.png");}
+#fireControlQuickBtn1BG:hover, #fireControlQuickBtn1BG.signal  {background-image: url("/static/img/fire_widget_buttons/lup_hover.png");}
 
 
 #fireControlQuickBtn2BG {
@@ -48,7 +48,7 @@
     left: 31px;
 }
 #fireControlQuickBtn2BG.active {background-image: url("/static/img/fire_widget_buttons/ldown_active.png");}
-#fireControlQuickBtn2BG:hover {background-image: url("/static/img/fire_widget_buttons/ldown_hover.png");}
+#fireControlQuickBtn2BG:hover, #fireControlQuickBtn2BG.signal {background-image: url("/static/img/fire_widget_buttons/ldown_hover.png");}
 
 #fireControlQuickBtn3BG {
     width: 56px;
@@ -59,7 +59,7 @@
     left: 309px;
 }
 #fireControlQuickBtn3BG.active {background-image: url("/static/img/fire_widget_buttons/rup_active.png");}
-#fireControlQuickBtn3BG:hover {background-image: url("/static/img/fire_widget_buttons/rup_hover.png");}
+#fireControlQuickBtn3BG:hover, #fireControlQuickBtn3BG.signal {background-image: url("/static/img/fire_widget_buttons/rup_hover.png");}
 
 #fireControlQuickBtn4BG {
     width: 49px;
@@ -71,7 +71,7 @@
 
 }
 #fireControlQuickBtn4BG.active {background-image: url("/static/img/fire_widget_buttons/rdown_active.png");}
-#fireControlQuickBtn4BG:hover {background-image: url("/static/img/fire_widget_buttons/rdown_hover.png");}
+#fireControlQuickBtn4BG:hover, #fireControlQuickBtn4BG.signal {background-image: url("/static/img/fire_widget_buttons/rdown_hover.png");}
 
 .fire-controll-quick-btn-block {
     position: absolute;

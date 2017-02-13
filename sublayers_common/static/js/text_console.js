@@ -430,6 +430,7 @@ var ConsoleFirstEnter = (function (_super) {
 
         this.target_div = textConsoleManager.jq_main_div;
         this.first_input = true;
+        this.teaching_answer_value = false;
 
         this.add_message(
             'welcome',
@@ -461,6 +462,7 @@ var ConsoleFirstEnter = (function (_super) {
         if (this.first_input)
             switch (event.keyCode) {
                 case 89:
+                    this.teaching_answer_value = true;
                     this.add_message('user', 'Активация системы обучения.');
                     this.add_message(
                         'system',
@@ -478,6 +480,7 @@ var ConsoleFirstEnter = (function (_super) {
                     this._wait_input = false;
                     break;
                 case 78:
+                    this.teaching_answer_value = false;
                     this.add_message('user', 'Деактивация системы обучения.');
                     this.add_message(
                         'system',
@@ -537,7 +540,11 @@ var ConsoleFirstEnter = (function (_super) {
                         this._cur_message = null;
                         this.first_input = false;
                         this._wait_input = false;
-                        resourceLoadManager.del(this);  // todo: обсудить: начать коннект по вебсокету
+                        this.teaching_answer(this.teaching_answer_value);
+                        if (! this.teaching_answer_value)
+                            resourceLoadManager.del(this);  // Произошёл отказ от обучения, поэтому коннект по ws
+                        else
+                            console.log('Происходит редирект на карту быстрой игры для обучения!');
                         this.target_div.off("keydown");
                         break;
             }
@@ -549,6 +556,18 @@ var ConsoleFirstEnter = (function (_super) {
             resourceLoadManager.add(this);  // todo: обсудить
             _super.prototype.start.call(this);
         }
+    };
+
+    ConsoleFirstEnter.prototype.teaching_answer = function(teach) {
+        $.ajax({
+            url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/tca',
+            data: {answer: teach},
+            success: function(data) {
+                if (data && data.length) {
+                    window.location = data;
+                }
+            }
+        });
     };
 
     return ConsoleFirstEnter;
@@ -573,7 +592,6 @@ var ConsoleEnter = (function (_super) {
             '       >                                              <\n' +
             '       ================================================'
         );
-
         this.add_message('user', 'Запрос статуса активной страховки.');
         this.add_message('system', 'Страховка активна для ' + textConsoleManager.user_name + '.');
         this.add_message('user', 'Запрос актуальных координат.');

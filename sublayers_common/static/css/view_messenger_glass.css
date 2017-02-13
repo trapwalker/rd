@@ -162,11 +162,18 @@
     margin: 3px;
     padding: 3px 5px 3px 5px;
     font: 11pt MICRADI;
+    font-weight: normal;
 }
 .VMGpageButton.active { color: #2ffa00; }
 .VMGpageButton.active:before { content: "< "; }
 .VMGpageButton.active:after { content: " >"; }
 .VMGpageButton:hover { color: #2ffa00; }
+.VMGpageButton.wait {
+    animation: blink-animation-page 1s steps(2, start) infinite;
+    -webkit-animation: blink-animation-page 1s steps(2, start) infinite;
+}
+@keyframes blink-animation-page { to { color: #000000; background-color: #0e4b00; } }
+@-webkit-keyframes blink-animation-page { to { color: #000000; background-color: #0e4b00; } }
 
 .VMGTextOutArea {
     position: relative;
@@ -265,11 +272,18 @@
 }
 
 @keyframes blink-animation {
-  to { color: #2ffa00; background-color: #0e4b00; }
+  to { color: #000000; background-color: #2ffa00; }
 }
 @-webkit-keyframes blink-animation {
-  to { color: #2ffa00; background-color: #0e4b00; }
+  to { color: #000000; background-color: #2ffa00; }
 }
+
+/*@keyframes blink-animation {*/
+  /*to { color: #2ffa00; background-color: #0e4b00; }*/
+/*}*/
+/*@-webkit-keyframes blink-animation {*/
+  /*to { color: #2ffa00; background-color: #0e4b00; }*/
+/*}*/
 
 .VMGPartypageButtonClose {
     position: relative;
@@ -286,6 +300,7 @@
     background: transparent url('/static/img/chat/tab_close_btn_pressed.png') 50% 50% no-repeat;
 }
 
+#townChatLocation .VMGStandarttextOutArea { width: 470px; }
 .VMGStandarttextOutArea{
     position: relative;
     height: 100%;

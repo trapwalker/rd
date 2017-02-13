@@ -425,7 +425,8 @@ class ItemState(object):
         if self.val(t=time) < count:
             return None
         ItemTask(consumer=None, owner=self, dv=-count, ddvs=0.0, action=None).start(time=time)
-        item_example = self.example.split(count=count)
+        # item_example = self.example.split(count=count)
+        item_example = self.example.instantiate(amount=count)
         model_item = ItemState(server=self.server, time=time, example=item_example, count=count)
         return model_item
 

@@ -272,7 +272,7 @@
     display: none;
     width: 16px;
     height: 15px;
-    background: transparent url('/static/img/cruise/limit_mountains.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/cruise/limit_slope.png') 100% 100% no-repeat;
     margin-top: 4px;
     margin-bottom: 4px;
 }

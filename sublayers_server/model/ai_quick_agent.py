@@ -25,14 +25,16 @@ class InitAIQuickCar(Event):
 
 
 class AIQuickAgent(AI):
-    def __init__(self, time, **kw):
+    def __init__(self, time, car_proto, **kw):
         super(AIQuickAgent, self).__init__(time=time, **kw)
+        self._car_proto = car_proto
         self.create_ai_quest(time=time)
         self._quick_bot_kills = 0
         self._quick_bot_deaths = 0
         self._quick_bot_time = 0
         self._quick_bot_start_time = None
         self._quick_bot_max_lt = 0
+        self.worked = True
 
     @event_deco
     def create_ai_quest(self, event):
@@ -52,14 +54,13 @@ class AIQuickAgent(AI):
 
     @tornado.gen.coroutine
     def on_timer_restart_car(self, event):
-        if len(self.server.app.clients) < self.server.reg['world_settings'].quick_game_bot_count:
+        if self.worked and len(self.server.app.clients) < self.server.reg['world_settings'].quick_game_bot_count:
             # Добавить свою машинку на карту
-            car_proto_list = self.server.quick_game_bot_cars_proto
-            self.example.car = car_proto_list[random.randint(0, len(car_proto_list) - 1)].instantiate(fixtured=False)
+            self.example.car = self._car_proto.instantiate(fixtured=False)
             yield self.example.car.load_references()
             self.example.current_location = None
             self.current_location = None
-            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, 300)
+            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, 1000) # Радиус появления ботов в быстрой игре
 
             car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
@@ -71,7 +72,7 @@ class AIQuickAgent(AI):
 
     def drop_car(self, time, **kw):
         super(AIQuickAgent, self).drop_car(time=time, **kw)
-        self.timer_restart_car(time=time+30.)
+        self.timer_restart_car(time=time+32.)
         life_t = time - self._quick_bot_start_time
         self._quick_bot_time += life_t
         self._quick_bot_max_lt = max(self._quick_bot_max_lt, life_t)

@@ -36,17 +36,16 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler, MobilePlayHandler
 from sublayers_server.handlers.mobile import MobileHeaderHandler, MobileContentHandler
 
-
 from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler, MenuCarHandler
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
 
-
 from sublayers_server.handlers.main_menu_character import MenuCharacterHandler
 from sublayers_server.handlers.main_menu_journal import MenuJournalHandler
 from sublayers_server.handlers.party_handler import MenuPartyHandler
 from sublayers_server.handlers.main_menu_radio import MenuRadioHandler
+from sublayers_server.handlers.teaching import MapTeachingHandler, ConsoleAnswerTeachingHandler, ResetTeachingHandler
 
 from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
@@ -54,9 +53,7 @@ from sublayers_server.handlers.site.site_auth import (
 )
 from sublayers_server.handlers.context_panel import ContextPanelListHandler
 
-from sublayers_server.handlers.statistics import (
-    ServerStatisticsHandler, ServerStatisticsRefreshHandler, ServerStatForSite,
-)
+from sublayers_server.handlers.statistics import  ServerStatisticsHandler, ServerStatForSite
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
@@ -115,7 +112,6 @@ class Application(BaseApplication):
 
             (r"/stat", ServerStatisticsHandler),
             (r"/site_stat", ServerStatForSite),
-            (r"/server_stat_refresh", ServerStatisticsRefreshHandler),
 
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),
@@ -128,7 +124,9 @@ class Application(BaseApplication):
             (r"/api/menu_journal", MenuJournalHandler),
             (r"/api/menu_party", MenuPartyHandler),
             (r"/api/menu_radio", MenuRadioHandler),
-
+            (r"/api/map_teaching", MapTeachingHandler),
+            (r"/api/tca", ConsoleAnswerTeachingHandler),
+            (r"/api/teaching_reset", ResetTeachingHandler),
 
             (r"/api/context_panel/locations", ContextPanelListHandler),
             (r"/api/context_panel/barter_send", ContextPanelListHandler),

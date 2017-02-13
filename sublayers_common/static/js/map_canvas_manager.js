@@ -21,8 +21,9 @@ var ParentCanvasManager = (function(_super){
     ParentCanvasManager.prototype.init_canvas = function() {
         this.canvas = document.getElementById(this.canvas_id);
         this.context = this.canvas.getContext("2d");
-        this.canvas.width = 1920;
-        this.canvas.height = 1080;
+        var a = map.getSize();
+        this.canvas.width = a.x;
+        this.canvas.height = a.y;
     };
 
     ParentCanvasManager.prototype.add_vobj = function(vobj, priority) {
@@ -78,6 +79,7 @@ var MapCanvasManager = (function(_super){
         this.map_tl = null;  // Игровые координаты, которые соответствуют 0,0 на канвасе (Map Top Left)
         this.cur_map_size = new Point(0, 0); // Текущие размеры карты
         this.cur_ctx_car_pos = new Point(0, 0); // Текущее положение userCar
+        this.called_reinit_canvas = false; // Для медленных машин
 
         this._mouse_focus_widget = null;
         this._mouse_look = false;
@@ -115,8 +117,9 @@ var MapCanvasManager = (function(_super){
 
     MapCanvasManager.prototype.redraw = function(time) {
         if(! this.is_canvas_render) return;
+        var a = map.getSize();
         //console.log('MapCanvasManager.prototype.redraw', time);
-        this.context.clearRect(0, 0, 1920, 1080);
+        this.context.clearRect(0, 0, a.x, a.y);
 
         this._mouse_focus_widget = this.mouse_test();
 
@@ -136,7 +139,13 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype.on_new_map_size = function() {
+        //console.log('MapCanvasManager.prototype.on_new_map_size');
         this.cur_map_size = new Point(0, 0);
+
+        if (! this.called_reinit_canvas) {
+            this.called_reinit_canvas = true;
+            setTimeout(function(){mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 200);
+        }
     };
 
 

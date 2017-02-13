@@ -98,6 +98,7 @@
 
     <link rel="stylesheet" href="{{ static_url('css/templates/car_info_block.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/context_panel.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/map_teaching.css') }}"/>
 
     {% if server_mode == 'quick' %}
         <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
@@ -192,6 +193,8 @@
     <script src="{{ static_url('js/teaching/teaching_quest_note.js') }}"></script>
     <script src="{{ static_url('js/teaching/teaching_trader_note.js') }}"></script>
 
+    <script src="{{ static_url('js/teaching/teaching_map_notes.js') }}"></script>
+
     <script src="{{ static_url('js/view_messenger_glass.js') }}"></script>
     <script src="{{ static_url('js/location/location_manager.js') }}"></script>
     <script src="{{ static_url('js/location/location_place_menu.js') }}"></script>
@@ -230,21 +233,23 @@
         <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;">My Canvas !!! </canvas>
     </div>
 
-    <div style="position: absolute; right: 20px; top: 10px; color: #2afd0a; font: 10pt MICRADI; ">FPS = <span id="FPSSpan">0</span></div>
+    <div style="position: absolute; right: 20px; top: 10px; color: #2afd0a; font: 10pt MICRADI; opacity: 0.6;">
+        Ping = <span id="PingSpan">0</span>   FPS = <span id="FPSSpan">0</span>
+    </div>
     <div id="divMainMenu">
-        <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Персонаж</div>
-        <div id="divMainMenuBtnCar" class="main-menu-btn-up sublayers-clickable">Автомобиль</div>
-        <div id="divMainMenuBtnInventory" class="main-menu-btn-up sublayers-clickable">Инвентарь</div>
-        <div id="divMainMenuBtnJournal" class="main-menu-btn-up sublayers-clickable">Журнал</div>
-        <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">Пати</div>
-        <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Сайт</div>
-        <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Сообщество</div>
-        <div id="divMainMenuBtnRadio" class="main-menu-btn-up sublayers-clickable">Радио</div>
+        <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Character</div>
+        <div id="divMainMenuBtnCar" class="main-menu-btn-up sublayers-clickable">Vehicle</div>
+        <div id="divMainMenuBtnInventory" class="main-menu-btn-up sublayers-clickable">Trunk</div>
+        <div id="divMainMenuBtnJournal" class="main-menu-btn-up sublayers-clickable">Logbook</div>
+        <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">Party</div>
+        <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Site</div>
+        <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Community</div>
+        <div id="divMainMenuBtnRadio" class="main-menu-btn-up sublayers-clickable">Radio</div>
         <!--<div id="divMainMenuBtnNucoil" class="main-menu-btn-up sublayers-clickable">Nucoil</div>-->
         <!--<div id="divMainMenuBtnOptions" class="main-menu-btn-up sublayers-clickable">Options</div>-->
         <!--<div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Forum</div>-->
     </div>
-
+    <div id="mapTeachingCanvasBackDiv"></div>
     <div id="divButtons">
         <div id="buttonOptions" class="sublayers-clickable"></div>
     </div>
@@ -277,12 +282,15 @@
         <div id="modalInfoPage"></div>
         <div id="modalAnswerPage"></div>
         <div id="modalItemDivisionPage"></div>
+        <div id="modalItemActivationPage" tabindex="0"></div>
         <div id="modalQuickGamePointsPage"></div>
+        <div id="modalQuickGameMapTeachingPage"></div>
     </div>
 
+    <canvas id="mapTeachingCanvas"></canvas>
     <div id="activeTownDivBack">
         <div id="activeTownDiv"></div>
-        <canvas id="townTeachingCanvas" width="1920" height="1080">1111</canvas>
+        <canvas id="townTeachingCanvas" width="1920" height="1080"></canvas>
     </div>
     <div style="display: none">
         <span id="settings_host_name">{{ host_name }}</span>

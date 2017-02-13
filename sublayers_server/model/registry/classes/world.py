@@ -28,3 +28,4 @@ class WorldSettings(Root):
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'))
     quick_game_bot_agents = ListField(
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.agents.AIQuickAgent'))
+    quick_game_bots_nick = ListField(base_field=StringField())
