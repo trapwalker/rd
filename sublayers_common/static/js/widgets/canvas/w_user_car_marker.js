@@ -22,6 +22,11 @@ var WCanvasCarMarker = (function (_super) {
         this.last_direction_arrow = this.last_direction;
 
         this._last_car_ctx_pos = new Point(-100, -100); // нужно для кеширования при расчёте теста мышки
+
+        this.audio_object = null;
+        if (car == user.userCar)
+            this.audio_object = audioManager.play(car.engine_audio.name, 0.0, 1.0, null, true, 0.0, null,
+                                                  car.getAudioEngineRate(clock.getCurrentTime()));
     }
 
     WCanvasCarMarker.prototype.mouse_test = function(time) {
@@ -67,7 +72,9 @@ var WCanvasCarMarker = (function (_super) {
         ctx.save();
         if (this.car == user.userCar) {
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
-            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos
+            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos;
+            if (this.audio_object)
+                this.audio_object.source_node.playbackRate.value = this.car.getAudioEngineRate(time);
         }
         else {
             var car_pos_real = this.car.getCurrentCoord(time);
@@ -158,6 +165,8 @@ var WCanvasCarMarker = (function (_super) {
 
     WCanvasCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
+        if (this.audio_object)
+            audioManager.stop(this.car.engine_audio.name, 0.0, this.audio_object);
         this.car = null;
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
@@ -331,7 +340,6 @@ var WCanvasStaticObjectMarker = (function (_super) {
 
     return WCanvasStaticObjectMarker;
 })(VisualObject);
-
 
 
 var WCanvasHPCarMarker = (function (_super) {

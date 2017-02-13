@@ -141,27 +141,22 @@ var MapCar = (function (_super) {
 
         this.p_obs_range_rate_min = aObsRangeRateMin;
         this.p_obs_range_rate_max = aObsRangeRateMax;
-
     }
-
 
     MapCar.prototype.AddFireSector = function (aFireSector) {
         this.fireSectors.push(aFireSector);
     };
-
 
     MapCar.prototype.AddFireSectors = function (aSectors) {
         for (var i = 0; i < aSectors.length; i++)
             this.AddFireSector(aSectors[i]);
     };
 
-
     MapCar.prototype.unbindOwner = function () {
         if (this.owner)
             this.owner.unbindCar(this);
         return this;
     };
-
 
     MapCar.prototype.getObservingRange = function (time) {
         var value = this.p_obs_range_rate_min +
@@ -170,6 +165,8 @@ var MapCar = (function (_super) {
         if (res < 5) return 5; // info: перестраховка, когда скорость машинки из-за неверного времени может быть неверной
         return res;
     };
+
+
 
     return MapCar;
 })(DynamicObject);
@@ -186,6 +183,13 @@ var UserCar = (function (_super) {
         this.altitude = 0.0;
         this.radiation_dps = 0.0;
         this.radius_visible = aObservingRange;  // todo: поискать и стереть
+
+        // todo: забрать из attr.yaml
+        this.engine_audio = {
+            name: 'engine_05',
+            rate_min: 0.5,
+            rate_max: 3
+        }
     }
 
     UserCar.prototype._manage_tm = function () {
@@ -228,6 +232,11 @@ var UserCar = (function (_super) {
             timeManager.addTimerEvent(this, 'change');
             this._in_tm = true;
         }
+    };
+
+    UserCar.prototype.getAudioEngineRate = function (time) {
+        var m_v = Math.abs(this.getCurrentSpeed(time)) / Math.max(Math.abs(this.v_forward), Math.abs(this.v_backward));
+        return this.engine_audio.rate_min + (this.engine_audio.rate_max - this.engine_audio.rate_min) * m_v;
     };
 
     return UserCar;

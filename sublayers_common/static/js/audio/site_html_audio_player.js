@@ -29,6 +29,7 @@ var RadioPlayer = (function () {
         var name = options.name;
         this.name = name;
         this.audio = new Audio();
+        this._current_radio_noise_switch = null;
 
         this.channels = options.channels;
         this.channel_name_prefix = options.channel_name_prefix;
@@ -218,7 +219,10 @@ var RadioPlayer = (function () {
             clearTimeout(this.timer_for_buffer);
             this.timer_for_buffer = null;
             // Выключить звук помех
-            audioManager.stop('radio_noise_switch');
+            if (this._current_radio_noise_switch) {
+                audioManager.stop('radio_noise_switch', 0, this._current_radio_noise_switch);
+                this._current_radio_noise_switch = null;
+            }
         }
         else {
             // Загрузка произошла после таймаута.
@@ -276,7 +280,7 @@ var RadioPlayer = (function () {
         this.playing = true;
 
         // Запуск шума в цикле
-        audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 35);
+        this._current_radio_noise_switch = audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 35);
     };
 
     RadioPlayer.prototype.click_stop = function (event) {
@@ -300,7 +304,10 @@ var RadioPlayer = (function () {
                 this.jq_volume_indicator.css('display', 'none');
             }
             this.power_on = false;
-            audioManager.stop('radio_noise_switch');
+            if (this._current_radio_noise_switch) {
+                audioManager.stop('radio_noise_switch', 0, this._current_radio_noise_switch);
+                this._current_radio_noise_switch = null;
+            }
             this.ticker_destroy();
             if (this.jq_current_channel && this.radio_window_header_channel && this.radio_window_header_logo) {
                 this.jq_current_channel.text('...');
@@ -335,7 +342,8 @@ var RadioPlayer = (function () {
         this.current_volume = volume;
         this.audio.volume = this.current_volume;
         // Изменение шума помех, если вдруг они запущены
-        audioManager.gain('radio_noise_switch', this.current_volume);
+        if (this._current_radio_noise_switch)
+            audioManager.set_gain('radio_noise_switch', this.current_volume, this._current_radio_noise_switch);
 
         // Правка вёрстки уровня громкости
         var jq_childs = this.jq_volume_indicator.children();
