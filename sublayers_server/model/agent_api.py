@@ -567,7 +567,11 @@ class AgentAPI(API):
     def console_cmd(self, cmd):
         log.debug('Agent %r cmd: %r', self.agent.user.name, cmd)
         self.agent.log.info('Agent {} cmd: {!r}'.format(self.agent.user.name, cmd))
-        self.console.on_cmd(cmd.lstrip('/'))
+        try:
+            self.console.on_cmd(cmd.lstrip('/'))
+        except Exception as e:
+            # log.warning('Agent {} try cmd: {!r} and generate exception {}'.format(self.agent.user.name, cmd, e.__class__.__name__))
+            log.warning('Agent {} try cmd: {!r} and generate exception'.format(self.agent.user.name, cmd))
 
     @basic_mode
     @public_method

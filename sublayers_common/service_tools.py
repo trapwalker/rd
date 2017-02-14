@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
+import sys
 import logging
 log = logging.getLogger(__name__)
 
 from collections import namedtuple
 import subprocess
 import signal
-import sys
 import os
 import re
 
@@ -38,6 +38,13 @@ class RevisionGettingError(Exception):
     pass
 
 
+def run(cmd):
+    encoding = sys.getfilesystemencoding()
+    cmd = [word.encode(encoding) if isinstance(word, unicode) else word for word in cmd]
+    data = subprocess.check_output(cmd, shell=True).decode(encoding)
+    return data.strip()
+    
+
 HGRevisionCls = namedtuple('HGRevisionCls', 'hash num branch is_changed')
 
 class HGRevision(HGRevisionCls):
@@ -45,15 +52,9 @@ class HGRevision(HGRevisionCls):
     _rev_parser = re.compile("([0-9a-f]+)(\+?)\s(\d+)(\+?)\s(.*)")
     # 7f9c68086b3e+ 1815+ website
     def __new__(cls, path=None):
-        encoding = sys.getfilesystemencoding()
-        if isinstance(path, unicode):
-            path = path.encode(encoding)
-        cmd = ['hg', 'id', '-ibn']
-        if path:
-            cmd += ['-R', '"{}"'.format(path)]
-
+        cmd = ['hg', 'id', '-ibn'] + (['-R', path] if path else [])
         try:
-            raw = subprocess.check_output(cmd, shell=True).decode(encoding)
+            raw = run(cmd)
         except subprocess.CalledProcessError as e:
             raise RevisionGettingError(e)
 
@@ -83,15 +84,13 @@ HGVersionCls = namedtuple('HGVersionCls', 'main release default')
 class HGVersion(HGVersionCls):
     @staticmethod
     def get_branche_size(branche, path=None):
-        encoding = sys.getfilesystemencoding()
-        if isinstance(path, unicode):
-            path = path.encode(encoding)
-
-        repo = '-R "{}"'.format(path) if path else ''
-
-        cmd = 'hg log {repo} -b {branche} | grep changeset | wc -l'.format(repo=repo, branche=branche)
+        cmd = (
+            ['hg', 'log'] + (['-R', path] if path else []) + ['-b', branche,]
+            #+ ['|', 'grep', 'changeset',] +
+            #+ ['|', 'wc', '-l']
+        )
         try:
-            return subprocess.check_output(cmd, shell=True).decode(encoding).strip()
+            return len(run(cmd).strip('\n').split('\n\n'))
         except subprocess.CalledProcessError as e:
             raise RevisionGettingError(e)
 
@@ -108,7 +107,15 @@ class HGVersion(HGVersionCls):
 
 
 if __name__ == '__main__':
-    print 'version =', HGVersion()
-    print 'revision =',
-    r = HGRevision()
-    print r
+    log = logging.getLogger()
+    log.level = logging.DEBUG
+    log.addHandler(logging.StreamHandler(sys.stderr))
+
+    import ctx_timer
+    with ctx_timer.Timer(log_start=None):
+        print 'version =', HGVersion()
+
+    with ctx_timer.Timer(log_start=None):        
+        print 'revision =',
+        r = HGRevision()
+        print r

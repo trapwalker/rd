@@ -527,12 +527,13 @@ class ItemPreActivationEvent(Event):
 
     def on_perform(self):
         super(ItemPreActivationEvent, self).on_perform()
-
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
         if obj is None:
             return
         inventory = obj.inventory
+        if not (inventory is self.agent.inventory) or (self.agent.inventory is None):
+            return
         item = inventory.get_item(position=self.position)
         if item is None:
             return
