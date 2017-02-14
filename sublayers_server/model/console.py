@@ -131,9 +131,10 @@ class Console(object):
                 
             self.stream_log.write(u'RESULT: {}\n'.format(result))  # todo: pformat
         except ConsoleCommandExecutionError as e:
-            self.stream_log.write(u'ERROR: {!r}\n'.format(e))  # todo: pformat
+            # self.stream_log.write(u'ERROR: {!r}\n'.format(e))  # todo: pformat
+            raise e  # info: раньше не было этой строки. Только логирование выше
         except Exception as e:
-            log.exception(repr(e))
+            # log.exception(repr(e))
             raise e
 
     def on_call(self, f, *av, **kw):
@@ -149,7 +150,7 @@ class Console(object):
                 self.stream_log.write(u'ECHO: {}\n'.format(f))
                 return func
         except Exception as e:
-            log.exception('User console error:')
+            # log.exception('User console error:')
             raise ConsoleCommandExecutionError('{}: {}'.format(e.__class__.__name__, e.message))
 
 
