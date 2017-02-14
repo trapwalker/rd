@@ -116,6 +116,19 @@ class PartyInviteDeleteEvent(Event):
         self.invite.delete_invite(time=self.time)
 
 
+class PartyDeleteEvent(Event):
+    def __init__(self, party, **kw):
+        super(PartyDeleteEvent, self).__init__(**kw)
+        self.party = party
+
+    def on_perform(self):
+        super(PartyDeleteEvent, self).on_perform()
+        del self.party.parties[self.party.name]
+        all_invites = self.party.invites[:]
+        for invite in all_invites:
+            invite.delete_invite(time=self.time)
+
+
 class Invite(object):
     def __init__(self, sender, recipient, party, time):
         assert (recipient is not None) and (party is not None)
@@ -263,6 +276,9 @@ class Party(object):
         self.room = PartyChatRoom(time=time, name=name)
         self.include(owner, time=time)
 
+        # механизм удаления пати
+        self.delete_event = None
+
     @property
     def classname(self):
         return self.__class__.__name__
@@ -308,6 +324,10 @@ class Party(object):
         PartyIncludeEvent(party=self, agent=agent, time=time).post()
 
     def on_include(self, agent, time):
+        if self.delete_event is not None:
+            PartyErrorMessage(agent=agent, time=time, comment='Party is not exist').post()
+            return
+
         old_party = agent.party
         if not (old_party is self):
             if old_party:
@@ -320,7 +340,7 @@ class Party(object):
             if not self.has_invite(agent):
                 PartyErrorMessage(agent=agent, time=time, comment='You do not have invite for this party').post()
                 return
-            self._del_invites_by_agent(agent, time=time)
+        self._del_invites_by_agent(agent, time=time)
 
         # before include for members and agent
         agent.party_before_include(new_member=agent, party=self, time=time)
@@ -373,6 +393,9 @@ class Party(object):
 
         agent.party = None
         out_member.out_from_party(time=time)
+        if len(self.members) == 0:
+            self.delete_event = PartyDeleteEvent(server=self.owner.server, time=time, party=self)
+            self.delete_event.post()
         self._on_exclude(agent=agent, time=time)
         log.info('Agent %s excluded from party %s', agent, self)
 
@@ -485,6 +508,9 @@ class Party(object):
 
         kicked.party = None
         kicked_member.kick_from_party(time=time)
+        if len(self.members) == 0:
+            self.delete_event = PartyDeleteEvent(server=self.owner.server, time=time, party=self)
+            self.delete_event.post()
         self._on_exclude(agent=kicked, time=time)
         log.info('Agent %s kick from party %s', kicked, self)
 
