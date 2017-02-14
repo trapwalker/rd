@@ -533,6 +533,8 @@ class ItemPreActivationEvent(Event):
         if obj is None:
             return
         inventory = obj.inventory
+        if not (inventory is self.agent.inventory) or (self.agent.inventory is None):
+            return
         item = inventory.get_item(position=self.position)
         if item is None:
             return
