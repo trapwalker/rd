@@ -527,7 +527,6 @@ class ItemPreActivationEvent(Event):
 
     def on_perform(self):
         super(ItemPreActivationEvent, self).on_perform()
-
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
         if obj is None:
