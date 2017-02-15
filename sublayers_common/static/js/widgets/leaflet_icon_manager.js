@@ -107,7 +107,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 17);
 
         // Animated Effects
-        this.load_new_icon('icon-car-effect-shield', '/static/img/map_icons/effects/shield_12_frames.png', [115, 115], this.max_id++, null, 12);
+        this.load_new_icon('icon-car-effect-shield', '/static/img/map_icons/effects/shield_12_frames.png', [60, 60], this.max_id++, null, 12);
 
 
         // Создание иконки стоящей машинки V 2
