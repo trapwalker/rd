@@ -193,7 +193,8 @@ class Update(Message):
         dict_update = dict(
             uid=obj.uid,
             state=obj.state.export(),
-            hp_state=obj.hp_state.export()
+            hp_state=obj.hp_state.export(),
+            active_shield_effect=obj.params.get('p_armor').value >= 100, # todo: пока нет списка всех визуальных эффектов для клиента, определение наличия неуязвимости будет выглядить так
         )
         if self.agent == obj.owner:
             if obj.cur_motion_task is not None:

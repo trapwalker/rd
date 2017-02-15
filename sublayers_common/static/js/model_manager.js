@@ -198,6 +198,11 @@ var ClientManager = (function () {
             if (car.cls == "Bot") {
                 var t = new WCanvasCarMarker(car);
                 new WCanvasHPCarMarker(car, t);
+
+                // Отрисовка щита, если нужно
+                if (event.object.active_shield_effect) {
+                    new WCanvasAnimateMarkerShieldEffect(car);
+                }
             }
             if (car.cls == "SlowMine" || car.cls == "BangMine") {
                 new WCarMarker(car);
@@ -443,6 +448,11 @@ var ClientManager = (function () {
             new WCanvasHPCarMarker(mcar, t);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
+            // Отирсовка щита, если нужно
+            if (event.car.active_shield_effect) {
+                new WCanvasAnimateMarkerShieldEffect(mcar);
+            }
+
             // Круиз
             wCruiseControl = new WCruiseControl(mcar, 'cruiseControlGlassDiv');
             new WAltmetrRadial(mcar, 'divForAltmetrRadial');
@@ -492,17 +502,13 @@ var ClientManager = (function () {
             return;
         }
 
-        //if (car == user.userCar && hp_state.dps != car._hp_state.dps) {
-        //    console.log('Смена DPS: old - ', car._hp_state.dps, '    new - ', hp_state.dps);
-        //}
-
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
-        if (car == user.userCar) car.setFuelState(fuel_state);
 
         // Если своя машинка
         if (car == user.userCar) {
+            car.setFuelState(fuel_state);
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
             if (mapManager.widget_target_point) {
@@ -519,6 +525,12 @@ var ClientManager = (function () {
             // Установка cc для круизконтроля
             wCruiseControl.setSpeedRange(event.object.params.p_cc);
         }
+
+        // Если появился или исчез щит
+        var vo = visualManager.getVobjByType(car, WCanvasAnimateMarkerShieldEffect);
+        if (event.object.active_shield_effect && !vo) new WCanvasAnimateMarkerShieldEffect(car);
+        if (!event.object.active_shield_effect && vo) vo.delFromVisualManager();
+
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerUpdate()) {

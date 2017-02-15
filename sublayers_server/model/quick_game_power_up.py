@@ -8,7 +8,7 @@ from sublayers_server.model.units import Bot
 from sublayers_server.model.agents import TeachingUser
 from sublayers_server.model.inventory import ItemState
 import sublayers_server.model.tags as tags
-from sublayers_server.model.events import Objective
+from sublayers_server.model.events import Objective, Event
 from game_log_messages import PowerUPLogMessage
 import random
 
@@ -81,9 +81,11 @@ class QuickGamePowerUpShield(QuickGamePowerUpSimple):
         def disable_shield(event):
             target.params.get('p_armor').current -= 100
             target.restart_weapons(time=event.time)
+            target.on_update(event)
 
         target.params.get('p_armor').current += 100
         target.restart_weapons(time=time)
+        target.on_update(Event(server=self.server, time=time))
 
         Objective(obj=target, time=time + self.example.duration_time, callback_after=disable_shield).post()
 

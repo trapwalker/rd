@@ -806,9 +806,11 @@ class TeachingUser(QuickUser):
             self.car.params.get('p_armor').current += 100
             self.car.restart_weapons(time=event.time)
             self.armory_shield_status = True
+            self.car.on_update(event)
 
     def armory_shield_off(self, event):
         if self.car and self.armory_shield_status:
             self.car.params.get('p_armor').current -= 100
             self.car.restart_weapons(time=event.time)
             self.armory_shield_status = False
+            self.car.on_update(event)
