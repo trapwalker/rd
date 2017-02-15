@@ -54,7 +54,7 @@ class AIQuickAgent(AI):
 
     @tornado.gen.coroutine
     def on_timer_restart_car(self, event):
-        if self.worked and len(self.server.app.clients) < self.server.reg['world_settings'].quick_game_bot_count:
+        if self.worked and len(self.server.app.clients) * 2 < self.server.reg['world_settings'].quick_game_bot_count:
             # Добавить свою машинку на карту
             self.example.car = self._car_proto.instantiate(fixtured=False)
             yield self.example.car.load_references()
