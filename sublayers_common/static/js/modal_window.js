@@ -57,13 +57,15 @@ var ModalWindow = (function () {
         this.back.addClass('modal-window-hide');
     };
 
-    ModalWindow.prototype.setupWindowAtScreenCenter = function (jq_window) {
+    ModalWindow.prototype.setupWindowAtScreenCenter = function (jq_window, top) {
         var win_height = jq_window.height();
         var win_width = jq_window.width();
         var screen_height = $(window).height();
         var screen_width = $(window).width();
-
-        jq_window.css('top', screen_height / 2 - win_height / 2);
+        if (top)
+            jq_window.css('top', top + '%');
+        else
+            jq_window.css('top', screen_height / 2 - win_height / 2);
         jq_window.css('left', screen_width / 2 - win_width / 2);
     };
 
@@ -142,7 +144,6 @@ var ModalWindow = (function () {
             });
 
         });
-
     };
 
 
@@ -544,7 +545,7 @@ var ModalWindow = (function () {
 
         this.modalItemActivation.removeClass('modal-window-hide');
         this.modalItemActivation.addClass('modal-window-show');
-        this.setupWindowAtScreenCenter(this.modalItemActivation);
+        this.setupWindowAtScreenCenter(this.modalItemActivation, 10);
         document.getElementById('modalItemActivationPage').focus();
 
         this.act_item_all = options.activate_time * 1000;
