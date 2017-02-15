@@ -172,15 +172,15 @@ var FireEffectManager = (function () {
         if (options.self_shot) {
             // 0.6/0.8 - границы рандома рэйта
             var rate = 0.6 + (0.6 - 0.8) * Math.random();
-            audioManager.play("shot_01", 0, 0.8, null, false, 0, 0, rate);
+            audioManager.play("shot_01", 0, 0.4, null, false, 0, 0, rate);
         }
         else {
             var distance = 2000;
             if (user.userCar)
                 var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
             if (distance <= 2000) {
-                // 0.05/0.4 - минимальная/максимальная громкость звука
-                var gain = 0.05 + (0.4 - 0.05) * (1 - distance/2000);
+                // 0.01/0.4 - минимальная/максимальная громкость звука
+                var gain = 0.01 + (0.4 - 0.01) * (1 - distance/2000);
                 // 0.2/0.4 - границы рандома рэйта
                 var rate = 0.2 + (0.4 - 0.2) * Math.random();
                 audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate);
