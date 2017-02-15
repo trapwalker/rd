@@ -520,7 +520,7 @@ var WCanvasAnimateMarkerPowerUp = (function (_super) {
 
     WCanvasAnimateMarkerPowerUp.prototype.delFromVisualManager = function () {
         //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
-        new ECanvasPowerUpHide(this.position).start();
+        //new ECanvasPowerUpHide(this.position).start();
         _super.prototype.delFromVisualManager.call(this);
     };
 

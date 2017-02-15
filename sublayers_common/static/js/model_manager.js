@@ -1258,6 +1258,12 @@ var ClientManager = (function () {
         $('#PingSpan').text(event.ping);
     };
 
+    // Power Up
+    ClientManager.prototype.PowerUPLogMessage = function (event) {
+        //console.log('ClientManager.prototype.PowerUPLogMessage', event);
+        new ECanvasPowerUpHide(new Point(event.position.x, event.position.y)).start();
+    };
+
     // Активация итема
 
     ClientManager.prototype.StartActivateItem = function (event) {
