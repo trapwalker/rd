@@ -440,7 +440,7 @@ var ClientManager = (function () {
             //new WCarMarker(mcar);    // виджет маркера
             //new WCanvasCarMarker(mcar);
             var t = new WCanvasCarMarker(mcar);
-            //new WCanvasHPCarMarker(mcar, t);
+            new WCanvasHPCarMarker(mcar, t);
             new WMapPosition(mcar);  // виджет позиционирования карты
 
             // Круиз
