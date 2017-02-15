@@ -424,7 +424,6 @@
 #modalAnswerPage {
     width: 360px;
     height: 260px;
-    margin-left: -180px;
 }
 
 #dialogAnswerPageBtnOK {
@@ -900,7 +899,7 @@
 /* Окно активации итемов */
 
 #modalItemActivationPage {
-    width: 460px;
+    width: 330px;
     height: 160px;
 }
 #modalItemActivationPage:focus { outline: 0px solid transparent; }
@@ -919,10 +918,10 @@
 
 .mw_ia_progress_bar {
     position: relative;
-    width: 436px;
+    width: 260px;
     height: 24px;
     margin: 0 auto;
-    background: transparent url('/static/img/modal_window_image/loadbar_436x24.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/modal_window_image/loadbar.png') 100% 100% no-repeat;
 }
 
 .mw_ia_progress_bar_load {
@@ -934,7 +933,7 @@
 
 .mw_ia_progress_bar_text {
     position: relative;
-    width: 436px;
+    width: 260px;
     height: 37px;
     line-height: 37px;
     margin: 0 auto;

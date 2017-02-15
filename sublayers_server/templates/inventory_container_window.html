@@ -9,7 +9,10 @@
         </div>
         <div id="containerInventoryWindow-id-container-{{ container_id }}" class="containerInventoryWindow-inventory-wrap">
             <div class="containerInventoryWindow-inventory-header">Контейнер</div>
-            <div class="containerInventoryWindow-inventory-body inventory-{{ container_id }}"></div>
+            <div class="containerInventoryWindow-inventory-body other inventory-{{ container_id }}"></div>
+            <div class="containerInventoryWindow-inventory-footer">
+                <div class="take-all-btn" onclick="clientManager.sendTakeAllInventory({{ container_id }})">Взять всё</div>
+            </div>
         </div>
     </div>
 </div>
