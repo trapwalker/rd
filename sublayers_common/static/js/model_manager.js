@@ -828,7 +828,7 @@ var ClientManager = (function () {
             widget_marker = visualManager.getVobjByType(user.userCar, WCanvasCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
-        chat.party_info_message(event.party);
+        chat.party_info_message(event);
         partyManager.include_to_party(event.party);
     };
 
