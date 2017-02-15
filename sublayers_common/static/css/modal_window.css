@@ -567,7 +567,7 @@
     width: 138px;
     height: 53px;
     left: 982px;
-    top: 57px;
+    top: 216px;
     background: transparent url('/static/img/modal_window_image/btn1_active.png') 100% 100% no-repeat;
     cursor: url(/static/img/cursors/hyper.png), pointer;
 }
@@ -578,12 +578,28 @@
     background: transparent url('/static/img/modal_window_image/btn1_press.png') 100% 100% no-repeat;
 }
 
-.qg-pp-site-btn {
+.qg-pp-change-car-btn {
     position: absolute;
     width: 138px;
     height: 53px;
     left: 982px;
     top: 110px;
+    background: transparent url('/static/img/modal_window_image/btn3_active.png') 100% 100% no-repeat;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.qg-pp-change-car-btn:hover {
+    background: transparent url('/static/img/modal_window_image/btn3_hover.png') 100% 100% no-repeat;
+}
+.qg-pp-change-car-btn:active, .qg-pp-change-car-btn.active {
+    background: transparent url('/static/img/modal_window_image/btn3_press.png') 100% 100% no-repeat;
+}
+
+.qg-pp-site-btn {
+    position: absolute;
+    width: 138px;
+    height: 53px;
+    left: 982px;
+    top: 163px;
     background: transparent url('/static/img/modal_window_image/btn2_active.png') 100% 100% no-repeat;
     cursor: url(/static/img/cursors/hyper.png), pointer;
 }
@@ -609,6 +625,23 @@
 
 }
 .qg-pp-block.right { width: 240px; }
+
+.qg-pp-records-btn {
+    position: absolute;
+    width: 138px;
+    height: 53px;
+    left: 982px;
+    top: 57px;
+    background: transparent url('/static/img/modal_window_image/btn4_active.png') 100% 100% no-repeat;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.qg-pp-records-btn:hover {
+    background: transparent url('/static/img/modal_window_image/btn4_hover.png') 100% 100% no-repeat;
+}
+.qg-pp-records-btn:active, .qg-pp-records-btn.active {
+    background: transparent url('/static/img/modal_window_image/btn4_press.png') 100% 100% no-repeat;
+}
+
 
 .qg-pp-block-left-header {
     position: relative;
@@ -720,6 +753,69 @@
                       linear-gradient(45deg, #0a2e03 25%, transparent 25%, transparent 74%, #0a2e03 75%, #0a2e03);
     background-size: 2px 2px;
     background-position: 0 0, 1px 1px;
+}
+
+
+#quickGamePagePointPointsChangeCar, #quickGamePagePointPointsRecords {
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 26px);
+}
+
+.window-records-qg-all-cars {
+    position: relative;
+    width: 492px;
+    height: 170px;
+    margin: auto;
+    top: 40px;
+}
+
+.window-records-qg-slide-arrow {
+    position: absolute;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    width: 17px;
+    height: 24px;
+    top: 170px;
+}
+
+.window-records-qg-all-cars .window-records-qg-car-name {
+    text-align: center;
+}
+
+.window-records-qg-slide-arrow.left {
+    background: transparent url(/static/static_site/img/btn_slide_left.png) no-repeat 100% 100%;
+    left: 80px;
+}
+
+.window-records-qg-slide-arrow.left:hover {
+    background: transparent url(/static/static_site/img/btn_slide_left_over.png) no-repeat 100% 100%;
+}
+
+.window-records-qg-slide-arrow.left:active {
+    background: none;
+}
+
+.window-records-qg-slide-arrow.right {
+    background: transparent url(/static/static_site/img/btn_slide_right.png) no-repeat 100% 100%;
+    right: 80px;
+}
+
+.window-records-qg-slide-arrow.right:hover {
+    background: transparent url(/static/static_site/img/btn_slide_right_over.png) no-repeat 100% 100%;
+}
+
+.window-records-qg-slide-arrow.right:active {
+    background: none;
+}
+
+
+#quickGamePagePointPointsChangeCar .car-info-block-info{
+    height: 180px;
+    margin-top: 30px;
+}
+
+#quickGamePagePointPointsChangeCar .car-info-block-picture-main {
+    top: 15px;
 }
 
 /* Окно запроса на прохождение обучения в быстрой игре */

@@ -589,7 +589,27 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalQuickGamePointsPageLoad = function () {
         // Загрузить информацию из документа в див
-        this.modalQuickGamePoints.load('/static/modal_window/quickGamePointsPage.html', function(){});
+        this.modalQuickGamePoints.load('/static/modal_window/quickGamePointsPage.html', function(){
+            $.ajax({
+                url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/quick_game_cars',
+                success: function (data_str) {
+                    modalWindow.modalQuickGamePoints.find(".window-records-qg-all-cars").append(data_str);
+
+                    modalWindow.modalQuickGamePoints.find(".window-records-qg-slide-arrow.left").click(function(){
+                        modalWindow._modalQuickGamePoints_current_car_index--;
+                        modalWindow.modalQuickGamePointsPageViewCar();
+                    });
+
+                    modalWindow.modalQuickGamePoints.find(".window-records-qg-slide-arrow.right").click(function(){
+                        modalWindow._modalQuickGamePoints_current_car_index++;
+                        modalWindow.modalQuickGamePointsPageViewCar();
+                    });
+                }
+            });
+        });
+
+        this._modalQuickGamePoints_current_car_index = 0;
+
         this.modalQuickGamePoints.draggable({
             cancel: '.qg-pp-graphic-wrap',
             containment: "parent"
@@ -604,6 +624,9 @@ var ModalWindow = (function () {
         this.modalQuickGamePoints.removeClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-show');
         this.setupWindowAtScreenCenter(this.modalQuickGamePoints);
+
+        this.modalQuickGamePoints.find("#quickGamePagePointPointsRecords").css("display", "block");
+        this.modalQuickGamePoints.find("#quickGamePagePointPointsChangeCar").css("display", "none");
 
         // Вывод очков
         if (options.record_index >= 0)
@@ -656,6 +679,32 @@ var ModalWindow = (function () {
             if (typeof(cb_cancel) === 'function')
                 cb_cancel(event);
         });
+
+        // Возможность выбора другой машинки
+        var btn_change_car = this.modalQuickGamePoints.find('#quickGamePointsPageBtnChangeCar');
+        btn_change_car.off('click');
+        btn_change_car.on('click', function(event) {
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsRecords").css("display","none");
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsChangeCar").css("display","block");
+            modalWindow.modalQuickGamePoints.find('.qg-pp-btn').removeClass("active");
+            $(this).addClass("active");
+        });
+
+        var btn_records = this.modalQuickGamePoints.find('#quickGamePointsPageBtnRecords');
+        btn_records.off('click');
+        btn_records.on('click', function(event) {
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsRecords").css("display","block");
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsChangeCar").css("display","none");
+            modalWindow.modalQuickGamePoints.find('.qg-pp-btn').removeClass("active");
+            $(this).addClass("active");
+        });
+
+        // Показать бывшую машинку юзера
+
+        modalWindow._modalQuickGamePoints_current_car_index = options.current_car_index;
+        this.modalQuickGamePointsPageViewCar();
+
+        btn_records.click();
     };
 
     ModalWindow.prototype.modalQuickGamePointsPageHide = function() {
@@ -663,6 +712,20 @@ var ModalWindow = (function () {
         this.modalQuickGamePoints.removeClass('modal-window-show');
         this.modalQuickGamePoints.addClass('modal-window-hide');
         returnFocusToMap();
+    };
+
+    ModalWindow.prototype.modalQuickGamePointsPageViewCar = function() {
+        var lc = modalWindow.modalQuickGamePoints.find('.window-records-qg-car');
+        lc.css("display", "none");
+
+        if (modalWindow._modalQuickGamePoints_current_car_index < 0)
+            modalWindow._modalQuickGamePoints_current_car_index += lc.length;
+        if (modalWindow._modalQuickGamePoints_current_car_index >= lc.length)
+            modalWindow._modalQuickGamePoints_current_car_index -= lc.length;
+
+        if (lc.length) {
+            $(lc[modalWindow._modalQuickGamePoints_current_car_index]).css("display", "block");
+        }
     };
 
 

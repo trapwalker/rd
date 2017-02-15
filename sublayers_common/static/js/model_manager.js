@@ -656,6 +656,7 @@ var ClientManager = (function () {
             quick_users: event.quick_users,
             points: event.points,
             record_index: event.record_index,
+            current_car_index: event.current_car_index,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();
@@ -2270,7 +2271,9 @@ var ClientManager = (function () {
         var mes = {
             call: "quick_play_again",
             rpc_call_id: rpcCallList.getID(),
-            params: {}
+            params: {
+                car_index: modalWindow._modalQuickGamePoints_current_car_index
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

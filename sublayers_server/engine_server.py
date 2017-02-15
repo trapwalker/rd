@@ -61,6 +61,8 @@ from sublayers_server.handlers.site_api import (
     APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
 )
 
+from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
+
 
 class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
@@ -131,6 +133,8 @@ class Application(BaseApplication):
             (r"/api/context_panel/locations", ContextPanelListHandler),
             (r"/api/context_panel/barter_send", ContextPanelListHandler),
             (r"/api/context_panel/barter_info", ContextPanelListHandler),
+
+            (r"/api/quick_game_cars", APIGetQuickGameCarsView),
 
             # Site API
             (r"/api/get_car_info", APIGetCarInfoHandler),

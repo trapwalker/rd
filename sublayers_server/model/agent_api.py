@@ -949,8 +949,8 @@ class AgentAPI(API):
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 
     @public_method
-    def quick_play_again(self):
-        self.agent.log.info('quick_play_again')
+    def quick_play_again(self, car_index):
+        self.agent.log.info('quick_play_again with index: %s', car_index)
         def callback(*kw):
             api.update_agent_api(time=api.agent.server.get_time())
 
@@ -959,6 +959,7 @@ class AgentAPI(API):
             # todo: зафиксировать факт жульничества
             log.warning('Lie!!!!')
             return
+        self.agent.user.car_index = car_index
         tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
 
     @public_method
