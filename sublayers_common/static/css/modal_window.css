@@ -758,7 +758,7 @@
 #quickGamePagePointPointsChangeCar, #quickGamePagePointPointsRecords {
     position: absolute;
     width: 100%;
-    height: calc(100% - 26px);
+    height: 100%;
 }
 
 .window-records-qg-all-cars {
