@@ -828,7 +828,7 @@ var ClientManager = (function () {
             widget_marker = visualManager.getVobjByType(user.userCar, WCanvasCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
-        chat.party_info_message(event.party);
+        chat.party_info_message(event);
         partyManager.include_to_party(event.party);
     };
 
@@ -1642,6 +1642,33 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendTakeAllInventory = function (owner_id) {
+        //console.log('ClientManager.prototype.sendTakeAllInventory', owner_id);
+        var mes = {
+            call: "take_all_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTakeItemInventory = function (owner_id, position) {
+        //console.log('ClientManager.prototype.sendTakeItemInventory', owner_id, position);
+        var mes = {
+            call: "take_item_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id,
+                position: position
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendItemActionInventory = function(start_owner_id, start_pos, end_owner_id, end_pos, count) {
         var mes = {
             call: "item_action_inventory",
@@ -2303,5 +2330,6 @@ var ClientManager = (function () {
 
     return ClientManager;
 })();
+
 
 var last_send_time = 0;

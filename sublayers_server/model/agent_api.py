@@ -17,7 +17,7 @@ from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGet
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent,
-    LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent)
+    LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent, TakeItemInventoryEvent, TakeAllInventoryEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
@@ -649,6 +649,17 @@ class AgentAPI(API):
         ItemActionInventoryEvent(agent=self.agent, start_owner_id=start_owner_id, start_pos=start_pos,
                                  end_owner_id=end_owner_id, end_pos=end_pos, time=self.agent.server.get_time(),
                                  count=count).post()
+
+    @public_method
+    def take_all_inventory(self, owner_id):
+        self.agent.log.info('try take all inventory from owner_id={}'.format(owner_id))
+        TakeAllInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def take_item_inventory(self, owner_id, position):
+        self.agent.log.info('try take item_pos={} from owner_id={}'.format(position, owner_id))
+        TakeItemInventoryEvent(agent=self.agent, owner_id=owner_id, position=position,
+                               time=self.agent.server.get_time()).post()
 
     @public_method
     def get_balance_cls(self, balance_cls_name):

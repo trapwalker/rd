@@ -110,6 +110,9 @@ var ModalWindow = (function () {
         if (this.modalItemDivision.hasClass('modal-window-show'))
             this.modalItemDivisionHide();
 
+        if (this.modalItemDivision.hasClass('modal-window-show'))
+            this.modalItemDivisionHide();
+
         //if (this.modalItemActivation.hasClass('modal-window-show'))
         //    this.modalItemActivationHide();
     };
@@ -365,6 +368,8 @@ var ModalWindow = (function () {
         // включить модальное окно modalOptions
         this.modalAnswerInfo.removeClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-show');
+        this.setupWindowAtScreenCenter(this.modalAnswerInfo, 25);
+        document.getElementById('modalAnswerPage').focus();
 
         // Повесить новый текст
         var caption = this.modalAnswerInfo.find('.windowDragCloseHeader-caption span').first();
@@ -380,13 +385,13 @@ var ModalWindow = (function () {
         var btn_cancel = this.modalAnswerInfo.find('#dialogAnswerPageBtnCancel');
         btn_ok.off('click');
         btn_cancel.off('click');
+
         btn_ok.on('click', function(event) {
             self.modalDialogAnswerHide();
             var cb_ok = options.callback_ok;
             if (typeof(cb_ok) === 'function')
-                cb_ok(event);
+                cb_ok();
         });
-
         btn_cancel.on('click', function(event) {
             self.modalDialogAnswerHide();
             var cb_cancel = options.callback_cancel;
@@ -405,10 +410,13 @@ var ModalWindow = (function () {
     };
 
     ModalWindow.prototype.modalDialogAnswerLoad = function () {
-        // Загрузить информацию из документа в див
+        var self = this;
         this.modalAnswerInfo.load('/static/modal_window/dialogAnswerPage.html', function(){});
         this.modalAnswerInfo.keydown(function(event) {
-            if (event.keyCode == 27) modalWindow.closeEscWindows();
+            if (event.keyCode == 13)
+                self.modalAnswerInfo.find('#dialogAnswerPageBtnOK').click();
+            if (event.keyCode == 27)
+                self.modalAnswerInfo.find('#dialogAnswerPageBtnCancel').click();
         });
     };
 
