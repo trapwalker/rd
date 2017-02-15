@@ -72,7 +72,7 @@ function init_sound() {
     audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, 1.0);
 
     // Тестовые звуки от димона
-    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, 0.12);
+    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, 0.1);
     audioManager.load('engine_01_1', {url: '/static/audio/test/engine_01_1.wav'}, 1.0);
     audioManager.load('engine_01_2', {url: '/static/audio/test/engine_01_2.wav'}, 1.0);
     audioManager.load('engine_01_3', {url: '/static/audio/test/engine_01_3.wav'}, 1.0);
@@ -81,7 +81,7 @@ function init_sound() {
     audioManager.load('engine_02', {url: '/static/audio/test/engine_02.wav'}, 1.0);
     audioManager.load('engine_03', {url: '/static/audio/test/engine_03.wav'}, 1.0);
     audioManager.load('engine_04', {url: '/static/audio/test/engine_04.wav'}, 1.0);
-    audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, 0.3);
+    audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, 0.075);
 
     audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, 1.0);
     audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, 1.0);
@@ -89,9 +89,9 @@ function init_sound() {
 
     audioManager.load('auto_self_1', {url: '/static/audio/test/auto_self_1.wav'}, 1.0);
     audioManager.load('auto_self_2', {url: '/static/audio/test/auto_self_2.wav'}, 1.0);
-    audioManager.load('auto_self_3', {url: '/static/audio/test/auto_self_3.wav'}, 1.0);
+    audioManager.load('auto_self_3', {url: '/static/audio/test/auto_self_3.wav'}, 0.15);
     audioManager.load('auto_other_1', {url: '/static/audio/test/auto_other_1.wav'}, 1.0);
-    audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 1.0);
+    audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 0.15);
 
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
 }

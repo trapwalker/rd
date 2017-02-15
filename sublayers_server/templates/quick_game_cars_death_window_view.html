@@ -1,0 +1,11 @@
+{% set car_index = 0 %}
+{% for record in quick_game_cars_html %}
+<div id="QuickGameCar{{ car_index }}" class="window-records-qg-car">
+    <div class="window-records-qg-car-name">{{ cars[car_index].name_car }}</div>
+    {% raw record['img'] %}
+    {% raw record['table'] %}
+</div>
+{% set car_index = car_index + 1 %}
+{% end %}
+
+

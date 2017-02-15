@@ -285,6 +285,7 @@ class Unit(Observer):
             direction=self.direction(time=time),
             hp_state=self.hp_state.export(),
             fire_sectors=[sector.as_dict() for sector in self.fire_sectors],
+            active_shield_effect=self.params.get('p_armor').value >= 100, # todo: пока нет списка всех визуальных эффектов для клиента, определение наличия неуязвимости будет выглядить так
         )
         return d
 
@@ -547,6 +548,7 @@ class Bot(Mobile):
         self.params.get('p_radiation_armor').current -= 100
         self.params.get('p_armor').current -= 100
         self.restart_weapons(time=event.time)
+        self.on_update(event)
 
     def on_init(self, event):
         super(Bot, self).on_init(event=event)

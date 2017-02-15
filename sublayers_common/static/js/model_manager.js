@@ -198,6 +198,11 @@ var ClientManager = (function () {
             if (car.cls == "Bot") {
                 var t = new WCanvasCarMarker(car);
                 new WCanvasHPCarMarker(car, t);
+
+                // Отрисовка щита, если нужно
+                if (event.object.active_shield_effect) {
+                    new WCanvasAnimateMarkerShieldEffect(car);
+                }
             }
             if (car.cls == "SlowMine" || car.cls == "BangMine") {
                 new WCarMarker(car);
@@ -440,8 +445,13 @@ var ClientManager = (function () {
             //new WCarMarker(mcar);    // виджет маркера
             //new WCanvasCarMarker(mcar);
             var t = new WCanvasCarMarker(mcar);
-            //new WCanvasHPCarMarker(mcar, t);
+            new WCanvasHPCarMarker(mcar, t);
             new WMapPosition(mcar);  // виджет позиционирования карты
+
+            // Отирсовка щита, если нужно
+            if (event.car.active_shield_effect) {
+                new WCanvasAnimateMarkerShieldEffect(mcar);
+            }
 
             // Круиз
             wCruiseControl = new WCruiseControl(mcar, 'cruiseControlGlassDiv');
@@ -492,17 +502,13 @@ var ClientManager = (function () {
             return;
         }
 
-        //if (car == user.userCar && hp_state.dps != car._hp_state.dps) {
-        //    console.log('Смена DPS: old - ', car._hp_state.dps, '    new - ', hp_state.dps);
-        //}
-
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
         car.setState(motion_state);
         car.setHPState(hp_state);
-        if (car == user.userCar) car.setFuelState(fuel_state);
 
         // Если своя машинка
         if (car == user.userCar) {
+            car.setFuelState(fuel_state);
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
             if (mapManager.widget_target_point) {
@@ -519,6 +525,12 @@ var ClientManager = (function () {
             // Установка cc для круизконтроля
             wCruiseControl.setSpeedRange(event.object.params.p_cc);
         }
+
+        // Если появился или исчез щит
+        var vo = visualManager.getVobjByType(car, WCanvasAnimateMarkerShieldEffect);
+        if (event.object.active_shield_effect && !vo) new WCanvasAnimateMarkerShieldEffect(car);
+        if (!event.object.active_shield_effect && vo) vo.delFromVisualManager();
+
 
         // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
         if (cookieStorage.enableMarkerUpdate()) {
@@ -644,6 +656,7 @@ var ClientManager = (function () {
             quick_users: event.quick_users,
             points: event.points,
             record_index: event.record_index,
+            current_car_index: event.current_car_index,
             callback_ok: function () {
                 clientManager.sendQuickPlayAgain();
                 modalWindow.modalQuickGamePointsPageHide();
@@ -828,7 +841,7 @@ var ClientManager = (function () {
             widget_marker = visualManager.getVobjByType(user.userCar, WCanvasCarMarker);
         if (widget_marker) widget_marker.updateIcon();
 
-        chat.party_info_message(event.party);
+        chat.party_info_message(event);
         partyManager.include_to_party(event.party);
     };
 
@@ -1258,6 +1271,12 @@ var ClientManager = (function () {
         $('#PingSpan').text(event.ping);
     };
 
+    // Power Up
+    ClientManager.prototype.PowerUPLogMessage = function (event) {
+        //console.log('ClientManager.prototype.PowerUPLogMessage', event);
+        new ECanvasPowerUpHide(new Point(event.position.x, event.position.y)).start();
+    };
+
     // Активация итема
 
     ClientManager.prototype.StartActivateItem = function (event) {
@@ -1630,6 +1649,33 @@ var ClientManager = (function () {
             rpc_call_id: rpcCallList.getID(),
             params: {
                 owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTakeAllInventory = function (owner_id) {
+        //console.log('ClientManager.prototype.sendTakeAllInventory', owner_id);
+        var mes = {
+            call: "take_all_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendTakeItemInventory = function (owner_id, position) {
+        //console.log('ClientManager.prototype.sendTakeItemInventory', owner_id, position);
+        var mes = {
+            call: "take_item_inventory",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                owner_id: owner_id,
+                position: position
             }
         };
         rpcCallList.add(mes);
@@ -2252,7 +2298,9 @@ var ClientManager = (function () {
         var mes = {
             call: "quick_play_again",
             rpc_call_id: rpcCallList.getID(),
-            params: {}
+            params: {
+                car_index: modalWindow._modalQuickGamePoints_current_car_index
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -2297,5 +2345,6 @@ var ClientManager = (function () {
 
     return ClientManager;
 })();
+
 
 var last_send_time = 0;

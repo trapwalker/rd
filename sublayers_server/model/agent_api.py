@@ -17,7 +17,7 @@ from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGet
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent,
-    LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent)
+    LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent, TakeItemInventoryEvent, TakeAllInventoryEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
@@ -651,6 +651,17 @@ class AgentAPI(API):
                                  count=count).post()
 
     @public_method
+    def take_all_inventory(self, owner_id):
+        self.agent.log.info('try take all inventory from owner_id={}'.format(owner_id))
+        TakeAllInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
+
+    @public_method
+    def take_item_inventory(self, owner_id, position):
+        self.agent.log.info('try take item_pos={} from owner_id={}'.format(position, owner_id))
+        TakeItemInventoryEvent(agent=self.agent, owner_id=owner_id, position=position,
+                               time=self.agent.server.get_time()).post()
+
+    @public_method
     def get_balance_cls(self, balance_cls_name):
         pass
         # log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
@@ -949,8 +960,8 @@ class AgentAPI(API):
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 
     @public_method
-    def quick_play_again(self):
-        self.agent.log.info('quick_play_again')
+    def quick_play_again(self, car_index):
+        self.agent.log.info('quick_play_again with index: %s', car_index)
         def callback(*kw):
             api.update_agent_api(time=api.agent.server.get_time())
 
@@ -959,6 +970,7 @@ class AgentAPI(API):
             # todo: зафиксировать факт жульничества
             log.warning('Lie!!!!')
             return
+        self.agent.user.car_index = car_index
         tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
 
     @public_method
