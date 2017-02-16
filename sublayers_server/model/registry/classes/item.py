@@ -107,8 +107,7 @@ class BuildSet(ItemUsable):
 
     def can_activate(self, time, agent_model=None):
         return (agent_model is not None) and \
-               (agent_model.car is not None) and \
-               (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
+               (agent_model.car is not None)
 
 
 class AmmoBullets(ItemUsable):
