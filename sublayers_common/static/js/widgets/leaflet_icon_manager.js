@@ -103,7 +103,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-power-up-shield', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_vision_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-vis', '/static/img/map_icons/power_up/power_up_stels_stay.png', [54, 54], this.max_id++, null, 17);
-        this.load_new_icon('icon-power-add-ammo', '/static/img/map_icons/power_up/power_up_add_ammo.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-ammo', '/static/img/map_icons/power_up/power_up_add_ammo.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 17);
 
         // Animated Effects

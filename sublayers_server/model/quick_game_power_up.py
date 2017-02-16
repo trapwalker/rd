@@ -9,8 +9,14 @@ from sublayers_server.model.agents import TeachingUser
 from sublayers_server.model.inventory import ItemState
 import sublayers_server.model.tags as tags
 from sublayers_server.model.events import Objective, Event
-from game_log_messages import PowerUPLogMessage
+from sublayers_server.model.game_log_messages import PowerUPLogMessage
+from sublayers_server.model.messages import Subjective
 import random
+
+
+class PowerUpAnimateHide(Subjective):
+    u""" Мессадж отправляется только в случае, если Power Up был кем-то подобран """
+    pass
 
 
 class QuickGamePowerUpSimple(Observer):
@@ -40,6 +46,8 @@ class QuickGamePowerUpSimple(Observer):
         target.main_agent.log.info("%s activated for %s", self, target)
         PowerUPLogMessage(agent=target.main_agent, time=time, comment=self.example.activate_comment,
                           position=self.position(time)).post()
+        for agent in self.subscribed_agents:
+            PowerUpAnimateHide(agent=agent, time=time, subj=self).post()
 
     def on_contact_in(self, time, obj, **kw):
         super(QuickGamePowerUpSimple, self).on_contact_in(time=time, obj=obj)

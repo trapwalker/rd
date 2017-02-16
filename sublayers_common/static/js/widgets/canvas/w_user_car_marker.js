@@ -516,11 +516,15 @@ var WCanvasAnimateMarkerPowerUp = (function (_super) {
     function WCanvasAnimateMarkerPowerUp(mobj) {
         _super.call(this, mobj);
         this.position = mobj.getCurrentCoord(clock.getCurrentTime());
+        this._power_up_overdown = null;
     }
 
     WCanvasAnimateMarkerPowerUp.prototype.delFromVisualManager = function () {
         //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
-        //new ECanvasPowerUpHide(this.position).start();
+        if(this._power_up_overdown)
+            new ECanvasPowerUpOverDown(this.position, this._power_up_overdown).start();
+        else
+            new ECanvasPowerUpHide(this.position).start();
         _super.prototype.delFromVisualManager.call(this);
     };
 
