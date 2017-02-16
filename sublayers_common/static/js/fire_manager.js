@@ -39,7 +39,17 @@ var EffectPNGLoader = (function(){
 
         this.load_new_image('effect-bang-png-1', '/static/img/fire_effects/bangs/mine-bang-png-1.png', [115, 115], 12);
 
-        this.load_new_image('effect-power-up-off', '/static/img/fire_effects/bangs/power_up_bloop.png', [67, 67], 4);
+        // Завершение power-up
+        this.load_new_image('effect-power-up-off', '/static/img/map_icons/power_up/power_up_bloop.png', [67, 67], 4);
+
+        this.load_new_image('effect-power-up-off-build-set', '/static/img/map_icons/power_up/owerdown_heal.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-fuel', '/static/img/map_icons/power_up/owerdown_oil.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-shield', '/static/img/map_icons/power_up/owerdown_shield.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-obs', '/static/img/map_icons/power_up/owerdown_vision.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-vis', '/static/img/map_icons/power_up/owerdown_stels.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-ammo', '/static/img/map_icons/power_up/owerdown_sleeve.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-random', '/static/img/map_icons/power_up/owerdown_random.png', [60, 60], 10);
+
 
     }
 

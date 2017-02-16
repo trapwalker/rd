@@ -1272,9 +1272,14 @@ var ClientManager = (function () {
     };
 
     // Power Up
-    ClientManager.prototype.PowerUPLogMessage = function (event) {
+    ClientManager.prototype.PowerUpAnimateHide = function (event) {
         //console.log('ClientManager.prototype.PowerUPLogMessage', event);
-        new ECanvasPowerUpHide(new Point(event.position.x, event.position.y)).start();
+        //new ECanvasPowerUpHide(new Point(event.position.x, event.position.y)).start();
+        var power_up = visualManager.getModelObject(event.subject_id);
+        if (!power_up) return;
+        var vo = visualManager.getVobjByType(power_up, WCanvasAnimateMarkerPowerUp);
+        if (!vo) return;
+        vo._power_up_overdown = power_up._icon_name.replace("icon-power-up-", "effect-power-up-off-");
     };
 
     // Активация итема

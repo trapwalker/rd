@@ -575,7 +575,7 @@ class Bot(Mobile):
             self.start_shield_off(event=event)
 
         # Отключаем активацию итема
-        if self.current_item_action:
+        if self.current_item_action and not self.current_item_action.item.example.can_activate(time=event.time, agent_model=self.main_agent):
             self.current_item_action.cancel(time=event.time)
 
     def on_fire_auto_enable(self, event=None, **kw):
@@ -596,7 +596,7 @@ class Bot(Mobile):
             self.start_shield_off(event=event)
 
         # Отключаем активацию итема
-        if self.current_item_action:
+        if self.current_item_action and not self.current_item_action.item.example.can_activate(time=event.time, agent_model=self.main_agent):
             self.current_item_action.cancel(time=event.time)
 
     def on_stop(self, event):

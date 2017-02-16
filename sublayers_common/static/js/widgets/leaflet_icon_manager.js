@@ -45,6 +45,9 @@ var LeafletIconManager = (function(){
         // Создание иконки для машинки в стратегическом режиме
         this.load_new_icon('icon_strategy_mode_car', '/static/img/map_icons/tact_pers.png', [24, 24], this.max_id++);
 
+        // Лут
+        this.load_new_icon('icon_loot', '/static/img/map_icons/loot.png', [24, 17], this.max_id++);
+
         // Новые иконки машин
         this.load_new_icon('icon_party_arrow', '/static/img/char_icons/party/arrow.png', [53, 53], this.max_id++);
         this.load_new_icon('icon_party_car', '/static/img/char_icons/party/car.png', [53, 53], this.max_id++);
@@ -103,7 +106,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-power-up-shield', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_vision_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-vis', '/static/img/map_icons/power_up/power_up_stels_stay.png', [54, 54], this.max_id++, null, 17);
-        this.load_new_icon('icon-power-add-ammo', '/static/img/map_icons/power_up/power_up_add_ammo.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-ammo', '/static/img/map_icons/power_up/power_up_add_ammo.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 17);
 
         // Animated Effects
