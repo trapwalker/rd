@@ -1,0 +1,10 @@
+date: '17.02.2017'
+header:
+  ru: 'Обновление v0.130.2877'
+  en: 'Update v0.130.2877'
+link: 'update_v0_130_2877'
+content:
+  ru: '<div style="width: 400px; height: 200px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_party_1.png"></img></div><div style=" font-size: 9pt; ">- В игру добавлены пати.<br>- Новый Power Up c патронами.<br>- Изменён механизм анимации залповых орудий. Добавлены новые эффекты залпов.<br>- Увеличен размер арены в режиме "Быстрый Бой". <br>- Изменена логика поведения мин: по истечению срока может произойти взрыв.<br>- Скорость трассеров увеличена.<br>- Изменены анимации подбора Power Up`ов.<br>- Визуализация эффекта временной неуязвимости.<br>- Добавлена кнопка "Взять всё" в окне инвентаря.<br>- Перекидывание стеков айтемов двойным кликом.<br>- Доработано окно активации айтемов.<br>- Изменена громкость звуков.<br><br></div>'
+  en: '<div style="width: 400px; height: 200px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_party_1.png"></img></div><div style=" font-size: 9pt; ">- Parties has been added.<br>- New power ups with ammo.<br>- Changed the mechanism of animation salvo of guns. Added new volleys effects.<br>- Increased the size of the arena in "Quick Fight" mode.<br>- Changed the logic behavior of mines.<br>- Increased tracers speed.<br>- Changed the animation of power ups getting.<br>- Visualization of the temporal effect of invulnerability.<br>- Added button "Take all" in the inventory window.<br>- Throwing stacks of items by double-clicking.<br>- Improved window of items activation.<br>- Sounds volume tunes.<br><br></div>'
+
+
