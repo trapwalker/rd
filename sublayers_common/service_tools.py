@@ -41,7 +41,7 @@ class RevisionGettingError(Exception):
 def run(cmd):
     encoding = sys.getfilesystemencoding()
     cmd = [word.encode(encoding) if isinstance(word, unicode) else word for word in cmd]
-    data = subprocess.check_output(cmd, shell=True).decode(encoding)
+    data = subprocess.check_output(cmd, shell=os.name == "nt").decode(encoding)
     return data.strip()
     
 
