@@ -23,6 +23,7 @@ from fnmatch import fnmatch
 
 from mongoengine import connect, Document, EmbeddedDocument
 from mongoengine.base import get_document
+from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, DictField, EmbeddedDocumentField,
@@ -128,8 +129,27 @@ class EmbeddedNodeField(EmbeddedDocumentField):
         super(EmbeddedNodeField, self).__set__(instance, value)
 
 
+class NodeMetaclass(DocumentMetaclass):
+    def __new__(cls, name, bases, attrs):
+        super_new = super(NodeMetaclass, cls).__new__
+        new_cls = super_new(cls, name, bases, attrs)
+        # todo: Добавить в класс атрибуты: перечень ненаследуемых полей, перечень наследуемых полей
+
+        new_cls._inheritable_fields = set()
+        new_cls._non_inheritable_fields = set()
+
+        for name, field in new_cls._fields.iteritems():
+            if getattr(field, 'not_inherited', False):
+                new_cls._non_inheritable_fields.add(name)
+            else:
+                new_cls._inheritable_fields.add(name)
+
+        return new_cls
+
+
 class Node(EmbeddedDocument):
     #__slots__ = ('_uri',)
+    __metaclass__ = NodeMetaclass
     _dynamic = True
     meta = dict(
         allow_inheritance=True,
@@ -191,6 +211,30 @@ class Node(EmbeddedDocument):
 
     # def __init__(self, name=None, owner=None, parent=None, registry=None, **kw):
     #     super(Node, self).__init__(name=name, owner=owner, parent=parent, **kw)
+
+    def __init__(self, **kw):
+        only_fields = kw.pop('__only_fields', self.__class__._inheritable_fields)
+        super(Node, self).__init__(__only_fields=only_fields, **kw)
+
+    def __getattribute__(self, item):
+        if item not in {
+            '_fields', '_get_inheritable_field_names', 'parent',
+            '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
+            # BaseDocument.__slots__
+            '_changed_fields', '_initialised', '_created', '_data',
+            '_dynamic_fields', '_auto_id_field', '_db_field_map',
+            '__weakref__',
+            # EmbeddedDocument.__slots__
+            '_instance',
+        }:
+            if self._initialised:
+                field = self._fields.get(item, None)
+                if field and not getattr(field, 'not_inherited', False) and item not in self._data:
+                    parent = self.parent
+                    default = field.default
+                    return parent and getattr(parent, item, default() if callable(default) else default)
+
+        return super(Node, self).__getattribute__(item)
 
     @classmethod
     def _get_inheritable_field_names(cls):
@@ -413,6 +457,10 @@ def test2():
     Registry.objects.filter({}).delete()
     reg = get_registry(None)
     reg.load(u'../../../tmp/reg')
+    a = reg['/reg/a']
+    aa = reg['/reg/a/aa']
+    print(a.y)
+    print(aa.y)
     reg.save()
     globals().update(locals())
 
