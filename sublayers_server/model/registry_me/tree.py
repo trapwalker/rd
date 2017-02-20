@@ -218,7 +218,7 @@ class Node(EmbeddedDocument):
 
     def __getattribute__(self, item):
         if item not in {
-            '_fields', '_get_inheritable_field_names', 'parent',
+            '_fields', 'parent',
             '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
             # BaseDocument.__slots__
             '_changed_fields', '_initialised', '_created', '_data',
@@ -235,11 +235,6 @@ class Node(EmbeddedDocument):
                     return parent and getattr(parent, item, default() if callable(default) else default)
 
         return super(Node, self).__getattribute__(item)
-
-    @classmethod
-    def _get_inheritable_field_names(cls):
-        # todo: Закешировать на уровне класса
-        return [name for name, field in cls._fields.iteritems() if not getattr(field, 'not_inherited', False)]
 
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
