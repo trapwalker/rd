@@ -16,7 +16,7 @@ from sublayers_server.model.registry.classes.trader import Trader
 
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
-    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out,
+    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
@@ -658,6 +658,10 @@ class AI(Agent):
 
 
 class QuickUser(User):
+    quick_game_koeff_kills = 30
+    quick_game_koeff_bot_kills = 10
+    quick_game_koeff_time = 0.1
+
     def __init__(self, **kw):
         super(QuickUser, self).__init__(**kw)
         self.time_quick_game_start = None
@@ -676,12 +680,18 @@ class QuickUser(User):
             }
         )
 
+    def on_connect(self, **kw):
+        super(QuickUser, self).on_connect(**kw)
+        if self.car:
+            QuickGameChangePoints(agent=self, time=self.server.get_time()).post()
+
     def append_car(self, time, **kw):
         super(QuickUser, self).append_car(time=time, **kw)
         # Сбросить время старта и количество фрагов
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
+        QuickGameChangePoints(agent=self, time=time).post()
 
     def drop_car(self, car, time, **kw):
         # if car is self.car:
@@ -689,7 +699,9 @@ class QuickUser(User):
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
 
     def get_quick_game_points(self, time):
-        return round((time - self.time_quick_game_start) / 10.0) + self.quick_game_kills * 30 + self.quick_game_bot_kills * 10
+        return round(round((time - self.time_quick_game_start) * self.quick_game_koeff_time) +
+                     self.quick_game_kills * self.quick_game_koeff_kills +
+                     self.quick_game_bot_kills * self.quick_game_koeff_bot_kills)
 
     def send_die_message(self, event, unit):
         self._add_quick_game_record(time=event.time)
@@ -704,6 +716,7 @@ class QuickUser(User):
         # добавить хп своей машинке
         if self.car:
             self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
+        QuickGameChangePoints(agent=self, time=event.time).post()
 
     @tornado.gen.coroutine
     def init_example_car(self):

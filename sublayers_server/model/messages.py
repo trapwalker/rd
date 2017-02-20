@@ -133,6 +133,21 @@ class QuickGameDie(Message):
         return d
 
 
+class QuickGameChangePoints(Message):
+    def as_dict(self):
+        d = super(QuickGameChangePoints, self).as_dict()
+        agent = self.agent
+        d.update(
+            quick_game_bot_kills=agent.quick_game_bot_kills,
+            quick_game_kills=agent.quick_game_kills,
+            time_quick_game_start=agent.time_quick_game_start,
+            quick_game_koeff_kills=agent.quick_game_koeff_kills,
+            quick_game_koeff_bot_kills=agent.quick_game_koeff_bot_kills,
+            quick_game_koeff_time=agent.quick_game_koeff_time,
+        )
+        return d
+
+
 class Chat(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text">'
 

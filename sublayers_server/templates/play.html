@@ -234,7 +234,11 @@
     </div>
 
     <div style="position: absolute; right: 20px; top: 10px; color: #2afd0a; font: 10pt MICRADI; opacity: 0.6;">
-        Ping = <span id="PingSpan">0</span>   FPS = <span id="FPSSpan">0</span>
+        <span style="{{ "" if server_mode == 'quick' else "display: none" }}">
+            Score <span id='QGPointsSpan'>0</span>
+            Kills <span id='QGKillsSpan'>0</span>
+        </span>
+         | Ping <span id="PingSpan">0</span>   FPS <span id="FPSSpan">0</span>
     </div>
     <div id="divMainMenu">
         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Character</div>
