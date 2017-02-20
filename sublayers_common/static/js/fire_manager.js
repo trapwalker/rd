@@ -20,7 +20,7 @@ var EffectPNGLoader = (function(){
 
         this.load_new_image('effect-fire-discharge-png-1', '/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png', [40, 40], 5);
         this.load_new_image('effect-fire-discharge-png-2', '/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png', [57, 75], 12);
-        this.load_new_image('effect-fire-discharge-png-3-dbl', '/static/img/fire_effects/shoots/heavygunfireright000_003_resized_stripe_12frames.png', [57, 75], 12);
+        this.load_new_image('effect-fire-discharge-png-3-dbl', '/static/img/fire_effects/shoots/heavygunfireright000_003_resized_stripe_12frames2.png', [84, 84], 12);
         this.load_new_image('effect-fire-auto-png', '/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png', [32, 20], 2);
         this.load_new_image('effect-heavy-bang-png-1', '/static/img/fire_effects/bangs/heavy_damage_1000_2_res_stripe.png', [115, 115], 12);
         this.load_new_image('effect-heavy-bang-png-2', '/static/img/fire_effects/bangs/heavy_damage_wave_1000_2_res_stripe.png', [115, 115], 12);
@@ -39,7 +39,17 @@ var EffectPNGLoader = (function(){
 
         this.load_new_image('effect-bang-png-1', '/static/img/fire_effects/bangs/mine-bang-png-1.png', [115, 115], 12);
 
-        this.load_new_image('effect-power-up-off', '/static/img/fire_effects/bangs/power_up_bloop.png', [67, 67], 4);
+        // Завершение power-up
+        this.load_new_image('effect-power-up-off', '/static/img/map_icons/power_up/power_up_bloop.png', [67, 67], 4);
+
+        this.load_new_image('effect-power-up-off-build-set', '/static/img/map_icons/power_up/owerdown_heal.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-fuel', '/static/img/map_icons/power_up/owerdown_oil.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-shield', '/static/img/map_icons/power_up/owerdown_shield.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-obs', '/static/img/map_icons/power_up/owerdown_vision.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-vis', '/static/img/map_icons/power_up/owerdown_stels.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-ammo', '/static/img/map_icons/power_up/owerdown_sleeve.png', [60, 60], 10);
+        this.load_new_image('effect-power-up-off-random', '/static/img/map_icons/power_up/owerdown_random.png', [60, 60], 10);
+
 
     }
 
@@ -172,15 +182,15 @@ var FireEffectManager = (function () {
         if (options.self_shot) {
             // 0.6/0.8 - границы рандома рэйта
             var rate = 0.6 + (0.6 - 0.8) * Math.random();
-            audioManager.play("shot_01", 0, 0.8, null, false, 0, 0, rate);
+            audioManager.play("shot_01", 0, 0.4, null, false, 0, 0, rate);
         }
         else {
             var distance = 2000;
             if (user.userCar)
                 var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
             if (distance <= 2000) {
-                // 0.05/0.4 - минимальная/максимальная громкость звука
-                var gain = 0.05 + (0.4 - 0.05) * (1 - distance/2000);
+                // 0.01/0.4 - минимальная/максимальная громкость звука
+                var gain = 0.01 + (0.4 - 0.01) * (1 - distance/2000);
                 // 0.2/0.4 - границы рандома рэйта
                 var rate = 0.2 + (0.4 - 0.2) * Math.random();
                 audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate);

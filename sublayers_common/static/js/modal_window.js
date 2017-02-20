@@ -57,13 +57,15 @@ var ModalWindow = (function () {
         this.back.addClass('modal-window-hide');
     };
 
-    ModalWindow.prototype.setupWindowAtScreenCenter = function (jq_window) {
+    ModalWindow.prototype.setupWindowAtScreenCenter = function (jq_window, top) {
         var win_height = jq_window.height();
         var win_width = jq_window.width();
         var screen_height = $(window).height();
         var screen_width = $(window).width();
-
-        jq_window.css('top', screen_height / 2 - win_height / 2);
+        if (top)
+            jq_window.css('top', top + '%');
+        else
+            jq_window.css('top', screen_height / 2 - win_height / 2);
         jq_window.css('left', screen_width / 2 - win_width / 2);
     };
 
@@ -108,6 +110,9 @@ var ModalWindow = (function () {
         if (this.modalItemDivision.hasClass('modal-window-show'))
             this.modalItemDivisionHide();
 
+        if (this.modalItemDivision.hasClass('modal-window-show'))
+            this.modalItemDivisionHide();
+
         //if (this.modalItemActivation.hasClass('modal-window-show'))
         //    this.modalItemActivationHide();
     };
@@ -142,7 +147,6 @@ var ModalWindow = (function () {
             });
 
         });
-
     };
 
 
@@ -364,6 +368,8 @@ var ModalWindow = (function () {
         // включить модальное окно modalOptions
         this.modalAnswerInfo.removeClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-show');
+        this.setupWindowAtScreenCenter(this.modalAnswerInfo, 25);
+        document.getElementById('modalAnswerPage').focus();
 
         // Повесить новый текст
         var caption = this.modalAnswerInfo.find('.windowDragCloseHeader-caption span').first();
@@ -379,13 +385,13 @@ var ModalWindow = (function () {
         var btn_cancel = this.modalAnswerInfo.find('#dialogAnswerPageBtnCancel');
         btn_ok.off('click');
         btn_cancel.off('click');
+
         btn_ok.on('click', function(event) {
             self.modalDialogAnswerHide();
             var cb_ok = options.callback_ok;
             if (typeof(cb_ok) === 'function')
-                cb_ok(event);
+                cb_ok();
         });
-
         btn_cancel.on('click', function(event) {
             self.modalDialogAnswerHide();
             var cb_cancel = options.callback_cancel;
@@ -404,10 +410,13 @@ var ModalWindow = (function () {
     };
 
     ModalWindow.prototype.modalDialogAnswerLoad = function () {
-        // Загрузить информацию из документа в див
+        var self = this;
         this.modalAnswerInfo.load('/static/modal_window/dialogAnswerPage.html', function(){});
         this.modalAnswerInfo.keydown(function(event) {
-            if (event.keyCode == 27) modalWindow.closeEscWindows();
+            if (event.keyCode == 13)
+                self.modalAnswerInfo.find('#dialogAnswerPageBtnOK').click();
+            if (event.keyCode == 27)
+                self.modalAnswerInfo.find('#dialogAnswerPageBtnCancel').click();
         });
     };
 
@@ -544,7 +553,7 @@ var ModalWindow = (function () {
 
         this.modalItemActivation.removeClass('modal-window-hide');
         this.modalItemActivation.addClass('modal-window-show');
-        this.setupWindowAtScreenCenter(this.modalItemActivation);
+        this.setupWindowAtScreenCenter(this.modalItemActivation, 10);
         document.getElementById('modalItemActivationPage').focus();
 
         this.act_item_all = options.activate_time * 1000;
@@ -588,7 +597,27 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalQuickGamePointsPageLoad = function () {
         // Загрузить информацию из документа в див
-        this.modalQuickGamePoints.load('/static/modal_window/quickGamePointsPage.html', function(){});
+        this.modalQuickGamePoints.load('/static/modal_window/quickGamePointsPage.html', function(){
+            $.ajax({
+                url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/quick_game_cars',
+                success: function (data_str) {
+                    modalWindow.modalQuickGamePoints.find(".window-records-qg-all-cars").append(data_str);
+
+                    modalWindow.modalQuickGamePoints.find(".window-records-qg-slide-arrow.left").click(function(){
+                        modalWindow._modalQuickGamePoints_current_car_index--;
+                        modalWindow.modalQuickGamePointsPageViewCar();
+                    });
+
+                    modalWindow.modalQuickGamePoints.find(".window-records-qg-slide-arrow.right").click(function(){
+                        modalWindow._modalQuickGamePoints_current_car_index++;
+                        modalWindow.modalQuickGamePointsPageViewCar();
+                    });
+                }
+            });
+        });
+
+        this._modalQuickGamePoints_current_car_index = 0;
+
         this.modalQuickGamePoints.draggable({
             cancel: '.qg-pp-graphic-wrap',
             containment: "parent"
@@ -603,6 +632,9 @@ var ModalWindow = (function () {
         this.modalQuickGamePoints.removeClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-show');
         this.setupWindowAtScreenCenter(this.modalQuickGamePoints);
+
+        this.modalQuickGamePoints.find("#quickGamePagePointPointsRecords").css("display", "block");
+        this.modalQuickGamePoints.find("#quickGamePagePointPointsChangeCar").css("display", "none");
 
         // Вывод очков
         if (options.record_index >= 0)
@@ -655,6 +687,32 @@ var ModalWindow = (function () {
             if (typeof(cb_cancel) === 'function')
                 cb_cancel(event);
         });
+
+        // Возможность выбора другой машинки
+        var btn_change_car = this.modalQuickGamePoints.find('#quickGamePointsPageBtnChangeCar');
+        btn_change_car.off('click');
+        btn_change_car.on('click', function(event) {
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsRecords").css("display","none");
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsChangeCar").css("display","block");
+            modalWindow.modalQuickGamePoints.find('.qg-pp-btn').removeClass("active");
+            $(this).addClass("active");
+        });
+
+        var btn_records = this.modalQuickGamePoints.find('#quickGamePointsPageBtnRecords');
+        btn_records.off('click');
+        btn_records.on('click', function(event) {
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsRecords").css("display","block");
+            modalWindow.modalQuickGamePoints.find("#quickGamePagePointPointsChangeCar").css("display","none");
+            modalWindow.modalQuickGamePoints.find('.qg-pp-btn').removeClass("active");
+            $(this).addClass("active");
+        });
+
+        // Показать бывшую машинку юзера
+
+        modalWindow._modalQuickGamePoints_current_car_index = options.current_car_index;
+        this.modalQuickGamePointsPageViewCar();
+
+        btn_records.click();
     };
 
     ModalWindow.prototype.modalQuickGamePointsPageHide = function() {
@@ -662,6 +720,20 @@ var ModalWindow = (function () {
         this.modalQuickGamePoints.removeClass('modal-window-show');
         this.modalQuickGamePoints.addClass('modal-window-hide');
         returnFocusToMap();
+    };
+
+    ModalWindow.prototype.modalQuickGamePointsPageViewCar = function() {
+        var lc = modalWindow.modalQuickGamePoints.find('.window-records-qg-car');
+        lc.css("display", "none");
+
+        if (modalWindow._modalQuickGamePoints_current_car_index < 0)
+            modalWindow._modalQuickGamePoints_current_car_index += lc.length;
+        if (modalWindow._modalQuickGamePoints_current_car_index >= lc.length)
+            modalWindow._modalQuickGamePoints_current_car_index -= lc.length;
+
+        if (lc.length) {
+            $(lc[modalWindow._modalQuickGamePoints_current_car_index]).css("display", "block");
+        }
     };
 
 

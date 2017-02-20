@@ -54,7 +54,9 @@ var WInventoryItem = (function (_super) {
             activateBtn.data('item_pos', self.item.position);
 
             self.redraw_info_for_window(true, inventoryDiv);
-
+        });
+        itemDiv.on('dblclick', {item: this}, function (event) {
+            clientManager.sendTakeItemInventory(self.item.inventory.owner_id, self.item.position);
         });
 
         itemDiv.on('mouseenter', {item: this, action: true, inventoryDiv: inventoryDiv}, this._redraw_info_for_window_handler);

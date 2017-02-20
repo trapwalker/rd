@@ -128,7 +128,7 @@ var WCarMarker = (function (_super) {
         }
 
         if(car.cls == 'POILoot') {
-            marker.setIcon(iconsLeaflet.getIcon('icon_killed_V1'));
+            marker.setIcon(iconsLeaflet.getIcon('icon_loot'));
         }
 
         if(car.cls == 'POIContainer') {

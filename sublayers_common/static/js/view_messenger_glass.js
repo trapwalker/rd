@@ -877,23 +877,28 @@ var ViewMessengerGlass = (function () {
 
         // формирование сообщения анализируя входные данные
         var aText = '';
+        var important = false;
         switch (msg.cls) {
             case 'AgentPartyChangeMessage':
                 aText = msg.subj.login + (msg.subj.party != null ? ' присоединился к группе' : ' покинул группу');
                 break;
             case 'PartyIncludeMessageForIncluded':
                 aText = 'Вы включены в состав группы ' + msg.party.name;
+                important = true;
                 break;
             case 'PartyExcludeMessageForExcluded':
                 aText = 'Вы исключены из состава группы ' + msg.party.name;
+                important = true;
                 break;
             case 'PartyKickMessageForKicked':
                 aText = 'Вас выгнали из состава группы ' + msg.party.name;
+                important = true;
                 break;
             case 'PartyInviteMessage':
                 if (user.login == msg.recipient.login) {
                     // значит инвайт для меня
                     aText = msg.sender.login + ' приглашает Вас вступить в группу ' + msg.party.name;
+                    important = true;
                 } else {
                     // значит инвайт для кого-то другого
                     if (user.login == msg.sender.login) {
@@ -907,6 +912,7 @@ var ViewMessengerGlass = (function () {
             case 'PartyInviteDeleteMessage':
                 if (user.login == msg.recipient.login) {
                     // значит инвайт для меня был кем-то отклонён, возможно даже мной
+                    important = true;
                     aText = 'Приглашание вступить в группу ' + msg.party.name + ' от ' + msg.sender.login + ' отклонено.';
                 } else {
                     // значит инвайт для кого-то другого
@@ -922,7 +928,8 @@ var ViewMessengerGlass = (function () {
                 aText = 'Ошибка: ' + msg.comment;
                 break;
             default:
-                aText = 'Неизвестная информация о пати! Попробуйте это повторить и расскажите нам.';
+                aText = 'Неизвестная информация о пати!';
+                console.warn('Unknown party message: ', msg);
         }
 
         // Найти чат для добавления в него сообщения
@@ -944,6 +951,10 @@ var ViewMessengerGlass = (function () {
         chat.chatArea.append(mesDiv);
         mesDiv.append(spanTime);
         mesDiv.append(spanText);
+        // Мигание кнопки Party
+        var pageBtn = $('#pageButtonParty');
+        if (important && !pageBtn.hasClass('active'))
+            pageBtn.addClass('wait');
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast', function () {
             chat.chatArea.scrollTop(99999999)
@@ -955,7 +966,6 @@ var ViewMessengerGlass = (function () {
             var dmessage = chat.mesList.shift();
             dmessage.mesDiv.remove();
         }
-
     };
 
     // Активировать пати-чат (пользователь зашел в пати)

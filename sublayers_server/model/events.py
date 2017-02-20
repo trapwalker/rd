@@ -491,6 +491,63 @@ class ItemActionInventoryEvent(Event):
                 start_obj.drop_item_to_map(item=drop_item, time=self.time)
 
 
+class TakeAllInventoryEvent(Event):
+    def __init__(self, agent, owner_id, **kw):
+        super(TakeAllInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+
+    def on_perform(self):
+        super(TakeAllInventoryEvent, self).on_perform()
+
+        # Получаем свой инвентарь
+        end_inventory = self.agent.car.inventory
+
+        # Пытаемся получить инвентарь и итем
+        start_obj = self.server.objects.get(self.owner_id)
+        if start_obj is None:
+            return
+        start_inventory = start_obj.inventory
+        if (start_inventory is None) or \
+           (self.agent not in start_inventory.managers) or \
+           (start_inventory is end_inventory):
+            return
+        items = start_inventory.get_all_items()
+
+        for item_rec in items:
+            if not item_rec['item'].set_inventory(inventory=end_inventory, time=self.time):
+                return
+
+
+class TakeItemInventoryEvent(Event):
+    def __init__(self, agent, owner_id, position, **kw):
+        super(TakeItemInventoryEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+        self.owner_id = owner_id
+        self.position = position
+
+    def on_perform(self):
+        super(TakeItemInventoryEvent, self).on_perform()
+
+        # Получаем свой инвентарь
+        end_inventory = self.agent.car.inventory
+
+        # Пытаемся получить инвентарь и итем
+        start_obj = self.server.objects.get(self.owner_id)
+        if start_obj is None:
+            return
+        start_inventory = start_obj.inventory
+        if (start_inventory is None) or \
+           (self.agent not in start_inventory.managers) or \
+           (start_inventory is end_inventory):
+            return
+        start_item = start_inventory.get_item(position=self.position)
+        if start_item is None:
+            return
+
+        start_item.set_inventory(inventory=end_inventory, time=self.time)
+
+
 class LootPickEvent(Event):
     def __init__(self, agent, poi_stash_id, **kw):
         super(LootPickEvent, self).__init__(server=agent.server, **kw)
@@ -527,12 +584,13 @@ class ItemPreActivationEvent(Event):
 
     def on_perform(self):
         super(ItemPreActivationEvent, self).on_perform()
-
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
         if obj is None:
             return
         inventory = obj.inventory
+        if not (inventory is self.agent.inventory) or (self.agent.inventory is None):
+            return
         item = inventory.get_item(position=self.position)
         if item is None:
             return

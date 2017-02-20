@@ -120,12 +120,6 @@ class QuickGameDie(Message):
     def as_dict(self):
         d = super(QuickGameDie, self).as_dict()
         quick_users = list(self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(1000))
-
-        # record_index = -1
-        # for index in range(len(quick_users)):
-        #     if str(quick_users[index].get(u'_id')) == str(self.agent.record_id):
-        #         record_index = index
-        #         break
         points = self.agent.get_quick_game_points(time=self.time)
         record_index = self.agent.server.app.db.quick_game_records.find({"points": {"$gte": points}, "time": {"$lte": self.time}}).count()
 
@@ -134,6 +128,7 @@ class QuickGameDie(Message):
             record_index=record_index + 1,
             object=self.obj.as_dict(time=self.time),
             quick_users=[dict(points=rec['points'], name=rec['name']) for rec in quick_users],
+            current_car_index=self.agent.user.car_index,
         )
         return d
 
@@ -193,7 +188,8 @@ class Update(Message):
         dict_update = dict(
             uid=obj.uid,
             state=obj.state.export(),
-            hp_state=obj.hp_state.export()
+            hp_state=obj.hp_state.export(),
+            active_shield_effect=obj.params.get('p_armor').value >= 100, # todo: пока нет списка всех визуальных эффектов для клиента, определение наличия неуязвимости будет выглядить так
         )
         if self.agent == obj.owner:
             if obj.cur_motion_task is not None:

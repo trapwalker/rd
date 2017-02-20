@@ -16,6 +16,8 @@ var ECanvasAnimationPNG = (function () {
         this.start_time = 0;
         this.offset_x = 0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = 0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.scale_icon_x = 1.0;
+        this.scale_icon_y = 1.0;
         this.infinity_animation = false;
     }
 
@@ -56,7 +58,7 @@ var ECanvasAnimationPNG = (function () {
 
         var frame = this._get_frame_num(time);
         ctx.drawImage(img_obj.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
-            this.offset_x * img_obj.size[1], this.offset_y * img_obj.size[0], this.frame_width, this.frame_height);
+            this.offset_x * img_obj.size[1], this.offset_y * img_obj.size[0], this.frame_width * this.scale_icon_x, this.frame_height * this.scale_icon_y);
 
         ctx.restore();
     };
@@ -314,4 +316,25 @@ var ECanvasPowerUpHide = (function (_super) {
     }
 
     return ECanvasPowerUpHide
+})(ECanvasAnimationPNG);
+
+
+var ECanvasPowerUpOverDown = (function (_super) {
+    __extends(ECanvasPowerUpOverDown, _super);
+
+    function ECanvasPowerUpOverDown(position, icon_name) {
+        _super.call(this, position, 0);
+        this.duration = 800;
+        this.effect_image_obj = effectPNGLoader.getImage(icon_name);
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -1.0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.scale_icon_x = 0.8;
+        this.scale_icon_y = 0.8;
+    }
+
+    return ECanvasPowerUpOverDown
 })(ECanvasAnimationPNG);

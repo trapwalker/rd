@@ -246,6 +246,33 @@
         overflow-x: hidden;
         box-sizing: border-box;
     }
+    .containerInventoryWindow-inventory-body.other { height: calc(100% - 35px - 40px); }
+
+    .containerInventoryWindow-inventory-footer {
+        position: relative;
+        width: 100%;
+        height: 40px;
+        overflow: hidden;
+        border-width: 1px 0 0 0;
+        border-style: solid;
+        border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, transparent);
+        border-image-slice: 1;
+        box-sizing: border-box;
+    }
+
+    .take-all-btn {
+        position: relative;
+        width: 150px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        cursor: url('/static/img/cursors/hyper.png'), pointer;
+        border: 1px solid #0e4b00;
+        background-color: #082801;
+        box-sizing: border-box;
+        margin: 7px auto 0 auto;
+    }
+    .take-all-btn:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
 
     .containerInventoryWindow-window-wrap .mainCarInfoWindow-body-trunk-body-right-item-wrap { margin: 0 5px 15px 15px; }
 

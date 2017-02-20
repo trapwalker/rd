@@ -359,4 +359,13 @@ class TransactionTrainerLogMessage(Message):
 
 
 class PowerUPLogMessage(Message):
-    pass
+    def __init__(self, position, **kw):
+        super(PowerUPLogMessage, self).__init__(**kw)
+        self.position = position
+
+    def as_dict(self):
+        d = super(PowerUPLogMessage, self).as_dict()
+        d.update(
+            position=self.position,
+        )
+        return d

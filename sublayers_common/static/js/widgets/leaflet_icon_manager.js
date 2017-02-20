@@ -45,6 +45,9 @@ var LeafletIconManager = (function(){
         // Создание иконки для машинки в стратегическом режиме
         this.load_new_icon('icon_strategy_mode_car', '/static/img/map_icons/tact_pers.png', [24, 24], this.max_id++);
 
+        // Лут
+        this.load_new_icon('icon_loot', '/static/img/map_icons/loot.png', [24, 17], this.max_id++);
+
         // Новые иконки машин
         this.load_new_icon('icon_party_arrow', '/static/img/char_icons/party/arrow.png', [53, 53], this.max_id++);
         this.load_new_icon('icon_party_car', '/static/img/char_icons/party/car.png', [53, 53], this.max_id++);
@@ -97,15 +100,18 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
 
         this.load_new_icon('mine_001', '/static/img/map_icons/mine.png', [24, 17], this.max_id++);
-
+        // Animated Power Up
         this.load_new_icon('icon-power-up-build-set', '/static/img/map_icons/power_up/power_up_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-fuel', '/static/img/map_icons/power_up/power_up_oil_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-shield', '/static/img/map_icons/power_up/power_up_shield.png', [54, 54], this.max_id++, null, 17);
-
         this.load_new_icon('icon-power-up-obs', '/static/img/map_icons/power_up/power_up_vision_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-vis', '/static/img/map_icons/power_up/power_up_stels_stay.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-ammo', '/static/img/map_icons/power_up/power_up_add_ammo.png', [54, 54], this.max_id++, null, 17);
+        this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 17);
 
-        this.load_new_icon('icon-power-up-random', '/static/img/map_icons/power_up/power_up_random.png', [54, 54], this.max_id++, null, 16);
+        // Animated Effects
+        this.load_new_icon('icon-car-effect-shield', '/static/img/map_icons/effects/shield_12_frames.png', [60, 60], this.max_id++, null, 12);
+
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
