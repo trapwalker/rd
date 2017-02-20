@@ -133,16 +133,26 @@ class NodeMetaclass(DocumentMetaclass):
     def __new__(cls, name, bases, attrs):
         super_new = super(NodeMetaclass, cls).__new__
         new_cls = super_new(cls, name, bases, attrs)
-        # todo: Добавить в класс атрибуты: перечень ненаследуемых полей, перечень наследуемых полей
 
+        # Fields processing
         new_cls._inheritable_fields = set()
         new_cls._non_inheritable_fields = set()
 
         for name, field in new_cls._fields.iteritems():
+            # Fields inheritance indexing
             if getattr(field, 'not_inherited', False):
                 new_cls._non_inheritable_fields.add(name)
             else:
                 new_cls._inheritable_fields.add(name)
+
+            # Field tags normalization
+            tags = getattr(field, 'tags', None)
+            if tags is not None and not isinstance(tags, set):
+                if isinstance(tags, basestring):
+                    tags = set(tags.split())
+                else:
+                    tags = set(tags)
+                field.tags = tags
 
         return new_cls
 
@@ -215,6 +225,21 @@ class Node(EmbeddedDocument):
     def __init__(self, **kw):
         only_fields = kw.pop('__only_fields', self.__class__._inheritable_fields)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
+
+    def iter_attrs(self, tags=None, classes=None):
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
+
+        for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
+            if hasattr(attr, 'tags'):
+                if (
+                    (not tags or attr.tags & tags) and
+                    (not classes or isinstance(attr, classes))
+                ):
+                    getter = lambda: getattr(self, name)
+                    yield name, attr, getter
 
     def __getattribute__(self, item):
         if item not in {
@@ -417,10 +442,10 @@ def get_registry(name=None):
 ###############################################################################################
 
 class A(Node):
-    x = IntField(null=True)
-    y = IntField(null=True)
-    z = IntField(null=True)
-    e = EmbeddedNodeField(document_type=Node)
+    x = IntField(null=True, tags='client t1 t2')
+    y = IntField(null=True, tags={'t1', 't0'})
+    z = IntField(null=True, tags=['t2', 't3'])
+    e = EmbeddedNodeField(document_type=Node, tags='t0')
     #k = RegistryLinkField
 
 
