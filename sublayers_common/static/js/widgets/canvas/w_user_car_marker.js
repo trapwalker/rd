@@ -588,3 +588,31 @@ var WCanvasAnimateMarkerShieldEffect = (function (_super) {
 
     return WCanvasAnimateMarkerShieldEffect;
 })(WCanvasAnimateMarker);
+
+
+var WCanvasRocketMarkerEffect = (function (_super) {
+    __extends(WCanvasRocketMarkerEffect, _super);
+
+    function WCanvasRocketMarkerEffect(mobj) {
+        _super.call(this, mobj);
+        this.position = mobj.getCurrentCoord(clock.getCurrentTime());
+    }
+
+    WCanvasRocketMarkerEffect.prototype.updateIcon = function() {
+        //console.log('WCanvasAnimateMarker.prototype.updateIcon');
+        // Здесь нужно заполнить все эти параметры
+        this.cm_z_index = 8; // todo: Выбрать правильный приоритет
+        this.icon_obj = iconsLeaflet.getIcon("icon-rocket", "canvas_icon");
+        this.duration = 1000;
+        this.frame_count = this.icon_obj.frames;
+        this.time_of_frame = this.duration / this.icon_obj.frames;
+        this.frame_width = this.icon_obj.size[0]; // размер одного кадра
+        this.frame_height = this.icon_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.scale_icon_x = 1.0;
+        this.scale_icon_y = 1.0;
+    };
+
+    return WCanvasRocketMarkerEffect;
+})(WCanvasAnimateMarker);

@@ -10,12 +10,6 @@ from sublayers_server.model.registry.odm.fields import (
 )
 
 
-# from sublayers_server.model.transaction_events import (
-#     TransactionActivateTank, TransactionActivateAmmoBullets,
-#     TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
-# )
-
-
 class Item(Root):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
@@ -148,10 +142,19 @@ class MapWeaponMineItem(MapWeaponItem):
 
 
 class MapWeaponRocketItem(MapWeaponItem):
+    starter_obj_list = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.weapons.RocketLauncher'),
+        caption=u'Список подходящих пусковых установок',
+    )
+
     @classmethod
     def activate(cls):
         from sublayers_server.model.transaction_events import TransactionActivateRocket
         return TransactionActivateRocket
+
+    def can_activate(self, time, agent_model=None):
+        return (agent_model is not None) and \
+               (agent_model.car is not None)
 
 
 class MechanicItem(SlotItem):

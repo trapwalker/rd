@@ -8,6 +8,10 @@ from sublayers_server.model.registry.odm.fields import UniReferenceField, String
     EmbeddedDocumentField
 
 
+class RocketLauncher(ArmorerItem):
+    pass
+
+
 class Weapon(ArmorerItem):
     ammo = UniReferenceField(
         caption=u'Боеприпас',
