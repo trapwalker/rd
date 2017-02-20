@@ -226,21 +226,6 @@ class Node(EmbeddedDocument):
         only_fields = kw.pop('__only_fields', self.__class__._inheritable_fields)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
 
-    def iter_attrs(self, tags=None, classes=None):
-        if isinstance(tags, basestring):
-            tags = set(tags.split())
-        elif tags is not None:
-            tags = set(tags)
-
-        for name, attr in self._fields.items():  # todo: optimize Сделать перебор по _fields, а не всем подряд атрибутам
-            if hasattr(attr, 'tags'):
-                if (
-                    (not tags or attr.tags & tags) and
-                    (not classes or isinstance(attr, classes))
-                ):
-                    getter = lambda: getattr(self, name)
-                    yield name, attr, getter
-
     def __getattribute__(self, item):
         if item not in {
             '_fields', 'parent',
