@@ -192,6 +192,16 @@ class Node(EmbeddedDocument):
         # self._uri = uri
         return uri
 
+    def node_hash(self):  # todo: (!) rename to proto_uri
+        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        uri = self.uri
+        if uri:
+            return uri
+
+        parent = self.parent
+        assert parent, 'Try to get a node hash of wrong node: {!r}'.format(self)
+        return self.parent.node_hash()
+
     @property
     def root_instance(self):
         # todo: cache it
