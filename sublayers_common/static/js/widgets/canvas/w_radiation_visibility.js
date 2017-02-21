@@ -21,14 +21,14 @@ var WRadiationEffect = (function () {
         var radiation_dps = user.userCar.radiation_dps || 0;  // 0
         radiation_dps = Math.floor(radiation_dps * 30);
 
-        if (this._effects.length < radiation_dps) {
+        for (var i = 0; i < radiation_dps - this._effects.length && i < 50; i++) {
             //new RadiationAnimationEffectRandomCloud().start();
-            new RadiationCircleEffectRandom().start();
+            //new RadiationCircleEffectRandom().start();
+            new RadiationLineEffectRandom().start();
         }
 
         ctx.save();
 
-        //ctx.globalCompositeOperation = "source-over";
         for (var i = 0; i < this._effects.length; i++)
             this._effects[i].redraw(ctx, time);
 
@@ -171,6 +171,63 @@ var RadiationCircleEffect = (function (_super) {
 })(RadiationEffectSmooth);
 
 
+var RadiationLineEffect = (function (_super) {
+    __extends(RadiationLineEffect, _super);
+
+    function RadiationLineEffect(position, direction, duration, line_length){
+        _super.call(this, position, direction, duration);
+        this._line_length = line_length;
+        this._lineWidth = 1;
+        this._strokeStyle = "red";
+    }
+
+    RadiationLineEffect.prototype.redraw = function (ctx, time) {
+        if (! this.is_active) return;
+        if (time >= this.start_time + this.duration / 1000.) {this.finish(); return; }
+        ctx.save();
+        ctx.translate(this.position.x, this.position.y);
+        ctx.rotate(this.direction);
+        ctx.globalAlpha = this._get_alpha(time);
+        ctx.beginPath();
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(this._line_length, 0);
+        ctx.lineWidth = this._lineWidth;
+        ctx.strokeStyle = this._strokeStyle;
+        ctx.stroke();
+        ctx.restore();
+    };
+
+    return RadiationLineEffect
+})(RadiationEffectSmooth);
+
+
+var RadiationMoveLineEffect = (function (_super) {
+    __extends(RadiationMoveLineEffect, _super);
+
+    function RadiationMoveLineEffect(position, direction, duration, line_length){
+        _super.call(this, position, direction, duration, line_length);
+        this._p0 = position;
+        this._ll0 = line_length;
+        this._speed_x = 0;
+        this._speed_y = 0;
+        this._speed_line_length = 0;
+    }
+
+    RadiationMoveLineEffect.prototype.redraw = function (ctx, time) {
+        var t = time - this.start_time;
+        this.position = new Point(this._p0.x + this._speed_x * t, this._p0.y + this._speed_y * t);
+        this._line_length = this._ll0 + this._speed_line_length * t;
+
+        _super.prototype.redraw.call(this, ctx, time);
+
+
+    };
+
+    return RadiationMoveLineEffect
+})(RadiationLineEffect);
+
+
 var RadiationAnimationEffectIcon = (function (_super) {
     __extends(RadiationAnimationEffectIcon, _super);
 
@@ -230,4 +287,35 @@ var RadiationCircleEffectRandom = (function (_super) {
 
     return RadiationCircleEffectRandom
 })(RadiationCircleEffect);
+
+
+
+
+
+var RadiationLineEffectRandom = (function (_super) {
+    __extends(RadiationLineEffectRandom, _super);
+
+    function RadiationLineEffectRandom() {
+        var position = new Point(mapCanvasManager.canvas.width * Math.random(), mapCanvasManager.canvas.height * Math.random());
+        var direction = 0; //Math.random() * 2.0 * Math.PI;
+        var duration = 200 * Math.random() + 200;
+        var line_length = 2;
+        _super.call(this, position, direction, duration, line_length);
+
+        this._lineWidth = Math.random() > 0.6 ? 2 : 1;
+        this._strokeStyle = "white";
+
+        var speed = 70 +  Math.random() * 60;
+
+        this._speed_x = -speed / 2.0;
+        this._speed_line_length = speed;
+
+        this._start_smooth_time = this.duration * 0.1; // Время плавного появления
+        this._finish_smooth_time = this.duration * 0.9; // Время плавного исчезновения
+    }
+
+    return RadiationLineEffectRandom
+})(RadiationMoveLineEffect);
+
+
 
