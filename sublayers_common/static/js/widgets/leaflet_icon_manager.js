@@ -94,7 +94,8 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_dead_van', '/static/img/char_icons/dead/van.png', [53, 53], this.max_id++);
 
         // Ракета
-        this.load_new_icon('icon-rocket', '/static/img/map_icons/transport/rocket.png', [20, 20], this.max_id++, null, 5);
+        this.load_new_icon('icon-rocket-small', '/static/img/map_icons/transport/rocket.png', [26, 26], this.max_id++, null, 5);
+        this.load_new_icon('icon-rocket', '/static/img/map_icons/transport/rocket_2.png', [26, 26], this.max_id++, null, 5);
 
         this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
 
@@ -321,6 +322,7 @@ var LeafletIconManager = (function(){
 
     LeafletIconManager.prototype.getIcon = function(icon_name, type){
         type = type ? type : 'icon';
+        if (!this.icons.hasOwnProperty(icon_name) || !this.icons[icon_name].hasOwnProperty(type)) return null;
         return this.icons[icon_name][type];
     };
 

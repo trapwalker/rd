@@ -22,7 +22,7 @@ class RocketStartEvent(Event):
 class Rocket(UnitWeapon):
     def __init__(self, time, starter, direction=0, **kw):
         # взять позицию и направление выпустившего ракету
-        log.info('start rocket with direction=%s', starter.direction(time=time))
+        starter.main_agent.log.info('start rocket with direction=%s', starter.direction(time=time))
         super(Rocket, self).__init__(time=time,
                                      starter=starter,
                                      position=starter.position(time=time),
@@ -32,8 +32,13 @@ class Rocket(UnitWeapon):
         self.radius_damage = self.example.radius_damage
         self.damage = self.example.damage
 
-    def can_see_me(self, subj, **kw):
-        return subj is self.starter or super(Rocket, self).can_see_me(subj=subj, **kw)
+    # def can_see_me(self, subj, **kw):
+    #     return subj is self.starter or super(Rocket, self).can_see_me(subj=subj, **kw)
+
+    def as_dict(self, time):
+        d = super(Rocket, self).as_dict(time=time)
+        d.update(icon_name=self.example.icon_name)
+        return d
 
     def on_init(self, event):
         super(Rocket, self).on_init(event)

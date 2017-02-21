@@ -508,20 +508,6 @@ class AgentAPI(API):
                              time=self.agent.server.get_time()).post()
 
     @public_method
-    def send_rocket(self):
-        return
-        self.agent.log.info("send_rocket")
-        if self.car.limbo or not self.car.is_alive:
-            return
-        position = None
-        for item_dict in self.car.inventory.get_all_items():
-            if isinstance(item_dict['item'].example, MapWeaponRocketItem):
-                position = item_dict['position']
-        if position is not None:
-            ItemActivationEvent(agent=self.agent, owner_id=self.car.uid, position=position, target_id=self.car.uid,
-                                time=self.agent.server.get_time()).post()
-
-    @public_method
     def send_slow_mine(self):
         return
         self.agent.log.info("send_slow_mine")

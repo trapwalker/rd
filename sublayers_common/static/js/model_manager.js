@@ -208,7 +208,10 @@ var ClientManager = (function () {
                 new WCarMarker(car);
             }
 
-            if (car.cls == "Rocket") new WCanvasRocketMarkerEffect(car);
+            if (car.cls == "Rocket") {
+                car._icon_name = event.object.icon_name;
+                new WCanvasRocketMarkerEffect(car);
+            }
 
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
             if (contextPanel) contextPanel.addModelObject(car); // добавить себя в контекстную панель
