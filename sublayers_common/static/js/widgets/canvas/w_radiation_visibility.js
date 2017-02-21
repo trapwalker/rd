@@ -18,10 +18,10 @@ var WRadiationEffect = (function () {
         if (mapCanvasManager.real_zoom < 15) return;
         if (! user.userCar) return;
 
-        var radiation_dps = user.userCar.radiation_dps || 1;  // 0
+        var radiation_dps = user.userCar.radiation_dps || 0;  // 0
         radiation_dps = Math.floor(radiation_dps * 30);
 
-        if (this._effects.length < 1) {
+        if (this._effects.length < radiation_dps) {
             //new RadiationAnimationEffectRandomCloud().start();
             new RadiationCircleEffectRandom().start();
         }
@@ -212,10 +212,10 @@ var RadiationCircleEffectRandom = (function (_super) {
     __extends(RadiationCircleEffectRandom, _super);
 
     function RadiationCircleEffectRandom() {
-        //var position = new Point(mapCanvasManager.canvas.width * Math.random(), mapCanvasManager.canvas.height * Math.random());
-        var position = new Point(300, 300);
+        var position = new Point(mapCanvasManager.canvas.width * Math.random(), mapCanvasManager.canvas.height * Math.random());
+        //var position = new Point(300, 300);
         var direction = Math.random() * 2.0 * Math.PI;
-        var duration = 5000 * Math.random() + 300;
+        var duration = 400 * Math.random() + 300;
         _super.call(this, position, direction, duration);
 
         this._radius = 1.0 + Math.random() * 8.0;
