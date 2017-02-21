@@ -32,6 +32,9 @@ class Rocket(UnitWeapon):
         self.radius_damage = self.example.radius_damage
         self.damage = self.example.damage
 
+    def can_see_me(self, subj, **kw):
+        return subj is self.starter or super(Rocket, self).can_see_me(subj=subj, **kw)
+
     def on_init(self, event):
         super(Rocket, self).on_init(event)
         self.set_motion(cc=1.0, time=event.time)
@@ -48,7 +51,6 @@ class Rocket(UnitWeapon):
             return
         if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return
-
         self.delete(time=time)
 
     def set_default_tags(self):
