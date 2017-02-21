@@ -75,18 +75,19 @@ var RadiationEffectSmooth = (function (_super) {
         this.duration = duration; // Время, сколько висит эвент
         this._start_smooth_time = this.duration * 0.2; // Время плавного появления
         this._finish_smooth_time = this.duration * 0.3; // Время плавного исчезновения
+        this._max_alpha_koeff = 1.0;
     }
 
     RadiationEffectSmooth.prototype._get_alpha = function (time) {
         var cur_effect_time = (time - this.start_time) * 1000;
-        var alpha_start = 0.0;
-        var alpha_finish = 0.0;
+        var alpha_start = 1.0;
+        var alpha_finish = 1.0;
         if (cur_effect_time < this._start_smooth_time)
             alpha_start = cur_effect_time / this._start_smooth_time;
         cur_effect_time = this.duration - cur_effect_time;
         if (cur_effect_time < this._finish_smooth_time)
             alpha_finish = cur_effect_time / this._finish_smooth_time;
-        return Math.min(Math.max(Math.min(alpha_start, alpha_finish), 0.0), 1.0);
+        return Math.min(Math.max(Math.min(alpha_start, alpha_finish), 0.0), 1.0) * this._max_alpha_koeff;
     };
 
     return RadiationEffectSmooth
@@ -213,9 +214,8 @@ var RadiationCircleEffectRandom = (function (_super) {
 
     function RadiationCircleEffectRandom() {
         var position = new Point(mapCanvasManager.canvas.width * Math.random(), mapCanvasManager.canvas.height * Math.random());
-        //var position = new Point(300, 300);
         var direction = Math.random() * 2.0 * Math.PI;
-        var duration = 400 * Math.random() + 300;
+        var duration = 5000 * Math.random() + 300;
         _super.call(this, position, direction, duration);
 
         this._radius = 1.0 + Math.random() * 8.0;
@@ -225,6 +225,7 @@ var RadiationCircleEffectRandom = (function (_super) {
 
         this._start_smooth_time = this.duration * 0.8; // Время плавного появления
         this._finish_smooth_time = this.duration * 0.8; // Время плавного исчезновения
+        //this._max_alpha_koeff = 0.8;
     }
 
     return RadiationCircleEffectRandom
