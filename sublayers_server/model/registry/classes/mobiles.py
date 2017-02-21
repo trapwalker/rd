@@ -474,7 +474,7 @@ class MapBangWeapon(MobileWeapon):
 
 
 class MapWeaponRocket(MapBangWeapon):
-    pass
+    icon_name = StringField(caption=u'Имя иконки в iconManager')
 
 
 class MapWeaponBangMine(MapBangWeapon):

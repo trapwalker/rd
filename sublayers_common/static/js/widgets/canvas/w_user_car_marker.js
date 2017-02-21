@@ -602,7 +602,8 @@ var WCanvasRocketMarkerEffect = (function (_super) {
         //console.log('WCanvasAnimateMarker.prototype.updateIcon');
         // Здесь нужно заполнить все эти параметры
         this.cm_z_index = 8; // todo: Выбрать правильный приоритет
-        this.icon_obj = iconsLeaflet.getIcon("icon-rocket", "canvas_icon");
+        this.icon_obj = iconsLeaflet.getIcon(this.mobj._icon_name, "canvas_icon");
+        if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;
         this.time_of_frame = this.duration / this.icon_obj.frames;
