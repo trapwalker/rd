@@ -215,16 +215,16 @@ var RadiationCircleEffectRandom = (function (_super) {
     function RadiationCircleEffectRandom() {
         var position = new Point(mapCanvasManager.canvas.width * Math.random(), mapCanvasManager.canvas.height * Math.random());
         var direction = Math.random() * 2.0 * Math.PI;
-        var duration = 5000 * Math.random() + 300;
+        var duration = 1000 * Math.random() + 50;
         _super.call(this, position, direction, duration);
 
-        this._radius = 1.0 + Math.random() * 8.0;
-        this._fillStyle = "green";
+        this._radius = 1.0 + Math.random() * 4.0;
+        this._fillStyle = "#030f00";
         this._lineWidth = Math.random() > 0.5 ? 1 : 2;
-        this._strokeStyle = "red";
+        this._strokeStyle = "#082801";
 
-        this._start_smooth_time = this.duration * 0.8; // Время плавного появления
-        this._finish_smooth_time = this.duration * 0.8; // Время плавного исчезновения
+        this._start_smooth_time = this.duration * 0.1; // Время плавного появления
+        this._finish_smooth_time = this.duration * 0.9; // Время плавного исчезновения
         //this._max_alpha_koeff = 0.8;
     }
 
