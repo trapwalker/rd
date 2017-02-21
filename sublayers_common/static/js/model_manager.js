@@ -480,6 +480,8 @@ var ClientManager = (function () {
             } else
                 wObservingRange.addModelObject(mcar);
 
+            if (!wRadiationEffect) wRadiationEffect = new WRadiationEffect();
+
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
 
