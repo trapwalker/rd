@@ -644,17 +644,18 @@ class User(Agent):
 
 
 class AI(Agent):
-    def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self.user.name)
-        log_file = 'log/agents/bot_{}.log'.format(logger_name)
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        formatter = logging.Formatter('%(asctime)s : %(message)s')
-        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
-        fileHandler.setFormatter(formatter)
-        l.setLevel(level)
-        l.addHandler(fileHandler)
-        return l
+    u""" Класс-родитель для всех агентов-ботов """
+    # def setup_logger(self, level=logging.INFO):
+    #     logger_name = 'agent_{}'.format(self.user.name)
+    #     log_file = 'log/agents/bot_{}.log'.format(logger_name)
+    #     l = logging.getLogger(logger_name)
+    #     l.propagate = 0
+    #     formatter = logging.Formatter('%(asctime)s : %(message)s')
+    #     fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
+    #     fileHandler.setFormatter(formatter)
+    #     l.setLevel(level)
+    #     l.addHandler(fileHandler)
+    #     return l
 
 
 class QuickUser(User):
