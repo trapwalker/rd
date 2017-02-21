@@ -23,7 +23,7 @@ var WRadiationEffect = (function () {
 
         for (var i = 0; i < radiation_dps - this._effects.length && i < 50; i++) {
             //new RadiationAnimationEffectRandomCloud().start();
-            //new RadiationCircleEffectRandom().start();
+            new RadiationCircleEffectRandom().start();
             new RadiationLineEffectRandom().start();
         }
 
@@ -189,12 +189,17 @@ var RadiationLineEffect = (function (_super) {
         ctx.rotate(this.direction);
         ctx.globalAlpha = this._get_alpha(time);
         ctx.beginPath();
-        ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(this._line_length, 0);
+        ctx.lineTo(this._line_length, 3);
+        ctx.lineTo(0, 3);
+        ctx.lineTo(0, 0);
+        ctx.fillStyle = "#76ff7a";
+        ctx.fill();
         ctx.lineWidth = this._lineWidth;
         ctx.strokeStyle = this._strokeStyle;
         ctx.stroke();
+
         ctx.restore();
     };
 
@@ -275,10 +280,10 @@ var RadiationCircleEffectRandom = (function (_super) {
         var duration = 1000 * Math.random() + 50;
         _super.call(this, position, direction, duration);
 
-        this._radius = 1.0 + Math.random() * 4.0;
-        this._fillStyle = "#030f00";
+        this._radius = 2.0 + Math.random() * 3.0;
+        this._fillStyle = "#76ff7a";
         this._lineWidth = Math.random() > 0.5 ? 1 : 2;
-        this._strokeStyle = "#082801";
+        this._strokeStyle = "#030f00";
 
         this._start_smooth_time = this.duration * 0.1; // Время плавного появления
         this._finish_smooth_time = this.duration * 0.9; // Время плавного исчезновения
@@ -298,14 +303,14 @@ var RadiationLineEffectRandom = (function (_super) {
     function RadiationLineEffectRandom() {
         var position = new Point(mapCanvasManager.canvas.width * Math.random(), mapCanvasManager.canvas.height * Math.random());
         var direction = 0; //Math.random() * 2.0 * Math.PI;
-        var duration = 200 * Math.random() + 200;
+        var duration = 1000 * Math.random() + 50;
         var line_length = 2;
         _super.call(this, position, direction, duration, line_length);
 
-        this._lineWidth = Math.random() > 0.6 ? 2 : 1;
-        this._strokeStyle = "white";
+        this._lineWidth = 1; //Math.random() > 0.5 ? 1 : 2;
+        this._strokeStyle = "#030f00";
 
-        var speed = 70 +  Math.random() * 60;
+        var speed = 5 +  Math.random() * 20;
 
         this._speed_x = -speed / 2.0;
         this._speed_line_length = speed;
