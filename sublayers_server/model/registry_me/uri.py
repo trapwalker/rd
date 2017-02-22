@@ -34,7 +34,7 @@ class URI(tuple):
 
     _RE_URI = re.compile(ur'''
         ^
-        (?:(?P<scheme>\w+)://)  #? scheme is necessary
+        (?:(?P<scheme>\w+)://)?  #? scheme is necessary
         (?P<storage>[^/]+)?
         (?P<path>(?:/[^\?#]+)*)
         (?P<tail_slash>/)?

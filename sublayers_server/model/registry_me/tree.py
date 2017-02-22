@@ -156,7 +156,7 @@ class NodeMetaclass(DocumentMetaclass):
 
         return new_cls
 
-
+########################################################################################################################
 class Node(EmbeddedDocument):
     #__slots__ = ('_uri',)
     __metaclass__ = NodeMetaclass
@@ -164,10 +164,6 @@ class Node(EmbeddedDocument):
     meta = dict(
         allow_inheritance=True,
     )
-
-    def put_to(self, reg):
-        get_registry(reg)._put(self)
-        return self
 
     @property
     def uri(self):
@@ -202,6 +198,9 @@ class Node(EmbeddedDocument):
         assert parent, 'Try to get a node hash of wrong node: {!r}'.format(self)
         return self.parent.node_hash()
 
+    def node_html(self):  # todo: rename
+        return self.node_hash().replace('://', '-').replace('/', '-')
+
     @property
     def root_instance(self):
         # todo: cache it
@@ -211,13 +210,6 @@ class Node(EmbeddedDocument):
             instance = next_instance
             next_instance = instance._instance
         return next_instance or instance
-
-    #uri = StringField(unique=True, null=True, not_inherited=True)
-    #owner = ReferenceField(document_type='self', not_inherited=True)  # todo: make it property
-    #parent = ReferenceField(document_type='Node', not_inherited=True)
-    parent = RegistryLinkField(document_type='self', not_inherited=True)
-    owner = RegistryLinkField(document_type='self', not_inherited=True)
-    # todo: make `owner` property
 
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     #fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
@@ -229,8 +221,40 @@ class Node(EmbeddedDocument):
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
-    # def __init__(self, name=None, owner=None, parent=None, registry=None, **kw):
-    #     super(Node, self).__init__(name=name, owner=owner, parent=parent, **kw)
+    #uri = StringField(unique=True, null=True, not_inherited=True)
+    parent = RegistryLinkField(document_type='self', not_inherited=True)
+    owner = RegistryLinkField(document_type='self', not_inherited=True)
+    subnodes = ListField(field=EmbeddedNodeField(document_type='self', not_inherited=True), not_inherited=True)
+    # todo: make `owner` property
+
+    def get(self, addr, *defaults):
+        if len(defaults) > 1:
+            raise TypeError('get expected at most 3 arguments, got {}'.format(2 + len(defaults)))
+
+        if isinstance(addr, basestring):
+            if addr.startswith('reg://') or addr.startswith('/'):
+                uri = URI(addr)
+                assert not uri.params and not uri.anchor, 'Wrong node address to get: {!r}'.format(addr)
+                path = uri.path
+            else:
+                path = tuple(addr.split('/'))
+        elif not isinstance(addr, tuple):
+            path = tuple(addr)
+        else:
+            path = addr
+
+        if not path:
+            return self
+
+        key, rest = path[0], path[1:]
+        for subnode in self.subnodes or []:  # todo: full search ##optimize
+            if subnode.name == key:
+                return subnode.get(rest, *defaults)
+
+        if defaults:
+            return defaults[0]
+
+        raise KeyError('Node {!r} has no subnode {!r}'.format(self, path))
 
     def __init__(self, **kw):
         only_fields = kw.pop('__only_fields', self.__class__._inheritable_fields)
@@ -324,27 +348,21 @@ class Node(EmbeddedDocument):
             d[name] = value
 
         d.update(
-            #node_hash=self.node_hash(),  # todo: REALIZE and uncomment this
-            #html_hash=self.node_html(),
+            node_hash=self.node_hash(),  # todo: REALIZE and uncomment this
+            html_hash=self.node_html(),
             tags=list(self.tag_set),
         )
         return d
 
-
+########################################################################################################################
 class Registry(Document):
     name = StringField()
-    tree = MapField(field=EmbeddedDocumentField(document_type=Node))
+    root = EmbeddedDocumentField(document_type=Node)
 
     # def __init__(self, **kw):
     #     super(Registry, self).__init__(**kw)
 
-    def _put(self, node, uri=None):
-        uri = uri or node.uri
-        added_node = self.tree.setdefault(uri, node)
-        assert added_node is node, (
-            'Registry already has same node: {added_node!r} by uri {uri!r}. Fail to put: {node!r}'.format(
-                **locals())
-        )
+    # todo: del mentions "_put"
 
     def get_node_by_uri(self, uri, default=None):
         # tod4o: support alternative path notations (list, relative, parametrized)
@@ -434,7 +452,8 @@ def get_registry(name=None):
     return reg
 
 
-###############################################################################################
+########################################################################################################################
+########################################################################################################################
 
 class A(Node):
     x = IntField(null=True, tags='client t1 t2')
