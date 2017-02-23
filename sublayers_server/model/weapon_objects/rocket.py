@@ -23,6 +23,7 @@ class Rocket(UnitWeapon):
     def __init__(self, time, starter, direction=0, **kw):
         # взять позицию и направление выпустившего ракету
         starter.main_agent.log.info('start rocket with direction=%s', starter.direction(time=time))
+        self._rocket_starter_v = starter.v(time)
         super(Rocket, self).__init__(time=time,
                                      starter=starter,
                                      position=starter.position(time=time),
@@ -38,6 +39,11 @@ class Rocket(UnitWeapon):
     def as_dict(self, time):
         d = super(Rocket, self).as_dict(time=time)
         d.update(icon_name=self.example.icon_name)
+        return d
+
+    def init_state_params(self):
+        d = super(Rocket, self).init_state_params()
+        d.update(v=self._rocket_starter_v)
         return d
 
     def on_init(self, event):
