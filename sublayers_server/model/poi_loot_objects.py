@@ -13,8 +13,7 @@ from sublayers_server.model.parameters import Parameter
 
 
 class CreatePOILootEvent(Event):
-    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50,
-                 sub_class_car=None, car_direction=None, donor_v=None, donor_example=None):
+    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50):
         super(CreatePOILootEvent, self).__init__(server=server, time=time)
         self.poi_cls = poi_cls
         self.example = example
@@ -23,10 +22,6 @@ class CreatePOILootEvent(Event):
         self.life_time = life_time
         self.items = items
         self.connect_radius = connect_radius
-        self.sub_class_car = sub_class_car
-        self.car_direction = car_direction
-        self.donor_v = donor_v
-        self.donor_example = donor_example
 
     def on_perform(self):
         super(CreatePOILootEvent, self).on_perform()
@@ -42,17 +37,37 @@ class CreatePOILootEvent(Event):
                     break
 
         if not stash:
-            if self.poi_cls is POICorpse:
-                stash = POICorpse(server=self.server, time=self.time, example=self.example,
-                                  inventory_size=self.inventory_size, position=self.position,
-                                  life_time=self.life_time, sub_class_car=self.sub_class_car,
-                                  car_direction=self.car_direction, donor_v=self.donor_v,
-                                  donor_example=self.donor_example)
-            else:
-                stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
-                                     inventory_size=self.inventory_size, position=self.position,
-                                     life_time=self.life_time)
+            stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
+                                 inventory_size=self.inventory_size, position=self.position,
+                                 life_time=self.life_time)
 
+        # заполнить инвентарь сундука
+        for item in self.items:
+            item.set_inventory(time=self.time, inventory=stash.inventory)
+
+
+class CreatePOICorpseEvent(Event):
+    def __init__(self, server, time, example, inventory_size, position, life_time, items, connect_radius=50,
+                 sub_class_car=None, car_direction=None, donor_v=None, donor_example=None):
+        super(CreatePOICorpseEvent, self).__init__(server=server, time=time)
+        self.example = example
+        self.inventory_size = inventory_size
+        self.position = position
+        self.life_time = life_time
+        self.items = items
+        self.connect_radius = connect_radius
+        self.sub_class_car = sub_class_car
+        self.car_direction = car_direction
+        self.donor_v = donor_v
+        self.donor_example = donor_example
+
+    def on_perform(self):
+        super(CreatePOICorpseEvent, self).on_perform()
+        stash = POICorpse(server=self.server, time=self.time, example=self.example,
+                          inventory_size=self.inventory_size, position=self.position,
+                          life_time=self.life_time, sub_class_car=self.sub_class_car,
+                          car_direction=self.car_direction, donor_v=self.donor_v,
+                          donor_example=self.donor_example)
         # заполнить инвентарь сундука
         for item in self.items:
             item.set_inventory(time=self.time, inventory=stash.inventory)

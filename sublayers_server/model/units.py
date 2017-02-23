@@ -18,7 +18,7 @@ from sublayers_server.model.events import (
 )
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
-from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot, POICorpse
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot, POICorpse, CreatePOICorpseEvent
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
 from sublayers_server.model.inventory import Inventory, ItemState
@@ -536,10 +536,9 @@ class Bot(Mobile):
         super(Bot, self).on_kill(event=event, obj=obj)
 
     def post_die_loot(self, event):
-        CreatePOILootEvent(
+        CreatePOICorpseEvent(
             server=self.server,
             time=event.time,
-            poi_cls=POICorpse,
             example=None,
             inventory_size=self.example.inventory.size,
             position=self.position(event.time),
