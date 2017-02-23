@@ -250,20 +250,12 @@ class Unit(Observer):
             # todo: возможно это нужно перенести (!)
             self.owner.example.car = None
 
-        # todo: Сделать другой эвенет, передавать в него не список итемов, а inventory
         if not self.inventory.is_empty():
-            CreatePOILootEvent(
-                server=self.server,
-                time=event.time,
-                poi_cls=POICorpse,
-                example=None,
-                inventory_size=self.example.inventory.size,
-                position=self.position(event.time),
-                life_time=self.server.poi_loot_objects_life_time,
-                items=self.inventory.get_items(),
-                sub_class_car=self.example.sub_class_car,
-                car_direction=self.direction(event.time),
-            ).post()
+            self.post_die_loot(event)
+
+    def post_die_loot(self, event):
+        # Данный метод упределяет как и куда денется лут из Unit объекта: взрыв, проезд и тд.
+        pass
 
     def drop_item_to_map(self, item, time):
         CreatePOILootEvent(
@@ -542,6 +534,22 @@ class Bot(Mobile):
         # Начисление опыта и фрага агенту
         self.main_agent.on_kill(event=event, target=obj, killer=self)
         super(Bot, self).on_kill(event=event, obj=obj)
+
+    def post_die_loot(self, event):
+        CreatePOILootEvent(
+            server=self.server,
+            time=event.time,
+            poi_cls=POICorpse,
+            example=None,
+            inventory_size=self.example.inventory.size,
+            position=self.position(event.time),
+            life_time=self.server.poi_loot_objects_life_time,
+            items=self.inventory.get_items(),
+            sub_class_car=self.example.sub_class_car,
+            car_direction=self.direction(event.time),
+            donor_v=self.v(event.time),
+            donor_example=self.example,
+        ).post()
 
     def start_shield_off(self, event):
         self.start_shield_event = None

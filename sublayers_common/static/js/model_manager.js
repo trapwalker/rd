@@ -162,7 +162,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype._contactBot = function (event) {
-        //console.log('ClientManager.prototype._contactBot');
+        //console.log('ClientManager.prototype._contactBot', event.object.cls);
         if (event.is_first) { // только если первый раз добавляется машинка
             var state = this._getState(event.object.state);
             var hp_state = this._getHPState(event.object.hp_state);
@@ -182,6 +182,9 @@ var ClientManager = (function () {
                 console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
                 return;
             }
+
+            if (event.object.cls == "POICorpse")
+                hp_state = new HPState(0, 0, 0, 0, 0);
 
             // Создание новой машинки
             car = new MapCar(uid, state, hp_state, fuel_state, v_forward, p_observing_range, aObsRangeRateMin, aObsRangeRateMax);
@@ -211,6 +214,11 @@ var ClientManager = (function () {
             if (car.cls == "Rocket") {
                 car._icon_name = event.object.icon_name;
                 new WCanvasRocketMarkerEffect(car);
+            }
+
+            if (car.cls == "POICorpse") {
+                car.direction = event.object.car_direction + Math.PI / 2.;
+                obj_marker = new WCarMarker(car); // виджет маркера
             }
 
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
@@ -510,8 +518,8 @@ var ClientManager = (function () {
         }
 
         // Обновить машинку и, возможно, что-то ещё (смерть или нет и тд)
-        car.setState(motion_state);
-        car.setHPState(hp_state);
+        if (motion_state) car.setState(motion_state);
+        if (hp_state) car.setHPState(hp_state);
 
         // Если своя машинка
         if (car == user.userCar) {
@@ -530,7 +538,7 @@ var ClientManager = (function () {
                 mapManager.widget_rumble.startDischargeRumble();
 
             // Установка cc для круизконтроля
-            wCruiseControl.setSpeedRange(event.object.params.p_cc);
+            if (event.object.params) wCruiseControl.setSpeedRange(event.object.params.p_cc);
         }
 
         // Если появился или исчез щит
@@ -577,6 +585,7 @@ var ClientManager = (function () {
             case 'StationaryTurret':
             case 'SlowMine':
             case 'BangMine':
+            case 'POICorpse':
             case 'Mobile':
                 this._contactBot(event);
                 break;
@@ -588,7 +597,6 @@ var ClientManager = (function () {
             case 'Town':
             case 'POILoot':
             case 'POIContainer':
-            case 'POICorpse':
             case 'GasStation':
                 this._contactStaticObject(event);
                 break;

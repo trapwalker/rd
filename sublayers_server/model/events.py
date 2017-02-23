@@ -421,7 +421,7 @@ class ShowInventoryEvent(Event):
         obj = self.server.objects.get(self.owner_id)
         # assert (obj is not None) and (obj.inventory is not None)
         if obj is not None and obj.inventory is not None and (
-                obj is self.agent.car or obj.is_available(agent=self.agent)):
+                obj is self.agent.car or obj.is_available(agent=self.agent, time=self.time)):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
