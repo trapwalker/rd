@@ -681,6 +681,22 @@ var ClientManager = (function () {
         }, 3000);
     };
 
+    ClientManager.prototype.DieVisualisationMessage  = function (event) {
+        //console.log('ClientManager.prototype.DieVisualisationMessage', event);
+        var uid = event.object_id;
+        var obj = visualManager.getModelObject(uid);
+        if (!obj) return;
+        var position = obj.getCurrentCoord(clock.getCurrentTime());
+        if (event.direction == null) {
+            // Если взрыв не направленный
+            new ECanvasDieVisualisation(position).start()
+        }
+        else {
+            // Если взрыв направленный
+            new ECanvasDieVisualisationOriented(position, event.direction).start()
+        }
+    };
+
     ClientManager.prototype.StartQuickGame = function(event) {
         console.log('ClientManager.prototype.StartQuickGame', event);
         modalWindow.modalQuickGameMapTeachingPageShow({

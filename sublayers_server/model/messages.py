@@ -133,6 +133,21 @@ class QuickGameDie(Message):
         return d
 
 
+class DieVisualisationMessage(Message):
+    def __init__(self, obj, direction, **kw):
+        super(DieVisualisationMessage, self).__init__(**kw)
+        self.obj = obj
+        self.direction = direction
+
+    def as_dict(self):
+        d = super(DieVisualisationMessage, self).as_dict()
+        d.update(
+            object_id=self.obj.uid,
+            direction=self.direction,
+        )
+        return d
+
+
 class QuickGameChangePoints(Message):
     def as_dict(self):
         d = super(QuickGameChangePoints, self).as_dict()

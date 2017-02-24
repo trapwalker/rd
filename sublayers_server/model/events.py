@@ -172,6 +172,10 @@ class Init(Objective):
 
 
 class Die(Objective):
+    def __init__(self, killer, **kw):
+        super(Die, self).__init__(**kw)
+        self.killer = killer
+
     def on_perform(self):
         super(Die, self).on_perform()
         self.obj.is_alive = False
