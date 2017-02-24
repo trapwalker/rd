@@ -2,7 +2,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import Event, Objective
 from sublayers_server.model.base import Observer
 from sublayers_server.model.inventory import Inventory, ItemState
 from sublayers_server.model.vectors import Point
@@ -48,7 +48,7 @@ class CreatePOILootEvent(Event):
 
 class CreatePOICorpseEvent(Event):
     def __init__(self, server, time, example, inventory_size, position, life_time, items, connect_radius=50,
-                 sub_class_car=None, car_direction=None, donor_v=None, donor_example=None):
+                 sub_class_car=None, car_direction=None, donor_v=None, donor_example=None, agent_viewer=None):
         super(CreatePOICorpseEvent, self).__init__(server=server, time=time)
         self.example = example
         self.inventory_size = inventory_size
@@ -60,6 +60,7 @@ class CreatePOICorpseEvent(Event):
         self.car_direction = car_direction
         self.donor_v = donor_v
         self.donor_example = donor_example
+        self.agent_viewer = agent_viewer
 
     def on_perform(self):
         super(CreatePOICorpseEvent, self).on_perform()
@@ -67,7 +68,7 @@ class CreatePOICorpseEvent(Event):
                           inventory_size=self.inventory_size, position=self.position,
                           life_time=self.life_time, sub_class_car=self.sub_class_car,
                           car_direction=self.car_direction, donor_v=self.donor_v,
-                          donor_example=self.donor_example)
+                          donor_example=self.donor_example, agent_viewer=self.agent_viewer)
         # заполнить инвентарь сундука
         for item in self.items:
             item.set_inventory(time=self.time, inventory=stash.inventory)
@@ -145,13 +146,14 @@ class POILoot(POIContainer):
 
 
 class POICorpse(POIContainer):
-    def __init__(self, time, sub_class_car, car_direction, donor_v, donor_example, **kw):
+    def __init__(self, time, sub_class_car, car_direction, donor_v, donor_example, agent_viewer=None, **kw):
         super(POICorpse, self).__init__(time=time, **kw)
         self.sub_class_car = sub_class_car
         self.car_direction = car_direction
         self.donor_v = donor_v
         self.donor_param_aggregate = donor_example.param_aggregate(example_agent=None)
         self.tasks = []
+        self.agent_viewer = agent_viewer
 
         self.state = MotionState(t=time, **self.init_state_params())
         self.cur_motion_task = None
@@ -175,9 +177,21 @@ class POICorpse(POIContainer):
             v=self.donor_v,
         )
 
+    def delete_self_from_viewer(self, event):
+        if self.agent_viewer:
+            self.agent_viewer.drop_obj(obj=self, time=event.time)
+            self.agent_viewer = None
+
     def on_init(self, event):
         super(POICorpse, self).on_init(event)
         self.set_motion(time=event.time, cc=0.0)
+        if self.agent_viewer:
+            self.agent_viewer.append_obj(obj=self, time=event.time)
+            Objective(obj=self, time=event.time + 4.0, callback_after=self.delete_self_from_viewer).post()
+
+    def on_before_delete(self, event):
+        self.delete_self_from_viewer(event=event)
+        super(POICorpse, self).on_before_delete(event=event)
 
     def as_dict(self, time):
         d = super(POICorpse, self).as_dict(time=time)

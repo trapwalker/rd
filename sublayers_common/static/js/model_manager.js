@@ -178,8 +178,8 @@ var ClientManager = (function () {
             // Проверка: нет ли уже такой машинки.
             var car = this._getMObj(uid);
             if (car) return;
-            if (car == user.userCar) {
-                console.error('Contact Error: Своя машинка не должна получать Contact !!!!');
+            if (user.userCar && car == user.userCar) {
+                console.error('Contact Error: Своя машинка не должна получать Contact !!!!', event);
                 return;
             }
 
@@ -487,11 +487,8 @@ var ClientManager = (function () {
             }
 
             // Инициализация виджетов работы с канвасом
-            if (!wObservingRange) {
-                wObservingRange = new WObservingRange();
-                wObservingRange.addModelObject(mcar);
-            } else
-                wObservingRange.addModelObject(mcar);
+            if (!wObservingRange) wObservingRange = new WObservingRange();
+            wObservingRange.addModelObject(mcar);
 
             if (!wRadiationEffect) wRadiationEffect = new WRadiationEffect();
 
@@ -513,7 +510,7 @@ var ClientManager = (function () {
         var car = visualManager.getModelObject(uid);
 
         if (!car) {
-            console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка! uid=', uid);
+            //console.error('Update Error: Машины с данным id не существует на клиенте. Ошибка! uid=', uid, event);
             return;
         }
 
@@ -522,7 +519,7 @@ var ClientManager = (function () {
         if (hp_state) car.setHPState(hp_state);
 
         // Если своя машинка
-        if (car == user.userCar) {
+        if (user.userCar && car == user.userCar) {
             car.setFuelState(fuel_state);
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
@@ -573,7 +570,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype.See = function (event) {
         //console.log('ClientManager.prototype.See', event);
-        if (user.userCar == null) {
+        if (user.userCar == null && event.object.cls != "POICorpse") {
             //console.warn('Контакт ивент до инициализации своей машинки!');
             return;
         }
@@ -667,19 +664,21 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.QuickGameDie', event);
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
-        modalWindow.modalQuickGamePointsPageShow({
-            quick_users: event.quick_users,
-            points: event.points,
-            record_index: event.record_index,
-            current_car_index: event.current_car_index,
-            callback_ok: function () {
-                clientManager.sendQuickPlayAgain();
-                modalWindow.modalQuickGamePointsPageHide();
-            },
-            callback_cancel: function() {
-                window.location = '/#start';
-            }
-        });
+        setTimeout(function () {
+            modalWindow.modalQuickGamePointsPageShow({
+                quick_users: event.quick_users,
+                points: event.points,
+                record_index: event.record_index,
+                current_car_index: event.current_car_index,
+                callback_ok: function () {
+                    clientManager.sendQuickPlayAgain();
+                    modalWindow.modalQuickGamePointsPageHide();
+                },
+                callback_cancel: function () {
+                    window.location = '/#start';
+                }
+            });
+        }, 3000);
     };
 
     ClientManager.prototype.StartQuickGame = function(event) {

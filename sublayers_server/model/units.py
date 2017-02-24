@@ -548,6 +548,7 @@ class Bot(Mobile):
             car_direction=self.direction(event.time),
             donor_v=self.v(event.time),
             donor_example=self.example,
+            agent_viewer=self.main_agent,
         ).post()
 
     def start_shield_off(self, event):

@@ -129,7 +129,7 @@ var ECanvasAutoFirePNG = (function (_super) {
 
     function ECanvasAutoFirePNG(car, side) {
         this.car = car;
-        this.side_direction = user.userCar.fireSidesMng.sides[side].direction;
+        this.side_direction = user.userCar ? user.userCar.fireSidesMng.sides[side].direction : 0.0;
         _super.call(this, car.getCurrentCoord(clock.getCurrentTime()), car.getCurrentDirection(clock.getCurrentTime()));
         this.duration = 200;
         this.effect_image_obj = effectPNGLoader.getImage("effect-fire-auto-png");

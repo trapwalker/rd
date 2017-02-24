@@ -55,10 +55,10 @@ var WObservingRange = (function (_super) {
     };
 
     WObservingRange.prototype.delFromVisualManager = function () {
-        //console.log('WObservingRange.prototype.delFromVisualManager');
-        mapCanvasManager.del_vobj(this);
-        _super.prototype.delFromVisualManager.call(this);
-        wObservingRange = null;
+        //console.trace('WObservingRange.prototype.delFromVisualManager');
+        //mapCanvasManager.del_vobj(this);
+        //_super.prototype.delFromVisualManager.call(this);
+        //wObservingRange = null;
     };
 
     return WObservingRange;
