@@ -133,6 +133,21 @@ class QuickGameDie(Message):
         return d
 
 
+class DieVisualisationMessage(Message):
+    def __init__(self, obj, direction, **kw):
+        super(DieVisualisationMessage, self).__init__(**kw)
+        self.obj = obj
+        self.direction = direction
+
+    def as_dict(self):
+        d = super(DieVisualisationMessage, self).as_dict()
+        d.update(
+            object_id=self.obj.uid,
+            direction=self.direction,
+        )
+        return d
+
+
 class QuickGameChangePoints(Message):
     def as_dict(self):
         d = super(QuickGameChangePoints, self).as_dict()
@@ -200,13 +215,14 @@ class Update(Message):
         d = super(Update, self).as_dict()
         # d.update(object=self.obj.as_dict())
         obj = self.obj
+        p_armor = obj.params.get('p_armor', None)
         dict_update = dict(
             uid=obj.uid,
-            state=obj.state.export(),
-            hp_state=obj.hp_state.export(),
-            active_shield_effect=obj.params.get('p_armor').value >= 100, # todo: пока нет списка всех визуальных эффектов для клиента, определение наличия неуязвимости будет выглядить так
+            state=None if getattr(obj, "state", None) is None else obj.state.export(),
+            hp_state=None if getattr(obj, "hp_state", None) is None else obj.hp_state.export(),
+            active_shield_effect=False if p_armor is None else p_armor.value >= 100, # todo: пока нет списка всех визуальных эффектов для клиента, определение наличия неуязвимости будет выглядить так
         )
-        if self.agent == obj.owner:
+        if getattr(obj, "owner", None) is not None and self.agent == obj.owner:
             if obj.cur_motion_task is not None:
                 dict_update.update(target_point=obj.cur_motion_task.target_point)
             dict_update.update(fuel_state=obj.fuel_state.export())

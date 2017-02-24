@@ -255,7 +255,7 @@ var FireAutoEffectController = (function () {
         this.muzzle_flash = null;
 
         // Настройки звука
-        this.audio_self = (this.subj && (this.subj == user.userCar.ID));
+        this.audio_self = (this.subj && (user.userCar && this.subj == user.userCar.ID));
         var audio_container = this.audio_self ? self_audio : other_audio;
         this.weapon_animation = [];
         this.set_weapon_animation(options.weapon_animation);
