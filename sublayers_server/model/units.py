@@ -665,6 +665,9 @@ class ExtraMobile(Mobile):
         # Начисление опыта и фрага агенту
         self.main_agent.on_kill(event=event, target=obj, killer=self)
 
+    def post_die_loot(self, event):
+        pass
+
 
 class Slave(ExtraMobile):
     def on_init(self, event):
