@@ -745,6 +745,9 @@ var ViewMessengerGlass = (function () {
                 case "TransactionActivateRocketLogMessage":
                     this.addMessageToLog('Запущена ракета: ' + msg.item_title + '.');
                     break;
+                case "TransactionActivateTurretLogMessage":
+                    this.addMessageToLog('Установлена турель: ' + msg.item_title + '.');
+                    break;
                 case "TransactionGasStationLogMessage":
                     if (msg.d_fuel > 0)
                         this.addMessageToLog('В бак долито ' +  Math.trunc(msg.d_fuel) + ' литров топлива.');

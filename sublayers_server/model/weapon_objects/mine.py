@@ -10,7 +10,6 @@ import sublayers_server.model.tags as tags
 import random
 
 
-
 class MineStartEvent(Event):
     def __init__(self, starter, example_mine, **kw):
         super(MineStartEvent, self).__init__(server=starter.server, **kw)

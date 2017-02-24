@@ -119,8 +119,12 @@ var WCarMarker = (function (_super) {
             marker.setIcon(iconsLeaflet.getIconByID(7));
         }
 
-        if(car.cls == 'SlowMine' || car.cls == 'BangMine') {
+        if((car.cls == 'SlowMine') || (car.cls == 'BangMine')) {
             marker.setIcon(iconsLeaflet.getIcon("mine_001"));
+        }
+
+        if(car.cls == 'Turret') {
+            marker.setIcon(iconsLeaflet.getIcon("turret_001"));
         }
 
         if(car.cls == 'RadioPoint') {

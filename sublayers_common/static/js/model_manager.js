@@ -204,8 +204,12 @@ var ClientManager = (function () {
                     new WCanvasAnimateMarkerShieldEffect(car);
                 }
             }
-            if (car.cls == "SlowMine" || car.cls == "BangMine") {
-                new WCarMarker(car);
+            if ((car.cls == "SlowMine") || (car.cls == "BangMine")) {
+
+            }
+            if (car.cls == "Turret") {
+                var t = new WCanvasMarker(car);
+                new WCanvasHPCarMarker(car, t);
             }
 
             if (car.cls == "Rocket") {
@@ -574,7 +578,7 @@ var ClientManager = (function () {
             case 'Bot':
             case 'Rocket':
             case 'ScoutDroid':
-            case 'StationaryTurret':
+            case 'Turret':
             case 'SlowMine':
             case 'BangMine':
             case 'Mobile':

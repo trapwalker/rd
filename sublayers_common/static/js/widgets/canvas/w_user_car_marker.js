@@ -242,6 +242,67 @@ var WCanvasCarMarker = (function (_super) {
 })(VisualObject);
 
 
+var WCanvasMarker = (function (_super) {
+    __extends(WCanvasMarker, _super);
+
+    function WCanvasMarker(mobj) {
+        _super.call(this, [mobj]);
+        this.mobj = mobj;
+
+        this.icon_obj = null;
+        this.icon_arrow_obj = null;
+        this.icon_offset = {x: 0, y: 0};
+        this._last_car_ctx_pos = new Point(0, 0);
+
+        this.updateIcon();
+
+        mapCanvasManager.add_vobj(this, 11);  // todo: Выбрать правильный приоритет
+
+        var time = clock.getCurrentTime();
+    }
+
+    WCanvasMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasCarMarker.prototype.redraw');
+        ctx.save();
+        var car_pos = this.mobj.getCurrentCoord(time);
+        var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        this._last_car_ctx_pos = ctx_car_pos;
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+
+        var car_direction = this.mobj.direction;
+        ctx.rotate(car_direction);
+        ctx.drawImage(this.icon_obj.img, this.icon_offset.x, this.icon_offset.y);
+        ctx.restore();  // Возврат транслейта
+    };
+
+    WCanvasMarker.prototype.delFromVisualManager = function () {
+        //console.log('WCanvasUserCarMarker.prototype.delFromVisualManager');
+        this.mobj = null;
+        mapCanvasManager.del_vobj(this);
+        _super.prototype.delFromVisualManager.call(this);
+    };
+
+    WCanvasMarker.prototype.updateIcon = function() {
+        //console.log('WCanvasStaticObjectMarker.prototype.updateIcon');
+        var mobj = this.mobj;
+        var icon_name = '';
+        switch (mobj.cls) {
+            case 'Turret':
+                icon_name = 'turret_001';
+                break;
+            default:
+                console.log('Не найдена иконка. Установлена стандартная. ', mobj);
+                return;
+        }
+        this.icon_obj = iconsLeaflet.getIcon(icon_name, 'canvas_icon');
+        console.log(this.icon_obj);
+        this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[1] >> 1}
+    };
+
+    return WCanvasMarker;
+})(VisualObject);
+
+
 var WCanvasStaticObjectMarker = (function (_super) {
     __extends(WCanvasStaticObjectMarker, _super);
 
@@ -258,7 +319,6 @@ var WCanvasStaticObjectMarker = (function (_super) {
         mapCanvasManager.add_vobj(this, 11);  // todo: Выбрать правильный приоритет
 
         var time = clock.getCurrentTime();
-
     }
 
     WCanvasStaticObjectMarker.prototype.getVisibleState = function () {
