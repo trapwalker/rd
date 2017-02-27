@@ -1281,3 +1281,14 @@ class StopActivateItem(Message):
         d = super(StopActivateItem, self).as_dict()
         d.update(item=self.item.example.as_client_dict())
         return d
+
+
+class QuickGameArcadeTextMessage(Message):
+    def __init__(self, text, **kw):
+        super(QuickGameArcadeTextMessage, self).__init__(**kw)
+        self.text = text
+
+    def as_dict(self):
+        d = super(QuickGameArcadeTextMessage, self).as_dict()
+        d.update(text=self.text)
+        return d

@@ -685,6 +685,8 @@ var ClientManager = (function () {
                 }
             });
         }, 3000);
+
+        new WTextArcade("Крушение").start();
     };
 
     ClientManager.prototype.DieVisualisationMessage  = function (event) {
@@ -749,6 +751,11 @@ var ClientManager = (function () {
     ClientManager.prototype.AgentConsoleEchoMessage = function (event){
         console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
         chat.addMessageToSys(event.comment);
+    };
+
+    ClientManager.prototype.QuickGameArcadeTextMessage = function (event){
+        //console.log('ClientManager.prototype.QuickGameArcadeTextMessage :', event.comment);
+        new WTextArcade(event.text).start();
     };
 
     // todo: эффекты вынести потом в отдельный модуль

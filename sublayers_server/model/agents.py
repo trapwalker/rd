@@ -16,7 +16,7 @@ from sublayers_server.model.registry.classes.trader import Trader
 
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
-    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints,
+    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
@@ -670,6 +670,9 @@ class QuickUser(User):
         self.quick_game_bot_kills = 0
         self.record_id = None
 
+        self.time_of_end_kills_series = None
+        self.series_kills = 0
+
     def _add_quick_game_record(self, time):
         # pymongo add to quick_game_records
         self.record_id = self.server.app.db.quick_game_records.insert(
@@ -718,6 +721,26 @@ class QuickUser(User):
         if self.car:
             self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
         QuickGameChangePoints(agent=self, time=event.time).post()
+        # Отправка сообщения об убийстве кого-то
+        if target.main_agent:
+            QuickGameArcadeTextMessage(agent=self, time=event.time,
+                                       text=u"{!r} уничтожен".format(target.main_agent.print_login())).post()
+        # Обработка серии убийств
+        if self.time_of_end_kills_series and self.time_of_end_kills_series > event.time:  # Если серия убийств в процессе
+            self.time_of_end_kills_series = event.time + 7.0
+            self.series_kills += 1
+            if self.series_kills == 2:
+                QuickGameArcadeTextMessage(agent=self, time=event.time, text=u"Двойное убийство").post()
+            elif self.series_kills == 3:
+                QuickGameArcadeTextMessage(agent=self, time=event.time, text=u"Тройное убийство").post()
+            else:
+                QuickGameArcadeTextMessage(agent=self, time=event.time,
+                                           text=u"Серия убийств: {!s}".format(self.series_kills)).post()
+        else:  # Если серия не начиналась или закончилась
+            self.time_of_end_kills_series = event.time + 7.0  # Даём 5 секунд на одно убийство
+            self.series_kills = 1
+
+
 
     @tornado.gen.coroutine
     def init_example_car(self):
