@@ -207,9 +207,11 @@ var ClientManager = (function () {
                     new WCanvasAnimateMarkerShieldEffect(car);
                 }
             }
-            if ((car.cls == "SlowMine") || (car.cls == "BangMine")) {
 
+            if (car.cls == "SlowMine" || car.cls == "BangMine") {
+                new WCarMarker(car);
             }
+
             if (car.cls == "Turret") {
                 var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
@@ -1328,7 +1330,7 @@ var ClientManager = (function () {
 
     // Power Up
     ClientManager.prototype.PowerUpAnimateHide = function (event) {
-        //console.log('ClientManager.prototype.PowerUPLogMessage', event);
+        //console.log('ClientManager.prototype.PowerUpAnimateHide', event);
         //new ECanvasPowerUpHide(new Point(event.position.x, event.position.y)).start();
         var power_up = visualManager.getModelObject(event.subject_id);
         if (!power_up) return;
