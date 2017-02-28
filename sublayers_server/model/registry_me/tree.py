@@ -64,7 +64,7 @@ class RegistryLinkField(BaseField):
         if isinstance(value, six.string_types):
             uri = URI(value)
             reg = get_registry(uri.storage)
-            node = reg[value]
+            node = reg.get(value)
             instance._data[value] = node  # Caching
             return node
 
@@ -115,17 +115,18 @@ class RegistryLinkField(BaseField):
 
 class EmbeddedNodeField(EmbeddedDocumentField):
     def __set__(self, instance, value):
-        if isinstance(value, basestring):
-            reg = get_registry()  # todo: Избавиться от глобального объекта
-            parent = reg.get_node_by_uri(value)
-            if parent:
-                value = parent.__class__(parent=parent)
-            else:
-                assert not instance._initialised
+        if instance._initialised:
+            if isinstance(value, basestring):
+                reg = get_registry()  # todo: Избавиться от глобального объекта
+                parent = reg.get_node_by_uri(value)
+                if parent:
+                    value = parent.__class__(parent=parent)
+                else:
+                    assert not instance._initialised
 
-        # todo: Проверить поддержку инициализации нода из словаря
-        if value and not isinstance(value, Node) and not (isinstance(value, basestring) and not instance._initialised):
-            value = self.to_python(value)
+            # todo: Проверить поддержку инициализации нода из словаря
+            if value and not isinstance(value, Node) and not (isinstance(value, basestring) and not instance._initialised):
+                value = self.to_python(value)
         super(EmbeddedNodeField, self).__set__(instance, value)
 
 
@@ -137,13 +138,18 @@ class NodeMetaclass(DocumentMetaclass):
         # Fields processing
         new_cls._inheritable_fields = set()
         new_cls._non_inheritable_fields = set()
+        new_cls._deferred_init_fields = set()
 
         for name, field in new_cls._fields.iteritems():
             # Fields inheritance indexing
-            if getattr(field, 'not_inherited', False):
+            not_inherited = getattr(field, 'not_inherited', False)
+            if not_inherited:
                 new_cls._non_inheritable_fields.add(name)
             else:
                 new_cls._inheritable_fields.add(name)
+
+            if isinstance(field, EmbeddedNodeField):
+                new_cls._deferred_init_fields.add(name)
 
             # Field tags normalization
             tags = getattr(field, 'tags', None)
@@ -231,18 +237,7 @@ class Node(EmbeddedDocument):
         if len(defaults) > 1:
             raise TypeError('get expected at most 3 arguments, got {}'.format(2 + len(defaults)))
 
-        if isinstance(addr, basestring):
-            if addr.startswith('reg://') or addr.startswith('/'):
-                uri = URI(addr)
-                assert not uri.params and not uri.anchor, 'Wrong node address to get: {!r}'.format(addr)
-                path = uri.path
-            else:
-                path = tuple(addr.split('/'))
-        elif not isinstance(addr, tuple):
-            path = tuple(addr)
-        else:
-            path = addr
-
+        path = addr2path(addr)
         if not path:
             return self
 
@@ -254,10 +249,11 @@ class Node(EmbeddedDocument):
         if defaults:
             return defaults[0]
 
-        raise KeyError('Node {!r} has no subnode {!r}'.format(self, path))
+        raise KeyError('Node {!r} has no subnode {}'.format(self, path))
 
     def __init__(self, **kw):
-        only_fields = kw.pop('__only_fields', self.__class__._inheritable_fields)
+        cls = self.__class__
+        only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
 
     def __getattribute__(self, item):
@@ -282,40 +278,44 @@ class Node(EmbeddedDocument):
 
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
-        keys_width = max(map(len, d.keys())) if d and keys_alignment else 1
+        keys_width = max(map(len, d.keys())) if d and keys_alignment and indent_size else 1
 
         def prepare_value(value):
             if isinstance(value, Node):
                 value = value.to_string(
-                    indent=indent + 1,
+                    indent=indent + 1 if indent_size else indent,
                     indent_size=indent_size,
                     keys_alignment=keys_alignment,
                 )
             else:
                 value = repr(value)
 
-            if isinstance(value, basestring) and '\n' in value:
+            if isinstance(value, basestring) and '\n' in value and (indent_size or indent):
                 value = (u'\n' + u' ' * (indent + 2) * indent_size).join(value.split('\n'))
 
             return value
 
-        return '{self.__class__.__name__}(\n{params})'.format(
+        return '{self.__class__.__name__}({nl}{params})'.format(
             self=self,
-            params=''.join([
-                '\t{k:{w}}{eq_space}={eq_space}{v},\n'.format(
+            nl='\n' if indent_size else '',
+            params=('' if indent_size else ' ').join([
+                '{tab}{k:{w}}{eq_space}={eq_space}{v},{nl}'.format(
                     k=k,
                     v=prepare_value(v),
                     w=keys_width,
                     eq_space=' ' if keys_width > 1 else '',
+                    tab='\t' if indent_size else '',  # todo: replace '\t' to ' '*indent_size
+                    nl='\n' if indent_size else '',
                 )
                 for k, v in sorted(d.items())
             ]),
         )
 
     def __repr__(self):
-        return self.to_string()
+        return self.to_string(indent_size=0)
 
-    __str__ = __repr__
+    def __str__(self):
+        return self.to_string()
 
     @property
     def tag_set(self):
@@ -355,52 +355,72 @@ class Node(EmbeddedDocument):
         return d
 
 ########################################################################################################################
+
+def addr2path(addr):
+    if isinstance(addr, tuple):
+        return addr
+
+    if isinstance(addr, basestring):
+        if addr.startswith('reg://') or addr.startswith('/'):
+            uri = URI(addr)
+            assert not uri.params and not uri.anchor, 'Wrong node address to get: {!r}'.format(addr)
+            return uri.path
+        else:
+            return tuple(addr.split('/'))
+
+    return tuple(addr)
+
+
 class Registry(Document):
     name = StringField()
-    root = EmbeddedDocumentField(document_type=Node)
+    root = EmbeddedNodeField(document_type=Node)
 
     # def __init__(self, **kw):
     #     super(Registry, self).__init__(**kw)
 
     # todo: del mentions "_put"
 
-    def get_node_by_uri(self, uri, default=None):
-        # tod4o: support alternative path notations (list, relative, parametrized)
-        if not uri.startswith('reg://'):
-            uri = 'reg://{}'.format(uri)
-        return self.tree.get(uri, default)
+    def get(self, uri, *defaults):
+        path = addr2path(uri)
+        if not path:
+            return self.root
 
-    get = get_node_by_uri
+        root_name, rest_path = path[0], path[1:]
+        if self.root.name == root_name:
+            return self.root.get(rest_path, *defaults)
 
-    def __getitem__(self, uri):
-        # tod4o: support alternative path notations (list, relative, parametrized)
-        if not uri.startswith('reg://'):
-            uri = 'reg://{}'.format(uri)
-        return self.tree[uri]
+        if defaults:
+            return defaults[0]
+
+        raise KeyError('Registry has no root named {!r}'.format(self, root_name))
+
+    get_node_by_uri = get  # todo: remove deprecated
 
     def load(self, path, mongo_store=True):
-        count = 0
+        all_nodes = []
         stack = deque([(path, None)])
         with Timer(name='registryFS loader', logger=log) as timer:
             while stack:
                 pth, owner = stack.pop()
                 node = self._load_node_from_fs(pth, owner)
                 if node:
-                    count += 1
+                    if owner is None:
+                        self.root = node
+                        log.debug('Setup root: {!r}'.format(node))
+                    all_nodes.append(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
 
-            # todo: resolve EmbeddedNodeField's
-            for node in self.tree.values():
+            for node in all_nodes:
                 for field_name, field in node._fields.items():
                     if isinstance(field, EmbeddedNodeField):
                         value = node._data.get(field_name, None)
                         if value and not isinstance(value, Node):
                             setattr(node, field_name, value)
 
-        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(count, timer.duration))
+        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
 
     def _load_node_from_fs(self, path, owner=None):
         assert isinstance(path, unicode), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
@@ -432,7 +452,8 @@ class Registry(Document):
         cls = get_document(class_name)
 
         node = cls(__auto_convert=False, _created=False, **attrs)
-        self._put(node)
+        if owner:
+            owner.subnodes.append(node)
         return node
 
 
@@ -446,7 +467,7 @@ def get_registry(name=None):
         reg = Registry.objects.filter(name=name).first()
 
     if reg is None:
-        reg = Registry(name=name, tree={})
+        reg = Registry(name=name)
         REGS[name] = reg
 
     return reg
@@ -491,8 +512,8 @@ def test2():
     Registry.objects.filter({}).delete()
     reg = get_registry(None)
     reg.load(u'../../../tmp/reg')
-    a = reg['/reg/a']
-    aa = reg['/reg/a/aa']
+    a = reg.get('/reg/a')
+    aa = reg.get('/reg/a/aa')
     print(a.y)
     print(aa.y)
     reg.save()
