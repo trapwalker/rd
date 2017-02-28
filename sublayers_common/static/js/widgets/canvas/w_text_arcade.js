@@ -1,6 +1,36 @@
 var WTextArcade = (function () {
     WTextArcade.prototype.queue = [];
 
+
+    WTextArcade.prototype.position_functions = {
+        easeOutElastic: function(x, t, b, c, d) {
+            // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
+            if (x > 0.68) return 0;
+            var s = 1.70158;
+            var p = 0;
+            var a = c;
+            if (t == 0) return b;
+            if ((t /= d) == 1) return b + c;
+            if (!p) p = d * .3;
+            if (a < Math.abs(c)) {
+                a = c;
+                var s = p / 4;
+            }
+            else var s = p / (2 * Math.PI) * Math.asin(c / a);
+            return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
+        },
+        easeInBack: function(x, t, b, c, d, s) {
+            if (s == undefined) s = 1.70158;
+            return c * (t /= d) * t * ((s + 1) * t - s) + b;
+        },
+        easeInCirc: function (x, t, b, c, d) {
+            return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+        },
+        easeOutCirc: function (x, t, b, c, d) {
+            return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+        },
+    };
+
     function WTextArcade(text){
         this.start_time = 0; // start current phase
         this.text = text || "";
@@ -14,15 +44,37 @@ var WTextArcade = (function () {
             finish: 600
         };
 
+        this.phases_func = {
+            start: this.position_functions['easeOutElastic'],
+            finish: this.position_functions['easeInBack']
+        };
+
         this.phase = null;
+        this._font = "italic 42px DS-Crystal";
     }
 
     WTextArcade.prototype.start = function() {
         this.queue.push(this);
-        if (this.queue.length == 1) this._start();
+        if (this.queue.length == 1) setTimeout(this._start.bind(this), 10);
     };
 
     WTextArcade.prototype._start = function () {
+        if (this.queue.length > 1) {
+            // Изменить отображение на быстрый вариант
+            this.phases_func = {
+                start: this.position_functions['easeOutCirc'],
+                finish: this.position_functions['easeInCirc']
+            };
+            this.phases_dur = {
+                start: 400,
+                freeze: 100,
+                finish: 400
+            };
+        }
+        // Финальная настройка шрифта перед запуском анимации
+        var font_size = mapCanvasManager.canvas.width > 1366 ? 42 : 28;
+        this._font = "italic " + font_size.toString() + "px DS-Crystal";
+
         this.start_time = clock.getClientTime();
         mapCanvasManager.add_vobj(this, 96);
         this.phase = "start";
@@ -43,7 +95,8 @@ var WTextArcade = (function () {
         }
 
         if (this.phase == "freeze") {
-            var phaze_dur = this.queue.length == 1 ? 3 * this.phases_dur.freeze : this.phases_dur.freeze; // если нет других сообщений, то удвоить длину этой фазы
+            var phaze_dur = this.queue.length == 1 ? 3 * this.phases_dur.freeze : this.phases_dur.freeze; // если нет других сообщений, то увеличить длину этой фазы
+            //var phaze_dur = this.phases_dur.freeze;
             prc = this._phase_progress(phaze_dur, time);
             if (prc < 0 || prc >= 1.0) { // Смена фазы
                 this.phase = "finish";
@@ -80,34 +133,11 @@ var WTextArcade = (function () {
     };
 
     WTextArcade.prototype._get_position = function (prc, time) {
-
-        function easeOutElastic(x, t, b, c, d) {
-            // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
-            if (x > 0.68) return 0;
-            var s = 1.70158;
-            var p = 0;
-            var a = c;
-            if (t == 0) return b;
-            if ((t /= d) == 1) return b + c;
-            if (!p) p = d * .3;
-            if (a < Math.abs(c)) {
-                a = c;
-                var s = p / 4;
-            }
-            else var s = p / (2 * Math.PI) * Math.asin(c / a);
-            return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
-        }
-
-        function easeInBack(x, t, b, c, d, s) {
-            if (s == undefined) s = 1.70158;
-            return c * (t /= d) * t * ((s + 1) * t - s) + b;
-        }
-
         if (this.phase == "start") {
-            return easeOutElastic(prc, time - this.start_time, -this.center.x, this.center.x, this.phases_dur.start);
+            return this.phases_func.start(prc, time - this.start_time, -this.center.x, this.center.x, this.phases_dur.start);
         }
         if (this.phase == "finish") {
-            return easeInBack(prc, time - this.start_time, 0, this.center.x, this.phases_dur.finish)
+            return this.phases_func.finish(prc, time - this.start_time, 0, this.center.x, this.phases_dur.finish)
         }
         return 0;
     };
@@ -131,7 +161,7 @@ var WTextArcade = (function () {
         ctx.translate(this.center.x + pos, this.center.y);
         ctx.textAlign = "center";
         ctx.textBaseline = "center";
-        ctx.font = "italic 42px DS-Crystal";
+        ctx.font = this._font;
         ctx.fillStyle = '#fffc00';
         ctx.shadowColor = '#fffc00';
         ctx.shadowOffsetX = 0;
