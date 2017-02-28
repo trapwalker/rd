@@ -131,7 +131,7 @@ var WTextArcade = (function () {
         ctx.translate(this.center.x + pos, this.center.y);
         ctx.textAlign = "center";
         ctx.textBaseline = "center";
-        ctx.font = "42px Calculate_01";
+        ctx.font = "italic 42px DS-Crystal";
         ctx.fillStyle = '#fffc00';
         ctx.shadowColor = '#fffc00';
         ctx.shadowOffsetX = 0;

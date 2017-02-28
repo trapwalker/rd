@@ -740,8 +740,6 @@ class QuickUser(User):
             self.time_of_end_kills_series = event.time + 7.0  # Даём 5 секунд на одно убийство
             self.series_kills = 1
 
-
-
     @tornado.gen.coroutine
     def init_example_car(self):
         user = self.user
