@@ -33,6 +33,8 @@ class HPTask(TaskSingleton):
 
     def _update_state(self, dhp, dps, is_die, event):
         owner = self.owner
+        if owner.hp_state._is_die:
+            return
         if is_die:
             owner.hp_state.set_die(event.time)
             killer = None

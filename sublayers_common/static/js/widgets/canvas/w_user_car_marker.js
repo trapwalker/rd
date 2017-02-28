@@ -295,7 +295,6 @@ var WCanvasMarker = (function (_super) {
                 return;
         }
         this.icon_obj = iconsLeaflet.getIcon(icon_name, 'canvas_icon');
-        console.log(this.icon_obj);
         this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[1] >> 1}
     };
 

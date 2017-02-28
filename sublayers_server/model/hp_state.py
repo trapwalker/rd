@@ -36,6 +36,7 @@ class HPState(object):
         self.dps = dps  # отрицательный dps => хил
         self.update(t=self.t0)
         self.dhp = 0
+        self._is_die = False  # info: Флаг для определения актуальности HPState. Чтобы нельзя было много раз вызвать set_die и on_kill
 
     @property
     def classname(self):
@@ -93,6 +94,7 @@ class HPState(object):
         self.t_die = time
         self.hp0 = 0
         self.dps = 0
+        self._is_die = True
 
     def export(self):
         return dict(
