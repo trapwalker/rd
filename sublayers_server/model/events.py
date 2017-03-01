@@ -323,7 +323,8 @@ class BangEvent(Event):
                 if isinstance(obj, Unit):
                     dist = abs(self.center - obj.position(time=self.time))
                     if dist < self.radius:
-                        obj.set_hp(dhp=self.damage, shooter=self.damager, time=self.time)
+                        dhp = self.damage * (1.0 - obj.params.get('p_armor').value / 100.)
+                        obj.set_hp(dhp=dhp, shooter=self.damager, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(
