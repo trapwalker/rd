@@ -733,11 +733,11 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
-                    new WTextArcade('+' + msg.value_fuel + 'л.').start();
+                    new WTextArcade('+' + msg.value_fuel + 'л').start();
                     break;
                 case "TransactionActivateRebuildSetLogMessage":
                     this.addMessageToLog('Автомобиль починен на ' + msg.build_points + 'hp.');
-                    new WTextArcade('+' + msg.build_points + 'hp.').start();
+                    new WTextArcade('+' + msg.build_points + 'hp').start();
                     break;
                 case "TransactionActivateAmmoBulletsLogMessage":
                     this.addMessageToLog('Заряжено: ' + msg.ammo_title + '.');
