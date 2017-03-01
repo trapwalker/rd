@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.units import UnitWeapon
-from sublayers_server.model.events  import Event, BangEvent
+from sublayers_server.model.events  import Event, BangEvent, Objective
 import sublayers_server.model.tags as tags
 
 
@@ -17,6 +17,12 @@ class RocketStartEvent(Event):
     def on_perform(self):
         super(RocketStartEvent, self).on_perform()
         Rocket(time=self.time, starter=self.starter, example=self.example_rocket)
+
+
+class RocketActivateEvent(Objective):
+    def on_perform(self):
+        super(RocketActivateEvent, self).on_perform()
+        self.obj.activate(self)
 
 
 class Rocket(UnitWeapon):
@@ -33,8 +39,15 @@ class Rocket(UnitWeapon):
         self.radius_damage = self.example.radius_damage
         self.damage = self.example.damage
 
-    # def can_see_me(self, subj, **kw):
-    #     return subj is self.starter or super(Rocket, self).can_see_me(subj=subj, **kw)
+        self._activated_event = RocketActivateEvent(obj=self, time=time + 2.0).post()
+        self._rocket_is_active = False
+
+    def activate(self, event):
+        self._rocket_is_active = True
+        for obj in self.visible_objects:
+            if self.is_target(target=obj):
+                self._on_bang(time=event.time)
+                self.delete(time=event.time)
 
     def as_dict(self, time):
         d = super(Rocket, self).as_dict(time=time)
@@ -52,9 +65,15 @@ class Rocket(UnitWeapon):
         self.delete(time=event.time + self.example.life_time)
 
     def on_before_delete(self, event):
-        BangEvent(damager=self, center=self.position(time=event.time), radius=self.radius_damage,
-                  damage=self.damage, time=event.time).post()
+        self._on_bang(time=event.time)
         super(Rocket, self).on_before_delete(event=event)
+
+    def _on_bang(self, time):
+        if not self._rocket_is_active:
+            return
+        self._rocket_is_active = False
+        BangEvent(damager=self, center=self.position(time=time), radius=self.radius_damage,
+                  damage=self.damage, time=time).post()
 
     def on_contact_in(self, time, obj):
         super(Rocket, self).on_contact_in(time=time, obj=obj)
@@ -62,6 +81,7 @@ class Rocket(UnitWeapon):
             return
         if tags.RocketTag in obj.tags:  # чтобы ракеты не врезались друг в друга
             return
+        self._on_bang(time=time)
         self.delete(time=time)
 
     def set_default_tags(self):
