@@ -54,14 +54,14 @@ class BaseMotionState(object):
 
         #self.track.append(TrackPoint(t=t, p=p, fi=fi, v=v))
 
-    def __init__(self, t, p, fi=0.0, r_min=10.0, ac_max=10.0):
+    def __init__(self, t, p, fi=0.0, r_min=10.0, ac_max=10.0, v=0.0):
         self.t0 = t
         self.p0 = p
         self.fi0 = fi
         self._fi0 = fi
         self.r_min = r_min
         self.ac_max = ac_max
-        self.v0 = 0.0
+        self.v0 = v
         self.a = 0.0
         self._c = None
         self._turn_sign = 0.0
@@ -182,8 +182,9 @@ class MotionState(BaseMotionState):
         a_forward=4.0,
         a_backward=-2.0,
         a_braking=-9.0,
+        v=0.0,
     ):
-        super(MotionState, self).__init__(t=t, p=p, fi=fi, r_min=r_min, ac_max=ac_max)
+        super(MotionState, self).__init__(t=t, p=p, fi=fi, r_min=r_min, ac_max=ac_max, v=v)
         half_ac_max = 0.5 * self.ac_max
         assert (a_forward < half_ac_max) and (a_backward < half_ac_max) and (a_braking < half_ac_max)
         assert (v_forward >= 0.0) and (v_backward <= 0.0)
@@ -382,6 +383,8 @@ class MotionState(BaseMotionState):
         res.target_point = self.target_point
         res.u_cc = self.u_cc
         return res
+
+
 
 
 if __name__ == '__main__':

@@ -21,4 +21,6 @@ import teaching_quest
 
 import notes
 
+import quick_game_items
+
 #import _test

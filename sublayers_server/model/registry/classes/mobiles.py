@@ -455,11 +455,11 @@ class Drone(Mobile):
     pass
 
 
-class MobileWeapon(Mobile):
-    pass
+class MapWeaponTurret(Mobile):
+    life_time = FloatField(caption=u"Время жизни турели")
 
 
-class MapWeaponEffectMine(MobileWeapon):
+class MapWeaponEffectMine(Mobile):
     # todo: заменить имена эффектов на URI
     effects = ListField(
         caption=u'Эффекты', doc=u'Список эффектов (URI) накладываемых миной',
@@ -467,15 +467,18 @@ class MapWeaponEffectMine(MobileWeapon):
     )
 
 
-class MapBangWeapon(MobileWeapon):
+class MapBangWeapon(Mobile):
     radius_damage = FloatField(caption=u"Радиус взрыва ракеты")
     damage = FloatField(caption=u"Дамаг в радиусе взрыва")
     life_time = FloatField(caption=u"Время жизни ракеты")
 
 
 class MapWeaponRocket(MapBangWeapon):
-    pass
+    icon_name = StringField(caption=u'Имя иконки в iconManager')
 
 
 class MapWeaponBangMine(MapBangWeapon):
     pass
+
+
+

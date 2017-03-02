@@ -29,6 +29,13 @@
             font-family: FreePixel;
             src: url({{ static_url('fonts/FreePixel.ttf') }});
         }
+
+        @font-face {
+            font-family: DS-Crystal;
+            src: url({{ static_url('fonts/DS-Crystal.ttf') }});
+        }
+
+
     </style>
 
     <!-- <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/> -->
@@ -161,6 +168,8 @@
     <script src="{{ static_url('js/widgets/canvas/w_user_car_marker.js') }}"></script>
     <script src="{{ static_url('js/widgets/canvas/w_target_point.js') }}"></script>
     <script src="{{ static_url('js/widgets/canvas/w_strategy_mode.js') }}"></script>
+    <script src="{{ static_url('js/widgets/canvas/w_radiation_visibility.js') }}"></script>
+    <script src="{{ static_url('js/widgets/canvas/w_text_arcade.js') }}"></script>
 
     <script src="{{ static_url('js/context_panel.js') }}"></script>
 
@@ -234,7 +243,11 @@
     </div>
 
     <div style="position: absolute; right: 20px; top: 10px; color: #2afd0a; font: 10pt MICRADI; opacity: 0.6;">
-        Ping = <span id="PingSpan">0</span>   FPS = <span id="FPSSpan">0</span>
+        <span style="{{ "" if server_mode == 'quick' else "display: none" }}">
+            Score <span id='QGPointsSpan'>0</span>
+            Kills <span id='QGKillsSpan'>0</span>
+        </span>
+         | Ping <span id="PingSpan">0</span>   FPS <span id="FPSSpan">0</span>
     </div>
     <div id="divMainMenu">
         <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Character</div>

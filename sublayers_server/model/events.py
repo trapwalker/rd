@@ -8,7 +8,8 @@ from sublayers_server.model.utils import time_log_format
 from sublayers_server.model.messages import (FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance,
                                              StartActivateItem, StopActivateItem)
 from sublayers_server.model.game_log_messages import (TransactionCancelActivateItemLogMessage,
-                                                      TransactionDisableActivateItemLogMessage)
+                                                      TransactionDisableActivateItemLogMessage,
+                                                      TransactionDisableActivateItemTimeoutLogMessage)
 from functools import total_ordering, wraps, partial
 
 
@@ -172,6 +173,10 @@ class Init(Objective):
 
 
 class Die(Objective):
+    def __init__(self, killer, **kw):
+        super(Die, self).__init__(**kw)
+        self.killer = killer
+
     def on_perform(self):
         super(Die, self).on_perform()
         self.obj.is_alive = False
@@ -319,7 +324,8 @@ class BangEvent(Event):
                 if isinstance(obj, Unit):
                     dist = abs(self.center - obj.position(time=self.time))
                     if dist < self.radius:
-                        obj.set_hp(dhp=self.damage, shooter=self.damager, time=self.time)
+                        dhp = self.damage * (1.0 - obj.params.get('p_armor').value / 100.)
+                        obj.set_hp(dhp=dhp, shooter=self.damager, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(
@@ -421,7 +427,7 @@ class ShowInventoryEvent(Event):
         obj = self.server.objects.get(self.owner_id)
         # assert (obj is not None) and (obj.inventory is not None)
         if obj is not None and obj.inventory is not None and (
-                obj is self.agent.car or obj.is_available(agent=self.agent)):
+                obj is self.agent.car or obj.is_available(agent=self.agent, time=self.time)):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 
@@ -596,9 +602,15 @@ class ItemPreActivationEvent(Event):
             return
         event_cls = item.example.activate()
         if event_cls:
+            # todo: вынести константу времени задержки между активациями в настройки
+            if (obj.last_activation_time is not None) and (abs(self.time - obj.last_activation_time) < 1):
+                TransactionDisableActivateItemTimeoutLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+                return
+
             if not item.example.can_activate(time=self.time, agent_model=self.agent):
                 TransactionDisableActivateItemLogMessage(agent=self.agent, time=self.time, item=item.example).post()
                 return
+
             if obj.current_item_action:
                 obj.current_item_action.cancel(time=self.time)
             activate_time = item.example.get_activate_time(agent_model=self.agent)
@@ -643,6 +655,7 @@ class ItemActivationEvent(Event):
 
         event_cls = item.example.activate()
         if event_cls:
+            obj.last_activation_time = self.time
             event_cls(agent=self.agent, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
 
     def on_cancel(self, time):

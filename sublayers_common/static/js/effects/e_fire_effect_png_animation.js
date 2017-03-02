@@ -129,7 +129,7 @@ var ECanvasAutoFirePNG = (function (_super) {
 
     function ECanvasAutoFirePNG(car, side) {
         this.car = car;
-        this.side_direction = user.userCar.fireSidesMng.sides[side].direction;
+        this.side_direction = user.userCar ? user.userCar.fireSidesMng.sides[side].direction : 0.0;
         _super.call(this, car.getCurrentCoord(clock.getCurrentTime()), car.getCurrentDirection(clock.getCurrentTime()));
         this.duration = 200;
         this.effect_image_obj = effectPNGLoader.getImage("effect-fire-auto-png");
@@ -337,4 +337,71 @@ var ECanvasPowerUpOverDown = (function (_super) {
     }
 
     return ECanvasPowerUpOverDown
+})(ECanvasAnimationPNG);
+
+
+
+var ECanvasDieVisualisation = (function (_super) {
+    __extends(ECanvasDieVisualisation, _super);
+
+    function ECanvasDieVisualisation(position){
+        _super.call(this, position, 2 * Math.random() * Math.PI);
+        this.duration = 1000;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-death-oriented-1");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    }
+
+    return ECanvasDieVisualisation
+})(ECanvasAnimationPNG);
+
+
+var ECanvasDieVisualisationOriented = (function (_super) {
+    __extends(ECanvasDieVisualisationOriented, _super);
+
+    function ECanvasDieVisualisationOriented(position, direction){
+        _super.call(this, position, direction);
+        this.duration = 1200;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-death-1");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.6; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+    }
+
+    return ECanvasDieVisualisationOriented
+})(ECanvasAnimationPNG);
+
+
+var ECanvasDieVisualisationOrientedMoved = (function (_super) {
+    __extends(ECanvasDieVisualisationOrientedMoved, _super);
+
+    function ECanvasDieVisualisationOrientedMoved(position, direction, start_speed){
+        _super.call(this, position, direction);
+        this.duration = 1300;
+        this.effect_image_obj = effectPNGLoader.getImage("effect-death-oriented-2");
+        this.frame_count = this.effect_image_obj.frames;
+        this.time_of_frame = this.duration / this.frame_count;
+        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
+        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
+        this.offset_x = -1.0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        var t0 = clock.getCurrentTime();
+        this._motion_state = new State(t0, position, direction, direction, start_speed, -5);
+    }
+
+    ECanvasDieVisualisationOrientedMoved.prototype.redraw = function (ctx, time) {
+        // Изменить позицию
+        this.position = this._motion_state.p(clock.getCurrentTime());
+        _super.prototype.redraw.call(this, ctx, time);
+    };
+
+    return ECanvasDieVisualisationOrientedMoved
 })(ECanvasAnimationPNG);

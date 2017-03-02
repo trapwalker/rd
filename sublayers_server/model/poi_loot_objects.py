@@ -2,15 +2,18 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import Event, Objective
 from sublayers_server.model.base import Observer
 from sublayers_server.model.inventory import Inventory, ItemState
 from sublayers_server.model.vectors import Point
 
+from sublayers_server.model.state import MotionState
+from sublayers_server.model.motion_task import MotionTask
+from sublayers_server.model.parameters import Parameter
+
 
 class CreatePOILootEvent(Event):
-    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50,
-                 sub_class_car=None, car_direction=None):
+    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50):
         super(CreatePOILootEvent, self).__init__(server=server, time=time)
         self.poi_cls = poi_cls
         self.example = example
@@ -19,8 +22,6 @@ class CreatePOILootEvent(Event):
         self.life_time = life_time
         self.items = items
         self.connect_radius = connect_radius
-        self.sub_class_car = sub_class_car
-        self.car_direction = car_direction
 
     def on_perform(self):
         super(CreatePOILootEvent, self).on_perform()
@@ -36,16 +37,38 @@ class CreatePOILootEvent(Event):
                     break
 
         if not stash:
-            if self.poi_cls is POICorpse:
-                stash = POICorpse(server=self.server, time=self.time, example=self.example,
-                                  inventory_size=self.inventory_size, position=self.position,
-                                  life_time=self.life_time, sub_class_car=self.sub_class_car,
-                                  car_direction=self.car_direction)
-            else:
-                stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
-                                     inventory_size=self.inventory_size, position=self.position,
-                                     life_time=self.life_time)
+            stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
+                                 inventory_size=self.inventory_size, position=self.position,
+                                 life_time=self.life_time)
 
+        # заполнить инвентарь сундука
+        for item in self.items:
+            item.set_inventory(time=self.time, inventory=stash.inventory)
+
+
+class CreatePOICorpseEvent(Event):
+    def __init__(self, server, time, example, inventory_size, position, life_time, items, connect_radius=50,
+                 sub_class_car=None, car_direction=None, donor_v=None, donor_example=None, agent_viewer=None):
+        super(CreatePOICorpseEvent, self).__init__(server=server, time=time)
+        self.example = example
+        self.inventory_size = inventory_size
+        self.position = position
+        self.life_time = life_time
+        self.items = items
+        self.connect_radius = connect_radius
+        self.sub_class_car = sub_class_car
+        self.car_direction = car_direction
+        self.donor_v = donor_v
+        self.donor_example = donor_example
+        self.agent_viewer = agent_viewer
+
+    def on_perform(self):
+        super(CreatePOICorpseEvent, self).on_perform()
+        stash = POICorpse(server=self.server, time=self.time, example=self.example,
+                          inventory_size=self.inventory_size, position=self.position,
+                          life_time=self.life_time, sub_class_car=self.sub_class_car,
+                          car_direction=self.car_direction, donor_v=self.donor_v,
+                          donor_example=self.donor_example, agent_viewer=self.agent_viewer)
         # заполнить инвентарь сундука
         for item in self.items:
             item.set_inventory(time=self.time, inventory=stash.inventory)
@@ -64,15 +87,6 @@ class CheckPOILootEmptyEvent(Event):
 
 class POIContainer(Observer):
     def __init__(self, server, time, life_time=None, example=None, inventory_size=None, position=None, **kw):
-
-        def callback():
-            super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
-            self.example.inventory.size = self.inventory_size
-            self.inventory = Inventory(max_size=self.example.inventory.size, owner=self)
-            self.load_inventory(time=time)
-            if life_time:
-                self.delete(time=time + life_time)
-
         assert (example is not None) or ((inventory_size is not None) and (position is not None))
         if example is None:
             example = server.reg['poi/stash'].instantiate(
@@ -80,10 +94,14 @@ class POIContainer(Observer):
                 fixtured=False,
             )
             self.inventory_size = inventory_size
-            example.load_references(callback=callback())
+        super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
+        self.example.inventory.size = self.inventory_size
+        self.inventory = Inventory(max_size=self.example.inventory.size, owner=self)
+        self.load_inventory(time=time)
+        if life_time:
+            self.delete(time=time + life_time)
 
-
-    def is_available(self, agent):
+    def is_available(self, agent, time):
         return agent.car in self.visible_objects
 
     def on_contact_in(self, time, obj):
@@ -128,12 +146,89 @@ class POILoot(POIContainer):
 
 
 class POICorpse(POIContainer):
-    def __init__(self, sub_class_car, car_direction, **kw):
-        super(POICorpse, self).__init__(**kw)
+    def __init__(self, time, sub_class_car, car_direction, donor_v, donor_example, agent_viewer=None, **kw):
+        super(POICorpse, self).__init__(time=time, **kw)
         self.sub_class_car = sub_class_car
         self.car_direction = car_direction
+        self.donor_v = donor_v
+        self.donor_param_aggregate = donor_example.param_aggregate(example_agent=None)
+        self.tasks = []
+        self.agent_viewer = agent_viewer
+
+        self.state = MotionState(t=time, **self.init_state_params())
+        self.cur_motion_task = None
+
+        v_forward = self.donor_param_aggregate['v_forward']
+        self.max_control_speed = self.donor_param_aggregate['max_control_speed']
+        assert v_forward <= self.max_control_speed
+        Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
+
+    def init_state_params(self):
+        return dict(
+            p=self._position,
+            fi=self.car_direction,
+            r_min=self.donor_param_aggregate['r_min'],
+            ac_max=self.donor_param_aggregate['ac_max'],
+            v_forward=self.donor_param_aggregate['max_control_speed'],
+            v_backward=self.donor_param_aggregate['v_backward'],
+            a_forward=self.donor_param_aggregate['a_forward'],
+            a_backward=self.donor_param_aggregate['a_backward'],
+            a_braking=self.donor_param_aggregate['a_braking'],
+            v=self.donor_v,
+        )
+
+    def delete_self_from_viewer(self, event):
+        if self.agent_viewer:
+            self.agent_viewer.drop_obj(obj=self, time=event.time)
+            self.agent_viewer = None
+
+    def on_init(self, event):
+        super(POICorpse, self).on_init(event)
+        self.set_motion(time=event.time, cc=0.0)
+        if self.agent_viewer:
+            self.agent_viewer.append_obj(obj=self, time=event.time)
+            Objective(obj=self, time=event.time + 4.0, callback_after=self.delete_self_from_viewer).post()
+
+    def on_before_delete(self, event):
+        self.delete_self_from_viewer(event=event)
+        super(POICorpse, self).on_before_delete(event=event)
 
     def as_dict(self, time):
         d = super(POICorpse, self).as_dict(time=time)
-        d.update(sub_class_car=self.sub_class_car, car_direction=self.car_direction)
+        d.update(
+            state=self.state.export(),
+            v_forward=self.state.v_forward,
+            v_backward=self.state.v_backward,
+            p_cc=self.params.get('p_cc').value,
+            p_obs_range_rate_max=1.0,
+            p_obs_range_rate_min=1.0,
+            sub_class_car=self.sub_class_car,
+            car_direction=self.car_direction,
+        )
         return d
+
+    def is_available(self, agent, time):
+        res = super(POICorpse, self).is_available(agent=agent, time=time)
+        return res and self.v(time) == 0 and self.a() == 0
+
+    def set_motion(self, time, target_point=None, cc=None, turn=None, comment=None):
+        assert (turn is None) or (target_point is None)
+        MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
+
+    def on_start(self, event):
+        pass
+
+    def on_stop(self, event):
+        pass
+
+    def v(self, time):
+        return self.state.v(t=time)
+
+    def a(self):
+        return self.state.a
+
+    def position(self, time):
+        return self.state.p(t=time)
+
+    def direction(self, time):
+        return self.state.fi(t=time)

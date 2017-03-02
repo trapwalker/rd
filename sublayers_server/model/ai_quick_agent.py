@@ -60,7 +60,7 @@ class AIQuickAgent(AI):
             yield self.example.car.load_references()
             self.example.current_location = None
             self.current_location = None
-            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, 1000) # Радиус появления ботов в быстрой игре
+            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, 1500) # Радиус появления ботов в быстрой игре
 
             car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)

@@ -33,16 +33,20 @@ class HPTask(TaskSingleton):
 
     def _update_state(self, dhp, dps, is_die, event):
         owner = self.owner
+        if owner.hp_state._is_die:
+            return
         if is_die:
             owner.hp_state.set_die(event.time)
-            Die(time=event.time, obj=owner).post()
+            killer = None
             if owner.is_frag:
                 if self.shooter is not None:
-                    self.shooter.on_kill(event=event, obj=owner)  
+                    self.shooter.on_kill(event=event, obj=owner)
+                    killer = self.shooter
                 else:
                     # todo: Определение того, кто застрелил, если стрелков много
                     if owner.hp_state.shooters:
                         owner.hp_state.shooters[0].on_kill(event=event, obj=owner)
+            Die(time=event.time, obj=owner, killer=killer).post()
             return
         owner.hp_state.update(t=event.time, dhp=dhp, dps=dps)
         owner.on_update(event=event)
