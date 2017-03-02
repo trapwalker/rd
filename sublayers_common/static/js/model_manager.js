@@ -722,7 +722,9 @@ var ClientManager = (function () {
         // Так делать нельзя! Нехорошо так записывать в объект разную инфу!
         if (this._quick_game_points_info && this._quick_game_points_info.quick_game_bonus_points != event.quick_game_bonus_points) {
             // Если был начислен бонус, то вывести текст об этом
-            new WTextArcade("+" + (event.quick_game_bonus_points - this._quick_game_points_info.quick_game_bonus_points) + " очков").start();
+            var points = event.quick_game_bonus_points - this._quick_game_points_info.quick_game_bonus_points;
+            if (points > 0)
+                new WTextArcade("+" + points + " очков").start();
         }
 
         this._quick_game_points_info = event;
