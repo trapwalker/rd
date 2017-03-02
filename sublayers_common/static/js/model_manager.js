@@ -695,13 +695,16 @@ var ClientManager = (function () {
         var obj = visualManager.getModelObject(uid);
         if (!obj) return;
         var position = obj.getCurrentCoord(clock.getCurrentTime());
+        var dir = obj.getCurrentDirection(clock.getCurrentTime());
+        //new ECanvasDieVisualisationOriented(position, dir + Math.PI / 2).start();
+
         if (event.direction == null) {
             // Если взрыв не направленный
             new ECanvasDieVisualisation(position).start()
         }
         else {
             // Если взрыв направленный
-            new ECanvasDieVisualisationOriented(position, event.direction).start()
+            new ECanvasDieVisualisationOriented(position, event.direction + Math.PI / 2.).start()
         }
     };
 

@@ -51,6 +51,10 @@ var EffectPNGLoader = (function(){
         this.load_new_image('effect-power-up-off-random', '/static/img/map_icons/power_up/owerdown_random.png', [60, 60], 10);
 
 
+        // Анимации смерти
+        this.load_new_image('effect-death-oriented-1', '/static/img/fire_effects/death/death_oriented_1.png', [90, 90], 16);
+        this.load_new_image('effect-death-1', '/static/img/fire_effects/death/death.png', [204, 204], 12);
+
 
         // Эффекты радиации
         this.load_new_image('effect-radiation-cloud-1', '/static/img/effect_radiation/oblako1.png', [40, 40], 1);
