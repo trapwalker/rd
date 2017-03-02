@@ -62,8 +62,7 @@ class RegistryLinkField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         if isinstance(value, six.string_types):
-            uri = URI(value)
-            reg = get_registry(uri.storage)
+            reg = instance.get_registry()
             node = reg.get(value)
             instance._data[value] = node  # Caching
             return node
@@ -195,7 +194,7 @@ class Node(EmbeddedDocument):
         return uri
 
     def node_hash(self):  # todo: (!) rename to proto_uri
-        u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        #u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
         uri = self.uri
         if uri:
             return uri
@@ -217,19 +216,27 @@ class Node(EmbeddedDocument):
             next_instance = instance._instance
         return next_instance or instance
 
+    def get_registry(self):
+        # todo: cache it
+        root = self.root_instance
+        if isinstance(root, Registry):
+            return root
+
+        raise ValueError('Root instance {!r} has not registry getter'.format(self))
+
+    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
+    parent = RegistryLinkField(document_type='self', not_inherited=True)
+    owner = RegistryLinkField(document_type='self', not_inherited=True)
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     #fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
     #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
     title = StringField(caption=u"Название", tags={"client"})
     can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
-    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     #uri = StringField(unique=True, null=True, not_inherited=True)
-    parent = RegistryLinkField(document_type='self', not_inherited=True)
-    owner = RegistryLinkField(document_type='self', not_inherited=True)
     subnodes = ListField(field=EmbeddedNodeField(document_type='self', not_inherited=True), not_inherited=True)
     # todo: make `owner` property
 
@@ -255,6 +262,7 @@ class Node(EmbeddedDocument):
         cls = self.__class__
         only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
+        print(kw.get('name'), kw.get('parent'))
 
     def __getattribute__(self, item):
         if item not in {
@@ -523,6 +531,9 @@ def test2():
 def test3():
     #REG.load(u'../../../tmp/reg')
     reg = Registry.objects.first()
+    aa = reg.root.get('a/aa')
+    ac = reg.root.get('a/ac')
+    print(ac.parent)
     globals().update(locals())
 
 
@@ -532,8 +543,8 @@ if __name__ == '__main__':
     log.info('Use `test_me` db')
 
     #test1()
-    test2()
-    #test3()
+    #test2()
+    test3()
 
     # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
     # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
