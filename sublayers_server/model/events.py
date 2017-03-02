@@ -172,6 +172,10 @@ class Init(Objective):
 
 
 class Die(Objective):
+    def __init__(self, killer, **kw):
+        super(Die, self).__init__(**kw)
+        self.killer = killer
+
     def on_perform(self):
         super(Die, self).on_perform()
         self.obj.is_alive = False
@@ -319,7 +323,8 @@ class BangEvent(Event):
                 if isinstance(obj, Unit):
                     dist = abs(self.center - obj.position(time=self.time))
                     if dist < self.radius:
-                        obj.set_hp(dhp=self.damage, shooter=self.damager, time=self.time)
+                        dhp = self.damage * (1.0 - obj.params.get('p_armor').value / 100.)
+                        obj.set_hp(dhp=dhp, shooter=self.damager, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(
@@ -421,7 +426,7 @@ class ShowInventoryEvent(Event):
         obj = self.server.objects.get(self.owner_id)
         # assert (obj is not None) and (obj.inventory is not None)
         if obj is not None and obj.inventory is not None and (
-                obj is self.agent.car or obj.is_available(agent=self.agent)):
+                obj is self.agent.car or obj.is_available(agent=self.agent, time=self.time)):
             obj.inventory.add_visitor(agent=self.agent, time=self.time)
 
 

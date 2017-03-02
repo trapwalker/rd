@@ -721,6 +721,7 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "WeaponAmmoFinishedLogMessage":
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.', true);
+                    new WTextArcade('Кончились патроны для ' + msg.weapon_name).start();
                     break;
                 case "TransactionCancelActivateItemLogMessage":
                     this.addMessageToLog('Отмена активации итема: ' + msg.item_title + '.');
@@ -732,18 +733,26 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
+                    new WTextArcade('+' + msg.value_fuel + 'л').start();
                     break;
                 case "TransactionActivateRebuildSetLogMessage":
                     this.addMessageToLog('Автомобиль починен на ' + msg.build_points + 'hp.');
+                    new WTextArcade('+' + msg.build_points + 'hp').start();
                     break;
                 case "TransactionActivateAmmoBulletsLogMessage":
                     this.addMessageToLog('Заряжено: ' + msg.ammo_title + '.');
                     break;
                 case "TransactionActivateMineLogMessage":
                     this.addMessageToLog('Установлена мина: ' + msg.item_title + '.');
+                    new WTextArcade('Установлена мина').start();
                     break;
                 case "TransactionActivateRocketLogMessage":
                     this.addMessageToLog('Запущена ракета: ' + msg.item_title + '.');
+                    new WTextArcade('Запущена ракета').start();
+                    break;
+                case "TransactionActivateTurretLogMessage":
+                    this.addMessageToLog('Установлена турель: ' + msg.item_title + '.');
+                    new WTextArcade('Установлена турель').start();
                     break;
                 case "TransactionGasStationLogMessage":
                     if (msg.d_fuel > 0)
@@ -836,6 +845,8 @@ var ViewMessengerGlass = (function () {
                     break;
                 case 'PowerUPLogMessage':
                     this.addMessageToLog('Активирован бонус: ' + msg.comment + '.');
+                    new WTextArcade(msg.comment).start();
+                    break;
             }
         }
         return true;

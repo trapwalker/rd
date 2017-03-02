@@ -10,12 +10,6 @@ from sublayers_server.model.registry.odm.fields import (
 )
 
 
-# from sublayers_server.model.transaction_events import (
-#     TransactionActivateTank, TransactionActivateAmmoBullets,
-#     TransactionActivateMine, TransactionActivateRebuildSet, TransactionActivateRocket,
-# )
-
-
 class Item(Root):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
@@ -148,10 +142,40 @@ class MapWeaponMineItem(MapWeaponItem):
 
 
 class MapWeaponRocketItem(MapWeaponItem):
+    starter_obj_list = ListField(
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.weapons.RocketLauncher'),
+        caption=u'Список подходящих пусковых установок',
+    )
+
     @classmethod
     def activate(cls):
         from sublayers_server.model.transaction_events import TransactionActivateRocket
         return TransactionActivateRocket
+
+    def can_activate(self, time, agent_model=None):
+        if agent_model is None or agent_model.car is None:
+            return False
+        if len(self.starter_obj_list) > 0:
+            node_hash_list = [v.node_hash() for v in self.starter_obj_list]
+            # Сделать проход по всем armorer слотам машинки и проверить, есть ли рокет-лаунчер
+            for k, v in agent_model.car.example.iter_slots(tags='armorer'):
+                if v and v.node_hash() in node_hash_list:
+                    return True
+            return False
+        else:
+            return True
+
+
+class MapWeaponTurretItem(MapWeaponItem):
+    @classmethod
+    def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateTurret
+        return TransactionActivateTurret
+
+    def can_activate(self, time, agent_model=None):
+        return (agent_model is not None) and \
+               (agent_model.car is not None) and \
+               (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
 
 
 class MechanicItem(SlotItem):
@@ -220,6 +244,7 @@ class ArmorerItem(SlotItem):
         big = EmbeddedDocumentField(embedded_document_type=ArmorerImagesSize, tags='client')
 
     weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags='client')
+    direction = StringField(caption=u'Направление (FBRL)', tags='client')
     armorer_images = EmbeddedDocumentField(
         embedded_document_type=ArmorerImages,
         caption=u'Картинки оружейника',

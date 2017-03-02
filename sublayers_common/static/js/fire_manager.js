@@ -51,10 +51,30 @@ var EffectPNGLoader = (function(){
         this.load_new_image('effect-power-up-off-random', '/static/img/map_icons/power_up/owerdown_random.png', [60, 60], 10);
 
 
+
+        // Эффекты радиации
+        this.load_new_image('effect-radiation-cloud-1', '/static/img/effect_radiation/oblako1.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-2', '/static/img/effect_radiation/oblako2.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-3', '/static/img/effect_radiation/oblako3.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-4', '/static/img/effect_radiation/oblako4.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-5', '/static/img/effect_radiation/oblako5.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-6', '/static/img/effect_radiation/oblako6.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-7', '/static/img/effect_radiation/oblako7.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-8', '/static/img/effect_radiation/oblako8.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-9', '/static/img/effect_radiation/oblako9.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-10', '/static/img/effect_radiation/oblako10.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-11', '/static/img/effect_radiation/oblako11.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-12', '/static/img/effect_radiation/oblako12.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-13', '/static/img/effect_radiation/oblako13.png', [40, 40], 1);
+        this.load_new_image('effect-radiation-cloud-14', '/static/img/effect_radiation/oblako14.png', [40, 40], 1);
+
     }
 
     EffectPNGLoader.prototype.getImage = function(name){
-        return this.effects[name];
+        if (this.effects.hasOwnProperty(name))
+            return this.effects[name];
+        console.log("EffectPNGLoader.prototype.getImage not found image with name: ", name);
+        return null;
     };
 
     EffectPNGLoader.prototype.load_complete = function () {
@@ -235,7 +255,7 @@ var FireAutoEffectController = (function () {
         this.muzzle_flash = null;
 
         // Настройки звука
-        this.audio_self = (this.subj && (this.subj == user.userCar.ID));
+        this.audio_self = (this.subj && (user.userCar && this.subj == user.userCar.ID));
         var audio_container = this.audio_self ? self_audio : other_audio;
         this.weapon_animation = [];
         this.set_weapon_animation(options.weapon_animation);

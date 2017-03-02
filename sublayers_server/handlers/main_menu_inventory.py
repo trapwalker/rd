@@ -35,7 +35,7 @@ class ContainerInventoryHandler(BaseHandler):
         if container_id:
             container = self.application.srv.objects.get(long(container_id))
         agent.log.info('open container container_id={}'.format(container_id))
-        if isinstance(container, POIContainer) and container.is_available(agent=agent):
+        if isinstance(container, POIContainer) and container.is_available(agent=agent, time=agent.server.get_time()):
             self.render("inventory_container_window.html", car_id=agent.api.car.uid, container_id=container_id)
 
 

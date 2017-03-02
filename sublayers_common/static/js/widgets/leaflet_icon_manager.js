@@ -1,7 +1,4 @@
-
-
 // Список Иконок для всех видов маркеров леафлета
-
 var LeafletIconManager = (function(){
     function LeafletIconManager(){
         var icons = {};
@@ -96,10 +93,14 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_dead_truck', '/static/img/char_icons/dead/truck.png', [53, 53], this.max_id++);
         this.load_new_icon('icon_dead_van', '/static/img/char_icons/dead/van.png', [53, 53], this.max_id++);
 
+        // Ракета
+        this.load_new_icon('icon-rocket-small', '/static/img/map_icons/transport/rocket.png', [26, 26], this.max_id++, null, 5);
+        this.load_new_icon('icon-rocket', '/static/img/map_icons/transport/rocket_2.png', [26, 26], this.max_id++, null, 5);
 
         this.load_new_icon('icon_map_target_point', '/static/img/cursors/target.png', [24, 25], this.max_id++);
 
         this.load_new_icon('mine_001', '/static/img/map_icons/mine.png', [24, 17], this.max_id++);
+        this.load_new_icon('turret_001', '/static/img/map_icons/turret.png', [15, 15], this.max_id++);
         // Animated Power Up
         this.load_new_icon('icon-power-up-build-set', '/static/img/map_icons/power_up/power_up_stay.png', [54, 54], this.max_id++, null, 17);
         this.load_new_icon('icon-power-up-fuel', '/static/img/map_icons/power_up/power_up_oil_stay.png', [54, 54], this.max_id++, null, 17);
@@ -111,7 +112,6 @@ var LeafletIconManager = (function(){
 
         // Animated Effects
         this.load_new_icon('icon-car-effect-shield', '/static/img/map_icons/effects/shield_12_frames.png', [60, 60], this.max_id++, null, 12);
-
 
         // Создание иконки стоящей машинки V 2
         icons['icon_stopped_V2'] = {
@@ -323,6 +323,7 @@ var LeafletIconManager = (function(){
 
     LeafletIconManager.prototype.getIcon = function(icon_name, type){
         type = type ? type : 'icon';
+        if (!this.icons.hasOwnProperty(icon_name) || !this.icons[icon_name].hasOwnProperty(type)) return null;
         return this.icons[icon_name][type];
     };
 
@@ -371,14 +372,8 @@ var LeafletIconManager = (function(){
         img.src = icon_url;
     };
 
-
-
     return LeafletIconManager;
 })();
-
-
-
-
 
 
 // Массив иконок

@@ -18,7 +18,7 @@ from sublayers_server.model.events import (
 )
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
-from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot, POICorpse
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot, CreatePOICorpseEvent
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
 from sublayers_server.model.inventory import Inventory, ItemState
@@ -250,20 +250,12 @@ class Unit(Observer):
             # todo: возможно это нужно перенести (!)
             self.owner.example.car = None
 
-        # todo: Сделать другой эвенет, передавать в него не список итемов, а inventory
         if not self.inventory.is_empty():
-            CreatePOILootEvent(
-                server=self.server,
-                time=event.time,
-                poi_cls=POICorpse,
-                example=None,
-                inventory_size=self.example.inventory.size,
-                position=self.position(event.time),
-                life_time=self.server.poi_loot_objects_life_time,
-                items=self.inventory.get_items(),
-                sub_class_car=self.example.sub_class_car,
-                car_direction=self.direction(event.time),
-            ).post()
+            self.post_die_loot(event)
+
+    def post_die_loot(self, event):
+        # Данный метод упределяет как и куда денется лут из Unit объекта: взрыв, проезд и тд.
+        pass
 
     def drop_item_to_map(self, item, time):
         CreatePOILootEvent(
@@ -543,6 +535,46 @@ class Bot(Mobile):
         self.main_agent.on_kill(event=event, target=obj, killer=self)
         super(Bot, self).on_kill(event=event, obj=obj)
 
+    def post_die_loot(self, event):
+        # Если есть киллер, значит труп был убит залповой стрельбой или взрывом
+        killer = event.killer
+        time = event.time
+        if killer:
+            # Отправить сообщение об анимации направленного убийства
+            direction = killer.position(time).direction(self.position(time))
+            for agent in self.subscribed_agents:
+                messages.DieVisualisationMessage(agent=agent, time=time, obj=self, direction=direction).post()
+            # Разбросать лут (обычный лут, а не POICorpse)
+            CreatePOILootEvent(
+                server=self.server,
+                time=time,
+                poi_cls=POILoot,
+                example=None,
+                inventory_size=self.example.inventory.size,
+                position=Point.random_gauss(self.position(time), 10),
+                life_time=self.server.poi_loot_objects_life_time,
+                items=self.inventory.get_items(),
+            ).post()
+        else:
+            # Отправить сообщенеи об анимации не направленного убийства
+            for agent in self.subscribed_agents:
+                messages.DieVisualisationMessage(agent=agent, time=time, obj=self, direction=None).post()
+            # Создать доезжающий труп машинки
+            CreatePOICorpseEvent(
+                server=self.server,
+                time=time,
+                example=None,
+                inventory_size=self.example.inventory.size,
+                position=self.position(event.time),
+                life_time=self.server.poi_loot_objects_life_time,
+                items=self.inventory.get_items(),
+                sub_class_car=self.example.sub_class_car,
+                car_direction=self.direction(time),
+                donor_v=self.v(event.time),
+                donor_example=self.example,
+                agent_viewer=self.main_agent,
+            ).post()
+
     def start_shield_off(self, event):
         self.start_shield_event = None
         self.params.get('p_radiation_armor').current -= 100
@@ -632,6 +664,9 @@ class ExtraMobile(Mobile):
     def on_kill(self, event, obj):
         # Начисление опыта и фрага агенту
         self.main_agent.on_kill(event=event, target=obj, killer=self)
+
+    def post_die_loot(self, event):
+        pass
 
 
 class Slave(ExtraMobile):
