@@ -1,0 +1,8 @@
+date: '02.03.2017'
+header:
+  ru: 'Обновление v0.130.2920'
+  en: 'Update v0.130.2920'
+link: 'update_v0_130_2920'
+content:
+  ru: '<div style="width: 400px; height: 220px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/rock_news.png"></img></div><div style=" font-size: 9pt; ">- Добавлены турели.<br>- Добавлены ракеты и ракетные установки.<br>- Отображение фрагов в режиме Быстрого боя.<br>- Визуализация радиации.<br>- Правки анимации смерти игрока.<br>- Новые эффекты смерти игроков.<br>- Аркадные титры для режима Быстрого боя.<br>- Взрывы мин теперь не игнорируют броню.<br>- Исправления механики видимости.<br></div>'
+  en: '<div style="width: 400px; height: 220px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/rock_news.png"></img></div><div style=" font-size: 9pt; ">- Added turrets.<br>- Added missiles and missile launchers.<br>- Showing frags in «Quick Fight» mode.<br>- Visualization of radiation.<br>- Animation of player death fix.<br>- New effects for player death.<br>- Arcade titles for the «Quick Fight» mode.<br>- Mines is no longer ignore armor.<br>- Visibility mechanics fixes.<br></div>'
