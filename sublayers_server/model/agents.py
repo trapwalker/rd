@@ -703,6 +703,9 @@ class QuickUser(User):
         # if car is self.car:
         #     self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
+        # В быстрой игре нужно уничтожить все slave-объекты
+        # for obj in self.slave_objects:
+        #     obj.delete(time)
 
     def get_quick_game_points(self, time):
         return round(round((time - self.time_quick_game_start) * self.quick_game_koeff_time) +
@@ -715,6 +718,12 @@ class QuickUser(User):
 
     def on_kill(self, event, target, killer):
         self.log.info('{}:: on_kill {} and killer={}'.format(self, target, killer))
+
+        if self.car is None:
+            return
+        if killer is not self.car and getattr(killer, "starter", None) and killer.starter is not self.car:
+            return
+
         if target.owner and isinstance(target.owner, AI):
             self.quick_game_bot_kills += 1
         else:
