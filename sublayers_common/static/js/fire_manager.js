@@ -149,7 +149,6 @@ var FireEffectManager = (function () {
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
-
     };
 
     FireEffectManager.prototype.delController = function (options) {
@@ -171,6 +170,17 @@ var FireEffectManager = (function () {
                 this.muzzle_flashs[options.subj + options.side].update(-1);
             else console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
         }
+    };
+
+    FireEffectManager.prototype.clear = function () {
+        for (var i = 0; i < this.controllers_list.length; i++)
+            if (this.controllers_list[i])
+                this.controllers_list[i].ctrl.finish();
+        for (var key in this.muzzle_flashs)
+            if (this.muzzle_flashs.hasOwnProperty(key))
+                this.muzzle_flashs[key].finish();
+        this.controllers_list = [];
+        this.muzzle_flashs = {};
     };
 
     FireEffectManager.prototype.fireDischargeEffect = function (options) {
