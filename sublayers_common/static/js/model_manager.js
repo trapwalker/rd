@@ -441,6 +441,9 @@ var ClientManager = (function () {
         textConsoleManager.async_stop();
 
         if (!user.userCar) {
+            // Очистить эффекты стрельбы из прошлой жизни
+            if (fireEffectManager) fireEffectManager.clear();
+
             // создать машинку
             var mcar = new UserCar(
                 uid,       //ID машинки
