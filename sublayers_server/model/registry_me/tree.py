@@ -70,6 +70,27 @@ class RegistryLinkField(BaseField):
         return value
         #return super(RegistryLinkField, self).__get__(instance, owner)
 
+    def __set__(self, instance, value):
+        if value is None:
+            if self.null:
+                value = None
+            elif self.default is not None:
+                value = self.default
+                if callable(value):
+                    value = value()
+
+        if instance._initialised:
+            try:
+                if (self.name not in instance._data or
+                        instance._data[self.name] != value):
+                    instance._mark_as_changed(self.name)
+            except Exception:
+                # Values cant be compared eg: naive and tz datetimes
+                # So mark it as changed
+                instance._mark_as_changed(self.name)
+
+        instance._data[self.name] = value
+
     def to_mongo(self, document):
         if document is None:
             return
@@ -116,7 +137,7 @@ class EmbeddedNodeField(EmbeddedDocumentField):
     def __set__(self, instance, value):
         if instance._initialised:
             if isinstance(value, basestring):
-                reg = get_registry()  # todo: Избавиться от глобального объекта
+                reg = instance.get_registry()  # todo: Избавиться от глобального объекта
                 parent = reg.get_node_by_uri(value)
                 if parent:
                     value = parent.__class__(parent=parent)
@@ -206,19 +227,19 @@ class Node(EmbeddedDocument):
     def node_html(self):  # todo: rename
         return self.node_hash().replace('://', '-').replace('/', '-')
 
-    @property
     def root_instance(self):
         # todo: cache it
-        instance = self._instance
-        next_instance = instance
-        while next_instance and hasattr(next_instance, '_instance'):
-            instance = next_instance
-            next_instance = instance._instance
-        return next_instance or instance
+        last_instance = self
+        instance = self
+        while instance:
+            last_instance = instance
+            instance = getattr(instance, '_instance', None)
+
+        return last_instance
 
     def get_registry(self):
         # todo: cache it
-        root = self.root_instance
+        root = self.root_instance()
         if isinstance(root, Registry):
             return root
 
@@ -465,22 +486,6 @@ class Registry(Document):
         return node
 
 
-REGS = {}
-
-def get_registry(name=None):
-    if isinstance(name, Registry):
-        return name
-    reg = REGS.get(name)
-    if reg is None:
-        reg = Registry.objects.filter(name=name).first()
-
-    if reg is None:
-        reg = Registry(name=name)
-        REGS[name] = reg
-
-    return reg
-
-
 ########################################################################################################################
 ########################################################################################################################
 
@@ -518,7 +523,7 @@ def test1():
 
 def test2():
     Registry.objects.filter({}).delete()
-    reg = get_registry(None)
+    reg = Registry()
     reg.load(u'../../../tmp/reg')
     a = reg.get('/reg/a')
     aa = reg.get('/reg/a/aa')
@@ -543,8 +548,8 @@ if __name__ == '__main__':
     log.info('Use `test_me` db')
 
     #test1()
-    #test2()
-    test3()
+    test2()
+    #test3()
 
     # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
     # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
