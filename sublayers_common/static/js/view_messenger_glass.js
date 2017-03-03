@@ -849,7 +849,7 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog('На оплату работы тренера потрачено - ' + msg.price + 'nc.');
                     break;
                 case 'PowerUPLogMessage':
-                    this.addMessageToLog('Активирован бонус: ' + msg.comment + '.');
+                    this.addMessageToLog('Подобрано: ' + msg.comment + '.');
                     new WTextArcade(msg.comment).start();
                     break;
             }
