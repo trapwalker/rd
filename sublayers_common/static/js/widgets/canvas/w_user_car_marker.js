@@ -26,7 +26,7 @@ var WCanvasCarMarker = (function (_super) {
         this.audio_object = null;
         if (car == user.userCar)
             this.audio_object = audioManager.play(car.engine_audio.name, 0.0, 1.0, null, true, 0.0, null,
-                                                  car.getAudioEngineRate(clock.getCurrentTime()));
+                                                  car.getAudioEngineRate(clock.getCurrentTime()), 0.1);
     }
 
     WCanvasCarMarker.prototype.mouse_test = function(time) {
@@ -166,7 +166,7 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
         if (this.audio_object)
-            audioManager.stop(this.car.engine_audio.name, 0.0, this.audio_object);
+            audioManager.stop(0.0, this.audio_object);
         this.car = null;
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);

@@ -785,7 +785,7 @@ var ClientManager = (function () {
             var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
             // 0.35/0.6 - границы рэйта
             var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
-            audioManager.play('shot_03', 0.0, gain, null, false, 0, 0, rate);
+            audioManager.play('shot_03', 0.0, gain, null, false, 0, 0, rate, 0.7);
         }
     };
 

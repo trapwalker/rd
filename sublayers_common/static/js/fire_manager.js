@@ -216,7 +216,7 @@ var FireEffectManager = (function () {
         if (options.self_shot) {
             // 0.6/0.8 - границы рандома рэйта
             var rate = 0.6 + (0.6 - 0.8) * Math.random();
-            audioManager.play("shot_01", 0, 0.4, null, false, 0, 0, rate);
+            audioManager.play("shot_01", 0, 0.4, null, false, 0, 0, rate, 0.8);
         }
         else {
             var distance = 2000;
@@ -227,7 +227,7 @@ var FireEffectManager = (function () {
                 var gain = 0.01 + (0.4 - 0.01) * (1 - distance/2000);
                 // 0.2/0.4 - границы рандома рэйта
                 var rate = 0.2 + (0.4 - 0.2) * Math.random();
-                audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate);
+                audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate, 0.5);
             }
         }
     };
@@ -277,7 +277,7 @@ var FireAutoEffectController = (function () {
         audio_container.count++;
         if (audio_container.count == 1) {
             var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
-            audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0,             audio_container.gain, null, true, 0, 0, 1);
+            audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0,             audio_container.gain, null, true, 0, 0, 1, 0.3);
             //audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
             //audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
             //audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
@@ -366,7 +366,7 @@ var FireAutoEffectController = (function () {
         var audio_container = this.audio_self ? self_audio : other_audio;
         audio_container.count--;
         if (audio_container.count == 0) {
-             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj1);
+             audioManager.stop(0.0, audio_container.audio_obj1);
              //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
              //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
              //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);

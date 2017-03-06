@@ -3,6 +3,9 @@ var AudioManager = (function () {
         this.audio_objects = {}; // <audio> объекты
         this.audio_context = new (window.AudioContext || window.webkitAudioContext)();
         this.general_gain = 1.0; // Общая громкость по-умолчанию
+
+        this.queue = [];
+        this.queue_size = 2;
     }
 
     // Воспроизведение
@@ -14,25 +17,21 @@ var AudioManager = (function () {
     *  offset - смещение от начала звука
     *  duration - продолжительность проигрывания
     * */
-    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate) {
+    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate, priority) {
         var audio_obj = this.get(name);
         if (!audio_obj) {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
-        return audio_obj.play(time, gain ? gain : 1.0, callback, loop, offset, duration, playbackRate);
+        return audio_obj.play(time, gain ? gain : 1.0, callback, loop, offset, duration, playbackRate, priority);
     };
 
-    AudioManager.prototype.stop = function (name, time, play_object) {
-        var audio_obj = this.get(name);
-        if (!audio_obj) return false;
-        return audio_obj.stop(time, play_object);
+    AudioManager.prototype.stop = function (time, play_object) {
+        return play_object.stop(time);
     };
 
-    AudioManager.prototype.set_gain = function (name, value, play_object) {
-        var audio_obj = this.get(name);
-        if (!audio_obj) return false;
-        return audio_obj.gain(play_object.gain_node, value);
+    AudioManager.prototype.set_gain = function (value, play_object) {
+        return play_object.gain(value);
     };
 
     AudioManager.prototype.set_general_gain = function (value) {
@@ -58,6 +57,55 @@ var AudioManager = (function () {
 
     AudioManager.prototype.get_ctx = function (name) {
         return this.audio_context;
+    };
+
+    AudioManager.prototype.add_playobject = function (play_object) {
+        var index = this.queue.indexOf(play_object);
+        if (index >= 0 && index <= this.queue.length) {
+            console.error(play_object + " уже в очереди ! Повторное добавление невозможно");
+            return;
+        }
+
+        var queue = this.queue;
+        queue.push(play_object);
+        var qlength = this.queue.length;
+
+        var i = qlength - 1;
+
+        for (; i > 0  && queue[i].priority > queue[i - 1].priority; i--) {
+            var temp = queue[i];
+            queue[i] = queue[i - 1];
+            queue[i - 1] = temp;
+        }
+        if (i < this.queue_size) {
+            play_object.gain(play_object.start_gain);
+            if (qlength > this.queue_size + 1) queue[this.queue_size + 1].gain(0);
+        }
+        else {
+            play_object.gain(0);
+        }
+    };
+
+
+    AudioManager.prototype.del_playobject = function (play_object) {
+        var index = this.queue.indexOf(play_object);
+        if (index < 0 || index > this.queue.length) {
+            console.error(play_object + " не найден в очереди !");
+            return;
+        }
+        this.queue.splice(index, 1);
+        if (index <= this.queue_size && this.queue.length > this.queue_size)
+            this.queue[this.queue_size].gain(this.queue[this.queue_size].start_gain);
+    };
+
+    AudioManager.prototype.get_playobject_gain = function (play_object) {
+        var index = this.queue.indexOf(play_object);
+        if (index < 0 || index > this.queue.length) {
+            console.error(play_object + " не найден в очереди !");
+            return 0;
+        }
+        if (index > this.queue_size) return 0;
+        return play_object.start_gain;
     };
 
     return AudioManager;
