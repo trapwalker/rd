@@ -5,7 +5,8 @@ var AudioManager = (function () {
         this.general_gain = 1.0; // Общая громкость по-умолчанию
 
         this.queue = [];
-        this.queue_size = 2;
+        this.queue_size = 10;
+        this.queue_tail_size = 5;
     }
 
     // Воспроизведение
@@ -59,6 +60,19 @@ var AudioManager = (function () {
         return this.audio_context;
     };
 
+    AudioManager.prototype._update_gain = function () {
+        var get_gain_mul = function(index, queue_size, queue_tail_size) {
+            if (i < queue_size)
+                return 1;
+            if (i < (queue_size + queue_tail_size))
+                return 1 - (1 / (queue_tail_size + 1)) * (index - queue_size + 1);
+            return 0;
+        };
+
+        for (var i = 0; i < this.queue.length; i++)
+            this.queue[i].gain(this.queue[i].start_gain * get_gain_mul(i, this.queue_size, this.queue_tail_size));
+    };
+
     AudioManager.prototype.add_playobject = function (play_object) {
         var index = this.queue.indexOf(play_object);
         if (index >= 0 && index <= this.queue.length) {
@@ -71,19 +85,12 @@ var AudioManager = (function () {
         var qlength = this.queue.length;
 
         var i = qlength - 1;
-
         for (; i > 0  && queue[i].priority > queue[i - 1].priority; i--) {
             var temp = queue[i];
             queue[i] = queue[i - 1];
             queue[i - 1] = temp;
         }
-        if (i < this.queue_size) {
-            play_object.gain(play_object.start_gain);
-            if (qlength > this.queue_size + 1) queue[this.queue_size + 1].gain(0);
-        }
-        else {
-            play_object.gain(0);
-        }
+        this._update_gain();
     };
 
 
@@ -94,8 +101,7 @@ var AudioManager = (function () {
             return;
         }
         this.queue.splice(index, 1);
-        if (index <= this.queue_size && this.queue.length > this.queue_size)
-            this.queue[this.queue_size].gain(this.queue[this.queue_size].start_gain);
+        this._update_gain();
     };
 
     AudioManager.prototype.get_playobject_gain = function (play_object) {

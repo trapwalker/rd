@@ -95,8 +95,6 @@ var PlayAudioObject = (function () {
                 current_source.start(t, offset, duration);
             else // Если это сафари
                 current_source.noteOn(t);
-
-
         }
         catch (e) {
             console.warn('Ошибка при попытке старта аудио объекта', e);
@@ -143,7 +141,8 @@ var PlayAudioObject = (function () {
         value = value * this.parent.start_relative_gain * audioManager.general_gain;
         value = value > 1.0 ? 1.0 : value;
         value = value < 0.0 ? 0.0 : value;
-        this.gain_node.gain.value = value;
+        if (this.gain_node.gain.value != value)
+            this.gain_node.gain.value = value;
         return true;
     };
 
