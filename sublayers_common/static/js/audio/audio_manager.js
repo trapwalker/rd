@@ -32,7 +32,12 @@ var AudioManager = (function () {
     };
 
     AudioManager.prototype.set_gain = function (value, play_object) {
-        return play_object.gain(value);
+        play_object.start_gain = value;
+        var index = this.queue.indexOf(play_object);
+        if (index >= 0)
+            this.update_gain(index);
+        else
+            play_object.gain(value);
     };
 
     AudioManager.prototype.set_general_gain = function (value) {
@@ -60,17 +65,16 @@ var AudioManager = (function () {
         return this.audio_context;
     };
 
-    AudioManager.prototype._update_gain = function () {
+    AudioManager.prototype.update_gain = function (index) {
         var get_gain_mul = function(index, queue_size, queue_tail_size) {
-            if (i < queue_size)
+            if (index < queue_size)
                 return 1;
-            if (i < (queue_size + queue_tail_size))
+            if (index < (queue_size + queue_tail_size))
                 return 1 - (1 / (queue_tail_size + 1)) * (index - queue_size + 1);
             return 0;
         };
 
-        for (var i = 0; i < this.queue.length; i++)
-            this.queue[i].gain(this.queue[i].start_gain * get_gain_mul(i, this.queue_size, this.queue_tail_size));
+        this.queue[index].gain(this.queue[index].start_gain * get_gain_mul(index, this.queue_size, this.queue_tail_size));
     };
 
     AudioManager.prototype.add_playobject = function (play_object) {
@@ -90,9 +94,10 @@ var AudioManager = (function () {
             queue[i] = queue[i - 1];
             queue[i - 1] = temp;
         }
-        this._update_gain();
-    };
 
+        for (var i = 0; i < this.queue.length; i++)
+            this.update_gain(i);
+    };
 
     AudioManager.prototype.del_playobject = function (play_object) {
         var index = this.queue.indexOf(play_object);
@@ -100,8 +105,11 @@ var AudioManager = (function () {
             console.error(play_object + " не найден в очереди !");
             return;
         }
+
         this.queue.splice(index, 1);
-        this._update_gain();
+
+        for (var i = 0; i < this.queue.length; i++)
+            this.update_gain(i);
     };
 
     AudioManager.prototype.get_playobject_gain = function (play_object) {
