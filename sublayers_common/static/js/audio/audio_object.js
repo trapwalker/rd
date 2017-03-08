@@ -54,7 +54,6 @@ var GameAudioObject = (function () {
 })();
 
 
-
 var PlayAudioObject = (function () {
     function PlayAudioObject(parent, time, gain, callback, loop, offset, duration, playbackRate, priority) {
         this.parent = parent;
@@ -99,7 +98,6 @@ var PlayAudioObject = (function () {
         catch (e) {
             console.warn('Ошибка при попытке старта аудио объекта', e);
         }
-
     }
 
     PlayAudioObject.prototype.stop = function (time) {
@@ -133,6 +131,10 @@ var PlayAudioObject = (function () {
         }
         else
             console.warn('Неизвестный аудио объект', this);
+    };
+
+    PlayAudioObject.prototype.duration = function () {
+        return this.source_node.buffer.duration;
     };
 
     // Установка громкости
