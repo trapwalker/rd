@@ -387,28 +387,47 @@ var FireAutoEffectController = (function () {
 
 
 var FireAutoAudioController = (function () {
-    function FireAutoAudioController(owner, names) {
+    function FireAutoAudioController(owner, names, weapon_speed) {
         this.owner = owner;
         this.count = 1; // Сколько раз этот контроллер добавлен
         this._is_active = true;
         this.audio_objects_names = names; // список имен аудио объектов
         this.curren_play_object = null; // текущий воспроизводимый звук
+        this.weapon_speed = weapon_speed; // Скорострельность в секунду - определяет задержку между звуками
         this.start(0);
     }
 
-    FireAutoAudioController.prototype.start = function (time) {
-        // todo: пробросить в овнера выключение стрельбы
+    FireAutoAudioController.prototype.start = function (delay) {
         this.owner.animation_finish();
         var self = this;
         this.curren_play_object = null;
         if (!this.audio_objects_names || this.audio_objects_names.length <= 0) return;
         var name = this.audio_objects_names[Math.floor(Math.random() * this.audio_objects_names.length)];
-        // var time = 0; // todo: тут вычислить по скорострельности
+
         setTimeout(function () {
             if (!self._is_active || !self.owner.is_active) return;
-            self.curren_play_object = audioManager.play(name, 0, 1, self.start.bind(self, 500), false, 0, null, 1, 1);
+            // Настройка звука очереди от расстояния
+            var gain = 0.5;
+            var base_autofire_priority = 0.8;
+            var subj = visualManager.getModelObject(self.owner.subj);
+            if (user.userCar && subj && user.userCar != subj) {
+                base_autofire_priority = 0.5;
+                if (!subj) return;
+                var t = clock.getCurrentTime();
+                var distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
+                if (distance <= 1000) {
+                    // 0.1/0.2 - минимальная/максимальная громкость звука
+                    gain = 0.1 + (0.2 - 0.1) * (1 - distance / 1000);
+                    base_autofire_priority = base_autofire_priority * gain;
+                }
+                else
+                    gain = 0;
+            }
+            var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
+            self.curren_play_object = audioManager.play(name, 0, gain, self.start.bind(self, delay), false, 0, null, 1.0, base_autofire_priority);
             self.owner.animation_start();  // пробросить в овнера запуск стрельбы
-        }, time);
+
+        }, delay);
     };
 
     FireAutoAudioController.prototype.stop = function () {
@@ -473,21 +492,21 @@ var FireAutoMuzzleFlashController = (function () {
         this.count += count_diff;
         if (options.weapon_id) {
             if (count_diff > 0)  // Значит нужно добавить звуки стрельбы
-                this.addAudioController(options.weapon_id, options.weapon_audio);
+                this.addAudioController(options.weapon_id, options.weapon_audio, options.animation_tracer_rate);
             else
                 this.delAudioController(options.weapon_id, options.weapon_audio);
         }
         return this.count;
     };
 
-    FireAutoMuzzleFlashController.prototype.addAudioController = function (weapon_id, weapon_audio) {
+    FireAutoMuzzleFlashController.prototype.addAudioController = function (weapon_id, weapon_audio, weapon_speed) {
         //console.log("FireAutoMuzzleFlashController.prototype.addAudioController", weapon_id, weapon_audio);
         if (this.audio_ctrls.hasOwnProperty(weapon_id) && this.audio_ctrls[weapon_id]) {
             this.audio_ctrls[weapon_id].count++;
             return;
         }
         if (weapon_audio)
-            this.audio_ctrls[weapon_id] = new FireAutoAudioController(this, weapon_audio);
+            this.audio_ctrls[weapon_id] = new FireAutoAudioController(this, weapon_audio, weapon_speed);
         else
             console.warn('Попытка добавления звукового контроллера без списка audio_names', weapon_audio);
     };

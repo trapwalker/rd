@@ -24,7 +24,7 @@ var AudioManager = (function () {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
-        return audio_obj.play(time, gain ? gain : 1.0, callback, loop, offset, duration, playbackRate, priority);
+        return audio_obj.play(time, gain, callback, loop, offset, duration, playbackRate, priority);
     };
 
     AudioManager.prototype.stop = function (time, play_object) {
