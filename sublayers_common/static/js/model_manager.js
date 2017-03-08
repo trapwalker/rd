@@ -840,7 +840,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
-        //console.log('ClientManager.prototype.FireAutoEffect', event);
+        //console.log('ClientManager.prototype.FireAutoEffect', event.action, event);
         if (event.action)
             fireEffectManager.addController({
                 subj: event.subj,
@@ -849,7 +849,7 @@ var ClientManager = (function () {
                 weapon_animation: event.weapon_animation,
                 animation_tracer_rate: event.animation_tracer_rate,
                 weapon_id: event.weapon_id,
-                weapon_audio:
+                weapon_audio: event.weapon_audio,
             });
         else
             fireEffectManager.delController({
@@ -857,7 +857,9 @@ var ClientManager = (function () {
                 obj: event.obj,
                 side: event.side,
                 weapon_animation: event.weapon_animation,
-                animation_tracer_rate: event.animation_tracer_rate
+                animation_tracer_rate: event.animation_tracer_rate,
+                weapon_id: event.weapon_id,
+                weapon_audio: event.weapon_audio,
             });
     };
 
