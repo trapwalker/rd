@@ -144,8 +144,12 @@ var FireEffectManager = (function () {
             });
 
         if (options.side && options.subj) {
+
+            options.weapon_id = '5';
+            options.audio_names = ['auto_z_11', 'auto_z_12', 'auto_z_13', 'auto_z_14'];
+
             if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
-                this.muzzle_flashs[options.subj + options.side].update(1);
+                this.muzzle_flashs[options.subj + options.side].update(options, 1);
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
@@ -166,8 +170,16 @@ var FireEffectManager = (function () {
         else
             console.error('Попытка удалить несуществующий контроллер автоматической стрельбы!', options);
         if (options.side && options.subj) {
-            if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
-                this.muzzle_flashs[options.subj + options.side].update(-1);
+
+            options.weapon_id = '5';
+
+            if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side)) {
+                var count = this.muzzle_flashs[options.subj + options.side].update(options, -1);
+                if (count <= 0) {
+                    this.muzzle_flashs[options.subj + options.side].finish();
+                    delete this.muzzle_flashs[options.subj + options.side];
+                }
+            }
             else console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
         }
     };
@@ -278,8 +290,8 @@ var FireAutoEffectController = (function () {
         var audio_container = this.audio_self ? self_audio : other_audio;
         audio_container.count++;
         if (audio_container.count == 1) {
-            var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
-            audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0, audio_container.gain, null, true, 0, 0, 1, 0.3);
+            //var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
+            //audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0, audio_container.gain, null, true, 0, 0, 1, 0.3);
             //audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
             //audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
             //audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
@@ -368,7 +380,7 @@ var FireAutoEffectController = (function () {
         var audio_container = this.audio_self ? self_audio : other_audio;
         audio_container.count--;
         if (audio_container.count == 0) {
-             audioManager.stop(0.0, audio_container.audio_obj1);
+             //audioManager.stop(0.0, audio_container.audio_obj1);
              //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
              //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
              //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
@@ -390,16 +402,18 @@ var FireAutoAudioController = (function () {
 
     FireAutoAudioController.prototype.start = function () {
         // todo: пробросить в овнера выключение стрельбы
-        this.owner.animation_finish(0);
+        this.owner.animation_finish();
         var self = this;
         this.curren_play_object = null;
-        var name = this.audio_objects_names[Math.floor(Math.random() * this.audio_objects_list.length)];
+        if (! this.owner.is_active) return;
+        if (!this.audio_objects_names || this.audio_objects_names.length <= 0) return;
+        var name = this.audio_objects_names[Math.floor(Math.random() * this.audio_objects_names.length)];
         var time = 0.5; // todo: тут вычислить по скорострельности
-        setTimeout(function(){
+        setTimeout(function () {
             if (!self._is_active) return;
             // todo: пробросить в овнера запуск стрельбы
-            self.curren_play_object = audioManager.play(name, 0, 1, this.prototype.start.bind(this), false, 0, null, 1, 1);
-            self.owner.animation_start(self.curren_play_object.duration());
+            self.curren_play_object = audioManager.play(name, 0, 1, self.start.bind(self), false, 0, null, 1, 1);
+            self.owner.animation_start();
         }, time);
     };
 
@@ -425,50 +439,64 @@ var FireAutoMuzzleFlashController = (function () {
 
         // Звуковые контроллеры
         this.audio_ctrls = {};
-        this.animation_end_time = 0;
-        this.animation_paused = true;
+        this.audio_count = 0;
+        this.is_active = true;
     }
 
-    FireAutoMuzzleFlashController.prototype.start = function () {
-        var subj = visualManager.getModelObject(this.subj);
-        if (subj && !this.muzzle_flash && this.side){
-            this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
+    //FireAutoMuzzleFlashController.prototype.start = function () {
+    //    var subj = visualManager.getModelObject(this.subj);
+    //    if (subj && !this.muzzle_flash && this.side){
+    //        this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
+    //    }
+    //};
+
+    FireAutoMuzzleFlashController.prototype.finish = function () {
+        if (this.muzzle_flash) {
+            this.muzzle_flash.finish();
+            this.muzzle_flash = null;
+        }
+        this.is_active = false;
+    };
+
+    FireAutoMuzzleFlashController.prototype.animation_start = function () {
+        this.audio_count++;
+        if (!this.muzzle_flash) {
+            var subj = visualManager.getModelObject(this.subj);
+            if (subj && this.side)
+                this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
         }
     };
 
-    FireAutoMuzzleFlashController.prototype.finish = function (options) {
-        if (this.muzzle_flash) {
+    FireAutoMuzzleFlashController.prototype.animation_finish = function () {
+        this.audio_count--;
+        if (this.audio_count <= 0 && this.muzzle_flash) {
             this.muzzle_flash.finish();
             this.muzzle_flash = null;
         }
     };
 
-    FireAutoMuzzleFlashController.prototype.animation_start = function (time) {
-        var temp_time = clock.getClientTime() / 1000. + time;
-        this.animation_end_time = Math.max(temp_time, this.animation_end_time);
-
-    };
-
-    FireAutoMuzzleFlashController.prototype.animation_finish = function (time) {
-        var temp_time = clock.getClientTime() / 1000.;
-        if (temp_time >= this.animation_end_time)
-
-    };
-
-    FireAutoMuzzleFlashController.prototype.update = function (count_diff) {
+    FireAutoMuzzleFlashController.prototype.update = function (options, count_diff) {
         this.count += count_diff;
-        //if (this.count > 0 && !this.muzzle_flash) this.start();
-        if (this.count <=0 && this.muzzle_flash) this.finish();
+        if (options.weapon_id) {
+            if (count_diff > 0)  // Значит нужно добавить звуки стрельбы
+                this.addAudioController(options.weapon_id, options.audio_names);
+            else
+                this.delAudioController(options.weapon_id, options.audio_names);
+        }
+        return this.count;
     };
 
     // Все что касается звука
 
-    FireAutoMuzzleFlashController.prototype.addAudioController = function (weapon_id, names) {
+    FireAutoMuzzleFlashController.prototype.addAudioController = function (weapon_id, audio_names) {
         if (this.audio_ctrls.hasOwnProperty(weapon_id) && this.audio_ctrls[weapon_id]) {
             console.warn('Попытка повторного добавления звукового контроллера;');
             return;
         }
-        this.audio_ctrls[weapon_id] = new FireAutoAudioController(this, names);
+        if (audio_names)
+            this.audio_ctrls[weapon_id] = new FireAutoAudioController(this, audio_names);
+        else
+            console.warn('Попытка добавления звукового контроллера без списка audio_names', audio_names);
     };
 
     FireAutoMuzzleFlashController.prototype.delAudioController = function (weapon_id) {

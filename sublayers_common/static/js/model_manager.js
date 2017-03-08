@@ -847,7 +847,9 @@ var ClientManager = (function () {
                 obj: event.obj,
                 side: event.side,
                 weapon_animation: event.weapon_animation,
-                animation_tracer_rate: event.animation_tracer_rate
+                animation_tracer_rate: event.animation_tracer_rate,
+                weapon_id: event.weapon_id,
+                weapon_audio:
             });
         else
             fireEffectManager.delController({
