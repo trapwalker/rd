@@ -22,6 +22,7 @@ class Weapon(ArmorerItem):
     radius = FloatField(caption=u'Дальность стрельбы (м)')
     width = FloatField(caption=u'Ширина сектора стрельбы (град)')
     power_penetration = FloatField(caption=u'Мощность оружия (пробитие)')
+    weapon_audio = ListField(caption=u'Имена звуков стрельбы', base_field=StringField())
 
 
 class Cannon(Weapon):

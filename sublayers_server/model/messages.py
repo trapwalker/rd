@@ -388,12 +388,13 @@ class FireDischargeEffect(Message):
 
 
 class FireAutoEffect(Message):
-    def __init__(self, subj, obj, sector=None, action=True, **kw):
+    def __init__(self, subj, obj, weapon=None, sector=None, action=True, **kw):
         super(FireAutoEffect, self).__init__(**kw)
         self.subj = subj
         self.obj = obj
         self.sector = sector
         self.action = action
+        self.weapon = weapon
 
     def as_dict(self):
         d = super(FireAutoEffect, self).as_dict()
@@ -413,7 +414,10 @@ class FireAutoEffect(Message):
             action=self.action,
             weapon_animation=[item for item in set(weapon_animation)],
             animation_tracer_rate=animation_tracer_rate,
+            weapon_id=self.weapon.id if self.weapon else None,
+            weapon_audio=[item for item in self.weapon.example.weapon_audio] if self.weapon else [],
         )
+
         return d
 
 

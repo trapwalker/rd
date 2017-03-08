@@ -233,7 +233,7 @@ class Unit(Observer):
                 if isinstance(weapon, WeaponAuto):
                     for target in weapon.targets:
                         messages.FireAutoEffect(
-                            agent=agent, subj=self, obj=target, action=action, sector=sector, time=time,
+                            agent=agent, subj=self, obj=target, action=action, weapon=weapon, sector=sector, time=time,
                         ).post()
 
     def on_die(self, event):

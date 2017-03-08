@@ -155,11 +155,10 @@ function init_sound() {
     audioManager.load('auto_other_1', {url: '/static/audio/test/auto_other_1.wav'}, 1.0);
     audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 0.15);
 
-    audioManager.load('auto_z_11', {url: '/static/audio/test2/z_11.wav'}, 1.0);
-    audioManager.load('auto_z_12', {url: '/static/audio/test2/z_12.wav'}, 1.0);
-    audioManager.load('auto_z_13', {url: '/static/audio/test2/z_13.wav'}, 1.0);
-    audioManager.load('auto_z_14', {url: '/static/audio/test2/z_14.wav'}, 1.0);
-
+    audioManager.load('auto_test_1', {url: '/static/audio/test2/z_11.wav'}, 1.0);
+    audioManager.load('auto_test_2', {url: '/static/audio/test2/z_12.wav'}, 1.0);
+    audioManager.load('auto_test_3', {url: '/static/audio/test2/z_13.wav'}, 1.0);
+    audioManager.load('auto_test_4', {url: '/static/audio/test2/z_14.wav'}, 1.0);
 
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
 }
