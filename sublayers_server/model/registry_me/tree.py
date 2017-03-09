@@ -240,10 +240,11 @@ class Node(EmbeddedDocument):
     def get_registry(self):
         # todo: cache it
         root = self.root_instance()
-        if isinstance(root, Registry):
-            return root
+        reg_getter = getattr(root, '__get_registry__')
+        if reg_getter is None:
+            raise ValueError('Root instance {!r} has not registry getter'.format(self))
 
-        raise ValueError('Root instance {!r} has not registry getter'.format(self))
+        return reg_getter()
 
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
@@ -383,6 +384,20 @@ class Node(EmbeddedDocument):
         )
         return d
 
+    def is_ancestor(self, parent_candidate):
+        return self.get_ancestor_level(parent_candidate) >= 0
+
+    def get_ancestor_level(self, parent_candidate):
+        h = parent_candidate.node_hash()
+        i = 0
+        obj = self
+        while obj and obj.node_hash() != h:
+            i += 1
+            obj = obj.parent
+
+        return i if obj else -1
+
+
 ########################################################################################################################
 
 def addr2path(addr):
@@ -408,6 +423,9 @@ class Registry(Document):
     #     super(Registry, self).__init__(**kw)
 
     # todo: del mentions "_put"
+
+    def __get_registry__(self):
+        return self
 
     def get(self, uri, *defaults):
         path = addr2path(uri)
@@ -482,7 +500,9 @@ class Registry(Document):
 
         node = cls(__auto_convert=False, _created=False, **attrs)
         if owner:
-            owner.subnodes.append(node)
+            if isinstance(owner, Node):
+                owner.subnodes.append(node)
+            # todo: assert: owner is document
             node._instance = owner
         return node
 
@@ -528,6 +548,8 @@ def test2():
     reg.load(u'../../../tmp/reg')
     a = reg.get('/reg/a')
     aa = reg.get('/reg/a/aa')
+    ab = reg.get('/reg/a/ab')
+    ac = reg.get('/reg/a/ac')
     print(a.y)
     print(aa.y)
     reg.save()
