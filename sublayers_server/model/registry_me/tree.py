@@ -483,6 +483,7 @@ class Registry(Document):
         node = cls(__auto_convert=False, _created=False, **attrs)
         if owner:
             owner.subnodes.append(node)
+            node._instance = owner
         return node
 
 
