@@ -124,7 +124,7 @@ class SlotLock(SlotItem):
     pass
 
 
-class MapWeaponItem(Item):
+class MapWeaponItem(ItemUsable):
     generate_obj = UniReferenceField(
         caption=u'Ссылка на объект генерации',
         reference_document_type="sublayers_server.model.registry.classes.mobiles.Mobile",
