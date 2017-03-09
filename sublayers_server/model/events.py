@@ -8,7 +8,8 @@ from sublayers_server.model.utils import time_log_format
 from sublayers_server.model.messages import (FireDischargeEffect, StrategyModeInfoObjectsMessage, ChangeAgentBalance,
                                              StartActivateItem, StopActivateItem)
 from sublayers_server.model.game_log_messages import (TransactionCancelActivateItemLogMessage,
-                                                      TransactionDisableActivateItemLogMessage)
+                                                      TransactionDisableActivateItemLogMessage,
+                                                      TransactionDisableActivateItemTimeoutLogMessage)
 from functools import total_ordering, wraps, partial
 
 
@@ -601,9 +602,15 @@ class ItemPreActivationEvent(Event):
             return
         event_cls = item.example.activate()
         if event_cls:
+            # todo: вынести константу времени задержки между активациями в настройки
+            if (obj.last_activation_time is not None) and (abs(self.time - obj.last_activation_time) < 1):
+                TransactionDisableActivateItemTimeoutLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+                return
+
             if not item.example.can_activate(time=self.time, agent_model=self.agent):
                 TransactionDisableActivateItemLogMessage(agent=self.agent, time=self.time, item=item.example).post()
                 return
+
             if obj.current_item_action:
                 obj.current_item_action.cancel(time=self.time)
             activate_time = item.example.get_activate_time(agent_model=self.agent)
@@ -648,6 +655,7 @@ class ItemActivationEvent(Event):
 
         event_cls = item.example.activate()
         if event_cls:
+            obj.last_activation_time = self.time
             event_cls(agent=self.agent, time=self.time, item=item, inventory=inventory, target=self.target_id).post()
 
     def on_cancel(self, time):

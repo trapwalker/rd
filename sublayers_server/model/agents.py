@@ -669,6 +669,7 @@ class QuickUser(User):
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
         self.record_id = None
+        self.bonus_points = 0  #
 
         self.time_of_end_kills_series = None
         self.series_kills = 0
@@ -695,17 +696,21 @@ class QuickUser(User):
         self.time_quick_game_start = self.server.get_time()
         self.quick_game_kills = 0
         self.quick_game_bot_kills = 0
+        self.bonus_points = 0
         QuickGameChangePoints(agent=self, time=time).post()
 
     def drop_car(self, car, time, **kw):
         # if car is self.car:
         #     self._add_quick_game_record(time=time)
         super(QuickUser, self).drop_car(car=car, time=time, **kw)
+        # В быстрой игре нужно уничтожить все slave-объекты
+        # for obj in self.slave_objects:
+        #     obj.delete(time)
 
     def get_quick_game_points(self, time):
         return round(round((time - self.time_quick_game_start) * self.quick_game_koeff_time) +
                      self.quick_game_kills * self.quick_game_koeff_kills +
-                     self.quick_game_bot_kills * self.quick_game_koeff_bot_kills)
+                     self.quick_game_bot_kills * self.quick_game_koeff_bot_kills) + self.bonus_points
 
     def send_die_message(self, event, unit):
         self._add_quick_game_record(time=event.time)
@@ -713,6 +718,12 @@ class QuickUser(User):
 
     def on_kill(self, event, target, killer):
         self.log.info('{}:: on_kill {} and killer={}'.format(self, target, killer))
+
+        if self.car is None:
+            return
+        if killer is not self.car and getattr(killer, "starter", None) and killer.starter is not self.car:
+            return
+
         if target.owner and isinstance(target.owner, AI):
             self.quick_game_bot_kills += 1
         else:
@@ -720,7 +731,6 @@ class QuickUser(User):
         # добавить хп своей машинке
         if self.car:
             self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
-        QuickGameChangePoints(agent=self, time=event.time).post()
         # Отправка сообщения об убийстве кого-то
         if target.main_agent:
             QuickGameArcadeTextMessage(agent=self, time=event.time,
@@ -736,9 +746,13 @@ class QuickUser(User):
             else:
                 QuickGameArcadeTextMessage(agent=self, time=event.time,
                                            text=u"Серия убийств: {!s}".format(self.series_kills)).post()
+            if self.series_kills > 1:
+                self.bonus_points += (self.series_kills - 1) * 5
         else:  # Если серия не начиналась или закончилась
-            self.time_of_end_kills_series = event.time + 7.0  # Даём 5 секунд на одно убийство
+            self.time_of_end_kills_series = event.time + 7.0  # Даём 7 секунд на одно убийство
             self.series_kills = 1
+
+        QuickGameChangePoints(agent=self, time=event.time).post()
 
     @tornado.gen.coroutine
     def init_example_car(self):

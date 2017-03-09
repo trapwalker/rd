@@ -10,7 +10,8 @@ from sublayers_server.model.inventory import ItemState
 import sublayers_server.model.tags as tags
 from sublayers_server.model.events import Objective, Event
 from sublayers_server.model.game_log_messages import PowerUPLogMessage
-from sublayers_server.model.messages import Subjective
+from sublayers_server.model.messages import Subjective, QuickGameChangePoints
+from sublayers_server.model.agents import QuickUser
 import random
 
 
@@ -48,6 +49,10 @@ class QuickGamePowerUpSimple(Observer):
                           position=self.position(time)).post()
         for agent in self.subscribed_agents:
             PowerUpAnimateHide(agent=agent, time=time, subj=self).post()
+
+        if isinstance(target.main_agent, QuickUser):
+            target.main_agent.bonus_points += 10
+            QuickGameChangePoints(agent=target.main_agent, time=time).post()
 
     def on_contact_in(self, time, obj, **kw):
         super(QuickGamePowerUpSimple, self).on_contact_in(time=time, obj=obj)

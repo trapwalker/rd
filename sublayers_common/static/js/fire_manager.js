@@ -51,6 +51,10 @@ var EffectPNGLoader = (function(){
         this.load_new_image('effect-power-up-off-random', '/static/img/map_icons/power_up/owerdown_random.png', [60, 60], 10);
 
 
+        // Анимации смерти
+        this.load_new_image('effect-death-oriented-1', '/static/img/fire_effects/death/death_oriented_1.png', [90, 90], 16);
+        this.load_new_image('effect-death-1', '/static/img/fire_effects/death/death.png', [204, 204], 12);
+
 
         // Эффекты радиации
         this.load_new_image('effect-radiation-cloud-1', '/static/img/effect_radiation/oblako1.png', [40, 40], 1);
@@ -145,7 +149,6 @@ var FireEffectManager = (function () {
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
-
     };
 
     FireEffectManager.prototype.delController = function (options) {
@@ -167,6 +170,17 @@ var FireEffectManager = (function () {
                 this.muzzle_flashs[options.subj + options.side].update(-1);
             else console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
         }
+    };
+
+    FireEffectManager.prototype.clear = function () {
+        for (var i = 0; i < this.controllers_list.length; i++)
+            if (this.controllers_list[i])
+                this.controllers_list[i].ctrl.finish();
+        for (var key in this.muzzle_flashs)
+            if (this.muzzle_flashs.hasOwnProperty(key))
+                this.muzzle_flashs[key].finish();
+        this.controllers_list = [];
+        this.muzzle_flashs = {};
     };
 
     FireEffectManager.prototype.fireDischargeEffect = function (options) {

@@ -731,6 +731,11 @@ var ViewMessengerGlass = (function () {
                     // TODO: вынести в model_manager
                     audioManager.play('error_1', 0.0, 1, null, false, 0, 0, 1);
                     break;
+                case "TransactionDisableActivateItemTimeoutLogMessage":
+                    this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Таймаут активации 1 секунда.');
+                    // TODO: вынести в model_manager
+                    audioManager.play('error_1', 0.0, 1, null, false, 0, 0, 1);
+                    break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
                     new WTextArcade('+' + msg.value_fuel + 'л').start();
@@ -844,7 +849,7 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog('На оплату работы тренера потрачено - ' + msg.price + 'nc.');
                     break;
                 case 'PowerUPLogMessage':
-                    this.addMessageToLog('Активирован бонус: ' + msg.comment + '.');
+                    this.addMessageToLog('Подобрано: ' + msg.comment + '.');
                     new WTextArcade(msg.comment).start();
                     break;
             }

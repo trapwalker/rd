@@ -22,7 +22,8 @@ class Item(Root):
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
-    inv_icon_supersmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
+    inv_icon_supersmall = StringField(caption=u'URL глифа (супер малый размер) для блоков инвентарей', tags='client')
+    inv_icon_xsmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
     activate_time = FloatField(caption=u'Время активации итема')

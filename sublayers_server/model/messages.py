@@ -153,6 +153,7 @@ class QuickGameChangePoints(Message):
         d = super(QuickGameChangePoints, self).as_dict()
         agent = self.agent
         d.update(
+            quick_game_bonus_points=agent.bonus_points,
             quick_game_bot_kills=agent.quick_game_bot_kills,
             quick_game_kills=agent.quick_game_kills,
             time_quick_game_start=agent.time_quick_game_start,

@@ -504,6 +504,7 @@ class Bot(Mobile):
         # активировать только один итем (активация может потребовать некоторое время). Любое действие в этот момент
         # приведет к отмене текущей активации, итем при этом не должен быть потерян.
         self.current_item_action = None
+        self.last_activation_time = None
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)

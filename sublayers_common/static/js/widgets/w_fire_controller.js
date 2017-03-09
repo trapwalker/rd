@@ -205,7 +205,7 @@ var WFireController = (function (_super) {
             var btn = panel_info.items[i];
             this.jq_quick_btns[btn.index].draggable("disable");
             if (btn.item) {
-                this.jq_quick_btns[btn.index].css('background-image', 'url("' + btn.item.example.inv_icon_small + '")');
+                this.jq_quick_btns[btn.index].css('background-image', 'url("' + btn.item.example.inv_icon_xsmall + '")');
                 this.jq_quick_btns[btn.index].draggable("enable");
             }
             else

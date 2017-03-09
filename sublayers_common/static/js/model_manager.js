@@ -441,6 +441,9 @@ var ClientManager = (function () {
         textConsoleManager.async_stop();
 
         if (!user.userCar) {
+            // Очистить эффекты стрельбы из прошлой жизни
+            if (fireEffectManager) fireEffectManager.clear();
+
             // создать машинку
             var mcar = new UserCar(
                 uid,       //ID машинки
@@ -684,7 +687,7 @@ var ClientManager = (function () {
                     window.location = '/#start';
                 }
             });
-        }, 3000);
+        }, 200);
 
         new WTextArcade("Крушение").start();
     };
@@ -695,13 +698,16 @@ var ClientManager = (function () {
         var obj = visualManager.getModelObject(uid);
         if (!obj) return;
         var position = obj.getCurrentCoord(clock.getCurrentTime());
+        var dir = obj.getCurrentDirection(clock.getCurrentTime());
+        //new ECanvasDieVisualisationOriented(position, dir + Math.PI / 2).start();
+
         if (event.direction == null) {
             // Если взрыв не направленный
             new ECanvasDieVisualisation(position).start()
         }
         else {
             // Если взрыв направленный
-            new ECanvasDieVisualisationOriented(position, event.direction).start()
+            new ECanvasDieVisualisationOriented(position, event.direction + Math.PI / 2.).start()
         }
     };
 
@@ -720,6 +726,13 @@ var ClientManager = (function () {
     ClientManager.prototype.QuickGameChangePoints = function(event) {
         //console.log('ClientManager.prototype.QuickGameChangePoints', event);
         // Так делать нельзя! Нехорошо так записывать в объект разную инфу!
+        if (this._quick_game_points_info && this._quick_game_points_info.quick_game_bonus_points != event.quick_game_bonus_points) {
+            // Если был начислен бонус, то вывести текст об этом
+            var points = event.quick_game_bonus_points - this._quick_game_points_info.quick_game_bonus_points;
+            if (points > 0)
+                new WTextArcade("+" + points + " очков").start();
+        }
+
         this._quick_game_points_info = event;
         if (!this._quick_game_points_info_interval) {
             this._quick_game_points_info_last = 0;
@@ -727,7 +740,8 @@ var ClientManager = (function () {
                 var self = clientManager._quick_game_points_info;
                 var res = (clock.getCurrentTime() - self.time_quick_game_start) * self.quick_game_koeff_time +
                     self.quick_game_kills * self.quick_game_koeff_kills +
-                    self.quick_game_bot_kills * self.quick_game_koeff_bot_kills;
+                    self.quick_game_bot_kills * self.quick_game_koeff_bot_kills +
+                    self.quick_game_bonus_points;
                 res = res.toFixed(0);
                 if (res != clientManager._quick_game_points_info_last && user.userCar) {
                     $("#QGPointsSpan").text(res);
