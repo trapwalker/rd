@@ -66,6 +66,11 @@ class TransactionActivateItem(TransactionEvent):
         self.inventory = inventory
         self.target = target
 
+    def on_perform(self):
+        super(TransactionActivateItem, self).on_perform()
+        # Отправка мессаджа об активации итема, пока используется для
+        messages.SuccessActivateItem(agent=self.agent, time=self.time, item=self.item).post()
+
 
 class TransactionActivateTank(TransactionActivateItem):
     @tornado.gen.coroutine

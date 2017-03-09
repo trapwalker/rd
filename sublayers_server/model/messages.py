@@ -1288,6 +1288,17 @@ class StopActivateItem(Message):
         return d
 
 
+class SuccessActivateItem(Message):
+    def __init__(self, item, **kw):
+        super(SuccessActivateItem, self).__init__(**kw)
+        self.item = item
+
+    def as_dict(self):
+        d = super(SuccessActivateItem, self).as_dict()
+        d.update(item=self.item.example.as_client_dict())
+        return d
+
+
 class QuickGameArcadeTextMessage(Message):
     def __init__(self, text, **kw):
         super(QuickGameArcadeTextMessage, self).__init__(**kw)

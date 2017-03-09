@@ -1377,6 +1377,14 @@ var ClientManager = (function () {
         modalWindow.modalItemActivationHide({});
     };
 
+    ClientManager.prototype.SuccessActivateItem = function (event) {
+        //console.log("ClientManager.prototype.SuccessActivateItem", event);
+        // Воспроизвести звук активации итема
+        if (event.item.activate_success_audio) {
+            audioManager.play(event.item.activate_success_audio, 0, 1.0);
+        }
+    };
+
     // Исходящие сообщения
 
     ClientManager.prototype.sendConsoleCmd = function (atext) {
