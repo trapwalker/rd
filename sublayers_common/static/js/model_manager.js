@@ -870,7 +870,8 @@ var ClientManager = (function () {
             targets: event.targets,
             fake_position: event.fake_position,
             weapon_animation: event.weapon_animation,
-            self_shot: event.self_shot
+            self_shot: event.self_shot,
+            weapon_audio: event.weapon_audio
         });
     };
 

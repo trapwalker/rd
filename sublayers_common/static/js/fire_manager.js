@@ -220,21 +220,24 @@ var FireEffectManager = (function () {
                 .start(i * tempDuration + tempDuration * Math.random());
 
         // Звук выстрела
-        if (options.self_shot) {
-            // 0.6/0.8 - границы рандома рэйта
-            var rate = 0.6 + (0.6 - 0.8) * Math.random();
-            audioManager.play("shot_01", 0, 0.4, null, false, 0, 0, rate, 0.8);
-        }
-        else {
-            var distance = 2000;
-            if (user.userCar)
-                var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
-            if (distance <= 2000) {
-                // 0.01/0.4 - минимальная/максимальная громкость звука
-                var gain = 0.01 + (0.4 - 0.01) * (1 - distance/2000);
-                // 0.2/0.4 - границы рандома рэйта
-                var rate = 0.2 + (0.4 - 0.2) * Math.random();
-                audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate, 0.5);
+        if (options.weapon_audio) {
+            var audio_name = options.weapon_audio[Math.floor(Math.random() * options.weapon_audio.length)];
+            if (options.self_shot) {
+                // 0.6/0.8 - границы рандома рэйта
+                var rate = 0.6 + (0.6 - 0.8) * Math.random();
+                audioManager.play(audio_name, 0, 0.4, null, false, 0, 0, rate, 0.8);
+            }
+            else {
+                var distance = 2000;
+                if (user.userCar)
+                    var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+                if (distance <= 2000) {
+                    // 0.01/0.4 - минимальная/максимальная громкость звука
+                    var gain = 0.01 + (0.4 - 0.01) * (1 - distance / 2000);
+                    // 0.2/0.4 - границы рандома рэйта
+                    var rate = 0.2 + (0.4 - 0.2) * Math.random();
+                    audioManager.play(audio_name, 0, gain, null, false, 0, 0, rate, 0.5);
+                }
             }
         }
     };
@@ -246,6 +249,7 @@ var FireEffectManager = (function () {
     
     return FireEffectManager;
 })();
+
 
 var FireAutoEffectController = (function () {
     function FireAutoEffectController(options) {
