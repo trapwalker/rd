@@ -247,50 +247,16 @@ var FireEffectManager = (function () {
     return FireEffectManager;
 })();
 
-
-var self_audio = {
-    name: 'auto_self_3',
-    gain: 1,
-    count: 0,
-    audio_obj1: null,
-    audio_obj2: null,
-    audio_obj3: null,
-    audio_obj4: null
-};
-
-var other_audio = {
-    name: 'auto_other_2',
-    gain: 1,
-    count: 0,
-    audio_obj1: null,
-    audio_obj2: null,
-    audio_obj3: null,
-    audio_obj4: null
-};
-
 var FireAutoEffectController = (function () {
     function FireAutoEffectController(options) {
         setOptions(options, this);
         this.last_time = 0;
         this.d_time_t = 1. / options.animation_tracer_rate;
         this.d_time_fl = 1. / ConstCountFlashlightPerSecond;
-        this.muzzle_flash = null;
 
         this.weapon_animation = [];
         this.set_weapon_animation(options.weapon_animation);
         this.weapon_animation = this.weapon_animation || [ECanvasPointsTracerSimple];
-
-        // Настройки звука
-        this.audio_self = (this.subj && (user.userCar && this.subj == user.userCar.ID));
-        var audio_container = this.audio_self ? self_audio : other_audio;
-        audio_container.count++;
-        if (audio_container.count == 1) {
-            //var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
-            //audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0, audio_container.gain, null, true, 0, 0, 1, 0.3);
-            //audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
-            //audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
-            //audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
-        }
     }
 
     FireAutoEffectController.prototype.change = function () {
@@ -298,8 +264,9 @@ var FireAutoEffectController = (function () {
         var subj = visualManager.getModelObject(this.subj);
         var obj = visualManager.getModelObject(this.obj);
 
-        if (subj && obj)
-            if ((time - this.last_time) > this.d_time_t) {
+        if (subj && obj) { // Если оба объекта видны, то рисуем между ними трассер, при условии, что рисуются усики выстрела
+            var muzzle_flash = fireEffectManager.muzzle_flashs[this.subj + this.side];  // Если есть усики у субъекта имменно на этой стороне
+            if (muzzle_flash && muzzle_flash.muzzle_flash && (time - this.last_time) > this.d_time_t) {
                 this.last_time = time;
                 var p_subj = subj.getCurrentCoord(time);
                 var p2 = obj.getCurrentCoord(time);
@@ -318,8 +285,9 @@ var FireAutoEffectController = (function () {
                     }).start();
                 }
             }
+        }
 
-        if (!subj && obj)
+        if (!subj && obj)  // Если источник трассеров не виден, то рисуем только вспышки вокруг получающей дамаг машинки
             if ((time - this.last_time) > this.d_time_fl) {
                 this.last_time = time;
                 var p2 = obj.getCurrentCoord(time);
@@ -350,12 +318,12 @@ var FireAutoEffectController = (function () {
         if (options.side)
             this.side = options.side;
 
-        if (added) {  // Если нужно добавить скорости или
+        if (added) {  // Если нужно добавить скорости или анимаций
             if (options.weapon_animation)
                 this.set_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate += options.animation_tracer_rate;
-                this.d_time_t = 1. / this.animation_tracer_rate;
+                this.d_time_t = 0.2 / this.animation_tracer_rate;
             }
         }
         else {
@@ -363,24 +331,12 @@ var FireAutoEffectController = (function () {
                 this.del_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate -= options.animation_tracer_rate;
-                this.d_time_t = 1. / this.animation_tracer_rate;
+                this.d_time_t = 0.2 / this.animation_tracer_rate;
             }
         }
     };
 
-    FireAutoEffectController.prototype.finish = function (options) {
-        if (this.muzzle_flash)
-            this.muzzle_flash.finish();
-
-        var audio_container = this.audio_self ? self_audio : other_audio;
-        audio_container.count--;
-        if (audio_container.count == 0) {
-             //audioManager.stop(0.0, audio_container.audio_obj1);
-             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
-             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
-             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
-        }
-    };
+    FireAutoEffectController.prototype.finish = function (options) {};
 
     return FireAutoEffectController;
 })();
