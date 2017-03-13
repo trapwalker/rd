@@ -698,12 +698,21 @@ var ClientManager = (function () {
         var obj = visualManager.getModelObject(uid);
         if (!obj) return;
         var position = obj.getCurrentCoord(clock.getCurrentTime());
-        var dir = obj.getCurrentDirection(clock.getCurrentTime());
-        //new ECanvasDieVisualisationOriented(position, dir + Math.PI / 2).start();
-
+        var dir = obj.getCurrentDirection(clock.getCurrentTime());   
         if (event.direction == null) {
             // Если взрыв не направленный
-            new ECanvasDieVisualisation(position).start()
+            new ECanvasDieVisualisation(position).start();
+            // Вызвать звук смерти от автоматической стрельбы
+            var distance = 1;
+            if (user.userCar && user.userCar.ID != uid) // Если умерла своя машинка
+                distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), position);
+            if (distance <= 2000) {
+                // 0.3/0.8 - минимальная/максимальная громкость звука
+                var gain = 0.3 + (0.9 - 0.3) * (1 - distance / 2000);
+                // 0.2/0.4 - границы рандома рэйта
+                var rate = 0.2 + (0.4 - 0.2) * Math.random();
+                audioManager.play("shot_03", 0, gain, null, false, 0, 0, rate, 0.8);
+            }
         }
         else {
             // Если взрыв направленный
