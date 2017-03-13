@@ -225,7 +225,12 @@ var FireEffectManager = (function () {
             if (options.self_shot) {
                 // 0.6/0.8 - границы рандома рэйта
                 var rate = 0.6 + (0.6 - 0.8) * Math.random();
-                audioManager.play(audio_name, 0, 0.4, null, false, 0, 0, rate, 0.8);
+                audioManager.play({
+                    name: audio_name,
+                    gain: 0.4,
+                    playbackRate: rate,
+                    priority: 0.8
+                });
             }
             else {
                 var distance = 2000;
@@ -236,7 +241,12 @@ var FireEffectManager = (function () {
                     var gain = 0.01 + (0.4 - 0.01) * (1 - distance / 2000);
                     // 0.2/0.4 - границы рандома рэйта
                     var rate = 0.2 + (0.4 - 0.2) * Math.random();
-                    audioManager.play(audio_name, 0, gain, null, false, 0, 0, rate, 0.5);
+                    audioManager.play({
+                        name: audio_name,
+                        gain: gain,
+                        playbackRate: rate,
+                        priority: 0.5
+                    });
                 }
             }
         }
@@ -384,7 +394,12 @@ var FireAutoAudioController = (function () {
                     gain = 0;
             }
             var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
-            self.curren_play_object = audioManager.play(name, 0, gain, self.start.bind(self, delay), false, 0, null, 1.0, base_autofire_priority);
+            self.curren_play_object = audioManager.play({
+                name: name,
+                gain: gain,
+                callback: self.start.bind(self, delay),
+                priority: base_autofire_priority
+            });
             self.owner.animation_start();  // пробросить в овнера запуск стрельбы
 
         }, delay);

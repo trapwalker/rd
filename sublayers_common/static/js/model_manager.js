@@ -715,7 +715,8 @@ var ClientManager = (function () {
                 var gain = 0.3 + (0.9 - 0.3) * (1 - distance / 2000);
                 // 0.2/0.4 - границы рандома рэйта
                 var rate = 0.2 + (0.4 - 0.2) * Math.random();
-                audioManager.play("shot_03", 0, gain, null, false, 0, 0, rate, 0.8);
+
+                audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.8});
             }
         }
         else {
@@ -798,7 +799,8 @@ var ClientManager = (function () {
             var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
             // 0.35/0.6 - границы рэйта
             var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
-            audioManager.play('shot_03', 0.0, gain, null, false, 0, 0, rate, 0.7);
+            audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.7});
+
         }
     };
 
@@ -1395,7 +1397,7 @@ var ClientManager = (function () {
         //console.log("ClientManager.prototype.SuccessActivateItem", event);
         // Воспроизвести звук активации итема
         if (event.item.activate_success_audio) {
-            audioManager.play(event.item.activate_success_audio, 0, 1.0);
+            audioManager.play({name: event.item.activate_success_audio, gain: 1.0});
         }
     };
 

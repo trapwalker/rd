@@ -25,8 +25,13 @@ var WCanvasCarMarker = (function (_super) {
 
         this.audio_object = null;
         if (car == user.userCar && car.engine_audio)
-            this.audio_object = audioManager.play(car.engine_audio.audio_name, 0.0, 1.0, null, true, 0.0, null,
-                                                  car.getAudioEngineRate(clock.getCurrentTime()), 0.1);
+            this.audio_object = audioManager.play({
+                    name: car.engine_audio.audio_name,
+                    gain: 1.0,
+                    loop: true,
+                    playbackRate: car.getAudioEngineRate(clock.getCurrentTime()),
+                    priority: 0.1
+                });
     }
 
     WCanvasCarMarker.prototype.mouse_test = function(time) {

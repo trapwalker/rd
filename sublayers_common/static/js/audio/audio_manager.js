@@ -19,6 +19,19 @@ var AudioManager = (function () {
     *  duration - продолжительность проигрывания
     * */
     AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate, priority) {
+        if (arguments.length == 1) {
+            var options = arguments[0];
+            name = options.name || "";
+            time = options.time;
+            gain = options.gain || 0.0;
+            callback = options.callback;
+            loop = options.loop;
+            offset = options.offset;
+            duration = options.duration;
+            playbackRate = options.playbackRate;
+            priority = options.priority;
+        }
+
         var audio_obj = this.get(name);
         if (!audio_obj) {
             console.warn('AudioManager not found melody name:', name);
