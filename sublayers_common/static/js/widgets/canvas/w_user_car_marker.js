@@ -24,8 +24,8 @@ var WCanvasCarMarker = (function (_super) {
         this._last_car_ctx_pos = new Point(-100, -100); // нужно для кеширования при расчёте теста мышки
 
         this.audio_object = null;
-        if (car == user.userCar)
-            this.audio_object = audioManager.play(car.engine_audio.name, 0.0, 1.0, null, true, 0.0, null,
+        if (car == user.userCar && car.engine_audio)
+            this.audio_object = audioManager.play(car.engine_audio.audio_name, 0.0, 1.0, null, true, 0.0, null,
                                                   car.getAudioEngineRate(clock.getCurrentTime()), 0.1);
     }
 

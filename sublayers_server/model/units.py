@@ -510,7 +510,11 @@ class Bot(Mobile):
         d = super(Bot, self).as_dict(time=time)
         d.update(quick_consumer_panel=self.quick_consumer_panel.as_dict(time=time))
         if self.example:
-            d.update(class_car=self.example.class_car, sub_class_car=self.example.sub_class_car)
+            d.update(
+                class_car=self.example.class_car,
+                sub_class_car=self.example.sub_class_car,
+                audio_engine=self.example.audio_engine.as_client_dict(),
+            )
         return d
 
     def on_save(self, time):

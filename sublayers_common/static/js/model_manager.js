@@ -463,6 +463,10 @@ var ClientManager = (function () {
             mcar.sub_class_car = event.car.sub_class_car;
             mapCanvasManager.on_new_map_size();
 
+            // Установка звука движка
+            if (event.car.audio_engine)
+                mcar.engine_audio = event.car.audio_engine;
+
             // Виджеты:
             //new WCarMarker(mcar);    // виджет маркера
             //new WCanvasCarMarker(mcar);
