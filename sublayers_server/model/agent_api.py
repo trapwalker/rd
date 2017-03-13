@@ -931,7 +931,7 @@ class AgentAPI(API):
 
     @public_method
     def teleport(self, x, y):
-        return
+        # return
         self.agent.log.info('teleport x={}, y={}'.format(x, y))
         if (self.agent.car):
             self.agent.save(time=self.agent.server.get_time())
