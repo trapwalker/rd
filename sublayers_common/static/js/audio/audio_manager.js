@@ -19,6 +19,7 @@ var AudioManager = (function () {
     *  duration - продолжительность проигрывания
     * */
     AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate, priority) {
+        var cls = null;
         if (arguments.length == 1) {
             var options = arguments[0];
             name = options.name || "";
@@ -30,6 +31,7 @@ var AudioManager = (function () {
             duration = options.duration;
             playbackRate = options.playbackRate;
             priority = options.priority;
+            cls = options.cls;
         }
 
         var audio_obj = this.get(name);
@@ -37,7 +39,8 @@ var AudioManager = (function () {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
-        return audio_obj.play(time, gain, callback, loop, offset, duration, playbackRate, priority);
+
+        return audio_obj.play(cls, time, gain, callback, loop, offset, duration, playbackRate, priority);
     };
 
     AudioManager.prototype.stop = function (time, play_object) {

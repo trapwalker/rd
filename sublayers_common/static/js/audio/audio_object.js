@@ -29,9 +29,10 @@ var GameAudioObject = (function () {
         xhr.send();
     };
 
-    GameAudioObject.prototype.play = function (time, gain, callback, loop, offset, duration, playbackRate, priority) {
+    GameAudioObject.prototype.play = function (cls, time, gain, callback, loop, offset, duration, playbackRate, priority) {
         if (!this.ready_to_play || !this.audio_buffer) return null;
-        return new PlayAudioObject(this, time, gain, callback, loop, offset, duration, playbackRate, priority);
+        cls = cls || PlayAudioObject;
+        return new cls(this, time, gain, callback, loop, offset, duration, playbackRate, priority);
     };
 
     // Установка громкости
@@ -150,3 +151,108 @@ var PlayAudioObject = (function () {
 
     return PlayAudioObject;
 })();
+
+
+var PlayAudioObjectLowEq = (function (_super) {
+    __extends(PlayAudioObjectLowEq, _super);
+
+    //function PlayAudioObjectLowEq(options, parent, time, gain, callback, loop, offset, duration, playbackRate, priority) {
+    function PlayAudioObjectLowEq(parent, time, gain, callback, loop, offset, duration, playbackRate, priority) {
+        var options = {fr: 1700, type: "highshelf", Q: 5, gain: -45};  // filter options  рабочая!
+        this.parent = parent;
+
+        // Создание и настройка нод
+        var context = audioManager.get_ctx();
+        var current_source = context.createBufferSource();
+        current_source.buffer = parent.audio_buffer;
+        current_source.loop = loop ? true : false;
+        current_source.playbackRate.value = playbackRate != null && playbackRate != undefined ? playbackRate : 1.0;
+
+        var gainNode = context.createGain();
+
+        //var filter = context.createBiquadFilter();
+        //filter.frequency.value = options.fr || 500;
+        //filter.type = options.type || "peaking";
+        //filter.Q.value = options.Q || 1; // Quality parameter
+        //filter.gain.value = options.gain || 10;
+
+
+        function createFilters(start_node, freq_gain_arr) {
+            var node_start = start_node;
+            var curr_node = start_node;
+            for (var i = 0; i < freq_gain_arr.length; i++) {
+                curr_node = context.createBiquadFilter();
+                curr_node.frequency.value = freq_gain_arr[i].fr;
+                curr_node.type = "peaking";
+                curr_node.Q.value = 1.0; // Quality parameter
+                curr_node.gain.value = freq_gain_arr[i].gain;
+                node_start.connect(curr_node);
+                node_start = curr_node;
+            }
+            return node_start;
+        }
+
+        // Создание конвейера
+        current_source.connect(gainNode);
+
+        var filter = createFilters(gainNode, options.l || [
+            {fr: 0, gain: -10},
+            {fr: 55, gain: -3},
+            {fr: 110, gain: -1},
+            {fr: 220, gain: 0},
+            {fr: 440, gain: 0},
+            {fr: 750, gain: 0},
+            {fr: 880, gain: -2},
+            {fr: 1760, gain: -20},
+            {fr: 3520, gain: -20},
+            {fr: 7040, gain: -20},
+            {fr: 14080, gain: -20}
+        ]);
+
+         //{fr: 0, gain: -5},
+         //   {fr: 55, gain: -2},
+         //   {fr: 110, gain: -1},
+         //   {fr: 220, gain: -1},
+         //   {fr: 440, gain: -3},
+         //   {fr: 750, gain: -5},
+         //   {fr: 880, gain: -12},
+         //   {fr: 1760, gain: -14},
+         //   {fr: 3520, gain: -15},
+         //   {fr: 7040, gain: -15},
+         //   {fr: 14080, gain: -15}
+
+        //gainNode.connect(filter);
+        filter.connect(context.destination);
+
+        // Создание хенддлера текущеко воспроизведения
+        this.source_node = current_source;
+        this.gain_node = gainNode;
+        this.ended_cb = typeof(callback) === 'function' ? callback : null;
+
+        this.start_gain = gain;
+        this.priority = priority || 0;
+
+        //this.gain(gain);  // Установка звука для данного gainNode
+
+        current_source.onended = PlayAudioObjectLowEq.prototype.ended.bind(this);
+
+        parent.current_objects_playing.push(this);
+        audioManager.add_playobject(this);
+
+        // Попытка запуска
+        try {
+            offset = offset === undefined ? null : offset;
+            var t = context.currentTime + (time === undefined ? 0 : time);
+            duration = duration ? duration : undefined;
+            if (typeof(current_source.start) == 'function') // Если это нормальный браузер
+                current_source.start(t, offset, duration);
+            else // Если это сафари
+                current_source.noteOn(t);
+        }
+        catch (e) {
+            console.warn('Ошибка при попытке старта аудио объекта', e);
+        }
+    }
+
+    return PlayAudioObjectLowEq;
+})(PlayAudioObject);

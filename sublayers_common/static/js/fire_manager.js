@@ -380,6 +380,7 @@ var FireAutoAudioController = (function () {
             var gain = 0.5;
             var base_autofire_priority = 0.8;
             var subj = visualManager.getModelObject(self.owner.subj);
+            var audio_cls = PlayAudioObject;
             if (user.userCar && subj && user.userCar != subj) {
                 base_autofire_priority = 0.5;
                 if (!subj) return;
@@ -392,13 +393,15 @@ var FireAutoAudioController = (function () {
                 }
                 else
                     gain = 0;
+                audio_cls = PlayAudioObjectLowEq;
             }
             var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
             self.curren_play_object = audioManager.play({
                 name: name,
                 gain: gain,
                 callback: self.start.bind(self, delay),
-                priority: base_autofire_priority
+                priority: base_autofire_priority,
+                cls: audio_cls,
             });
             self.owner.animation_start();  // пробросить в овнера запуск стрельбы
 
