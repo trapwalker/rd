@@ -172,6 +172,7 @@ function init_sound() {
     audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 0.15);
 
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
+    audioManager.load('reverse_gear', {url: '/static/audio/test/reverse_gear.wav'}, 1.0);
 
     // Комплекты звуков авто стрельбы
 
