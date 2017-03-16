@@ -69,6 +69,7 @@ class Item(Root):
 class ItemUsable(Item):
     post_activate_item = UniReferenceField(caption=u'Итем, который будет положен в инвентарь после активации',
                                            reference_document_type="sublayers_server.model.registry.classes.item.Item")
+    activate_success_audio = StringField(caption=u'Имя звука, сигнализизирующего об успешной активации итема', tags='client')
 
 
 class Tank(ItemUsable):
@@ -123,7 +124,7 @@ class SlotLock(SlotItem):
     pass
 
 
-class MapWeaponItem(Item):
+class MapWeaponItem(ItemUsable):
     generate_obj = UniReferenceField(
         caption=u'Ссылка на объект генерации',
         reference_document_type="sublayers_server.model.registry.classes.mobiles.Mobile",

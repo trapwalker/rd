@@ -278,7 +278,9 @@ class FireDischargeEffectEvent(Objective):
                                     self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
         for agent in self.server.agents.values():
             FireDischargeEffect(agent=agent, pos_subj=subj_position, targets=targets, fake_position=fake_position,
-                                time=self.time, self_shot=(agent is self.obj.main_agent), weapon_animation=self.weapon_example.weapon_animation).post()
+                                time=self.time, self_shot=(agent is self.obj.main_agent),
+                                weapon_animation=self.weapon_example.weapon_animation,
+                                weapon_audio=self.weapon_example.weapon_audio).post()
 
 
 class FireAutoEnableEvent(Objective):
