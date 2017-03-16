@@ -387,8 +387,8 @@ var FireAutoAudioController = (function () {
                 var t = clock.getCurrentTime();
                 var distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
                 if (distance <= 1000) {
-                    // 0.1/0.2 - минимальная/максимальная громкость звука
-                    gain = 0.1 + (0.2 - 0.1) * (1 - distance / 1000);
+                    // 0.3/0.4 - минимальная/максимальная громкость звука
+                    gain = 0.3 + (0.4 - 0.3) * (1 - distance / 1000);
                     base_autofire_priority = base_autofire_priority * gain;
                 }
                 else

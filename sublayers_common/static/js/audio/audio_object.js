@@ -156,9 +156,8 @@ var PlayAudioObject = (function () {
 var PlayAudioObjectLowEq = (function (_super) {
     __extends(PlayAudioObjectLowEq, _super);
 
-    //function PlayAudioObjectLowEq(options, parent, time, gain, callback, loop, offset, duration, playbackRate, priority) {
     function PlayAudioObjectLowEq(parent, time, gain, callback, loop, offset, duration, playbackRate, priority) {
-        var options = {fr: 1700, type: "highshelf", Q: 5, gain: -45};  // filter options  рабочая!
+        //var options = {fr: 1700, type: "highshelf", Q: 5, gain: -45};  // Раскомментить для простой версии
         this.parent = parent;
 
         // Создание и настройка нод
@@ -170,12 +169,12 @@ var PlayAudioObjectLowEq = (function (_super) {
 
         var gainNode = context.createGain();
 
+        // Раскомментить для простой версии
         //var filter = context.createBiquadFilter();
         //filter.frequency.value = options.fr || 500;
         //filter.type = options.type || "peaking";
         //filter.Q.value = options.Q || 1; // Quality parameter
         //filter.gain.value = options.gain || 10;
-
 
         function createFilters(start_node, freq_gain_arr) {
             var node_start = start_node;
@@ -195,7 +194,7 @@ var PlayAudioObjectLowEq = (function (_super) {
         // Создание конвейера
         current_source.connect(gainNode);
 
-        var filter = createFilters(gainNode, options.l || [
+        var filter = createFilters(gainNode, [
             {fr: 0, gain: -10},
             {fr: 55, gain: -3},
             {fr: 110, gain: -1},
@@ -209,19 +208,7 @@ var PlayAudioObjectLowEq = (function (_super) {
             {fr: 14080, gain: -20}
         ]);
 
-         //{fr: 0, gain: -5},
-         //   {fr: 55, gain: -2},
-         //   {fr: 110, gain: -1},
-         //   {fr: 220, gain: -1},
-         //   {fr: 440, gain: -3},
-         //   {fr: 750, gain: -5},
-         //   {fr: 880, gain: -12},
-         //   {fr: 1760, gain: -14},
-         //   {fr: 3520, gain: -15},
-         //   {fr: 7040, gain: -15},
-         //   {fr: 14080, gain: -15}
-
-        //gainNode.connect(filter);
+        //gainNode.connect(filter);  // Раскомментить для простой версии
         filter.connect(context.destination);
 
         // Создание хенддлера текущеко воспроизведения

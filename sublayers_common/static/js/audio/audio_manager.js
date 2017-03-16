@@ -195,6 +195,24 @@ function init_sound() {
     audioManager.load('auto_32', {url: '/static/audio/auto_shoot/auto_shoot_3/3x.wav'}, 1.0);
     audioManager.load('auto_33', {url: '/static/audio/auto_shoot/auto_shoot_3/4x.wav'}, 1.0);
     audioManager.load('auto_34', {url: '/static/audio/auto_shoot/auto_shoot_3/6x.wav'}, 1.0);
+
+
+    audioManager.load('auto_r_11', {url: '/static/audio/auto_shoot/1/1_1.wav'}, 1.0);
+    audioManager.load('auto_r_12', {url: '/static/audio/auto_shoot/1/1_2.wav'}, 1.0);
+    audioManager.load('auto_r_13', {url: '/static/audio/auto_shoot/1/1_3.wav'}, 1.0);
+    audioManager.load('auto_r_14', {url: '/static/audio/auto_shoot/1/1_4.wav'}, 1.0);
+
+    audioManager.load('auto_r_21', {url: '/static/audio/auto_shoot/2/2_2.wav'}, 1.0);
+    audioManager.load('auto_r_22', {url: '/static/audio/auto_shoot/2/2_3.wav'}, 1.0);
+    audioManager.load('auto_r_23', {url: '/static/audio/auto_shoot/2/2_4.wav'}, 1.0);
+    audioManager.load('auto_r_24', {url: '/static/audio/auto_shoot/2/2_5.wav'}, 1.0);
+
+
+
+
+
+
+
 }
 
 
