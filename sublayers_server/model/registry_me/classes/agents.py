@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
-from sublayers_server.model.registry_me.tree import Root, InstantReferenceField #, Subdoc
+from sublayers_server.model.registry_me.tree import Node, Subdoc, EmbeddedNodeField, RegistryLinkField, EmbeddedDocumentField
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
@@ -16,7 +16,7 @@ from itertools import chain
 
 
 class RelationshipRec(Subdoc):
-    npc = InstantReferenceField(
+    npc = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
         tags={'client'},
         caption=u"Целевой NPC",
@@ -34,6 +34,9 @@ class RelationshipRec(Subdoc):
         return (npc.koef_rel_index * self.get_index_norm() +
                 npc.koef_karma  * (1 - abs(agent.karma_norm - self.npc.karma_norm)))
                 # + npc.koef_pont_points * agent.get_pont_points())  # todo: norm pont_points
+
+
+class Agent()
 
 
 class Agent(Root):
@@ -56,12 +59,12 @@ class Agent(Root):
     _exp = FloatField(default=0, caption=u"Количество опыта")
     _frag = IntField(default=0, caption=u"Количество убийств")
 
-    car = EmbeddedDocumentField(
+    car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry.classes.mobiles.Car',
         caption=u"Активный автомобиль",
     )  # todo: test to prefix path like: /mobile/cars/*
     car_list = ListField(
-        field=EmbeddedDocumentField(document_type='sublayers_server.model.registry.classes.mobiles.Car', reinst=True),
+        field=EmbeddedNodeField(document_type='sublayers_server.model.registry.classes.mobiles.Car', reinst=True),
         default=list, caption=u"Список всех машин, кроме активной",
         reinst=True,
     )
@@ -69,11 +72,11 @@ class Agent(Root):
     position = PositionField(caption=u"Последние координаты агента", reinst=True)
     balance = FloatField(caption=u"Количество литров на счете агента", tags={'client'})  # todo: обсудить #release
 
-    last_town = InstantReferenceField(
+    last_town = RegistryLinkField(
         caption=u"Последний посещенный город",
         document_type='sublayers_server.model.registry.classes.poi.Town',
     )
-    current_location = InstantReferenceField(
+    current_location = RegistryLinkField(
         caption=u"Текущая локация",
         document_type='sublayers_server.model.registry.classes.poi.Town',
     )
@@ -83,125 +86,125 @@ class Agent(Root):
 
     # Механизм перков
     perks = ListField(
-        field=InstantReferenceField(document_type='sublayers_server.model.registry.classes.perks.Perk'),
+        field=EmbeddedNodeField(document_type='sublayers_server.model.registry.classes.perks.Perk'),
         caption=u'Список прокачанных перков',
         reinst=True,
     )
 
     # Механизм скилов
-    exp_table = InstantReferenceField(
+    exp_table = EmbeddedNodeField(
         caption=u"Таблица опыта",
         default='reg:///registry/rpg_settings/exptable',
         document_type='sublayers_server.model.registry.classes.exptable.ExpTable',
     )
-    role_class = InstantReferenceField(  # todo: Проверить нужно ли декларировать default
+    role_class = EmbeddedNodeField(  # todo: Проверить нужно ли декларировать default
         caption=u"Ролевой класс",
         document_type='sublayers_server.model.registry.classes.role_class.RoleClass',
     )
 
     # todo: Избавиться от пакета покупных скиллов.
     # Инфу этих документов нужно разместить в обычных скиллах.
-    buy_driving = InstantReferenceField(
+    buy_driving = EmbeddedNodeField(
         caption=u"Купленные очки навыка вождения",
         default='reg:///registry/rpg_settings/buy_skill/driving',
         document_type='sublayers_server.model.registry.classes.skills.BuySkill',
         reinst=True,
     )
-    buy_shooting = EmbeddedDocumentField(
+    buy_shooting = EmbeddedNodeField(
         caption=u"Купленные очки навыка стрельбы",
         default='reg:///registry/rpg_settings/buy_skill/shooting',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        document_type='sublayers_server.model.registry.classes.skills.BuySkill',
         reinst=True,
     )
-    buy_masking = EmbeddedDocumentField(
+    buy_masking = EmbeddedNodeField(
         caption=u"Купленные очки навыка маскировки",
         default='reg:///registry/rpg_settings/buy_skill/masking',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        document_type='sublayers_server.model.registry.classes.skills.BuySkill',
         reinst=True,
     )
-    buy_leading = EmbeddedDocumentField(
+    buy_leading = EmbeddedNodeField(
         caption=u"Купленные очки навыка лидерства",
         default='reg:///registry/rpg_settings/buy_skill/leading',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        document_type='sublayers_server.model.registry.classes.skills.BuySkill',
         reinst=True,
     )
-    buy_trading = EmbeddedDocumentField(
+    buy_trading = EmbeddedNodeField(
         caption=u"Купленные очки навыка торговли",
         default='reg:///registry/rpg_settings/buy_skill/trading',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        document_type='sublayers_server.model.registry.classes.skills.BuySkill',
         reinst=True,
     )
-    buy_engineering = EmbeddedDocumentField(
+    buy_engineering = EmbeddedNodeField(
         caption=u"Купленные очки навыка инженеринга",
         default='reg:///registry/rpg_settings/buy_skill/engineering',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.BuySkill',
+        document_type='sublayers_server.model.registry.classes.skills.BuySkill',
         reinst=True,
     )
 
-    driving = EmbeddedDocumentField(
+    driving = EmbeddedNodeField(
         caption=u"Навык вождения", tags='skill',
         default='reg:///registry/rpg_settings/skill/driving',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
-    shooting = EmbeddedDocumentField(
+    shooting = EmbeddedNodeField(
         caption=u"Навык стрельбы", tags='skill',
         default='reg:///registry/rpg_settings/skill/shooting',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
-    masking = EmbeddedDocumentField(
+    masking = EmbeddedNodeField(
         caption=u"Навык маскировки", tags='skill',
         default='reg:///registry/rpg_settings/skill/masking',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
-    leading = EmbeddedDocumentField(
+    leading = EmbeddedNodeField(
         caption=u"Навык лидерства", tags='skill',
         default='reg:///registry/rpg_settings/skill/leading',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
-    trading = EmbeddedDocumentField(
+    trading = EmbeddedNodeField(
         caption=u"Навык торговли", tags='skill',
         default='reg:///registry/rpg_settings/skill/trading',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
-    engineering = EmbeddedDocumentField(
+    engineering = EmbeddedNodeField(
         caption=u"Навык инженеринга", tags='skill',
         default='reg:///registry/rpg_settings/skill/engineering',
-        embedded_document_type='sublayers_server.model.registry.classes.skills.Skill',
+        document_type='sublayers_server.model.registry.classes.skills.Skill',
         reinst=True,
     )
 
     quests_unstarted = ListField(
         caption=u"Список доступных (невзятых) квестов",
         reinst=True,
-        base_field=EmbeddedDocumentField(
-            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+        field=EmbeddedNodeField(
+            document_type='sublayers_server.model.registry.classes.quests.Quest',
             reinst = True,
         ),
     )
     quests_active = ListField(
         caption=u"Список активных квестов",
         reinst=True,
-        base_field=EmbeddedDocumentField(
-            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+        field=EmbeddedNodeField(
+            document_type='sublayers_server.model.registry.classes.quests.Quest',
             reinst = True,
         ),
     )
     quests_ended = ListField(
         caption=u"Список законченных квестов (пройденных или проваленных)",
         reinst=True,
-        base_field=EmbeddedDocumentField(
-            embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+        field=EmbeddedNodeField(
+            document_type='sublayers_server.model.registry.classes.quests.Quest',
             reinst = True,
         ),
     )
 
     notes = ListField(
-        base_field=EmbeddedDocumentField(embedded_document_type='sublayers_server.model.registry.classes.notes.Note'),
+        field=EmbeddedNodeField(document_type='sublayers_server.model.registry.classes.notes.Note'),
         default=list, caption=u"Список доступных нотесов",
         reinst=True,
     )
@@ -380,7 +383,7 @@ class Agent(Root):
 
 
 class AIQuickAgent(Agent):
-    ai_quest = EmbeddedDocumentField(
-        embedded_document_type='sublayers_server.model.registry.classes.quests.Quest',
+    ai_quest = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry.classes.quests.Quest',
         reinst=True,
     )
