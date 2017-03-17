@@ -528,17 +528,21 @@ class TakeAllInventoryEvent(Event):
 
 
 class TakeItemInventoryEvent(Event):
-    def __init__(self, agent, owner_id, position, **kw):
+    def __init__(self, agent, owner_id, position, other_id, **kw):
         super(TakeItemInventoryEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.owner_id = owner_id
         self.position = position
+        self.other_id = other_id
 
     def on_perform(self):
         super(TakeItemInventoryEvent, self).on_perform()
 
         # Получаем свой инвентарь
-        end_inventory = self.agent.car.inventory
+        end_obj = self.server.objects.get(self.other_id)
+        if end_obj is None:
+            return
+        end_inventory = end_obj.inventory
 
         # Пытаемся получить инвентарь и итем
         start_obj = self.server.objects.get(self.owner_id)
