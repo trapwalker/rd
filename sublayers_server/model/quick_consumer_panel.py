@@ -32,13 +32,25 @@ class QuickItem(Consumer):
     def __init__(self, owner):
         super(QuickItem, self).__init__(server=owner.owner.server, dv=0, ddvs=0)
         self.owner = owner
+        self.last_item_example = None
 
     def can_set(self, item):
         return item.example.activate() is not None
 
     def set_item(self, time, **kw):
+        # log.debug(''.join(traceback.format_stack()))
         super(QuickItem, self).set_item(time=time, **kw)
         QuickConsumerPanelMessageEvent(owner=self.owner, time=time + 0.1).post()
+
+    @event_deco
+    def try_recharge(self, event, inventory):
+        item = inventory.get_item_by_cls(balance_cls_list=[self.last_item_example], time=event.time)
+        if item is not None:
+            self.set_item(item=item, time=event.time)
+
+    def on_empty_item(self, time, **kw):
+        self.last_item_example = self.item.example.parent
+        super(QuickItem, self).on_empty_item(time=time, **kw)
 
 
 class QuickConsumerPanel(object):
@@ -129,3 +141,8 @@ class QuickConsumerPanel(object):
             items=[dict({'index': index,
                          'item': None if self.quick_items[index].item is None else self.quick_items[index].item.export_item_state()}) for index in self.quick_items]
         )
+
+    def on_change_inventory_cb(self, inventory, time):
+        for index in self.quick_items.keys():
+            if (self.quick_items[index].item is None) and (self.quick_items[index].last_item_example is not None):
+                self.quick_items[index].try_recharge(inventory=inventory, time=time)

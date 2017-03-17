@@ -220,7 +220,7 @@ var RadioPlayer = (function () {
             this.timer_for_buffer = null;
             // Выключить звук помех
             if (this._current_radio_noise_switch) {
-                audioManager.stop('radio_noise_switch', 0, this._current_radio_noise_switch);
+                this._current_radio_noise_switch.stop();
                 this._current_radio_noise_switch = null;
             }
         }
@@ -280,7 +280,13 @@ var RadioPlayer = (function () {
         this.playing = true;
 
         // Запуск шума в цикле
-        this._current_radio_noise_switch = audioManager.play('radio_noise_switch', 0, this.current_volume, null, true, Math.random() * 35);
+        this._current_radio_noise_switch = audioManager.play({
+            name:'radio_noise_switch',
+            gain: this.current_volume,
+            loop: true,
+            offset: Math.random() * 35,
+            priority: 1.0
+        });
     };
 
     RadioPlayer.prototype.click_stop = function (event) {
@@ -305,7 +311,7 @@ var RadioPlayer = (function () {
             }
             this.power_on = false;
             if (this._current_radio_noise_switch) {
-                audioManager.stop('radio_noise_switch', 0, this._current_radio_noise_switch);
+                this._current_radio_noise_switch.stop();
                 this._current_radio_noise_switch = null;
             }
             this.ticker_destroy();
@@ -330,7 +336,7 @@ var RadioPlayer = (function () {
         }
 
         // Звук кнопки сети
-        audioManager.play('tumbler');
+        audioManager.play({name: 'tumbler', gain: 1.0});
 
         // Сохранить в cookie
         this.save_setting_to_cookie(false);
@@ -343,7 +349,7 @@ var RadioPlayer = (function () {
         this.audio.volume = this.current_volume;
         // Изменение шума помех, если вдруг они запущены
         if (this._current_radio_noise_switch)
-            audioManager.set_gain('radio_noise_switch', this.current_volume, this._current_radio_noise_switch);
+            audioManager.set_gain(this.current_volume, this._current_radio_noise_switch);
 
         // Правка вёрстки уровня громкости
         var jq_childs = this.jq_volume_indicator.children();
@@ -373,7 +379,7 @@ var RadioPlayer = (function () {
         if (this.playing) this.click_play();
 
         // Звук кнопки переключения качества
-        audioManager.play('tumbler');
+        audioManager.play({name: 'tumbler', gain: 1.0});
     };
 
     RadioPlayer.prototype.change_site_size = function (old_size, new_size) {

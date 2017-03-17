@@ -145,23 +145,19 @@ var ECanvasAutoFirePNG = (function (_super) {
             this.offset_x = 0.8;
         else
             this.offset_x = 0.4;
-
     }
 
     ECanvasAutoFirePNG.prototype.redraw = function (ctx, time) {
         this.direction = this.car.getCurrentDirection(time) + this.side_direction;
         this.position = this.car.getCurrentCoord(time);
-
         _super.prototype.redraw.call(this, ctx, time);
     };
-
 
     ECanvasAutoFirePNG.prototype._start = function () {
         mapCanvasManager.add_vobj(this, 50);
         this.start_time = clock.getCurrentTime();
         return this;
     };
-
 
     return ECanvasAutoFirePNG
 })(ECanvasAnimationPNG);

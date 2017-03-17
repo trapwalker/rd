@@ -233,7 +233,7 @@ class Unit(Observer):
                 if isinstance(weapon, WeaponAuto):
                     for target in weapon.targets:
                         messages.FireAutoEffect(
-                            agent=agent, subj=self, obj=target, action=action, sector=sector, time=time,
+                            agent=agent, subj=self, obj=target, action=action, weapon=weapon, sector=sector, time=time,
                         ).post()
 
     def on_die(self, event):
@@ -497,7 +497,11 @@ class Mobile(Unit):
 class Bot(Mobile):
     def __init__(self, time, **kw):
         super(Bot, self).__init__(time=time, **kw)
+
+        # Панель быстрого доступа (колбэк нужен чтобы "перезаряжать" панель когда мы подбираем новые итемы)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
+        self.inventory.add_change_call_back(method=self.quick_consumer_panel.on_change_inventory_cb)
+
         self.start_shield_event = None
 
         # self.current_item_action ивент для активации итемов, единовременно игрок (а точнее его машинка) может
@@ -506,11 +510,19 @@ class Bot(Mobile):
         self.current_item_action = None
         self.last_activation_time = None
 
+    def on_before_delete(self, event):
+        self.inventory.del_change_call_back(method=self.quick_consumer_panel.on_change_inventory_cb)
+        super(Bot, self).on_before_delete(event=event)
+
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)
         d.update(quick_consumer_panel=self.quick_consumer_panel.as_dict(time=time))
         if self.example:
-            d.update(class_car=self.example.class_car, sub_class_car=self.example.sub_class_car)
+            d.update(
+                class_car=self.example.class_car,
+                sub_class_car=self.example.sub_class_car,
+                audio_engine=self.example.audio_engine.as_client_dict(),
+            )
         return d
 
     def on_save(self, time):
