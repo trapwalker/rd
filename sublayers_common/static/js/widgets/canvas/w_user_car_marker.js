@@ -24,9 +24,25 @@ var WCanvasCarMarker = (function (_super) {
         this._last_car_ctx_pos = new Point(-100, -100); // нужно для кеширования при расчёте теста мышки
 
         this.audio_object = null;
-        if (car == user.userCar)
-            this.audio_object = audioManager.play(car.engine_audio.name, 0.0, 1.0, null, true, 0.0, null,
-                                                  car.getAudioEngineRate(clock.getCurrentTime()));
+        this.audio_object_reverse_gear = null;
+        if (car == user.userCar && car.engine_audio) {
+            this.audio_object = audioManager.play({
+                name: car.engine_audio.audio_name,
+                gain: 1.0,
+                loop: true,
+                playbackRate: car.getAudioEngineRate(clock.getCurrentTime()),
+                priority: 0.1
+            });
+
+            this.audio_object_reverse_gear = audioManager.play({
+                name: "reverse_gear",
+                gain: 0.0,
+                loop: true,
+                playbackRate: 1.0,
+                priority: 0.1
+            });
+
+        }
     }
 
     WCanvasCarMarker.prototype.mouse_test = function(time) {
@@ -73,8 +89,18 @@ var WCanvasCarMarker = (function (_super) {
         if (this.car == user.userCar) {
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
             this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos;
+
+            // Звук двигателя
             if (this.audio_object)
                 this.audio_object.source_node.playbackRate.value = this.car.getAudioEngineRate(time);
+
+            // Звук движения назад
+            if (this.audio_object_reverse_gear) {
+                if (this.car.getCurrentSpeed(time) < 0)
+                    this.audio_object_reverse_gear.gain(0.3);
+                else
+                    this.audio_object_reverse_gear.gain(0.0);
+            }
         }
         else {
             var car_pos_real = this.car.getCurrentCoord(time);
@@ -166,7 +192,9 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
         if (this.audio_object)
-            audioManager.stop(this.car.engine_audio.name, 0.0, this.audio_object);
+            audioManager.stop(0.0, this.audio_object);
+        if (this.audio_object_reverse_gear)
+            audioManager.stop(0.0, this.audio_object_reverse_gear);
         this.car = null;
         mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);

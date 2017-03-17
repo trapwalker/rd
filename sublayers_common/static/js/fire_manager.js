@@ -145,7 +145,7 @@ var FireEffectManager = (function () {
 
         if (options.side && options.subj) {
             if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
-                this.muzzle_flashs[options.subj + options.side].update(1);
+                this.muzzle_flashs[options.subj + options.side].update(options, 1);
             else
                 this.muzzle_flashs[options.subj + options.side] = new FireAutoMuzzleFlashController(options);
         }
@@ -165,9 +165,16 @@ var FireEffectManager = (function () {
         }
         else
             console.error('Попытка удалить несуществующий контроллер автоматической стрельбы!', options);
+
         if (options.side && options.subj) {
-            if (this.muzzle_flashs.hasOwnProperty(options.subj + options.side))
-                this.muzzle_flashs[options.subj + options.side].update(-1);
+            var muzzle_flash_name = options.subj + options.side;
+            if (this.muzzle_flashs.hasOwnProperty(muzzle_flash_name)) {
+                var count = this.muzzle_flashs[muzzle_flash_name].update(options, -1);
+                if (count <= 0) {
+                    this.muzzle_flashs[muzzle_flash_name].finish();
+                    delete this.muzzle_flashs[muzzle_flash_name];
+                }
+            }
             else console.error('Попытка отключить автоматическую стрельбу у отсутствующего контроллера', options);
         }
     };
@@ -213,21 +220,34 @@ var FireEffectManager = (function () {
                 .start(i * tempDuration + tempDuration * Math.random());
 
         // Звук выстрела
-        if (options.self_shot) {
-            // 0.6/0.8 - границы рандома рэйта
-            var rate = 0.6 + (0.6 - 0.8) * Math.random();
-            audioManager.play("shot_01", 0, 0.4, null, false, 0, 0, rate);
-        }
-        else {
-            var distance = 2000;
-            if (user.userCar)
-                var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
-            if (distance <= 2000) {
-                // 0.01/0.4 - минимальная/максимальная громкость звука
-                var gain = 0.01 + (0.4 - 0.01) * (1 - distance/2000);
-                // 0.2/0.4 - границы рандома рэйта
-                var rate = 0.2 + (0.4 - 0.2) * Math.random();
-                audioManager.play("shot_02", 0, gain, null, false, 0, 0, rate);
+        if (options.weapon_audio) {
+            var audio_name = options.weapon_audio[Math.floor(Math.random() * options.weapon_audio.length)];
+            if (options.self_shot) {
+                // 0.6/0.8 - границы рандома рэйта
+                var rate = 0.6 + (0.6 - 0.8) * Math.random();
+                audioManager.play({
+                    name: audio_name,
+                    gain: 0.4,
+                    playbackRate: rate,
+                    priority: 0.8
+                });
+            }
+            else {
+                var distance = 2000;
+                if (user.userCar)
+                    var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+                if (distance <= 2000) {
+                    // 0.01/0.4 - минимальная/максимальная громкость звука
+                    var gain = 0.01 + (0.4 - 0.01) * (1 - distance / 2000);
+                    // 0.2/0.4 - границы рандома рэйта
+                    var rate = 0.2 + (0.4 - 0.2) * Math.random();
+                    audioManager.play({
+                        name: audio_name,
+                        gain: gain,
+                        playbackRate: rate,
+                        priority: 0.5
+                    });
+                }
             }
         }
     };
@@ -240,25 +260,6 @@ var FireEffectManager = (function () {
     return FireEffectManager;
 })();
 
-var self_audio = {
-    name: 'auto_self_3',
-    gain: 1,
-    count: 0,
-    audio_obj1: null,
-    audio_obj2: null,
-    audio_obj3: null,
-    audio_obj4: null
-};
-
-var other_audio = {
-    name: 'auto_other_2',
-    gain: 1,
-    count: 0,
-    audio_obj1: null,
-    audio_obj2: null,
-    audio_obj3: null,
-    audio_obj4: null
-};
 
 var FireAutoEffectController = (function () {
     function FireAutoEffectController(options) {
@@ -266,22 +267,10 @@ var FireAutoEffectController = (function () {
         this.last_time = 0;
         this.d_time_t = 1. / options.animation_tracer_rate;
         this.d_time_fl = 1. / ConstCountFlashlightPerSecond;
-        this.muzzle_flash = null;
 
-        // Настройки звука
-        this.audio_self = (this.subj && (user.userCar && this.subj == user.userCar.ID));
-        var audio_container = this.audio_self ? self_audio : other_audio;
         this.weapon_animation = [];
         this.set_weapon_animation(options.weapon_animation);
         this.weapon_animation = this.weapon_animation || [ECanvasPointsTracerSimple];
-        audio_container.count++;
-        if (audio_container.count == 1) {
-            var audio_shift = audioManager.get(audio_container.name).audio_buffer.duration / 4.0;
-            audio_container.audio_obj1 = audioManager.play(audio_container.name, 0.0,             audio_container.gain, null, true, 0, 0, 1);
-            //audio_container.audio_obj2 = audioManager.play(audio_container.name, audio_shift,     audio_container.gain, null, true, 0, 0, 1);
-            //audio_container.audio_obj3 = audioManager.play(audio_container.name, audio_shift * 2, audio_container.gain, null, true, 0, 0, 1);
-            //audio_container.audio_obj4 = audioManager.play(audio_container.name, audio_shift * 3, audio_container.gain, null, true, 0, 0, 1);
-        }
     }
 
     FireAutoEffectController.prototype.change = function () {
@@ -289,8 +278,9 @@ var FireAutoEffectController = (function () {
         var subj = visualManager.getModelObject(this.subj);
         var obj = visualManager.getModelObject(this.obj);
 
-        if (subj && obj)
-            if ((time - this.last_time) > this.d_time_t) {
+        if (subj && obj) { // Если оба объекта видны, то рисуем между ними трассер, при условии, что рисуются усики выстрела
+            var muzzle_flash = fireEffectManager.muzzle_flashs[this.subj + this.side];  // Если есть усики у субъекта имменно на этой стороне
+            if (muzzle_flash && muzzle_flash.muzzle_flash && (time - this.last_time) > this.d_time_t) {
                 this.last_time = time;
                 var p_subj = subj.getCurrentCoord(time);
                 var p2 = obj.getCurrentCoord(time);
@@ -309,8 +299,9 @@ var FireAutoEffectController = (function () {
                     }).start();
                 }
             }
+        }
 
-        if (!subj && obj)
+        if (!subj && obj)  // Если источник трассеров не виден, то рисуем только вспышки вокруг получающей дамаг машинки
             if ((time - this.last_time) > this.d_time_fl) {
                 this.last_time = time;
                 var p2 = obj.getCurrentCoord(time);
@@ -341,12 +332,12 @@ var FireAutoEffectController = (function () {
         if (options.side)
             this.side = options.side;
 
-        if (added) {  // Если нужно добавить скорости или
+        if (added) {  // Если нужно добавить скорости или анимаций
             if (options.weapon_animation)
                 this.set_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate += options.animation_tracer_rate;
-                this.d_time_t = 1. / this.animation_tracer_rate;
+                this.d_time_t = 0.2 / this.animation_tracer_rate;
             }
         }
         else {
@@ -354,26 +345,76 @@ var FireAutoEffectController = (function () {
                 this.del_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate -= options.animation_tracer_rate;
-                this.d_time_t = 1. / this.animation_tracer_rate;
+                this.d_time_t = 0.2 / this.animation_tracer_rate;
             }
         }
     };
 
-    FireAutoEffectController.prototype.finish = function (options) {
-        if (this.muzzle_flash)
-            this.muzzle_flash.finish();
-
-        var audio_container = this.audio_self ? self_audio : other_audio;
-        audio_container.count--;
-        if (audio_container.count == 0) {
-             audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj1);
-             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj2);
-             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj3);
-             //audioManager.stop(audio_container.name, 0.0, audio_container.audio_obj4);
-        }
-    };
+    FireAutoEffectController.prototype.finish = function (options) {};
 
     return FireAutoEffectController;
+})();
+
+
+var FireAutoAudioController = (function () {
+    function FireAutoAudioController(owner, names, weapon_speed) {
+        this.owner = owner;
+        this.count = 1; // Сколько раз этот контроллер добавлен
+        this._is_active = true;
+        this.audio_objects_names = names; // список имен аудио объектов
+        this.curren_play_object = null; // текущий воспроизводимый звук
+        this.weapon_speed = weapon_speed; // Скорострельность в секунду - определяет задержку между звуками
+        this.start(0);
+    }
+
+    FireAutoAudioController.prototype.start = function (delay) {
+        this.owner.animation_finish();
+        var self = this;
+        this.curren_play_object = null;
+        if (!this.audio_objects_names || this.audio_objects_names.length <= 0) return;
+        var name = this.audio_objects_names[Math.floor(Math.random() * this.audio_objects_names.length)];
+
+        setTimeout(function () {
+            if (!self._is_active || !self.owner.is_active) return;
+            // Настройка звука очереди от расстояния
+            var gain = 0.5;
+            var base_autofire_priority = 0.8;
+            var subj = visualManager.getModelObject(self.owner.subj);
+            var audio_cls = PlayAudioObject;
+            if (user.userCar && subj && user.userCar != subj) {
+                base_autofire_priority = 0.5;
+                if (!subj) return;
+                var t = clock.getCurrentTime();
+                var distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
+                if (distance <= 1000) {
+                    // 0.3/0.4 - минимальная/максимальная громкость звука
+                    gain = 0.3 + (0.4 - 0.3) * (1 - distance / 1000);
+                    base_autofire_priority = base_autofire_priority * gain;
+                }
+                else
+                    gain = 0;
+                audio_cls = PlayAudioObjectLowEq;
+            }
+            var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
+            self.curren_play_object = audioManager.play({
+                name: name,
+                gain: gain,
+                callback: self.start.bind(self, delay),
+                priority: base_autofire_priority,
+                cls: audio_cls,
+            });
+            self.owner.animation_start();  // пробросить в овнера запуск стрельбы
+
+        }, delay);
+    };
+
+    FireAutoAudioController.prototype.stop = function () {
+        this._is_active = false;
+        //if (this.curren_play_object)
+        //    this.curren_play_object.stop();
+    };
+
+    return FireAutoAudioController;
 })();
 
 
@@ -382,27 +423,81 @@ var FireAutoMuzzleFlashController = (function () {
         setOptions(options, this);
         this.count = 0;
         this.muzzle_flash = null;
-        this.update(1);
+
+        // Звуковые контроллеры
+        this.audio_ctrls = {};
+        this.audio_count = 0;
+        this.is_active = true;
+
+        this.update(options, 1);
     }
 
-    FireAutoMuzzleFlashController.prototype.start = function () {
-        var subj = visualManager.getModelObject(this.subj);
-        if (subj && !this.muzzle_flash && this.side){
-            this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
+    //FireAutoMuzzleFlashController.prototype.start = function () {
+    //    var subj = visualManager.getModelObject(this.subj);
+    //    if (subj && !this.muzzle_flash && this.side){
+    //        this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
+    //    }
+    //};
+
+    FireAutoMuzzleFlashController.prototype.finish = function () {
+        if (this.muzzle_flash) {
+            this.muzzle_flash.finish();
+            this.muzzle_flash = null;
+        }
+        this.is_active = false;
+    };
+
+    FireAutoMuzzleFlashController.prototype.animation_start = function () {
+        this.audio_count++;
+        if(!this.is_active) return;
+        if (!this.muzzle_flash) {
+            var subj = visualManager.getModelObject(this.subj);
+            if (subj && this.side)
+                this.muzzle_flash = new ECanvasAutoFirePNG(subj, this.side).start();
         }
     };
 
-    FireAutoMuzzleFlashController.prototype.finish = function (options) {
-        if (this.muzzle_flash) {
+    FireAutoMuzzleFlashController.prototype.animation_finish = function () {
+        this.audio_count--;
+        if (this.audio_count <= 0 && this.muzzle_flash) {
             this.muzzle_flash.finish();
             this.muzzle_flash = null;
         }
     };
 
-    FireAutoMuzzleFlashController.prototype.update = function (count_diff) {
+    FireAutoMuzzleFlashController.prototype.update = function (options, count_diff) {
+        //console.log("FireAutoMuzzleFlashController.prototype.update", options, count_diff);
         this.count += count_diff;
-        if (this.count > 0 && !this.muzzle_flash) this.start();
-        if (this.count <=0 && this.muzzle_flash) this.finish();
+        if (options.weapon_id) {
+            if (count_diff > 0)  // Значит нужно добавить звуки стрельбы
+                this.addAudioController(options.weapon_id, options.weapon_audio, options.animation_tracer_rate);
+            else
+                this.delAudioController(options.weapon_id, options.weapon_audio);
+        }
+        return this.count;
+    };
+
+    FireAutoMuzzleFlashController.prototype.addAudioController = function (weapon_id, weapon_audio, weapon_speed) {
+        //console.log("FireAutoMuzzleFlashController.prototype.addAudioController", weapon_id, weapon_audio);
+        if (this.audio_ctrls.hasOwnProperty(weapon_id) && this.audio_ctrls[weapon_id]) {
+            this.audio_ctrls[weapon_id].count++;
+            return;
+        }
+        if (weapon_audio)
+            this.audio_ctrls[weapon_id] = new FireAutoAudioController(this, weapon_audio, weapon_speed);
+        else
+            console.warn('Попытка добавления звукового контроллера без списка audio_names', weapon_audio);
+    };
+
+    FireAutoMuzzleFlashController.prototype.delAudioController = function (weapon_id) {
+        //console.log("FireAutoMuzzleFlashController.prototype.delAudioController", weapon_id);
+        if (this.audio_ctrls.hasOwnProperty(weapon_id)) {
+            this.audio_ctrls[weapon_id].count--;
+            if (this.audio_ctrls[weapon_id].count == 0) {
+                this.audio_ctrls[weapon_id].stop();
+                delete this.audio_ctrls[weapon_id];
+            }
+        }
     };
 
     return FireAutoMuzzleFlashController;

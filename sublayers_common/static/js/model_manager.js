@@ -463,6 +463,10 @@ var ClientManager = (function () {
             mcar.sub_class_car = event.car.sub_class_car;
             mapCanvasManager.on_new_map_size();
 
+            // Установка звука движка
+            if (event.car.audio_engine)
+                mcar.engine_audio = event.car.audio_engine;
+
             // Виджеты:
             //new WCarMarker(mcar);    // виджет маркера
             //new WCanvasCarMarker(mcar);
@@ -698,12 +702,22 @@ var ClientManager = (function () {
         var obj = visualManager.getModelObject(uid);
         if (!obj) return;
         var position = obj.getCurrentCoord(clock.getCurrentTime());
-        var dir = obj.getCurrentDirection(clock.getCurrentTime());
-        //new ECanvasDieVisualisationOriented(position, dir + Math.PI / 2).start();
-
+        var dir = obj.getCurrentDirection(clock.getCurrentTime());   
         if (event.direction == null) {
             // Если взрыв не направленный
-            new ECanvasDieVisualisation(position).start()
+            new ECanvasDieVisualisation(position).start();
+            // Вызвать звук смерти от автоматической стрельбы
+            var distance = 1;
+            if (user.userCar && user.userCar.ID != uid) // Если умерла своя машинка
+                distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), position);
+            if (distance <= 2000) {
+                // 0.3/0.8 - минимальная/максимальная громкость звука
+                var gain = 0.3 + (0.9 - 0.3) * (1 - distance / 2000);
+                // 0.2/0.4 - границы рандома рэйта
+                var rate = 0.2 + (0.4 - 0.2) * Math.random();
+
+                audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.8});
+            }
         }
         else {
             // Если взрыв направленный
@@ -785,7 +799,8 @@ var ClientManager = (function () {
             var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
             // 0.35/0.6 - границы рэйта
             var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
-            audioManager.play('shot_03', 0.0, gain, null, false, 0, 0, rate);
+            audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.7});
+
         }
     };
 
@@ -840,14 +855,16 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.FireAutoEffect = function (event) {
-        //console.log('ClientManager.prototype.FireAutoEffect', event);
+        //console.log('ClientManager.prototype.FireAutoEffect', event.action, event);
         if (event.action)
             fireEffectManager.addController({
                 subj: event.subj,
                 obj: event.obj,
                 side: event.side,
                 weapon_animation: event.weapon_animation,
-                animation_tracer_rate: event.animation_tracer_rate
+                animation_tracer_rate: event.animation_tracer_rate,
+                weapon_id: event.weapon_id,
+                weapon_audio: event.weapon_audio,
             });
         else
             fireEffectManager.delController({
@@ -855,7 +872,9 @@ var ClientManager = (function () {
                 obj: event.obj,
                 side: event.side,
                 weapon_animation: event.weapon_animation,
-                animation_tracer_rate: event.animation_tracer_rate
+                animation_tracer_rate: event.animation_tracer_rate,
+                weapon_id: event.weapon_id,
+                weapon_audio: event.weapon_audio,
             });
     };
 
@@ -866,7 +885,8 @@ var ClientManager = (function () {
             targets: event.targets,
             fake_position: event.fake_position,
             weapon_animation: event.weapon_animation,
-            self_shot: event.self_shot
+            self_shot: event.self_shot,
+            weapon_audio: event.weapon_audio
         });
     };
 
@@ -1371,6 +1391,14 @@ var ClientManager = (function () {
     ClientManager.prototype.StopActivateItem = function (event) {
         //console.log('ClientManager.prototype.StopActivateItem', event);
         modalWindow.modalItemActivationHide({});
+    };
+
+    ClientManager.prototype.SuccessActivateItem = function (event) {
+        //console.log("ClientManager.prototype.SuccessActivateItem", event);
+        // Воспроизвести звук активации итема
+        if (event.item.activate_success_audio) {
+            audioManager.play({name: event.item.activate_success_audio, gain: 1.0});
+        }
     };
 
     // Исходящие сообщения

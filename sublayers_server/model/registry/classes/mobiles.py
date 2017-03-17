@@ -286,7 +286,14 @@ class Car(Mobile):
         qb_3 = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
         qb_4 = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.item.Item')
 
+    class AudioEngine(Subdoc):
+        audio_name = StringField(default="", caption=u'Звук двигателя автомобиля.', tags="client")
+        min_rate = FloatField(default=0, caption=u'Rate звука при скорости 0 (холостой ход)', tags="client")
+        max_rate = FloatField(default=0, caption=u'Rate звука при максимальной скорости', tags="client")
+
     quick_panel = EmbeddedDocumentField(embedded_document_type=QuickPanel, reinst=True)
+
+    audio_engine = EmbeddedDocumentField(embedded_document_type=AudioEngine, reinst=True)
 
     last_parking_npc = StringField(default="", caption=u'Парковщик машины.')
 
