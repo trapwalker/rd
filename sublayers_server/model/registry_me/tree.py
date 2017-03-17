@@ -62,7 +62,7 @@ class RegistryLinkField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         if isinstance(value, six.string_types):
-            reg = instance.get_registry()
+            reg = instance.__get_registry__()
             node = reg.get(value)
             instance._data[value] = node  # Caching
             return node
@@ -134,10 +134,14 @@ class RegistryLinkField(BaseField):
 
 
 class EmbeddedNodeField(EmbeddedDocumentField):
+
+    def __init__(self, document_type='Node', **kwargs):
+        super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
+
     def __set__(self, instance, value):
         if instance._initialised:
             if isinstance(value, basestring):
-                reg = instance.get_registry()  # todo: Избавиться от глобального объекта
+                reg = instance.__get_registry__()  # todo: Избавиться от глобального объекта
                 parent = reg.get_node_by_uri(value)
                 if parent:
                     value = parent.__class__(parent=parent)
@@ -182,10 +186,29 @@ class NodeMetaclass(DocumentMetaclass):
 
         return new_cls
 
-########################################################################################################################
-class Node(EmbeddedDocument):
-    #__slots__ = ('_uri',)
+
+class Subdoc(EmbeddedDocument):
     __metaclass__ = NodeMetaclass
+    _dynamic = True
+    meta = dict(
+        allow_inheritance=True,
+    )
+
+    def as_client_dict(self):  # todo: rename to 'to_son_client'
+        d = {}
+        for name, attr, getter in self.iter_attrs(tags='client'):
+            value = getter()
+            if hasattr(value, 'as_client_dict'):
+                value = value.as_client_dict()
+            d[name] = value
+
+        return d
+
+
+########################################################################################################################
+class Node(Subdoc):
+    #__slots__ = ('_uri',)
+    #__metaclass__ = NodeMetaclass
     _dynamic = True
     meta = dict(
         allow_inheritance=True,
@@ -237,7 +260,7 @@ class Node(EmbeddedDocument):
 
         return last_instance
 
-    def get_registry(self):
+    def __get_registry__(self):
         # todo: cache it
         root = self.root_instance()
         reg_getter = getattr(root, '__get_registry__')
@@ -259,7 +282,7 @@ class Node(EmbeddedDocument):
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     #uri = StringField(unique=True, null=True, not_inherited=True)
-    subnodes = ListField(field=EmbeddedNodeField(document_type='self', not_inherited=True), not_inherited=True)
+    subnodes = ListField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
     # todo: make `owner` property
 
     def get(self, addr, *defaults):
@@ -370,13 +393,7 @@ class Node(EmbeddedDocument):
                 yield name, attr, getter
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
-        d = {}
-        for name, attr, getter in self.iter_attrs(tags='client'):
-            value = getter()
-            if isinstance(value, Node):
-                value = value.as_client_dict()
-            d[name] = value
-
+        d = super(Node, self).as_client_dict()
         d.update(
             node_hash=self.node_hash(),  # todo: REALIZE and uncomment this
             html_hash=self.node_html(),
@@ -415,9 +432,17 @@ def addr2path(addr):
     return tuple(addr)
 
 
-class Registry(Document):
+class Doc(Document):
+    meta = dict(
+        allow_inheritance=True,
+    )
+    def __get_registry__(self):
+        return get_global_registry()
+
+
+class Registry(Doc):
     name = StringField()
-    root = EmbeddedNodeField(document_type=Node)
+    root = EmbeddedNodeField()
 
     # def __init__(self, **kw):
     #     super(Registry, self).__init__(**kw)
@@ -507,6 +532,21 @@ class Registry(Document):
         return node
 
 
+REGISTRY = None
+
+def get_global_registry(reload=True):
+    global REGISTRY
+    if REGISTRY is None:
+        REGISTRY = Registry.objects.first()
+        if REGISTRY is None or reload:
+            REGISTRY = Registry()
+            reload = True
+
+        if reload:
+            Registry.objects.filter({}).delete()
+            REGISTRY.load(u'../../../tmp/reg')
+
+    return REGISTRY
 ########################################################################################################################
 ########################################################################################################################
 
@@ -514,7 +554,7 @@ class A(Node):
     x = IntField(null=True, tags='client t1 t2')
     y = IntField(null=True, tags={'t1', 't0'})
     z = IntField(null=True, tags=['t2', 't3'])
-    e = EmbeddedNodeField(document_type=Node, tags='t0')
+    e = EmbeddedNodeField(tags='t0')
     #k = RegistryLinkField
 
 
@@ -529,11 +569,12 @@ class B(Node):
 
 def test1():
     Registry.objects.filter({}).delete()
-    reg = get_registry(None)
-    a   = A(name='a'   , x= 3, y= 7, e=None,).put_to(reg)
-    aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, ).put_to(reg)
-    aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,).put_to(reg)
-    ab  = A(name='ab'  , x=31, y=71, e='reg:///a/aa', owner=a.uri, ).put_to(reg)
+    reg = Registry()
+    reg.root = Node(name='reg')
+    a   = A(name='a'   , x= 3, y= 7, e=None, owner=reg.root)
+    aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, )
+    aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,)
+    ab  = A(name='ab'  , x=31, y=71, e='reg:///a/aa', owner=a.uri, )
 
     # aa.e = ab.uri
 
@@ -543,9 +584,7 @@ def test1():
 
 
 def test2():
-    Registry.objects.filter({}).delete()
-    reg = Registry()
-    reg.load(u'../../../tmp/reg')
+    reg = get_global_registry()
     a = reg.get('/reg/a')
     aa = reg.get('/reg/a/aa')
     ab = reg.get('/reg/a/ab')

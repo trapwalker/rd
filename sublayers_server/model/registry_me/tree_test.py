@@ -29,7 +29,7 @@ class B(A):
     y = IntField()
     p = ListField(
         #base_field=ListField(
-            base_field=EmbeddedDocumentField(embedded_document_type=A)
+            field=EmbeddedDocumentField(document_type=A)
         #)
     )
     #d = JsonField()
