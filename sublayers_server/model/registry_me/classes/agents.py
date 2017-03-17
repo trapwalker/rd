@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
-from sublayers_server.model.registry_me.tree import Node, Subdoc, EmbeddedNodeField, RegistryLinkField, EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import Node, Doc, Subdoc, EmbeddedNodeField, RegistryLinkField
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
@@ -36,13 +36,9 @@ class RelationshipRec(Subdoc):
                 # + npc.koef_pont_points * agent.get_pont_points())  # todo: norm pont_points
 
 
-class Agent()
-
-
-class Agent(Root):
+class AgentProfile(Node):
+    '''Inheritable data about agent'''
     __not_a_fields__ = ['_agent_model']
-    profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
-    login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
     about_self = StringField(default=u'', caption=u'О себе', tags={'client'})
 
     # Карма и отношения
@@ -382,8 +378,15 @@ class Agent(Root):
                 DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()
 
 
-class AIQuickAgent(Agent):
+class AIQuickAgentProfile(AgentProfile):
     ai_quest = EmbeddedNodeField(
         document_type='sublayers_server.model.registry.classes.quests.Quest',
         reinst=True,
     )
+
+
+class Agent(Doc):
+    '''Agent account in database'''
+    user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
+    login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
+    profile = EmbeddedNodeField(caption=u'Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
