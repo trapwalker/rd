@@ -544,7 +544,7 @@ def get_global_registry(reload=True):
 
         if reload:
             Registry.objects.filter({}).delete()
-            REGISTRY.load(u'../../../tmp/reg')
+            REGISTRY.load(u'../../../tmp/registry')
 
     return REGISTRY
 ########################################################################################################################
@@ -570,7 +570,7 @@ class B(Node):
 def test1():
     Registry.objects.filter({}).delete()
     reg = Registry()
-    reg.root = Node(name='reg')
+    reg.root = Node(name='registry')
     a   = A(name='a'   , x= 3, y= 7, e=None, owner=reg.root)
     aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, )
     aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,)
@@ -585,10 +585,10 @@ def test1():
 
 def test2():
     reg = get_global_registry()
-    a = reg.get('/reg/a')
-    aa = reg.get('/reg/a/aa')
-    ab = reg.get('/reg/a/ab')
-    ac = reg.get('/reg/a/ac')
+    a = reg.get('/registry/a')
+    aa = reg.get('/registry/a/aa')
+    ab = reg.get('/registry/a/ab')
+    ac = reg.get('/registry/a/ac')
     print(a.y)
     print(aa.y)
     reg.save()
