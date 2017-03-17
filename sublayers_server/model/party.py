@@ -127,6 +127,7 @@ class PartyDeleteEvent(Event):
         all_invites = self.party.invites[:]
         for invite in all_invites:
             invite.delete_invite(time=self.time)
+        self.party.room.delete_room(time=self.time)
 
 
 class Invite(object):
@@ -399,6 +400,10 @@ class Party(object):
         self._on_exclude(agent=agent, time=time)
         log.info('Agent %s excluded from party %s', agent, self)
 
+        # Если ушёл создатель пати, то назначить другого
+        if len(self.members) > 0 and agent is self.owner:  # Если есть ещё мембы
+            self.change_owner(time)
+
         # after exclude for members and agent
         agent.party_after_exclude(old_member=agent, party=self, time=time)
         for member in self.members:
@@ -514,6 +519,10 @@ class Party(object):
         self._on_exclude(agent=kicked, time=time)
         log.info('Agent %s kick from party %s', kicked, self)
 
+        # Если ушёл создатель пати, то назначить другого
+        if len(self.members) > 0 and kicked is self.owner:  # Если есть ещё мембы
+            self.change_owner(time)
+
         # after exclude for members and agent
         kicked.party_after_exclude(old_member=kicked, party=self, time=time)
         for member in self.members:
@@ -521,3 +530,14 @@ class Party(object):
 
         # исключить агента из чат-комнаты пати
         self.room.exclude(agent=kicked, time=time)
+
+    def change_owner(self, time):
+        # Выбрать первого мембера с минимальной категорией
+        all_members = self.members[:]
+        sorted_members = sorted(all_members, key=lambda member: member.category)
+        candidate = sorted_members[0]
+        candidate.category = 0
+        self.owner = candidate.agent
+        log.info('Agent %s now new owner for party %s', self.owner, self)
+        for member in self.members:
+            PartyInfoMessage(agent=member.agent, time=time, party=self).post()
