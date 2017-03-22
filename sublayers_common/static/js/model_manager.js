@@ -1779,14 +1779,15 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendTakeItemInventory = function (owner_id, position) {
-        //console.log('ClientManager.prototype.sendTakeItemInventory', owner_id, position);
+    ClientManager.prototype.sendTakeItemInventory = function (owner_id, position, other_id) {
+        //console.log('ClientManager.prototype.sendTakeItemInventory', owner_id, position, other_id);
         var mes = {
             call: "take_item_inventory",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 owner_id: owner_id,
-                position: position
+                position: position,
+                other_id: other_id,
             }
         };
         rpcCallList.add(mes);

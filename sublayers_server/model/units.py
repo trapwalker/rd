@@ -497,7 +497,11 @@ class Mobile(Unit):
 class Bot(Mobile):
     def __init__(self, time, **kw):
         super(Bot, self).__init__(time=time, **kw)
+
+        # Панель быстрого доступа (колбэк нужен чтобы "перезаряжать" панель когда мы подбираем новые итемы)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
+        self.inventory.add_change_call_back(method=self.quick_consumer_panel.on_change_inventory_cb)
+
         self.start_shield_event = None
 
         # self.current_item_action ивент для активации итемов, единовременно игрок (а точнее его машинка) может
@@ -505,6 +509,10 @@ class Bot(Mobile):
         # приведет к отмене текущей активации, итем при этом не должен быть потерян.
         self.current_item_action = None
         self.last_activation_time = None
+
+    def on_before_delete(self, event):
+        self.inventory.del_change_call_back(method=self.quick_consumer_panel.on_change_inventory_cb)
+        super(Bot, self).on_before_delete(event=event)
 
     def as_dict(self, time):
         d = super(Bot, self).as_dict(time=time)

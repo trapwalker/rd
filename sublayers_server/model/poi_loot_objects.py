@@ -12,6 +12,20 @@ from sublayers_server.model.motion_task import MotionTask
 from sublayers_server.model.parameters import Parameter
 
 
+class DelPOIContainerEvent(Event):
+    def __init__(self, container, **kw):
+        super(DelPOIContainerEvent, self).__init__(**kw)
+        self.container = container
+
+    def on_perform(self):
+        super(DelPOIContainerEvent, self).on_perform()
+        if len(self.container.inventory.managers) > 0:
+            DelPOIContainerEvent(server=self.server, container=self.container,
+                                 time=self.time + self.container.life_time).post()
+        else:
+            self.container.delete(time=self.time)
+
+
 class CreatePOILootEvent(Event):
     def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50):
         super(CreatePOILootEvent, self).__init__(server=server, time=time)
@@ -98,8 +112,9 @@ class POIContainer(Observer):
         self.example.inventory.size = self.inventory_size
         self.inventory = Inventory(max_size=self.example.inventory.size, owner=self)
         self.load_inventory(time=time)
+        self.life_time = life_time
         if life_time:
-            self.delete(time=time + life_time)
+            DelPOIContainerEvent(server=self.server, time=time + life_time, container=self).post()
 
     def is_available(self, agent, time):
         return agent.car in self.visible_objects

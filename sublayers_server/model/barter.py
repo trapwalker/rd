@@ -163,7 +163,7 @@ class BarterTable(Object):
         self.inventory = Inventory(owner=self, max_size=max_size)
         self.barter = barter
 
-    def is_available(self, agent):
+    def is_available(self, agent, time=None):
         return (agent is self.barter.initiator) or (agent is self.barter.recipient)
 
 

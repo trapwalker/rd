@@ -141,7 +141,7 @@ class MapLocation(Observer):
         # info: не нужно делать ездящие города, иначе могут быть проблемы
         self.radio_points.remove(chat)
 
-    def is_available(self, agent):
+    def is_available(self, agent, time=None):
         return agent in self.visitors
 
     @classmethod
