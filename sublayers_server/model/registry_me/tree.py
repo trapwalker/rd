@@ -213,6 +213,27 @@ class Node(Subdoc):
     meta = dict(
         allow_inheritance=True,
     )
+    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
+    parent = RegistryLinkField(document_type='self', not_inherited=True)
+    owner = RegistryLinkField(document_type='self', not_inherited=True)
+    uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
+    #fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
+    #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
+    abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
+    title = StringField(caption=u"Название", tags={"client"})
+    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
+    doc = StringField(caption=u"Описание узла реестра")
+    tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
+
+    #uri = StringField(unique=True, null=True, not_inherited=True)
+    subnodes = ListField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
+    # todo: make `owner` property
+
+    def __init__(self, **kw):
+        cls = self.__class__
+        only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
+        super(Node, self).__init__(__only_fields=only_fields, **kw)
+        print(kw.get('name'), kw.get('parent'))
 
     @property
     def uri(self):
@@ -269,22 +290,6 @@ class Node(Subdoc):
 
         return reg_getter()
 
-    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
-    parent = RegistryLinkField(document_type='self', not_inherited=True)
-    owner = RegistryLinkField(document_type='self', not_inherited=True)
-    uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
-    #fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
-    #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
-    abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
-    title = StringField(caption=u"Название", tags={"client"})
-    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
-    doc = StringField(caption=u"Описание узла реестра")
-    tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
-
-    #uri = StringField(unique=True, null=True, not_inherited=True)
-    subnodes = ListField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
-    # todo: make `owner` property
-
     def get(self, addr, *defaults):
         if len(defaults) > 1:
             raise TypeError('get expected at most 3 arguments, got {}'.format(2 + len(defaults)))
@@ -302,12 +307,6 @@ class Node(Subdoc):
             return defaults[0]
 
         raise KeyError('Node {!r} has no subnode {}'.format(self, path))
-
-    def __init__(self, **kw):
-        cls = self.__class__
-        only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
-        super(Node, self).__init__(__only_fields=only_fields, **kw)
-        print(kw.get('name'), kw.get('parent'))
 
     def __getattribute__(self, item):
         if item not in {

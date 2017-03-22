@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me.classes.item import ArmorerItem, Item
 from sublayers_server.model.registry_me.tree import RegistryLinkField, EmbeddedNodeField
 
-from mongoengine.fields import StringField, FloatField, ListField
+from mongoengine import StringField, FloatField, ListField
 
 
 class Weapon(ArmorerItem):
