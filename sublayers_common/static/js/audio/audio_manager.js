@@ -207,9 +207,9 @@ function init_sound() {
     audioManager.load('auto_r_23', {url: '/static/audio/auto_shoot/2/2_4.wav'}, 1.0);
     audioManager.load('auto_r_24', {url: '/static/audio/auto_shoot/2/2_5.wav'}, 1.0);
 
-    audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.wav'}, 1.0);
-    audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.wav'}, 1.0);
-    audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.wav'}, 1.0);
+    audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.m4a'}, 1.0);
+    audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 1.0);
+    audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 1.0);
 
 
 }
