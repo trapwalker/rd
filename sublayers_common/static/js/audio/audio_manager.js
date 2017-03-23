@@ -172,7 +172,6 @@ function init_sound() {
     audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 0.15);
 
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
-    audioManager.load('reverse_gear', {url: '/static/audio/test/reverse_gear.wav'}, 1.0);
 
     // Комплекты звуков авто стрельбы
 
@@ -207,12 +206,18 @@ function init_sound() {
     audioManager.load('auto_r_23', {url: '/static/audio/auto_shoot/2/2_4.wav'}, 1.0);
     audioManager.load('auto_r_24', {url: '/static/audio/auto_shoot/2/2_5.wav'}, 1.0);
 
+    // items
+
     audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.m4a'}, 1.0);
     audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 1.0);
     audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 1.0);
 
+    // powerups
+
     audioManager.load('powerup_001', {url: '/static/audio/powerups/powerup_001.m4a'}, 0.95);
 
-    
+    // signals
+
+    audioManager.load('reverse_gear', {url: '/static/audio/signals/drive_reverse_001.m4a'}, 0.95);
 
 }
