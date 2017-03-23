@@ -753,7 +753,7 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "TransactionActivateRocketLogMessage":
                     this.addMessageToLog('Запущена ракета: ' + msg.item_title + '.');
-                    new WTextArcade('Запущена ракета').start();
+                    //new WTextArcade('Запущена ракета').start();
                     break;
                 case "TransactionActivateTurretLogMessage":
                     this.addMessageToLog('Установлена турель: ' + msg.item_title + '.');
