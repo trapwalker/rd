@@ -141,23 +141,15 @@ var WCanvasMarker = (function (_super) {
 var WCanvasCarMarker = (function (_super) {
     __extends(WCanvasCarMarker, _super);
 
-    function WCanvasCarMarker(car) {
-        _super.call(this, [car]);
-        this.car = car;
-
-        this.icon_obj = null;
+    function WCanvasCarMarker(mobj) {
         this.icon_arrow_obj = null;
-
-        this.updateIcon();
-
-        mapCanvasManager.add_vobj(this, 11);
-
+        _super.call(this, mobj);
+        var car = mobj;
         var time = clock.getCurrentTime();
-        this.last_position = this.car.getCurrentCoord(time);  // experimental
-        this.last_direction = this.car.getCurrentDirection(time) + Math.PI / 2.;  // experimental
-        this.last_direction_arrow = this.last_direction;
-
-        this._last_car_ctx_pos = new Point(-100, -100); // нужно для кеширования при расчёте теста мышки
+        // Псевдо координаты, нужны для доезжания
+        this._ps_last_position = car.getCurrentCoord(time);  // experimental
+        this._ps_last_direction = car.getCurrentDirection(time) + Math.PI / 2.;  // experimental
+        this._ps_last_direction_arrow = this._ps_last_direction;
 
         this.audio_object = null;
         this.audio_object_reverse_gear = null;
@@ -177,27 +169,15 @@ var WCanvasCarMarker = (function (_super) {
                 playbackRate: 1.0,
                 priority: 0.1
             });
-
         }
-
 
         this.tail_particles_interval_stay = 10000;  // Время между генерациями при скорости = 0
         this.tail_particles_last_born_time = 0;
     }
 
-    WCanvasCarMarker.prototype.mouse_test = function(time) {
-        //console.log('WCanvasCarMarker.prototype.mouse_test');
-        var distance = distancePoints2(this._last_car_ctx_pos, mapCanvasManager._mouse_client);
-        var icon_size = this.icon_obj.iconSize[1] >> 2;
-        icon_size *= icon_size;
-        if (distance < icon_size)
-            return true;
-    };
-
     WCanvasCarMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasCarMarker.prototype.click_handler', event);
-        //console.log('Произведён клик на машинку ', this.car);
-        var owner = this.car.owner ? this.car.owner : user;
+        var owner = this.mobj.owner ? this.mobj.owner : user;
 
         var print_login = owner.quick ? getQuickUserLogin(owner.login) : owner.login;
 
@@ -221,23 +201,25 @@ var WCanvasCarMarker = (function (_super) {
         );
     };
 
-    WCanvasCarMarker.prototype.redraw = function(ctx, time){
+    WCanvasCarMarker.prototype.redraw = function(ctx, time, client_time){
         //console.log('WCanvasCarMarker.prototype.redraw');
         var focused = mapCanvasManager._mouse_focus_widget == this;
-
+        var mobj = this.mobj;
         ctx.save();
-        var car_pos_real = this.car.getCurrentCoord(time);
-        if (this.car == user.userCar) {
+        var car_pos_real = mobj.getCurrentCoord(time);
+
+        if (mobj == user.userCar) {
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
-            this._last_car_ctx_pos = mapCanvasManager.cur_ctx_car_pos;
+            this._last_mobj_ctx_pos = mapCanvasManager.cur_ctx_car_pos;
+            this._ps_last_position = car_pos_real;
 
             // Звук двигателя
             if (this.audio_object)
-                this.audio_object.source_node.playbackRate.value = this.car.getAudioEngineRate(time);
+                this.audio_object.source_node.playbackRate.value = mobj.getAudioEngineRate(time);
 
             // Звук движения назад
             if (this.audio_object_reverse_gear) {
-                if (this.car.getCurrentSpeed(time) < 0)
+                if (mobj.getCurrentSpeed(time) < 0)
                     this.audio_object_reverse_gear.gain(0.3);
                 else
                     this.audio_object_reverse_gear.gain(0.0);
@@ -245,34 +227,35 @@ var WCanvasCarMarker = (function (_super) {
         }
         else {
             var car_pos;
-
-            var diff_vec = subVector(car_pos_real, this.last_position);
+            var diff_vec = subVector(car_pos_real, this._last_mobj_position);
             var diff_vec_abs = diff_vec.abs();
 
             // Если больше заданного максимального расстояния, то подвинуть по направлению на максимальное расстояние
             // Но если сильно отстаёт или не отстаёт, то сдвинуть сразу
             if (diff_vec_abs > ConstMaxLengthToMoveMarker && diff_vec_abs < 3 * ConstMaxLengthToMoveMarker)
-                car_pos = summVector(this.last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs));
+                car_pos = summVector(this._ps_last_position, mulScalVector(diff_vec, ConstMaxLengthToMoveMarker / diff_vec_abs));
             else
                 car_pos = car_pos_real;
 
-            this.last_position = car_pos;
+            this._ps_last_position = car_pos;
             var ctx_car_pos = mulScalVector(subVector(car_pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
             ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
-            this._last_car_ctx_pos = ctx_car_pos;
+            this._last_mobj_ctx_pos = ctx_car_pos;
         }
 
-        var car_direction_real = this.car.getCurrentDirection(time) + Math.PI / 2.;
+        this._last_mobj_position = car_pos_real;
+
+        var car_direction_real = mobj.getCurrentDirection(time) + Math.PI / 2.;
+        this._last_mobj_direction = car_direction_real;
         var car_direction;
-        var diff_angle_direction = car_direction_real - this.last_direction;
-        if (Math.abs(diff_angle_direction) > ConstMaxAngleToMoveMarker && Math.abs(diff_angle_direction_arrow) < Math.PI / 2.) {
-            //car_direction = this.last_direction + ConstMaxAngleToMoveMarker * (diff_angle_direction > 0 ? 1 : -1);
-            car_direction = this.last_direction + ConstMaxAngleToMoveMarker * (diff_angle_direction / 3.);
+        var diff_angle_direction = car_direction_real - this._ps_last_direction;
+        if (Math.abs(diff_angle_direction) > ConstMaxAngleToMoveMarker && Math.abs(diff_angle_direction) < Math.PI / 2.) {
+            car_direction = this._ps_last_direction + ConstMaxAngleToMoveMarker * (diff_angle_direction / 3.);
         }
         else {
             car_direction = car_direction_real;
         }
-        this.last_direction = car_direction;
+        this._ps_last_direction = car_direction;
 
         ctx.save(); // для возврата от поворота
         //ctx.rotate(car_direction);
@@ -283,18 +266,18 @@ var WCanvasCarMarker = (function (_super) {
         // Отображение стрелки иконки
         if (this.icon_arrow_obj) {
             ctx.save(); // для возврата от поворота
-            var speed_angle = this.car.getCurrentSpeed(time) >= 0 ? 0 : Math.PI;
-            var car_direction_arrow_real = this.car.getCurrentDirection(time + 0.5) + Math.PI / 2. + speed_angle;
+            var speed_angle = mobj.getCurrentSpeed(time) >= 0 ? 0 : Math.PI;
+            var car_direction_arrow_real = mobj.getCurrentDirection(time + 0.5) + Math.PI / 2. + speed_angle;
             var car_direction_arrow;
-            var diff_angle_direction_arrow = car_direction_arrow_real - this.last_direction_arrow;
+            var diff_angle_direction_arrow = car_direction_arrow_real - this._ps_last_direction_arrow;
             if (Math.abs(diff_angle_direction_arrow) > ConstMaxAngleToMoveMarker && Math.abs(diff_angle_direction_arrow) < Math.PI / 2.) {
                 //car_direction_arrow = this.last_direction_arrow + ConstMaxAngleToMoveMarker * (diff_angle_direction_arrow > 0 ? 1 : -1);
-                car_direction_arrow = this.last_direction_arrow + diff_angle_direction_arrow / 3.;
+                car_direction_arrow = this._ps_last_direction_arrow + diff_angle_direction_arrow / 3.;
             }
             else {
                 car_direction_arrow = car_direction_arrow_real;
             }
-            this.last_direction_arrow = car_direction_arrow;
+            this._ps_last_direction_arrow = car_direction_arrow;
 
             ctx.rotate(car_direction_arrow);
             ctx.drawImage(this.icon_arrow_obj.img, -this.icon_arrow_obj.iconSize[0] >> 1, -this.icon_arrow_obj.iconSize[1] >> 1);
@@ -302,8 +285,8 @@ var WCanvasCarMarker = (function (_super) {
         }
 
         // Вывод лейбла
-        if (this.car.owner || this.car == user.userCar) {
-            var owner = this.car.owner || user;
+        if (mobj.owner || mobj == user.userCar) {
+            var owner = mobj.owner || user;
             var label_str = '';
             if (owner.quick)
                 label_str = getQuickUserLogin(owner.login);
@@ -326,23 +309,20 @@ var WCanvasCarMarker = (function (_super) {
         //    ctx.fillRect(-10, -10, 20, 20);
         //}
 
-
-        //ctx.beginPath();
-        //ctx.arc(0, 0, 20, 0, 2 * Math.PI, false);
-        //ctx.lineWidth = 2;
-        //ctx.strokeStyle = 'red';
-        //ctx.stroke();
-
-
         ctx.restore();  // Возврат транслейта
 
-        // Отрисовка хвоста машинки
-        var car_speed = this.car.getCurrentSpeed(time);
-        var car_speed_abs = Math.abs(car_speed);
-        if (car_speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / car_speed_abs < time * 1000) {
+        this.post_redraw(ctx, time, client_time);
+    };
+
+    WCanvasCarMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        var speed = this.mobj.getCurrentSpeed(time);
+        var speed_abs = Math.abs(speed);
+        var pos_real = this._last_mobj_position;
+        var direction_real = this._last_mobj_direction;
+        if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
-            var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + car_direction_real);
-            new ECanvasCarTail(getRadialRandomPointWithAngle(car_pos_real, 10, angle_of_tail, 1.0), car_direction_real, 2000).start();
+            var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000).start();
         }
     };
 
@@ -352,13 +332,12 @@ var WCanvasCarMarker = (function (_super) {
             audioManager.stop(0.0, this.audio_object);
         if (this.audio_object_reverse_gear)
             audioManager.stop(0.0, this.audio_object_reverse_gear);
-        this.car = null;
-        mapCanvasManager.del_vobj(this);
         _super.prototype.delFromVisualManager.call(this);
     };
 
     WCanvasCarMarker.prototype.updateIcon = function() {
-        var car = this.car;
+        this.cm_z_index = 11;
+        var car = this.mobj;
         var icon_type = 'neutral';
         var icon_name = 'car';
 
@@ -421,10 +400,12 @@ var WCanvasCarMarker = (function (_super) {
 
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name, 'canvas_icon');
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow', 'canvas_icon');
+
+        this.icon_size_min_div_2 = Math.min(this.icon_obj.iconSize[0], this.icon_obj.iconSize[1]) >> 1;
     };
 
     return WCanvasCarMarker;
-})(VisualObject);
+})(WCanvasMarker);
 
 
 var WCanvasStaticObjectMarker = (function (_super) {
