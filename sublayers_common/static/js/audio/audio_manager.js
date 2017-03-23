@@ -211,5 +211,8 @@ function init_sound() {
     audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 1.0);
     audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 1.0);
 
+    audioManager.load('powerup_001', {url: '/static/audio/powerups/powerup_001.m4a'}, 0.95);
+
+    
 
 }
