@@ -213,7 +213,7 @@ var ClientManager = (function () {
             }
 
             if (car.cls == "Turret") {
-                var t = new WCanvasMarker1(car);
+                var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
             }
 

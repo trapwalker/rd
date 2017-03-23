@@ -59,8 +59,9 @@ var ParentCanvasManager = (function(_super){
     };
 
     ParentCanvasManager.prototype.redraw = function(time) {
+        var client_time = clock.getClientTime();
         for (var i = 0; i < this.vobj_list.length; i++)
-            this.vobj_list[i].obj.redraw(this.context, time);
+            this.vobj_list[i].obj.redraw(this.context, time, client_time);
     };
 
     return ParentCanvasManager;
