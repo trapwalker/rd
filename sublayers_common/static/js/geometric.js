@@ -202,6 +202,10 @@ function getRadialRandomPoint(point, radius) {
     return summVector(point, polarPoint(radius * Math.random(), 2 * Math.PI * Math.random()))
 }
 
+function getRadialRandomPointWithAngle(point, radius, angle, angle_dispers) {
+    return summVector(point, polarPoint(radius * Math.random(), (angle - angle_dispers / 2.0) + (Math.random() * angle_dispers)))
+}
+
 var const_karma_list = ['Новая надежда', 'Мессия', 'Спаситель', 'Святой', 'Герой', 'Страж', 'Борец', 'Спасатель',
     'Защитник', 'Друг людей', 'Правильный', 'Честный парень', 'Партнер', 'Славный малый', 'Поселенец',
     'Человек простой', 'Странник', 'Наблюдатель', 'Выживальщик', 'Авантюрист', 'Равнодушный', 'Циник', 'Хулиган',
