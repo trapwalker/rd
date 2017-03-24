@@ -322,7 +322,7 @@ var WCanvasCarMarker = (function (_super) {
         if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
             var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
-            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000).start();
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
         }
     };
 
@@ -663,7 +663,7 @@ var WCanvasRocketMarkerEffect = (function (_super) {
         var direction_real = this._last_mobj_direction;
         if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
-            new ECanvasCarTail(pos_real, direction_real, 3000).start();
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000).start();
         }
     };
 
