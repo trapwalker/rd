@@ -155,10 +155,31 @@
         '/static/content/locations/map_locations/rbup_active.png?' + random_str(),
         '/static/content/locations/map_locations/rbup_hover.png?' + random_str(),
         '/static/content/locations/map_locations/rbup_noactive.png?' + random_str(),
-        '/static/content/locations/map_locations/rbup_press.png?' + random_str()
+        '/static/content/locations/map_locations/rbup_press.png?' + random_str(),
 
+        '/static/img/noise/map_noise_src.png?' + random_str(),
+        '/static/img/noise/map_noise_src_1.png?' + random_str(),
+        '/static/img/noise/1_noise.png?' + random_str(),
+        '/static/img/noise/1_noise_inv.png?' + random_str(),
+        '/static/img/noise/1_noise60.png?' + random_str(),
+        '/static/img/noise/2_noise.png?' + random_str(),
+        '/static/img/noise/2_noise_inv.png?' + random_str(),
+        '/static/img/noise/2_noise60.png?' + random_str(),
+        '/static/img/noise/3_noise.png?' + random_str(),
+        '/static/img/noise/3_noise_inv.png?' + random_str(),
+        '/static/img/noise/3_noise60.png?' + random_str(),
+        '/static/img/noise/4_noise.png?' + random_str(),
+        '/static/img/noise/4_noise_inv.png?' + random_str(),
+        '/static/img/noise/4_noise60.png?' + random_str(),
+        '/static/img/noise/n1.png?' + random_str(),
+        '/static/img/noise/n2.png?' + random_str(),
+        '/static/img/noise/n3.png?' + random_str(),
+        '/static/img/noise/n4.png?' + random_str(),
+        '/static/img/noise/2n1_white.png?' + random_str(),
+        '/static/img/noise/2n2_white.png?' + random_str(),
+        '/static/img/noise/2n3_white.png?' + random_str(),
+        '/static/img/noise/2n4_white.png?' + random_str()
         // todo: не забыть пройтись по папке /static/content/locations/institutions
-
     ], complete, 20000);
 
 })();

@@ -145,7 +145,7 @@ var MapCanvasManager = (function(_super){
 
         if (! this.called_reinit_canvas) {
             this.called_reinit_canvas = true;
-            setTimeout(function(){mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 200);
+            setTimeout(function(){ mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 200);
         }
     };
 
