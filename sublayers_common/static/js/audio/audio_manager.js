@@ -158,7 +158,6 @@ function init_sound() {
 
     audioManager.load('engine_02', {url: '/static/audio/test/engine_02.wav'}, 1.0);
     audioManager.load('engine_03', {url: '/static/audio/test/engine_03.wav'}, 1.0);
-    audioManager.load('engine_04', {url: '/static/audio/test/engine_04.wav'}, 1.0);
     audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, 0.075);
 
     audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, 1.0);
@@ -208,16 +207,20 @@ function init_sound() {
 
     // items
 
-    audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.m4a'}, 1.0);
-    audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 1.0);
-    audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 1.0);
+    audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.m4a'}, 0.3);
+    audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 0.3);
+    audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 0.3);
 
     // powerups
 
-    audioManager.load('powerup_001', {url: '/static/audio/powerups/powerup_001.m4a'}, 0.95);
+    audioManager.load('powerup_001', {url: '/static/audio/powerups/powerup_001.m4a'}, 0.3);
 
     // signals
 
-    audioManager.load('reverse_gear', {url: '/static/audio/signals/drive_reverse_001.m4a'}, 0.95);
+    audioManager.load('reverse_gear', {url: '/static/audio/signals/drive_reverse_001.m4a'}, 0.3);
 
+    // engines
+
+    audioManager.load('engine_heavy_001', {url: '/static/audio/engines/engine_heavy_001.m4a'}, 0.075);
+    audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.m4a'}, 0.075);
 }
