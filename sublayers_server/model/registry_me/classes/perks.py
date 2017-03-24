@@ -10,21 +10,21 @@ from mongoengine import StringField, IntField, ListField, FloatField
 
 
 class Perk(Node):
-    icon = StringField(caption=u'Пиктограмма перка', tags='client')
+    icon = StringField(caption=u'Пиктограмма перка', tags={'client'})
 
-    title__en = StringField(caption=u"Название", tags='client')
-    title__ru = StringField(caption=u"Название", tags='client')
-    description = StringField(caption=u'Расширенное описание перка', tags='client')
-    description__en = StringField(caption=u'Расширенное описание перка', tags='client')
-    description__ru = StringField(caption=u'Расширенное описание перка', tags='client')
+    title__en = StringField(caption=u"Название", tags={'client'})
+    title__ru = StringField(caption=u"Название", tags={'client'})
+    description = StringField(caption=u'Расширенное описание перка', tags={'client'})
+    description__en = StringField(caption=u'Расширенное описание перка', tags={'client'})
+    description__ru = StringField(caption=u'Расширенное описание перка', tags={'client'})
 
-    driving_req     = IntField(caption=u"Необходимый уровень навыка вождения", tags='client')
-    shooting_req    = IntField(caption=u"Необходимый уровень навыка стрельбы", tags='client')
-    masking_req     = IntField(caption=u"Необходимый уровень навыка маскировки", tags='client')
-    leading_req     = IntField(caption=u"Необходимый уровень навыка лидерства", tags='client')
-    trading_req     = IntField(caption=u"Необходимый уровень навыка торговли", tags='client')
-    engineering_req = IntField(caption=u"Необходимый уровень навыка инженеринга", tags='client')
-    level_req       = IntField(caption=u"Необходимый уровень персонажа", tags='client')
+    driving_req     = IntField(caption=u"Необходимый уровень навыка вождения", tags={'client'})
+    shooting_req    = IntField(caption=u"Необходимый уровень навыка стрельбы", tags={'client'})
+    masking_req     = IntField(caption=u"Необходимый уровень навыка маскировки", tags={'client'})
+    leading_req     = IntField(caption=u"Необходимый уровень навыка лидерства", tags={'client'})
+    trading_req     = IntField(caption=u"Необходимый уровень навыка торговли", tags={'client'})
+    engineering_req = IntField(caption=u"Необходимый уровень навыка инженеринга", tags={'client'})
+    level_req       = IntField(caption=u"Необходимый уровень персонажа", tags={'client'})
     perks_req       = ListField(
         caption=u'Список прокачанных перков',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),

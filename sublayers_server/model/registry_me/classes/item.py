@@ -12,21 +12,21 @@ from mongoengine import IntField, FloatField, StringField, ListField, EmbeddedDo
 class Item(Node):
     icon = StringField(caption=u'Пиктограмма предмета')
     # todo: обсудить диапазон
-    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке', tags='client')
-    stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags='client')
+    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке', tags={'client'})
+    stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags={'client'})
     position = IntField(caption=u'Позиция в инвентаре')
-    base_price = FloatField(caption=u'Базовая цена за 1 стек', tags='client')
+    base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
 
-    description = StringField(caption=u'Расширенное описание предмета', tags='client')
-    inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
-    inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
-    inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
-    inv_icon_supersmall = StringField(caption=u'URL глифа (супер малый размер) для блоков инвентарей', tags='client')
-    inv_icon_xsmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
+    description = StringField(caption=u'Расширенное описание предмета', tags={'client'})
+    inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
+    inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
+    inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
+    inv_icon_supersmall = StringField(caption=u'URL глифа (супер малый размер) для блоков инвентарей', tags={'client'})
+    inv_icon_xsmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags={'client'})
     # todo: move title attr to the root
-    activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
+    activate_type = StringField(caption=u'Способ активации: none, self ...', tags={'client'})
     activate_time = FloatField(caption=u'Время активации итема')
-    activate_disable_comment = StringField(caption=u'Опсиание условий активации', tags='client')
+    activate_disable_comment = StringField(caption=u'Опсиание условий активации', tags={'client'})
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
@@ -73,7 +73,7 @@ class ItemUsable(Item):
 
 
 class Tank(ItemUsable):
-    value_fuel = FloatField(caption=u'Объем канистры', tags='client')
+    value_fuel = FloatField(caption=u'Объем канистры', tags={'client'})
 
 
 class TankFull(Tank):
@@ -162,7 +162,7 @@ class MapWeaponRocketItem(MapWeaponItem):
         if len(self.starter_obj_list) > 0:
             node_hash_list = [v.node_hash() for v in self.starter_obj_list]
             # Сделать проход по всем armorer слотам машинки и проверить, есть ли рокет-лаунчер
-            for k, v in agent_model.car.example.iter_slots(tags='armorer'):
+            for k, v in agent_model.car.example.iter_slots(tags={'armorer'}):
                 if v and v.node_hash() in node_hash_list:
                     return True
             return False
@@ -202,24 +202,24 @@ class MechanicItem(SlotItem):
 class TunerItem(SlotItem):
     class TunerImage(Subdoc):
         class TunerImageView(Subdoc):
-            link = StringField(caption=u"Ссылка на картинку", tags='client')
-            z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags='client')
+            link = StringField(caption=u"Ссылка на картинку", tags={'client'})
+            z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags={'client'})
 
         car = RegistryLinkField(
             caption=u"Автомобиль, для которого указаны данные параметры",
             document_type='sublayers_server.model.registry_me.classes.mobiles.Car'
         )
-        top = EmbeddedDocumentField(document_type=TunerImageView, tags='client')
-        side = EmbeddedDocumentField(document_type=TunerImageView, tags='client')
+        top = EmbeddedDocumentField(document_type=TunerImageView, tags={'client'})
+        side = EmbeddedDocumentField(document_type=TunerImageView, tags={'client'})
 
         def as_client_dict(self):
             d = super(TunerItem.TunerImage, self).as_client_dict()
             d['car'] = self.car and self.car.node_hash()
             return d
 
-    pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags='client')
+    pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags={'client'})
     images = ListField(
-        caption=u'Изображения у тюнера', tags='client',
+        caption=u'Изображения у тюнера', tags={'client'},
         field=EmbeddedDocumentField(document_type=TunerImage),
     )
 
@@ -234,24 +234,24 @@ class TunerItem(SlotItem):
 class ArmorerItem(SlotItem):
     class ArmorerImages(Subdoc):
         class ArmorerImagesSize(Subdoc):
-            armorer_side_F = StringField(tags='client')
-            armorer_side_B = StringField(tags='client')
-            armorer_side_R = StringField(tags='client')
-            armorer_side_L = StringField(tags='client')
-            armorer_top_F = StringField(tags='client')
-            armorer_top_B = StringField(tags='client')
-            armorer_top_R = StringField(tags='client')
-            armorer_top_L = StringField(tags='client')
+            armorer_side_F = StringField(tags={'client'})
+            armorer_side_B = StringField(tags={'client'})
+            armorer_side_R = StringField(tags={'client'})
+            armorer_side_L = StringField(tags={'client'})
+            armorer_top_F = StringField(tags={'client'})
+            armorer_top_B = StringField(tags={'client'})
+            armorer_top_R = StringField(tags={'client'})
+            armorer_top_L = StringField(tags={'client'})
 
-        small = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags='client')
-        middle = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags='client')
-        big = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags='client')
+        small = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags={'client'})
+        middle = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags={'client'})
+        big = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags={'client'})
 
-    weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags='client')
-    direction = StringField(caption=u'Направление (FBRL)', tags='client')
+    weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags={'client'})
+    direction = StringField(caption=u'Направление (FBRL)', tags={'client'})
     armorer_images = EmbeddedDocumentField(
         document_type=ArmorerImages,
         caption=u'Картинки оружейника',
         doc=u'Ссылки на картинки у оружейника по масштабам.',
-        tags='client',
+        tags={'client'},
     )

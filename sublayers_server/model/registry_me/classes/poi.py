@@ -16,15 +16,15 @@ from mongoengine import IntField, FloatField, StringField, ListField, EmbeddedDo
 
 class POI(Node):
     position = PositionField(caption=u"Координаты")
-    p_visibility_min = FloatField(caption=u"Минимальный коэффициент заметности", tags="parameter param_aggregate")
-    p_visibility_max = FloatField(caption=u"Максимальный коэффициент заметности", tags="parameter param_aggregate")
+    p_visibility_min = FloatField(caption=u"Минимальный коэффициент заметности", tags={'parameter', 'param_aggregate'})
+    p_visibility_max = FloatField(caption=u"Максимальный коэффициент заметности", tags={'parameter', 'param_aggregate'})
 
     def get_modify_value(self, param_name, example_agent=None):
         return getattr(self, param_name, None)
 
     def param_aggregate(self, example_agent):
         d = dict()
-        for param_name, attr, getter in self.iter_attrs(tags='param_aggregate'):
+        for param_name, attr, getter in self.iter_attrs(tags={'param_aggregate'}):
             d[param_name] = getattr(self, param_name)
 
         return d
@@ -36,8 +36,8 @@ class POI(Node):
 
 
 class POIObserver(POI):
-    p_observing_range = FloatField(caption=u"Радиус подбора лута", tags="parameter param_aggregate")
-    p_vigilance = FloatField(caption=u"Коэффициент зоркости", tags="parameter param_aggregate")
+    p_observing_range = FloatField(caption=u"Радиус подбора лута", tags={'parameter', 'param_aggregate'})
+    p_vigilance = FloatField(caption=u"Коэффициент зоркости", tags={'parameter', 'param_aggregate'})
 
 
 class PoiStash(POIObserver):
@@ -46,7 +46,7 @@ class PoiStash(POIObserver):
 
 
 class RadioTower(POIObserver):
-    radio_point_name = StringField(caption=u'Техническое имя', tags='client')
+    radio_point_name = StringField(caption=u'Техническое имя', tags={'client'})
     pass
 
 
@@ -93,13 +93,13 @@ class MapLocation(POIObserver):
 
 
 class Building(Subdoc):
-    name = StringField(caption=u'Техническое имя', tags='client')  # todo: identify string constrain
-    caption = StringField(caption=u'Название', tags='client')
-    title = StringField(caption=u'Заголовок', tags='client')
-    head = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution', tags='client')
+    name = StringField(caption=u'Техническое имя', tags={'client'})  # todo: identify string constrain
+    caption = StringField(caption=u'Название', tags={'client'})
+    title = StringField(caption=u'Заголовок', tags={'client'})
+    head = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution', tags={'client'})
     instances = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry+me.classes.poi.Institution'),
-        tags='client',
+        tags={'client'},
     )
 
 
@@ -112,7 +112,7 @@ class Town(MapLocation):
     buildings = ListField(  # todo: (!) Обойти все упоминания и исправить интерфейс
         field=EmbeddedDocumentField(document_type=Building),
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.',
-        tags='client',
+        tags={'client'},
     )
 
     def get_npc_list(self):
@@ -139,7 +139,7 @@ class GasStation(Town):
 
 
 class Institution(Node):
-    karma = FloatField(caption=u"Значение кармы NPC", tags='client')
+    karma = FloatField(caption=u"Значение кармы NPC", tags={'client'})
     # Сумма следующих 3 коэффициентов должна давать 1
     koef_karma = FloatField(caption=u"Коэффициент влияния кармы на отношение данного NPC")
     koef_rel_index = FloatField(caption=u"Коэффициент влияния индекса отношения на отношение данного NPC")
@@ -151,9 +151,9 @@ class Institution(Node):
         caption=u"Родной город НПЦ",
     )
 
-    photo = StringField(caption=u"Фото", tags='client')  # todo: Сделать специальный атрибут для ссылки на файл
-    text = StringField(caption=u"Текст приветствия", tags='client')
-    type = StringField(caption=u"Специальность NPC", tags='client')
+    photo = StringField(caption=u"Фото", tags={'client'})  # todo: Сделать специальный атрибут для ссылки на файл
+    text = StringField(caption=u"Текст приветствия", tags={'client'})
+    type = StringField(caption=u"Специальность NPC", tags={'client'})
     quests = ListField(
         caption=u"Генераторы квестов",
         reinst=True,
@@ -169,18 +169,18 @@ class Institution(Node):
 
 
 class Trainer(Institution):
-    drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags='client')
+    drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags={'client'})
 
 
 class Hangar(Institution):
     car_list = ListField(
-        caption=u"Список продаваемых машин", tags='client',
+        caption=u"Список продаваемых машин", tags={'client'},
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
 
 
 class Parking(Institution):
-    cost_for_day_parking = FloatField(caption=u'Стоимость дня у парковщика', tags='client')
+    cost_for_day_parking = FloatField(caption=u'Стоимость дня у парковщика', tags={'client'})
 
     def get_car_price(self, car):
         # todo: сделать иначе работу с датой

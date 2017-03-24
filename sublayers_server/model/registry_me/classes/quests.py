@@ -72,10 +72,10 @@ def script_compile(code, fn):
 
 
 class LogRecord(Subdoc):
-    quest_uid   = StringField  (tags={"client"}, doc=u"UID of quest")
-    time        = DateTimeField(tags={"client"}, doc=u"Время создания записи")
-    text        = StringField  (tags={"client"}, doc=u"Текст записи")
-    position    = PositionField(tags={"client"}, doc=u"Привязанная к записи позиция на карте")
+    quest_uid   = StringField  (tags={'client'}, doc=u"UID of quest")
+    time        = DateTimeField(tags={'client'}, doc=u"Время создания записи")
+    text        = StringField  (tags={'client'}, doc=u"Текст записи")
+    position    = PositionField(tags={'client'}, doc=u"Привязанная к записи позиция на карте")
     # target  # todo: target of log record
 
     def __init__(self, quest=None, **kw):
@@ -227,26 +227,26 @@ class Quest(Node):
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
     on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
         стартового состояния. Любое исключение в скрипте отменяет принятие квеста. Исключение Cancel тихо отменяет.''')
-    caption     = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text        = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short  = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
-    typename    = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
-    list_icon   = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
-    level       = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
-    starttime   = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
-    deadline    = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    caption     = StringField(tags={'client'}, caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
+    text        = StringField(tags={'client'}, caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
+    text_short  = StringField(tags={'client'}, caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    typename    = StringField(tags={'client'}, caption=u'Тип квеста', doc=u'Может быть произвольным')
+    list_icon   = StringField(tags={'client'}, caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
+    starttime   = DateTimeField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
+    deadline    = DateTimeField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
     hirer       = RegistryLinkField(
-        tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста',
+        tags={'client'}, caption=u'Заказчик', doc=u'NPC-заказчик квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
     )
     town        = RegistryLinkField(
-        tags='client', caption=u'Город выдачи', doc=u'Город выдачи квеста',
+        tags={'client'}, caption=u'Город выдачи', doc=u'Город выдачи квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     # todo: Make AgentLinkField type
     agent       = RegistryLinkField(
-        tags='client', caption=u'Агент', doc=u'Исполнитель квеста',
+        tags={'client'}, caption=u'Агент', doc=u'Исполнитель квеста',
         document_type='sublayers_server.model.registry_me.classes.agents.Agent',
     )
     history     = ListField(
@@ -258,7 +258,7 @@ class Quest(Node):
     total_reward_money = FloatField(caption=u'Общая сумма награды в нукойнах')
     karma_coef = FloatField(caption=u'Часть кармы от общей награды')
     money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
-    reward_money = FloatField(caption=u'Сумма денежной награды', tags='client')
+    reward_money = FloatField(caption=u'Сумма денежной награды', tags={'client'})
     reward_karma = FloatField(caption=u'Величина кармической награды')
     reward_items = ListField(
         default=[],
@@ -267,10 +267,10 @@ class Quest(Node):
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Итем для награды",
             reinst=True,
-            tags='client',
+            tags={'client'},
         ),
         reinst=True,
-        tags='client',
+        tags={'client'},
     )
     reward_items_list = ListField(
         default=[],
@@ -652,7 +652,7 @@ class KillerQuest(Quest):
         caption=u"Диапазон количетсва жертв",
         reinst=True,
     )
-    count_to_kill = IntField(caption=u'Количество убийств', tags='client')
+    count_to_kill = IntField(caption=u'Количество убийств', tags={'client'})
     karma_victims = IntField(caption=u'Максимальное значение кармы жертвы')
     victims = ListField(
         default=[],
@@ -679,7 +679,7 @@ class DeliveryQuest(Quest):
     )
     recipient = RegistryLinkField(
         caption=u'Получатель доставки',
-        tags='client',
+        tags={'client'},
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
     )
     total_delivery_money_coef = FloatField(
@@ -693,7 +693,7 @@ class DeliveryQuest(Quest):
                 document_type='sublayers_server.model.registry_me.classes.item.Item',
                 caption=u"Необходимый итем",
                 reinst=True,
-                tags='client',
+                tags={'client'},
             ),
             reinst=True,
         ),
@@ -705,7 +705,7 @@ class DeliveryQuest(Quest):
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,
-            tags='client',
+            tags={'client'},
         ),
         reinst=True,
     )

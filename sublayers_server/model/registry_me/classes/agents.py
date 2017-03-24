@@ -138,37 +138,37 @@ class AgentProfile(Node):
     )
 
     driving = EmbeddedNodeField(
-        caption=u"Навык вождения", tags='skill',
+        caption=u"Навык вождения", tags={'skill'},
         default='reg:///registry/rpg_settings/skill/driving',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     shooting = EmbeddedNodeField(
-        caption=u"Навык стрельбы", tags='skill',
+        caption=u"Навык стрельбы", tags={'skill'},
         default='reg:///registry/rpg_settings/skill/shooting',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     masking = EmbeddedNodeField(
-        caption=u"Навык маскировки", tags='skill',
+        caption=u"Навык маскировки", tags={'skill'},
         default='reg:///registry/rpg_settings/skill/masking',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     leading = EmbeddedNodeField(
-        caption=u"Навык лидерства", tags='skill',
+        caption=u"Навык лидерства", tags={'skill'},
         default='reg:///registry/rpg_settings/skill/leading',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     trading = EmbeddedNodeField(
-        caption=u"Навык торговли", tags='skill',
+        caption=u"Навык торговли", tags={'skill'},
         default='reg:///registry/rpg_settings/skill/trading',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     engineering = EmbeddedNodeField(
-        caption=u"Навык инженеринга", tags='skill',
+        caption=u"Навык инженеринга", tags={'skill'},
         default='reg:///registry/rpg_settings/skill/engineering',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
@@ -259,7 +259,7 @@ class AgentProfile(Node):
         return self.balance
 
     def iter_skills(self):  # todo: need review
-        for name, attr, getter in self.iter_attrs(tags='skill'):
+        for name, attr, getter in self.iter_attrs(tags={'skill'}):
             yield name, getter().calc_value()
 
     def iter_perks(self):  # todo: need review

@@ -32,8 +32,8 @@ class DelNoteMessage(Message):
 
 
 class Note(Subdoc):
-    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags="client")
-    quest_uid = UUIDField(tags='client')
+    uid = UUIDField(default=get_uuid, unique=True, identify=True, tags={'client'})
+    quest_uid = UUIDField(tags={'client'})
 
     @property
     def cls(self):
@@ -46,11 +46,11 @@ class Note(Subdoc):
 
 
 class NPCPageNote(Note):
-    page_caption = StringField(caption=u'Название кнопки у нпц', tags='client')
-    btn1_caption = StringField(default=u'<br>Сдать', caption=u'Текст для кнопки btn1', tags='client')
+    page_caption = StringField(caption=u'Название кнопки у нпц', tags={'client'})
+    btn1_caption = StringField(default=u'<br>Сдать', caption=u'Текст для кнопки btn1', tags={'client'})
     npc = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
-        tags='client',
+        tags={'client'},
         caption=u"Целевой NPC ноты",
     )
 
@@ -70,13 +70,13 @@ class NPCWantedNote(NPCPageNote):
 # Ноты обучения
 
 class GetQuestTeachingNote(Note):
-    target_quest_uid = UUIDField(tags='client')
+    target_quest_uid = UUIDField(tags={'client'})
 
 
 class FinishQuestTeachingNote(GetQuestTeachingNote):
-    target_note_uid = UUIDField(tags='client')
-    target_build_name = StringField(tags='client')
-    target_build_coord = StringField(tags='client')
+    target_note_uid = UUIDField(tags={'client'})
+    target_build_name = StringField(tags={'client'})
+    target_build_coord = StringField(tags={'client'})
 
 
 class HangarTeachingNote(Note): pass
