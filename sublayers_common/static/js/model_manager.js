@@ -1378,7 +1378,8 @@ var ClientManager = (function () {
         var vo = visualManager.getVobjByType(power_up, WCanvasAnimateMarkerPowerUp);
         if (!vo) return;
         vo._power_up_overdown = power_up._icon_name.replace("icon-power-up-", "effect-power-up-off-");
-    };
+        audioManager.play({name: "powerup_001", gain: 1.0, priority: 1.0});
+};
 
     // Активация итема
 
