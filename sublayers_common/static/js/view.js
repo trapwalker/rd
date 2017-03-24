@@ -13,6 +13,8 @@ $(document).ready(function () {
     locationManager = new LocationManager();
     mapCanvasManager = new MapCanvasManager();
     wStrategyModeManager = new WStrategyModeManager();
+    wMapNoise = new WMapNoise();
+    wMapNoise.start('cat_noise_1', 0.7);
 
     teachingManager = new TeachingManager();
     teachingMapManager = new TeachingMapManager();

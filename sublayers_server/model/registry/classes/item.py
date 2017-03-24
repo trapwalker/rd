@@ -22,7 +22,8 @@ class Item(Root):
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags='client')
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags='client')
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags='client')
-    inv_icon_supersmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
+    inv_icon_supersmall = StringField(caption=u'URL глифа (супер малый размер) для блоков инвентарей', tags='client')
+    inv_icon_xsmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags='client')
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags='client')
     activate_time = FloatField(caption=u'Время активации итема')
@@ -68,6 +69,7 @@ class Item(Root):
 class ItemUsable(Item):
     post_activate_item = UniReferenceField(caption=u'Итем, который будет положен в инвентарь после активации',
                                            reference_document_type="sublayers_server.model.registry.classes.item.Item")
+    activate_success_audio = StringField(caption=u'Имя звука, сигнализизирующего об успешной активации итема', tags='client')
 
 
 class Tank(ItemUsable):
@@ -122,7 +124,7 @@ class SlotLock(SlotItem):
     pass
 
 
-class MapWeaponItem(Item):
+class MapWeaponItem(ItemUsable):
     generate_obj = UniReferenceField(
         caption=u'Ссылка на объект генерации',
         reference_document_type="sublayers_server.model.registry.classes.mobiles.Mobile",

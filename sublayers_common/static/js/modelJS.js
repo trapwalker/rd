@@ -184,12 +184,8 @@ var UserCar = (function (_super) {
         this.radiation_dps = 0.0;
         this.radius_visible = aObservingRange;  // todo: поискать и стереть
 
-        // todo: забрать из attr.yaml
-        this.engine_audio = {
-            name: 'engine_05',
-            rate_min: 0.5,
-            rate_max: 3
-        }
+        // устанавливается при инициализации UserCar в мессадже InitCar
+        this.engine_audio = null;  // {audio_name: 'engine_05',  min_rate: 0.5, max_rate: 3 }
     }
 
     UserCar.prototype._manage_tm = function () {
@@ -235,8 +231,9 @@ var UserCar = (function (_super) {
     };
 
     UserCar.prototype.getAudioEngineRate = function (time) {
+        if (! this.engine_audio) return 1;
         var m_v = Math.abs(this.getCurrentSpeed(time)) / Math.max(Math.abs(this.v_forward), Math.abs(this.v_backward));
-        return this.engine_audio.rate_min + (this.engine_audio.rate_max - this.engine_audio.rate_min) * m_v;
+        return this.engine_audio.min_rate + (this.engine_audio.max_rate - this.engine_audio.min_rate) * m_v;
     };
 
     return UserCar;

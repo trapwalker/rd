@@ -43,8 +43,10 @@ var ModalWindow = (function () {
         this.modalDialogAnswerLoad();
         this.modalItemDivisionLoad();
         this.modalItemActivationLoad();
-        this.modalQuickGamePointsPageLoad();
-        this.modalQuickGameMapTeachingPageLoad();
+        if ($('#settings_server_mode').text() == 'quick') {
+            this.modalQuickGamePointsPageLoad();
+            this.modalQuickGameMapTeachingPageLoad();
+        }
     }
 
     ModalWindow.prototype._modalBackShow = function () {

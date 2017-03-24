@@ -3,6 +3,10 @@ var AudioManager = (function () {
         this.audio_objects = {}; // <audio> объекты
         this.audio_context = new (window.AudioContext || window.webkitAudioContext)();
         this.general_gain = 1.0; // Общая громкость по-умолчанию
+
+        this.queue = [];
+        this.queue_size = 10;
+        this.queue_tail_size = 5;
     }
 
     // Воспроизведение
@@ -14,25 +18,42 @@ var AudioManager = (function () {
     *  offset - смещение от начала звука
     *  duration - продолжительность проигрывания
     * */
-    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate) {
+    AudioManager.prototype.play = function (name, time, gain, callback, loop, offset, duration, playbackRate, priority) {
+        var cls = null;
+        if (arguments.length == 1) {
+            var options = arguments[0];
+            name = options.name || "";
+            time = options.time;
+            gain = options.gain || 0.0;
+            callback = options.callback;
+            loop = options.loop;
+            offset = options.offset;
+            duration = options.duration;
+            playbackRate = options.playbackRate;
+            priority = options.priority;
+            cls = options.cls;
+        }
+
         var audio_obj = this.get(name);
         if (!audio_obj) {
             console.warn('AudioManager not found melody name:', name);
             return false;
         }
-        return audio_obj.play(time, gain ? gain : 1.0, callback, loop, offset, duration, playbackRate);
+
+        return audio_obj.play(cls, time, gain, callback, loop, offset, duration, playbackRate, priority);
     };
 
-    AudioManager.prototype.stop = function (name, time, play_object) {
-        var audio_obj = this.get(name);
-        if (!audio_obj) return false;
-        return audio_obj.stop(time, play_object);
+    AudioManager.prototype.stop = function (time, play_object) {
+        return play_object.stop(time);
     };
 
-    AudioManager.prototype.set_gain = function (name, value, play_object) {
-        var audio_obj = this.get(name);
-        if (!audio_obj) return false;
-        return audio_obj.gain(play_object.gain_node, value);
+    AudioManager.prototype.set_gain = function (value, play_object) {
+        play_object.start_gain = value;
+        var index = this.queue.indexOf(play_object);
+        if (index >= 0)
+            this.update_gain(index);
+        else
+            play_object.gain(value);
     };
 
     AudioManager.prototype.set_general_gain = function (value) {
@@ -60,6 +81,63 @@ var AudioManager = (function () {
         return this.audio_context;
     };
 
+    AudioManager.prototype.update_gain = function (index) {
+        var get_gain_mul = function(index, queue_size, queue_tail_size) {
+            if (index < queue_size)
+                return 1;
+            if (index < (queue_size + queue_tail_size))
+                return 1 - (1 / (queue_tail_size + 1)) * (index - queue_size + 1);
+            return 0;
+        };
+
+        this.queue[index].gain(this.queue[index].start_gain * get_gain_mul(index, this.queue_size, this.queue_tail_size));
+    };
+
+    AudioManager.prototype.add_playobject = function (play_object) {
+        var index = this.queue.indexOf(play_object);
+        if (index >= 0 && index <= this.queue.length) {
+            console.error(play_object + " уже в очереди ! Повторное добавление невозможно");
+            return;
+        }
+
+        var queue = this.queue;
+        queue.push(play_object);
+        var qlength = this.queue.length;
+
+        var i = qlength - 1;
+        for (; i > 0  && queue[i].priority > queue[i - 1].priority; i--) {
+            var temp = queue[i];
+            queue[i] = queue[i - 1];
+            queue[i - 1] = temp;
+        }
+
+        for (var i = 0; i < this.queue.length; i++)
+            this.update_gain(i);
+    };
+
+    AudioManager.prototype.del_playobject = function (play_object) {
+        var index = this.queue.indexOf(play_object);
+        if (index < 0 || index > this.queue.length) {
+            console.error(play_object + " не найден в очереди !");
+            return;
+        }
+
+        this.queue.splice(index, 1);
+
+        for (var i = 0; i < this.queue.length; i++)
+            this.update_gain(i);
+    };
+
+    AudioManager.prototype.get_playobject_gain = function (play_object) {
+        var index = this.queue.indexOf(play_object);
+        if (index < 0 || index > this.queue.length) {
+            console.error(play_object + " не найден в очереди !");
+            return 0;
+        }
+        if (index > this.queue_size) return 0;
+        return play_object.start_gain;
+    };
+
     return AudioManager;
 })();
 
@@ -73,15 +151,6 @@ function init_sound() {
 
     // Тестовые звуки от димона
     audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, 0.1);
-    audioManager.load('engine_01_1', {url: '/static/audio/test/engine_01_1.wav'}, 1.0);
-    audioManager.load('engine_01_2', {url: '/static/audio/test/engine_01_2.wav'}, 1.0);
-    audioManager.load('engine_01_3', {url: '/static/audio/test/engine_01_3.wav'}, 1.0);
-    audioManager.load('engine_01_4', {url: '/static/audio/test/engine_01_4.wav'}, 1.0);
-
-    audioManager.load('engine_02', {url: '/static/audio/test/engine_02.wav'}, 1.0);
-    audioManager.load('engine_03', {url: '/static/audio/test/engine_03.wav'}, 1.0);
-    audioManager.load('engine_04', {url: '/static/audio/test/engine_04.wav'}, 1.0);
-    audioManager.load('engine_05', {url: '/static/audio/test/engine_05.wav'}, 0.075);
 
     audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, 1.0);
     audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, 1.0);
@@ -94,193 +163,57 @@ function init_sound() {
     audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 0.15);
 
     audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
+
+    // Комплекты звуков авто стрельбы
+
+    audioManager.load('auto_test_1', {url: '/static/audio/test2/z_11.wav'}, 1.0);
+    audioManager.load('auto_test_2', {url: '/static/audio/test2/z_12.wav'}, 1.0);
+    audioManager.load('auto_test_3', {url: '/static/audio/test2/z_13.wav'}, 1.0);
+    audioManager.load('auto_test_4', {url: '/static/audio/test2/z_14.wav'}, 1.0);
+
+    audioManager.load('auto_11', {url: '/static/audio/auto_shoot/auto_shoot_1/2x.wav'}, 1.0);
+    audioManager.load('auto_12', {url: '/static/audio/auto_shoot/auto_shoot_1/3x.wav'}, 1.0);
+    audioManager.load('auto_13', {url: '/static/audio/auto_shoot/auto_shoot_1/4x.wav'}, 1.0);
+    audioManager.load('auto_14', {url: '/static/audio/auto_shoot/auto_shoot_1/6x.wav'}, 1.0);
+
+    audioManager.load('auto_21', {url: '/static/audio/auto_shoot/auto_shoot_2/2x.wav'}, 1.0);
+    audioManager.load('auto_22', {url: '/static/audio/auto_shoot/auto_shoot_2/3x.wav'}, 1.0);
+    audioManager.load('auto_23', {url: '/static/audio/auto_shoot/auto_shoot_2/4x.wav'}, 1.0);
+    audioManager.load('auto_24', {url: '/static/audio/auto_shoot/auto_shoot_2/6x.wav'}, 1.0);
+
+    audioManager.load('auto_31', {url: '/static/audio/auto_shoot/auto_shoot_3/2x.wav'}, 1.0);
+    audioManager.load('auto_32', {url: '/static/audio/auto_shoot/auto_shoot_3/3x.wav'}, 1.0);
+    audioManager.load('auto_33', {url: '/static/audio/auto_shoot/auto_shoot_3/4x.wav'}, 1.0);
+    audioManager.load('auto_34', {url: '/static/audio/auto_shoot/auto_shoot_3/6x.wav'}, 1.0);
+
+
+    audioManager.load('auto_r_11', {url: '/static/audio/auto_shoot/1/1_1.wav'}, 1.0);
+    audioManager.load('auto_r_12', {url: '/static/audio/auto_shoot/1/1_2.wav'}, 1.0);
+    audioManager.load('auto_r_13', {url: '/static/audio/auto_shoot/1/1_3.wav'}, 1.0);
+    audioManager.load('auto_r_14', {url: '/static/audio/auto_shoot/1/1_4.wav'}, 1.0);
+
+    audioManager.load('auto_r_21', {url: '/static/audio/auto_shoot/2/2_2.wav'}, 1.0);
+    audioManager.load('auto_r_22', {url: '/static/audio/auto_shoot/2/2_3.wav'}, 1.0);
+    audioManager.load('auto_r_23', {url: '/static/audio/auto_shoot/2/2_4.wav'}, 1.0);
+    audioManager.load('auto_r_24', {url: '/static/audio/auto_shoot/2/2_5.wav'}, 1.0);
+
+    // items
+
+    audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.m4a'}, 0.3);
+    audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 0.3);
+    audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 0.3);
+
+    // powerups
+
+    audioManager.load('powerup_001', {url: '/static/audio/powerups/powerup_001.m4a'}, 0.3);
+
+    // signals
+
+    audioManager.load('reverse_gear', {url: '/static/audio/signals/drive_reverse_001.m4a'}, 0.3);
+
+    // engines
+
+    audioManager.load('engine_heavy_001', {url: '/static/audio/engines/engine_heavy_001.m4a'}, 0.075);
+    audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.m4a'}, 0.075);
+    audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.m4a'}, 0.075);
 }
-
-function randomInterval(a, b) {return Math.random() * (b - a) + a;}
-
-
-function scene(){
-    var a1 = audioManager.play('engine_05', 0.0, 0.3, null, true);
-
-    var razgon = null;
-    var razgon_znak = 1.0;
-
-    setInterval(function() {
-        if (Math.random() > 0.95) {
-            var a21 = audioManager.play('shot_01', 0.0, randomInterval(0.05, 0.3), null, true, 0.0, Math.random() * 3.0);
-            a21.source_node.playbackRate.value = 5.0
-        }
-
-        if (Math.random() > 0.95) {
-            var a22 = audioManager.play('shot_02', 0.0, randomInterval(0.05, 0.4), null, true, 0.0, Math.random() * 3.0);
-            a22.source_node.playbackRate.value = 3.0
-        }
-
-        if (Math.random() > 0.95) {
-            var a23 = audioManager.play('shot_03', 0.0, randomInterval(0.05, 0.3), null, true, 0.0, Math.random() * 3.0);
-            a23.source_node.playbackRate.value = 3.5
-        }
-
-
-        if (Math.random() > 0.97) {
-            audioManager.play('shot_01', 0.0, randomInterval(0.3, 0.5), null, false);
-        }
-        if (Math.random() > 0.97) {
-            audioManager.play('shot_02', 0.0, randomInterval(0.3, 0.5), null, false);
-        }
-        if (Math.random() > 0.97) {
-            audioManager.play('shot_03', 0.0, randomInterval(0.2, 0.5), null, false);
-        }
-
-        // разгон или торможение
-        if (Math.random() > 0.8) {
-            if (razgon) {clearInterval(razgon); razgon=null;}
-            if (Math.random() > 0.8) {
-                razgon_znak = Math.random() > 0.5 ? 1.0 : -1.0;
-                razgon = setInterval(function () {
-                    a1.source_node.playbackRate.value += 0.02 * razgon_znak;
-                    if (a1.source_node.playbackRate.value < 0.35)
-                        a1.source_node.playbackRate.value = 0.35;
-                    if (a1.source_node.playbackRate.value > 1.9)
-                        a1.source_node.playbackRate.value = 1.9;
-                }, 130);
-            }
-        }
-    }, 200)
-}
-
-var audio_obj1;
-var audio_obj2;
-var audio_obj3;
-var audio_obj4;
-
-function random_shoot_start() {
-    audio_obj1 = audioManager.play('shot_01', 0.0,      0.5, null, true, 0, 0, 1);
-    audio_obj2 = audioManager.play('shot_01', 0.164925, 0.5, null, true, 0, 0, 1);
-    audio_obj3 = audioManager.play('shot_01', 0.32985,  0.5, null, true, 0, 0, 1);
-    audio_obj4 = audioManager.play('shot_01', 0.494775, 0.5, null, true, 0, 0, 1);
-}
-
-function random_shoot_stop() {
-    audioManager.play('shot_01', 0, audio_obj1);
-    audioManager.play('shot_01', 0, audio_obj2);
-    audioManager.play('shot_01', 0, audio_obj3);
-    audioManager.play('shot_01', 0, audio_obj4);
-}
-
-    //function generateShoot() {
-    //    audioManager.play('shot_01', 0, 0.2 + Math.random() * 0.2, function() { generateShoot() }, false, 0, 0, 3 + Math.random() * 2);
-    //}
-    //generateShoot()
-
-    //audioManager.play('shot_03', 0.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 0.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 1.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 2.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 3.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 4.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 5.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 6.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 7.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 8.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 9.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.1, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.2, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.3, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.4, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.5, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.6, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.7, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.8, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 10.9, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-    //audioManager.play('shot_03', 11.0, 0.2 + Math.random() * 0.2, null, false, 0, 0, 1);
-//}

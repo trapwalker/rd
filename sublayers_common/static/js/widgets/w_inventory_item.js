@@ -35,9 +35,13 @@ var WInventoryItem = (function (_super) {
         itemDiv.find(this.itemDivPictureStr).css('background', 'transparent url(http://' + $('#settings_host_name').text() + '/' + this.item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
         var self = this;
-        itemDiv.on('dblclick', function () {
-            self.item.activate();
-        });
+
+        var other_id = $(inventoryDiv).data('other_id');
+        if (other_id)
+            itemDiv.on('dblclick', function () { clientManager.sendTakeItemInventory(self.item.inventory.owner_id, self.item.position, other_id); });
+        else
+            itemDiv.on('dblclick', function () { self.item.activate(); });
+
         this.change();
 
         itemDiv.on('click', {item: this, action: true, inventoryDiv: inventoryDiv}, function (event) {
@@ -54,9 +58,6 @@ var WInventoryItem = (function (_super) {
             activateBtn.data('item_pos', self.item.position);
 
             self.redraw_info_for_window(true, inventoryDiv);
-        });
-        itemDiv.on('dblclick', {item: this}, function (event) {
-            clientManager.sendTakeItemInventory(self.item.inventory.owner_id, self.item.position);
         });
 
         itemDiv.on('mouseenter', {item: this, action: true, inventoryDiv: inventoryDiv}, this._redraw_info_for_window_handler);

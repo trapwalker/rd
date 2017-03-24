@@ -642,9 +642,9 @@ class AgentAPI(API):
         TakeAllInventoryEvent(agent=self.agent, owner_id=owner_id, time=self.agent.server.get_time()).post()
 
     @public_method
-    def take_item_inventory(self, owner_id, position):
-        self.agent.log.info('try take item_pos={} from owner_id={}'.format(position, owner_id))
-        TakeItemInventoryEvent(agent=self.agent, owner_id=owner_id, position=position,
+    def take_item_inventory(self, owner_id, position, other_id):
+        self.agent.log.info('try take item_pos={} from owner_id={} to other_id={}'.format(position, owner_id, other_id))
+        TakeItemInventoryEvent(agent=self.agent, owner_id=owner_id, position=position, other_id=other_id,
                                time=self.agent.server.get_time()).post()
 
     @public_method
@@ -931,7 +931,7 @@ class AgentAPI(API):
 
     @public_method
     def teleport(self, x, y):
-        return
+        # return
         self.agent.log.info('teleport x={}, y={}'.format(x, y))
         if (self.agent.car):
             self.agent.save(time=self.agent.server.get_time())

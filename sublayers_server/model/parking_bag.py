@@ -38,5 +38,5 @@ class ParkingBag(Object):
         self.inventory = None
         self.agent = None
 
-    def is_available(self, agent):
+    def is_available(self, agent, time=None):
         return self.agent and agent is self.agent

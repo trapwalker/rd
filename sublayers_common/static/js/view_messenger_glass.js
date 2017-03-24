@@ -729,12 +729,12 @@ var ViewMessengerGlass = (function () {
                 case "TransactionDisableActivateItemLogMessage":
                     this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Необходимо выполнение следующих условий: ' + msg.activate_comment + '.');
                     // TODO: вынести в model_manager
-                    audioManager.play('error_1', 0.0, 1, null, false, 0, 0, 1);
+                    audioManager.play({name: "error_1", gain: 1.0, priority: 1.0});
                     break;
                 case "TransactionDisableActivateItemTimeoutLogMessage":
                     this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Таймаут активации 1 секунда.');
                     // TODO: вынести в model_manager
-                    audioManager.play('error_1', 0.0, 1, null, false, 0, 0, 1);
+                    audioManager.play({name: "error_1", gain: 1.0, priority: 1.0});
                     break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
@@ -753,7 +753,7 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "TransactionActivateRocketLogMessage":
                     this.addMessageToLog('Запущена ракета: ' + msg.item_title + '.');
-                    new WTextArcade('Запущена ракета').start();
+                    //new WTextArcade('Запущена ракета').start();
                     break;
                 case "TransactionActivateTurretLogMessage":
                     this.addMessageToLog('Установлена турель: ' + msg.item_title + '.');
