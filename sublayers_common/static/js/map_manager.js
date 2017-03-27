@@ -334,6 +334,19 @@ var MapManager = (function(_super) {
                     clientManager.sendSetQuickItem(ui.draggable.data('index'), -1);
             }
         });
+
+
+        // Подключение новой карты
+        smap =  slippymap({
+            div: "map2",
+            tileprovider: function (x, y, z) {return "http://185.58.205.29/map/" + z + "/" + x + "/" + y +".jpg";},
+            zMin: this.server_min_zoom,
+            zMax: ConstMaxMapZoom,
+            lat: 32.93523932687671,
+            lon: -113.0391401052475,
+            zoom: this.anim_zoom,
+        }).init();
+
     };
 
     MapManager.prototype.createTileLayer = function(storage) {
@@ -431,6 +444,7 @@ var MapManager = (function(_super) {
         if(zoom == map.getZoom()) return;
         if(zoom < this.server_min_zoom || zoom > ConstMaxMapZoom) return;
         map.setZoom(zoom);
+        smap.zoom(zoom, {animated: true});
     };
 
     MapManager.prototype.onZoomAnimation = function(event) {
@@ -493,6 +507,7 @@ var MapManager = (function(_super) {
 })(ClientObject);
 
 var map;
+var smap;
 var mapManager = new MapManager();
 
 

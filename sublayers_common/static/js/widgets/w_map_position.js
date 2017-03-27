@@ -35,6 +35,8 @@ var WMapPosition = (function (_super) {
                     noMoveStart: true
                 }
             });
+
+            smap.center({x: tempPoint.x, y:tempPoint.y, z: map.getZoom()}, {animated: false});
         }
     };
 

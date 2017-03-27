@@ -171,7 +171,7 @@ var WCanvasCarMarker = (function (_super) {
             });
         }
 
-        this.tail_particles_interval_stay = 10000;  // Время между генерациями при скорости = 0
+        this.tail_particles_interval_stay = 5000;  // Время между генерациями при скорости = 0
         this.tail_particles_last_born_time = 0;
     }
 
@@ -322,7 +322,9 @@ var WCanvasCarMarker = (function (_super) {
         if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
             var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
-            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
+            //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(3 + 3 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.4))), direction_real, 2000, 1).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(3 + 3 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.4))), direction_real, 2000, 1).start();
         }
     };
 

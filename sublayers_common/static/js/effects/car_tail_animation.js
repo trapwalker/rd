@@ -11,7 +11,7 @@ var ECanvasCarTail = (function () {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this._max_scale = max_tail_scale || 3.5 ;
-        this._min_scale = 0.7;
+        this._min_scale = 0.3;
 
         this.scale_icon_x = this._min_scale;
         this.scale_icon_y = this._min_scale;
