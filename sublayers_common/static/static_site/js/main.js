@@ -467,9 +467,9 @@ function init_site_sound() {
     audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, null, null, 1.0);
     audioManager.load('listing', {url: '/static/audio/final_v1_mp3/listing.mp3'}, null, null, 1.0);
     audioManager.load('glitch_noise', {url: '/static/audio/final_v1_mp3/glitch_noise.mp3'}, null, null, 0.8);
-    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, null, null, 0.6);
+    audioManager.load('error_1', {url: '/static/audio/signals/error_001.m4a'}, null, null, 0.6);
     audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, null, null, 1.0);
-    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type1.mp3'}, null, null, 0.2);
+    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type.mp3'}, null, null, 0.2);
 
     audioKeyboard = new AudioKeyboard([
         audioManager.get('key_cl_1')
