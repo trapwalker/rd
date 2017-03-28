@@ -16,14 +16,25 @@ var ParentCanvasManager = (function(_super){
         this.is_canvas_render = true;
         // todo: сделать это не просто списком, а списком с параметрами
         this.vobj_list = [];
+
+        this.dom_canvas = null;
+        this.dom_context = null;
     }
 
     ParentCanvasManager.prototype.init_canvas = function() {
-        this.canvas = document.getElementById(this.canvas_id);
+        this.canvas = document.createElement("canvas");
         this.context = this.canvas.getContext("2d");
         var a = mapManager.getMapSize();
         this.canvas.width = a.x;
         this.canvas.height = a.y;
+
+        smap.renderer.canvas = this.canvas;
+        smap.renderer.context = this.context;
+
+        this.dom_canvas = document.getElementById(this.canvas_id);
+        this.dom_context = this.dom_canvas.getContext("2d");
+        this.dom_canvas.width = a.x;
+        this.dom_canvas.height = a.y;
     };
 
     ParentCanvasManager.prototype.add_vobj = function(vobj, priority) {
@@ -62,6 +73,9 @@ var ParentCanvasManager = (function(_super){
         var client_time = clock.getClientTime();
         for (var i = 0; i < this.vobj_list.length; i++)
             this.vobj_list[i].obj.redraw(this.context, time, client_time);
+
+        //this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
+        this.dom_context.drawImage(this.canvas, 0, 0);
     };
 
     return ParentCanvasManager;
@@ -135,7 +149,6 @@ var MapCanvasManager = (function(_super){
             this.cur_map_size = map_size;
             this.cur_ctx_car_pos = car_ctx_pos;
         }
-
         _super.prototype.redraw.call(this, time);
     };
 

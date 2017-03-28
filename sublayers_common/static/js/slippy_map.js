@@ -502,7 +502,7 @@
                             },
                             alpha: 1,
                             callback: function (id, viewport, alpha) {
-                                console.log("callback tile layer", id, viewport, alpha);
+                                //return;
                                 var tileprovider, tileLayers, maxTileNumber, tileDone, preload,
                                     t, x, y, xoff, yoff, tileKey,
                                     tileAboveX, tileAboveY, tileAboveZ, tileKeyAbove,
@@ -533,42 +533,49 @@
                                         map.renderer.context.globalAlpha = tileLayers[t].alpha || alpha;
                                         map.renderer.tiles[t] = map.renderer.tiles[t] || {};
                                         tileDone = [];
+                                        //console.log("callback tile layer", t,  id, viewport.zoom, tileLayers);
                                         for (x = $.Math.floor(viewport.xMin / viewport.sz) - preload; !map.renderer.skip && x < $.Math.ceil(viewport.xMax / viewport.sz) + preload; x = x + 1) {
                                             tileDone[x] = [];
                                             //xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp) * viewport.zf) - viewport.offsetX;
-                                            xoff = (((x * map.renderer.tilesize - viewport.xMin) / viewport.zp)) - viewport.offsetX;
+                                            xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
                                             for (y = $.Math.floor(viewport.yMin / viewport.sz) - preload; !map.renderer.skip &&  y < $.Math.ceil(viewport.yMax / viewport.sz) + preload; y = y + 1) {
                                                 //yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp) * viewport.zf) - viewport.offsetY;
-                                                yoff = (((y * map.renderer.tilesize - viewport.yMin) / viewport.zp)) - viewport.offsetY;
+                                                yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
                                                 tileKey = encodeIndex(x, y, viewport.zi);
                                                 tileDone[tileKey] = false;
                                                 if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
                                                     // out of xyz bounds
                                                     //map.renderer.blank(
-                                                    //    "#dddddd",
+                                                    //    "#dd3333",
                                                     //    xoff,
                                                     //    yoff,
-                                                    //    viewport.tilesize,
-                                                    //    viewport.tilesize
+                                                    //    map.renderer.tilesize,
+                                                    //    map.renderer.tilesize
                                                     //);
                                                     tileDone[tileKey] = true;
                                                 } else {
                                                     if (map.renderer.tiles[t][tileKey] && map.renderer.tiles[t][tileKey].complete) {
                                                         // draw tile
-                                                        if (map.renderer.drawImage(
-                                                                map.renderer.tiles[t][tileKey],
-                                                                "#dddddd",
-                                                                0,
-                                                                0,
-                                                                map.renderer.tilesize,
-                                                                map.renderer.tilesize,
-                                                                xoff,
-                                                                yoff,
-                                                                map.renderer.tilesize,
-                                                                map.renderer.tilesize
-                                                            )) {
-                                                            map.renderer.tiles[t][tileKey].lastDrawnId = id;
-                                                        }
+                                                        //if (map.renderer.drawImage(
+                                                        //        map.renderer.tiles[t][tileKey],
+                                                        //        "#dddddd",
+                                                        //        0,
+                                                        //        0,
+                                                        //        map.renderer.tilesize,
+                                                        //        map.renderer.tilesize,
+                                                        //        xoff,
+                                                        //        yoff,
+                                                        //        map.renderer.tilesize,
+                                                        //        map.renderer.tilesize
+                                                        //    )) {
+                                                        //    map.renderer.tiles[t][tileKey].lastDrawnId = id;
+                                                        //}
+                                                        map.renderer.context.drawImage(
+                                                            map.renderer.tiles[t][tileKey],
+                                                            xoff,
+                                                            yoff
+                                                        );
+                                                        map.renderer.tiles[t][tileKey].lastDrawnId = id;
                                                         tileDone[tileKey] = true;
                                                     }
                                                     else
@@ -874,8 +881,8 @@
                         }
                         if (!options.animated) {
                             map.position.z = z;
-                            map.renderer.update();
-                            map.position.zoomed();
+                            //map.renderer.update();
+                            //map.position.zoomed();
                         } else {
                             map.position.animation.start(false, false, z);
                         }

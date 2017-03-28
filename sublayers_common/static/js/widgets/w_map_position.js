@@ -22,11 +22,10 @@ var WMapPosition = (function (_super) {
         var tempPoint = this.car.getCurrentCoord(time);
         if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
             this.old_position = tempPoint;
+            mapManager.set_coord(tempPoint.x, tempPoint.y, mapManager.getZoom());
+            //mapManager.render_map();
             //smap.center({x: tempPoint.x, y:tempPoint.y, z: mapManager.getZoom()}, {animated: false});
-            smap.map.position.setX(tempPoint.x);
-            smap.map.position.setY(tempPoint.y);
-            smap.map.position.setZ(mapManager.getZoom());
-            smap.renderer.refresh();
+            //smap.renderer.refresh();
         }
     };
 

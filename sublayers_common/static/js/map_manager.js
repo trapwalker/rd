@@ -278,7 +278,7 @@ var MapManager = (function(_super) {
 
 
         // Подключение новой карты
-        this.anim_zoom = cookieStorage.zoom;
+        this.anim_zoom = 18 // cookieStorage.zoom;
         smap =  slippymap({
             div: "map2",
             tileprovider: function (x, y, z) {return "http://185.58.205.29/map/" + z + "/" + x + "/" + y +".jpg";},
@@ -293,8 +293,39 @@ var MapManager = (function(_super) {
 
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
+
+        this.add_to_canvas_manager();
     };
 
+    MapManager.prototype.set_coord = function (x, y, z) {
+        if (x !== undefined) {
+            smap.map.position.setX(x, {animated: false});
+        }
+        if (y !== undefined) {
+            smap.map.position.setY(y, {animated: false});
+        }
+        if (z !== undefined) {
+            smap.map.position.setZ(z, {animated: false});
+        }
+    };
+
+    MapManager.prototype.render_map = function () {
+        smap.renderer.refresh();
+    };
+
+    MapManager.prototype.redraw = function(ctx, time, client_time) {
+        this.render_map();
+    };
+
+    MapManager.prototype.add_to_canvas_manager = function () {
+        function add_to_canvas_manager() {
+            if (mapCanvasManager)
+                mapCanvasManager.add_vobj(mapManager, 99);
+            else
+                setTimeout(add_to_canvas_manager, 10);
+        }
+        setTimeout(add_to_canvas_manager, 10);
+    };
 
     // =============================== Model Events
 
