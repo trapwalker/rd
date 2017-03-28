@@ -134,6 +134,7 @@
                         return true;
                     },
                     mouseDown: function (event) {
+                        return;
                         var x, y;
                         map.position.animation.stop();
                         if (!event) {
@@ -150,6 +151,7 @@
                         return true;
                     },
                     mouseMove: function (event) {
+                        return;
                         var x, y, dX, dY;
                         x = event.clientX - map.renderer.canvas.offsetLeft;
                         y = event.clientY - map.renderer.canvas.offsetTop;
@@ -168,6 +170,7 @@
                         return true;
                     },
                     mouseUp: function (event) {
+                        return;
                         var duration = map.events.momentum.duration();
                         if (map.events.dragging && map.scrollMomentum && duration !== 0) {
                             map.events.dragging = false;
@@ -185,12 +188,14 @@
                         return true;
                     },
                     mouseOut: function (event) {
+                        return;
                         map.events.dragging = false;
                         map.position.moveend();
                         map.events.preventDefault(event);
                         return true;
                     },
                     mouseWheel: function (event) {
+                        return;
                         var delta = 0;
                         map.position.animation.stop();
                         if (!event) {
@@ -221,6 +226,7 @@
                         return true;
                     },
                     doubleClick: function (event) {
+                        return;
                         var x, y, dX, dY, center;
                         center = event.simulated || false;
                         map.position.animation.stop();
@@ -254,6 +260,7 @@
                     },
                     /* maps touch events to mouse events */
                     touch: function (event) {
+                        return;
                         var now, touches, type, first, simulatedEvent, distance;
 
                         map.position.animation.stop();
@@ -437,7 +444,7 @@
                         map.renderer.tiles[t][id].src = tileprovider(x, y, z, id);
                         map.renderer.tiles[t][id].onload = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
-                            //map.renderer.update();
+                            map.renderer.update();
                         };
                         map.renderer.tiles[t][id].onerror = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;

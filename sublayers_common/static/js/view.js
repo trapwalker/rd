@@ -159,6 +159,7 @@ $(document).ready(function () {
         }
     }, 1000);
 
+    audioManager.set_general_gain(0.1);
 
     // Интервал запроса пинга
     setInterval(function(){

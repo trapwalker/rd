@@ -117,12 +117,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype._sendMessage = function (msg) {
         //console.log('ClientManager.prototype._sendMessage', msg);
-        // добавление координат центра карты в сообщение
-        var center_map_coords;
-        center_map_coords = mapManager.project(map.getCenter(), mapManager.getMaxZoom());
-        msg.map_coords_center = center_map_coords;
-        msg.map_coords_zoom = map.getZoom();
-
         message_stream.sendMessage({
             type: 'ws_message_send',
             body: msg
@@ -197,7 +191,6 @@ var ClientManager = (function () {
                 aOwner.bindCar(car);
 
             // Создание/инициализация виджетов
-            //new WCarMarker(car);                 // виджет маркера
             if (car.cls == "Bot") {
                 var t = new WCanvasCarMarker(car);
                 new WCanvasHPCarMarker(car, t);
@@ -209,7 +202,7 @@ var ClientManager = (function () {
             }
 
             if (car.cls == "SlowMine" || car.cls == "BangMine") {
-                new WCarMarker(car);
+                console.warn(car)
             }
 
             if (car.cls == "Turret") {
@@ -224,7 +217,7 @@ var ClientManager = (function () {
 
             if (car.cls == "POICorpse") {
                 car.direction = event.object.car_direction + Math.PI / 2.;
-                obj_marker = new WCarMarker(car); // виджет маркера
+                console.warn(car)
             }
 
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
@@ -277,10 +270,10 @@ var ClientManager = (function () {
                     break;
                 case 'POICorpse':
                     obj.direction = event.object.car_direction + Math.PI / 2.;
-                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    console.warn(obj);
                     break;
                 default:
-                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    console.warn(obj);
             }
 
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
@@ -509,7 +502,7 @@ var ClientManager = (function () {
             contextPanel = new ContextPanel();
 
             // Инициализация мап-зума
-            mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
+            mapManager.onZoomAnimation({zoom: mapManager.getZoom()});  // todo: сделать правильно
         }
     };
 
@@ -555,30 +548,6 @@ var ClientManager = (function () {
         var vo = visualManager.getVobjByType(car, WCanvasAnimateMarkerShieldEffect);
         if (event.object.active_shield_effect && !vo) new WCanvasAnimateMarkerShieldEffect(car);
         if (!event.object.active_shield_effect && vo) vo.delFromVisualManager();
-
-
-        // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerUpdate()) {
-            debugMapList.push(
-                L.circleMarker(mapManager.unproject([event.object.state.p0.x, event.object.state.p0.y], mapManager.getMaxZoom()), {color: '#FF0000'})
-                    .setRadius(3)
-                    .bindPopup(
-                        'Тип сообщения: ' + event.cls + '</br>' +
-                        'uid объекта: ' + event.object.uid + '</br>' +
-                        'comment: ' + event.comment + '</br>'
-                )
-                    .addTo(map)
-            );
-
-            if (event.object.state.c)
-                debugMapList.push(
-                    L.circleMarker(mapManager.unproject([event.object.state.c.x, event.object.state.c.y], mapManager.getMaxZoom()), {color: '#FFFF00'})
-                        .setRadius(20)
-                        .addTo(map)
-                );
-
-        }
-
     };
 
     ClientManager.prototype.See = function (event) {
@@ -620,19 +589,6 @@ var ClientManager = (function () {
             default:
             console.warn('Контакт с неизвестным объектом ', event.object);
         }
-
-        // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerContact())
-            debugMapList.push(
-                L.circleMarker(mapManager.unproject([event.object.state.p0.x, event.object.state.p0.y], mapManager.getMaxZoom()), {color: '#FFBA12'})
-                    .setRadius(8)
-                    .bindPopup(
-                        'Тип сообщения: ' + event.cls + '</br>' +
-                        'uid объекта: ' + event.object.uid + '</br>' +
-                        'subject_id: ' + event.subject_id + '</br>'
-                )
-                    .addTo(map)
-            );
     };
 
     ClientManager.prototype.Out = function (event) {

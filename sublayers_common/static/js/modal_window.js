@@ -193,9 +193,6 @@ var ModalWindow = (function () {
 
             // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
             cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
-            if (!cookieStorage.flagDebug)
-                for (; debugMapList.length;) // Очистиить debugMapList и удалить всё с карты
-                    map.removeLayer(debugMapList.pop());
 
             // TODO Развыделить все машинки и снова выделить только партийные
             cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;

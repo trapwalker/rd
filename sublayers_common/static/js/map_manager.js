@@ -9,40 +9,24 @@ var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
-function onMouseDownMap(mouseEventObject){
-    // Запомнить координаты начала нажатия и флаг нажатия = true
-    map._mouseDowned = true;
-    map.lastDownPoint = new Point(mouseEventObject.originalEvent.clientX, mouseEventObject.originalEvent.clientY);
-}
-
 function onMouseUpMap(mouseEventObject) {
-    map._mouseDowned = false;
     if (mapCanvasManager && mapCanvasManager._mouse_focus_widget) {
-        mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject.originalEvent);
+        mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject);
     }
     else {
-        clientManager.sendGoto(mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom()));
+        //clientManager.sendGoto(mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom()));
+        // todo: учесть зум
+        //console.log(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()), new Point(mouseEventObject.clientX, mouseEventObject.clientY)));
+        var click_point = new Point(mouseEventObject.clientX, mouseEventObject.clientY);
+        clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()), mulScalVector(click_point, Math.pow(2., (ConstMaxMapZoom - mapManager.getZoom())))));
     }
 }
 
-function onMouseDblClick(mouseEventObject) {
-    clientManager.sendScoutDroid(mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom()));
-    //console.log(mapManager.project(mouseEventObject.latlng, map.getMaxZoom()))
-}
 
-function onMouseRightClick(mouseEventObject) {
-    var p = mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom());
-    last_right_click_on_map = p;
-    chat.addMessageToSys(p);
-    console.log(p);
-
-    if (map.dragging._enabled)
-        clientManager.sendTileCoord(p.x, p.y);
-}
 
 function onMouseMoveMap(mouseEventObject) {
     mapCanvasManager.set_mouse_look(true);
-    mapCanvasManager._on_mouse_hover(mouseEventObject.originalEvent)
+    mapCanvasManager._on_mouse_hover(mouseEventObject)
 }
 
 function onMouseOutMap(mouseEventObject){
@@ -149,13 +133,6 @@ function onKeyDownMap(event) {
             if (wFireController && wFireController.allFire)
                 wFireController.allFire.click();
             break;
-        case 77:  // M
-            if (map.dragging._enabled)
-                map.dragging.disable();
-            else
-                map.dragging.enable();
-            mapCanvasManager.on_new_map_size();
-            break;
         case 90:  // Z
             //console.log('Was pressed: Z');
             break;
@@ -220,17 +197,8 @@ function onKeyUpMap(event) {
     }
 }
 
-function TileLaterSet() {
-    if (cookieStorage.optionsMapTileVisible) {  // Если нужно отображать
-        if (!map.hasLayer(mapManager.tileLayer))
-            mapManager.tileLayer.addTo(map);
-    }
-    else if (map.hasLayer(mapManager.tileLayer))
-        map.removeLayer(mapManager.tileLayer);
-}
-
 function returnFocusToMap() {
-    document.getElementById('map').focus();
+    document.getElementById('map2').focus();
 }
 
 var MapManager = (function(_super) {
@@ -262,46 +230,19 @@ var MapManager = (function(_super) {
         this.tileLayerPath = $('#settings_map_link').text();
         this.server_min_zoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
 
-        map = L.map('map',
-            {
-                minZoom: this.server_min_zoom,
-                maxZoom: ConstMaxMapZoom,
-                zoomControl: false,
-                attributionControl: false,
-                scrollWheelZoom: "center",
-                dragging: false,
-                zoomAnimationThreshold: (ConstMaxMapZoom - this.server_min_zoom),
-                doubleClickZoom: false
-            }).setView([32.93523932687671, -113.0391401052475], cookieStorage.zoom);
 
-        this.anim_zoom = map.getZoom();
-
-        //var storage = getWebSqlStorage('createTileLayer', this)
-        //     || getIndexedDBStorage('createTileLayer', this);
-        //if (!storage) {
-        //    alert('Storage not loading!');
-        //    this.createTileLayer(null);
-        //}
-        this.createTileLayer(null);
 
         // Обработчики событий карты
         pressedKey = false;
-        map.on('click', onMouseUpMap);
-        //map.on('mousedown', onMouseDownMap);
-        //map.on('mouseup', onMouseUpMap);
-        map.on('contextmenu', onMouseRightClick);
-        map.on('mousemove', onMouseMoveMap);
-        map.on('mouseout', onMouseOutMap);
-        map.on('zoomstart', this.onZoomStart);
-        map.on('zoomend', this.onZoomEnd);
-        map.on('zoomanim', this.onZoomAnimation);
 
-        document.getElementById('map').onkeydown = onKeyDownMap;
-        document.getElementById('map').onkeyup = onKeyUpMap;
-        map.keyboard.disable();
+        document.getElementById('map2').onkeydown = onKeyDownMap;
+        document.getElementById('map2').onkeyup = onKeyUpMap;
 
-        // Инициализация виджетов карты
-        this.zoomSlider = new WZoomSlider(this);
+        document.getElementById('map2').onmouseup = onMouseUpMap;
+
+        document.getElementById('map2').onmousemove = onMouseMoveMap;
+        document.getElementById('map2').onmouseout = onMouseOutMap;
+
 
         /*
             Карта является глобальным droppabl'ом в качестве мусорки
@@ -337,6 +278,7 @@ var MapManager = (function(_super) {
 
 
         // Подключение новой карты
+        this.anim_zoom = cookieStorage.zoom;
         smap =  slippymap({
             div: "map2",
             tileprovider: function (x, y, z) {return "http://185.58.205.29/map/" + z + "/" + x + "/" + y +".jpg";},
@@ -347,39 +289,12 @@ var MapManager = (function(_super) {
             zoom: this.anim_zoom,
         }).init();
 
+
+
+        // Инициализация виджетов карты
+        this.zoomSlider = new WZoomSlider(this);
     };
 
-    MapManager.prototype.createTileLayer = function(storage) {
-        //console.log('MapManager.prototype.createTileLayer', storage);
-        if (storage) {
-            mapManager.tileLayer = new StorageTileLayer(this.tileLayerPath, {
-                maxZoom: ConstMaxMapZoom,
-                minZoom: this.server_min_zoom,
-                continuousWorld: true,
-                opacity: 1.0,
-                errorTileUrl: '/static/img/map_404.jpg',
-                storage: storage});
-        }
-        else {
-            mapManager.tileLayer = L.tileLayer(this.tileLayerPath, {
-                continuousWorld: true,
-                opacity: 1.0,
-                errorTileUrl: '/static/img/map_404.jpg',
-                maxZoom: ConstMaxMapZoom,
-                minZoom: this.server_min_zoom});
-        }
-        if (cookieStorage.optionsMapTileVisible)
-            mapManager.tileLayer.addTo(map);
-        return true;
-    };
-
-    MapManager.prototype.project = function(latlng, zoom) {
-        return map.project(latlng, zoom);
-    };
-
-    MapManager.prototype.unproject = function(point, zoom) {
-        return map.unproject(point, zoom);
-    };
 
     // =============================== Model Events
 
@@ -396,13 +311,12 @@ var MapManager = (function(_super) {
     // =============================== Map Coords
 
     MapManager.prototype.getMapCenter = function () {
-        var c = this.project(map.getCenter(), mapManager.getMaxZoom());
+        var c = smap.center();
         return new Point(c.x, c.y);
     };
 
     MapManager.prototype.getMapSize = function() {
-        var s = map.getSize();
-        return new Point(s.x, s.y);
+        return new Point(smap.width(), smap.height());
     };
 
     MapManager.prototype.getTopLeftCoords = function(zoom) {
@@ -436,14 +350,13 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.getZoom = function() {
-        return map.getZoom();
+        return smap.zoom();
     };
 
     MapManager.prototype.setZoom = function(zoom) {
         //console.log('MapManager.prototype.setZoom', zoom, this.server_min_zoom, ConstMaxMapZoom);
-        if(zoom == map.getZoom()) return;
+        if(zoom == this.getZoom()) return;
         if(zoom < this.server_min_zoom || zoom > ConstMaxMapZoom) return;
-        map.setZoom(zoom);
         smap.zoom(zoom, {animated: true});
     };
 
@@ -490,23 +403,22 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.onZoomStart = function (event) {
         //console.log('MapManager.prototype.onZoomStart', map.getZoom());
-        mapManager.inZoomChange = true;
-        mapManager.oldZoomForCalcZoom = map.getZoom();
-        mapManager.startZoomChangeTime = clock.getCurrentTime();
-
-        audioManager.play({name: 'zoom_01', gain: 0.1, priority: 0.5});
+        //mapManager.inZoomChange = true;
+        //mapManager.oldZoomForCalcZoom = map.getZoom();
+        //mapManager.startZoomChangeTime = clock.getCurrentTime();
+        //
+        //audioManager.play({name: 'zoom_01', gain: 0.1, priority: 0.5});
     };
 
     MapManager.prototype.onZoomEnd = function (event) {
-        //console.log('MapManager.prototype.onZoomEnd');
-        mapManager.inZoomChange = false;
-        visualManager.changeModelObject(mapManager);
+        ////console.log('MapManager.prototype.onZoomEnd');
+        //mapManager.inZoomChange = false;
+        //visualManager.changeModelObject(mapManager);
     };
 
     return MapManager;
 })(ClientObject);
 
-var map;
 var smap;
 var mapManager = new MapManager();
 

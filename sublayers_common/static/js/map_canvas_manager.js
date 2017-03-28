@@ -21,7 +21,7 @@ var ParentCanvasManager = (function(_super){
     ParentCanvasManager.prototype.init_canvas = function() {
         this.canvas = document.getElementById(this.canvas_id);
         this.context = this.canvas.getContext("2d");
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         this.canvas.width = a.x;
         this.canvas.height = a.y;
     };
@@ -118,7 +118,7 @@ var MapCanvasManager = (function(_super){
 
     MapCanvasManager.prototype.redraw = function(time) {
         if(! this.is_canvas_render) return;
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         //console.log('MapCanvasManager.prototype.redraw', time);
         this.context.clearRect(0, 0, a.x, a.y);
 
@@ -129,7 +129,7 @@ var MapCanvasManager = (function(_super){
         this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
         this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
         var map_size = mapManager.getMapSize();
-        if (subVector(map_size, this.cur_map_size).abs() > 0.2 || map.dragging._enabled) {
+        if (subVector(map_size, this.cur_map_size).abs() > 0.2) {  // todo: ||  map.dragging._enabled
             var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
             var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
             this.cur_map_size = map_size;
