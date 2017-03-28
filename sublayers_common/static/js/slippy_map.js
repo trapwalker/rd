@@ -408,14 +408,14 @@
                         try {
                             map.renderer.context.drawImage(
                                 image,
-                                sx,
-                                sy,
-                                sw,
-                                sh,
+                                //sx,
+                                //sy,
+                                //sw,
+                                //sh,
                                 dx,
-                                dy,
-                                dw,
-                                dh
+                                dy
+                                //dw,
+                                //dh
                             );
                             return true;
                         } catch (e) {
@@ -481,19 +481,19 @@
                         map.renderer.layers.sort(sortZIndex);
                     },
                     layers: [
-                        {
-                            id: 'base',
-                            zindex: 0,
-                            visible: function () {
-                                return true;
-                            },
-                            alpha: 1,
-
-                            callback: function (id, viewport, alpha) {
-                                map.renderer.context.globalAlpha = alpha;
-                                map.renderer.blank("#dddddd", 0, 0, viewport.w, viewport.h);
-                            }
-                        },
+                        //{
+                        //    id: 'base',
+                        //    zindex: 0,
+                        //    visible: function () {
+                        //        return true;
+                        //    },
+                        //    alpha: 1,
+                        //
+                        //    callback: function (id, viewport, alpha) {
+                        //        map.renderer.context.globalAlpha = alpha;
+                        //        map.renderer.blank("#dddddd", 0, 0, viewport.w, viewport.h);
+                        //    }
+                        //},
                         { /* repaint canvas, load missing images */
                             id: 'tiles',
                             zindex: 1,
@@ -502,6 +502,7 @@
                             },
                             alpha: 1,
                             callback: function (id, viewport, alpha) {
+                                console.log("callback tile layer", id, viewport, alpha);
                                 var tileprovider, tileLayers, maxTileNumber, tileDone, preload,
                                     t, x, y, xoff, yoff, tileKey,
                                     tileAboveX, tileAboveY, tileAboveZ, tileKeyAbove,
@@ -525,6 +526,7 @@
                                     tileLayers = map.tileprovider;
                                 }
 
+
                                 for (t in tileLayers) {
                                     if (tileLayers.hasOwnProperty(t)) {
                                         tileprovider = tileLayers[t].url;
@@ -533,20 +535,22 @@
                                         tileDone = [];
                                         for (x = $.Math.floor(viewport.xMin / viewport.sz) - preload; !map.renderer.skip && x < $.Math.ceil(viewport.xMax / viewport.sz) + preload; x = x + 1) {
                                             tileDone[x] = [];
-                                            xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp) * viewport.zf) - viewport.offsetX;
+                                            //xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp) * viewport.zf) - viewport.offsetX;
+                                            xoff = (((x * map.renderer.tilesize - viewport.xMin) / viewport.zp)) - viewport.offsetX;
                                             for (y = $.Math.floor(viewport.yMin / viewport.sz) - preload; !map.renderer.skip &&  y < $.Math.ceil(viewport.yMax / viewport.sz) + preload; y = y + 1) {
-                                                yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp) * viewport.zf) - viewport.offsetY;
+                                                //yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp) * viewport.zf) - viewport.offsetY;
+                                                yoff = (((y * map.renderer.tilesize - viewport.yMin) / viewport.zp)) - viewport.offsetY;
                                                 tileKey = encodeIndex(x, y, viewport.zi);
                                                 tileDone[tileKey] = false;
                                                 if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
                                                     // out of xyz bounds
-                                                    map.renderer.blank(
-                                                        "#dddddd",
-                                                        xoff,
-                                                        yoff,
-                                                        viewport.tilesize,
-                                                        viewport.tilesize
-                                                    );
+                                                    //map.renderer.blank(
+                                                    //    "#dddddd",
+                                                    //    xoff,
+                                                    //    yoff,
+                                                    //    viewport.tilesize,
+                                                    //    viewport.tilesize
+                                                    //);
                                                     tileDone[tileKey] = true;
                                                 } else {
                                                     if (map.renderer.tiles[t][tileKey] && map.renderer.tiles[t][tileKey].complete) {
@@ -560,56 +564,59 @@
                                                                 map.renderer.tilesize,
                                                                 xoff,
                                                                 yoff,
-                                                                viewport.tilesize,
-                                                                viewport.tilesize
+                                                                map.renderer.tilesize,
+                                                                map.renderer.tilesize
                                                             )) {
                                                             map.renderer.tiles[t][tileKey].lastDrawnId = id;
                                                         }
                                                         tileDone[tileKey] = true;
-                                                    } else {
+                                                    }
+                                                    else
+                                                    {
                                                         if (typeof map.renderer.tiles[t][tileKey] === 'undefined' &&
                                                                 typeof tileLoadingCue[tileKey] === 'undefined') {
                                                             tileLoadingCue[tileKey] = {id: tileKey, x: x, y: y, z: viewport.zi};
                                                         }
                                                         // try tile preview with tile from lower z level
-                                                        for (tileAboveZ = viewport.zi - 1; !tileDone[tileKey] && (tileAboveZ > map.zMin); tileAboveZ = tileAboveZ - 1) {
-                                                            tileZdiff = viewport.zi - tileAboveZ;
-                                                            tileAboveX = $.Math.floor(x / map.pow(2, tileZdiff));
-                                                            tileAboveY = $.Math.floor(y / map.pow(2, tileZdiff));
-                                                            tileKeyAbove = encodeIndex(tileAboveX, tileAboveY, tileAboveZ);
-                                                            if (!tileDone[tileKey] && map.renderer.tiles[t][tileKeyAbove] && map.renderer.tiles[t][tileKeyAbove].complete) {
-                                                                // we have a tile from previous z level loaded, let draw it
-                                                                tilePartOffsetX = (x - tileAboveX * map.pow(2, tileZdiff));
-                                                                tilePartOffsetY = (y - tileAboveY * map.pow(2, tileZdiff));
-                                                                tilePartSize = (map.renderer.tilesize / map.pow(2, tileZdiff));
-                                                                if (map.renderer.drawImage(
-                                                                        map.renderer.tiles[t][tileKeyAbove],
-                                                                        "#dddddd",
-                                                                        tilePartOffsetX * tilePartSize,
-                                                                        tilePartOffsetY * tilePartSize,
-                                                                        tilePartSize,
-                                                                        tilePartSize,
-                                                                        xoff,
-                                                                        yoff,
-                                                                        viewport.tilesize,
-                                                                        viewport.tilesize
-                                                                    )) {
-                                                                    map.renderer.tiles[t][tileKeyAbove].lastDrawnId = id;
-                                                                }
-                                                                tileDone[tileKey] = true;
-                                                                break;
-                                                            }
-                                                        }
-                                                        if (tileDone[tileKey] === false) {
-                                                            map.renderer.blank(
-                                                                "#dddddd",
-                                                                xoff,
-                                                                yoff,
-                                                                viewport.tilesize,
-                                                                viewport.tilesize
-                                                            );
-                                                            tileDone[tileKey] = true;
-                                                        }
+                                                        //for (tileAboveZ = viewport.zi - 1; !tileDone[tileKey] && (tileAboveZ > map.zMin); tileAboveZ = tileAboveZ - 1) {
+                                                        //    tileZdiff = viewport.zi - tileAboveZ;
+                                                        //    tileAboveX = $.Math.floor(x / map.pow(2, tileZdiff));
+                                                        //    tileAboveY = $.Math.floor(y / map.pow(2, tileZdiff));
+                                                        //    tileKeyAbove = encodeIndex(tileAboveX, tileAboveY, tileAboveZ);
+                                                        //    if (!tileDone[tileKey] && map.renderer.tiles[t][tileKeyAbove] && map.renderer.tiles[t][tileKeyAbove].complete) {
+                                                        //        // we have a tile from previous z level loaded, let draw it
+                                                        //        tilePartOffsetX = (x - tileAboveX * map.pow(2, tileZdiff));
+                                                        //        tilePartOffsetY = (y - tileAboveY * map.pow(2, tileZdiff));
+                                                        //        tilePartSize = (map.renderer.tilesize / map.pow(2, tileZdiff));
+                                                        //        if (map.renderer.drawImage(
+                                                        //                map.renderer.tiles[t][tileKeyAbove],
+                                                        //                "#dddddd",
+                                                        //                tilePartOffsetX * tilePartSize,
+                                                        //                tilePartOffsetY * tilePartSize,
+                                                        //                tilePartSize,
+                                                        //                tilePartSize,
+                                                        //                xoff,
+                                                        //                yoff,
+                                                        //                viewport.tilesize,
+                                                        //                viewport.tilesize
+                                                        //            )) {
+                                                        //            map.renderer.tiles[t][tileKeyAbove].lastDrawnId = id;
+                                                        //        }
+                                                        //        map.renderer.tiles[t][tileKeyAbove].lastDrawnId = id;  // todo: стереть если что
+                                                        //        tileDone[tileKey] = true;
+                                                        //        break;
+                                                        //    }
+                                                        //}
+                                                        //if (tileDone[tileKey] === false) {
+                                                        //    //map.renderer.blank(
+                                                        //    //    "#dddddd",
+                                                        //    //    xoff,
+                                                        //    //    yoff,
+                                                        //    //    viewport.tilesize,
+                                                        //    //    viewport.tilesize
+                                                        //    //);
+                                                        //    tileDone[tileKey] = true;
+                                                        //}
                                                     }
                                                 }
                                             }
@@ -748,6 +755,13 @@
                         refreshId = map.renderer.refreshCounter;
                         map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
                         viewport = map.viewport();
+
+                        // Очистить канвас отрисовки карты
+                        map.renderer.context.clearRect(0, 0, viewport.x, viewport.y);
+                        // Отскейлить карту
+                        map.renderer.context.save();
+                        map.renderer.context.scale(viewport.zf, viewport.zf);
+
                         for (layer in map.renderer.layers) {
                             if (map.renderer.layers.hasOwnProperty(layer)) {
                                 if (map.renderer.layers[layer].visible()) {
@@ -755,6 +769,7 @@
                                 }
                             }
                         }
+                        map.renderer.context.restore();
                     },
                     /* garbage collector, purges tiles if more than 500 are loaded and tile is more than 100 refresh cycles old */
                     garbage: function () {
@@ -792,14 +807,14 @@
                     viewport.height =  map.renderer.canvas.height;
                     viewport.zoom = map.position.z;
 
-                    viewport.zi = parseInt(map.position.z, 10);
-                    viewport.zf = map.useFractionalZoom ? (1 + map.position.z - viewport.zi) : 1;
-                    viewport.zp = map.pow(2, map.zMax - viewport.zi);
+                    viewport.zi = parseInt(map.position.z, 10);  // Целое число зума. Без округлений
+                    viewport.zf = map.useFractionalZoom ? (1 + map.position.z - viewport.zi) : 1;  // коэффициент зума от целого зума + 1: 17.5 => 1.5
+                    viewport.zp = map.pow(2, map.zMax - viewport.zi);  // Коэффициент зумирования для целого зума
 
                     viewport.w = (map.renderer.canvas.width - map.renderer.canvas.width % 2) * viewport.zp;
                     viewport.h = (map.renderer.canvas.height - map.renderer.canvas.height % 2) * viewport.zp;
                     viewport.sz = map.renderer.tilesize * viewport.zp;
-                    viewport.tilesize = (map.renderer.tilesize * viewport.zf);
+                    viewport.tilesize = (map.renderer.tilesize * viewport.zf);  // реальный размер тайлов при данном зуме
                     viewport.xMin = (map.position.x - viewport.w / 2);
                     viewport.yMin = (map.position.y - viewport.h / 2);
                     viewport.xMax = (map.position.x + viewport.w / 2);
