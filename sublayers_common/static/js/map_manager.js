@@ -198,7 +198,7 @@ function onKeyUpMap(event) {
 }
 
 function returnFocusToMap() {
-    document.getElementById('map2').focus();
+    document.getElementById('map2div').focus();
 }
 
 var MapManager = (function(_super) {
@@ -235,13 +235,13 @@ var MapManager = (function(_super) {
         // Обработчики событий карты
         pressedKey = false;
 
-        document.getElementById('map2').onkeydown = onKeyDownMap;
-        document.getElementById('map2').onkeyup = onKeyUpMap;
+        document.getElementById('map2div').onkeydown = onKeyDownMap;
+        document.getElementById('map2div').onkeyup = onKeyUpMap;
 
-        document.getElementById('map2').onmouseup = onMouseUpMap;
+        document.getElementById('map2div').onmouseup = onMouseUpMap;
 
-        document.getElementById('map2').onmousemove = onMouseMoveMap;
-        document.getElementById('map2').onmouseout = onMouseOutMap;
+        document.getElementById('map2div').onmousemove = onMouseMoveMap;
+        document.getElementById('map2div').onmouseout = onMouseOutMap;
 
 
         /*
@@ -294,19 +294,21 @@ var MapManager = (function(_super) {
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
 
-        this.add_to_canvas_manager();
+        //this.add_to_canvas_manager();
     };
 
-    MapManager.prototype.set_coord = function (x, y, z) {
-        if (x !== undefined) {
-            smap.map.position.setX(x, {animated: false});
+    MapManager.prototype.set_coord = function (options) {
+        if (options.x !== undefined) {
+            smap.map.position.setX(options.x, {animated: false});
         }
-        if (y !== undefined) {
-            smap.map.position.setY(y, {animated: false});
+        if (options.y !== undefined) {
+            smap.map.position.setY(options.y, {animated: false});
         }
-        if (z !== undefined) {
-            smap.map.position.setZ(z, {animated: false});
+        if (options.z !== undefined) {
+            smap.map.position.setZ(options.z, {animated: false});
         }
+
+        this.render_map();
     };
 
     MapManager.prototype.render_map = function () {
@@ -322,9 +324,9 @@ var MapManager = (function(_super) {
             if (mapCanvasManager)
                 mapCanvasManager.add_vobj(mapManager, 99);
             else
-                setTimeout(add_to_canvas_manager, 10);
+                setTimeout(add_to_canvas_manager, 0);
         }
-        setTimeout(add_to_canvas_manager, 10);
+        setTimeout(add_to_canvas_manager, 0);
     };
 
     // =============================== Model Events

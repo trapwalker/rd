@@ -28,8 +28,8 @@ var ParentCanvasManager = (function(_super){
         this.canvas.width = a.x;
         this.canvas.height = a.y;
 
-        smap.renderer.canvas = this.canvas;
-        smap.renderer.context = this.context;
+        //smap.renderer.canvas = this.canvas;
+        //smap.renderer.context = this.context;
 
         this.dom_canvas = document.getElementById(this.canvas_id);
         this.dom_context = this.dom_canvas.getContext("2d");
@@ -74,7 +74,7 @@ var ParentCanvasManager = (function(_super){
         for (var i = 0; i < this.vobj_list.length; i++)
             this.vobj_list[i].obj.redraw(this.context, time, client_time);
 
-        //this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
+        this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
         this.dom_context.drawImage(this.canvas, 0, 0);
     };
 

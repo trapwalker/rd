@@ -15,7 +15,7 @@ var WObservingRange = (function (_super) {
 
     WObservingRange.prototype.redraw = function(ctx, time){
         //console.log('WObservingRange.prototype.change');
-        return;
+        //return;
         var zoom_koeff = mapCanvasManager.zoom_koeff;
         var real_zoom = mapCanvasManager.real_zoom;
         var map_tl = mapCanvasManager.map_tl;
