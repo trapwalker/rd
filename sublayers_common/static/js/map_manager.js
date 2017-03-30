@@ -296,7 +296,7 @@ var MapManager = (function(_super) {
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
 
-        this.zoom_calc = this.zoom_functions['easeInBack'];
+        this.zoom_calc = this.zoom_functions['easeOutQuart'];
 
         //this.add_to_canvas_manager();
     };
@@ -325,15 +325,14 @@ var MapManager = (function(_super) {
             if (client_time >= this.startZoomChangeTime && client_time < this.startZoomChangeTime + this.zoom_duration) {
                 var zoom_progress = this._zoom_progress(this.zoom_duration, client_time);
                 // todo: починить !!!!
-                //this.anim_zoom = this.zoom_calc(zoom_progress, client_time - this.startZoomChangeTime, this.oldZoomForCalcZoom, this.newZoomForCalcZoom, this.zoom_duration);
-                this.anim_zoom = this.oldZoomForCalcZoom + zoom_progress * (this.oldZoomForCalcZoom > this.newZoomForCalcZoom ? -1 : 1);
+                var anim_zoom_progress = this.zoom_calc(zoom_progress, client_time - this.startZoomChangeTime, 0, 100, this.zoom_duration);
+                this.anim_zoom = this.oldZoomForCalcZoom + (anim_zoom_progress / 100.) * (this.newZoomForCalcZoom - this.oldZoomForCalcZoom);
                 //console.log(this.anim_zoom);
             }
             else {
                 this.anim_zoom = this.newZoomForCalcZoom;
                 this.onZoomEnd();
             }
-
 
             this.onZoomAnimation();
         }
@@ -373,33 +372,14 @@ var MapManager = (function(_super) {
     // =============================== Zoom
 
     MapManager.prototype.zoom_functions = {
-        easeOutElastic: function(x, t, b, c, d) {
-            // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
-            if (x > 0.68) return 0;
-            var s = 1.70158;
-            var p = 0;
-            var a = c;
-            if (t == 0) return b;
-            if ((t /= d) == 1) return b + c;
-            if (!p) p = d * .3;
-            if (a < Math.abs(c)) {
-                a = c;
-                var s = p / 4;
-            }
-            else var s = p / (2 * Math.PI) * Math.asin(c / a);
-            return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
+        easeInOutQuint: function (x, t, b, c, d) {
+            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t * t + b;
+            return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
         },
-        easeInBack: function(x, t, b, c, d, s) {
-            console.log(x, t, b, c, d, s);
-            if (s == undefined) s = 1.70158;
-            return c * (t /= d) * t * ((s + 1) * t - s) + b;
+        easeOutQuart: function (x, t, b, c, d) {
+            return -c * ((t = t / d - 1) * t * t * t - 1) + b;
         },
-        easeInCirc: function (x, t, b, c, d) {
-            return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
-        },
-        easeOutCirc: function (x, t, b, c, d) {
-            return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
-        },
+
     };
 
     MapManager.prototype._zoom_progress = function (zoom_duration, time) {
@@ -468,8 +448,6 @@ var MapManager = (function(_super) {
     MapManager.prototype.onZoomAnimation = function(client_time) {
         //console.trace('MapManager.prototype.onZoomAnimation', this.anim_zoom);
         this.set_coord({z: this.anim_zoom});
-
-
     };
 
     MapManager.prototype.onZoomStart = function () {
