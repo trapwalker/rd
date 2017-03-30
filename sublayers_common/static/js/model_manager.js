@@ -502,7 +502,7 @@ var ClientManager = (function () {
             contextPanel = new ContextPanel();
 
             // Инициализация мап-зума
-            mapManager.onZoomAnimation({zoom: mapManager.getZoom()});  // todo: сделать правильно
+            //mapManager.onZoomAnimation({zoom: mapManager.getZoom()});  // todo: сделать правильно
         }
     };
 

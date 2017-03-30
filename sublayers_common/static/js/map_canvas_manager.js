@@ -138,8 +138,7 @@ var MapCanvasManager = (function(_super){
 
         this._mouse_focus_widget = this.mouse_test();
 
-
-        this.real_zoom = mapManager.getRealZoom(time);
+        this.real_zoom = mapManager.getZoom();
         this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
         this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
         var map_size = mapManager.getMapSize();

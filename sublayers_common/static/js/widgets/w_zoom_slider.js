@@ -223,7 +223,7 @@ var WZoomSlider = (function () {
         var slider = event.data.self;
         var value = $('#Zoom_slider').slider("value");
         var zoom = Math.round(value / slider.points_in_step);
-        if (zoom != slider.mapMng.anim_zoom) {
+        if (zoom != slider.mapMng.getZoom()) {
             slider.mapMng.setZoom(zoom);
             return;
         }
