@@ -17,7 +17,7 @@ var WZoomSlider = (function () {
             parentDiv: "zoomSetDivForZoomSlider",
             max: mapManager.getMaxZoom(),
             min: mapManager.getMinZoom(),
-            step: 1,
+            step: 0.2,
             height: 100, // px
             width: 5,    // px
             onChange: ''

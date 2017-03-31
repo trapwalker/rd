@@ -425,8 +425,9 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.setZoom = function(zoom) {
         //console.log('MapManager.prototype.setZoom', zoom, this.server_min_zoom, ConstMaxMapZoom);
+        if (zoom < this.server_min_zoom) zoom = this.server_min_zoom;
+        if (zoom > ConstMaxMapZoom) zoom = ConstMaxMapZoom;
         if (zoom == this.getZoom()) return;
-        if (zoom < this.server_min_zoom || zoom > ConstMaxMapZoom) return;  // todo: присвоить граничный
 
         this.newZoomForCalcZoom = zoom;
         this.onZoomStart();
