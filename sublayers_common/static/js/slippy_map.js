@@ -795,23 +795,35 @@
                     var canvas_w = map.renderer.canvas.width - map.renderer.canvas.width % 2;
                     var canvas_h = map.renderer.canvas.height - map.renderer.canvas.height % 2;
 
-                    viewport.zi = parseInt(map.position.z, 10);  // Целое число зума. Без округлений
-                    viewport.zf = map.useFractionalZoom ? (1 + map.position.z - viewport.zi) : 1;  // коэффициент зума от целого зума + 1: 17.5 => 1.5
+                    //viewport.zi = parseInt(map.position.z, 10);  // Целое число зума. Без округлений
+                    //viewport.zf = map.useFractionalZoom ? (1 + map.position.z - viewport.zi) : 1;  // коэффициент зума от целого зума + 1: 17.5 => 1.5
+                    //viewport.zp = map.pow(2, map.zMax - viewport.zi);  // Коэффициент зумирования для целого зума
+                    //viewport.w = canvas_w * viewport.zp;  // Размер полотна в пикселях максимального зума
+                    //viewport.h = canvas_h * viewport.zp;  // Размер полотна в пикселях максимального зума
+                    //viewport.sz = map.renderer.tilesize * viewport.zp; // Размер тайла текущего округлённого зума в пикселях максимального зума
+                    //viewport.tilesize = (map.renderer.tilesize * viewport.zf);  // Размер тайла текущего зума в пикселях максимального зума
+                    //viewport.xMin = (map.position.x - viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
+                    //viewport.yMin = (map.position.y - viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
+                    //viewport.xMax = (map.position.x + viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
+                    //viewport.yMax = (map.position.y + viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
+                    //viewport.offsetX = (viewport.zf - 1) * canvas_w / 2; // Сдвиг начала канваса, чтобы центр остался в центре!
+                    //viewport.offsetY = (viewport.zf - 1) * canvas_h / 2;
+
+                    viewport.zi = Math.ceil(map.position.z);  // Целое число зума. Без округлений
+                    viewport.zf = 1. / (1 + viewport.zi - map.position.z);  // коэффициент зума от целого зума + 1: 17.5 => 1.5
                     viewport.zp = map.pow(2, map.zMax - viewport.zi);  // Коэффициент зумирования для целого зума
-                    viewport.w = canvas_w * viewport.zp;  // Размер полотна в пикселях максимального зума
-                    viewport.h = canvas_h * viewport.zp;  // Размер полотна в пикселях максимального зума
+                    viewport.w = canvas_w * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
+                    viewport.h = canvas_h * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
                     viewport.sz = map.renderer.tilesize * viewport.zp; // Размер тайла текущего округлённого зума в пикселях максимального зума
                     viewport.tilesize = (map.renderer.tilesize * viewport.zf);  // Размер тайла текущего зума в пикселях максимального зума
                     viewport.xMin = (map.position.x - viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
                     viewport.yMin = (map.position.y - viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
                     viewport.xMax = (map.position.x + viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
                     viewport.yMax = (map.position.y + viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
-                    viewport.offsetX = (viewport.zf - 1) * canvas_w / 2; // Сдвиг начала канваса, чтобы центр остался в центре!
-                    viewport.offsetY = (viewport.zf - 1) * canvas_h / 2;
+                    viewport.offsetX = 0; //(canvas_w / 2) * ((1 - viewport.zf) ); // Сдвиг начала канваса, чтобы центр остался в центре!
+                    viewport.offsetY = 0; //(canvas_h / 2) * ((1 - viewport.zf) );
+
                     map.cache.viewport = viewport;
-
-                    console.log(viewport.x, viewport.y, viewport.zoom, viewport);
-
                     return map.cache.viewport;
                 },
 

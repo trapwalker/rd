@@ -16,16 +16,11 @@ var WMapPosition = (function (_super) {
         //console.log('WMapPosition.prototype.change');
         //return;
 
-        if (mapManager.inZoomChange) return;
-
         var time = clock.getCurrentTime();
         var tempPoint = this.car.getCurrentCoord(time);
         if ((Math.abs(this.old_position.x - tempPoint.x) >= 0.5) || (Math.abs(this.old_position.y - tempPoint.y) >= 0.5)) {
             this.old_position = tempPoint;
             mapManager.set_coord({x: tempPoint.x, y:tempPoint.y});
-            //mapManager.render_map();
-            //smap.center({x: tempPoint.x, y:tempPoint.y, z: mapManager.getZoom()}, {animated: false});
-            //smap.renderer.refresh();
         }
     };
 
