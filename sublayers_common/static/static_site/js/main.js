@@ -538,10 +538,6 @@ function GetUserInfo() {
         method: 'POST',
         data: {_xsrf: getCookie('_xsrf')},
         success: function (data) {
-
-            // todo: убрать после тестирования
-            SetQuickGameBtnEnable(data.is_tester);
-
             registration_status = data.user_status;
             if (registration_status == 'register') {
                 var pos_x = '';

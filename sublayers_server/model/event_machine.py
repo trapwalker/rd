@@ -155,8 +155,7 @@ class Server(object):
             self.ioloop.add_callback(callback=self.load_ai_quick_bots)
 
             # Создание Тестовых аккаунтов
-            self.ioloop.add_callback(callback=self.load_test_accounts)
-
+            # self.ioloop.add_callback(callback=self.load_test_accounts)
 
         print('Load world complete !')
 

@@ -117,27 +117,14 @@ class StandardLoginHandler(BaseSiteHandler):
 
         quick_user = None
         if self.current_user:
-            quick_user = self.current_user if (self.current_user.quick or self.current_user.is_tester) else None
+            quick_user = self.current_user if self.current_user.quick else None
             if quick_user:
-                if quick_user.quick:
-                    if quick_user.name == nickname:
-                        quick_user.car_index = qg_car_index
-                        quick_user.teaching_state = ''
-                        yield quick_user.save()
-                        self.finish({'status': u'Такой пользователь существует'})
-                        return
-                else:
+                if '_'.join(quick_user.name.split('_')[:-1]) == nickname:
                     quick_user.car_index = qg_car_index
                     quick_user.teaching_state = ''
                     yield quick_user.save()
                     self.finish({'status': u'Такой пользователь существует'})
                     return
-
-        # todo: убрать по завершении тестирования
-        if quick_user is None:
-            log.warning('Quick game is closed for %r', nickname)
-            self.send_error(403)
-            return
 
         try:
             str(nickname)
@@ -151,14 +138,13 @@ class StandardLoginHandler(BaseSiteHandler):
             self.send_error(403)
             return
 
-        # todo: Проверять введенный username, а, если занят, предлагать рандомизированный пока не будет введен
         # укниальный среди быстрых игроков.
         login_free = False
         email = u''
         password = str(randint(0,999999))
         username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
         while not login_free:
-            email = u'{}@{}'.format(username, username)  # todo: Предотвратить заполнение email заведомо ложной информацией
+            email = u'{}@{}'.format(username, username)
             login_free = ((yield User.get_by_email(email=email)) is None) and \
                          ((yield User.get_by_name(name=username)) is None)
             if not login_free:

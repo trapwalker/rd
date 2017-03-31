@@ -68,7 +68,7 @@ class ServerAPI(API):
     @tornado.gen.coroutine
     def get_agent_quick_game(self, user, do_disconnect=False):
         # User здесь обязательно QuickUser
-        assert user.quick or user.is_tester
+        assert user.quick
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
             # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=True)
@@ -146,8 +146,8 @@ class ServerAPI(API):
                 yield agent_exemplar.load_references()
                 role_class_list = self.server.reg['world_settings'].role_class_order
                 agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
-                # todo: убрать тут is_tester
-                agent_exemplar.quick_flag = user.quick or user.is_tester
+
+                agent_exemplar.quick_flag = user.quick
 
                 # Если был найден агент из основной игры, то скопировать всю информацию из него
                 if main_agent_exemplar:
@@ -161,8 +161,7 @@ class ServerAPI(API):
                     agent_exemplar.perks = main_agent_exemplar.perks
                     agent_exemplar.role_class = main_agent_exemplar.role_class
                 else:
-                    # todo: убрать тут is_tester
-                    if not user.quick and not user.is_tester:
+                    if not user.quick:
                         log.warning('Agent from main server not founded for user: {}'.format(user.name))
                     agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
                     agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
