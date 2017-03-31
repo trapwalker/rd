@@ -31,7 +31,6 @@ class PlayHandler(BaseHandler):
                     self.redirect(self.get_login_url())
 
             if options.mode == 'quick':
-                # todo: убрать все что касается is_tester
                 if (not user.quick) and (user.teaching_state != "map"):
                     log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
                     self.redirect('/play')

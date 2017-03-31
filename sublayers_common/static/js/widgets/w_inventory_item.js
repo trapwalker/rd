@@ -32,7 +32,7 @@ var WInventoryItem = (function (_super) {
         var itemDiv = $(inventoryDiv).find(this.itemDivStr);
         itemDiv.find(this.itemDivCaptionStr).text(this.item.example.title);
         itemDiv.draggable("option", "disabled", false);
-        itemDiv.find(this.itemDivPictureStr).css('background', 'transparent url(http://' + $('#settings_host_name').text() + '/' + this.item.example.inv_icon_mid + ') no-repeat 100% 100%');
+        itemDiv.find(this.itemDivPictureStr).css('background', 'transparent url(http://' + location.hostname + '/' + this.item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
         var self = this;
 
@@ -79,7 +79,7 @@ var WInventoryItem = (function (_super) {
             if (! self.item || ! self.item.example) {self.clear_info_for_window(inventoryDiv); return}
             // отобразить текущий итем
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
-                    'transparent url(http://' + $('#settings_host_name').text() + '/' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');
+                    'transparent url(http://' + location.hostname + '/' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").text(self.item.example.title);
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-description").text(self.item.example.description);
 
