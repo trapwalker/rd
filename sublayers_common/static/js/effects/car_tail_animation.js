@@ -1,7 +1,7 @@
 var ECanvasCarTail = (function () {
-    function ECanvasCarTail(position, direction, duration, max_tail_scale){
+    function ECanvasCarTail(position, direction, duration, icon_name, max_tail_scale){
         this.duration = duration || 1000;  // 1сек по умолчанию
-        this.effect_image_obj = iconsLeaflet.getIcon("icon-car-tail-circle", "canvas_icon");
+        this.effect_image_obj = iconsLeaflet.getIcon(icon_name, "canvas_icon");
         this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.direction = direction; // Направление в радианах
@@ -11,7 +11,7 @@ var ECanvasCarTail = (function () {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this._max_scale = max_tail_scale || 3.5 ;
-        this._min_scale = 0.3;
+        this._min_scale = 0.45;
 
         this.scale_icon_x = this._min_scale;
         this.scale_icon_y = this._min_scale;

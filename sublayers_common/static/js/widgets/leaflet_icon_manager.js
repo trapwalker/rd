@@ -114,7 +114,9 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-car-effect-shield', '/static/img/map_icons/effects/shield_12_frames.png', [60, 60], this.max_id++, null, 12);
 
         // Хвост за машинкой
-        this.load_new_icon('icon-car-tail-circle', '/static/img/smoke_tail_point.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-1', '/static/img/smoke_tail_point1.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-3', '/static/img/smoke_tail_point3.png', [39, 39], this.max_id++, null, 1);
+
     }
 
     LeafletIconManager.prototype.getIcon = function(icon_name, type){

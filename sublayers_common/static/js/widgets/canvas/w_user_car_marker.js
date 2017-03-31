@@ -323,8 +323,8 @@ var WCanvasCarMarker = (function (_super) {
             this.tail_particles_last_born_time = time * 1000;
             var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
             //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(3 + 3 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.4))), direction_real, 2000, 1).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(3 + 3 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.4))), direction_real, 2000, 1).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, "icon-car-tail-3", 1).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, "icon-car-tail-3", 1).start();
         }
     };
 
@@ -638,7 +638,7 @@ var WCanvasRocketMarkerEffect = (function (_super) {
         _super.call(this, mobj);
 
         this.tail_particles_last_born_time = 0;
-        this.tail_particles_interval_stay = 7000;
+        this.tail_particles_interval_stay = 4000;
     }
 
     WCanvasRocketMarkerEffect.prototype.updateIcon = function() {
@@ -665,7 +665,7 @@ var WCanvasRocketMarkerEffect = (function (_super) {
         var direction_real = this._last_mobj_direction;
         if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
-            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000).start();
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000, "icon-car-tail-1", 2.).start();
         }
     };
 
