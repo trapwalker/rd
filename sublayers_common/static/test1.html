@@ -95,7 +95,7 @@
         if (this.inZoomChange) {
             //if ((client_time >= this.startZoomChangeTime) &&
             //        (client_time < (this.startZoomChangeTime + this.zoom_duration))) {
-            if (Math.abs(this.current_zoom - this.newZoomForCalcZoom) > 0.00002) {
+            if (Math.abs(this.current_zoom - this.newZoomForCalcZoom) > 0.002) {
                 var d_zoom = this.current_zoom - this.newZoomForCalcZoom;
                 var dd_zoom = d_zoom * 0.1;
                 this.current_zoom = this.current_zoom - dd_zoom;
@@ -103,7 +103,7 @@
                 //var zoom_progress = this._zoom_progress(client_time);
                 //var anim_zoom_progress = this.zoom_calc_func(zoom_progress, client_time - this.startZoomChangeTime, 0, 100, this.zoom_duration);
                 //this.current_zoom = this.oldZoomForCalcZoom + (anim_zoom_progress / 100.) * (this.newZoomForCalcZoom - this.oldZoomForCalcZoom);
-                this.current_zoom = parseFloat(this.current_zoom.toFixed(4))
+                this.current_zoom = parseFloat(this.current_zoom.toFixed(6))
             }
             else {
                 this.current_zoom = this.newZoomForCalcZoom;
@@ -228,10 +228,11 @@
         this.inZoomChange = false;
         this.startZoomChangeTime = 0;
 
-        console.log("on_Zoom_End ", Math.max.apply(null, this.times_of_render));
+        console.log("on_Zoom_End max_time=", Math.max.apply(null, this.times_of_render), "   count_of_frames=", this.times_of_render.length);
         this.times_of_render = [];
 
-        // if (this.getZoom()  > 17) this.setZoom(15); else  this.setZoom(18);
+        //if (this.getZoom() > 15) this.setZoom(13); else this.setZoom(16);
+         //if (this.getZoom() > 17) this.setZoom(15); else this.setZoom(18);
     };
 
     return MapManager;

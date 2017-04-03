@@ -94,16 +94,22 @@
                     loadingCue : 0,
                     drawImage : function (image, fallbackColor, sx, sy, sw, sh, dx, dy, dw, dh) {
                         try {
+                            //map.renderer.context.drawImage(
+                            //    image,
+                            //    sx,
+                            //    sy,
+                            //    sw,
+                            //    sh,
+                            //    dx,
+                            //    dy,
+                            //    dw,
+                            //    dh
+                            //);
+
                             map.renderer.context.drawImage(
                                 image,
-                                sx,
-                                sy,
-                                sw,
-                                sh,
                                 dx,
-                                dy,
-                                dw,
-                                dh
+                                dy
                             );
                             //dx+=5;
                             //dy+=5;
@@ -214,12 +220,12 @@
                                         var condi_x = $.Math.ceil(viewport.xMax / viewport.sz) + preload;
                                         for (x = $.Math.floor(viewport.xMin / viewport.sz) - preload; x < condi_x ; x++) {
                                             tileDone[x] = [];
-                                            xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp) * viewport.zf) - viewport.offsetX;
-                                            xoff = Math.floor(xoff);
+                                            xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
+                                            //xoff = Math.floor(xoff);
                                             var condi_y = $.Math.ceil(viewport.yMax / viewport.sz) + preload;
                                             for (y = $.Math.floor(viewport.yMin / viewport.sz) - preload; y < condi_y; y = y + 1) {
-                                                yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp) * viewport.zf) - viewport.offsetY;
-                                                yoff = Math.floor(yoff);
+                                                yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
+                                                //yoff = Math.floor(yoff);
                                                 tileKey = encodeIndex(x, y, viewport.zi);
                                                 tileDone[tileKey] = false;
                                                 if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
@@ -239,7 +245,6 @@
                                                                 viewport.tilesize,
                                                                 viewport.tilesize
                                                             )) {
-
                                                             current_tiles[tileKey].lastDrawnId = id;
                                                         }
                                                         tileDone[tileKey] = true;
@@ -295,14 +300,11 @@
                         map.renderer.refreshLastStart = (new $.Date()).getTime();
                         var viewport = map.viewport();
                         map.renderer.context.save();
-                        map.renderer.context.fillStyle = "#ffffff";
-                        map.renderer.context.lineWidth="1";
                         map.renderer.context.fillRect(0, 0, viewport.w, viewport.h);
-                        map.renderer.context.strokeStyle = "rgb(50, 50, 50)";
+                        map.renderer.context.scale(viewport.zf, viewport.zf);
+
                         map.renderer.layers[0].callback(map.renderer.refreshCounter, viewport, 1.0);
-
                         map.renderer.refreshLastFinish = (new $.Date()).getTime();
-
                         map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
 
                         map.renderer.context.restore();
@@ -356,7 +358,7 @@
                     viewport.w = canvas_w * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
                     viewport.h = canvas_h * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
                     viewport.sz = map.renderer.tilesize * viewport.zp; // Размер тайла текущего округлённого зума в пикселях максимального зума
-                    viewport.tilesize = Math.ceil(map.renderer.tilesize * viewport.zf);  // Размер тайла текущего зума в пикселях максимального зума
+                    viewport.tilesize = map.renderer.tilesize;  // Размер тайла текущего зума в пикселях максимального зума
                     viewport.xMin = (map.position.x - viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
                     viewport.yMin = (map.position.y - viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
                     viewport.xMax = (map.position.x + viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
