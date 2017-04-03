@@ -10,69 +10,22 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
-import tornado.gen
+from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
+from sublayers_server.model.registry_me.tree import Node, get_global_registry
+
 from pprint import pprint as pp
-from sublayers_server.test_iolop import io_loop, start
-
-#from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry_me.tree import Node
-from sublayers_server.model.registry_me.odm.fields import StringField, IntField, EmbeddedDocumentField, JsonField, ListField
-from sublayers_server.model.registry_me.uri import URI
-from motorengine import Document
-from sublayers_server.model.vectors import Point
+from mongoengine import connect
 
 
-class A(Node):
-    x = IntField()
-
-class B(A):
-    y = IntField()
-    p = ListField(
-        #base_field=ListField(
-            field=EmbeddedDocumentField(document_type=A)
-        #)
-    )
-    #d = JsonField()
-
-
-@tornado.gen.coroutine
-def test_store():
-    log.debug('### test tree')
-    print((yield A.objects.delete()))
-
-    a = A(name='a', x=3)
-    log.debug('id(a)=%s', id(a))
-    yield a.save()
-    #Node.objects_cache.clear()
-    b = B(name='b', y=4, parent=a.uri, owner=a, p=['reg:///registry/a'],)
-    yield b.load_references()
-    log.debug('id(b.p[0].parent)=%s', id(b.p[0].parent))
-    yield b.save()
-    #Node.objects_cache.clear()
-
-    aa = yield Node.objects.get(
-        #a._id
-        id='reg:///registry/a',
-    )
-    log.debug('id(aa)=%s', id(aa))
-
-    log.debug('aa[%s]: %s', id(aa), aa)
-
-    bb = yield Node.objects.get(
-        'reg:///registry/a/b',
-        #id=b._id,
-    )
-    log.debug('bb[%s]: %s', id(bb), bb)
-    print(bb.parent)
-    log.debug('before load references')
-    # yield b.load_references()
-    log.debug('after load references')
-    # print(b.parent)
-
-    log.debug('THE END ' + '########################################')
+def test3():
+    import sublayers_server.model.registry_me.classes
+    reg = get_global_registry(path=u'../../../sublayers_world/registry', reload=True)
+    ac = reg.get('/registry/a/ac')
+    print(ac.parent)
     globals().update(locals())
 
 
 if __name__ == '__main__':
-    io_loop.add_callback(test_store)
-    start()
+    db = connect(db='test_me')
+    log.info('Use `test_me` db')
+    test3()

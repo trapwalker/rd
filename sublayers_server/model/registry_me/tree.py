@@ -233,7 +233,6 @@ class Node(Subdoc):
         cls = self.__class__
         only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
-        print(kw.get('name'), kw.get('parent'))
 
     @property
     def uri(self):
@@ -515,12 +514,22 @@ class Registry(Doc):
         attrs.setdefault('parent', owner)
         attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
         #attrs.setdefault('fixtured', True)
-        parent = attrs.get('parent', None)
-        if parent:
-            attrs.setdefault('_cls', parent._cls)
+        class_name = attrs.get('_cls')
 
-        class_name = attrs.get('_cls', Node._class_name)
-        cls = get_document(class_name)
+        if not class_name:
+            parent = attrs.get('parent', None)
+            if parent:
+                parent_node = self.get(parent, None) if isinstance(parent, basestring) else parent
+
+                if parent_node is None:
+                    log.warning(
+                        "Parent node {parent!r} of {path!r} is not found (not loaded yet?). "
+                        "Can't detect node class to load.".format(**locals())
+                    )
+                else:
+                    class_name = attrs.setdefault('_cls', parent_node._cls)
+
+        cls = get_document(class_name or Node._class_name)
 
         node = cls(__auto_convert=False, _created=False, **attrs)
         if owner:
@@ -533,7 +542,7 @@ class Registry(Doc):
 
 REGISTRY = None
 
-def get_global_registry(reload=True):
+def get_global_registry(path=None, reload=False):
     global REGISTRY
     if REGISTRY is None:
         REGISTRY = Registry.objects.first()
@@ -543,7 +552,8 @@ def get_global_registry(reload=True):
 
         if reload:
             Registry.objects.filter({}).delete()
-            REGISTRY.load(u'../../../tmp/registry')
+            if path:
+                REGISTRY.load(path)
 
     return REGISTRY
 ########################################################################################################################
@@ -595,10 +605,9 @@ def test2():
 
 
 def test3():
-    #REG.load(u'../../../tmp/reg')
-    reg = Registry.objects.first()
-    aa = reg.root.get('a/aa')
-    ac = reg.root.get('a/ac')
+    import sublayers_server.model.registry_me.classes
+    reg = get_global_registry(path=u'../../../tmp/registry', reload=True)
+    ac = reg.get('/registry/a/ac')
     print(ac.parent)
     globals().update(locals())
 
@@ -609,8 +618,8 @@ if __name__ == '__main__':
     log.info('Use `test_me` db')
 
     #test1()
-    test2()
-    #test3()
+    #test2()
+    test3()
 
     # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
     # todo: Сделать прокси-наследование вместо копирования наследуемых атрибутов предка
