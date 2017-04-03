@@ -56,8 +56,8 @@
         this.inZoomChange = false;
         this.need_render = true;
 
-        this.oldZoomForCalcZoom = 0;
-        this.newZoomForCalcZoom = 0;
+        this.oldZoomForCalcZoom = 18;
+        this.newZoomForCalcZoom = 18;
         this.startZoomChangeTime = 0;
 
         this.tileLayerPath = '';
@@ -70,6 +70,14 @@
 
 
         this.times_of_render = [];
+
+
+
+        //this.canvas = document.createElement("canvas");
+        //this.context = this.canvas.getContext("2d");
+
+        //this.dom_canvas = document.getElementById("map2");
+        //this.dom_context = this.dom_canvas.getContext("2d");
     }
 
     MapManager.prototype.set_coord = function (options) {
@@ -83,13 +91,19 @@
     };
 
     MapManager.prototype.redraw = function(ctx, time, client_time) {
+        // console.log(this.current_zoom, this.newZoomForCalcZoom);
         if (this.inZoomChange) {
-            if ((client_time >= this.startZoomChangeTime) &&
-                (client_time < (this.startZoomChangeTime + this.zoom_duration))) {
-                var zoom_progress = this._zoom_progress(client_time);
-                var anim_zoom_progress = this.zoom_calc_func(zoom_progress, client_time - this.startZoomChangeTime, 0, 100, this.zoom_duration);
-                this.current_zoom = this.oldZoomForCalcZoom + (anim_zoom_progress / 100.) * (this.newZoomForCalcZoom - this.oldZoomForCalcZoom);
-                this.current_zoom = parseFloat(this.current_zoom.toFixed(2))
+            //if ((client_time >= this.startZoomChangeTime) &&
+            //        (client_time < (this.startZoomChangeTime + this.zoom_duration))) {
+            if (Math.abs(this.current_zoom - this.newZoomForCalcZoom) > 0.00002) {
+                var d_zoom = this.current_zoom - this.newZoomForCalcZoom;
+                var dd_zoom = d_zoom * 0.1;
+                this.current_zoom = this.current_zoom - dd_zoom;
+
+                //var zoom_progress = this._zoom_progress(client_time);
+                //var anim_zoom_progress = this.zoom_calc_func(zoom_progress, client_time - this.startZoomChangeTime, 0, 100, this.zoom_duration);
+                //this.current_zoom = this.oldZoomForCalcZoom + (anim_zoom_progress / 100.) * (this.newZoomForCalcZoom - this.oldZoomForCalcZoom);
+                this.current_zoom = parseFloat(this.current_zoom.toFixed(4))
             }
             else {
                 this.current_zoom = this.newZoomForCalcZoom;
@@ -103,7 +117,11 @@
 
             var redraw_time = smap.renderer.refreshLastFinish - smap.renderer.refreshLastStart;
             this.times_of_render.push(redraw_time);
-            console.log(redraw_time, this.current_zoom);
+            // console.log(redraw_time, this.current_zoom);
+
+
+            //this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
+            //this.dom_context.drawImage(this.canvas, 0, 0);
         }
     };
 
@@ -189,7 +207,6 @@
 
         this.newZoomForCalcZoom = zoom;
         this.onZoomStart();
-
     };
 
     MapManager.prototype.onZoomStart = function () {
@@ -202,8 +219,8 @@
         var end_tick = this.getTickByZoom(this.newZoomForCalcZoom);
         //this.zoom_duration = Math.min(1000, Math.max(200, Math.abs(start_tick - end_tick) * 200));
         //this.zoom_duration = Math.min(600, Math.max(200, Math.abs(start_tick - end_tick) * 200));
-        this.zoom_duration = Math.min(750, Math.max(350, Math.abs(start_tick - end_tick) * 350));
-        //this.zoom_duration = 500;
+        //this.zoom_duration = Math.min(750, Math.max(350, Math.abs(start_tick - end_tick) * 350));
+        this.zoom_duration = 500;
 
     };
 
@@ -212,15 +229,9 @@
         this.startZoomChangeTime = 0;
 
         console.log("on_Zoom_End ", Math.max.apply(null, this.times_of_render));
-
         this.times_of_render = [];
 
-
-        //if (this.getZoom()  > 17)
-        //    this.setZoom(15);
-        //else
-        //    this.setZoom(18);
-
+        // if (this.getZoom()  > 17) this.setZoom(15); else  this.setZoom(18);
     };
 
     return MapManager;
@@ -242,11 +253,26 @@
 
     var newZoomForCalcZoom = 0;
 
+
+    //mapManager.canvas.width = smap.renderer.canvas.width;
+    //mapManager.canvas.height = smap.renderer.canvas.height;
+
+    //smap.renderer.canvas = mapManager.canvas;
+    //smap.renderer.context = mapManager.context;
+
     function onMapWheel(event) {
         event = event || window.event;
         var delta = (event.deltaY || event.detail || event.wheelDelta) / 100.;
-        var tick = mapManager.getTickByZoom(mapManager.newZoomForCalcZoom);
-        var zoom = mapManager.getZoomByTick(tick - delta);
+        //var tick = mapManager.getTickByZoom(mapManager.newZoomForCalcZoom);
+        //var zoom = mapManager.getZoomByTick(tick - delta);
+        //mapManager.setZoom(zoom);
+
+        var zoom = 0;
+        //if (mapManager.newZoomForCalcZoom == mapManager.getZoom())
+        //    zoom = mapManager.newZoomForCalcZoom - delta * 0.05;
+        //else
+            zoom = mapManager.newZoomForCalcZoom - delta * 0.5;
+
         mapManager.setZoom(zoom);
     }
 
@@ -254,12 +280,16 @@
     document.getElementById('map2div').addEventListener("wheel", onMapWheel);
 
 
-    function interval_perform(){
+    function interval_perform() {
         mapManager.redraw(null, null, new Date().getTime());
         return requestAnimationFrame(interval_perform);
     };
 
     setTimeout(interval_perform, 10);
+
+
+    setTimeout(function() {mapManager.setZoom(15)}, 1000);
+    setTimeout(function() {mapManager.setZoom(18)}, 3000);
 
 
 </script>
