@@ -187,7 +187,8 @@
         event = event || window.event;
         var delta = (event.deltaY || event.detail || event.wheelDelta) / 100.;
 
-        var zoom = mapManager.newZoomForCalcZoom - delta * 0.5;
+        if (Math.abs(delta) < 1) delta *= 33; // Для mozilla
+        var zoom = mapManager.newZoomForCalcZoom - delta * 0.15;
         mapManager.setZoom(zoom);
     }
 
