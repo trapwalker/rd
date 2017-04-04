@@ -277,6 +277,51 @@
                                 }
                             }
                         },
+                        { /* repaint canvas - grid */
+                            id: 'grid',
+                            zindex: 1,
+                            callback: function (id, viewport, alpha) {
+                                var preload, t, x, y, xoff, yoff;
+
+                                preload = map.preloadMargin;
+                                var view_width = viewport.w;
+                                var view_height = viewport.h;
+
+
+                                var ctx = map.renderer.context;
+                                ctx.save();
+
+                                ctx.strokeStyle = "#0e4b00";
+
+
+                                map.renderer.tiles[t] = map.renderer.tiles[t] || {};
+                                var current_tiles = map.renderer.tiles[t];
+                                var condi_x = $.Math.ceil(viewport.xMax / viewport.sz) + preload;
+                                for (x = $.Math.floor(viewport.xMin / viewport.sz) - preload; x < condi_x; x++) {
+                                    xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
+                                    //xoff = Math.floor(xoff);
+                                    ctx.lineWidth = x % 4 == 0 ? 2 : 1;
+                                    ctx.beginPath();
+                                    ctx.moveTo(xoff, 0);
+                                    ctx.lineTo(xoff, view_height);
+                                    ctx.stroke();
+                                }
+
+                                var condi_y = $.Math.ceil(viewport.yMax / viewport.sz) + preload;
+                                for (y = $.Math.floor(viewport.yMin / viewport.sz) - preload; y < condi_y; y = y + 1) {
+                                    yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
+                                    //yoff = Math.floor(yoff);
+                                    ctx.lineWidth = y % 4 == 0 ? 2 : 1;
+                                    ctx.beginPath();
+                                    ctx.moveTo(0, yoff);
+                                    ctx.lineTo(view_width, yoff);
+                                    ctx.stroke();
+                                }
+
+
+                                ctx.restore();
+                            }
+                        },
                     ],
                     refresh: function () {
                         //console.log("map renderer refresh");
@@ -288,6 +333,7 @@
                         ctx.clearRect(0, 0, viewport.w, viewport.h);
                         ctx.scale(viewport.zf, viewport.zf);
                         map.renderer.layers[0].callback(map.renderer.refreshCounter, viewport, 1.0);
+                        map.renderer.layers[1].callback(map.renderer.refreshCounter, viewport, 1.0);
                         map.renderer.refreshLastFinish = (new $.Date()).getTime();
                         map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
 
