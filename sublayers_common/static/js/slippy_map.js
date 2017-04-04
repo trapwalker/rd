@@ -17,8 +17,6 @@
                 zoom: 1,
                 lon: 0,
                 lat: 0,
-                markers: {},
-                tracks: {},
                 tileprovider: function (x, y, z) {
                     var rand, sub, url;
                     rand = function (n) {
@@ -28,8 +26,6 @@
                     url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
                     return url;
                 },
-                useFractionalZoom: true,
-                scrollMomentum: true,
                 zMin: 0,
                 zMax: 18,
                 cacheValues: true,
@@ -47,17 +43,13 @@
             }
             options = defaults;
             map = {
-                markers: options.markers,
-                tracks: options.tracks,
                 tileprovider: options.tileprovider,
-                useFractionalZoom: options.useFractionalZoom,
-                scrollMomentum: options.scrollMomentum,
                 cache: {},
                 cacheValues: options.cacheValues,
                 preloadMargin: options.preloadMargin,
                 zMin : options.zMin,
                 zMax : options.zMax,
-                maxImageLoadingCount : 10,
+                maxImageLoadingCount : 30,
                 init: function () {
                     var coords;
                     if ($.document.getElementById(options.div)) {
@@ -67,7 +59,7 @@
                             map.renderer.canvas.height = $.innerHeight;
                         }
                         map.renderer.context = map.renderer.canvas.getContext("2d");
-                        map.renderer.sortLayers();
+                        //map.renderer.sortLayers();
                         map.events.init();
                     } else {
                         $.slippymap.debug("canvas not found");
@@ -90,7 +82,6 @@
                     refreshLastFinish: 0,
                     refreshTimeout: 0,
                     refreshFPS: 50,
-                    roundToPixel : false,
                     loadingCue : 0,
                     drawImage : function (image, fallbackColor, sx, sy, sw, sh, dx, dy, dw, dh) {
                         try {
@@ -138,30 +129,6 @@
                             this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                             this.onload = function () {};
                         };
-                    },
-                    sortObject: function (o) {
-                        var sorted = {},
-                            key,
-                            a = [];
-                        for (key in o) {
-                            if (o.hasOwnProperty(key)) {
-                                a.push(key);
-                            }
-                        }
-                        a.sort();
-                        for (key = 0; key < a.length; key = key + 1) {
-                            sorted[a[key]] = o[a[key]];
-                        }
-                        return sorted;
-                    },
-                    sortLayers: function () {
-                        function sortZIndex(a, b) {
-                            var x, y;
-                            x = a.zindex;
-                            y = b.zindex;
-                            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-                        }
-                        map.renderer.layers.sort(sortZIndex);
                     },
                     layers: [
                         { /* repaint canvas, load missing images */
@@ -463,57 +430,6 @@
                         map.position.z = z;
                         return map.position.z;
                     },
-                    zoomIn: function (options) {
-                        var step, round;
-                        options = options || {};
-                        step = options.step || 1;
-                        round = options.round || false;
-                        step = step || 1;
-                        if (!map.useFractionalZoom) {
-                            step = Math.round(step);
-                            if (step < 1) {
-                                step = 1;
-                            }
-                        }
-                        if (round === false) {
-                            map.position.setZ(map.position.z + step, options);
-                        } else {
-                            map.position.setZ($.Math.round(map.position.z + step), options);
-                        }
-                    },
-                    zoomOut: function (options) {
-                        var step, round;
-                        options = options || {};
-                        step = options.step || 1;
-                        round = options.round || false;
-                        step = step || 1;
-                        if (!map.useFractionalZoom) {
-                            step = Math.round(step);
-                            if (step < 1) {
-                                step = 1;
-                            }
-                        }
-                        if (round === false) {
-                            map.position.setZ(map.position.z - step, options);
-                        } else {
-                            map.position.setZ($.Math.round(map.position.z - step), options);
-                        }
-                    },
-                    coords: function (coords, options) {
-                        if (typeof coords !== "object") {
-                            return {
-                                lon: map.position.tile2lon(map.position.x / map.renderer.tilesize, map.zMax),
-                                lat: map.position.tile2lat(map.position.y / map.renderer.tilesize, map.zMax),
-                                z: map.position.z
-                            };
-                        }
-                        coords = {
-                            x: map.position.lon2posX(coords.lon),
-                            y: map.position.lat2posY(coords.lat),
-                            z: coords.zoom
-                        };
-                        map.position.center(coords, options);
-                    },
                     center: function (coords, options) {
                         //console.log("map position center", coords, options);
                         var animated, zoomChanged;
@@ -527,12 +443,6 @@
                         map.position.setX(coords.x);
                         map.position.setY(coords.y);
                         map.position.setZ(coords.z);
-                    },
-                    move: function (dx, dy, options) {
-                        map.position.center({
-                            x: map.position.x + dx,
-                            y: map.position.y + dy
-                        }, options);
                     },
                     lat2posY: function (lat) {
                         return map.pow(2, map.zMax) * map.renderer.tilesize * (1 - $.Math.log($.Math.tan(lat * $.Math.PI / 180) + 1 / $.Math.cos(lat * $.Math.PI / 180)) / $.Math.PI) / 2;
@@ -553,125 +463,6 @@
                         }
                         n = $.Math.PI - 2 * $.Math.PI * y / map.pow(2, z);
                         return (180 / $.Math.PI * $.Math.atan(0.5 * ($.Math.exp(n) - $.Math.exp(-n))));
-                    },
-                    zoomed: function (options) {
-                        var event = $.document.createEvent('Event');
-                        event.initEvent('zoomed', false, false);
-                        map.renderer.canvas.dispatchEvent(event);
-                    },
-                    moved: function (options) {
-                        var event = $.document.createEvent('Event');
-                        event.initEvent('moved', false, false);
-                        map.renderer.canvas.dispatchEvent(event);
-                    },
-                    moveend: function (options) {
-                        var event = $.document.createEvent('Event');
-                        event.initEvent('moveend', false, false);
-                        map.renderer.canvas.dispatchEvent(event);
-                    },
-                    animation: {
-                        now: function () {
-                            return (new Date()).getTime();
-                        },
-                        timeoutId: 0,
-                        interval: 0,
-                        duration: 750,
-                        descriptor: {},
-                        ease: function (func) {
-                            // use logic from jquery.easing
-                            var t, b = 0, c = 1, d = 1;
-                            if (map.position.animation.descriptor) {
-                                t = ((map.position.animation.descriptor.end - map.position.animation.now()) / map.position.animation.descriptor.duration);
-                                if (t < 0) {
-                                    t = 0;
-                                }
-                                if (t > 1) {
-                                    t = 1;
-                                }
-                                if (typeof func !== "function") {
-                                    if (typeof func === "string") {
-                                        switch (func) {
-                                        case "easeInExpo":
-                                            return (t === 0) ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
-                                        case "easeInSine":
-                                            return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
-                                        case "easeInCubic":
-                                            return c * (t /= d) * t * t + b;
-                                        // case "easeInQuad":
-                                        default:
-                                            return c *  (t /= d) * t + b;
-                                        }
-                                    }
-                                    return c *  (t /= d) * t + b;
-                                }
-                                return func(t);
-                            }
-                        },
-                        start: function (x, y, z) {
-                            map.position.animation.descriptor.duration = map.position.animation.duration;
-                            map.position.animation.descriptor.start = map.position.animation.now();
-                            map.position.animation.descriptor.end = map.position.animation.descriptor.start + map.position.animation.duration;
-                            map.position.animation.descriptor.from = {
-                                x: map.position.x,
-                                y: map.position.y,
-                                z: map.position.z
-                            };
-                            map.position.animation.descriptor.to = map.position.animation.descriptor.to || {};
-                            if (typeof x !== 'undefined' && x !== false) {
-                                map.position.animation.descriptor.to.x = x;
-                            }
-                            if (typeof y !== 'undefined' && y !== false) {
-                                map.position.animation.descriptor.to.y = y;
-                            }
-                            if (typeof z !== 'undefined' && z !== false && z >= map.zMin && z <= map.zMax) {
-                                map.position.animation.descriptor.to.z = z;
-                            } else {
-                                map.position.animation.descriptor.to.z = map.position.z;
-                            }
-                            map.position.animation.step();
-                        },
-                        step: function () {
-                            var progressXY, progressZ, destX, destY, destZ;
-                            if (map.position.animation.descriptor.end < map.position.animation.now()) {
-                                map.position.center({
-                                    x: map.position.animation.descriptor.to.x || map.position.x,
-                                    y: map.position.animation.descriptor.to.y || map.position.y,
-                                    z: map.position.animation.descriptor.to.z || map.position.z
-                                }, {
-                                    animationStep: false
-                                });
-                                map.position.animation.stop();
-                            } else {
-                                progressXY = map.position.animation.ease("easeInExpo");
-                                progressZ = map.position.animation.ease("easeInCubic");
-
-                                if (typeof map.position.animation.descriptor.to.x !== 'undefined' && map.position.animation.descriptor.to.x !== false) {
-                                    destX = map.position.animation.descriptor.from.x * progressXY + map.position.animation.descriptor.to.x * (1 - progressXY);
-                                }
-                                if (typeof map.position.animation.descriptor.to.y !== 'undefined' && map.position.animation.descriptor.to.y !== false) {
-                                    destY = map.position.animation.descriptor.from.y * progressXY + map.position.animation.descriptor.to.y * (1 - progressXY);
-                                }
-                                if (typeof map.position.animation.descriptor.to.z !== 'undefined' && map.position.animation.descriptor.to.z !== false) {
-                                    destZ = map.position.animation.descriptor.from.z * progressZ + map.position.animation.descriptor.to.z * (1 - progressZ);
-                                }
-                                map.position.center({
-                                    x: destX || map.position.x,
-                                    y: destY || map.position.y,
-                                    z: destZ || map.position.z
-                                }, {
-                                    animationStep: true
-                                });
-                                $.clearInterval(map.position.animation.timeoutId);
-                                map.position.animation.timeoutId = $.setTimeout(map.position.animation.step, map.position.animation.interval);
-                            }
-                        },
-                        stop: function () {
-                            if (map.position.animation.timeoutId) {
-                                $.clearTimeout(map.position.animation.timeoutId);
-                                map.position.animation.timeoutId = 0;
-                                map.position.animation.descriptor = {};
-                            }
-                        }
                     }
                 },
                 pow: function (base, exp) {
@@ -741,75 +532,6 @@
                     map.position.center(coords, options);
                     return this;
                 },
-                coords: function (coords, options) {
-                    if (typeof coords !== 'object') {
-                        return map.position.coords();
-                    }
-                    map.position.coords(
-                        {
-                            lon: parseFloat(coords.lon),
-                            lat: parseFloat(coords.lat),
-                            zoom: parseFloat(coords.zoom)
-                        },
-                        options
-                    );
-                    return this;
-                },
-                zoom: function (z, options) {
-                    if (typeof z !== 'number') {
-                        return map.position.z;
-                    }
-                    map.position.setZ(z, options);
-                    return this;
-                },
-                maxZ: function (z) {
-                    if (typeof z !== 'number') {
-                        return map.zMax;
-                    }
-                    if (z < map.zMin) {
-                        map.zMax = map.zMin;
-                    } else {
-                        map.zMax = z;
-                    }
-                    return this;
-                },
-                minZ: function (z) {
-                    if (typeof z !== 'number') {
-                        return map.zMin;
-                    }
-                    if (z < 0) {
-                        map.zMin = 0;
-                    } else if (z > map.zMax) {
-                        map.zMin = map.zMax;
-                    } else {
-                        map.zMin = z;
-                    }
-                    return this;
-                },
-                bounds: function (left, top, right, bottom) {
-                    var viewport, bounds;
-                    if (typeof left === 'number' && typeof top === 'number' &&
-                            typeof right === 'number' && typeof bottom === 'number' &&
-                            parseFloat(left) < parseFloat(right) &&
-                            parseFloat(bottom) < parseFloat(top)) {
-                        map.position.minX = map.position.lon2posX(parseFloat(left));
-                        map.position.maxX = map.position.lon2posX(parseFloat(right));
-                        map.position.minY = map.position.lat2posY(parseFloat(top));    // NB pixel origin is top left
-                        map.position.maxY = map.position.lat2posY(parseFloat(bottom)); // NB pixel origin is top left
-                        return this;
-                    }
-                    viewport =  map.viewport();
-                    bounds = {};
-                    bounds.left = map.position.tile2lon((map.position.x - viewport.w / 2) / map.renderer.tilesize, map.zMax);
-                    bounds.right = map.position.tile2lon((map.position.x + viewport.w / 2) / map.renderer.tilesize, map.zMax);
-                    bounds.top = map.position.tile2lat((map.position.y - viewport.h / 2) / map.renderer.tilesize, map.zMax);
-                    bounds.bottom = map.position.tile2lat((map.position.y + viewport.h / 2) / map.renderer.tilesize, map.zMax);
-                    return bounds;
-                },
-                refresh: function () {
-                    map.renderer.update();
-                    return this;
-                },
                 width: function (width) {
                     if (typeof width !== 'number') {
                         return map.renderer.canvas.width;
@@ -823,26 +545,6 @@
                     }
                     map.renderer.canvas.height = height;
                     return this;
-                },
-                zoomIn: function (event, options) {
-                    map.position.zoomIn(options);
-                    if (event.preventDefault) {
-                        map.events.preventDefault(event);
-                    }
-                    if (typeof event !== 'undefined') {
-                        return this;
-                    }
-                    return false;
-                },
-                zoomOut: function (event, options) {
-                    map.position.zoomOut(options);
-                    if (event.preventDefault) {
-                        map.events.preventDefault(event);
-                    }
-                    if (typeof event !== 'undefined') {
-                        return this;
-                    }
-                    return false;
                 },
                 tileCache: function (tiles) {
                     if (typeof tiles !== 'undefined') {
@@ -863,60 +565,6 @@
                     delete map.renderer.tiles;
                     map.renderer.tiles = [];
                     map.renderer.update();
-                    return this;
-                },
-                markers: function (markers) {
-                    if (typeof markers !== 'object') {
-                        return map.markers;
-                    }
-                    map.markers = markers;
-                    map.renderer.update();
-                    return this;
-                },
-                marker: function (id, marker, isUpdate) {
-                    var property;
-                    if (id && typeof marker !== 'object') {
-                        return map.markers[id];
-                    }
-                    if (isUpdate === true) {
-                        for (property in marker) {
-                            if (marker.hasOwnProperty(property)) {
-                                map.markers[id][property] = marker[property];
-                            }
-                        }
-                    } else {
-                        map.markers[id] = marker;
-                    }
-                    map.renderer.update();
-                    return this;
-                },
-                tracks: function (tracks) {
-                    if (typeof tracks !== 'object') {
-                        return map.tracks;
-                    }
-                    map.tracks = tracks;
-                    map.renderer.update();
-                    return this;
-                },
-                tileSize: function (size) {
-                    if (typeof size !== 'number') {
-                        return map.renderer.tilesize;
-                    }
-                    map.renderer.tilesize = size;
-                    return this;
-                },
-                fractionalZoom: function (state) {
-                    if (state !== true && state !== false) {
-                        return map.useFractionalZoom;
-                    }
-                    map.useFractionalZoom = state;
-                    return this;
-                },
-                scrollMomentum: function (state) {
-                    if (state !== true && state !== false) {
-                        return map.scrollMomentum;
-                    }
-                    map.scrollMomentum = state;
                     return this;
                 },
                 renderer: map.renderer,
