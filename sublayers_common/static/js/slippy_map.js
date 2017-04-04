@@ -111,22 +111,6 @@
                                 dx,
                                 dy
                             );
-                            //dx+=5;
-                            //dy+=5;
-                            //dw-=5;
-                            //dh-=5;
-                            //var ctx = map.renderer.context;
-                            //ctx.strokeRect(dx, dy, dw, dh);
-                            //ctx.rect(dx, dy, dw, dh);
-
-                            //ctx.beginPath();
-                            //ctx.moveTo(0, 0);
-                            //ctx.moveTo(dx, dy);
-                            //ctx.lineTo(dw, dy);
-                            //ctx.lineTo(dw, dh);
-                            //ctx.lineTo(dx, dh);
-                            //ctx.closePath();
-                            //ctx.stroke();
 
                             return true;
                         } catch (e) {
@@ -299,15 +283,15 @@
 
                         map.renderer.refreshLastStart = (new $.Date()).getTime();
                         var viewport = map.viewport();
-                        map.renderer.context.save();
-                        map.renderer.context.fillRect(0, 0, viewport.w, viewport.h);
-                        map.renderer.context.scale(viewport.zf, viewport.zf);
-
+                        var ctx = map.renderer.context;
+                        ctx.save();
+                        ctx.clearRect(0, 0, viewport.w, viewport.h);
+                        ctx.scale(viewport.zf, viewport.zf);
                         map.renderer.layers[0].callback(map.renderer.refreshCounter, viewport, 1.0);
                         map.renderer.refreshLastFinish = (new $.Date()).getTime();
                         map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
 
-                        map.renderer.context.restore();
+                        ctx.restore();
 
                         map.renderer.garbage();
 
