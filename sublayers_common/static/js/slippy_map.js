@@ -300,22 +300,44 @@
                                 for (x = $.Math.floor(viewport.xMin / viewport.sz) - preload; x < condi_x; x++) {
                                     xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
                                     //xoff = Math.floor(xoff);
-                                    ctx.lineWidth = x % 4 == 0 ? 2 : 1;
+                                    ctx.lineWidth = 2;
                                     ctx.beginPath();
                                     ctx.moveTo(xoff, 0);
                                     ctx.lineTo(xoff, view_height);
                                     ctx.stroke();
+                                    if (viewport.zf > 0.6 && viewport.zf <= 1.0) {
+                                        ctx.save();
+                                        ctx.globalAlpha = 1 - (1 - viewport.zf) / 0.4;
+                                        xoff += viewport.sz / (2 * viewport.zp);
+                                        ctx.lineWidth = 1;
+                                        ctx.beginPath();
+                                        ctx.moveTo(xoff, 0);
+                                        ctx.lineTo(xoff, view_height);
+                                        ctx.stroke();
+                                        ctx.restore();
+                                    }
                                 }
 
                                 var condi_y = $.Math.ceil(viewport.yMax / viewport.sz) + preload;
                                 for (y = $.Math.floor(viewport.yMin / viewport.sz) - preload; y < condi_y; y = y + 1) {
                                     yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
                                     //yoff = Math.floor(yoff);
-                                    ctx.lineWidth = y % 4 == 0 ? 2 : 1;
+                                    ctx.lineWidth = 2;
                                     ctx.beginPath();
                                     ctx.moveTo(0, yoff);
                                     ctx.lineTo(view_width, yoff);
                                     ctx.stroke();
+                                    if (viewport.zf > 0.6 && viewport.zf <= 1.0) {
+                                        ctx.save();
+                                        ctx.globalAlpha = 1 - (1 - viewport.zf) / 0.4;
+                                        yoff += viewport.sz / (2 * viewport.zp);
+                                        ctx.lineWidth = 1;
+                                        ctx.beginPath();
+                                        ctx.moveTo(0, yoff);
+                                        ctx.lineTo(view_width, yoff);
+                                        ctx.stroke();
+                                        ctx.restore();
+                                    }
                                 }
 
 
@@ -338,6 +360,12 @@
                         map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
 
                         ctx.restore();
+
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "center";
+                        ctx.font = "22pt MICRADI";
+                        ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
+                        ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
 
                         map.renderer.garbage();
 
