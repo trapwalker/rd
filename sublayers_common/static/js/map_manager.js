@@ -198,8 +198,8 @@ function onKeyUpMap(event) {
 function onMapWheel(event) {
     event = event || window.event;
     var delta = (event.deltaY || event.detail || event.wheelDelta) / 100.;
-    var tick = mapManager.getTickByZoom(mapManager.newZoomForCalcZoom);
-    var zoom = mapManager.getZoomByTick(tick - delta);
+    if (Math.abs(delta) < 1) delta *= 33; // Для mozilla
+    var zoom = mapManager.newZoomForCalcZoom - delta * 0.15;
     mapManager.setZoom(zoom);
 }
 
@@ -213,16 +213,14 @@ var MapManager = (function(_super) {
     function MapManager(){
         _super.call(this);
 
+        this.current_zoom = 18;
+
         this.inZoomChange = false;
         this.need_render = true;
-
-        this.oldZoomForCalcZoom = 0;
-        this.newZoomForCalcZoom = 0;
-        this.startZoomChangeTime = 0;
-
+        this.oldZoomForCalcZoom = 18;
+        this.newZoomForCalcZoom = 18;
         this.tileLayerPath = '';
-
-        this.zoom_duration = 0;
+        this.server_min_zoom = 10;
 
         // добавление в визуалменеджер для своих виджетов (зум виджет например)
         this.addToVisualManager();
@@ -298,8 +296,6 @@ var MapManager = (function(_super) {
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
 
-        this.zoom_calc_func = this.zoom_functions['easeOutCirc'];
-
         // Подписаться на изменение канваса
         function add_to_canvas_manager() {
             if (mapCanvasManager)
@@ -321,12 +317,13 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.redraw = function(ctx, time, client_time) {
+        // console.log(this.current_zoom, this.newZoomForCalcZoom);
         if (this.inZoomChange) {
-            if ((client_time >= this.startZoomChangeTime) &&
-                (client_time < (this.startZoomChangeTime + this.zoom_duration))) {
-                var zoom_progress = this._zoom_progress(client_time);
-                var anim_zoom_progress = this.zoom_calc_func(zoom_progress, client_time - this.startZoomChangeTime, 0, 100, this.zoom_duration);
-                this.current_zoom = this.oldZoomForCalcZoom + (anim_zoom_progress / 100.) * (this.newZoomForCalcZoom - this.oldZoomForCalcZoom);
+            if (Math.abs(this.current_zoom - this.newZoomForCalcZoom) > 0.002) {
+                var d_zoom = this.current_zoom - this.newZoomForCalcZoom;
+                var dd_zoom = d_zoom * 0.1;
+                this.current_zoom = this.current_zoom - dd_zoom;
+                // this.current_zoom = parseFloat(this.current_zoom.toFixed(6))
             }
             else {
                 this.current_zoom = this.newZoomForCalcZoom;
@@ -372,51 +369,12 @@ var MapManager = (function(_super) {
 
     // =============================== Zoom
 
-    MapManager.prototype.zoom_functions = {
-        easeInOutQuint: function (x, t, b, c, d) {
-            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t * t + b;
-            return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
-        },
-        easeOutQuart: function (x, t, b, c, d) {
-            return -c * ((t = t / d - 1) * t * t * t - 1) + b;
-        },
-        easeOutCirc: function (x, t, b, c, d) { return c * Math.sqrt(1 - (t=t/d-1)*t) + b; },
-    };
-
-    MapManager.prototype._zoom_progress = function (time) {
-        return (time - this.startZoomChangeTime) / this.zoom_duration;
-    };
-
     MapManager.prototype.getMaxZoom = function() {
         return ConstMaxMapZoom;
     };
 
     MapManager.prototype.getMinZoom = function() {
         return this.server_min_zoom;
-    };
-
-    MapManager.prototype.getZoomByTick = function(tick) {
-        //if (tick <= 0)  return 10;
-        //if (tick <= 3) return 10 + tick;
-        //if (tick <= 9) return 13 + (tick - 3) * 0.5;
-        //if (tick <= 17) return 16 + (tick - 9) * 0.25;
-        //return 18;
-
-        if (tick <= 0)  return 10;
-        if (tick <= 32) return 10 + tick * 0.25;
-        return 18;
-    };
-
-    MapManager.prototype.getTickByZoom = function(zoom) {
-        //if (zoom <= 10) return 0;
-        //if (zoom <= 13) return zoom - 10;
-        //if (zoom <= 16) return 3 + (zoom - 13) * 2;
-        //if (zoom <= 18) return 9 + (zoom - 16) * 4;
-        //return 17;
-
-        if (zoom <= 10) return 0;
-        if (zoom <= 18) return 0 + (zoom - 10) * 4;
-        return 32;
     };
 
     MapManager.prototype.getZoom = function() {
@@ -462,25 +420,26 @@ var MapManager = (function(_super) {
         }
     };
 
+    MapManager.prototype.setZoom = function(zoom) {
+        //console.log('MapManager.prototype.setZoom', zoom, this.server_min_zoom, ConstMaxMapZoom);
+        if (zoom < this.server_min_zoom) zoom = this.server_min_zoom;
+        if (zoom > ConstMaxMapZoom) zoom = ConstMaxMapZoom;
+        if (zoom == this.getZoom()) return;
+
+        this.newZoomForCalcZoom = zoom;
+        this.onZoomStart();
+    };
+
     MapManager.prototype.onZoomStart = function () {
         //console.log('MapManager.prototype.onZoomStart', this.getZoom());
         this.inZoomChange = true;
         this.oldZoomForCalcZoom = this.getZoom();
-        this.startZoomChangeTime = clock.getClientTime();
-
-        var start_tick = this.getTickByZoom(this.oldZoomForCalcZoom);
-        var end_tick = this.getTickByZoom(this.newZoomForCalcZoom);
-        //this.zoom_duration = Math.min(1000, Math.max(200, Math.abs(start_tick - end_tick) * 200));
-        //this.zoom_duration = Math.min(600, Math.max(200, Math.abs(start_tick - end_tick) * 200));
-        this.zoom_duration = Math.min(750, Math.max(350, Math.abs(start_tick - end_tick) * 350));
-        //this.zoom_duration = 500;
 
         audioManager.play({name: 'zoom_01', gain: 0.1, priority: 0.5});
     };
 
     MapManager.prototype.onZoomEnd = function () {
         this.inZoomChange = false;
-        this.startZoomChangeTime = 0;
     };
 
     return MapManager;

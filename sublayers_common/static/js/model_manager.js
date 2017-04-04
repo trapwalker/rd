@@ -502,7 +502,9 @@ var ClientManager = (function () {
             contextPanel = new ContextPanel();
 
             // Инициализация мап-зума
-            //mapManager.onZoomAnimation({zoom: mapManager.getZoom()});  // todo: сделать правильно
+            var curr_cord = mcar.getCurrentCoord(clock.getCurrentTime());
+            mapManager.set_coord({x: curr_cord.x, y: curr_cord.y});
+            mapManager.redraw();
         }
     };
 
