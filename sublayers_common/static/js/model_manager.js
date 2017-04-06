@@ -1463,19 +1463,6 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendRocket = function () {
-        var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 0.333) return;
-        last_send_time = time;
-        var mes = {
-            call: "send_rocket",
-            rpc_call_id: rpcCallList.getID(),
-            params: { }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
     ClientManager.prototype.sendSlowMine = function () {
         var time = clock.getCurrentTime();
         if ((time - last_send_time) < 0.333) return;

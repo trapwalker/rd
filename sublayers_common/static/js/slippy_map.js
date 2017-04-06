@@ -1,10 +1,3 @@
-/*  Slippy Map on Canvas - HTML5
- *
- *  Copyright 2010 dFacts Network
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *
- *  TODO:
- */
 (function (window) {
     "use strict";
     if (typeof window.slippymap === 'undefined') {
@@ -18,13 +11,7 @@
                 lon: 0,
                 lat: 0,
                 tileprovider: function (x, y, z) {
-                    var rand, sub, url;
-                    rand = function (n) {
-                        return $.Math.floor($.Math.random() * n);
-                    };
-                    sub = ["a", "b", "c"];
-                    url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
-                    return url;
+                    return "http://185.58.205.29/map/" + z + "/" + x + "/" + y +".jpg";
                 },
                 zMin: 0,
                 zMax: 18,
@@ -59,7 +46,6 @@
                             map.renderer.canvas.height = $.innerHeight;
                         }
                         map.renderer.context = map.renderer.canvas.getContext("2d");
-                        //map.renderer.sortLayers();
                         map.events.init();
                     } else {
                         $.slippymap.debug("canvas not found");
@@ -109,13 +95,10 @@
                         }
                     },
                     loadImage : function (id, x, y, z, t, tileprovider) {
-                        if (typeof map.renderer.tiles[t] === 'undefined') {
+                        if (typeof map.renderer.tiles[t] === 'undefined')
                             map.renderer.tiles[t] = [];
-                        }
-                        if (map.renderer.loadingCue > map.maxImageLoadingCount && z !== map.position.z) {
-                            //skipping
+                        if (map.renderer.loadingCue > map.maxImageLoadingCount && z !== map.position.z) //skipping
                             return;
-                        }
                         map.renderer.loadingCue = map.renderer.loadingCue + 1;
                         map.renderer.tiles[t][id] = new $.Image();
                         map.renderer.tiles[t][id].lastDrawnId = 0;
@@ -133,17 +116,10 @@
                     layers: [
                         { /* repaint canvas, load missing images */
                             id: 'tiles',
-                            zindex: 1,
-                            visible: function () {
-                                return true;
-                            },
-                            alpha: 1,
-                            callback: function (id, viewport, alpha) {
+                            callback: function (id, viewport) {
                                 var tileprovider, tileLayers, maxTileNumber, tileDone, preload,
                                     t, x, y, xoff, yoff, tileKey,
                                     tileAboveX, tileAboveY, tileAboveZ, tileKeyAbove,
-                                    tilePartOffsetX, tilePartOffsetY, tilePartSize,
-                                    tileZdiff,
                                     encodeIndex,
                                     tileLoadingCue = [],
                                     tileLoading, tileLoadingKey;
@@ -161,7 +137,6 @@
                                 } else {
                                     tileLayers = map.tileprovider;
                                 }
-
                                 for (t in tileLayers) {
                                     if (tileLayers.hasOwnProperty(t)) {
                                         tileprovider = tileLayers[t].url;
@@ -208,20 +183,22 @@
                                                 }
                                             }
                                         }
-                                        for (tileLoadingKey in tileLoadingCue) {
-                                            if (tileLoadingCue.hasOwnProperty(tileLoadingKey)) {
-                                                tileLoading = tileLoadingCue[tileLoadingKey];
-                                                // get tile above
-                                                tileAboveX = $.Math.floor(tileLoading.x / 2);
-                                                tileAboveY = $.Math.floor(tileLoading.y / 2);
-                                                tileAboveZ = tileLoading.z - 1;
-                                                tileKeyAbove = encodeIndex(tileAboveX, tileAboveY, tileAboveZ);
-                                                if (typeof current_tiles[tileKeyAbove] === 'undefined' &&
-                                                        typeof tileLoadingCue[tileKeyAbove] === 'undefined') {
-                                                    tileLoadingCue[tileKeyAbove] = {id: tileKeyAbove, x: tileAboveX, y: tileAboveY, z: tileAboveZ};
-                                                }
-                                            }
-                                        }
+
+                                        // Загрузка тайлов зума + 1
+                                        //for (tileLoadingKey in tileLoadingCue) {
+                                        //    if (tileLoadingCue.hasOwnProperty(tileLoadingKey)) {
+                                        //        tileLoading = tileLoadingCue[tileLoadingKey];
+                                        //        // get tile above
+                                        //        tileAboveX = $.Math.floor(tileLoading.x / 2);
+                                        //        tileAboveY = $.Math.floor(tileLoading.y / 2);
+                                        //        tileAboveZ = tileLoading.z - 1;
+                                        //        tileKeyAbove = encodeIndex(tileAboveX, tileAboveY, tileAboveZ);
+                                        //        if (typeof current_tiles[tileKeyAbove] === 'undefined' &&
+                                        //                typeof tileLoadingCue[tileKeyAbove] === 'undefined') {
+                                        //            tileLoadingCue[tileKeyAbove] = {id: tileKeyAbove, x: tileAboveX, y: tileAboveY, z: tileAboveZ};
+                                        //        }
+                                        //    }
+                                        //}
                                         //tileLoadingCue = map.renderer.sortObject(tileLoadingCue);
                                         for (tileLoadingKey in tileLoadingCue) {
                                             if (tileLoadingCue.hasOwnProperty(tileLoadingKey)) {
@@ -246,8 +223,7 @@
                         },
                         { /* repaint canvas - grid */
                             id: 'grid',
-                            zindex: 1,
-                            callback: function (id, viewport, alpha) {
+                            callback: function (id, viewport) {
                                 var preload, t, x, y, xoff, yoff;
 
                                 preload = map.preloadMargin;
@@ -307,10 +283,9 @@
                                     }
                                 }
 
-
                                 ctx.restore();
                             }
-                        },
+                        }
                     ],
                     refresh: function () {
                         //console.log("map renderer refresh");
@@ -321,21 +296,20 @@
                         ctx.save();
                         ctx.clearRect(0, 0, viewport.w, viewport.h);
                         ctx.scale(viewport.zf, viewport.zf);
-                        map.renderer.layers[0].callback(map.renderer.refreshCounter, viewport, 1.0);
-                        map.renderer.layers[1].callback(map.renderer.refreshCounter, viewport, 1.0);
+                        map.renderer.layers[0].callback(map.renderer.refreshCounter, viewport);
+                        map.renderer.layers[1].callback(map.renderer.refreshCounter, viewport);
                         map.renderer.refreshLastFinish = (new $.Date()).getTime();
                         map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
 
                         ctx.restore();
 
-                        ctx.textAlign = "center";
-                        ctx.textBaseline = "center";
-                        ctx.font = "22pt MICRADI";
-                        ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
-                        ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
+                        //ctx.textAlign = "center";
+                        //ctx.textBaseline = "center";
+                        //ctx.font = "22pt MICRADI";
+                        //ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
+                        //ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
 
                         map.renderer.garbage();
-
                     },
                     /* garbage collector, purges tiles if more than 500 are loaded and tile is more than 100 refresh cycles old */
                     garbage: function () {
@@ -399,40 +373,18 @@
                 /* positioning, conversion between pixel + lon/lat */
                 position: {
                     setX: function (x) {
-                        var viewport, xMin, xMax;
-                        if (map.position.minX && map.position.maxX) {
-                            viewport =  map.viewport();
-                            xMin = Math.floor(x - viewport.w / 2);
-                            xMax = Math.ceil(x + viewport.w / 2);
-                            if (xMin < map.position.minX) {
-                                x = map.position.minX + viewport.w / 2;
-                            } else if (xMax > map.position.maxX) {
-                                x = map.position.maxX - viewport.w / 2;
-                            }
-                        }
                         map.position.x = Math.round(x);
+                        //map.position.x = x;
                     },
                     setY: function (y) {
-                        var viewport, yMin, yMax;
-                        if (map.position.minY && map.position.maxY) {
-                            viewport =  map.viewport();
-                            yMin = Math.floor(y - viewport.h / 2);
-                            yMax = Math.ceil(y + viewport.h / 2);
-                            if (yMin < map.position.minY) {
-                                y = map.position.minY + viewport.h / 2;
-                            } else if (yMax > map.position.maxY) {
-                                y = map.position.maxY - viewport.h / 2;
-                            }
-                        }
                         map.position.y = Math.round(y);
+                        //map.position.y = y;
                     },
-                    setZ: function (z, options) {
+                    setZ: function (z) {
                         map.position.z = z;
                         return map.position.z;
                     },
-                    center: function (coords, options) {
-                        //console.log("map position center", coords, options);
-                        var animated, zoomChanged;
+                    center: function (coords) {
                         if (typeof coords === 'undefined') {
                             return {
                                 x: map.position.x,
@@ -512,7 +464,7 @@
                         config(this);
                     }
                     coords = {
-                        z:  (map.position && map.position.z) || options.zoom,
+                        z: (map.position && map.position.z) || options.zoom,
                         x: (map.position && map.position.x) || map.position.lon2posX(options.lon),
                         y: (map.position && map.position.y) || map.position.lat2posY(options.lat)
                     };

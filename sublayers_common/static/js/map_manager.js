@@ -3,22 +3,25 @@
 * В данный модуль писать все методы и функции для работы с картой
 */
 
-//Максимальный и минимальный зумы карты
+// Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
 var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
+// Для отслеживания состояний нажатия стрелок
+var pressedArrowUp;
+var pressedArrowDown;
+var pressedArrowLeft;
+var pressedArrowRight;
+
 function onMouseUpMap(mouseEventObject) {
-    if (mapCanvasManager && mapCanvasManager._mouse_focus_widget) {
+    if (mapCanvasManager && mapCanvasManager._mouse_focus_widget)
         mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject);
-    }
     else {
-        //clientManager.sendGoto(mapManager.project(mouseEventObject.latlng, mapManager.getMaxZoom()));
-        // todo: учесть зум
-        //console.log(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()), new Point(mouseEventObject.clientX, mouseEventObject.clientY)));
         var click_point = new Point(mouseEventObject.clientX, mouseEventObject.clientY);
-        clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()), mulScalVector(click_point, Math.pow(2., (ConstMaxMapZoom - mapManager.getZoom())))));
+        clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
+                                          mulScalVector(click_point, Math.pow(2., (ConstMaxMapZoom - mapManager.getZoom())))));
     }
 }
 
@@ -29,23 +32,6 @@ function onMouseMoveMap(mouseEventObject) {
 
 function onMouseOutMap(mouseEventObject){
     mapCanvasManager.set_mouse_look(false);
-}
-
-var pressedKey;
-var pressedArrowUp;
-var pressedArrowDown;
-var pressedArrowLeft;
-var pressedArrowRight;
-var pressedTurnLeft = false;
-var pressedTurnRight = false;
-
-var crazy_timer = null;
-
-function sendRandGoTo(){
-    var pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
-    rx = Math.random() * 100. - 50. + pos.x;
-    ry = Math.random() * 100. - 50. + pos.y;
-    clientManager.sendGoto(new Point(rx, ry));
 }
 
 function onKeyDownMap(event) {
@@ -94,18 +80,9 @@ function onKeyDownMap(event) {
             }
             break;
         case 72:
-            clientManager.sendRocket();
             break;
-        case 84: // T // Crazy Click Timer
-            //if (crazy_timer){
-            //    clearInterval(crazy_timer);
-            //    crazy_timer = null;
-            //}
-            //else{
-            //    crazy_timer = setInterval(sendRandGoTo, 100);
-            //}
+        case 84:
             clientManager.sendTeleportCoord(last_right_click_on_map.x, last_right_click_on_map.y);
-
             break;
         case 87:  // W
             clientManager.sendFireDischarge('front');
@@ -120,44 +97,25 @@ function onKeyDownMap(event) {
             clientManager.sendFireDischarge('right');
             break;
         case 69:  // E
-            /*
-            clientManager.sendFireAutoEnable('front', true);
-            clientManager.sendFireAutoEnable('back', true);
-            clientManager.sendFireAutoEnable('right', true);
-            clientManager.sendFireAutoEnable('left', true);
-            */
             break;
         case 81:  // Q
             if (wFireController && wFireController.allFire)
                 wFireController.allFire.click();
             break;
         case 90:  // Z
-            //console.log('Was pressed: Z');
             break;
-        case 49:  // 1
+        case 49: // 1
+        case 50: // 2
+        case 51: // 3
+        case 52: // 4
             if (! user.userCar) return;
-            clientManager.sendActivateQuickItem(1, user.userCar.ID);
-            wFireController.signalQuickConsumerPanel(1);
-            break;
-        case 50:  // 2
-            if (! user.userCar) return;
-            clientManager.sendActivateQuickItem(2, user.userCar.ID);
-            wFireController.signalQuickConsumerPanel(2);
-            break;
-        case 51:  // 3
-            if (! user.userCar) return;
-            clientManager.sendActivateQuickItem(3, user.userCar.ID);
-            wFireController.signalQuickConsumerPanel(3);
-            break;
-        case 52:  // 4
-            if (! user.userCar) return;
-            clientManager.sendActivateQuickItem(4, user.userCar.ID);
-            wFireController.signalQuickConsumerPanel(4);
+            var key = event.keyCode - 48;
+            clientManager.sendActivateQuickItem(key, user.userCar.ID);
+            wFireController.signalQuickConsumerPanel(key);
             break;
         case 32:  // Space / Пробел
             clientManager.sendStopCar();
             break;
-        //LM=77 N O=79 P=80   Q=81
     }
 }
 
@@ -210,7 +168,7 @@ function returnFocusToMap() {
 var MapManager = (function(_super) {
     __extends(MapManager, _super);
 
-    function MapManager(){
+    function MapManager() {
         _super.call(this);
 
         this.current_zoom = 18;
@@ -219,8 +177,6 @@ var MapManager = (function(_super) {
         this.need_render = true;
         this.oldZoomForCalcZoom = 18;
         this.newZoomForCalcZoom = 18;
-        this.tileLayerPath = '';
-        this.server_min_zoom = 10;
 
         // добавление в визуалменеджер для своих виджетов (зум виджет например)
         this.addToVisualManager();
@@ -235,13 +191,9 @@ var MapManager = (function(_super) {
     }
 
     MapManager.prototype._init = function () {
-        this.tileLayerPath = $('#settings_map_link').text();
-        //this.server_min_zoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
-        this.server_min_zoom = ConstMinMapZoom;
+        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
 
         // Обработчики событий карты
-        pressedKey = false;
-
         document.getElementById('map2div').onkeydown = onKeyDownMap;
         document.getElementById('map2div').onkeyup = onKeyUpMap;
         document.getElementById('map2div').onmouseup = onMouseUpMap;
@@ -282,15 +234,14 @@ var MapManager = (function(_super) {
         });
 
         // Подключение новой карты
-        this.current_zoom = 18; // cookieStorage.zoom;
+        this.current_zoom = 18; // todo: cookieStorage.zoom?
         smap =  slippymap({
             div: "map2",
-            tileprovider: function (x, y, z) {return "http://185.58.205.29/map/" + z + "/" + x + "/" + y +".jpg";},
-            zMin: this.server_min_zoom,
+            zMin: ConstMinMapZoom,
             zMax: ConstMaxMapZoom,
             lat: 32.93523932687671,
             lon: -113.0391401052475,
-            zoom: this.current_zoom,
+            zoom: this.current_zoom
         }).init();
 
         // Инициализация виджетов карты
@@ -308,11 +259,11 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.set_coord = function (options) {
         if (options.x !== undefined)
-            smap.map.position.setX(options.x, {animated: false});
+            smap.map.position.setX(options.x);
         if (options.y !== undefined)
-            smap.map.position.setY(options.y, {animated: false});
+            smap.map.position.setY(options.y);
         if (options.z !== undefined)
-            smap.map.position.setZ(options.z, {animated: false});
+            smap.map.position.setZ(options.z);
         this.need_render = true;
     };
 
@@ -374,7 +325,7 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.getMinZoom = function() {
-        return this.server_min_zoom;
+        return ConstMinMapZoom;
     };
 
     MapManager.prototype.getZoom = function() {
@@ -382,59 +333,48 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.setZoom = function(zoom) {
-        //console.log('MapManager.prototype.setZoom', zoom, this.server_min_zoom, ConstMaxMapZoom);
-        if (zoom < this.server_min_zoom) zoom = this.server_min_zoom;
+        //console.log('MapManager.prototype.setZoom', zoom, ConstMinMapZoom, ConstMaxMapZoom);
+        if (zoom < ConstMinMapZoom) zoom = ConstMinMapZoom;
         if (zoom > ConstMaxMapZoom) zoom = ConstMaxMapZoom;
         if (zoom == this.getZoom()) return;
 
+        this.oldZoomForCalcZoom = this.getZoom();
         this.newZoomForCalcZoom = zoom;
         this.onZoomStart();
 
-        //if (this.zoomSlider)
-        //    this.zoomSlider.setZoom(zoom);
-        return;
-        if (zoom < 15) {
-            // убрать сетку и сектора
-            if (mapManager.widget_fire_radial_grid)
-                mapManager.widget_fire_radial_grid.setVisible(false);
-            if (mapManager.widget_fire_sectors)
-                mapManager.widget_fire_sectors.setVisible(false);
-
-            // todo: сделать это не через таймер !!!
-            if (! mapManager.strategy_mode_timer) {
-                mapManager.strategy_mode_timer = setInterval(function () {
-                    clientManager.sendGetStrategyModeObjects();
-                }, 5000);
-            }
-        }
-        else {
-            // показать сетку и сектора, если боевой режим
-            if ((mapManager.widget_fire_radial_grid) && (wFireController))
-                mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
-            if ((mapManager.widget_fire_sectors) && (wFireController))
-                mapManager.widget_fire_sectors.setVisible(wFireController.visible);
-             if (mapManager.strategy_mode_timer) {
-                 clearInterval(mapManager.strategy_mode_timer);
-                 mapManager.strategy_mode_timer = null;
-             }
-        }
-    };
-
-    MapManager.prototype.setZoom = function(zoom) {
-        //console.log('MapManager.prototype.setZoom', zoom, this.server_min_zoom, ConstMaxMapZoom);
-        if (zoom < this.server_min_zoom) zoom = this.server_min_zoom;
-        if (zoom > ConstMaxMapZoom) zoom = ConstMaxMapZoom;
-        if (zoom == this.getZoom()) return;
-
-        this.newZoomForCalcZoom = zoom;
-        this.onZoomStart();
+        //    //if (this.zoomSlider)
+    //    //    this.zoomSlider.setZoom(zoom);
+    //    return;
+    //
+    //    if (zoom < 15) {
+    //        // убрать сетку и сектора
+    //        if (mapManager.widget_fire_radial_grid)
+    //            mapManager.widget_fire_radial_grid.setVisible(false);
+    //        if (mapManager.widget_fire_sectors)
+    //            mapManager.widget_fire_sectors.setVisible(false);
+    //
+    //        // todo: сделать это не через таймер !!!
+    //        if (! mapManager.strategy_mode_timer) {
+    //            mapManager.strategy_mode_timer = setInterval(function () {
+    //                clientManager.sendGetStrategyModeObjects();
+    //            }, 5000);
+    //        }
+    //    }
+    //    else {
+    //        // показать сетку и сектора, если боевой режим
+    //        if ((mapManager.widget_fire_radial_grid) && (wFireController))
+    //            mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
+    //        if ((mapManager.widget_fire_sectors) && (wFireController))
+    //            mapManager.widget_fire_sectors.setVisible(wFireController.visible);
+    //        if (mapManager.strategy_mode_timer) {
+    //             clearInterval(mapManager.strategy_mode_timer);
+    //             mapManager.strategy_mode_timer = null;
+    //        }
+    //    }
     };
 
     MapManager.prototype.onZoomStart = function () {
-        //console.log('MapManager.prototype.onZoomStart', this.getZoom());
         this.inZoomChange = true;
-        this.oldZoomForCalcZoom = this.getZoom();
-
         audioManager.play({name: 'zoom_01', gain: 0.1, priority: 0.5});
     };
 
