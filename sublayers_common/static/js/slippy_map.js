@@ -373,12 +373,10 @@
                 /* positioning, conversion between pixel + lon/lat */
                 position: {
                     setX: function (x) {
-                        map.position.x = Math.round(x);
-                        //map.position.x = x;
+                        map.position.x = x;
                     },
                     setY: function (y) {
-                        map.position.y = Math.round(y);
-                        //map.position.y = y;
+                        map.position.y = y;
                     },
                     setZ: function (z) {
                         map.position.z = z;
