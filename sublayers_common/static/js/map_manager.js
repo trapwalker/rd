@@ -178,6 +178,8 @@ var MapManager = (function(_super) {
         this.oldZoomForCalcZoom = 18;
         this.newZoomForCalcZoom = 18;
 
+        this.last_render_time = 0;
+
         // добавление в визуалменеджер для своих виджетов (зум виджет например)
         this.addToVisualManager();
 
@@ -191,7 +193,7 @@ var MapManager = (function(_super) {
     }
 
     MapManager.prototype._init = function () {
-        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
+        //ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
 
         // Обработчики событий карты
         document.getElementById('map2div').onkeydown = onKeyDownMap;
@@ -282,6 +284,10 @@ var MapManager = (function(_super) {
             }
             this.set_coord({z: this.current_zoom});
         }
+
+         if (client_time - this.last_render_time > 2000) // Сделать перерисовку обязательно раз в 2 секунды
+            this.need_render = true;
+
         if (this.need_render) {
             this.need_render = false;
             smap.renderer.refresh();
@@ -380,6 +386,10 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.onZoomEnd = function () {
         this.inZoomChange = false;
+    };
+
+    MapManager.prototype.on_new_map_size = function (width, height) {
+        smap.new_map_size();
     };
 
     return MapManager;

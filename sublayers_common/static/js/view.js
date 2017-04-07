@@ -267,6 +267,7 @@ function resizeWindowHandler() {
     }
     if (teachingMapManager) teachingMapManager.redraw();
     if (mapCanvasManager) mapCanvasManager.on_new_map_size();
+    if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
 }
 
 

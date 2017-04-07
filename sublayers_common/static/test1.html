@@ -59,6 +59,7 @@
         this.newZoomForCalcZoom = 18;
         this.tileLayerPath = '';
         this.server_min_zoom = 10;
+        this.last_render_time = 0;
 
 
         //this.canvas = document.createElement("canvas");
@@ -93,9 +94,14 @@
             }
             this.set_coord({z: this.current_zoom});
         }
+
+        if (client_time - this.last_render_time > 2000) // Сделать перерисовку обязательно раз в 2 секунды
+            this.need_render = true;
+
         if (this.need_render) {
             this.need_render = false;
             smap.renderer.refresh();
+            this.last_render_time = client_time;
 
             //this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
             //this.dom_context.drawImage(this.canvas, 0, 0);
@@ -152,9 +158,6 @@
 
     MapManager.prototype.onZoomEnd = function () {
         this.inZoomChange = false;
-
-        //if (this.getZoom() > 15) this.setZoom(13); else this.setZoom(16);
-         //if (this.getZoom() > 17) this.setZoom(15); else this.setZoom(18);
     };
 
     return MapManager;
@@ -163,14 +166,11 @@
     var mapManager = new MapManager();
     var smap = slippymap({
         div: "map2",
-        tileprovider: function (x, y, z) {
-            return "http://185.58.205.29/map/" + z + "/" + x + "/" + y + ".jpg";
-        },
-        zMin: 10,
-        zMax: 18,
+        zMin: mapManager.getMinZoom(),
+        zMax: mapManager.getMaxZoom(),
         lat: 32.93523932687671,
         lon: -113.0391401052475,
-        zoom: 18,
+        zoom:  mapManager.getMaxZoom()
     }).init();
 
 
@@ -204,8 +204,7 @@
     setTimeout(interval_perform, 10);
 
 
-    setTimeout(function() {mapManager.setZoom(15)}, 1000);
-    setTimeout(function() {mapManager.setZoom(18)}, 3000);
+    setTimeout(function() {smap.renderer.refresh();}, 2000);
 
 
 </script>
