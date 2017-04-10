@@ -20,8 +20,8 @@ from mongoengine import connect
 def test3():
     import sublayers_server.model.registry_me.classes
     reg = get_global_registry(path=u'../../../sublayers_world/registry', reload=True)
-    ac = reg.get('/registry/a/ac')
-    print(ac.parent)
+    x = reg.get('/registry/items/usable/tanks/tank_full/tank_10l')
+    print(x.parent)
     globals().update(locals())
 
 
