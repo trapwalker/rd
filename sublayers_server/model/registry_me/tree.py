@@ -545,6 +545,10 @@ class Registry(Doc):
         return node
 
 
+class Root(Node):
+    pass
+
+
 REGISTRY = None
 
 def get_global_registry(path=None, reload=False):
