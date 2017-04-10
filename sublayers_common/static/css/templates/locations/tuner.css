@@ -18,7 +18,7 @@
     width: 734px;
     height: 392px;
     background-color: rgba(0, 0, 0, 0.45);
-    border-width: 1px 0 1px 0;
+    border-width: 0 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #30fc00, transparent);
     border-image-slice: 1;
@@ -37,16 +37,107 @@
 
 .tunerRightSide {
     width: 242px;
-    height: 100%;
+    height: 491px;
     float: left;
-    background-color: #f5f5f5;
+    text-shadow: 0 0 80px #99ff99,0 0 30px #00ff00,0 0 6px #22B222;
+    color: #99ff99;
+    font: 36pt mr_dafoe;
+    position: absolute;
+    right: 0px;
+    top: -100px;
+    border-width: 0 0 0 1px;
+    border-style: solid;
+    border-image: linear-gradient(to top, #30fc00, transparent);
+    border-image-slice: 0 0 0 1;
 }
+
+#tunerPontPoints {
+    float: left;
+    transform:rotate(-20deg);
+    -ms-transform:rotate(-20deg); /* IE 9 */
+    -webkit-transform:rotate(-20deg); /* Safari and Chrome */
+    margin-left: 20px;
+    margin-top: 30px;
+}
+
+#tunerPontPoints span {
+    animation: upper 11s linear infinite;
+}
+
+@keyframes upper {
+    0%,19.999%,22%,62.999%,64%, 64.999%,70%,100% {
+        opacity:.99; text-shadow: 0 0 80px #99ff99,0 0 30px #00ff00,0 0 6px #22B222;
+    }
+    20%,21.999%,63%,63.999%,65%,69.999% {
+        opacity:0.4; text-shadow: none;
+    }
+}
+
+#tunerPontPointsValue {
+    float: left;
+    transform:rotate(-20deg);
+    -ms-transform:rotate(-20deg); /* IE 9 */
+    -webkit-transform:rotate(-20deg); /* Safari and Chrome */
+    margin-left: 110px;
+    margin-top: -40px;
+}
+
+.tPPVAnimated {
+    animation: lower 10s linear infinite;
+}
+
+@keyframes lower {
+    0%,12%,18.999%,23%,31.999%,37%,44.999%,46%,49.999%,51%,58.999%,61%,68.999%,71%,85.999%,96%,100% {
+        opacity:0.99; text-shadow: 0 0 80px #99ff99,0 0 30px #00ff00,0 0 6px #22B222;
+    }
+    19%,22.99%,32%,36.999%,45%,45.999%,50%,50.99%,59%,60.999%,69%,70.999%,86%,95.999% {
+        opacity:0.4; text-shadow: none;
+    }
+}
+
+.tPPVDisable {
+    text-shadow: none;
+    opacity:.4;
+    animation: none;
+    color: green;
+}
+
+#tunerPontCards {
+    width: 206px;
+    height: 321px;
+    margin-top: 150px;
+    margin-left: 17px;
+}
+
+.tunerPontCardOff {
+    width: 206px;
+    height: 321px;
+    position: absolute;
+    display: none;
+}
+
+#tunerPontCard0 { background-image: url("/static/img/interface/stylist_cards/00.png"); }
+#tunerPontCard1 { background-image: url("/static/img/interface/stylist_cards/01.png"); }
+#tunerPontCard2 { background-image: url("/static/img/interface/stylist_cards/02.png"); }
+#tunerPontCard3 { background-image: url("/static/img/interface/stylist_cards/03.png"); }
+#tunerPontCard4 { background-image: url("/static/img/interface/stylist_cards/04.png"); }
+#tunerPontCard5 { background-image: url("/static/img/interface/stylist_cards/05.png"); }
+#tunerPontCard6 { background-image: url("/static/img/interface/stylist_cards/06.png"); }
+#tunerPontCard7 { background-image: url("/static/img/interface/stylist_cards/07.png"); }
+#tunerPontCard8 { background-image: url("/static/img/interface/stylist_cards/08.png"); }
+#tunerPontCard9 { background-image: url("/static/img/interface/stylist_cards/09.png"); }
 
 .tuner-car-slot-picture {
     width: 35px;
     height: 35px;
 }
 
+.tunerWindow-main .armorer-car {
+    border-top: 1px;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #30fc00, transparent);
+    border-image-slice: 1 0 0 0;
+}
 
 /* общие для всех машинок классы */
 
@@ -54,6 +145,7 @@
     position: relative;
     width: 492px;
     height: 325px;
+    margin-top: 30px;
 }
 
 .tuner-car-main-container {
