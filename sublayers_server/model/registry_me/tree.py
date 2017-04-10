@@ -516,6 +516,11 @@ class Registry(Doc):
         #attrs.setdefault('fixtured', True)
         class_name = attrs.get('_cls')
 
+        if not class_name:  # TODO: remove deprecated '__cls__' attribute support
+            class_name = attrs.pop('__cls__', None)
+            if class_name:
+                attrs['_cls'] = class_name
+
         if not class_name:
             parent = attrs.get('parent', None)
             if parent:
