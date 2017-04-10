@@ -10,9 +10,30 @@
                 zoom: 1,
                 lon: 0,
                 lat: 0,
-                tileprovider: function (x, y, z) {
-                    return "http://185.58.205.29/map/" + z + "/" + x + "/" + y +".jpg";
-                },
+                tileproviders: [
+                    // Слои карты. Отрисовка начинается с нулевого слоя. Здесь очень важен порядок!
+                    {
+                        name: "base",
+                        url: function (x, y, z) {
+                            return "http://185.58.205.29/map/" + z + "/" + x + "/" + y + ".jpg";
+                        },
+                        alpha: 1.0,
+                    },
+                    // Другие слои карты.
+                    {
+                        name: "osm",
+                        url: function (x, y, z) {
+                            var rand, sub, url;
+                            rand = function (n) {
+                                return $.Math.floor($.Math.random() * n);
+                            };
+                            sub = ["a", "b", "c"];
+                            url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
+                            return url;
+                        },
+                        alpha: 0.5,
+                    }
+                ],
                 zMin: 0,
                 zMax: 18,
                 cacheValues: true,
@@ -30,7 +51,7 @@
             }
             options = defaults;
             map = {
-                tileprovider: options.tileprovider,
+                tileproviders: options.tileproviders,
                 cache: {},
                 cacheValues: options.cacheValues,
                 preloadMargin: options.preloadMargin,
@@ -104,32 +125,38 @@
                             return false;
                         }
                     },
-                    loadImage : function (id, x, y, z, t, tileprovider) {
-                        if (typeof map.renderer.tiles[t] === 'undefined')
-                            map.renderer.tiles[t] = [];
-                        if (map.renderer.tiles[t][id] && map.renderer.tiles[t][id].complete) {
+                    loadImage : function (id, x, y, z, tileprovider) {
+                        var pr_name = tileprovider.name;
+
+                        if (pr_name === 'undefined') {
+                            console.log("aaaaaaaaaaaa");
+                        }
+
+                        if (typeof map.renderer.tiles[pr_name] === 'undefined')
+                            map.renderer.tiles[pr_name] = [];
+                        if (map.renderer.tiles[pr_name][id] && map.renderer.tiles[pr_name][id].complete) {
                             map.renderer.next_load_tile();
                             return;
                         }
                         //if (map.renderer.loadingCue > map.maxImageLoadingCount && z !== map.position.z) //skipping
                         //    return;
                         map.renderer.loadingCue = map.renderer.loadingCue + 1;
-                        map.renderer.tiles[t][id] = new $.Image();
-                        map.renderer.tiles[t][id].lastDrawnId = 0;
+                        map.renderer.tiles[pr_name][id] = new $.Image();
+                        map.renderer.tiles[pr_name][id].lastDrawnId = 0;
                         map.renderer.tilecount = map.renderer.tilecount + 1;
-                        map.renderer.tiles[t][id].src = tileprovider(x, y, z, id);
-                        map.renderer.tiles[t][id].onload = function () {
+                        map.renderer.tiles[pr_name][id].src = tileprovider.url(x, y, z, id);
+                        map.renderer.tiles[pr_name][id].onload = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
                             map.renderer.next_load_tile();
                         };
-                        map.renderer.tiles[t][id].onerror = function () {
+                        map.renderer.tiles[pr_name][id].onerror = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
                             this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                             this.onload = function () {};
                             map.renderer.next_load_tile();
                         };
 
-                        map.renderer.tiles[t][id].slippy_coord = {x: x, y: y, z: z};  // Для правильной работы чистильщика старых тайлов по viewport
+                        map.renderer.tiles[pr_name][id].slippy_coord = {x: x, y: y, z: z};  // Для правильной работы чистильщика старых тайлов по viewport
                     },
                     refresh_load : function() {
                         var current_x = map.position.x;
@@ -164,9 +191,17 @@
                     add_zoom_to_queue: function (zoom) {
                         var viewport = map.renderer.viewports[zoom];
                         var encodeIndex = map.renderer.encodeIndex;
+                        var tileproviders = map.tileproviders;
                         for (var x = viewport.x_tile_min; x <= viewport.x_tile_max; x++)
                             for (var y = viewport.y_tile_min; y <= viewport.y_tile_max; y++)
-                                map.renderer.load_queue.push({x: x, y: y, z: zoom, t: "base", id: encodeIndex(x, y, zoom), tileprovider: map.tileprovider});
+                                for (var prov_index = 0; prov_index < tileproviders.length; prov_index++)
+                                    map.renderer.load_queue.push({
+                                        x: x,
+                                        y: y,
+                                        z: zoom,
+                                        id: encodeIndex(x, y, zoom),
+                                        tileprovider: tileproviders[prov_index]
+                                    });
                     },
                     next_load_tile: function () {
                         var tileLoading = map.renderer.load_queue.shift();
@@ -176,7 +211,6 @@
                                 tileLoading.x,
                                 tileLoading.y,
                                 tileLoading.z,
-                                tileLoading.t,
                                 tileLoading.tileprovider
                             );
                         //console.log(map.renderer.load_queue.length);
@@ -195,104 +229,53 @@
                         { /* repaint canvas, load missing images */
                             id: 'tiles',
                             callback: function (id, viewport) {
-                                var tileprovider, tileLayers, maxTileNumber, tileDone,
-                                    t, x, y, xoff, yoff, tileKey,
-                                    tileAboveX, tileAboveY, tileAboveZ, tileKeyAbove,
-                                    encodeIndex,
-                                    tileLoadingCue = [],
-                                    tileLoading, tileLoadingKey;
+                                var maxTileNumber, tileDone, x, y, xoff, yoff, tileKey, encodeIndex;
                                 encodeIndex = map.renderer.encodeIndex;
                                 maxTileNumber = map.pow(2, viewport.zi) - 1;
-                                if (typeof map.tileprovider === 'function') {
-                                    tileLayers = {
-                                        base: {
-                                            url: map.tileprovider
-                                        }
-                                    };
-                                } else {
-                                    tileLayers = map.tileprovider;
-                                }
-                                for (t in tileLayers) {
-                                    if (tileLayers.hasOwnProperty(t)) {
-                                        tileprovider = tileLayers[t].url;
-                                        map.renderer.tiles[t] = map.renderer.tiles[t] || {};
-                                        var current_tiles = map.renderer.tiles[t];
-                                        tileDone = [];
-                                        for (x = viewport.x_tile_min; x < viewport.x_tile_max ; x++) {
-                                            tileDone[x] = [];
-                                            xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
-                                            //xoff = Math.floor(xoff);
-                                            for (y = viewport.y_tile_min; y < viewport.y_tile_max; y = y + 1) {
-                                                yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
-                                                //yoff = Math.floor(yoff);
-                                                tileKey = encodeIndex(x, y, viewport.zi);
-                                                tileDone[tileKey] = false;
-                                                if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
-                                                    tileDone[tileKey] = true;
-                                                } else {
-                                                    if (current_tiles[tileKey] && current_tiles[tileKey].complete) {
-                                                        // draw tile
-                                                        if (map.renderer.drawImage(
-                                                                current_tiles[tileKey],
-                                                                "#dddddd",
-                                                                0,
-                                                                0,
-                                                                map.renderer.tilesize,
-                                                                map.renderer.tilesize,
-                                                                xoff,
-                                                                yoff,
-                                                                viewport.tilesize,
-                                                                viewport.tilesize
-                                                            )) {
-                                                            current_tiles[tileKey].lastDrawnId = id;
-                                                        }
-                                                        tileDone[tileKey] = true;
+                                var old_global_alpha = map.renderer.context.globalAlpha;
+                                for (var prov_index = 0; prov_index < map.tileproviders.length; prov_index++) {
+                                    map.renderer.context.globalAlpha = map.tileproviders[prov_index].alpha;
+                                    var pr_name = map.tileproviders[prov_index].name;
+                                    var current_tiles = map.renderer.tiles[pr_name] || {};
+                                    tileDone = []; // todo: возможно убрать данный массив. Но если мы хотим рисовать правильно заглушки, то нельзя убирать.
+                                    for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
+                                        tileDone[x] = [];
+                                        xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
+                                        //xoff = Math.floor(xoff);
+                                        for (y = viewport.y_tile_min; y < viewport.y_tile_max; y = y + 1) {
+                                            yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
+                                            //yoff = Math.floor(yoff);
+                                            tileKey = encodeIndex(x, y, viewport.zi);
+                                            tileDone[tileKey] = false;
+                                            if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
+                                                tileDone[tileKey] = true;
+                                            } else {
+                                                if (current_tiles[tileKey] && current_tiles[tileKey].complete) {
+                                                    // draw tile
+                                                    if (map.renderer.drawImage(
+                                                            current_tiles[tileKey],
+                                                            "#dddddd",
+                                                            0,
+                                                            0,
+                                                            map.renderer.tilesize,
+                                                            map.renderer.tilesize,
+                                                            xoff,
+                                                            yoff,
+                                                            viewport.tilesize,
+                                                            viewport.tilesize
+                                                        )) {
+                                                        current_tiles[tileKey].lastDrawnId = id;
                                                     }
-                                                    //else {
-                                                    //    if (typeof current_tiles[tileKey] === 'undefined' &&
-                                                    //            typeof tileLoadingCue[tileKey] === 'undefined') {
-                                                    //        tileLoadingCue[tileKey] = {id: tileKey, x: x, y: y, z: viewport.zi};
-                                                    //    }
-                                                    //}
+                                                    tileDone[tileKey] = true;
+                                                }
+                                                else {
+                                                    // Тайла нет. Отрисовать заглушку или ничего
                                                 }
                                             }
                                         }
-
-                                        // Загрузка тайлов зума + 1
-                                        //for (tileLoadingKey in tileLoadingCue) {
-                                        //    if (tileLoadingCue.hasOwnProperty(tileLoadingKey)) {
-                                        //        tileLoading = tileLoadingCue[tileLoadingKey];
-                                        //        // get tile above
-                                        //        tileAboveX = $.Math.floor(tileLoading.x / 2);
-                                        //        tileAboveY = $.Math.floor(tileLoading.y / 2);
-                                        //        tileAboveZ = tileLoading.z - 1;
-                                        //        tileKeyAbove = encodeIndex(tileAboveX, tileAboveY, tileAboveZ);
-                                        //        if (typeof current_tiles[tileKeyAbove] === 'undefined' &&
-                                        //                typeof tileLoadingCue[tileKeyAbove] === 'undefined') {
-                                        //            tileLoadingCue[tileKeyAbove] = {id: tileKeyAbove, x: tileAboveX, y: tileAboveY, z: tileAboveZ};
-                                        //        }
-                                        //    }
-                                        //}
-                                        //tileLoadingCue = map.renderer.sortObject(tileLoadingCue);
-                                        //for (tileLoadingKey in tileLoadingCue) {
-                                        //    if (tileLoadingCue.hasOwnProperty(tileLoadingKey)) {
-                                        //        tileLoading = tileLoadingCue[tileLoadingKey];
-                                        //        if (!map.renderer.tiles[t][tileLoading.id]) {
-                                        //            // request tile and dispatch refresh
-                                        //            map.renderer.loadImage(
-                                        //                tileLoading.id,
-                                        //                tileLoading.x,
-                                        //                tileLoading.y,
-                                        //                tileLoading.z,
-                                        //                t,
-                                        //                tileprovider
-                                        //            );
-                                        //        }
-                                        //    }
-                                        //}
-
                                     }
                                 }
+                                map.renderer.context.globalAlpha = old_global_alpha;
                             }
                         },
                         { /* repaint canvas - grid */
@@ -305,7 +288,6 @@
                                 ctx.save();
                                 ctx.strokeStyle = "#0e4b00";
 
-                                map.renderer.tiles[t] = map.renderer.tiles[t] || {};
                                 for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
                                     xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
                                     //xoff = Math.floor(xoff);
@@ -381,15 +363,16 @@
                     garbage: function () {
                         var viewports = map.renderer.viewports;
                         for (var key_base in map.renderer.tiles)
-                            for (var key in map.renderer.tiles[key_base])
-                                if (map.renderer.tiles[key_base].hasOwnProperty(key)) {
-                                    var img_coord = map.renderer.tiles[key_base][key].slippy_coord;
-                                    if (img_coord.x < viewports[img_coord.z].x_tile_min || img_coord.x > viewports[img_coord.z].x_tile_max ||
-                                        img_coord.y < viewports[img_coord.z].y_tile_min || img_coord.y > viewports[img_coord.z].y_tile_max) {
-                                        delete map.renderer.tiles[key_base][key];
-                                        //console.log(key + " deleted");
+                            if (map.renderer.tiles.hasOwnProperty(key_base))
+                                for (var key in map.renderer.tiles[key_base])
+                                    if (map.renderer.tiles[key_base].hasOwnProperty(key)) {
+                                        var img_coord = map.renderer.tiles[key_base][key].slippy_coord;
+                                        if (img_coord.x < viewports[img_coord.z].x_tile_min || img_coord.x > viewports[img_coord.z].x_tile_max ||
+                                            img_coord.y < viewports[img_coord.z].y_tile_min || img_coord.y > viewports[img_coord.z].y_tile_max) {
+                                            delete map.renderer.tiles[key_base][key];
+                                            //console.log(key + " deleted");
+                                        }
                                     }
-                                }
                     }
                 },
                 viewport: function () {
