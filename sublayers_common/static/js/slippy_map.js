@@ -127,11 +127,6 @@
                     },
                     loadImage : function (id, x, y, z, tileprovider) {
                         var pr_name = tileprovider.name;
-
-                        if (pr_name === 'undefined') {
-                            console.log("aaaaaaaaaaaa");
-                        }
-
                         if (typeof map.renderer.tiles[pr_name] === 'undefined')
                             map.renderer.tiles[pr_name] = [];
                         if (map.renderer.tiles[pr_name][id] && map.renderer.tiles[pr_name][id].complete) {
@@ -142,7 +137,6 @@
                         //    return;
                         map.renderer.loadingCue = map.renderer.loadingCue + 1;
                         map.renderer.tiles[pr_name][id] = new $.Image();
-                        map.renderer.tiles[pr_name][id].lastDrawnId = 0;
                         map.renderer.tilecount = map.renderer.tilecount + 1;
                         map.renderer.tiles[pr_name][id].src = tileprovider.url(x, y, z, id);
                         map.renderer.tiles[pr_name][id].onload = function () {
@@ -171,7 +165,6 @@
 
                         if (count_of_new_viewports == 0) return;
 
-                        // console.log(viewports);
                         // формирование очереди загрузки тайлов
                         map.renderer.load_queue = [];
                         var zi = $.Math.ceil(map.position.z);
@@ -264,7 +257,6 @@
                                                             viewport.tilesize,
                                                             viewport.tilesize
                                                         )) {
-                                                        current_tiles[tileKey].lastDrawnId = id;
                                                     }
                                                     tileDone[tileKey] = true;
                                                 }
@@ -544,16 +536,6 @@
                         }
                         return map.renderer.tiles;
                     }
-                    return this;
-                },
-                tileProvider: function (provider) {
-                    if (typeof provider !== 'function') {
-                        return map.tileprovider;
-                    }
-                    map.tileprovider = provider;
-                    delete map.renderer.tiles;
-                    map.renderer.tiles = [];
-                    map.renderer.update();
                     return this;
                 },
                 new_map_size: function (width, height) {
