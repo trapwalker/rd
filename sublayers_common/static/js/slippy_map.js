@@ -99,6 +99,7 @@
                     refreshLastFinish: 0,
                     refreshTimeout: 0,
                     refreshFPS: 50,
+                    refresh_load_called: false,
                     loadingCue : 0,
                     drawImage : function (image, fallbackColor, sx, sy, sw, sh, dx, dy, dw, dh) {
                         try {
@@ -151,6 +152,14 @@
                         };
 
                         map.renderer.tiles[pr_name][id].slippy_coord = {x: x, y: y, z: z};  // Для правильной работы чистильщика старых тайлов по viewport
+                    },
+                    refresh_load_async: function () {
+                        if (map.renderer.refresh_load_called) return;
+                        map.renderer.refresh_load_called = true;
+                        setTimeout(function () {
+                            map.renderer.refresh_load();
+                            map.renderer.refresh_load_called = false;
+                        }, 0);
                     },
                     refresh_load : function() {
                         var current_x = map.position.x;
@@ -417,19 +426,19 @@
                     is_init: false,
                     setX: function (x) {
                         map.position.x = x;
-                        if (map.position.is_init) map.renderer.refresh_load();
+                        if (map.position.is_init) map.renderer.refresh_load_async();
                         return map.position.x;
                     },
                     setY: function (y) {
                         map.position.y = y;
-                        if (map.position.is_init) map.renderer.refresh_load();
+                        if (map.position.is_init) map.renderer.refresh_load_async();
                         return map.position.y;
                     },
                     setZ: function (z) {
                         var old_zi = $.Math.ceil(map.position.z);
                         var new_zi = $.Math.ceil(z);
                         map.position.z = z;
-                        if (map.position.is_init && old_zi != new_zi) map.renderer.refresh_load();
+                        if (map.position.is_init && old_zi != new_zi) map.renderer.refresh_load_async();
                         return map.position.z;
                     },
                     center: function (coords, need_load) {
