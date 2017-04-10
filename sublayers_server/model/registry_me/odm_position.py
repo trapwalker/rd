@@ -28,12 +28,23 @@ class Position(EmbeddedDocument):
     x = FloatField()
     y = FloatField()
     # todo: generate qrts index by on_save
-    def __init__(self, x=None, y=None, **kw):
-        if isinstance(x, Point):
-            x, y = x.as_tuple()
-        elif isinstance(x, (tuple, list)) and len(x) == 2:
-            x, y = x
-        super(Position, self).__init__(x=x, y=y, **kw)
+    def __init__(self, *av, **kw):
+        if av:
+            x, av = av[0], av[1:]
+            if isinstance(x, dict):
+                kw.update(x)
+            elif isinstance(x, Point):
+                kw.update(x.as_dict())
+            elif isinstance(x, (tuple, list)) and len(x) == 2:
+                kw.update(x=x[0], y=x[1])
+            else:
+                if av:
+                    y, av = av[0], av[1:]
+                else:
+                    x, y = x
+                kw.update(x=x, y=y)
+
+        super(Position, self).__init__(**kw)
 
     def as_point(self):
         return Point(self.x, self.y)
