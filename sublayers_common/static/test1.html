@@ -170,7 +170,8 @@
         zMax: mapManager.getMaxZoom(),
         lat: 32.93523932687671,
         lon: -113.0391401052475,
-        zoom:  mapManager.getMaxZoom()
+        zoom:  mapManager.getMaxZoom(),
+        loadCompleteCB: function() {console.log("load complete cb")},
     }).init();
 
 

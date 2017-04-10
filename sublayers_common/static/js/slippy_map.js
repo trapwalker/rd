@@ -20,24 +20,25 @@
                         alpha: 1.0,
                     },
                     // Другие слои карты.
-                    {
-                        name: "osm",
-                        url: function (x, y, z) {
-                            var rand, sub, url;
-                            rand = function (n) {
-                                return $.Math.floor($.Math.random() * n);
-                            };
-                            sub = ["a", "b", "c"];
-                            url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
-                            return url;
-                        },
-                        alpha: 0.5,
-                    }
+                    //{
+                    //    name: "osm",
+                    //    url: function (x, y, z) {
+                    //        var rand, sub, url;
+                    //        rand = function (n) {
+                    //            return $.Math.floor($.Math.random() * n);
+                    //        };
+                    //        sub = ["a", "b", "c"];
+                    //        url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
+                    //        return url;
+                    //    },
+                    //    alpha: 0.5,
+                    //}
                 ],
                 zMin: 0,
                 zMax: 18,
                 cacheValues: true,
-                preloadMargin: 0
+                preloadMargin: 0,
+                loadCompleteCB: null
             };
             /* merge defaults and options */
             if (typeof options === "object") {
@@ -90,31 +91,13 @@
                     },
                     viewports: {}, // key = zoom, value = viewport
                     load_queue: [],
-                    lastRenderTime: 0,
                     tiles: [],
-                    tilecount: 0,
                     tilesize: 256,
-                    refreshCounter: 0,
-                    refreshLastStart: 0,
-                    refreshLastFinish: 0,
-                    refreshTimeout: 0,
-                    refreshFPS: 50,
                     refresh_load_called: false,
+                    load_tiles_complete: false,
                     loadingCue : 0,
-                    drawImage : function (image, fallbackColor, sx, sy, sw, sh, dx, dy, dw, dh) {
+                    drawImage : function (image, dx, dy) {
                         try {
-                            //map.renderer.context.drawImage(
-                            //    image,
-                            //    sx,
-                            //    sy,
-                            //    sw,
-                            //    sh,
-                            //    dx,
-                            //    dy,
-                            //    dw,
-                            //    dh
-                            //);
-
                             map.renderer.context.drawImage(
                                 image,
                                 dx,
@@ -134,11 +117,8 @@
                             map.renderer.next_load_tile();
                             return;
                         }
-                        //if (map.renderer.loadingCue > map.maxImageLoadingCount && z !== map.position.z) //skipping
-                        //    return;
                         map.renderer.loadingCue = map.renderer.loadingCue + 1;
                         map.renderer.tiles[pr_name][id] = new $.Image();
-                        map.renderer.tilecount = map.renderer.tilecount + 1;
                         map.renderer.tiles[pr_name][id].src = tileprovider.url(x, y, z, id);
                         map.renderer.tiles[pr_name][id].onload = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
@@ -165,14 +145,9 @@
                         var current_x = map.position.x;
                         var current_y = map.position.y;
                         var viewports = map.renderer.viewports;
-                        var count_of_new_viewports = 0;  // todo: не работает в случае с зумом!! что-то нужно делать!
                         for (var i = map.zMin; i <= map.zMax; i++) // Если неободимо создать новый вьювпорт для загрузки тайлов
-                            if (!viewports.hasOwnProperty(i) || Math.abs(viewports[i].x - current_x) > viewports[i].sz || Math.abs(viewports[i].y - current_y) > viewports[i].sz) {
+                            if (!viewports.hasOwnProperty(i) || Math.abs(viewports[i].x - current_x) > viewports[i].sz || Math.abs(viewports[i].y - current_y) > viewports[i].sz)
                                 viewports[i] = map.viewport_by_zoom(i, true);
-                                count_of_new_viewports++;
-                            }
-
-                        if (count_of_new_viewports == 0) return;
 
                         // формирование очереди загрузки тайлов
                         map.renderer.load_queue = [];
@@ -215,10 +190,12 @@
                                 tileLoading.z,
                                 tileLoading.tileprovider
                             );
-                        //console.log(map.renderer.load_queue.length);
-                        //if (map.renderer.load_queue.length == 0) {
-                        //    console.log("Load Complete");
-                        //}
+                        else
+                            if (!map.renderer.load_tiles_complete) {
+                                map.renderer.load_tiles_complete = true;
+                                if (typeof options.loadCompleteCB === "function")
+                                    options.loadCompleteCB();
+                            }
                     },
                     encodeIndex: function (x, y, z) {
                         return x + "-" + y + "-" + z;
@@ -228,9 +205,9 @@
                         return {x: ll[0], y: ll[1], z: ll[2]};
                     },
                     layers: [
-                        { /* repaint canvas, load missing images */
+                        { /* repaint canvas */
                             id: 'tiles',
-                            callback: function (id, viewport) {
+                            callback: function (viewport) {
                                 var maxTileNumber, tileDone, x, y, xoff, yoff, tileKey, encodeIndex;
                                 encodeIndex = map.renderer.encodeIndex;
                                 maxTileNumber = map.pow(2, viewport.zi) - 1;
@@ -256,15 +233,8 @@
                                                     // draw tile
                                                     if (map.renderer.drawImage(
                                                             current_tiles[tileKey],
-                                                            "#dddddd",
-                                                            0,
-                                                            0,
-                                                            map.renderer.tilesize,
-                                                            map.renderer.tilesize,
                                                             xoff,
-                                                            yoff,
-                                                            viewport.tilesize,
-                                                            viewport.tilesize
+                                                            yoff
                                                         )) {
                                                     }
                                                     tileDone[tileKey] = true;
@@ -281,7 +251,7 @@
                         },
                         { /* repaint canvas - grid */
                             id: 'grid',
-                            callback: function (id, viewport) {
+                            callback: function (viewport) {
                                 var t, x, y, xoff, yoff;
                                 var view_width = viewport.w;
                                 var view_height = viewport.h;
@@ -336,18 +306,13 @@
                         }
                     ],
                     refresh: function () {
-                        //console.log("map renderer refresh");
-
-                        map.renderer.refreshLastStart = (new $.Date()).getTime();
                         var viewport = map.viewport();
                         var ctx = map.renderer.context;
                         ctx.save();
                         ctx.clearRect(0, 0, viewport.w, viewport.h);
                         ctx.scale(viewport.zf, viewport.zf);
-                        map.renderer.layers[0].callback(map.renderer.refreshCounter, viewport);
-                        map.renderer.layers[1].callback(map.renderer.refreshCounter, viewport);
-                        map.renderer.refreshLastFinish = (new $.Date()).getTime();
-                        map.renderer.refreshCounter = map.renderer.refreshCounter + 1;
+                        map.renderer.layers[0].callback(viewport);
+                        map.renderer.layers[1].callback(viewport);
 
                         ctx.restore();
 
@@ -357,10 +322,7 @@
                         ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
                         ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
                         ctx.fillText("Load Queue : " + map.renderer.load_queue.length, 100, 130);
-
-                        //map.renderer.garbage();
                     },
-                    /* garbage collector, purges tiles if more than 500 are loaded and tile is more than 100 refresh cycles old */
                     garbage: function () {
                         var viewports = map.renderer.viewports;
                         for (var key_base in map.renderer.tiles)
