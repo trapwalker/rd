@@ -388,12 +388,12 @@
                     is_init: false,
                     setX: function (x) {
                         map.position.x = x;
-                        if (map.position.is_init) map.renderer.refresh_load_async();
+                        if (map.position.is_init && map.renderer.viewports[18] && Math.abs(map.renderer.viewports[18].x - x) > 255) map.renderer.refresh_load_async();
                         return map.position.x;
                     },
                     setY: function (y) {
                         map.position.y = y;
-                        if (map.position.is_init) map.renderer.refresh_load_async();
+                        if (map.position.is_init && map.renderer.viewports[18] && Math.abs(map.renderer.viewports[18].y - y) > 255) map.renderer.refresh_load_async();
                         return map.position.y;
                     },
                     setZ: function (z) {
