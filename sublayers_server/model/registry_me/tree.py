@@ -21,6 +21,7 @@ from uuid import uuid1 as get_uuid
 from collections import deque
 from fnmatch import fnmatch
 
+import mongoengine
 from mongoengine import connect, Document, EmbeddedDocument
 from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
@@ -150,7 +151,10 @@ class EmbeddedNodeField(EmbeddedDocumentField):
 
             # todo: Проверить поддержку инициализации нода из словаря
             if value and not isinstance(value, Node) and not (isinstance(value, basestring) and not instance._initialised):
-                value = self.to_python(value)
+                try:
+                    value = self.to_python(value)
+                except mongoengine.errors.InvalidDocumentError as e:
+                    raise e
         super(EmbeddedNodeField, self).__set__(instance, value)
 
 
