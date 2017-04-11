@@ -221,7 +221,7 @@ class AgentProfile(Node):
         return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
 
     def __init__(self, **kw):
-        super(Agent, self).__init__(**kw)
+        super(AgentProfile, self).__init__(**kw)
         self._agent_model = None
 
     def get_relationship(self, npc):

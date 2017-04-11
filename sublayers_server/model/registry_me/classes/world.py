@@ -23,5 +23,5 @@ class WorldSettings(Node):
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
     quick_game_bot_agents = ListField(
-        field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.agents.AIQuickAgent'),
+        field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.agents.AIQuickAgentProfile'),
     )

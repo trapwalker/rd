@@ -23,6 +23,7 @@ class Item(Node):
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
     inv_icon_supersmall = StringField(caption=u'URL глифа (супер малый размер) для блоков инвентарей', tags={'client'})
     inv_icon_xsmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags={'client'})
+        
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags={'client'})
     activate_time = FloatField(caption=u'Время активации итема')
@@ -70,6 +71,7 @@ class ItemUsable(Item):
         document_type=Item,
         caption=u'Итем, который будет положен в инвентарь после активации',
     )
+    activate_success_audio = StringField(caption=u'Имя звука, сигнализизирующего об успешной активации итема', tags={'client'})
 
 
 class Tank(ItemUsable):
@@ -126,7 +128,7 @@ class SlotLock(SlotItem):
     pass
 
 
-class MapWeaponItem(Item):
+class MapWeaponItem(ItemUsable):
     generate_obj = EmbeddedNodeField(
         # document_type = # todo: Указать тип реестрового объекта
         caption=u'Ссылка на объект генерации',
