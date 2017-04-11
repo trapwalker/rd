@@ -287,7 +287,7 @@
                                 for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
                                     xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
                                     //xoff = Math.floor(xoff);
-                                    ctx.lineWidth = 2;
+                                    ctx.lineWidth = 1 / viewport.zf;
                                     ctx.beginPath();
                                     ctx.moveTo(xoff, 0);
                                     ctx.lineTo(xoff, view_height);
@@ -296,7 +296,7 @@
                                         ctx.save();
                                         ctx.globalAlpha = 1 - (1 - viewport.zf) / 0.4;
                                         xoff += viewport.sz / (2 * viewport.zp);
-                                        ctx.lineWidth = 1;
+                                        ctx.lineWidth = 1 / viewport.zf;
                                         ctx.beginPath();
                                         ctx.moveTo(xoff, 0);
                                         ctx.lineTo(xoff, view_height);
@@ -308,7 +308,7 @@
                                 for (y = viewport.y_tile_min; y < viewport.y_tile_max; y++) {
                                     yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
                                     //yoff = Math.floor(yoff);
-                                    ctx.lineWidth = 2;
+                                    ctx.lineWidth = 1 / viewport.zf;
                                     ctx.beginPath();
                                     ctx.moveTo(0, yoff);
                                     ctx.lineTo(view_width, yoff);
@@ -317,7 +317,7 @@
                                         ctx.save();
                                         ctx.globalAlpha = 1 - (1 - viewport.zf) / 0.4;
                                         yoff += viewport.sz / (2 * viewport.zp);
-                                        ctx.lineWidth = 1;
+                                        ctx.lineWidth = 1 / viewport.zf;
                                         ctx.beginPath();
                                         ctx.moveTo(0, yoff);
                                         ctx.lineTo(view_width, yoff);
