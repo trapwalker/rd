@@ -218,7 +218,6 @@
                                     var current_tiles = map.renderer.tiles[pr_name] || {};
                                     tileDone = []; // todo: возможно убрать данный массив. Но если мы хотим рисовать правильно заглушки, то нельзя убирать.
                                     for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
-                                        tileDone[x] = [];
                                         xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
                                         //xoff = Math.floor(xoff);
                                         for (y = viewport.y_tile_min; y < viewport.y_tile_max; y = y + 1) {
@@ -226,6 +225,7 @@
                                             //yoff = Math.floor(yoff);
                                             tileKey = encodeIndex(x, y, viewport.zi);
                                             tileDone[tileKey] = false;
+
                                             if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
                                                 tileDone[tileKey] = true;
                                             } else {
@@ -245,6 +245,29 @@
                                             }
                                         }
                                     }
+
+                                    var ctx = map.renderer.context;
+                                    ctx.save();
+                                    var grd=ctx.createRadialGradient(0, 0, 180 , 0, 0, 250);
+                                    grd.addColorStop(0,"black");
+                                    grd.addColorStop(1,"rgba(0, 0, 0, 0)");
+                                    ctx.fillStyle=grd;
+                                    for (var key in tileDone)
+                                        if (tileDone.hasOwnProperty(key) && tileDone[key] == false) {
+                                            // Отрисовать заглушку, что тайл не загрузился
+                                            var coord = map.renderer.dencodeIndex(key);
+                                            xoff = (((coord.x * viewport.sz - viewport.xMin) / viewport.zp)) + 125;
+                                            yoff = (((coord.y * viewport.sz - viewport.yMin) / viewport.zp)) + 125;
+                                            if (xoff && yoff) {
+                                                ctx.save();
+                                                ctx.translate(xoff, yoff);
+                                                ctx.beginPath();
+                                                ctx.arc(0, 0, 250, 0, 2 * Math.PI);
+                                                ctx.fill();
+                                                ctx.restore();
+                                            }
+                                        }
+                                    ctx.restore();
                                 }
                                 map.renderer.context.globalAlpha = old_global_alpha;
                             }
