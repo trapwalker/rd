@@ -128,6 +128,7 @@
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
                             this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                             this.onload = function () {};
+                            this._404_tile = true;  // todo: возможно потом убрать
                             map.renderer.next_load_tile();
                         };
 
@@ -228,8 +229,9 @@
 
                                             if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
                                                 tileDone[tileKey] = true;
+                                                console.log(tileKey);
                                             } else {
-                                                if (current_tiles[tileKey] && current_tiles[tileKey].complete) {
+                                                if (current_tiles[tileKey] && current_tiles[tileKey].complete && ! current_tiles[tileKey]._404_tile) {
                                                     // draw tile
                                                     if (map.renderer.drawImage(
                                                             current_tiles[tileKey],
