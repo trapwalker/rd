@@ -146,46 +146,24 @@ var audioManager = new AudioManager();
 
 
 function init_sound() {
+
+    // radio
+
     audioManager.load('tumbler', {url: '/static/audio/final_v1_mp3/tumbler.mp3'}, 1.0);
     audioManager.load('radio_noise_switch', {url: "/static/audio/final_v1_mp3/radio_static.mp3"}, 1.0);
 
-    // Тестовые звуки от димона
-    audioManager.load('error_1', {url: '/static/audio/final_v1_mp3/error.mp3'}, 0.1);
+    // cannons
 
     audioManager.load('shot_01', {url: '/static/audio/test/shot_01.wav'}, 1.0);
     audioManager.load('shot_02', {url: '/static/audio/test/shot_02.wav'}, 1.0);
     audioManager.load('shot_03', {url: '/static/audio/test/shot_03.wav'}, 1.0);
 
-    audioManager.load('auto_self_1', {url: '/static/audio/test/auto_self_1.wav'}, 1.0);
-    audioManager.load('auto_self_2', {url: '/static/audio/test/auto_self_2.wav'}, 1.0);
-    audioManager.load('auto_self_3', {url: '/static/audio/test/auto_self_3.wav'}, 0.15);
-    audioManager.load('auto_other_1', {url: '/static/audio/test/auto_other_1.wav'}, 1.0);
-    audioManager.load('auto_other_2', {url: '/static/audio/test/auto_other_2.wav'}, 0.15);
-
-    audioManager.load('zoom_01', {url: '/static/audio/test/zoom_01.wav'}, 1.0);
-
-    // Комплекты звуков авто стрельбы
+    // machine guns
 
     audioManager.load('auto_test_1', {url: '/static/audio/test2/z_11.wav'}, 1.0);
     audioManager.load('auto_test_2', {url: '/static/audio/test2/z_12.wav'}, 1.0);
     audioManager.load('auto_test_3', {url: '/static/audio/test2/z_13.wav'}, 1.0);
     audioManager.load('auto_test_4', {url: '/static/audio/test2/z_14.wav'}, 1.0);
-
-    audioManager.load('auto_11', {url: '/static/audio/auto_shoot/auto_shoot_1/2x.wav'}, 1.0);
-    audioManager.load('auto_12', {url: '/static/audio/auto_shoot/auto_shoot_1/3x.wav'}, 1.0);
-    audioManager.load('auto_13', {url: '/static/audio/auto_shoot/auto_shoot_1/4x.wav'}, 1.0);
-    audioManager.load('auto_14', {url: '/static/audio/auto_shoot/auto_shoot_1/6x.wav'}, 1.0);
-
-    audioManager.load('auto_21', {url: '/static/audio/auto_shoot/auto_shoot_2/2x.wav'}, 1.0);
-    audioManager.load('auto_22', {url: '/static/audio/auto_shoot/auto_shoot_2/3x.wav'}, 1.0);
-    audioManager.load('auto_23', {url: '/static/audio/auto_shoot/auto_shoot_2/4x.wav'}, 1.0);
-    audioManager.load('auto_24', {url: '/static/audio/auto_shoot/auto_shoot_2/6x.wav'}, 1.0);
-
-    audioManager.load('auto_31', {url: '/static/audio/auto_shoot/auto_shoot_3/2x.wav'}, 1.0);
-    audioManager.load('auto_32', {url: '/static/audio/auto_shoot/auto_shoot_3/3x.wav'}, 1.0);
-    audioManager.load('auto_33', {url: '/static/audio/auto_shoot/auto_shoot_3/4x.wav'}, 1.0);
-    audioManager.load('auto_34', {url: '/static/audio/auto_shoot/auto_shoot_3/6x.wav'}, 1.0);
-
 
     audioManager.load('auto_r_11', {url: '/static/audio/auto_shoot/1/1_1.wav'}, 1.0);
     audioManager.load('auto_r_12', {url: '/static/audio/auto_shoot/1/1_2.wav'}, 1.0);
@@ -202,6 +180,7 @@ function init_sound() {
     audioManager.load('mine_ttt', {url: '/static/audio/items/map_weapon/mines/mine_ttt.m4a'}, 0.3);
     audioManager.load('sa16_igla', {url: '/static/audio/items/map_weapon/rockets/sa16_igla.m4a'}, 0.3);
     audioManager.load('turret_mg15', {url: '/static/audio/items/map_weapon/turret/turret_mg15.m4a'}, 0.3);
+    audioManager.load('repair_kit_001', {url: '/static/audio/items/usable/build_set/repair_kit_001.m4a'}, 0.3);
 
     // powerups
 
@@ -210,10 +189,13 @@ function init_sound() {
     // signals
 
     audioManager.load('reverse_gear', {url: '/static/audio/signals/drive_reverse_001.m4a'}, 0.3);
+    audioManager.load('error_1', {url: '/static/audio/signals/error_001.m4a'}, 0.3);
+    audioManager.load('zoom_01', {url: '/static/audio/signals/zoom_001.m4a'}, 1.0);
 
     // engines
 
     audioManager.load('engine_heavy_001', {url: '/static/audio/engines/engine_heavy_001.m4a'}, 0.075);
     audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.m4a'}, 0.075);
     audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.m4a'}, 0.075);
+
 }

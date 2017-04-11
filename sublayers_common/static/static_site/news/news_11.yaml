@@ -1,0 +1,8 @@
+date: '24.03.2017'
+header:
+  ru: 'Обновление v0.130.2955'
+  en: 'Update v0.130.2955'
+link: 'update_v0_130_2955'
+content:
+  ru: '<div style=" font-size: 9pt; "><br>- Добавлен пылевой шлейф за игроками, отражающий размер и скорость транспорта.<br>- Добавлен декоративный шум поверх игрового экрана.<br>- Полностью переработана система звуков, добавлена обработка звука в зависимости от дистанции, добавлены новые события.<br>- Кнопка быстрого запуска теперь запоминает наименование айтема, если тот заканчивается.<br>- Доработка взаимодействия сконтейнерами.<br>- В основную игру добавлен новый город: Прайр.<br></div><div style="width: 400px; height: 315px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/city_n.png"></img></div>'
+  en: '<div style=" font-size: 9pt; "><br>- Added a dusty trail behind the players, displaying the size and speed of transport.<br>- Added a decorative "white static" over the game screen.<br>- Completely redesigned system of sounds, added sound processing depending on the distance. Added new events.<br>- The quick launch button now remembers the item, if it ends.<br>- Improving the interaction of containers.<br>	- A new city has been added to the main game: Prior.<br></div><div style="width: 400px; height: 315px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/city_n.png"></img></div>'

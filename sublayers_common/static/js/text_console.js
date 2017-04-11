@@ -560,7 +560,7 @@ var ConsoleFirstEnter = (function (_super) {
 
     ConsoleFirstEnter.prototype.teaching_answer = function(teach) {
         $.ajax({
-            url: "http://" + $('#settings_host_name').text() + $('#settings_server_mode_link_path').text() + '/api/tca',
+            url: "http://" + location.hostname + $('#settings_server_mode_link_path').text() + '/api/tca',
             data: {answer: teach},
             success: function(data) {
                 if (data && data.length) {

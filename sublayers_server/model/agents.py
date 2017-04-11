@@ -789,8 +789,7 @@ class TeachingUser(QuickUser):
     def __init__(self, time, **kw):
         super(TeachingUser, self).__init__(time=time, **kw)
         self.armory_shield_status = False
-        # todo: убрать is_tester
-        if not self.user.quick and not self.user.is_tester:
+        if not self.user.quick:
             assert self.user.teaching_state == 'map'
             self.create_teaching_quest_map(time=time)
 
@@ -817,7 +816,7 @@ class TeachingUser(QuickUser):
         if new_quest.generate(event=event):
             self.example.add_quest(quest=new_quest, time=event.time)
             self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
-            if self.user.quick or self.user.is_tester:
+            if self.user.quick:
                 self.set_teaching_state('map')
         else:
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
