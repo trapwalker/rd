@@ -35,6 +35,8 @@ var ParentCanvasManager = (function(_super){
         this.dom_context = this.dom_canvas.getContext("2d");
         this.dom_canvas.width = a.x;
         this.dom_canvas.height = a.y;
+
+        this.jq_for_cursor = $("#bodydiv");
     };
 
     ParentCanvasManager.prototype.add_vobj = function(vobj, priority) {
@@ -98,8 +100,6 @@ var MapCanvasManager = (function(_super){
 
         this._mouse_focus_widget = null;
         this._mouse_look = false;
-        this._mouse_client_x = 0;
-        this._mouse_client_y = 0;
         this._mouse_client = new Point(0, 0);
     }
 
@@ -108,10 +108,7 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype._on_mouse_hover = function (event) {
-        this._mouse_client_x = event.clientX;
-        this._mouse_client_y = event.clientY;
         this._mouse_client = new Point(event.clientX, event.clientY);
-        //console.log(this._mouse_client_x, this._mouse_client_y);
     };
 
     MapCanvasManager.prototype.set_mouse_look = function (new_look_state) {
@@ -136,7 +133,14 @@ var MapCanvasManager = (function(_super){
         //console.log('MapCanvasManager.prototype.redraw', time);
         this.context.clearRect(0, 0, a.x, a.y);
 
-        this._mouse_focus_widget = this.mouse_test();
+        var focused_widget = this.mouse_test(time);
+        // Заменить курсор и css, если нужно
+        if ((focused_widget && !this._mouse_focus_widget) || (!focused_widget && this._mouse_focus_widget))
+            if (focused_widget)
+                this.jq_for_cursor.addClass("sublayers-clickable");
+            else
+                this.jq_for_cursor.removeClass("sublayers-clickable");
+        this._mouse_focus_widget = focused_widget;
 
         this.real_zoom = mapManager.getZoom();
         this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));

@@ -200,6 +200,7 @@ var MapManager = (function(_super) {
         document.getElementById('map2div').onkeyup = onKeyUpMap;
         document.getElementById('map2div').onmouseup = onMouseUpMap;
         document.getElementById('map2div').onmousemove = onMouseMoveMap;
+        document.getElementById('map2div').onmouseenter = onMouseMoveMap;
         document.getElementById('map2div').onmouseout = onMouseOutMap;
         document.getElementById('map2div').addEventListener("wheel", onMapWheel);
 
