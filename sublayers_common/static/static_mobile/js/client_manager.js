@@ -254,7 +254,7 @@ var ClientManager = (function () {
 
             // Создание/инициализация виджетов
             if (obj.cls == 'Town' || obj.cls == 'GasStation') {
-                obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                obj_marker = new WCanvasStaticTownMarker(obj); // виджет маркера
                 //obj_marker = new WStaticObjectMarker(obj);
             }
             else

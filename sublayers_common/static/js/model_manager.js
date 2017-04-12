@@ -202,7 +202,7 @@ var ClientManager = (function () {
             }
 
             if (car.cls == "SlowMine" || car.cls == "BangMine") {
-                console.warn(car)
+                new WCanvasMarker(car);
             }
 
             if (car.cls == "Turret") {
@@ -254,7 +254,7 @@ var ClientManager = (function () {
                 case 'Town':
                     obj.title = event.object.example.title || 'GasStation';
                     obj.direction = - 2 * Math.PI;
-                    obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                    obj_marker = new WCanvasStaticTownMarker(obj); // виджет маркера
                     break;
                 case 'QuickGamePowerUpFullHeal':
                 case 'QuickGamePowerUpFullFuel':
@@ -268,9 +268,13 @@ var ClientManager = (function () {
                 case 'RadioPoint':
                     obj.direction = 0.5 * Math.PI;
                     break;
-                case 'POICorpse':
-                    obj.direction = event.object.car_direction + Math.PI / 2.;
-                    console.warn(obj);
+                //case 'POICorpse':
+                //    obj.direction = event.object.car_direction + Math.PI / 2.;
+                //    console.warn(1111, obj);
+                //    break;
+                case 'POILoot':
+                    obj.direction = 0.0;
+                    new WCanvasPOILootMarker(obj);
                     break;
                 default:
                     console.warn(obj);

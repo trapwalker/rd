@@ -1,7 +1,7 @@
 var ECanvasCarTail = (function () {
     function ECanvasCarTail(position, direction, duration, icon_name, max_tail_scale){
         this.duration = duration || 1000;  // 1сек по умолчанию
-        this.effect_image_obj = iconsLeaflet.getIcon(icon_name, "canvas_icon");
+        this.effect_image_obj = iconsLeaflet.getIcon(icon_name);
         this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.direction = direction; // Направление в радианах

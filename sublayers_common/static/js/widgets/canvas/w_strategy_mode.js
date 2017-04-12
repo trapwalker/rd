@@ -120,7 +120,7 @@ var WStrategyModeManager = (function () {
             ctx.restore();
         }
         else {
-            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car', 'canvas_icon');
+            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car');
         }
 
         // Отрисовка линии радара

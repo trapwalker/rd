@@ -54,12 +54,16 @@ var WCanvasMarker = (function (_super) {
             case 'Turret':
                 icon_name = 'turret_001';
                 break;
+            case "SlowMine":
+            case "BangMine":
+                icon_name = "mine_001";
+                break;
             default:
                 console.warn('Не найдена иконка для', mobj);
                 return;
         }
 
-        this.icon_obj = iconsLeaflet.getIcon(icon_name, "canvas_icon");
+        this.icon_obj = iconsLeaflet.getIcon(icon_name);
         if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;
@@ -400,8 +404,8 @@ var WCanvasCarMarker = (function (_super) {
                 icon_name = 'car';
         }
 
-        this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name, 'canvas_icon');
-        this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow', 'canvas_icon');
+        this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name);
+        this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow');
 
         this.icon_size_min_div_2 = Math.min(this.icon_obj.iconSize[0], this.icon_obj.iconSize[1]) >> 1;
     };
@@ -410,22 +414,22 @@ var WCanvasCarMarker = (function (_super) {
 })(WCanvasMarker);
 
 
-var WCanvasStaticObjectMarker = (function (_super) {
-    __extends(WCanvasStaticObjectMarker, _super);
+var WCanvasStaticTownMarker = (function (_super) {
+    __extends(WCanvasStaticTownMarker, _super);
 
-    function WCanvasStaticObjectMarker(mobj) {
+    function WCanvasStaticTownMarker(mobj) {
         _super.call(this, mobj);
     }
 
-    WCanvasStaticObjectMarker.prototype.getVisibleState = function () {
+    WCanvasStaticTownMarker.prototype.getVisibleState = function () {
         var zoom = 15. - mapCanvasManager.real_zoom;
         if (zoom <= 0) return 0;
         if (zoom > 1.) return 1.;
         return zoom;
     };
 
-    WCanvasStaticObjectMarker.prototype.updateIcon = function() {
-        //console.log('WCanvasStaticObjectMarker.prototype.updateIcon');
+    WCanvasStaticTownMarker.prototype.updateIcon = function() {
+        //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
         var mobj = this.mobj;
         var icon_name = '';
         switch (mobj.cls) {
@@ -449,7 +453,7 @@ var WCanvasStaticObjectMarker = (function (_super) {
                 icon_name = 'city';
         }
         this.cm_z_index = 75;
-        this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_name, 'canvas_icon');
+        this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_name);
         if (!this.icon_obj) return;
         this.frame_count = this.icon_obj.frames;
         this.time_of_frame = this.duration / this.icon_obj.frames;
@@ -463,7 +467,40 @@ var WCanvasStaticObjectMarker = (function (_super) {
         }
     };
 
-    return WCanvasStaticObjectMarker;
+    return WCanvasStaticTownMarker;
+})(WCanvasMarker);
+
+
+var WCanvasPOILootMarker = (function (_super) {
+    __extends(WCanvasPOILootMarker, _super);
+
+    function WCanvasPOILootMarker(mobj) {
+        _super.call(this, mobj);
+        this.obj_id = mobj.ID;
+    }
+
+    WCanvasPOILootMarker.prototype.updateIcon = function() {
+        //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
+        this.icon_obj = iconsLeaflet.getIcon("icon_loot");
+        if (! this.icon_obj) return;
+        this.duration = 1000;
+        this.frame_count = this.icon_obj.frames;
+        this.time_of_frame = this.duration / this.icon_obj.frames;
+        this.frame_width = this.icon_obj.size[0]; // размер одного кадра
+        this.frame_height = this.icon_obj.size[1]; // размер одного кадра
+        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
+        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
+    };
+
+    WCanvasPOILootMarker.prototype.click_handler = function(event) {
+        //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
+        windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
+        returnFocusToMap();
+    };
+
+    return WCanvasPOILootMarker;
 })(WCanvasMarker);
 
 
@@ -588,7 +625,7 @@ var WCanvasAnimateMarkerPowerUp = (function (_super) {
         //console.log('WCanvasAnimateMarker.prototype.updateIcon');
         // Здесь нужно заполнить все эти параметры
         this.cm_z_index = 10;
-        this.icon_obj = iconsLeaflet.getIcon(this.mobj._icon_name, "canvas_icon");
+        this.icon_obj = iconsLeaflet.getIcon(this.mobj._icon_name);
         this.duration = 1500;
         this.frame_count = this.icon_obj.frames;
         this.time_of_frame = this.duration / this.icon_obj.frames;
@@ -615,7 +652,7 @@ var WCanvasAnimateMarkerShieldEffect = (function (_super) {
         //console.log('WCanvasAnimateMarker.prototype.updateIcon');
         // Здесь нужно заполнить все эти параметры
         this.cm_z_index = 8; // todo: Выбрать правильный приоритет
-        this.icon_obj = iconsLeaflet.getIcon("icon-car-effect-shield", "canvas_icon");
+        this.icon_obj = iconsLeaflet.getIcon("icon-car-effect-shield");
         this.duration = 1500;
         this.frame_count = this.icon_obj.frames;
         this.time_of_frame = this.duration / this.icon_obj.frames;
@@ -645,7 +682,7 @@ var WCanvasRocketMarkerEffect = (function (_super) {
         //console.log('WCanvasAnimateMarker.prototype.updateIcon');
         // Здесь нужно заполнить все эти параметры
         this.cm_z_index = 8; // todo: Выбрать правильный приоритет
-        this.icon_obj = iconsLeaflet.getIcon(this.mobj._icon_name, "canvas_icon");
+        this.icon_obj = iconsLeaflet.getIcon(this.mobj._icon_name);
         if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;

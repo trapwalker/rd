@@ -119,19 +119,17 @@ var LeafletIconManager = (function(){
 
     }
 
-    LeafletIconManager.prototype.getIcon = function(icon_name, type){
-        type = type ? type : 'icon';
-        if (!this.icons.hasOwnProperty(icon_name) || !this.icons[icon_name].hasOwnProperty(type)) return null;
-        return this.icons[icon_name][type];
+    LeafletIconManager.prototype.getIcon = function(icon_name){
+        if (!this.icons.hasOwnProperty(icon_name)) return null;
+        return this.icons[icon_name];
     };
 
-    LeafletIconManager.prototype.getIconByID = function(ID, type) {
-        type = type ? type : 'icon';
+    LeafletIconManager.prototype.getIconByID = function(ID) {
         var tid = ID % this.max_id;
         for(var key in this.icons)
-            if (this.icons[key].id == tid)
-                return this.icons[key][type];
-        return this.icons['icon_city'][type];
+            if (this.icons[key].icon_id == tid)
+                return this.icons[key];
+        return this.icons['icon_city'];
     };
 
     LeafletIconManager.prototype.load_complete = function () {
@@ -146,13 +144,11 @@ var LeafletIconManager = (function(){
         this.count_loading_img++;
         img.onload = function() {
             iconsLeaflet.icons[icon_name] = {
-                canvas_icon: {
-                    img: img,
-                    iconSize: [this.width, this.height],
-                    size: icon_size,
-                    frames: frames
-                },
-                id: icon_id
+                img: img,
+                iconSize: [this.width, this.height],
+                size: icon_size,
+                frames: frames,
+                icon_id: icon_id
             };
             iconsLeaflet.count_loading_img--;
             iconsLeaflet.load_complete();
