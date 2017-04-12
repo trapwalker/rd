@@ -236,14 +236,21 @@ var MapManager = (function(_super) {
             }
         });
 
+        var pos = {
+            str: $('#settings_start_coord').text(),
+            x: '',
+            y: ''
+        };
+        pos.x = parseFloat(pos.str.split('_')[0]);
+        pos.y = parseFloat(pos.str.split('_')[1]);
         // Подключение новой карты
         this.current_zoom = 18; // todo: cookieStorage.zoom?
         smap =  slippymap({
             div: "map2",
             zMin: ConstMinMapZoom,
             zMax: ConstMaxMapZoom,
-            lat: 32.93523932687671,
-            lon: -113.0391401052475,
+            x: pos.x,
+            y: pos.y,
             zoom: this.current_zoom
         }).init();
 

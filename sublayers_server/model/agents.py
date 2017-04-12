@@ -773,7 +773,14 @@ class QuickUser(User):
         self.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
         yield self.example.car.load_references()
 
-        self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 750) # Радиус появления игроков в быстрой игре
+        if user.start_position:
+            self.example.car.position = user.start_position
+            user.start_position = None
+        else:
+            # Радиус появления игроков в быстрой игре
+            self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 750)
+
+
         self.example.current_location = None
         self.current_location = None
 

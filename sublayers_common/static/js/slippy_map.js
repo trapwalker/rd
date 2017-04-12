@@ -10,6 +10,8 @@
                 zoom: 1,
                 lon: 0,
                 lat: 0,
+                x: 0,
+                y: 0,
                 tileproviders: [
                     // Слои карты. Отрисовка начинается с нулевого слоя. Здесь очень важен порядок!
                     {
@@ -491,8 +493,8 @@
                     }
                     coords = {
                         z: (map.position && map.position.z) || options.zoom,
-                        x: (map.position && map.position.x) || map.position.lon2posX(options.lon),
-                        y: (map.position && map.position.y) || map.position.lat2posY(options.lat)
+                        x: (map.position && map.position.x) || options.x || map.position.lon2posX(options.lon),
+                        y: (map.position && map.position.y) || options.y || map.position.lat2posY(options.lat)
                     };
                     map.position.center(coords);
                     map.position.is_init = true;
