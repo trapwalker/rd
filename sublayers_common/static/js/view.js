@@ -167,6 +167,9 @@ $(document).ready(function () {
         if (ws_connector.isConnected)
             clientManager.get_ping_set_fps();
     }, 25000);
+
+    resourceLoadManager.load_complete_init = true;
+    resourceLoadManager.del(null);
 });
 
 var index_notes_test = 0;

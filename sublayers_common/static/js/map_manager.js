@@ -190,6 +190,8 @@ var MapManager = (function(_super) {
         this.zoomSlider = null; // инициализируется после карты
 
         this.strategy_mode_timer = null;
+
+        resourceLoadManager.add(this);
     }
 
     MapManager.prototype._init = function () {
@@ -251,7 +253,8 @@ var MapManager = (function(_super) {
             zMax: ConstMaxMapZoom,
             x: pos.x,
             y: pos.y,
-            zoom: this.current_zoom
+            zoom: this.current_zoom,
+            loadCompleteCB: this.removeFromLoader
         }).init();
 
         // Инициализация виджетов карты
@@ -265,6 +268,14 @@ var MapManager = (function(_super) {
                 setTimeout(add_to_canvas_manager, 0);
         }
         setTimeout(add_to_canvas_manager, 0);
+
+        // Добавиться в загрузчик
+        setTimeout(this.removeFromLoader, 20000);
+    };
+
+    MapManager.prototype.removeFromLoader = function () {
+        console.trace('MapManager.prototype.removeFromLoader');
+        resourceLoadManager.del(mapManager);
     };
 
     MapManager.prototype.set_coord = function (options) {

@@ -10,6 +10,7 @@ import tornado.gen
 
 from tornado.options import options
 from sublayers_server.model.vectors import Point
+from sublayers_server.model.registry.odm_position import Position
 
 
 class PlayHandler(BaseHandler):
@@ -50,7 +51,8 @@ class PlayHandler(BaseHandler):
                     coord = agent.car.position(time=self.application.srv.get_time())
                 else:
                     coord = Point.random_gauss(self.application.srv.quick_game_start_pos, 750)
-                user.start_position = coord
+                user.start_position = Position(coord.x, coord.y)
+                yield user.save()
                 if (not user.quick) and (user.teaching_state != "map"):
                     log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
                     self.redirect('/play')
