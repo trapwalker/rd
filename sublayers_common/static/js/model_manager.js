@@ -217,7 +217,7 @@ var ClientManager = (function () {
 
             if (car.cls == "POICorpse") {
                 car.direction = event.object.car_direction + Math.PI / 2.;
-                console.warn(car)
+                new WCanvasLootMarker(car);
             }
 
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
@@ -273,8 +273,7 @@ var ClientManager = (function () {
                 //    console.warn(1111, obj);
                 //    break;
                 case 'POILoot':
-                    obj.direction = 0.0;
-                    new WCanvasPOILootMarker(obj);
+                    new WCanvasLootMarker(obj);
                     break;
                 default:
                     console.warn(obj);
