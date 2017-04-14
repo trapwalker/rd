@@ -49,7 +49,7 @@
     pointer-events: none;
     font: 16pt MICRADI;
     color: #2afd0a;
-    left: -8px;
+    left: -15px;
 }
 
 #Zoom_btnPlus {
@@ -71,8 +71,8 @@
 }
 
 #Zoom_sliderBar {
-    height: 175px; /* на каждый масштаб +25px, но начинать считать с ЕДИНИЦЫ!*/
-    width: 35px;
+    height: 170px; /* на каждый масштаб +25px, но начинать считать с ЕДИНИЦЫ!*/
+    width: 60px;
     background-color: transparent;
     position: relative;
     top: 6px;
@@ -92,7 +92,7 @@
     font-family: MICRADI;
     font-size: 50pt;
     background-color: rgba(0, 255, 85, 0.10);
-    top: 8px;
+    top: 12px;
 }
 
 #ZoomBtnMinusSpan {
@@ -104,12 +104,11 @@
 
 #Zoom_slider {
     pointer-events: auto;
-    border-radius: 0;
-    height: 170px;
-    width: 25px;
-    border: 0;
     position: absolute;
-    background-color: transparent;
+    background: transparent url('/static/img/control_zoom/zoom_mark.png') 100% 100% no-repeat;
+    width: 39px;
+    height: 27px;
+    left: 20px;
 }
 
 #Zoom_slider span {
@@ -117,9 +116,7 @@
 }
 
 .slider-zoom-carriage {
-    pointer-events: auto;
-    background: transparent url('/static/img/control_zoom/zoom_mark.png') 50% 50% no-repeat;
-    margin-left: 0px;
+
 }
 
 .slider-zoom-carriage:hover {

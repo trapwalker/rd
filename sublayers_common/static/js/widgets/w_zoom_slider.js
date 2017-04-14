@@ -10,7 +10,6 @@ var WZoomSlider = (function () {
         this.mapMng = mapManager;
         this.count_zoom = mapManager.getMaxZoom() - mapManager.getMinZoom();
         this.px_on_zoom = ConstZoomHeightOfScale / (this.count_zoom);
-        this.points_in_step = ConstZoomHeightOfScale / (this.count_zoom);
         this.zoom_visible = true;
 
         this.options = {
@@ -38,58 +37,26 @@ var WZoomSlider = (function () {
         $('#DivForBtnFSCRInsideZoom').on('click', {self: this}, this.fullscr);
 
         parentGlass.append('<div id="zoomSliderMainDivWrapper"></div>');
-
         var parent = $('#zoomSliderMainDivWrapper');
 
-
         // создание 5 дивов
-        var nodeTextDiv = '<div id="ZoomTextDiv"><div id="ZoomTextZoomValue"></div></div>';
-        var nodePlus = '<div id="Zoom_btnPlus"><div id="ZoomBtnPlusSpan">+</div></div>';
-        var nodeBar = '<div id="Zoom_sliderBar"></div>';
-        var nodeSlider = '<div id="Zoom_slider"></div>';
-        var nodeMinus = '<div id="Zoom_btnMinus"><div id="ZoomBtnMinusSpan">_</div></div>';
-
+        var jq_nodeTextDiv = $('<div id="ZoomTextDiv"><div id="ZoomTextZoomValue"></div></div>');
+        var jq_nodePlus = $('<div id="Zoom_btnPlus"><div id="ZoomBtnPlusSpan">+</div></div>');
+        var jq_nodeBar = $('<div id="Zoom_sliderBar"></div>');
+        this.jq_slider = $('<div id="Zoom_slider"></div>');
+        var jq_nodeMinus = $('<div id="Zoom_btnMinus"><div id="ZoomBtnMinusSpan">_</div></div>');
 
         // добавление дивов в родительский див
-        parent.append(nodeTextDiv);
-        parent.append(nodePlus);
-        parent.append(nodeBar);
+        parent.append(jq_nodeTextDiv);
+        parent.append(jq_nodePlus);
+        parent.append(jq_nodeBar);
+        jq_nodeBar.append(this.jq_slider);
+        parent.append(jq_nodeMinus);
+        jq_nodePlus.on('click', {self: this}, this.plusFunc);
+        jq_nodeMinus.on('click', {self: this}, this.minusFunc);
+        this.jq_zoom_text_value = $('#ZoomTextZoomValue'); // сохранение jq-ссылок на слайдер и область текста
 
-        $('#Zoom_sliderBar').append(nodeSlider);
-        parent.append(nodeMinus);
-
-        $('#Zoom_btnPlus').on('click', {self: this}, this.plusFunc);
-        $('#Zoom_btnMinus').on('click', {self: this}, this.minusFunc);
-
-        // сохранение jq-ссылок на слайдер и область текста
-        this.slider = $('#Zoom_slider');
-        this.zoom_text_value = $('#ZoomTextZoomValue');
-
-        // создание слайдера
-        this.slider.slider({
-            max: this.options.max * this.points_in_step,
-            min: this.options.min * this.points_in_step,
-            orientation: 'vertical',
-            step: this.options.step,
-            animate: ConstDurationAnimation
-        }).on('slidechange', {self: this}, this.slidechange);
-
-        // Изменение размеров ползунка
-        this.slider.removeClass('ui-widget-content');
-        var carriage = this.slider.find('span:first-child');
-
-        carriage.addClass('slider-zoom-carriage');
-        carriage.css('width', '39px');
-        carriage.css('height', '27px');
-        carriage.css('border', '0px');
-        carriage.css('left', '20px');
-        carriage.css('margin-bottom', '-13.5px');
-        //carriage.css("cursor", 'pointer'); // т.к. класс sublayers-clickable не применяется
-        carriage.append('<div id="ZoomDivInsideSpanCarriage"></div>');
-
-        this.zomm_circle = $('#ZoomDivInsideSpanCarriage');
-
-        // Создание и добавление текста
+        // Создание и добавление текста Zoom вертикально расположенного на виджете
         var spanZoomZoomText = '<span id="spanZoomZoomText" class="sublayers-unclickable">zoom</span>';
         parent.append(spanZoomZoomText);
 
@@ -111,7 +78,6 @@ var WZoomSlider = (function () {
         $('#DivForBtnRazverALLInsideZoomCompact').click(this, this.razverAll);
         $('#DivForBtnFSCRInsideZoomCompact').on('click', {self: this}, this.fullscr);
 
-
         // добавление кнопок + и минус
         this.mainCompact.append('<div id="DivForBtnPlusZoomCompact">' +
             '<div class="classForBtnZoomCompactText">+</div></div>');
@@ -122,10 +88,10 @@ var WZoomSlider = (function () {
 
         // добавление текста - уровень зума
         this.mainCompact.append('<div id="ZoomTextDivCompact"><div id="ZoomTextZoomValueCompact"></div></div>');
-        this.zoom_text_value_compact = $('#ZoomTextZoomValueCompact');
+        this.jq_zoom_text_value_compact = $('#ZoomTextZoomValueCompact');
 
 
-        this.setZoom(this.mapMng.getZoom());
+        //this.setZoom(this.mapMng.getZoom());
     }
 
     WZoomSlider.prototype.drawScale = function(){
@@ -181,29 +147,16 @@ var WZoomSlider = (function () {
     };
 
     WZoomSlider.prototype.setZoom = function(new_zoom){
-        //console.log('WZoomSlider.prototype.setZoom');
-        this.slider.slider("value", new_zoom * this.points_in_step);
-
+        // Установка зума в слайдере извне
+        console.log('WZoomSlider.prototype.setZoom');
         // текст, который нужно вывести
-        var new_str = new_zoom + 'x';
-        var old_str = this.zoom_text_value.text();
+        var new_str = new_zoom.toFixed(1) + 'x';
+        var old_str = this.jq_zoom_text_value.text();
         if(old_str != new_str) {
-            var text = this.zoom_text_value;
-            var text_compact = this.zoom_text_value_compact;
-            text.animate({opacity: 0}, ConstDurationAnimation / 2., function(){
-                text.text(new_str)
-                    .animate({opacity: 1}, ConstDurationAnimation / 2.);
-            });
-
-            text_compact.animate({opacity: 0}, ConstDurationAnimation / 2., function(){
-                text_compact.text(new_str)
-                    .animate({opacity: 0.5}, ConstDurationAnimation / 2.);
-            });
-
-            var zoom_circle = this.zomm_circle;
-            zoom_circle.animate({opacity: 0.3}, ConstDurationAnimation / 2., function(){
-                zoom_circle.animate({opacity: 1}, ConstDurationAnimation / 2.);
-            })
+            this.jq_zoom_text_value.text(new_str);
+            this.jq_zoom_text_value_compact.text(new_str);
+            // Установка каретки
+            this.jq_slider.css("top", (ConstZoomHeightOfScale - this.px_on_zoom * (new_zoom - this.options.min) - 13.5).toFixed(0) + "px");
         }
     };
 
@@ -220,18 +173,18 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.slidechange = function (event) {
         // отрабатывает мгновенно, значение value у слайдера уже установлено до начала анимации
         //console.log('WZoomSlider.prototype.slidechange');
-        var slider = event.data.self;
-        var value = $('#Zoom_slider').slider("value");
-        var zoom = Math.round(value / slider.points_in_step);
-        if (zoom != slider.mapMng.getZoom()) {
-            slider.mapMng.setZoom(zoom);
-            return;
-        }
-        if (Math.abs(value - zoom * slider.points_in_step) > 1)
-            slider.setZoom(zoom);
-
-        // установить фокус на карту
-        returnFocusToMap();
+        //var slider = event.data.self;
+        //var value = $('#Zoom_slider').slider("value");
+        //var zoom = Math.round(value / slider.px_on_zoom);
+        //if (zoom != slider.mapMng.getZoom()) {
+        //    slider.mapMng.setZoom(zoom);
+        //    return;
+        //}
+        //if (Math.abs(value - zoom * slider.px_on_zoom) > 1)
+        //    slider.setZoom(zoom);
+        //
+        //// установить фокус на карту
+        //returnFocusToMap();
     };
 
     WZoomSlider.prototype.fullscr = function (event) {

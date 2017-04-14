@@ -310,6 +310,8 @@ var MapManager = (function(_super) {
         if (this.need_render) {
             this.need_render = false;
             smap.renderer.refresh();
+            this.last_render_time = client_time;
+            this.zoomSlider.setZoom(this.current_zoom);
         }
     };
 
