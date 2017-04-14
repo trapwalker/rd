@@ -195,7 +195,7 @@ var MapManager = (function(_super) {
     }
 
     MapManager.prototype._init = function () {
-        //ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
+        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
 
         // Обработчики событий карты
         document.getElementById('map2div').onkeydown = onKeyDownMap;
@@ -274,7 +274,7 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.removeFromLoader = function () {
-        console.trace('MapManager.prototype.removeFromLoader');
+        //console.trace('MapManager.prototype.removeFromLoader');
         resourceLoadManager.del(mapManager);
     };
 
@@ -283,8 +283,10 @@ var MapManager = (function(_super) {
             smap.map.position.setX(options.x);
         if (options.y !== undefined)
             smap.map.position.setY(options.y);
-        if (options.z !== undefined)
+        if (options.z !== undefined) {
+            this.current_zoom = options.z;
             smap.map.position.setZ(options.z);
+        }
         this.need_render = true;
     };
 
@@ -304,7 +306,7 @@ var MapManager = (function(_super) {
             this.set_coord({z: this.current_zoom});
         }
 
-         if (client_time - this.last_render_time > 2000) // Сделать перерисовку обязательно раз в 2 секунды
+        if (client_time - this.last_render_time > 2000) // Сделать перерисовку обязательно раз в 2 секунды
             this.need_render = true;
 
         if (this.need_render) {

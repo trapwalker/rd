@@ -71,14 +71,13 @@
 }
 
 #Zoom_sliderBar {
-    height: 170px; /* на каждый масштаб +25px, но начинать считать с ЕДИНИЦЫ!*/
-    width: 60px;
-    background-color: transparent;
     position: relative;
+    height: 175px; /* на каждый масштаб +25px, но начинать считать с ЕДИНИЦЫ!*/
+    width: 60px;
     top: 6px;
     left: 0;
+    pointer-events: auto;
 }
-
 
 #Zoom_btnMinus {
     pointer-events: auto;
@@ -103,7 +102,7 @@
 }
 
 #Zoom_slider {
-    pointer-events: auto;
+    pointer-events: none;
     position: absolute;
     background: transparent url('/static/img/control_zoom/zoom_mark.png') 100% 100% no-repeat;
     width: 39px;

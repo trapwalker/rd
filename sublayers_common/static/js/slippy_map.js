@@ -174,14 +174,20 @@
                         var tileproviders = map.tileproviders;
                         for (var x = viewport.x_tile_min; x <= viewport.x_tile_max; x++)
                             for (var y = viewport.y_tile_min; y <= viewport.y_tile_max; y++)
-                                for (var prov_index = 0; prov_index < tileproviders.length; prov_index++)
-                                    map.renderer.load_queue.push({
-                                        x: x,
-                                        y: y,
-                                        z: zoom,
-                                        id: encodeIndex(x, y, zoom),
-                                        tileprovider: tileproviders[prov_index]
-                                    });
+                                for (var prov_index = 0; prov_index < tileproviders.length; prov_index++) {
+                                    var id = encodeIndex(x, y, zoom);
+                                    if (typeof map.renderer.tiles[tileproviders[prov_index].name] === 'undefined')
+                                        map.renderer.tiles[tileproviders[prov_index].name] = [];
+                                    if (!map.renderer.tiles[tileproviders[prov_index].name][id] ||
+                                        !map.renderer.tiles[tileproviders[prov_index].name][id].complete)
+                                        map.renderer.load_queue.push({
+                                            x: x,
+                                            y: y,
+                                            z: zoom,
+                                            id: id,
+                                            tileprovider: tileproviders[prov_index]
+                                        });
+                                }
                     },
                     next_load_tile: function () {
                         var tileLoading = map.renderer.load_queue.shift();
@@ -343,12 +349,12 @@
 
                         ctx.restore();
 
-                        ctx.textAlign = "left";
-                        ctx.textBaseline = "center";
-                        ctx.font = "22pt MICRADI";
-                        ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
-                        ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
-                        ctx.fillText("Load Queue : " + map.renderer.load_queue.length, 100, 130);
+                        //ctx.textAlign = "left";
+                        //ctx.textBaseline = "center";
+                        //ctx.font = "22pt MICRADI";
+                        //ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
+                        //ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
+                        //ctx.fillText("Load Queue : " + map.renderer.load_queue.length, 100, 130);
                     },
                     garbage: function () {
                         var viewports = map.renderer.viewports;

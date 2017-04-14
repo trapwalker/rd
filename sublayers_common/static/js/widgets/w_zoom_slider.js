@@ -16,7 +16,7 @@ var WZoomSlider = (function () {
             parentDiv: "zoomSetDivForZoomSlider",
             max: mapManager.getMaxZoom(),
             min: mapManager.getMinZoom(),
-            step: 0.2,
+            step: 1,
             height: 100, // px
             width: 5,    // px
             onChange: ''
@@ -56,6 +56,19 @@ var WZoomSlider = (function () {
         jq_nodeMinus.on('click', {self: this}, this.minusFunc);
         this.jq_zoom_text_value = $('#ZoomTextZoomValue'); // сохранение jq-ссылок на слайдер и область текста
 
+        // Вешаем ивенты мыши на слайдер
+        var self = this;
+        jq_nodeBar.on('mousemove', function(event) {
+            if (event.buttons == 1) {
+                mapManager.onZoomEnd();
+                mapManager.set_coord({z: 18 - event.offsetY / ConstZoomHeightOfScale * self.count_zoom});
+            }
+        });
+        jq_nodeBar.on('click', function(event) {
+            mapManager.onZoomEnd();
+            mapManager.set_coord({z: 18 - event.offsetY / ConstZoomHeightOfScale * self.count_zoom});
+        });
+
         // Создание и добавление текста Zoom вертикально расположенного на виджете
         var spanZoomZoomText = '<span id="spanZoomZoomText" class="sublayers-unclickable">zoom</span>';
         parent.append(spanZoomZoomText);
@@ -89,9 +102,6 @@ var WZoomSlider = (function () {
         // добавление текста - уровень зума
         this.mainCompact.append('<div id="ZoomTextDivCompact"><div id="ZoomTextZoomValueCompact"></div></div>');
         this.jq_zoom_text_value_compact = $('#ZoomTextZoomValueCompact');
-
-
-        //this.setZoom(this.mapMng.getZoom());
     }
 
     WZoomSlider.prototype.drawScale = function(){
@@ -148,7 +158,7 @@ var WZoomSlider = (function () {
 
     WZoomSlider.prototype.setZoom = function(new_zoom){
         // Установка зума в слайдере извне
-        console.log('WZoomSlider.prototype.setZoom');
+        //console.log('WZoomSlider.prototype.setZoom');
         // текст, который нужно вывести
         var new_str = new_zoom.toFixed(1) + 'x';
         var old_str = this.jq_zoom_text_value.text();
@@ -168,23 +178,6 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.minusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() - slider.options.step);
-    };
-
-    WZoomSlider.prototype.slidechange = function (event) {
-        // отрабатывает мгновенно, значение value у слайдера уже установлено до начала анимации
-        //console.log('WZoomSlider.prototype.slidechange');
-        //var slider = event.data.self;
-        //var value = $('#Zoom_slider').slider("value");
-        //var zoom = Math.round(value / slider.px_on_zoom);
-        //if (zoom != slider.mapMng.getZoom()) {
-        //    slider.mapMng.setZoom(zoom);
-        //    return;
-        //}
-        //if (Math.abs(value - zoom * slider.px_on_zoom) > 1)
-        //    slider.setZoom(zoom);
-        //
-        //// установить фокус на карту
-        //returnFocusToMap();
     };
 
     WZoomSlider.prototype.fullscr = function (event) {
@@ -269,7 +262,6 @@ var WZoomSlider = (function () {
 
     return WZoomSlider;
 })();
-
 
 //Подстановка префиксов к методам для работы полноэкранного режима в различных браузерах
 function RunPrefixMethod(obj, method) {
