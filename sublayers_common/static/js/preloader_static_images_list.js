@@ -8,9 +8,7 @@
         resourceLoadManager.del(preloaderImage);
     }
 
-
     resourceLoadManager.add(preloaderImage);
-
 
     preloaderImage.add_list([
         '/static/img/teaching/arrow_big.png',

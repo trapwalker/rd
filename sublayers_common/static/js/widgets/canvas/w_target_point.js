@@ -12,7 +12,7 @@ var WCanvasTargetPoint = (function (_super) {
         this.car = car;
         this.target_point = null;
 
-        this.icon_target_obj = iconsLeaflet.getIcon('icon_map_target_point', 'canvas_icon');
+        this.icon_target_obj = iconsLeaflet.getIcon('icon_map_target_point');
 
         mapCanvasManager.add_vobj(this, 20);
     }

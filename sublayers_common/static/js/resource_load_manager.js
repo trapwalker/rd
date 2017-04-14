@@ -11,6 +11,7 @@ var ResourceLoadManager = (function () {
         this.resource_list = [];
         // todo: сделать setTimeout на несколько секунд вперёд, чтобы сообщить в консоль, какие объекты не загружены ещё.
         this.load_complete_called = false;
+        this.load_complete_init = false;
     }
 
     ResourceLoadManager.prototype.add = function (obj) {
@@ -20,19 +21,20 @@ var ResourceLoadManager = (function () {
 
     ResourceLoadManager.prototype.del = function (obj) {
         //console.log('ResourceLoadManager: load complete for ', obj);
-        var index = 0;
+        var index = -1;
         for (var i = 0; i < this.resource_list.length; i++)
             if (obj == this.resource_list[i])
                 index = i;
-        this.resource_list.splice(index, 1);
-        if (this.resource_list.length == 0)
+        if (index >= 0)
+            this.resource_list.splice(index, 1);
+        if ((this.resource_list.length == 0) && this.load_complete_init)
             this.load_complete();
     };
 
     ResourceLoadManager.prototype.load_complete = function () {
         if (this.load_complete_called) return;
         this.load_complete_called = true;
-        setTimeout(function() {ws_connector.connect(); }, 2000); // todo: fix this f*cking bug !
+        ws_connector.connect();
     };
 
     return ResourceLoadManager;

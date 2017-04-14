@@ -15,6 +15,7 @@ var WObservingRange = (function (_super) {
 
     WObservingRange.prototype.redraw = function(ctx, time){
         //console.log('WObservingRange.prototype.change');
+        //return;
         var zoom_koeff = mapCanvasManager.zoom_koeff;
         var real_zoom = mapCanvasManager.real_zoom;
         var map_tl = mapCanvasManager.map_tl;
@@ -49,7 +50,7 @@ var WObservingRange = (function (_super) {
 
         ctx.globalCompositeOperation = "xor";
         ctx.fillStyle = "rgba(0,0,0,0.85)";
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         ctx.fillRect(0, 0, a.x, a.y);
         ctx.restore();
     };
