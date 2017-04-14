@@ -657,6 +657,14 @@ var ClientManager = (function () {
         new WTextArcade("Крушение").start();
     };
 
+    ClientManager.prototype.SetMapCenterMessage = function (event) {
+        //console.log('ClientManager.prototype.SetMapCenterMessage', event);
+        setTimeout(function () {
+            if (! user.userCar)
+                mapManager.set_coord({x: event.center.x, y: event.center.y});
+        }, 500);
+    };
+
     ClientManager.prototype.DieVisualisationMessage  = function (event) {
         //console.log('ClientManager.prototype.DieVisualisationMessage', event);
         var uid = event.object_id;
