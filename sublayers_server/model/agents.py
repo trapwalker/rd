@@ -17,7 +17,7 @@ from sublayers_server.model.registry.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -674,6 +674,8 @@ class QuickUser(User):
         self.time_of_end_kills_series = None
         self.series_kills = 0
 
+        self._next_respawn_point = None
+
     def _add_quick_game_record(self, time):
         # pymongo add to quick_game_records
         self.record_id = self.server.app.db.quick_game_records.insert(
@@ -778,11 +780,15 @@ class QuickUser(User):
             user.start_position = None
         else:
             # Радиус появления игроков в быстрой игре
-            self.example.car.position = Point.random_gauss(self.server.quick_game_start_pos, 750)
-
+            self.example.car.position = self._next_respawn_point or Point.random_gauss(self.server.quick_game_start_pos, 750)
 
         self.example.current_location = None
         self.current_location = None
+
+    def on_die(self, event, **kw):
+        super(QuickUser, self).on_die(event=event, **kw)
+        self._next_respawn_point = Point.random_gauss(self.server.quick_game_start_pos, 750)
+        SetMapCenterMessage(agent=self, time=event.time, center=self._next_respawn_point).post()  # send message to load map
 
     def print_login(self):
         str_list = self.user.name.split('_')
