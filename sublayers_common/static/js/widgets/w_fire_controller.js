@@ -179,7 +179,7 @@ var WFireController = (function (_super) {
             revert: true,
             revertDuration: 0,
             zIndex: 100,
-            appendTo: '#map',
+            appendTo: '#map2',
             start: function (event, ui) {
                 // Разрешить таскание только если открыто окно своего инвентаря
                 if (!windowTemplateManager.unique.hasOwnProperty('inventory_info')) return false;
@@ -353,7 +353,7 @@ var WFireController = (function (_super) {
             }
         });
         returnFocusToMap();
-        var is_show_central = !this.visible && (map.getZoom() >= 14);
+        var is_show_central = !this.visible && (mapManager.getZoom() >= 14);
         if (mapManager.widget_fire_radial_grid)
             mapManager.widget_fire_radial_grid.setVisible(is_show_central);
         if (mapManager.widget_fire_sectors)

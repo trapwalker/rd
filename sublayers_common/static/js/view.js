@@ -160,12 +160,16 @@ $(document).ready(function () {
         }
     }, 1000);
 
+    //audioManager.set_general_gain(0.1);
 
     // Интервал запроса пинга
     setInterval(function(){
         if (ws_connector.isConnected)
             clientManager.get_ping_set_fps();
     }, 25000);
+
+    resourceLoadManager.load_complete_init = true;
+    resourceLoadManager.del(null);
 });
 
 var index_notes_test = 0;
@@ -266,6 +270,7 @@ function resizeWindowHandler() {
     }
     if (teachingMapManager) teachingMapManager.redraw();
     if (mapCanvasManager) mapCanvasManager.on_new_map_size();
+    if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
 }
 
 

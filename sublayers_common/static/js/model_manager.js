@@ -117,12 +117,6 @@ var ClientManager = (function () {
 
     ClientManager.prototype._sendMessage = function (msg) {
         //console.log('ClientManager.prototype._sendMessage', msg);
-        // добавление координат центра карты в сообщение
-        var center_map_coords;
-        center_map_coords = mapManager.project(map.getCenter(), mapManager.getMaxZoom());
-        msg.map_coords_center = center_map_coords;
-        msg.map_coords_zoom = map.getZoom();
-
         message_stream.sendMessage({
             type: 'ws_message_send',
             body: msg
@@ -197,7 +191,6 @@ var ClientManager = (function () {
                 aOwner.bindCar(car);
 
             // Создание/инициализация виджетов
-            //new WCarMarker(car);                 // виджет маркера
             if (car.cls == "Bot") {
                 var t = new WCanvasCarMarker(car);
                 new WCanvasHPCarMarker(car, t);
@@ -209,7 +202,7 @@ var ClientManager = (function () {
             }
 
             if (car.cls == "SlowMine" || car.cls == "BangMine") {
-                new WCarMarker(car);
+                new WCanvasMarker(car);
             }
 
             if (car.cls == "Turret") {
@@ -224,7 +217,7 @@ var ClientManager = (function () {
 
             if (car.cls == "POICorpse") {
                 car.direction = event.object.car_direction + Math.PI / 2.;
-                obj_marker = new WCarMarker(car); // виджет маркера
+                new WCanvasLootMarker(car);
             }
 
             if (wFireController) wFireController.addModelObject(car); // добавить себя в радар
@@ -261,7 +254,7 @@ var ClientManager = (function () {
                 case 'Town':
                     obj.title = event.object.example.title || 'GasStation';
                     obj.direction = - 2 * Math.PI;
-                    obj_marker = new WCanvasStaticObjectMarker(obj); // виджет маркера
+                    obj_marker = new WCanvasStaticTownMarker(obj); // виджет маркера
                     break;
                 case 'QuickGamePowerUpFullHeal':
                 case 'QuickGamePowerUpFullFuel':
@@ -275,12 +268,15 @@ var ClientManager = (function () {
                 case 'RadioPoint':
                     obj.direction = 0.5 * Math.PI;
                     break;
-                case 'POICorpse':
-                    obj.direction = event.object.car_direction + Math.PI / 2.;
-                    obj_marker = new WCarMarker(obj); // виджет маркера
+                //case 'POICorpse':
+                //    obj.direction = event.object.car_direction + Math.PI / 2.;
+                //    console.warn(1111, obj);
+                //    break;
+                case 'POILoot':
+                    new WCanvasLootMarker(obj);
                     break;
                 default:
-                    obj_marker = new WCarMarker(obj); // виджет маркера
+                    console.warn(obj);
             }
 
             if (wFireController) wFireController.addModelObject(obj); // добавить себя в радар
@@ -509,7 +505,9 @@ var ClientManager = (function () {
             contextPanel = new ContextPanel();
 
             // Инициализация мап-зума
-            mapManager.onZoomAnimation({zoom: map.getZoom()});  // todo: сделать правильно
+            var curr_cord = mcar.getCurrentCoord(clock.getCurrentTime());
+            mapManager.set_coord({x: curr_cord.x, y: curr_cord.y});
+            mapManager.redraw();
         }
     };
 
@@ -555,30 +553,6 @@ var ClientManager = (function () {
         var vo = visualManager.getVobjByType(car, WCanvasAnimateMarkerShieldEffect);
         if (event.object.active_shield_effect && !vo) new WCanvasAnimateMarkerShieldEffect(car);
         if (!event.object.active_shield_effect && vo) vo.delFromVisualManager();
-
-
-        // Визуализация Update. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerUpdate()) {
-            debugMapList.push(
-                L.circleMarker(mapManager.unproject([event.object.state.p0.x, event.object.state.p0.y], mapManager.getMaxZoom()), {color: '#FF0000'})
-                    .setRadius(3)
-                    .bindPopup(
-                        'Тип сообщения: ' + event.cls + '</br>' +
-                        'uid объекта: ' + event.object.uid + '</br>' +
-                        'comment: ' + event.comment + '</br>'
-                )
-                    .addTo(map)
-            );
-
-            if (event.object.state.c)
-                debugMapList.push(
-                    L.circleMarker(mapManager.unproject([event.object.state.c.x, event.object.state.c.y], mapManager.getMaxZoom()), {color: '#FFFF00'})
-                        .setRadius(20)
-                        .addTo(map)
-                );
-
-        }
-
     };
 
     ClientManager.prototype.See = function (event) {
@@ -620,19 +594,6 @@ var ClientManager = (function () {
             default:
             console.warn('Контакт с неизвестным объектом ', event.object);
         }
-
-        // Визуализация контакта. При каждом сообщение Contact или See будет создан маркер с соответствующим попапом
-        if (cookieStorage.enableMarkerContact())
-            debugMapList.push(
-                L.circleMarker(mapManager.unproject([event.object.state.p0.x, event.object.state.p0.y], mapManager.getMaxZoom()), {color: '#FFBA12'})
-                    .setRadius(8)
-                    .bindPopup(
-                        'Тип сообщения: ' + event.cls + '</br>' +
-                        'uid объекта: ' + event.object.uid + '</br>' +
-                        'subject_id: ' + event.subject_id + '</br>'
-                )
-                    .addTo(map)
-            );
     };
 
     ClientManager.prototype.Out = function (event) {
@@ -1500,19 +1461,6 @@ var ClientManager = (function () {
             params: {
                 enable: enable
             }
-        };
-        rpcCallList.add(mes);
-        this._sendMessage(mes);
-    };
-
-    ClientManager.prototype.sendRocket = function () {
-        var time = clock.getCurrentTime();
-        if ((time - last_send_time) < 0.333) return;
-        last_send_time = time;
-        var mes = {
-            call: "send_rocket",
-            rpc_call_id: rpcCallList.getID(),
-            params: { }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

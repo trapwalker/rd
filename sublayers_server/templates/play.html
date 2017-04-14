@@ -43,16 +43,6 @@
 
     </style>
 
-    <!-- <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/> -->
-    <!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/> -->
-    <!-- <script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script> -->
-    <!-- <script src="//raw.githubusercontent.com/DmitryBaranovskiy/raphael/master/raphael.js"></script> -->
-
-    <link rel="stylesheet" href="{{ static_url('css/third_party/leaflet.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('css/third_party/jquery-ui.css') }}"/>
-
     <link rel="stylesheet" href="{{ static_url('css/interlacing.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/view_messenger.css') }}"/>
@@ -116,13 +106,14 @@
         <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
     {% end %}
 
-    <script src="{{ static_url('js/third_party/leaflet-src.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery.jrumble.1.3.js') }}"></script>
 
     <!-- SVG JS Lib -->
     <script src="{{ static_url('js/third_party/svgjs/svg.js') }}"></script>
+
+    <script src="{{ static_url('js/slippy_map.js') }}"></script>
 
     <script src="{{ static_url('js/geometric.js') }}"></script>
     <script src="{{ static_url('js/generator_ID.js') }}"></script>
@@ -158,7 +149,6 @@
     <script src="{{ static_url('js/widgets/w_rumble.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_map_position.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_zoom_slider.js') }}"></script>
-    <script src="{{ static_url('js/widgets/w_target_point_marker.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_fire_controller.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_dashboard/w_health_radial.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_dashboard/w_fuel_radial.js') }}"></script>
@@ -184,7 +174,6 @@
     <script src="{{ static_url('js/effects/e_fire_effect_png_animation.js') }}"></script>
 
     <script src="{{ static_url('js/rpc_list.js') }}"></script>
-    <script src="{{ static_url('js/leaflet_addon.js') }}"></script>
 
     <script src="{{ static_url('js/audio/audio_object.js') }}"></script>
     <script src="{{ static_url('js/audio/audio_manager.js') }}"></script>
@@ -233,7 +222,6 @@
     <script src="{{ static_url('js/menu/journal_managers.js') }}"></script>
     <script src="{{ static_url('js/menu/party_manager.js') }}"></script>
     <script src="{{ static_url('js/cache.js') }}"></script>
-    <script src="{{ static_url('js/third_party/leaflet_label.js') }}"></script>
     <script src="{{ static_url('js/cookie.js') }}"></script>
     <script src="{{ static_url('js/modal_window.js') }}"></script>
     <script src="{{ static_url('js/text_console.js') }}"></script>
@@ -243,6 +231,12 @@
 <body>
 <div id="bodydiv">
     <div id="map" style="z-index: 0;"></div>
+
+    <div id="map2div" style="position: absolute; width: 100%; height: 100%; z-index: 0; " tabindex="0">
+        <canvas id="map2" style="">
+            Your browser doesn't support canvas elements.
+        </canvas>
+    </div>
 
     <div style="position: absolute; width: 100%; height: 100%; pointer-events: none; ">
         <canvas id="ctest_1" width="1920" height="1080" style="position: absolute; pointer-events: none;"></canvas>
@@ -320,6 +314,7 @@
         <span id="settings_app_version">{{ version }}</span>
         <span id="settings_user_name">{{ user_name }}</span>
         <span id="settings_first_enter">{{ first_enter }}</span>
+        <span id="settings_start_coord">{{ '{}_{}'.format(start_coord.x, start_coord.y) if start_coord else '' }}</span>
         <span id="settings_user_balance">Нет доступа</span>
         <span id="settings_user_position">Нет доступа</span>
     </div>
