@@ -114,229 +114,22 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon-car-effect-shield', '/static/img/map_icons/effects/shield_12_frames.png', [60, 60], this.max_id++, null, 12);
 
         // Хвост за машинкой
-        this.load_new_icon('icon-car-tail-circle', '/static/img/smoke_tail_point.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-1', '/static/img/smoke_tail_point1.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-3', '/static/img/smoke_tail_point3.png', [39, 39], this.max_id++, null, 1);
 
-        // Создание иконки стоящей машинки V 2
-        icons['icon_stopped_V2'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v2_stopped.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
-
-        // Создание иконки убитой машинки V 2
-        //icons['icon_killed_V2'] = {
-        //    icon: new L.icon({
-        //        iconUrl: '/static/img/map_icons/map_icon_player_v2_killed.png',
-        //        iconSize: [51, 28]
-        //    }),
-        //    canvas_icon: {
-        //        img: new Image('/static/img/map_icons/map_icon_player_v2_killed.png'),
-        //        iconSize: [51, 28]
-        //    },
-        //    id: this.max_id++
-        //};
-
-        // Создание иконки движущейся машинки V 3
-        icons['icon_moving_V3'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v3_moving.png',
-                iconSize: [51, 28]
-            }),
-            id: this.max_id++
-        };
-
-        // Создание иконки стоящей машинки V 3
-        icons['icon_stopped_V3'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_player_v3_stopped.png',
-                iconSize: [51, 28]
-            }),
-            //canvas_icon: {
-            //    img: new Image('/static/img/map_icons/map_icon_player_v3_stopped.png'),
-            //    iconSize: [51, 28]
-            //},
-            id: this.max_id++
-        };
-
-        // Создание иконки ракеты
-        icons['icon_rocket_V1'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/map_icon_rocket.png',
-                iconSize: [40, 18]
-            }),
-            //canvas_icon: {
-            //    img: new Image('/static/img/map_icons/map_icon_rocket.png'),
-            //    iconSize: [51, 28]
-            //},
-            id: this.max_id++
-        };
-
-        // новые транспортные иконки
-        icons['big_truck_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/big_truck_001.png',
-                iconSize: [31, 11]
-            }),
-            id: this.max_id++
-        };
-        icons['big_truck_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/big_truck_002.png',
-                iconSize: [31, 11]
-            }),
-            id: this.max_id++
-        };
-        icons['coupe_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/coupe_001.png',
-                iconSize: [19, 9]
-            }),
-            id: this.max_id++
-        };
-        icons['coupe_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/coupe_002.png',
-                iconSize: [19, 9]
-            }),
-            id: this.max_id++
-        };
-        icons['jeep_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/jeep_001.png',
-                iconSize: [21, 10]
-            }),
-            id: this.max_id++
-        };
-        icons['jeep_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/jeep_002.png',
-                iconSize: [21, 10]
-            }),
-            id: this.max_id++
-        };
-        icons['motorcycle_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/motorcycle_001.png',
-                iconSize: [14, 7]
-            }),
-            id: this.max_id++
-        };
-        icons['motorcycle_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/motorcycle_002.png',
-                iconSize: [14, 7]
-            }),
-            id: this.max_id++
-        };
-        icons['pickup_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/pickup_001.png',
-                iconSize: [20, 9]
-            }),
-            id: this.max_id++
-        };
-        icons['pickup_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/pickup_002.png',
-                iconSize: [20, 9]
-            }),
-            id: this.max_id++
-        };
-        icons['quadrocycle_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/quadrocycle_001.png',
-                iconSize: [13, 8]
-            }),
-            id: this.max_id++
-        };
-        icons['quadrocycle_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/quadrocycle_002.png',
-                iconSize: [13, 8]
-            }),
-            id: this.max_id++
-        };
-        icons['seedan_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/seedan_001.png',
-                iconSize: [19, 9]
-            }),
-            id: this.max_id++
-        };
-        icons['seedan_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/seedan_002.png',
-                iconSize: [19, 9]
-            }),
-            id: this.max_id++
-        };
-        icons['seedan2_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/seedan2_001.png',
-                iconSize: [21, 8]
-            }),
-            id: this.max_id++
-        };
-        icons['seedan2_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/seedan2_002.png',
-                iconSize: [21, 8]
-            }),
-            id: this.max_id++
-        };
-        icons['truck_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/truck_001.png',
-                iconSize: [19, 12]
-            }),
-            id: this.max_id++
-        };
-        icons['truck_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/truck_002.png',
-                iconSize: [19, 12]
-            }),
-            id: this.max_id++
-        };
-        icons['truck2_001'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/truck2_001.png',
-                iconSize: [23, 10]
-            }),
-            id: this.max_id++
-        };
-        icons['truck2_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/transport/truck2_002.png',
-                iconSize: [23, 10]
-            }),
-            id: this.max_id++
-        };
-
-        icons['mine_002'] = {
-            icon: new L.icon({
-                iconUrl: '/static/img/map_icons/mine_5.png',
-                iconSize: [24, 17]
-            }),
-            id: this.max_id++
-        };
     }
 
-    LeafletIconManager.prototype.getIcon = function(icon_name, type){
-        type = type ? type : 'icon';
-        if (!this.icons.hasOwnProperty(icon_name) || !this.icons[icon_name].hasOwnProperty(type)) return null;
-        return this.icons[icon_name][type];
+    LeafletIconManager.prototype.getIcon = function(icon_name){
+        if (!this.icons.hasOwnProperty(icon_name)) return null;
+        return this.icons[icon_name];
     };
 
-    LeafletIconManager.prototype.getIconByID = function(ID, type) {
-        type = type ? type : 'icon';
+    LeafletIconManager.prototype.getIconByID = function(ID) {
         var tid = ID % this.max_id;
         for(var key in this.icons)
-            if (this.icons[key].id == tid)
-                return this.icons[key][type];
-        return this.icons['icon_city'][type];
+            if (this.icons[key].icon_id == tid)
+                return this.icons[key];
+        return this.icons['icon_city'];
     };
 
     LeafletIconManager.prototype.load_complete = function () {
@@ -351,18 +144,11 @@ var LeafletIconManager = (function(){
         this.count_loading_img++;
         img.onload = function() {
             iconsLeaflet.icons[icon_name] = {
-                icon: new L.icon({
-                    iconUrl: icon_url,
-                    iconSize: icon_size,
-                    iconAnchor: iconAnchor
-                }),
-                canvas_icon: {
-                    img: img,
-                    iconSize: [this.width, this.height],
-                    size: icon_size,
-                    frames: frames
-                },
-                id: icon_id
+                img: img,
+                iconSize: [this.width, this.height],
+                size: icon_size,
+                frames: frames,
+                icon_id: icon_id
             };
             iconsLeaflet.count_loading_img--;
             iconsLeaflet.load_complete();

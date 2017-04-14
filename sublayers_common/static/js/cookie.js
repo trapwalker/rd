@@ -85,7 +85,7 @@ var LocalCookieStorage = (function(){
         this.setCookie('flagDebug', (this.flagDebug ? 1 : 0));
         this.setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
         this.setCookie('chatActiveID', chat._activeChatID);
-        this.setCookie('zoom', map.getZoom());
+        this.setCookie('zoom', mapManager.getZoom());
         this.setCookie('chatHistory', JSON.stringify(chat._history));
 
         // Новые куки
@@ -323,7 +323,7 @@ var LocalCookieStorage = (function(){
 
     // levelZoomForVisibleLabel
     LocalCookieStorage.prototype.visibleLabel = function(){
-        return (map.getZoom() > this.levelZoomForVisibleLabel);
+        return (mapManager.getZoom() > this.levelZoomForVisibleLabel);
     };
 
     // optionsShowDebugLine

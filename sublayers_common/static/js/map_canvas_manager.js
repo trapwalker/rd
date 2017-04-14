@@ -16,14 +16,27 @@ var ParentCanvasManager = (function(_super){
         this.is_canvas_render = true;
         // todo: сделать это не просто списком, а списком с параметрами
         this.vobj_list = [];
+
+        this.dom_canvas = null;
+        this.dom_context = null;
     }
 
     ParentCanvasManager.prototype.init_canvas = function() {
-        this.canvas = document.getElementById(this.canvas_id);
+        this.canvas = document.createElement("canvas");
         this.context = this.canvas.getContext("2d");
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         this.canvas.width = a.x;
         this.canvas.height = a.y;
+
+        //smap.renderer.canvas = this.canvas;
+        //smap.renderer.context = this.context;
+
+        this.dom_canvas = document.getElementById(this.canvas_id);
+        this.dom_context = this.dom_canvas.getContext("2d");
+        this.dom_canvas.width = a.x;
+        this.dom_canvas.height = a.y;
+
+        this.jq_for_cursor = $("#bodydiv");
     };
 
     ParentCanvasManager.prototype.add_vobj = function(vobj, priority) {
@@ -62,6 +75,9 @@ var ParentCanvasManager = (function(_super){
         var client_time = clock.getClientTime();
         for (var i = 0; i < this.vobj_list.length; i++)
             this.vobj_list[i].obj.redraw(this.context, time, client_time);
+
+        this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
+        this.dom_context.drawImage(this.canvas, 0, 0);
     };
 
     return ParentCanvasManager;
@@ -84,8 +100,6 @@ var MapCanvasManager = (function(_super){
 
         this._mouse_focus_widget = null;
         this._mouse_look = false;
-        this._mouse_client_x = 0;
-        this._mouse_client_y = 0;
         this._mouse_client = new Point(0, 0);
     }
 
@@ -94,10 +108,7 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype._on_mouse_hover = function (event) {
-        this._mouse_client_x = event.clientX;
-        this._mouse_client_y = event.clientY;
         this._mouse_client = new Point(event.clientX, event.clientY);
-        //console.log(this._mouse_client_x, this._mouse_client_y);
     };
 
     MapCanvasManager.prototype.set_mouse_look = function (new_look_state) {
@@ -118,24 +129,29 @@ var MapCanvasManager = (function(_super){
 
     MapCanvasManager.prototype.redraw = function(time) {
         if(! this.is_canvas_render) return;
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         //console.log('MapCanvasManager.prototype.redraw', time);
         this.context.clearRect(0, 0, a.x, a.y);
 
-        this._mouse_focus_widget = this.mouse_test();
+        var focused_widget = this.mouse_test(time);
+        // Заменить курсор и css, если нужно
+        if ((focused_widget && !this._mouse_focus_widget) || (!focused_widget && this._mouse_focus_widget))
+            if (focused_widget)
+                this.jq_for_cursor.addClass("sublayers-clickable");
+            else
+                this.jq_for_cursor.removeClass("sublayers-clickable");
+        this._mouse_focus_widget = focused_widget;
 
-
-        this.real_zoom = mapManager.getRealZoom(time);
+        this.real_zoom = mapManager.getZoom();
         this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
         this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
         var map_size = mapManager.getMapSize();
-        if (subVector(map_size, this.cur_map_size).abs() > 0.2 || map.dragging._enabled) {
+        if (subVector(map_size, this.cur_map_size).abs() > 0.2) {  // todo: ||  map.dragging._enabled
             var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
             var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
             this.cur_map_size = map_size;
             this.cur_ctx_car_pos = car_ctx_pos;
         }
-
         _super.prototype.redraw.call(this, time);
     };
 

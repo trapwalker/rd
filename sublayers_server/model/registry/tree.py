@@ -36,6 +36,7 @@ class RegistryNodeFormatError(RegistryError):
 
 
 class Doc(AbstractDocument):
+    _cls = StringField()
 
     def _reinst_list(self, field, lst):
         lst = copy(lst)

@@ -61,7 +61,7 @@ var WStrategyModeManager = (function () {
         ctx.save();
         ctx.globalCompositeOperation = "xor";
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         ctx.fillRect(0, 0, a.x, a.y);
         ctx.restore();
 
@@ -120,7 +120,7 @@ var WStrategyModeManager = (function () {
             ctx.restore();
         }
         else {
-            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car', 'canvas_icon');
+            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car');
         }
 
         // Отрисовка линии радара
@@ -158,7 +158,7 @@ var WStrategyModeManager = (function () {
         grad2.addColorStop(0.5, "rgba(0,0,0,1)");
         grad2.addColorStop(1, "rgba(0,0,0,1)");
         ctx.fillStyle = grad2;
-        var a = map.getSize();
+        var a = mapManager.getMapSize();
         ctx.fillRect(0, 0, a.x, a.y);
 
 

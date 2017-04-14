@@ -89,7 +89,16 @@ var LocationTunerNPC = (function (_super) {
             this.inv_show_div.empty();
 
         this.jq_car_view.empty();
-        this.jq_ppv.text(0);
+        //this.jq_ppv.text(0);
+
+        var i = 0;
+        for (i = 1; i < 5; i++) {
+            this.jq_ppv.find('#tPPV' + i).text(0);
+            $('#tPPV' + i).addClass('tPPVDisable');
+        }
+
+        $('.tunerPontCardOff').css('display', 'none');
+        $('#tunerPontCard0').css('display', 'block');
     };
 
     LocationTunerNPC.prototype.update = function(data) {
@@ -436,7 +445,29 @@ var LocationTunerNPC = (function (_super) {
                 if (key.toString().indexOf('slot') >= 0)
                     if (this.items[key].example)
                         pp += this.items[key].example.pont_points;
-        this.jq_ppv.text(pp);
+        //this.jq_ppv.text(pp);
+
+        if (pp > 9999) pp = 9999;
+        var pp_str = String(pp + 10000);
+
+        var i = 0;
+        var k = 1;
+        for (i = 1; i < 5; i++) {
+            this.jq_ppv.find('#tPPV' + i).text(pp_str[i]);
+
+            if (pp_str[i] === '0' && k)
+                $('#tPPV' + i).addClass('tPPVDisable');
+            else {
+                $('#tPPV' + i).removeClass('tPPVDisable');
+                k = 0;
+            }
+        }
+
+        $('.tunerPontCardOff').css('display', 'none');
+
+        var m = Math.floor(pp / 1000) + 1;
+        if (m > 9) m = 9;
+        $('#tunerPontCard' + m).css('display', 'block');
     };
 
     LocationTunerNPC.prototype.getSlotTextInfo = function(slot_name) {

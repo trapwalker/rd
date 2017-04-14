@@ -10,6 +10,7 @@ import random
 import re
 import tornado.gen
 from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
+from sublayers_server.model.registry.odm_position import PositionField
 
 
 class User(Document):
@@ -51,6 +52,7 @@ class User(Document):
     date_created = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)
     avatar_link = StringField(default='/static/content/avatars/dog_def.png', max_length=255)
     teaching_state = StringField(default="", max_length=30)  # "" - не известно, "cancel" - отменено, "done" - завершено, "map" - карта, "city" - город
+    start_position = PositionField(caption=u"Стартовые координаты")
 
     def __init__(self, raw_password=None, email=None, **kw):
         super(User, self).__init__(**kw)
