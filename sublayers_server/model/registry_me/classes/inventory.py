@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.inventory import Inventory as ModelInventory, ItemState
 from sublayers_server.model.events import Event
-from sublayers_server.model.registry_me.tree import Subdoc
+from sublayers_server.model.registry_me.tree import Subdoc, EmbeddedNodeField
 
 from mongoengine import IntField, ListField, EmbeddedDocumentField
 from collections import Counter
@@ -40,7 +40,7 @@ class LoadInventoryEvent(Event):
 
 class Inventory(Subdoc):
     size = IntField(caption=u'Размер инвентаря', default=1)
-    items = ListField(reinst=True, field=EmbeddedDocumentField(
+    items = ListField(reinst=True, field=EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.item.Item',
     ))
 
