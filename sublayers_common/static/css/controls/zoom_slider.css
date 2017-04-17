@@ -506,3 +506,8 @@
         background: transparent url('/static/img/misc_button/768/unhide_glass_btn.png') 100% 100% no-repeat;
     }
 }
+
+
+@media screen and (max-width: 800px), screen and (max-height: 550px) {
+    .slider-zoom-parent {transform: scale(0.75);}
+}
