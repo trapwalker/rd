@@ -198,6 +198,11 @@ class Subdoc(EmbeddedDocument):
         allow_inheritance=True,
     )
 
+    def __init__(self, **kw):
+        cls = self.__class__
+        only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
+        super(Subdoc, self).__init__(__only_fields=only_fields, **kw)
+
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = {}
         for name, attr, getter in self.iter_attrs(tags='client'):
@@ -232,11 +237,6 @@ class Node(Subdoc):
     #uri = StringField(unique=True, null=True, not_inherited=True)
     subnodes = ListField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
     # todo: make `owner` property
-
-    def __init__(self, **kw):
-        cls = self.__class__
-        only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
-        super(Node, self).__init__(__only_fields=only_fields, **kw)
 
     @property
     def uri(self):
