@@ -5,8 +5,9 @@
 var WZoomSlider = (function () {
     function WZoomSlider() {
         this.mapMng = mapManager;
-        this.zoomHeightOfScale = interface_scale_big ? 170 : 120; // в пикселах, высота шкалы
-        this.slider_margin_top = interface_scale_big ? 13.5 : 10;
+        this.current_interface_size = interface_scale_big;
+        this.zoomHeightOfScale = this.current_interface_size ? 170 : 120; // в пикселах, высота шкалы
+        this.slider_margin_top = this.current_interface_size ? 13.5 : 10;
         this.count_zoom = mapManager.getMaxZoom() - mapManager.getMinZoom();
         this.px_on_zoom = this.zoomHeightOfScale / (this.count_zoom);
         this.zoom_visible = true;
@@ -157,13 +158,13 @@ var WZoomSlider = (function () {
         }
     };
 
-    WZoomSlider.prototype.setZoom = function(new_zoom){
+    WZoomSlider.prototype.setZoom = function(new_zoom, need_redraw){
         // Установка зума в слайдере извне
         //console.log('WZoomSlider.prototype.setZoom');
         // текст, который нужно вывести
         var new_str = new_zoom.toFixed(1) + 'x';
         var old_str = this.jq_zoom_text_value.text();
-        if(old_str != new_str) {
+        if(old_str != new_str || need_redraw) {
             this.jq_zoom_text_value.text(new_str);
             this.jq_zoom_text_value_compact.text(new_str);
             // Установка каретки
@@ -262,10 +263,13 @@ var WZoomSlider = (function () {
     };
 
     WZoomSlider.prototype._resize_view = function(width, height) {
-        this.zoomHeightOfScale = interface_scale_big ? 170 : 120; // в пикселах, высота шкалы
-        this.slider_margin_top = interface_scale_big ? 13.5 : 10;
+        if (this.current_interface_size == interface_scale_big) return;
+        this.current_interface_size = interface_scale_big;
+        this.zoomHeightOfScale = this.current_interface_size ? 170 : 120; // в пикселах, высота шкалы
+        this.slider_margin_top = this.current_interface_size ? 13.5 : 10;
         this.px_on_zoom = this.zoomHeightOfScale / (this.count_zoom);
         this.drawScale();
+        mapManager.zoomSlider.setZoom(mapManager.getZoom(), true);
     };
 
     return WZoomSlider;
