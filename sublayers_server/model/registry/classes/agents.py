@@ -41,8 +41,8 @@ class RelationshipRec(Subdoc):
 
 class Agent(Root):
     __not_a_fields__ = ['_agent_model']
-    profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
-    login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=True)
+    profile_id = StringField(caption=u'Идентификатор профиля владельца', sparse=False, identify=True)  # sparse=True
+    login = StringField(caption=u'Уникальное имя пользователя', tags='client', sparse=False)  # sparse=True
     about_self = StringField(default=u'', caption=u'О себе', tags='client')
     teaching_flag = BooleanField(caption=u'Является ли этот агент агентом обучения')
     quick_flag = BooleanField(caption=u'Является ли этот агент агентом быстрой игры')

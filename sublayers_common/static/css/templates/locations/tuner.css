@@ -116,6 +116,7 @@
     display: none;
 }
 
+#tunerPontCardC { background-image: url("/static/img/interface/stylist_cards/cover.png"); }
 #tunerPontCard0 { background-image: url("/static/img/interface/stylist_cards/00.png"); }
 #tunerPontCard1 { background-image: url("/static/img/interface/stylist_cards/01.png"); }
 #tunerPontCard2 { background-image: url("/static/img/interface/stylist_cards/02.png"); }
