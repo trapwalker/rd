@@ -147,6 +147,7 @@ var WCanvasCarMarker = (function (_super) {
 
     function WCanvasCarMarker(mobj) {
         this.icon_arrow_obj = null;
+        this.icon_obj_focused = null;
         _super.call(this, mobj);
         var car = mobj;
         var time = clock.getCurrentTime();
@@ -308,10 +309,9 @@ var WCanvasCarMarker = (function (_super) {
             ctx.fillText(label_str, 0, -15);
         }
 
-        //if (focused) {
-        //    ctx.fillStyle = "red";
-        //    ctx.fillRect(-10, -10, 20, 20);
-        //}
+        if (focused && this.icon_obj_focused) {
+            ctx.drawImage(this.icon_obj_focused.img, -this.icon_obj_focused.iconSize[0] >> 1, -this.icon_obj_focused.iconSize[1] >> 1);
+        }
 
         ctx.restore();  // Возврат транслейта
 
@@ -412,6 +412,8 @@ var WCanvasCarMarker = (function (_super) {
 
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name);
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow');
+
+        this.icon_obj_focused = iconsLeaflet.getIcon("icon_car_focused");
 
         this.icon_size_min_div_2 = Math.min(this.icon_obj.iconSize[0], this.icon_obj.iconSize[1]) >> 1;
     };
