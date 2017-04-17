@@ -178,7 +178,44 @@ var WCanvasCarMarker = (function (_super) {
 
         this.tail_particles_interval_stay = 5000;  // Время между генерациями при скорости = 0
         this.tail_particles_last_born_time = 0;
+        this.tail_particles_icon_name = "icon-car-tail-3";
+
+        this._set_car_tail();
     }
+
+    WCanvasCarMarker.prototype._set_car_tail = function() {
+        var car = this.mobj;
+        switch (car.sub_class_car) {
+            case 'artillery':
+            case 'armored':
+            case 'btrs':
+            case 'buses':
+            case 'trucks':
+            case 'tanks':
+            case 'tractors':
+                // Тяжёлые
+                this.tail_particles_interval_stay = 4000;
+                this.tail_particles_icon_name = "icon-car-tail-3";
+                break;
+            case 'cars':
+            case 'sports':
+            case 'offroad':
+            case 'vans':
+                // Средние
+                this.tail_particles_interval_stay = 5000;
+                this.tail_particles_icon_name = "icon-car-tail-3";
+                break;
+            case 'buggies':
+            case 'motorcycles':
+            case 'quadbikes':
+                // Лёгкие
+                this.tail_particles_interval_stay = 8000;
+                this.tail_particles_icon_name = "icon-car-tail-1";
+                break;
+            default:
+                console.log('Не найдена иконка. Установлена стандартная. ', car.sub_class_car);
+        }
+    };
 
     WCanvasCarMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasCarMarker.prototype.click_handler', event);
@@ -327,8 +364,8 @@ var WCanvasCarMarker = (function (_super) {
             this.tail_particles_last_born_time = time * 1000;
             var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
             //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, "icon-car-tail-3", 1).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, "icon-car-tail-3", 1).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
         }
     };
 
