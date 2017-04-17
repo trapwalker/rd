@@ -8,7 +8,6 @@ var PreloaderImage = (function(){
 
         this.tasks = []; // Список объектов вида: {id, img_url, callback, maxdelay_timer}
         this.callbacks = []; // Список коллбеков
-
     }
 
     PreloaderImage.prototype.get_tasks_by_url = function(img_url) {

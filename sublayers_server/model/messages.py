@@ -1310,3 +1310,14 @@ class QuickGameArcadeTextMessage(Message):
         d = super(QuickGameArcadeTextMessage, self).as_dict()
         d.update(text=self.text)
         return d
+
+
+class SetMapCenterMessage(Message):
+    def __init__(self, center, **kw):
+        super(SetMapCenterMessage, self).__init__(**kw)
+        self.center = center
+
+    def as_dict(self):
+        d = super(SetMapCenterMessage, self).as_dict()
+        d.update(center=self.center)
+        return d
