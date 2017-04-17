@@ -1,14 +1,14 @@
 var ECanvasCarTail = (function () {
     function ECanvasCarTail(position, direction, duration, icon_name, max_tail_scale, min_tail_scale){
-        this.duration = duration || 1000;  // 1сек по умолчанию
+        this.duration = duration || 1000;  // 1СЃРµРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
         this.effect_image_obj = iconsLeaflet.getIcon(icon_name);
-        this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
-        this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
-        this.direction = direction; // Направление в радианах
-        this.position = position; // Позиция в пиксельных-серверных координатах
+        this.frame_height = this.effect_image_obj.size[0]; // СЂР°Р·РјРµСЂ РѕРґРЅРѕРіРѕ РєР°РґСЂР°
+        this.frame_width = this.effect_image_obj.size[1]; // СЂР°Р·РјРµСЂ РѕРґРЅРѕРіРѕ РєР°РґСЂР°
+        this.direction = direction; // РќР°РїСЂР°РІР»РµРЅРёРµ РІ СЂР°РґРёР°РЅР°С…
+        this.position = position; // РџРѕР·РёС†РёСЏ РІ РїРёРєСЃРµР»СЊРЅС‹С…-СЃРµСЂРІРµСЂРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
         this.start_time = 0;
-        this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
-        this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+        this.offset_x = -0.5; // РњРЅРѕР¶РёС‚РµР»СЊ СЃРґРІРёРіР° РєР°РґСЂР° РїРѕ РѕСЃРё РҐ (СЂР°Р·РјРµСЂ РєР°РґСЂР° СѓРјРЅРѕР¶Р°РµС‚СЃСЏ РЅР° СЌС‚Рѕ С‡РёСЃР»Рѕ)
+        this.offset_y = -0.5; // РњРЅРѕР¶РёС‚РµР»СЊ СЃРґРІРёРіР° РєР°РґСЂР° РїРѕ РѕСЃРё Y (СЂР°Р·РјРµСЂ РєР°РґСЂР° СѓРјРЅРѕР¶Р°РµС‚СЃСЏ РЅР° СЌС‚Рѕ С‡РёСЃР»Рѕ)
 
         this._max_scale = max_tail_scale || 3.5 ;
         this._min_scale = min_tail_scale || 0.45;
