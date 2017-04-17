@@ -57,7 +57,7 @@ var ECanvasCarTail = (function () {
         ctx.translate(ctx_pos.x, ctx_pos.y);
         var progress = this._progress(time);
         ctx.globalAlpha = this._get_alpha(progress);
-        //ctx.rotate(this.direction);
+        ctx.rotate(this.direction);
         ctx.scale(1.0 / mapCanvasManager.zoom_koeff, 1.0 / mapCanvasManager.zoom_koeff);
         ctx.drawImage(img_obj.img, 0, 0, this.frame_width, this.frame_height,
             this.offset_x * img_obj.size[1] * this.scale_icon_x, this.offset_y * img_obj.size[0] * this.scale_icon_y, this.frame_width * this.scale_icon_x, this.frame_height * this.scale_icon_y);

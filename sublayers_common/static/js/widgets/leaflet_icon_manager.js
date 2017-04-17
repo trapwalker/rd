@@ -117,6 +117,12 @@ var LeafletIconManager = (function(){
         // Хвост за машинкой
         this.load_new_icon('icon-car-tail-1', '/static/img/smoke_tail_point1.png', [39, 39], this.max_id++, null, 1);
         this.load_new_icon('icon-car-tail-3', '/static/img/smoke_tail_point3.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-06l-25', '/static/img/particles/car_tail_06l_25.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-06l-35', '/static/img/particles/car_tail_06l_35.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-06l-45', '/static/img/particles/car_tail_06l_45.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-06r-25', '/static/img/particles/car_tail_06r_25.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-06r-35', '/static/img/particles/car_tail_06r_35.png', [39, 39], this.max_id++, null, 1);
+        this.load_new_icon('icon-car-tail-06r-45', '/static/img/particles/car_tail_06r_45.png', [39, 39], this.max_id++, null, 1);
 
     }
 

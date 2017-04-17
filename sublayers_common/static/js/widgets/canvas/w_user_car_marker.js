@@ -178,7 +178,10 @@ var WCanvasCarMarker = (function (_super) {
 
         this.tail_particles_interval_stay = 5000;  // Время между генерациями при скорости = 0
         this.tail_particles_last_born_time = 0;
-        this.tail_particles_icon_name = "icon-car-tail-3";
+        this.tail_particles_icon_left_name = "icon-car-tail-06l-35";
+        this.tail_particles_icon_right_name = "icon-car-tail-06r-35";
+        this.tail_particles_size_start = 0.45;
+        this.tail_particles_size_end = 0.8;
 
         this._set_car_tail();
     }
@@ -186,31 +189,40 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype._set_car_tail = function() {
         var car = this.mobj;
         switch (car.sub_class_car) {
-            case 'artillery':
-            case 'armored':
-            case 'btrs':
-            case 'buses':
-            case 'trucks':
-            case 'tanks':
-            case 'tractors':
-                // Тяжёлые
-                this.tail_particles_interval_stay = 4000;
-                this.tail_particles_icon_name = "icon-car-tail-3";
+            case 'motorcycles':
+            case 'quadbikes':
+            case 'buggies':
+                // Лёгкие
+                this.tail_particles_interval_stay = 6000;
+                this.tail_particles_size_start = 0.25;
+                this.tail_particles_size_end = 0.6;
+                this.tail_particles_icon_left_name = "icon-car-tail-06l-25";
+                this.tail_particles_icon_right_name = "icon-car-tail-06r-25";
                 break;
-            case 'cars':
             case 'sports':
+            case 'cars':
             case 'offroad':
             case 'vans':
                 // Средние
                 this.tail_particles_interval_stay = 5000;
-                this.tail_particles_icon_name = "icon-car-tail-3";
+                this.tail_particles_size_start = 0.45;
+                this.tail_particles_size_end = 0.8;
+                this.tail_particles_icon_left_name = "icon-car-tail-06l-35";
+                this.tail_particles_icon_right_name = "icon-car-tail-06r-35";
                 break;
-            case 'buggies':
-            case 'motorcycles':
-            case 'quadbikes':
-                // Лёгкие
-                this.tail_particles_interval_stay = 8000;
-                this.tail_particles_icon_name = "icon-car-tail-1";
+            case 'armored':
+            case 'btrs':
+            case 'artillery':
+            case 'tanks':
+            case 'buses':
+            case 'trucks':
+            case 'tractors':
+                // Тяжёлые
+                this.tail_particles_interval_stay = 4000;
+                this.tail_particles_size_start = 0.65;
+                this.tail_particles_size_end = 1.0;
+                this.tail_particles_icon_left_name = "icon-car-tail-06l-45";
+                this.tail_particles_icon_right_name = "icon-car-tail-06r-45";
                 break;
             default:
                 console.log('Не найдена иконка. Установлена стандартная. ', car.sub_class_car);
@@ -364,8 +376,11 @@ var WCanvasCarMarker = (function (_super) {
             this.tail_particles_last_born_time = time * 1000;
             var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
             //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+            //new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+            //new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+
+            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000, this.tail_particles_icon_left_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000, this.tail_particles_icon_right_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
         }
     };
 
