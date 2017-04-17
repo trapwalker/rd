@@ -2,14 +2,13 @@
  * Виджет слайдер зума
 */
 
-var ConstZoomHeightOfScale = 170; // в пикселах, высота шкалы
-
-
 var WZoomSlider = (function () {
     function WZoomSlider() {
         this.mapMng = mapManager;
+        this.zoomHeightOfScale = interface_scale_big ? 170 : 120; // в пикселах, высота шкалы
+        this.slider_margin_top = interface_scale_big ? 13.5 : 10;
         this.count_zoom = mapManager.getMaxZoom() - mapManager.getMinZoom();
-        this.px_on_zoom = ConstZoomHeightOfScale / (this.count_zoom);
+        this.px_on_zoom = this.zoomHeightOfScale / (this.count_zoom);
         this.zoom_visible = true;
 
         this.options = {
@@ -51,6 +50,7 @@ var WZoomSlider = (function () {
         parent.append(jq_nodePlus);
         parent.append(jq_nodeBar);
         jq_nodeBar.append(this.jq_slider);
+        jq_nodeBar.append('<div id="Zoom_sliderScale"></div>');
         parent.append(jq_nodeMinus);
         jq_nodePlus.on('click', {self: this}, this.plusFunc);
         jq_nodeMinus.on('click', {self: this}, this.minusFunc);
@@ -61,12 +61,12 @@ var WZoomSlider = (function () {
         jq_nodeBar.on('mousemove', function(event) {
             if (event.buttons == 1) {
                 mapManager.onZoomEnd();
-                mapManager.set_coord({z: 18 - event.offsetY / ConstZoomHeightOfScale * self.count_zoom});
+                mapManager.set_coord({z: 18 - event.offsetY / self.zoomHeightOfScale * self.count_zoom});
             }
         });
         jq_nodeBar.on('click', function(event) {
             mapManager.onZoomEnd();
-            mapManager.set_coord({z: 18 - event.offsetY / ConstZoomHeightOfScale * self.count_zoom});
+            mapManager.set_coord({z: 18 - event.offsetY / self.zoomHeightOfScale * self.count_zoom});
         });
 
         // Создание и добавление текста Zoom вертикально расположенного на виджете
@@ -105,8 +105,9 @@ var WZoomSlider = (function () {
     }
 
     WZoomSlider.prototype.drawScale = function(){
-        var draw = SVG('Zoom_sliderBar');
-        var height = ConstZoomHeightOfScale;
+        $("#Zoom_sliderScale").empty();
+        var draw = SVG('Zoom_sliderScale');
+        var height = this.zoomHeightOfScale;
         var width_large_line = 35;
         var count_zoom = this.count_zoom;
         var px_on_zoom = this.px_on_zoom;
@@ -166,7 +167,7 @@ var WZoomSlider = (function () {
             this.jq_zoom_text_value.text(new_str);
             this.jq_zoom_text_value_compact.text(new_str);
             // Установка каретки
-            this.jq_slider.css("top", (ConstZoomHeightOfScale - this.px_on_zoom * (new_zoom - this.options.min) - 13.5).toFixed(0) + "px");
+            this.jq_slider.css("top", (this.zoomHeightOfScale - this.px_on_zoom * (new_zoom - this.options.min) - this.slider_margin_top).toFixed(0) + "px");
         }
     };
 
@@ -261,7 +262,10 @@ var WZoomSlider = (function () {
     };
 
     WZoomSlider.prototype._resize_view = function(width, height) {
-
+        this.zoomHeightOfScale = interface_scale_big ? 170 : 120; // в пикселах, высота шкалы
+        this.slider_margin_top = interface_scale_big ? 13.5 : 10;
+        this.px_on_zoom = this.zoomHeightOfScale / (this.count_zoom);
+        this.drawScale();
     };
 
     return WZoomSlider;
