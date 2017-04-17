@@ -182,6 +182,8 @@ var MapManager = (function(_super) {
 
         this.last_render_time = 0;
 
+        this.called_reinit_canvas_map = false;
+
         // добавление в визуалменеджер для своих виджетов (зум виджет например)
         this.addToVisualManager();
 
@@ -414,7 +416,15 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.on_new_map_size = function (width, height) {
-        smap.new_map_size();
+        if (! this.called_reinit_canvas_map) {
+            this.called_reinit_canvas = true;
+            setTimeout(function() {
+                smap.new_map_size(width, height); mapManager.called_reinit_canvas = false;
+                if (mapCanvasManager) mapCanvasManager.on_new_map_size();
+            }, 50);
+        }
+
+        this.zoomSlider._resize_view(width, height);
     };
 
     return MapManager;

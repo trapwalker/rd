@@ -22,7 +22,7 @@ var ParentCanvasManager = (function(_super){
     }
 
     ParentCanvasManager.prototype.init_canvas = function() {
-        this.canvas = document.createElement("canvas");
+        this.canvas = this.canvas || document.createElement("canvas");
         this.context = this.canvas.getContext("2d");
         var a = mapManager.getMapSize();
         this.canvas.width = a.x;
@@ -161,7 +161,7 @@ var MapCanvasManager = (function(_super){
 
         if (! this.called_reinit_canvas) {
             this.called_reinit_canvas = true;
-            setTimeout(function(){ mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 200);
+            setTimeout(function(){ mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 50);
         }
     };
 

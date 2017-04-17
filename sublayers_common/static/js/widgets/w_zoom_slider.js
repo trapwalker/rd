@@ -260,6 +260,10 @@ var WZoomSlider = (function () {
         }
     };
 
+    WZoomSlider.prototype._resize_view = function(width, height) {
+
+    };
+
     return WZoomSlider;
 })();
 
