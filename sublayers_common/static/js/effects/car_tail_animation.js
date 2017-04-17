@@ -1,5 +1,5 @@
 var ECanvasCarTail = (function () {
-    function ECanvasCarTail(position, direction, duration, icon_name, max_tail_scale){
+    function ECanvasCarTail(position, direction, duration, icon_name, max_tail_scale, min_tail_scale){
         this.duration = duration || 1000;  // 1сек по умолчанию
         this.effect_image_obj = iconsLeaflet.getIcon(icon_name);
         this.frame_height = this.effect_image_obj.size[0]; // размер одного кадра
@@ -11,7 +11,7 @@ var ECanvasCarTail = (function () {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this._max_scale = max_tail_scale || 3.5 ;
-        this._min_scale = 0.45;
+        this._min_scale = min_tail_scale || 0.45;
 
         this.scale_icon_x = this._min_scale;
         this.scale_icon_y = this._min_scale;
