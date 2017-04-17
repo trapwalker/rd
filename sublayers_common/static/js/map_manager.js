@@ -44,7 +44,7 @@ function onKeyDownMap(event) {
             chat.get_current_input().focus();
             break;
         case 37:
-            if (! user.userCar) return;
+            if (!user.userCar) return;
             if (!pressedArrowLeft) {
                 pressedArrowLeft = true;
                 var turn = 0;
@@ -54,7 +54,7 @@ function onKeyDownMap(event) {
             }
             break;
         case 38:
-            if (! user.userCar) return;
+            if (!user.userCar) return;
             if (!pressedArrowUp) {
                 clientManager.sendSetSpeed(user.userCar.v_forward);
                 if (wCruiseControl) wCruiseControl.startKeyboardControl();
@@ -125,9 +125,10 @@ function onKeyUpMap(event) {
         case 37:
             if (! user.userCar) return;
             pressedArrowLeft = false;
+            pressedArrowRight = false;
             var turn = 0;
-            if (pressedArrowLeft) turn++;
-            if (pressedArrowRight) turn--;
+            //if (pressedArrowLeft) turn++;
+            //if (pressedArrowRight) turn--;
             clientManager.sendTurn(turn);
             break;
         case 38:
@@ -138,10 +139,11 @@ function onKeyUpMap(event) {
             break;
         case 39:
             if (! user.userCar) return;
+            pressedArrowLeft = false;
             pressedArrowRight = false;
             var turn = 0;
-            if (pressedArrowLeft) turn++;
-            if (pressedArrowRight) turn--;
+            //if (pressedArrowLeft) turn++;
+            //if (pressedArrowRight) turn--;
             clientManager.sendTurn(turn);
             break;
         case 40:
