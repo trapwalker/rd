@@ -463,7 +463,7 @@
 @media screen and (max-width: 800px), screen and (max-height: 550px) {
     #chatAreaGlass {
         transform: scale(0.75);
-        bottom: -57px;
-        left: -70px;
+        bottom: -45px;
+        left: -54px;
     }
 }
