@@ -376,6 +376,7 @@
     /*Если что, то смотреть прозрачность в коде, так как она там стоит = 0.5!!! Функция зуммирования!*/
 }
 
+
 @media screen and (max-width: 1366px), screen and (max-height: 880px) {
     #zoomSliderMainDivHardware {
         width: 21px;
@@ -447,7 +448,6 @@
         margin-top: -14px;
     }
 
-
     #zoomSliderMainDivWrapper {top: 16px; padding-left: 18px; }
 
     #DivForBtnRazverALLInsideZoomCompact {
@@ -470,40 +470,30 @@
 
     #spanZoomZoomText { top: 126px; left: -7px; font: 8pt MICRADI;}
 
-
-    #ZoomPortHideBtn {top: 280px; left: 2px;}
+    #ZoomPortHideBtn {top: 280px; left: -3px;}
 
     .hideBtnDownLeft {
-        height: 22px;
-        width: 15px;
-        background: transparent url('/static/img/misc_button/768/hide_glass_btn.png') 100% 100% no-repeat;
-        transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/down_hide_normal.png') 50% 50% no-repeat;
     }
-
     .hideBtnDownLeft:hover {
-        background: transparent url('/static/img/misc_button/768/hide_glass_btn.png') 100% 100% no-repeat;
+        background: transparent url('/static/img/misc_button/768/down_hide_hover.png') 50% 50% no-repeat;
     }
-
     .hideBtnDownLeft:active {
-        background: transparent url('/static/img/misc_button/768/hide_glass_btn.png') 100% 100% no-repeat;
+        background: transparent url('/static/img/misc_button/768/down_hide_active.png') 50% 50% no-repeat;
     }
-
 
     .hideBtnUpLeft {
-        height: 22px;
-        width: 15px;
-        background: transparent url('/static/img/misc_button/768/unhide_glass_btn.png') 100% 100% no-repeat;
-        transform: rotate(0deg);
-        -webkit-transform: rotate(0deg);
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/up_hide_normal.png') 50% 50% no-repeat;
     }
-
     .hideBtnUpLeft:hover {
-        background: transparent url('/static/img/misc_button/768/unhide_glass_btn.png') 100% 100% no-repeat;
+        background: transparent url('/static/img/misc_button/768/up_hide_hover.png') 50% 50% no-repeat;
     }
-
     .hideBtnUpLeft:active {
-        background: transparent url('/static/img/misc_button/768/unhide_glass_btn.png') 100% 100% no-repeat;
+        background: transparent url('/static/img/misc_button/768/up_hide_active.png') 50% 50% no-repeat;
     }
 }
 
