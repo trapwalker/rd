@@ -376,6 +376,7 @@
     /*Если что, то смотреть прозрачность в коде, так как она там стоит = 0.5!!! Функция зуммирования!*/
 }
 
+
 @media screen and (max-width: 1366px), screen and (max-height: 880px) {
     #zoomSliderMainDivHardware {
         width: 21px;
