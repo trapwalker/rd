@@ -769,9 +769,12 @@ var WCanvasRocketMarkerEffect = (function (_super) {
         var speed_abs = Math.abs(speed);
         var pos_real = this._last_mobj_position;
         var direction_real = this._last_mobj_direction;
+        this.tail_particles_interval_stay = 3000;
         if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
-            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000, "icon-car-tail-1", 2.).start();
+            //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000, "icon-car-tail-1", 2.).start();
+
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -5, direction_real, 0.5), Math.PI / 2. + direction_real, 2500, "icon-rocket-tail-03", 0.5, 0.25).start();
         }
     };
 
