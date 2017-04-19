@@ -425,6 +425,7 @@ var MapManager = (function(_super) {
         }
 
         this.zoomSlider._resize_view(width, height);
+        if (wCruiseControl) wCruiseControl._resize_view();
     };
 
     return MapManager;

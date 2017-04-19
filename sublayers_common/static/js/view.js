@@ -252,8 +252,6 @@ var img1;
 var window_scaled_prc = 1.0;
 
 
-
-
 $(window).resize(resizeWindowHandler);
 
 

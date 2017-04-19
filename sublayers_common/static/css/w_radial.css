@@ -30,15 +30,6 @@
     /*pointer-events: none;*/
 }
 
-#divForCruiseNotClick {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 160px;
-    height: 440px;
-    /*pointer-events: none;*/
-}
-
 .w-hp-radial-parent {
     position: absolute;
     right: 0;
