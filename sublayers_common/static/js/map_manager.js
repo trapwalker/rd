@@ -425,6 +425,12 @@ var MapManager = (function(_super) {
         }
 
         this.zoomSlider._resize_view(width, height);
+        if (wCruiseControl) wCruiseControl._resize_view();
+        if (wAltmetrControl) wAltmetrControl._resize_view();
+        if (wHPControl) wHPControl._resize_view();
+        if (wFuelControl) wFuelControl._resize_view();
+        if (wRadiationControl) wRadiationControl._resize_view();
+        if (wWindControl) wWindControl._resize_view();
     };
 
     return MapManager;

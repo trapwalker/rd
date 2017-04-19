@@ -233,9 +233,11 @@ var FireEffectManager = (function () {
                 });
             }
             else {
-                var distance = 2000;
+                var distance;
                 if (user.userCar)
-                    var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+                    distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+                else
+                    distance = distancePoints(mapManager.getMapCenter(), options.pos_subj);
                 if (distance <= 2000) {
                     // 0.01/0.4 - минимальная/максимальная громкость звука
                     var gain = 0.01 + (0.4 - 0.01) * (1 - distance / 2000);
@@ -381,11 +383,18 @@ var FireAutoAudioController = (function () {
             var base_autofire_priority = 0.8;
             var subj = visualManager.getModelObject(self.owner.subj);
             var audio_cls = PlayAudioObject;
-            if (user.userCar && subj && user.userCar != subj) {
+
+            if (!user.userCar) gain = 0; // Если своей машинки нет
+
+            // Если стрельба не своя
+            if (subj && user.userCar != subj) {
                 base_autofire_priority = 0.5;
-                if (!subj) return;
                 var t = clock.getCurrentTime();
-                var distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
+                var distance;
+                if (user.userCar)
+                    distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
+                else
+                    distance = distancePoints(mapManager.getMapCenter(), subj.getCurrentCoord(t));
                 if (distance <= 1000) {
                     // 0.3/0.4 - минимальная/максимальная громкость звука
                     gain = 0.3 + (0.4 - 0.3) * (1 - distance / 1000);
@@ -395,6 +404,7 @@ var FireAutoAudioController = (function () {
                     gain = 0;
                 audio_cls = PlayAudioObjectLowEq;
             }
+
             var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
             self.curren_play_object = audioManager.play({
                 name: name,

@@ -271,6 +271,8 @@ input:focus {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
+.anti-click-class { pointer-events: auto; }
+
 @media screen and (max-width: 1367px) {
     #activeTownDiv {
 
