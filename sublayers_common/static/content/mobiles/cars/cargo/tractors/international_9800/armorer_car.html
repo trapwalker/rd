@@ -6,7 +6,7 @@
         background: transparent url(static/content/mobiles/cars/cargo/tractors/international_9800/top.png) no-repeat 100% 100%;
         height: 158px;
         width: 492px;
-        margin: 5px auto 0px auto;
+        margin: 20px auto 0px auto;
         overflow: hidden;
     }
 
@@ -16,36 +16,41 @@
         background: transparent url(static/content/mobiles/cars/cargo/tractors/international_9800/side.png) no-repeat 100% 100%;
         height: 170px;
         width: 492px;
-        margin: 5px auto 0px auto;
+        margin: 30px auto 0px auto;
         overflow: hidden;
     }
     {% end %}
+
+    .car-info-block-armorer-margin_{{ car.node_html() }} { position: absolute; margin-top: -60px ; }
 
     .shift-for-journal_{{ car.node_html() }} {margin: -158px 0 0 0;}
 
     .top_slot_FL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
     .side_slot_FL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
+    .top_slot_FC_{{ car.node_html() }} { top: 82px; left: 270px; }
+    .side_slot_FC_{{ car.node_html() }} { top: 213px; left: 270px; }
+
     .top_slot_FR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
     .side_slot_FR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
-    .top_slot_CL_{{ car.node_html() }} { top: 35px; left: 235px; }
+    .top_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
     .side_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
-    .top_slot_CC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
-    .side_slot_CC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .top_slot_CC_{{ car.node_html() }} { top: 82px; left: 200px; }
+    .side_slot_CC_{{ car.node_html() }} { top: 285px; left: 200px; }
 
-    .top_slot_CR_{{ car.node_html() }} { top: 89px; left: 235px;}
-    .side_slot_CR_{{ car.node_html() }} { top: 164px; left: 235px;}
+    .top_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
-    .top_slot_BL_{{ car.node_html() }} { top: 35px; left: 135px;}
+    .top_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
     .side_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
-    .top_slot_BC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
-    .side_slot_BC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .top_slot_BC_{{ car.node_html() }} { top: 82px; left: 135px; }
+    .side_slot_BC_{{ car.node_html() }} { top: 285px; left: 135px; }
 
-    .top_slot_BR_{{ car.node_html() }} { top: 89px; left: 135px; }
-    .side_slot_BR_{{ car.node_html() }} { top: 235px; left: 135px; }
+    .top_slot_BR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_BR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 </style>
 
 {% if need_css_only is False %}
@@ -54,6 +59,7 @@
     <div class="armorer-car-main-side"></div>
     <div class="town-back-interlacing"></div>
     <div id="top_slot_FL" class="armorer-slot top_slot_FL_{{ car.node_html() }}"></div>
+    <div id="top_slot_FC" class="armorer-slot top_slot_FC_{{ car.node_html() }}"></div>
     <div id="top_slot_FR" class="armorer-slot top_slot_FR_{{ car.node_html() }}"></div>
     <div id="top_slot_CL" class="armorer-slot top_slot_CL_{{ car.node_html() }}"></div>
     <div id="top_slot_CC" class="armorer-slot top_slot_CC_{{ car.node_html() }}"></div>
@@ -62,6 +68,7 @@
     <div id="top_slot_BC" class="armorer-slot top_slot_BC_{{ car.node_html() }}"></div>
     <div id="top_slot_BR" class="armorer-slot top_slot_BR_{{ car.node_html() }}"></div>
     <div id="side_slot_FL" class="armorer-slot side_slot_FL_{{ car.node_html() }}"></div>
+    <div id="side_slot_FC" class="armorer-slot side_slot_FC_{{ car.node_html() }}"></div>
     <div id="side_slot_FR" class="armorer-slot side_slot_FR_{{ car.node_html() }}"></div>
     <div id="side_slot_CL" class="armorer-slot side_slot_CL_{{ car.node_html() }}"></div>
     <div id="side_slot_CC" class="armorer-slot side_slot_CC_{{ car.node_html() }}"></div>
