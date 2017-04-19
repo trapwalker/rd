@@ -477,11 +477,11 @@ var ClientManager = (function () {
 
             // Круиз
             wCruiseControl = new WCruiseControl(mcar, 'cruiseControlGlassDiv');
-            new WAltmetrRadial(mcar, 'divForAltmetrRadial');
-            new WHPRadial(mcar, 'divForHpAndFuelRadials');
-            new WFuelRadial(mcar, 'divForHpAndFuelRadials');
-            new WRadiationRadial(mcar, 'divForRadAndWindRadials');
-            new WWindRadial(mcar, 'divForRadAndWindRadials');
+            wAltmetrControl = new WAltmetrRadial(mcar, 'divForAltmetrRadial');
+            wHPControl = new WHPRadial(mcar, 'divForHpAndFuelRadials');
+            wFuelControl = new WFuelRadial(mcar, 'divForHpAndFuelRadials');
+            wRadiationControl = new WRadiationRadial(mcar, 'divForRadAndWindRadials');
+            wWindControl = new WWindRadial(mcar, 'divForRadAndWindRadials');
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
