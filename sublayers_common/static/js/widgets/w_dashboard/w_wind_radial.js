@@ -205,9 +205,6 @@ var WWindRadial = (function (_super) {
             .font(this.svg_params.text_digits_font)
             .fill(this.svg_params.text_digits_fill)
             .dmove(size, this.max_r);
-
-
-
     };
 
     WWindRadial.prototype.draw_alarmLamp = function() {
@@ -292,6 +289,7 @@ var WWindRadial = (function (_super) {
         this.current_interface_size = interface_scale_big;
 
         this._drawRadialScale();
+        this.draw_fill_area(0.75);
     };
 
     return WWindRadial;

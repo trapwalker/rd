@@ -113,8 +113,8 @@
 }
 
 
-@media screen and (max-width: 1366px), screen and (max-height: 880px) {
-    #divForHpAndFuelRadials { right: 105px; width: 115px; height: 115px; }
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
+    #divForHpAndFuelRadials { right: 113px; width: 115px; height: 115px; }
 
     .w-fuel-radial-parent { top: 60px; }
 
@@ -136,7 +136,7 @@
     .fuelAlarmLamp-off { background: transparent url('/static/img/cruise/cruise_768/fuel_lamp_off.png') 100% 100% no-repeat; }
     .fuelAlarmLamp-on { background: transparent url('/static/img/cruise/cruise_768/fuel_lamp_on.png') 100% 100% no-repeat; }
 
-    #divForRadAndWindRadials { right: 210px; width: 115px; height: 115px; }
+    #divForRadAndWindRadials { right: 215px; width: 115px; height: 115px; }
 
     .w-wind-radial-parent { top: 60px; }
 
@@ -158,9 +158,9 @@
     .radiationAlarmLamp-off { background: transparent url('/static/img/cruise/cruise_768/rad_lamp_off.png') 100% 100% no-repeat; }
     .radiationAlarmLamp-on { background: transparent url('/static/img/cruise/cruise_768/rad_lamp_on.png') 100% 100% no-repeat; }
 
-    #divForAltmetrRadial { bottom: -60px; right: 245px; }
+    #divForAltmetrRadial { bottom: -60px; right: 250px; }
 }
 
 
-@media screen and (max-width: 800px), screen and (max-height: 550px) {
+@media screen and (max-width: 1250px), screen and (max-height: 550px) {
 }
