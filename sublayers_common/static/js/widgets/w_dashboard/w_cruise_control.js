@@ -359,7 +359,7 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype._drawScale = function () {
-        console.log('WCruiseControl.prototype._drawScale');
+        //console.log('WCruiseControl.prototype._drawScale');
         $('#cruiseControlScaleArea').empty();
         this.svgScaleArea = SVG('cruiseControlScaleArea');
         this._init_params();

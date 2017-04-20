@@ -45,6 +45,13 @@
     background: transparent url('/static/img/chat/chat_glass.png') 50% 50% no-repeat;
 }
 
+#divForChatNotClick {
+    position: absolute;
+    bottom: 0;
+    width: 490px;
+    height: 325px;
+}
+
 #VMGDivWrapChat {
     position: absolute;
     height: 310px;
@@ -409,7 +416,7 @@
 }
 
 
-@media screen and (max-width: 1366px), screen and (max-height: 880px) {
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
     #chatAreaGlass { height: 342px; width: 421px; }
 
     #VMGDivHardware {
@@ -425,6 +432,8 @@
         width: 421px;
         background: transparent url('/static/img/chat/chat_768/chat_glass.png') 50% 50% no-repeat;
     }
+
+    #divForChatNotClick { width: 380px; height: 250px; }
 
     #VMGDivWrapChat {
         height: 245px;
@@ -460,7 +469,7 @@
 }
 
 
-@media screen and (max-width: 800px), screen and (max-height: 550px) {
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {
     #chatAreaGlass {
         transform: scale(0.75);
         bottom: -45px;

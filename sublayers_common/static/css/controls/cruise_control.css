@@ -25,12 +25,26 @@
     background-position: center;
 }
 
-#divForCruiseNotClick {
+#divForCruiseNotClick1 {
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 160px;
+    width: 165px;
     height: 470px;
+}
+#divForCruiseNotClick2 {
+    position: absolute;
+    bottom: 0;
+    right: 165px;
+    width: 160px;
+    height: 160px;
+}
+#divForCruiseNotClick3 {
+    position: absolute;
+    bottom: 0;
+    right: 325px;
+    width: 195px;
+    height: 145px;
 }
 
 #cruiseControlVisibleButtonDiv {
@@ -352,7 +366,7 @@
 }
 
 
-@media screen and (max-width: 1366px), screen and (max-height: 880px) {
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
     .cruise-control-glass {
         width: 427px;
         height: 378px;
@@ -365,7 +379,27 @@
         background: transparent url('/static/img/cruise/cruise_768/cruise_port.png') 100% 100% no-repeat;
     }
 
-    #divForCruiseNotClick { width: 130px; height: 360px; }
+    #cruiseControlVisibleButtonDiv { top: 34px; left: -6px; }
+
+    .hideBtnDownRight {
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/down_hide_normal.png') 50% 50% no-repeat;
+    }
+    .hideBtnDownRight:hover { background: transparent url('/static/img/misc_button/768/down_hide_hover.png') 50% 50% no-repeat; }
+    .hideBtnDownRight:active { background: transparent url('/static/img/misc_button/768/down_hide_active.png') 50% 50% no-repeat; }
+
+    .hideBtnUpRight {
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/up_hide_normal.png') 50% 50% no-repeat;
+    }
+    .hideBtnUpRight:hover { background: transparent url('/static/img/misc_button/768/up_hide_hover.png') 50% 50% no-repeat; }
+    .hideBtnUpRight:active { background: transparent url('/static/img/misc_button/768/up_hide_active.png') 50% 50% no-repeat; }
+
+    #divForCruiseNotClick1 { width: 130px; height: 360px; }
+    #divForCruiseNotClick2 { right: 130px; width: 140px; height: 120px; }
+    #divForCruiseNotClick3 { right: 270px; width: 130px; height: 110px; }
 
     #cruiseControlSpeedMainDiv { width: 130px; height: 360px; }
 
@@ -473,6 +507,6 @@
 }
 
 
-@media screen and (max-width: 800px), screen and (max-height: 550px) {
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {
     .cruise-control-main { transform: scale(0.75); }
 }
