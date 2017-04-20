@@ -3,28 +3,20 @@
     {% include ../drag_close_header.html %}
     <div class="settings-window-wrap">
         <div class="settings-window-header-block">
-            <div class="settings-window-menu-item active" data-page_class="settings_page_graphics">Графика</div>
-            <div class="settings-window-menu-item" data-page_class="settings_page_audio">Звук</div>
-            <div class="settings-window-menu-item" data-page_class="settings_page_control">Управление</div>
-            <div class="settings-window-menu-item" data-page_class="settings_page_other">Другое</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_graphics" onclick="settingsManager._handler_click_header(this)">Графика</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_audio" onclick="settingsManager._handler_click_header(this)">Звук</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_control" onclick="settingsManager._handler_click_header(this)">Управление</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_other" onclick="settingsManager._handler_click_header(this)">Другое</div>
+        </div>
+        <div class="settings-window-description-block">
+            <div class="settings-window-header">Описание:</div>
+            <div class="settings-window-description"></div>
         </div>
         <div class="settings-window-page-block">
-            <div class="settings-window-page settings_page_graphics" style="display: block;">
-                <div class="settings-elem" data-desctiprion="Описание элемента настройки">
-                    <div class="name trainer-light-back">Частицы</div>
-                    <div class="value trainer-light-back"></div>
-                </div>
-                <div class="settings-elem" data-desctiprion="Описание элемента настройки">
-                    <div class="name trainer-dark-back">Шум</div>
-                    <div class="value trainer-dark-back"></div>
-                </div>
-            </div>
-            <div class="settings-window-page settings_page_audio">
-            </div>
-            <div class="settings-window-page settings_page_control">
-            </div>
-            <div class="settings-window-page settings_page_other">
-            </div>
+            <div class="settings-window-page settings_page_graphics"></div>
+            <div class="settings-window-page settings_page_audio"></div>
+            <div class="settings-window-page settings_page_control"></div>
+            <div class="settings-window-page settings_page_other"></div>
         </div>
     </div>
 </div>
