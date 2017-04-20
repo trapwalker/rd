@@ -297,23 +297,87 @@ var SettingsManager = (function() {
         this.jq_headers = null;
         this.jq_description = null;
         this.jq_description_header = null;
+
+        // this.load(); // Загрузка из куков и с сервера
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
     SettingsManager.prototype.options = {
         general_gain: {
+            name: "general_gain",
             page: "audio",
             text_name: "Общая громкость",
             text_description: "Настройка общей громкости",
             jq_div: null,
-            type: "scale",
+            type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
             value: 1.0,
             currentValue: 1.0,
             set_callback: function(new_value) {if (audioManager) audioManager.set_general_gain(new_value); },
         },
+        auto_fire_gain: {
+            name: "auto_fire_gain",
+            page: "audio",
+            text_name: "Громкость автоматической стрельбы",
+            text_description: "Настройка громкости автоматической стрельбы",
+            jq_div: null,
+            type: "scale",  // Значит значение от 0 до 1.
+            default: 1.0,
+            value: 1.0,
+            currentValue: 1.0,
+            set_callback: function(new_value) {},
+        },
+        discharge_fire_gain: {
+            name: "discharge_fire_gain",
+            page: "audio",
+            text_name: "Громкость залповой стрельбы",
+            text_description: "Настройка громкости залповой стрельбы",
+            jq_div: null,
+            type: "scale",  // Значит значение от 0 до 1.
+            default: 1.0,
+            value: 1.0,
+            currentValue: 1.0,
+            set_callback: function(new_value) {},
+        },
+        bang_gain: {
+            name: "bang_gain",
+            page: "audio",
+            text_name: "Громкость взрывов",
+            text_description: "Настройка громкости взрывов",
+            jq_div: null,
+            type: "scale",  // Значит значение от 0 до 1.
+            default: 1.0,
+            value: 1.0,
+            currentValue: 1.0,
+            set_callback: function(new_value) {},
+        },
+        engine_gain: {
+            name: "engine_gain",
+            page: "audio",
+            text_name: "Громкость двигателя",
+            text_description: "Настройка громкости двигателя",
+            jq_div: null,
+            type: "scale",  // Значит значение от 0 до 1.
+            default: 1.0,
+            value: 1.0,
+            currentValue: 1.0,
+            set_callback: function(new_value) {},
+        },
+        interface_gain: {
+            name: "interface_gain",
+            page: "audio",
+            text_name: "Громкость интерфейса",
+            text_description: "Настройка громкости интерфейса",
+            jq_div: null,
+            type: "scale",  // Значит значение от 0 до 1.
+            default: 1.0,
+            value: 1.0,
+            currentValue: 1.0,
+            set_callback: function(new_value) {},
+        },
 
         particles: {
+            name: "particles",
             page: "graphics",
             text_name: "Частицы",
             text_description: "Количество частиц",
@@ -322,8 +386,10 @@ var SettingsManager = (function() {
             default: 0,
             value: 0,
             currentValue: 0,
-            list_values: [{name: "Мало", value: 1}, {name: "Средне", value: 2}, {name: "Много", value: 3}],
+            //currentIndex: 0,
+            list_values: [{text: "Мало", value: 1}, {text: "Средне", value: 2}, {text: "Много", value: 3}],
             set_callback: function(new_value) {console.log(new_value);},
+            //load: function(value) {}, // todo: для всех списков: искать данное значение в спике значений и установить currentValue и currentIndex
         },
 
     };
@@ -335,37 +401,81 @@ var SettingsManager = (function() {
         this.jq_pages = jq_main_div.find(".settings-window-page-block");
         this.jq_description = jq_main_div.find(".settings-window-description");
         this.jq_description_header = jq_main_div.find(".settings-window-header");
-
+        var even_background = true;
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name)){
                 var option = this.options[opt_name];
                 var page = this.jq_pages.find(".settings_page_" + option.page).first();
-                var jq_option = $('<div class="settings-elem" onmouseenter="settingsManager._handler_mouse_over(`' + opt_name + '`)" onmouseleave="settingsManager._handler_mouse_over()"></div>');
+                var jq_option = $('<div class="settings-elem ' + option.type + '" onmouseenter="settingsManager._handler_mouse_over(`' + opt_name + '`)" onmouseleave="settingsManager._handler_mouse_over()"></div>');
+                option.jq_div = jq_option;
+
+                var background_class_name = even_background ? "trainer-light-back" : "trainer-dark-back";
+
                 switch (option.type){
                     case "scale":
-                        this.draw_scale_options(option, jq_option);
+                        this.draw_scale_options(option, jq_option, background_class_name);
                         break;
                     case "list":
-                        this.draw_list_options(option, jq_option);
+                        this.draw_list_options(option, jq_option, background_class_name);
                         break;
                     default:
                         console.warn("Not found options type: ", option.type);
                 }
-
                 page.append(jq_option);
-                option.jq_div = jq_option;
+
+                even_background = ! even_background;
             }
 
-
-        this.jq_headers.find(".settings-window-menu-item").first().click();
+        this.jq_headers.find(".settings-window-menu-item")[0].click();
     };
 
-    SettingsManager.prototype.draw_scale_options = function(option, jq_option) {
+    SettingsManager.prototype.draw_scale_options = function(option, jq_option, background_class_name) {
         //console.log("SettingsManager.prototype.draw_scale_options", option);
+        // Добавить название
+        jq_option.append('<div class="name scale ' + background_class_name + '">' + option.text_name + '</div>');
+        var jq_value_wrap = $('<div class="value scale ' + background_class_name + '"></div>');
+        var jq_scale = $('<div class="settings-scale" onclick="settingsManager._handler_scale_click(this, event, `' + option.name + '`);" ' +
+            'onmousemove="settingsManager._handler_scale_mousemove(this, event, `' + option.name + '`);"></div>');
+        jq_scale.append('<div class="settings-scale-hover"></div>');
+        jq_value_wrap.append(jq_scale);
+        jq_option.append(jq_value_wrap);
+
+        this.refresh_scale_options(option, jq_option);
     };
 
-    SettingsManager.prototype.draw_list_options = function(option, jq_option) {
+    SettingsManager.prototype.refresh_scale_options = function(option) {
+        //console.log("SettingsManager.prototype.refresh_scale_options", option);
+        option.jq_div.find(".settings-scale-hover").first()
+            .css("width", (option.currentValue * 100.).toFixed(0) + "%");
+    };
+
+    SettingsManager.prototype.draw_list_options = function(option, jq_option, background_class_name) {
         //console.log("SettingsManager.prototype.draw_list_options", option);
+        jq_option.append('<div class="name list ' + background_class_name + '">' + option.text_name + '</div>');
+        var jq_value_wrap = $('<div class="value list ' + background_class_name + '"></div>');
+        var jq_list = $('<div class="settings-list" onclick="settingsManager._handler_list_click(`' + option.name + '`, 1)";></div>');
+        var jq_btn_1 = $('<div class="settings-list-btn left" onclick="settingsManager._handler_list_click(`' + option.name + '`, -1);"></div>');
+        var jq_btn_2 = $('<div class="settings-list-btn right" onclick="settingsManager._handler_list_click(`' + option.name + '`, 1);"></div>');
+
+        jq_value_wrap.append(jq_btn_1);
+        jq_value_wrap.append(jq_list);
+        jq_value_wrap.append(jq_btn_2);
+
+        jq_option.append(jq_value_wrap);
+
+        this.refresh_list_options(option);
+    };
+
+    SettingsManager.prototype.refresh_list_options = function(option, index) {
+        //console.log("SettingsManager.prototype.refresh_list_options", option);
+        var curr_index = index;
+        if (!curr_index)
+            for (var i = 0; i < option.list_values.length; i++)
+                if (option.list_values[i].value == option.currentValue)
+                    curr_index = i;
+        if (!curr_index) curr_index = 0;
+
+        option.jq_div.find(".settings-list").first().text(option.list_values[curr_index].text);
     };
 
     SettingsManager.prototype._handler_click_header = function(click_element) {
@@ -394,6 +504,40 @@ var SettingsManager = (function() {
                 this.jq_description_header.css("display", "none");
                 this.jq_description.text("");
             }
+        }
+    };
+
+    SettingsManager.prototype._handler_scale_click = function(element, event, opt_name) {
+        //console.log("SettingsManager.prototype._handler_click_scale", element, event, opt_name);
+        // Обновить значение опции
+        var option = this.options[opt_name];
+        option.currentValue = (event.offsetX / $(element).width()).toFixed(2);
+        this.refresh_scale_options(option);
+        if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+    };
+
+    SettingsManager.prototype._handler_scale_mousemove = function(element, event, opt_name) {
+        //console.log("SettingsManager.prototype._handler_click_scale", element, event, opt_name);
+        if (event.buttons == 1) this._handler_scale_click(element, event, opt_name);
+    };
+
+    SettingsManager.prototype._handler_list_click = function(opt_name, dvalue) {
+        //console.log("SettingsManager.prototype._handler_click_scale", element, event, opt_name);
+        // Обновить значение опции
+        var option = this.options[opt_name];
+
+        var old_index = 0;
+        for (var i = 0; i < option.list_values.length; i++)
+            if (option.list_values[i].value == option.currentValue)
+                old_index = i;
+
+        var curr_index = old_index + dvalue;
+        if (curr_index < 0) curr_index = 0;
+        if (curr_index >= option.list_values.length) curr_index = option.list_values.length - 1;
+        if (curr_index != old_index) {
+            option.currentValue = option.list_values[curr_index].value;
+            this.refresh_list_options(option, curr_index);
+            if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
         }
     };
 

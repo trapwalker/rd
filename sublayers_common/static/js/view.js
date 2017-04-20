@@ -103,6 +103,11 @@ $(document).ready(function () {
         returnFocusToMap();
     };
 
+    document.getElementById('divMainMenuBtnOptions').onclick = function () {
+        windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager));
+        returnFocusToMap();
+    };
+
     $('.anti-click-class').click(function(){
         returnFocusToMap();
     });
@@ -159,7 +164,7 @@ $(document).ready(function () {
         }
     }, 1000);
 
-    //audioManager.set_general_gain(0.1);
+    audioManager.set_general_gain(0.1);
 
     // Интервал запроса пинга
     setInterval(function(){

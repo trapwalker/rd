@@ -147,23 +147,91 @@
     height: 28px;
     margin-bottom: 2px;
     box-sizing: border-box;
-    border: 1px solid red;
+    overflow: hidden;
 }
 
 .settings-elem .name {
     position: relative;
     float: left;
-    width: 45%;
+    width: 50%;
     height: 100%;
+    line-height: 27px;
+    box-sizing: border-box;
+    padding-left: 10px;
 }
-
-
-/* */
 
 .settings-elem .value {
     position: relative;
     float: left;
     width: 50%;
-    margin-left: 5%;
     height: 100%;
 }
+
+
+/* scale */
+
+.settings-elem.scale {
+    height: 30px;
+    margin-bottom: 5px;
+}
+
+.settings-elem .name.scale {
+    width: calc(100% - 100px - 10px);
+    line-height: 30px;
+}
+
+.settings-elem .value.scale {
+    width: 100px;
+    margin-left: 10px;
+}
+
+.settings-elem .value.scale .settings-scale {
+    position: relative;
+    margin: 2px auto;
+    width: 79px;
+    height: 26px;
+    background-image: url(/static/img/radio/radio_volume_softly.png);
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+
+.settings-elem .value.scale .settings-scale-hover {
+    position: relative;
+    height: 100%;
+    width: 40px;
+    background-image: url(/static/img/radio/radio_volume_bright.png);
+    pointer-events: none;
+}
+
+/* list */
+
+.settings-elem .name.list {
+    width: calc(100% - 160px - 10px);
+}
+
+.settings-elem .value.list {
+    width: 160px;
+    margin-left: 10px;
+}
+
+.settings-elem .settings-list {
+    position: relative;
+    float: left;
+    width: 120px;
+    height: 100%;
+    line-height: 28px;
+    text-align: center;
+}
+
+.settings-elem .settings-list-btn {
+    position: relative;
+    float: left;
+    box-sizing: border-box;
+    margin: 8px 4px 0 4px;
+    border: 6px solid transparent;
+}
+
+
+.settings-elem .settings-list-btn.left {border-right: 6px solid #31c811;}
+.settings-elem .settings-list-btn.right {border-left: 6px solid #31c811;}
+
+
