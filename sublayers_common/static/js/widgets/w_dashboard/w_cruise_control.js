@@ -11,6 +11,7 @@ var WCruiseControl = (function (_super) {
         this.keyBoardControl = false;
         this.lastSpeed = -100;
         this.reverse = false;
+        this.current_interface_size = interface_scale_big;
 
         // Механизм скрытия
         this.visible = true;
@@ -76,9 +77,9 @@ var WCruiseControl = (function (_super) {
 
         // Средний див (слайдер)
         // Заполнил эти размеры со скриншотов, чтоб править их тут а не по всему коду
-        this.constScaleHeight = 325;
-        this.constScaleWidth = 24;
-        this.constSpeedHandleHeight = 27;
+        this.constScaleHeight = this.current_interface_size ? 325 : 269 ;
+        this.constScaleWidth = this.current_interface_size ? 24 : 20;
+        this.constSpeedHandleHeight = this.current_interface_size ? 27 : 21;
 
         this.mediumDiv = $("<div id='cruiseControlMediumDiv'></div>");
         this.mainDiv.append(this.mediumDiv);
@@ -110,40 +111,7 @@ var WCruiseControl = (function (_super) {
         this.scaleArea.click(this, this._onClickScaleArea);
 
         // Рисуем SVG шкалу
-        this.svgScaleArea = SVG('cruiseControlScaleArea');
-        this._init_params();
-
-        this.svgScaleDX = 10;                               // сдвиг на ширину верхней линии
-        this.svgScaleDY = this.constSpeedHandleHeight / 2;  // сдвиг на пол каретки вниз
-
-        // Вертикальная линия
-        this.svgScaleArea.line(this.svgScaleDX, this.svgScaleDY,
-                               this.svgScaleDX, this.constScaleHeight + this.svgScaleDY)
-                         .stroke({width: 1, color: this.svg_colors.line});
-
-        // Верхняя заглушка
-        this.svgScaleArea.line(0, this.svgScaleDY,
-                               this.svgScaleDX + this.constScaleWidth + 10, this.svgScaleDY + 0.01)
-                         .stroke({width: 1, color: this.svg_params.gradients.line_grad2});
-
-        // Промежуточные засечки
-        for (var i = 0; i <= 5; i ++) {
-            var dy = 25;
-            this.svgScaleArea.line(0, dy + this.svgScaleDY + i * 50, this.constScaleWidth, dy + this.svgScaleDY + i * 50 + 0.01).stroke({
-                width: 1,
-                color: this.svg_params.gradients.line_grad1
-            }).dmove(10, 0);
-        }
-        for (var i = 1; i <= 6; i ++)
-            this.svgScaleArea.line(0, this.svgScaleDY + i * 50, 9, this.svgScaleDY + i * 50 + 0.01).stroke({
-                width: 1,
-                color: this.svg_params.gradients.line_grad1
-            }).dmove(10, 0);
-
-        // Нижняя заглушка
-        this.svgScaleArea.line(0, this.svgScaleDY + this.constScaleHeight,
-                               this.svgScaleDX + this.constScaleWidth + 10, this.svgScaleDY + this.constScaleHeight + 0.01)
-            .stroke({width: 1, color: this.svg_params.gradients.line_grad2});
+        this._drawScale();
 
         // Ограничитель зон
         this.zoneArea = $("<div id='cruiseControlZoneArea' class='cruise-control-zoneArea sublayers-unclickable'></div>");
@@ -390,6 +358,37 @@ var WCruiseControl = (function (_super) {
             .stroke({width: 1, color: this.svg_params.gradients.line_grad3});
     };
 
+    WCruiseControl.prototype._drawScale = function () {
+        //console.log('WCruiseControl.prototype._drawScale');
+        $('#cruiseControlScaleArea').empty();
+        this.svgScaleArea = SVG('cruiseControlScaleArea');
+        this._init_params();
+        this.svgScaleDX = 10;                               // сдвиг на ширину верхней линии
+        this.svgScaleDY = this.constSpeedHandleHeight / 2;  // сдвиг на пол каретки вниз
+
+        // Вертикальная линия
+        this.svgScaleArea.line(this.svgScaleDX, this.svgScaleDY, this.svgScaleDX, this.constScaleHeight + this.svgScaleDY)
+                         .stroke({width: 1, color: this.svg_colors.line});
+
+        //// Верхняя заглушка
+        this.svgScaleArea.line(0, this.svgScaleDY, this.svgScaleDX + this.constScaleWidth + 10, this.svgScaleDY + 0.01)
+                         .stroke({width: 1, color: this.svg_params.gradients.line_grad2});
+
+        // Промежуточные засечки
+        var big_d = this.constScaleHeight / 6;
+        var small_d = big_d / 2;
+        for (var i = 1; i <= 5; i ++)
+            this.svgScaleArea.line(0, this.svgScaleDY + i * big_d, this.constScaleWidth, this.svgScaleDY + i * big_d + 0.01)
+                             .stroke({width: 1, color: this.svg_params.gradients.line_grad1}).dmove(10, 0);
+        for (var i = 1; i <= 6; i ++)
+            this.svgScaleArea.line(0, this.svgScaleDY + i * big_d - small_d, 9, this.svgScaleDY + i * big_d - small_d + 0.01)
+                .stroke({width: 1, color: this.svg_params.gradients.line_grad1 }).dmove(10, 0);
+
+        // Нижняя заглушка
+        this.svgScaleArea.line(0, this.svgScaleDY + this.constScaleHeight, this.svgScaleDX + this.constScaleWidth + 10, this.svgScaleDY + this.constScaleHeight + 0.01)
+            .stroke({width: 1, color: this.svg_params.gradients.line_grad2});
+    };
+
     WCruiseControl.prototype.setZoneState = function(zoneName, zoneState) {
         //console.log('WCruiseControl.prototype.setZoneState', zoneName, zoneState);
         if (zoneState) {
@@ -477,6 +476,22 @@ var WCruiseControl = (function (_super) {
         this.mainDiv.remove();
 
         _super.prototype.delFromVisualManager.call(this);
+    };
+
+    WCruiseControl.prototype._resize_view = function() {
+        if (this.current_interface_size == interface_scale_big) return;
+        this.current_interface_size = interface_scale_big;
+        this.constScaleHeight = this.current_interface_size ? 325 : 269 ;
+        this.constScaleWidth = this.current_interface_size ? 24 : 20;
+        this.constSpeedHandleHeight = this.current_interface_size ? 27 : 21;
+        this._drawScale();
+
+        // Принудительная перерисовка
+        var prc = 0;
+        if (this.lastSpeed >= 0) prc = this.lastSpeed / user.userCar.v_forward;
+        else prc = this.lastSpeed / user.userCar.v_backward;
+        this._drawFillArea(prc);
+        this.setSpeedHandleValue(prc);
     };
 
     return WCruiseControl;

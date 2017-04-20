@@ -98,7 +98,7 @@ var LocationTunerNPC = (function (_super) {
         }
 
         $('.tunerPontCardOff').css('display', 'none');
-        $('#tunerPontCard0').css('display', 'block');
+        $('#tunerPontCardC').css('display', 'block');
     };
 
     LocationTunerNPC.prototype.update = function(data) {

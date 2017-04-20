@@ -95,6 +95,7 @@
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/journal/journal_window_quests.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/journal/journal_window_parking.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/party_window.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('css/templates/menu/settings_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/person_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('css/templates/menu/radio_window.css') }}"/>
 
@@ -144,7 +145,6 @@
 
     <script src="{{ static_url('js/widgets/visual_object.js') }}"></script>
     <script src="{{ static_url('js/widgets/leaflet_icon_manager.js') }}"></script>
-    <script src="{{ static_url('js/widgets/w_car_marker.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_inventory_item.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_rumble.js') }}"></script>
     <script src="{{ static_url('js/widgets/w_map_position.js') }}"></script>
@@ -268,10 +268,12 @@
     </div>
     <div id="cruiseControlMainDiv" class="cruise-control-main">
         <div id="cruiseControlGlassDiv" class="cruise-control-glass">
-            <div id="divForRadAndWindRadials" class="anti-click-class"></div>
-            <div id="divForHpAndFuelRadials" class="anti-click-class"></div>
-            <div id="divForAltmetrRadial" class="anti-click-class"></div>
-            <div id="divForCruiseNotClick" class="anti-click-class"></div>
+            <div id="divForRadAndWindRadials"></div>
+            <div id="divForHpAndFuelRadials"></div>
+            <div id="divForAltmetrRadial"></div>
+            <div id="divForCruiseNotClick1" class="anti-click-class"></div>
+            <div id="divForCruiseNotClick2" class="anti-click-class"></div>
+            <div id="divForCruiseNotClick3" class="anti-click-class"></div>
         </div>
         <div id="cruiseControlHardwareDiv" class="cruise-control-hardware">
             <div id='cruiseControlVisibleButtonDiv' class='hideBtnDownRight sublayers-clickable'></div>

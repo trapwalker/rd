@@ -35,7 +35,6 @@ $(document).ready(function () {
     user = new User(1);
     ownerList = new OwnerList();
 
-
     ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
 
     rpcCallList = new RPCCallList();
@@ -252,14 +251,12 @@ var img1;
 var window_scaled_prc = 1.0;
 
 
-
-
 $(window).resize(resizeWindowHandler);
 
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
-    interface_scale_big = $(window).width() > 1366;
+    interface_scale_big = ($(window).width()) > 1550 && ($(window).height() > 880);
     var scale_prc_w_width = $(window).width() / 1920;
     var scale_prc_w_height = $(window).height() / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
@@ -269,7 +266,6 @@ function resizeWindowHandler() {
         window_scaled_prc = scale_prc;
     }
     if (teachingMapManager) teachingMapManager.redraw();
-    if (mapCanvasManager) mapCanvasManager.on_new_map_size();
     if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
 }
 

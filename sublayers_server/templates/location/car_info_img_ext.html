@@ -12,6 +12,7 @@
             {% end %}
         {% end %}
     {% end %}
+    <div class="car-info-block-armorer-margin_{{ car.node_html() }}">
     {% for k, v in car.iter_slots(tags='armorer') %}
         {% if v is not None %}
             {% set scale_images = v.armorer_images %}
@@ -24,6 +25,7 @@
             {% end %}
         {% end %}
     {% end %}
+    </div>
 </div>
 
 
