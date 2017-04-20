@@ -1,3 +1,4 @@
+
 var LocalCookieStorage = (function(){
     function LocalCookieStorage(){
         // Список параметров и их значений по умолчанию
@@ -286,50 +287,117 @@ var LocalCookieStorage = (function(){
         return this.flagDebug && this.optionsChatRPC;
     };
 
-    // optionsChatAnswer
-    LocalCookieStorage.prototype.enableLogAnswerMessage = function(){
-        return this.flagDebug && this.optionsChatAnswer;
-    };
-
-    // optionsChatSystemLog
-    LocalCookieStorage.prototype.enableLogSystemMessage = function(){
-        return this.flagDebug && this.optionsChatSystemLog;
-    };
-
-    // optionsMarkerContact
-    LocalCookieStorage.prototype.enableMarkerContact = function(){
-        return this.flagDebug && this.optionsMarkerContact;
-    };
-
-    // optionsMarkerUpdate
-    LocalCookieStorage.prototype.enableMarkerUpdate = function(){
-        return this.flagDebug && this.optionsMarkerUpdate;
-    };
-
-    // optionsMapTileVisible
-    LocalCookieStorage.prototype.visibleTileLayer = function(){
-        return this.optionsMapTileVisible;
-    };
-
-    // optionsFCRotate
-    LocalCookieStorage.prototype.enableFCRotate = function(){
-        return this.optionsFCRotate;
-    };
-
-    // optionsRMVisible
-    LocalCookieStorage.prototype.enableRadialMenu = function(){
-        return this.optionsRMVisible && (!this.optionsDraggingMap);
-    };
-
-    // levelZoomForVisibleLabel
-    LocalCookieStorage.prototype.visibleLabel = function(){
-        return (mapManager.getZoom() > this.levelZoomForVisibleLabel);
-    };
-
-    // optionsShowDebugLine
-    LocalCookieStorage.prototype.enableShowDebugLine = function(){
-        return this.flagDebug && this.optionsShowDebugLine;
-    };
-
     return LocalCookieStorage;
 })();
+
+
+var SettingsManager = (function() {
+    function SettingsManager(){
+        this.jq_pages = null;
+        this.jq_headers = null;
+        this.jq_description = null;
+        this.jq_description_header = null;
+    }
+
+    // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
+    SettingsManager.prototype.options = {
+        general_gain: {
+            page: "audio",
+            text_name: "Общая громкость",
+            text_description: "Настройка общей громкости",
+            jq_div: null,
+            type: "scale",
+            default: 1.0,
+            value: 1.0,
+            currentValue: 1.0,
+            set_callback: function(new_value) {if (audioManager) audioManager.set_general_gain(new_value); },
+        },
+
+        particles: {
+            page: "graphics",
+            text_name: "Частицы",
+            text_description: "Количество частиц",
+            jq_div: null,
+            type: "list",
+            default: 0,
+            value: 0,
+            currentValue: 0,
+            list_values: [{name: "Мало", value: 1}, {name: "Средне", value: 2}, {name: "Много", value: 3}],
+            set_callback: function(new_value) {console.log(new_value);},
+        },
+
+    };
+
+    SettingsManager.prototype.redraw = function(jq_main_div) {
+        //console.log("SettingsManager.prototype.redraw", this);
+        // Сначала повесить клики на
+        this.jq_headers = jq_main_div.find(".settings-window-header-block");
+        this.jq_pages = jq_main_div.find(".settings-window-page-block");
+        this.jq_description = jq_main_div.find(".settings-window-description");
+        this.jq_description_header = jq_main_div.find(".settings-window-header");
+
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)){
+                var option = this.options[opt_name];
+                var page = this.jq_pages.find(".settings_page_" + option.page).first();
+                var jq_option = $('<div class="settings-elem" onmouseenter="settingsManager._handler_mouse_over(`' + opt_name + '`)" onmouseleave="settingsManager._handler_mouse_over()"></div>');
+                switch (option.type){
+                    case "scale":
+                        this.draw_scale_options(option, jq_option);
+                        break;
+                    case "list":
+                        this.draw_list_options(option, jq_option);
+                        break;
+                    default:
+                        console.warn("Not found options type: ", option.type);
+                }
+
+                page.append(jq_option);
+                option.jq_div = jq_option;
+            }
+
+
+        this.jq_headers.find(".settings-window-menu-item").first().click();
+    };
+
+    SettingsManager.prototype.draw_scale_options = function(option, jq_option) {
+        //console.log("SettingsManager.prototype.draw_scale_options", option);
+    };
+
+    SettingsManager.prototype.draw_list_options = function(option, jq_option) {
+        //console.log("SettingsManager.prototype.draw_list_options", option);
+    };
+
+    SettingsManager.prototype._handler_click_header = function(click_element) {
+        var jq_elem = $(click_element);
+        this.jq_headers.find(".settings-window-menu-item").removeClass("active");
+        jq_elem.addClass("active");
+        this.jq_pages.find(".settings-window-page").css("display", "none");
+        this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
+    };
+
+    SettingsManager.prototype._handler_mouse_over = function(opt_name) {
+        //console.log("SettingsManager.prototype._handler_mouse_enter", opt_name, this.options[opt_name].text_description);
+        if (locationManager.in_location_flag) {
+            //
+            if (opt_name)
+                console.log(opt_name, " ===>>>> ", this.options[opt_name].text_description);
+            else {
+            }
+        }
+        else {
+            if (opt_name) {
+                this.jq_description_header.css("display", "block");
+                this.jq_description.text(this.options[opt_name].text_description);
+            }
+            else {
+                this.jq_description_header.css("display", "none");
+                this.jq_description.text("");
+            }
+        }
+    };
+
+    return SettingsManager;
+})();
+
+var settingsManager = new SettingsManager();
