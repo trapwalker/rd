@@ -23,7 +23,7 @@ var WZoomSlider = (function () {
         };
         var mainParent = $('#' + this.options.parentDiv);
         mainParent.append('<div id="zoomSliderMainDivHardware"></div>');
-        mainParent.append('<div id="zoomSliderMainDivGlass"></div>');
+        mainParent.append('<div id="zoomSliderMainDivGlass"><div id="divForZoomNotClick" class="anti-click-class"></div></div>');
         mainParent.addClass('slider-zoom-parent sublayers-clickable');
         var parentGlass = $('#zoomSliderMainDivGlass');
         var parentPort = $('#zoomSliderMainDivHardware');

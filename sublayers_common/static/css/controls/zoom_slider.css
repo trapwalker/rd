@@ -28,6 +28,12 @@
     pointer-events: none;
 }
 
+#divForZoomNotClick {
+    position: absolute;
+    width: 105px;
+    height: 350px;
+}
+
 /* Оконтовка для непосредственно зума: кнопки плюс и минус, текст, шкала, каретка и тд */
 #zoomSliderMainDivWrapper {
     position: relative;
@@ -144,7 +150,6 @@
     border-radius: 30%;
 }
 
-
 #Zoom_btnPlus:hover {
     color: white;
 }
@@ -152,8 +157,6 @@
 #Zoom_btnPlus:active {
 
 }
-
-
 
 #Zoom_btnMinus:hover {
     color: white;
@@ -220,7 +223,6 @@
     background-color: rgba(0, 255, 85, 0.20);
 }
 
-
 /* Кнопка сворачивания гаджета зума */
 #ZoomPortHideBtn {
     pointer-events: auto;
@@ -236,15 +238,12 @@
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
 }
-
 .hideBtnDownLeft:hover {
     background: transparent url('/static/img/misc_button/down_hide_hover.png') 50% 50% no-repeat;
 }
-
 .hideBtnDownLeft:active {
     background: transparent url('/static/img/misc_button/down_hide_active.png') 50% 50% no-repeat;
 }
-
 
 .hideBtnUpLeft {
     height: 36px;
@@ -253,24 +252,12 @@
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
 }
-
 .hideBtnUpLeft:hover {
     background: transparent url('/static/img/misc_button/up_hide_hover.png') 50% 50% no-repeat;
 }
-
 .hideBtnUpLeft:active {
     background: transparent url('/static/img/misc_button/up_hide_active.png') 50% 50% no-repeat;
 }
-
-
-
-
-
-
-
-
-
-
 
 /* Настройка портативного (свёрнутого) режима зума */
 
@@ -362,7 +349,6 @@
     opacity: 0.3;
 }
 
-
 #ZoomTextDivCompact {
     position: absolute;
     left: 24px;
@@ -377,7 +363,7 @@
 }
 
 
-@media screen and (max-width: 1366px), screen and (max-height: 880px) {
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
     #zoomSliderMainDivHardware {
         width: 21px;
         height: 322px;
@@ -389,6 +375,8 @@
         height: 273px;
         background: transparent url('/static/img/control_zoom/zoom_768/zoom_glass.png') 100% 100% no-repeat;
     }
+
+    #divForZoomNotClick { width: 80px; height: 260px; }
 
     #Zoom_sliderBar { height: 120px; width: 48px; top: 4px; }
 
@@ -498,6 +486,6 @@
 }
 
 
-@media screen and (max-width: 800px), screen and (max-height: 550px) {
+@media screen and (max-width: 1250px), screen and (max-height: 550px) {
     .slider-zoom-parent {transform: scale(0.75);}
 }
