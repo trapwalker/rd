@@ -408,7 +408,7 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.onZoomStart = function () {
         this.inZoomChange = true;
-        audioManager.play({name: 'zoom_01', gain: 0.1, priority: 0.5});
+        audioManager.play({name: 'zoom_01', gain: 0.1 * audioManager._settings_interface_gain, priority: 0.5});
     };
 
     MapManager.prototype.onZoomEnd = function () {

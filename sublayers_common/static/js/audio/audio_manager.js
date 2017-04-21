@@ -7,6 +7,14 @@ var AudioManager = (function () {
         this.queue = [];
         this.queue_size = 10;
         this.queue_tail_size = 5;
+
+        // settings
+        this.general_gain = settingsManager.options.general_gain.value;
+        this._settings_auto_fire_gain =  settingsManager.options.auto_fire_gain.value;
+        this._settings_discharge_fire_gain =  settingsManager.options.discharge_fire_gain.value;
+        this._settings_bang_gain =  settingsManager.options.bang_gain.value;
+        this._settings_engine_gain =  settingsManager.options.engine_gain.value;
+        this._settings_interface_gain =  settingsManager.options.interface_gain.value;
     }
 
     // Воспроизведение

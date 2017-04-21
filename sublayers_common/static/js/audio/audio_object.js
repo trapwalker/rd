@@ -159,6 +159,8 @@ var PlayAudioObject = (function () {
         return true;
     };
 
+    PlayAudioObject.prototype.get_gain = function () {return this.gain_node.gain.value; };
+
     return PlayAudioObject;
 })();
 

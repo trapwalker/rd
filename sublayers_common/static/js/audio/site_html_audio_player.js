@@ -336,7 +336,7 @@ var RadioPlayer = (function () {
         }
 
         // Звук кнопки сети
-        audioManager.play({name: 'tumbler', gain: 1.0});
+        audioManager.play({name: 'tumbler', gain: 1.0 * audioManager._settings_interface_gain});
 
         // Сохранить в cookie
         this.save_setting_to_cookie(false);
@@ -379,7 +379,7 @@ var RadioPlayer = (function () {
         if (this.playing) this.click_play();
 
         // Звук кнопки переключения качества
-        audioManager.play({name: 'tumbler', gain: 1.0});
+        audioManager.play({name: 'tumbler', gain: 1.0 * audioManager._settings_interface_gain});
     };
 
     RadioPlayer.prototype.change_site_size = function (old_size, new_size) {

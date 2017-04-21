@@ -306,6 +306,7 @@ var SettingsManager = (function() {
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
     SettingsManager.prototype.options = {
+        /* Настройка звуков */
         general_gain: {
             name: "general_gain",
             page: "audio",
@@ -328,7 +329,7 @@ var SettingsManager = (function() {
             default: 1.0,
             value: 1.0,
             currentValue: 1.0,
-            set_callback: function(new_value) {},
+            set_callback: function(new_value) {if (audioManager) audioManager._settings_auto_fire_gain = new_value;},
         },
         discharge_fire_gain: {
             name: "discharge_fire_gain",
@@ -340,7 +341,7 @@ var SettingsManager = (function() {
             default: 1.0,
             value: 1.0,
             currentValue: 1.0,
-            set_callback: function(new_value) {},
+            set_callback: function(new_value) {if (audioManager) audioManager._settings_discharge_fire_gain = new_value;},
         },
         bang_gain: {
             name: "bang_gain",
@@ -352,19 +353,19 @@ var SettingsManager = (function() {
             default: 1.0,
             value: 1.0,
             currentValue: 1.0,
-            set_callback: function(new_value) {},
+            set_callback: function(new_value) {if (audioManager) audioManager._settings_bang_gain = new_value;},
         },
         engine_gain: {
             name: "engine_gain",
             page: "audio",
-            text_name: "Громкость двигателя",
-            text_description: "Настройка громкости двигателя",
+            text_name: "Громкость автомобиля",
+            text_description: "Настройка громкости двигателя и сигнала заднего хода",
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
             value: 1.0,
             currentValue: 1.0,
-            set_callback: function(new_value) {},
+            set_callback: function(new_value) {if (audioManager) audioManager._settings_engine_gain = new_value;},
         },
         interface_gain: {
             name: "interface_gain",
@@ -376,7 +377,7 @@ var SettingsManager = (function() {
             default: 1.0,
             value: 1.0,
             currentValue: 1.0,
-            set_callback: function(new_value) {},
+            set_callback: function(new_value) {if (audioManager) audioManager._settings_interface_gain = new_value;},
         },
 
         particles: {
@@ -392,7 +393,6 @@ var SettingsManager = (function() {
             //currentIndex: 0,
             list_values: [{text: "Мало", value: 1}, {text: "Средне", value: 2}, {text: "Много", value: 3}],
             set_callback: function(new_value) {},
-            //load: function(value) {}, // todo: для всех списков: искать данное значение в спике значений и установить currentValue и currentIndex
         },
 
     };

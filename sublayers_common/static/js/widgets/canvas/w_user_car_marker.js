@@ -161,7 +161,7 @@ var WCanvasCarMarker = (function (_super) {
         if (car == user.userCar && car.engine_audio) {
             this.audio_object = audioManager.play({
                 name: car.engine_audio.audio_name,
-                gain: 1.0,
+                gain: 1.0 * audioManager._settings_engine_gain,
                 loop: true,
                 playbackRate: car.getAudioEngineRate(clock.getCurrentTime()),
                 priority: 0.1
@@ -268,13 +268,16 @@ var WCanvasCarMarker = (function (_super) {
             this._ps_last_position = car_pos_real;
 
             // Звук двигателя
-            if (this.audio_object)
+            if (this.audio_object) {
                 this.audio_object.source_node.playbackRate.value = mobj.getAudioEngineRate(time);
+                if (this.audio_object.get_gain() != audioManager._settings_engine_gain)
+                    this.audio_object.gain(audioManager._settings_engine_gain);
+            }
 
             // Звук движения назад
             if (this.audio_object_reverse_gear) {
                 if (mobj.getCurrentSpeed(time) < 0)
-                    this.audio_object_reverse_gear.gain(0.3);
+                    this.audio_object_reverse_gear.gain(audioManager._settings_engine_gain * 0.3);
                 else
                     this.audio_object_reverse_gear.gain(0.0);
             }

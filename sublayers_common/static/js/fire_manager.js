@@ -227,7 +227,7 @@ var FireEffectManager = (function () {
                 var rate = 0.6 + (0.6 - 0.8) * Math.random();
                 audioManager.play({
                     name: audio_name,
-                    gain: 0.4,
+                    gain: 0.4 * audioManager._settings_discharge_fire_gain,
                     playbackRate: rate,
                     priority: 0.8
                 });
@@ -245,7 +245,7 @@ var FireEffectManager = (function () {
                     var rate = 0.2 + (0.4 - 0.2) * Math.random();
                     audioManager.play({
                         name: audio_name,
-                        gain: gain,
+                        gain: gain * audioManager._settings_discharge_fire_gain,
                         playbackRate: rate,
                         priority: 0.5
                     });
@@ -408,7 +408,7 @@ var FireAutoAudioController = (function () {
             var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
             self.curren_play_object = audioManager.play({
                 name: name,
-                gain: gain,
+                gain: gain * audioManager._settings_auto_fire_gain,
                 callback: self.start.bind(self, delay),
                 priority: base_autofire_priority,
                 cls: audio_cls,

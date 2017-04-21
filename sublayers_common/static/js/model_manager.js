@@ -684,7 +684,7 @@ var ClientManager = (function () {
                 // 0.2/0.4 - границы рандома рэйта
                 var rate = 0.2 + (0.4 - 0.2) * Math.random();
 
-                audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.8});
+                audioManager.play({name: "shot_03", gain: gain * audioManager._settings_bang_gain, playbackRate: rate, priority: 0.8});
             }
         }
         else {
@@ -767,7 +767,7 @@ var ClientManager = (function () {
             var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
             // 0.35/0.6 - границы рэйта
             var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
-            audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.7});
+            audioManager.play({name: "shot_03", gain: gain * audioManager._settings_bang_gain, playbackRate: rate, priority: 0.7});
 
         }
     };
@@ -1346,7 +1346,7 @@ var ClientManager = (function () {
         var vo = visualManager.getVobjByType(power_up, WCanvasAnimateMarkerPowerUp);
         if (!vo) return;
         vo._power_up_overdown = power_up._icon_name.replace("icon-power-up-", "effect-power-up-off-");
-        audioManager.play({name: "powerup_001", gain: 1.0, priority: 1.0});
+        audioManager.play({name: "powerup_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
 };
 
     // Активация итема
@@ -1366,7 +1366,7 @@ var ClientManager = (function () {
         //console.log("ClientManager.prototype.SuccessActivateItem", event);
         // Воспроизвести звук активации итема
         if (event.item.activate_success_audio) {
-            audioManager.play({name: event.item.activate_success_audio, gain: 1.0});
+            audioManager.play({name: event.item.activate_success_audio, gain: 1.0 * audioManager._settings_interface_gain});
         }
     };
 
