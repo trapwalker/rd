@@ -64,10 +64,12 @@ var WMapNoise = (function (_super) {
         this.noise_img_src_list['2n4_white'].src = '/static/img/noise/2n4_white.png';
 
         this.noise_img = null;
+
+        this.temp_canvas = document.createElement("canvas");
         this.img_size = new Point(0, 0);
     }
 
-    WMapNoise.prototype.generate_img = function() {
+    WMapNoise.prototype._generate_img = function() {
         // В случае если изменилось разрешение экрана, надо перегенерировать картинку шума
         var width = Math.round(mapCanvasManager.canvas.width * 1.2);
         var height = Math.round(mapCanvasManager.canvas.height * 1.2);
@@ -80,7 +82,7 @@ var WMapNoise = (function (_super) {
             this.img_size.y = height;
 
             // Генерируем новый шум
-            var temp_canvas = document.createElement("canvas");
+            var temp_canvas = this.temp_canvas;
             temp_canvas.width = this.img_size.x;
             temp_canvas.height = this.img_size.y;
             var temp_ctx = temp_canvas.getContext("2d");
@@ -97,17 +99,15 @@ var WMapNoise = (function (_super) {
                 x_pos += src_size_x;
                 y_pos = 0;
             }
-            this.noise_img = document.createElement("img");
-            this.noise_img.src = temp_canvas.toDataURL("image/png");
         }
     };
 
     WMapNoise.prototype.redraw = function(ctx, time){
         if (!this.activated) return;
-        this.generate_img();
+        this._generate_img();
         var shift_x = Math.round(Math.random() * mapCanvasManager.canvas.width * 0.2);
         var shift_y = Math.round(Math.random() * mapCanvasManager.canvas.height * 0.2);
-        ctx.drawImage(this.noise_img, -shift_x, -shift_y);
+        ctx.drawImage(this.temp_canvas, -shift_x, -shift_y);
     };
 
     WMapNoise.prototype.start = function(noise_name, opacity) {
@@ -134,4 +134,41 @@ var WMapNoise = (function (_super) {
     return WMapNoise;
 })(VisualObject);
 
+
+var WRadiationNoise = (function (_super) {
+    __extends(WRadiationNoise, _super);
+
+    function WRadiationNoise() {
+        _super.call(this, []);
+        this.frame_rate = 5;
+
+        this.radiation_dps_max = 5; // Уровень урона радиаций после которого (включительно) шум показывается без прозрачности
+        this.radiation_d_dps_max = 0.1; // Максимальный уровень приращения дамага за кадр
+        this.target_radiation_dps = 0; // Целевой дамаг
+        this.current_radiation_dps = 0; // Текущий дамаг
+        this.activated = true;
+        this.current_noise = 'n4';
+    }
+
+    WRadiationNoise.prototype.redraw = function(ctx, time) {
+        if (user.userCar) {
+            this.target_radiation_dps = user.userCar.radiation_dps || 0;
+            var d_dps = this.target_radiation_dps - this.current_radiation_dps;
+            if (Math.abs(d_dps) <  this.radiation_d_dps_max)
+                this.current_radiation_dps = this.target_radiation_dps;
+            else
+                this.current_radiation_dps += Math.sign(d_dps) * this.radiation_d_dps_max;
+            this.current_opacity = Math.min(this.current_radiation_dps / this.radiation_dps_max, 1.0);
+        }
+        else
+            this.current_opacity = 0;
+        if ((this.current_opacity == this._last_opacity) && (this.current_opacity == 0)) return;
+        _super.prototype.redraw.call(this, ctx, time);
+    };
+
+    return WRadiationNoise;
+})(WMapNoise);
+
+
 var wMapNoise;
+var wRadiationNoise;

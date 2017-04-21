@@ -113,6 +113,7 @@
 #fireControlQuickBtn4 { top: 10px; left: 4px; transform: rotate(14deg); }
 
 #divForSVG {
+    position: absolute;
     margin-left: 118px;
     margin-top: 22px;
 }

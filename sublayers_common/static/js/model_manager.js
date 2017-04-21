@@ -499,7 +499,8 @@ var ClientManager = (function () {
             if (!wObservingRange) wObservingRange = new WObservingRange();
             wObservingRange.addModelObject(mcar);
 
-            if (!wRadiationEffect) wRadiationEffect = new WRadiationEffect();
+            //if (!wRadiationEffect) wRadiationEffect = new WRadiationEffect();
+            if (!wRadiationNoise) wRadiationNoise = new WRadiationNoise();
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
@@ -785,6 +786,8 @@ var ClientManager = (function () {
          //console.log('ClientManager.prototype.ChangeRadiation ', event);
         if (user.userCar && event.obj_id == user.userCar.ID){
             user.userCar.radiation_dps += event.radiation_dps;
+            if (user.userCar.radiation_dps != 0)
+                new WTextArcade("Вы покидаете поле боя").start();
         }
         else
             console.warn('Warning! Пришла радиация на неизветную машинку!')
