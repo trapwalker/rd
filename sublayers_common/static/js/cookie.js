@@ -302,7 +302,7 @@ var SettingsManager = (function() {
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
-        // this.load(); // Загрузка из куков и с сервера
+        this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
@@ -387,12 +387,12 @@ var SettingsManager = (function() {
             text_description: "Количество частиц",
             jq_div: null,
             type: "list",
-            default: 0,
+            default: 3,
             value: 0,
             currentValue: 0,
             //currentIndex: 0,
             list_values: [{text: "Мало", value: 1}, {text: "Средне", value: 2}, {text: "Много", value: 3}],
-            set_callback: function(new_value) {console.log(new_value);},
+            set_callback: function(new_value) {},
             //load: function(value) {}, // todo: для всех списков: искать данное значение в спике значений и установить currentValue и currentIndex
         },
 
@@ -447,6 +447,8 @@ var SettingsManager = (function() {
                 if (option.value != option.currentValue)
                     option.value = option.currentValue;
             }
+
+        this.save_to_cookie();
     };
 
     SettingsManager.prototype.cancel_options = function() {
@@ -483,6 +485,48 @@ var SettingsManager = (function() {
         }
     };
 
+    SettingsManager.prototype.load = function() {
+        var cookie_str = LocalCookieStorage.prototype.getCookie("rd_settings", false); // todo: Забрать из куков
+        var server_str = ""; // todo: Забрать из html
+        var cookie_obj = null;
+        var server_obj = null;
+        try {
+            var cl = cookie_str.split("|");
+            for (var i=0; i < cl.length; i++) {
+                var record = cl[i].split("=");
+                cookie_obj[record[0]] = record[1];
+            }
+            server_obj = JSON.parse(server_str);
+        } catch (e) {
+            cookie_obj = {};
+            server_obj = {};
+        }
+
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                var option = this.options[opt_name];
+                //option.value = option.currentValue = cookie_obj[opt_name] || server_obj[opt_name] || option.default;  // плохо работает с нулями
+                var value = option.default;
+                if (server_obj.hasOwnProperty(opt_name)) value = server_obj[opt_name];
+                if (cookie_obj.hasOwnProperty(opt_name)) value = cookie_obj[opt_name];
+                option.value = option.currentValue = value;
+            }
+        return false;
+    };
+
+    SettingsManager.prototype.save_to_cookie = function() {
+        var cookie_str = "";
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                console.log(cookie_str);
+                cookie_str = cookie_str + "|" + opt_name + "=" + this.options[opt_name].value;
+            }
+
+        console.log(cookie_str);
+
+        LocalCookieStorage.prototype.setCookie("rd_settings", cookie_str);
+    };
+
     // Общие обработчики
     SettingsManager.prototype._handler_click_header = function(click_element) {
         var jq_elem = $(click_element);
@@ -517,14 +561,14 @@ var SettingsManager = (function() {
 
     SettingsManager.prototype._handler_click_cancel = function() {
         this.cancel_options();
-        this.btn_set_enable_disable();
-        // todo: закрыть окно
+        // закрыть окно
+        windowTemplateManager.closeUniqueWindow("settings");
     };
 
     SettingsManager.prototype._handler_click_ok = function() {
         this.apply_options();
-        this.btn_set_enable_disable();
-        // todo: закрыть окно
+        // закрыть окно
+        windowTemplateManager.closeUniqueWindow("settings");
     };
 
 

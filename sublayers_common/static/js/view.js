@@ -104,7 +104,7 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnOptions').onclick = function () {
-        windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager));
+        windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager), settingsManager.cancel_options.bind(settingsManager));
         returnFocusToMap();
     };
 
