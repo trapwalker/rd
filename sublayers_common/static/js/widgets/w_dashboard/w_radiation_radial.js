@@ -10,6 +10,7 @@ var WRadiationRadial = (function (_super) {
         this.car = car;
         this.max_radiation_dps = 20;
         this.current_interface_size = interface_scale_big;
+        this.alarm_sound = null;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WRadiationRadial' + (-generator_ID.getID());
@@ -212,10 +213,12 @@ var WRadiationRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('radiationAlarmLamp-off');
             this.alarmLamp.addClass('radiationAlarmLamp-on');
+            this.alarm_sound = audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('radiationAlarmLamp-on');
             this.alarmLamp.addClass('radiationAlarmLamp-off');
+            if (this.alarm_sound) this.alarm_sound.stop();
         }
     };
 
@@ -280,6 +283,7 @@ var WRadiationRadial = (function (_super) {
         $('#' + this.div_id).remove();
         this.alarmLamp.remove();
         this.car = null;
+        if (this.alarm_sound) this.alarm_sound.stop();
         _super.prototype.delFromVisualManager.call(this);
     };
 

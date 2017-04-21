@@ -10,6 +10,7 @@ var WHPRadial = (function (_super) {
         this.car = car;
         this.value_prc = 0.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
         this.current_interface_size = interface_scale_big;
+        this.alarm_sound = null;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WHPRadial' + (-generator_ID.getID());
@@ -208,10 +209,12 @@ var WHPRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('healthAlarmLamp-off');
             this.alarmLamp.addClass('healthAlarmLamp-on');
+            this.alarm_sound = audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('healthAlarmLamp-on');
             this.alarmLamp.addClass('healthAlarmLamp-off');
+            if (this.alarm_sound) this.alarm_sound.stop();
         }
     };
 
@@ -268,7 +271,7 @@ var WHPRadial = (function (_super) {
     };
 
     WHPRadial.prototype.change = function () {
-        //console.log('WHPRadial.prototype.change');
+        console.log('WHPRadial.prototype.change');
         //return;
         var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
@@ -290,6 +293,7 @@ var WHPRadial = (function (_super) {
         $('#' + this.div_id).remove();
         this.alarmLamp.remove();
         this.car = null;
+        if (this.alarm_sound) this.alarm_sound.stop();
         _super.prototype.delFromVisualManager.call(this);
     };
 
