@@ -17,7 +17,6 @@ var WCanvasTargetPoint = (function (_super) {
         mapCanvasManager.add_vobj(this, 20);
     }
 
-
     WCanvasTargetPoint.prototype.redraw = function(ctx, time){
         //console.log('WCanvasTargetPoint.prototype.redraw');
         if (! this.target_point) return;
@@ -65,13 +64,13 @@ var WCanvasTargetPoint = (function (_super) {
         // если таргет поинт не сменился, то выход
         if (this.equals_target_points(target_point))
             return;
+        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         this.target_point = target_point;
     };
 
     WCanvasTargetPoint.prototype.deactivate = function(){
         this.target_point = null;
     };
-
 
     WCanvasTargetPoint.prototype.delFromVisualManager = function () {
         //console.log('WCanvasTargetPoint.prototype.delFromVisualManager');
