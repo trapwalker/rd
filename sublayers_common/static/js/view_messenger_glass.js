@@ -1029,6 +1029,10 @@ var ViewMessengerGlass = (function () {
         var self = this;
         if (visible != this.chat_visible) {
             this.chat_visible = visible;
+
+            // Звук сворачивания/разворачивания
+            audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
                 this.parentGlass.animate({left: 0}, 1000, function () {

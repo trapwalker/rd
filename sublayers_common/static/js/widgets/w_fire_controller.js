@@ -339,6 +339,10 @@ var WFireController = (function (_super) {
     WFireController.prototype.changeVisible = function () {
         //console.log('WFireController.prototype.changeVisible');
         var self = this;
+
+        // Звук сворачивания/разворачивания
+        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
         this.fCT.slideToggle("slow", function () {
             if (self.visible) {
                 self.visible = false;

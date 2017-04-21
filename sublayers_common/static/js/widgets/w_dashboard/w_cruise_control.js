@@ -204,6 +204,10 @@ var WCruiseControl = (function (_super) {
         //console.log('WCruiseControl.prototype.changeVisible');
         if (visible == this.visible) return;
         var self = this;
+
+        // Звук сворачивания/разворачивания
+        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
         if (this.visible) {
             this.visible = false;
             this.glassDiv.animate({right: -560}, 1000, function () {
