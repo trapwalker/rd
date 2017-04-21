@@ -101,6 +101,9 @@ var MapCanvasManager = (function(_super){
         this._mouse_focus_widget = null;
         this._mouse_look = false;
         this._mouse_client = new Point(0, 0);
+
+
+        this._settings_particles_tail = settingsManager.options.particles_tail.value;  // Длина шлейфов
     }
 
     MapCanvasManager.prototype.get_canvas_center = function() {
