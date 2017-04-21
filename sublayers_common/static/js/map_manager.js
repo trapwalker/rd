@@ -255,6 +255,7 @@ var MapManager = (function(_super) {
             div: "map2",
             zMin: ConstMinMapZoom,
             zMax: ConstMaxMapZoom,
+            preload_pyramid_lvl: settingsManager.options.map_tile_preload.value,
             x: pos.x,
             y: pos.y,
             zoom: this.current_zoom,
@@ -342,6 +343,19 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.getMapSize = function() {
         return new Point(smap.width(), smap.height());
+    };
+
+    MapManager.prototype.set_layer_visibility = function(layer_name, visibility) {
+        var layer = null;
+        for (var i=0; i < smap.renderer.layers.length; i++)
+            if (smap.renderer.layers[i].id == layer_name)
+                layer = smap.renderer.layers[i];
+        if (layer && layer.visibility != visibility) layer.visibility = visibility;
+    };
+
+    MapManager.prototype.set_pyramid_size = function(value) {
+        if (value >= 8) value = this.getMaxZoom() - mapManager.getMinZoom();
+        smap.map.preload_pyramid_lvl = value;
     };
 
     MapManager.prototype.getTopLeftCoords = function(zoom) {

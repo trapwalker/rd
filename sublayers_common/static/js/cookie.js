@@ -421,8 +421,41 @@ var SettingsManager = (function() {
             //currentIndex: 0,
             list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
             set_callback: function(new_value) {
-                if (wMapNoise) wMapNoise.activated = new_value == 1 ? true : false;
-                if (wRadiationNoise) wRadiationNoise.activated = new_value == 1 ? true : false;
+                if (wMapNoise) wMapNoise.activated = new_value == 1;
+                if (wRadiationNoise) wRadiationNoise.activated = new_value == 1;
+            },
+        },
+        map_tile_draw: {
+            name: "map_tile_draw",
+            page: "graphics",
+            text_name: "Отображение тайлов карты",
+            text_description: "Отображение тайлов карты",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            //currentIndex: 0,
+            list_values: [{text: "Скрыть", value: 0}, {text: "Отображать", value: 1}],
+            set_callback: function(new_value) {
+                if (mapManager) mapManager.set_layer_visibility("tiles", new_value == 1);
+            },
+        },
+
+        map_tile_preload: {
+            name: "map_tile_preload",
+            page: "graphics",
+            text_name: "Предзагрузка тайлов карты",
+            text_description: "Предзагрузка тайлов карты",
+            jq_div: null,
+            type: "list",
+            default: 8,
+            value: 0,
+            currentValue: 0,
+            //currentIndex: 0,
+            list_values: [{text: "Текущий масштаб", value: 0}, {text: "Один масштаб", value: 1}, {text: "два масштаба", value: 2}, {text: "Вся пирамида", value: 8}],
+            set_callback: function(new_value) {
+                if (mapManager) mapManager.set_pyramid_size("tiles", new_value);
             },
         },
 
