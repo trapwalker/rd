@@ -408,6 +408,23 @@ var SettingsManager = (function() {
             list_values: [{text: "Нет", value: 0}, {text: "Короткие", value: 0.5}, {text: "Обычные", value: 1.0}],
             set_callback: function(new_value) {if (mapCanvasManager) mapCanvasManager._settings_particles_tail = new_value;},
         },
+        canvas_noise: {
+            name: "canvas_noise",
+            page: "graphics",
+            text_name: "Шум",
+            text_description: "Настройка шума карты",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            //currentIndex: 0,
+            list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
+            set_callback: function(new_value) {
+                if (wMapNoise) wMapNoise.activated = new_value == 1 ? true : false;
+                if (wRadiationNoise) wRadiationNoise.activated = new_value == 1 ? true : false;
+            },
+        },
 
     };
 

@@ -114,7 +114,7 @@ var WMapNoise = (function (_super) {
         if (this.noise_img_src_list.hasOwnProperty(noise_name)) {
             this.current_noise = noise_name;
             this.current_opacity = opacity;
-            this.activated = true;
+            this.activated = settingsManager.options.canvas_noise.value == 1 ? true : false;
         }
         else {
             console.warn('Указанный тип шума не найден - ' + noise_name);
