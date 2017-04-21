@@ -121,14 +121,53 @@
 
 /* Настройка вкдадок-разделов */
 
-.settings-window-page-block {
+
+.settings-window-page-block-wrap {
     position: relative;
     float: left;
     width: calc(100% - 190px);
     height: calc(100% - 25px);
 }
 
-#townMenuLocation .settings-window-page-block {width: 100%;}
+#townMenuLocation .settings-window-page-block-wrap {width: 100%;}
+
+.settings-window-page-block {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 40px);
+}
+
+#townMenuLocation .settings-window-page-block {height: 100%;}
+
+.settings-window-page-btn-block {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-image: linear-gradient(to left, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+}
+
+#townMenuLocation .settings-window-page-btn-block {height: 0; display: none;}
+
+.settings-window-page-btn {
+    position: relative;
+    float: right;
+    width: 130px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border: 1px solid #0e4b00;
+    background-color: #082801;
+    box-sizing: border-box;
+    margin: 8px 10px 0 auto;
+}
+
+.settings-window-page-btn:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
+.settings-window-page-btn.disable {pointer-events: none; background-color: #082801; color: #0e4b00; border-color: #0e4b00;}
+
 
 .settings-window-page {
     position: absolute;

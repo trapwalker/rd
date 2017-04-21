@@ -298,6 +298,10 @@ var SettingsManager = (function() {
         this.jq_description = null;
         this.jq_description_header = null;
 
+        this.jq_btn_ok = null;
+        this.jq_btn_cancel = null;
+        this.jq_btn_apply = null;
+
         // this.load(); // Загрузка из куков и с сервера
     }
 
@@ -401,6 +405,11 @@ var SettingsManager = (function() {
         this.jq_pages = jq_main_div.find(".settings-window-page-block");
         this.jq_description = jq_main_div.find(".settings-window-description");
         this.jq_description_header = jq_main_div.find(".settings-window-header");
+
+        this.jq_btn_ok = jq_main_div.find(".settings-window-page-btn.settings-ok").first();
+        this.jq_btn_cancel = jq_main_div.find(".settings-window-page-btn.settings-cancel").first();
+        this.jq_btn_apply = jq_main_div.find(".settings-window-page-btn.settings-apply").first();
+
         var even_background = true;
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name)){
@@ -427,57 +436,54 @@ var SettingsManager = (function() {
             }
 
         this.jq_headers.find(".settings-window-menu-item")[0].click();
+
+        this.btn_set_enable_disable();
     };
 
-    SettingsManager.prototype.draw_scale_options = function(option, jq_option, background_class_name) {
-        //console.log("SettingsManager.prototype.draw_scale_options", option);
-        // Добавить название
-        jq_option.append('<div class="name scale ' + background_class_name + '">' + option.text_name + '</div>');
-        var jq_value_wrap = $('<div class="value scale ' + background_class_name + '"></div>');
-        var jq_scale = $('<div class="settings-scale" onclick="settingsManager._handler_scale_click(this, event, `' + option.name + '`);" ' +
-            'onmousemove="settingsManager._handler_scale_mousemove(this, event, `' + option.name + '`);"></div>');
-        jq_scale.append('<div class="settings-scale-hover"></div>');
-        jq_value_wrap.append(jq_scale);
-        jq_option.append(jq_value_wrap);
-
-        this.refresh_scale_options(option, jq_option);
+    SettingsManager.prototype.apply_options = function() {
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                var option = this.options[opt_name];
+                if (option.value != option.currentValue)
+                    option.value = option.currentValue;
+            }
     };
 
-    SettingsManager.prototype.refresh_scale_options = function(option) {
-        //console.log("SettingsManager.prototype.refresh_scale_options", option);
-        option.jq_div.find(".settings-scale-hover").first()
-            .css("width", (option.currentValue * 100.).toFixed(0) + "%");
+    SettingsManager.prototype.cancel_options = function() {
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                var option = this.options[opt_name];
+                if (option.value != option.currentValue) {
+                    option.currentValue = option.value;
+                    this["refresh_" + option.type + "_options"](option);
+                    if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+                }
+            }
     };
 
-    SettingsManager.prototype.draw_list_options = function(option, jq_option, background_class_name) {
-        //console.log("SettingsManager.prototype.draw_list_options", option);
-        jq_option.append('<div class="name list ' + background_class_name + '">' + option.text_name + '</div>');
-        var jq_value_wrap = $('<div class="value list ' + background_class_name + '"></div>');
-        var jq_list = $('<div class="settings-list" onclick="settingsManager._handler_list_click(`' + option.name + '`, 1)";></div>');
-        var jq_btn_1 = $('<div class="settings-list-btn left" onclick="settingsManager._handler_list_click(`' + option.name + '`, -1);"></div>');
-        var jq_btn_2 = $('<div class="settings-list-btn right" onclick="settingsManager._handler_list_click(`' + option.name + '`, 1);"></div>');
-
-        jq_value_wrap.append(jq_btn_1);
-        jq_value_wrap.append(jq_list);
-        jq_value_wrap.append(jq_btn_2);
-
-        jq_option.append(jq_value_wrap);
-
-        this.refresh_list_options(option);
+    SettingsManager.prototype.test_diffrents = function() {
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                var option = this.options[opt_name];
+                if (option.value != option.currentValue)
+                    return true;
+            }
+        return false;
     };
 
-    SettingsManager.prototype.refresh_list_options = function(option, index) {
-        //console.log("SettingsManager.prototype.refresh_list_options", option);
-        var curr_index = index;
-        if (!curr_index)
-            for (var i = 0; i < option.list_values.length; i++)
-                if (option.list_values[i].value == option.currentValue)
-                    curr_index = i;
-        if (!curr_index) curr_index = 0;
-
-        option.jq_div.find(".settings-list").first().text(option.list_values[curr_index].text);
+    SettingsManager.prototype.btn_set_enable_disable = function() {
+        //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
+        if (this.test_diffrents()) { // Кнопки доступны
+            this.jq_btn_cancel.removeClass("disable");
+            this.jq_btn_apply.removeClass("disable");
+        }
+        else {  // Кнопки не доступны
+            this.jq_btn_cancel.addClass("disable");
+            this.jq_btn_apply.addClass("disable");
+        }
     };
 
+    // Общие обработчики
     SettingsManager.prototype._handler_click_header = function(click_element) {
         var jq_elem = $(click_element);
         this.jq_headers.find(".settings-window-menu-item").removeClass("active");
@@ -507,6 +513,42 @@ var SettingsManager = (function() {
         }
     };
 
+    SettingsManager.prototype._handler_click_apply = function() {this.apply_options(); this.btn_set_enable_disable(); };
+
+    SettingsManager.prototype._handler_click_cancel = function() {
+        this.cancel_options();
+        this.btn_set_enable_disable();
+        // todo: закрыть окно
+    };
+
+    SettingsManager.prototype._handler_click_ok = function() {
+        this.apply_options();
+        this.btn_set_enable_disable();
+        // todo: закрыть окно
+    };
+
+
+    // работа с типом scale
+    SettingsManager.prototype.draw_scale_options = function(option, jq_option, background_class_name) {
+        //console.log("SettingsManager.prototype.draw_scale_options", option);
+        // Добавить название
+        jq_option.append('<div class="name scale ' + background_class_name + '">' + option.text_name + '</div>');
+        var jq_value_wrap = $('<div class="value scale ' + background_class_name + '"></div>');
+        var jq_scale = $('<div class="settings-scale" onclick="settingsManager._handler_scale_click(this, event, `' + option.name + '`);" ' +
+            'onmousemove="settingsManager._handler_scale_mousemove(this, event, `' + option.name + '`);"></div>');
+        jq_scale.append('<div class="settings-scale-hover"></div>');
+        jq_value_wrap.append(jq_scale);
+        jq_option.append(jq_value_wrap);
+
+        this.refresh_scale_options(option, jq_option);
+    };
+
+    SettingsManager.prototype.refresh_scale_options = function(option) {
+        //console.log("SettingsManager.prototype.refresh_scale_options", option);
+        option.jq_div.find(".settings-scale-hover").first()
+            .css("width", (option.currentValue * 100.).toFixed(0) + "%");
+    };
+
     SettingsManager.prototype._handler_scale_click = function(element, event, opt_name) {
         //console.log("SettingsManager.prototype._handler_click_scale", element, event, opt_name);
         // Обновить значение опции
@@ -514,11 +556,43 @@ var SettingsManager = (function() {
         option.currentValue = (event.offsetX / $(element).width()).toFixed(2);
         this.refresh_scale_options(option);
         if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+        this.btn_set_enable_disable();
     };
 
     SettingsManager.prototype._handler_scale_mousemove = function(element, event, opt_name) {
         //console.log("SettingsManager.prototype._handler_click_scale", element, event, opt_name);
         if (event.buttons == 1) this._handler_scale_click(element, event, opt_name);
+    };
+
+
+    // работа с типом list
+    SettingsManager.prototype.draw_list_options = function(option, jq_option, background_class_name) {
+        //console.log("SettingsManager.prototype.draw_list_options", option);
+        jq_option.append('<div class="name list ' + background_class_name + '">' + option.text_name + '</div>');
+        var jq_value_wrap = $('<div class="value list ' + background_class_name + '"></div>');
+        var jq_list = $('<div class="settings-list sublayers-clickable" onclick="settingsManager._handler_list_click(`' + option.name + '`, 1)";></div>');
+        var jq_btn_1 = $('<div class="settings-list-btn left sublayers-clickable" onclick="settingsManager._handler_list_click(`' + option.name + '`, -1);"></div>');
+        var jq_btn_2 = $('<div class="settings-list-btn right sublayers-clickable" onclick="settingsManager._handler_list_click(`' + option.name + '`, 1);"></div>');
+
+        jq_value_wrap.append(jq_btn_1);
+        jq_value_wrap.append(jq_list);
+        jq_value_wrap.append(jq_btn_2);
+
+        jq_option.append(jq_value_wrap);
+
+        this.refresh_list_options(option);
+    };
+
+    SettingsManager.prototype.refresh_list_options = function(option, index) {
+        //console.log("SettingsManager.prototype.refresh_list_options", option);
+        var curr_index = index;
+        if (!curr_index)
+            for (var i = 0; i < option.list_values.length; i++)
+                if (option.list_values[i].value == option.currentValue)
+                    curr_index = i;
+        if (!curr_index) curr_index = 0;
+
+        option.jq_div.find(".settings-list").first().text(option.list_values[curr_index].text);
     };
 
     SettingsManager.prototype._handler_list_click = function(opt_name, dvalue) {
@@ -539,6 +613,7 @@ var SettingsManager = (function() {
             this.refresh_list_options(option, curr_index);
             if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
         }
+        this.btn_set_enable_disable();
     };
 
     return SettingsManager;
