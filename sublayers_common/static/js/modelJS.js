@@ -223,6 +223,12 @@ var UserCar = (function (_super) {
 
     UserCar.prototype.setShootTime = function (aSideStr, shoot_time, t_rch) {
         this.fireSidesMng.setShootTime(aSideStr, shoot_time, t_rch);
+
+        // Звук на завершение перезарядки
+        setTimeout(function(){
+            audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        }, t_rch * 1000);
+
         // добавить в тайм-менеджер, чтобы оно начало обновляться
         if (this.fireSidesMng.inRecharge(clock.getCurrentTime()) && !this._in_tm) {
             timeManager.addTimerEvent(this, 'change');
