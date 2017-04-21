@@ -298,7 +298,6 @@ var SettingsManager = (function() {
         this.jq_description = null;
         this.jq_description_header = null;
 
-        this.jq_btn_ok = null;
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
@@ -406,7 +405,6 @@ var SettingsManager = (function() {
         this.jq_description = jq_main_div.find(".settings-window-description");
         this.jq_description_header = jq_main_div.find(".settings-window-header");
 
-        this.jq_btn_ok = jq_main_div.find(".settings-window-page-btn.settings-ok").first();
         this.jq_btn_cancel = jq_main_div.find(".settings-window-page-btn.settings-cancel").first();
         this.jq_btn_apply = jq_main_div.find(".settings-window-page-btn.settings-apply").first();
 
@@ -486,19 +484,23 @@ var SettingsManager = (function() {
     };
 
     SettingsManager.prototype.load = function() {
-        var cookie_str = LocalCookieStorage.prototype.getCookie("rd_settings", false); // todo: Забрать из куков
+        var cookie_str = LocalCookieStorage.prototype.getCookie("rd_settings"); // todo: Забрать из куков
         var server_str = ""; // todo: Забрать из html
-        var cookie_obj = null;
-        var server_obj = null;
+        var cookie_obj = {};
+        var server_obj = {};
         try {
             var cl = cookie_str.split("|");
             for (var i=0; i < cl.length; i++) {
                 var record = cl[i].split("=");
                 cookie_obj[record[0]] = record[1];
             }
-            server_obj = JSON.parse(server_str);
         } catch (e) {
             cookie_obj = {};
+        }
+
+        try {
+            server_obj = JSON.parse(server_str);
+        } catch (e) {
             server_obj = {};
         }
 
@@ -517,13 +519,8 @@ var SettingsManager = (function() {
     SettingsManager.prototype.save_to_cookie = function() {
         var cookie_str = "";
         for (var opt_name in this.options)
-            if (this.options.hasOwnProperty(opt_name)) {
-                console.log(cookie_str);
-                cookie_str = cookie_str + "|" + opt_name + "=" + this.options[opt_name].value;
-            }
-
-        console.log(cookie_str);
-
+            if (this.options.hasOwnProperty(opt_name))
+                cookie_str = cookie_str + opt_name + "=" + this.options[opt_name].value + "|";
         LocalCookieStorage.prototype.setCookie("rd_settings", cookie_str);
     };
 
