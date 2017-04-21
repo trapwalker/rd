@@ -41,6 +41,9 @@ var WFireController = (function (_super) {
         $('#fireControlArea').append(
             '<div id="fireControlAreaRumble">' +
                 '<div id="fireControlTop">' +
+                    '<div id="divForFireControlNotClick1" class="anti-click-class"></div>' +
+                    '<div id="divForFireControlNotClick2" class="anti-click-class"></div>' +
+                    '<div id="divForFireControlNotClick3" class="anti-click-class"></div>' +
                     '<div id="divForSVG"></div>' +
                     '<div id="divForCanvas">' +
                         '<canvas id="fireControlRadarCanvas" class="fire-controll-canvas"></canvas>' +

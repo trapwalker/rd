@@ -19,6 +19,28 @@
     bottom: -225px
 }
 
+#divForFireControlNotClick1 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 150px;
+}
+#divForFireControlNotClick2 {
+    position: absolute;
+    bottom: 0;
+    right: 100px;
+    width: 186px;
+    height: 200px;
+}
+#divForFireControlNotClick3 {
+    position: absolute;
+    bottom: 0;
+    right: 325px;
+    width: 100px;
+    height: 150px;
+}
+
 .fire-control-undroppable-area {
     position: absolute;
     width: 65px;
