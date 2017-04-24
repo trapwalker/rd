@@ -61,7 +61,7 @@
                 preloadMargin: options.preloadMargin,
                 zMin : options.zMin,
                 zMax : options.zMax,
-                maxImageLoadingCount : 30,
+                maxImageLoadingCount : 5,
                 preload_pyramid_lvl: options.preload_pyramid_lvl,
                 init: function () {
                     var coords;
@@ -162,7 +162,7 @@
                             if (zi + i <= map.zMax) map.renderer.add_zoom_to_queue(zi + i);
                             if (zi - i >= map.zMin) map.renderer.add_zoom_to_queue(zi - i);
                         }
-
+                        
                         // начать грузить тайлы
                         for (var i = 0; i < map.maxImageLoadingCount; i++)
                             map.renderer.next_load_tile();
