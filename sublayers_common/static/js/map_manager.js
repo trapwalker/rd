@@ -32,7 +32,7 @@ function onMapWheel(event) {
     event = event || window.event;
     var delta = (event.deltaY || event.detail || event.wheelDelta) / 100.;
     if (Math.abs(delta) < 1) delta *= 33; // Для mozilla
-    var zoom = mapManager.newZoomForCalcZoom - delta * 0.15;
+    var zoom = mapManager.newZoomForCalcZoom - delta * mapManager.zoom_wheel_step;
     mapManager.setZoom(zoom);
 }
 
@@ -45,6 +45,8 @@ var MapManager = (function(_super) {
 
     function MapManager() {
         _super.call(this);
+
+        this.zoom_wheel_step = settingsManager.options.zoom_step_value.value;
 
         this.current_zoom = 18;
 

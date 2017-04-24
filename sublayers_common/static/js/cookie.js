@@ -790,6 +790,34 @@ var SettingsManager = (function() {
             currentValue: 0,
             set_callback: function(new_value) {controlManager.bind_code(new_value, "open_options");},
         },
+
+        /* Вкладка Другое */
+        save_current_zoom: {
+            name: "save_current_zoom",
+            page: "other",
+            text_name: "save_current_zoom",
+            text_description: "save_current_zoom",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            set_callback: function(new_value) {},
+        },
+        zoom_step_value: {
+            name: "zoom_step_value",
+            page: "other",
+            text_name: "zoom_step_value",
+            text_description: "zoom_step_value",
+            jq_div: null,
+            type: "list",
+            default: 0.2,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "0.2", value: 0.2}, {text: "0.5", value: 0.5}, {text: "1", value: 1}, {text: "2", value: 2}, {text: "3", value: 3}],
+            set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
+        },
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
