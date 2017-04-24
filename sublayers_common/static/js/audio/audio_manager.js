@@ -206,4 +206,11 @@ function init_sound() {
     audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.m4a'}, 0.075);
     audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.m4a'}, 0.075);
 
+    // interface
+
+    audioManager.load('widget_motion_001', {url: '/static/audio/interface/widget_motion_001.m4a'}, 0.15);
+    audioManager.load('cannon_reloaded_001', {url: '/static/audio/interface/cannon_reloaded_001.m4a'}, 0.45);
+    audioManager.load('alarm_001', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
+    audioManager.load('path_setting_001', {url: '/static/audio/interface/path_setting_001.m4a'}, 0.1);
+
 }

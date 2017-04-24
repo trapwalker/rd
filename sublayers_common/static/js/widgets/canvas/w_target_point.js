@@ -64,7 +64,7 @@ var WCanvasTargetPoint = (function (_super) {
         // если таргет поинт не сменился, то выход
         if (this.equals_target_points(target_point))
             return;
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "path_setting_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         this.target_point = target_point;
     };
 

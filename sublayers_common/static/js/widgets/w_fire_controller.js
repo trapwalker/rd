@@ -341,7 +341,7 @@ var WFireController = (function (_super) {
         var self = this;
 
         // Звук сворачивания/разворачивания
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
 
         this.fCT.slideToggle("slow", function () {
             if (self.visible) {

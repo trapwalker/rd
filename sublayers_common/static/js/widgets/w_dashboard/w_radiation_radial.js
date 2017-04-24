@@ -213,7 +213,7 @@ var WRadiationRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('radiationAlarmLamp-off');
             this.alarmLamp.addClass('radiationAlarmLamp-on');
-            this.alarm_sound = audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
+            this.alarm_sound = audioManager.play({name: "alarm_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('radiationAlarmLamp-on');

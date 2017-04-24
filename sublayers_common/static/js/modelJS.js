@@ -226,7 +226,7 @@ var UserCar = (function (_super) {
 
         // Звук на завершение перезарядки
         setTimeout(function(){
-            audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }, t_rch * 1000);
 
         // добавить в тайм-менеджер, чтобы оно начало обновляться

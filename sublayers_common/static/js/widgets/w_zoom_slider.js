@@ -236,7 +236,7 @@ var WZoomSlider = (function () {
             this.zoom_visible = visible;
 
             // Звук сворачивания/разворачивания
-            audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
 
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});

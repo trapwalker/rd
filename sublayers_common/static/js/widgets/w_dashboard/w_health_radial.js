@@ -209,7 +209,7 @@ var WHPRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('healthAlarmLamp-off');
             this.alarmLamp.addClass('healthAlarmLamp-on');
-            this.alarm_sound = audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
+            this.alarm_sound = audioManager.play({name: "alarm_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('healthAlarmLamp-on');
