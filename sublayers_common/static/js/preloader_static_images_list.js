@@ -11,7 +11,7 @@
 
     resourceLoadManager.add(preloaderImage);
 
-    preloaderImage.add_list([
+    var ll = [
         '/static/img/teaching/arrow_big.png',
         '/static/img/teaching/arrow_big_big.png',
         '/static/img/cursors/hyper.png' + random_str(),
@@ -55,82 +55,8 @@
         '/static/img/modal_window_image/btn2_start_hover.png' + random_str(),
         '/static/img/modal_window_image/btn2_start_press.png' + random_str(),
 
-        // Свернуть/Развернуть виджеты
-        '/static/img/misc_button/down_hide_normal.png' + random_str(),
-        '/static/img/misc_button/down_hide_hover.png' + random_str(),
-        '/static/img/misc_button/down_hide_active.png' + random_str(),
-        '/static/img/misc_button/up_hide_normal.png' + random_str(),
-        '/static/img/misc_button/up_hide_hover.png' + random_str(),
-        '/static/img/misc_button/up_hide_active.png' + random_str(),
-        //'/static/img/misc_button/768/down_hide_normal.png' + random_str(),
-        //'/static/img/misc_button/768/down_hide_hover.png' + random_str(),
-        //'/static/img/misc_button/768/down_hide_active.png' + random_str(),
-        //'/static/img/misc_button/768/up_hide_normal.png' + random_str(),
-        //'/static/img/misc_button/768/up_hide_hover.png' + random_str(),
-        //'/static/img/misc_button/768/up_hide_active.png' + random_str(),
-
-        // Зум слайдер
-        '/static/img/control_zoom/zoom_port.png' + random_str(),
-        '/static/img/control_zoom/zoom_glass.png' + random_str(),
-        '/static/img/control_zoom/zoom_mark.png' + random_str(),
-        '/static/img/control_zoom/hide_gadgets.png' + random_str(),
-        '/static/img/control_zoom/unhide_gadgets.png' + random_str(),
-        //'/static/img/control_zoom/zoom_768/zoom_port.png' + random_str(),
-        //'/static/img/control_zoom/zoom_768/zoom_glass.png' + random_str(),
-        //'/static/img/control_zoom/zoom_768/zoom_mark.png' + random_str(),
-        //'/static/img/control_zoom/zoom_768/hide_gadgets.png' + random_str(),
-        //'/static/img/control_zoom/zoom_768/unhide_gadgets.png' + random_str(),
-
         // Круиз контрол
-        '/static/img/cruise/cruise_glass.png' + random_str(),
-        '/static/img/cruise/cruise_port.png' + random_str(),
-        '/static/img/cruise/dgigits_back_glow.png' + random_str(),
-        '/static/img/cruise/speed_mark.png' + random_str(),
         '/static/img/cruise/limit_arrow.png' + random_str(),
-        '/static/img/cruise/limit_mark.png' + random_str(),
-        '/static/img/cruise/limit_dirt.png' + random_str(),
-        '/static/img/cruise/limit_wood.png' + random_str(),
-        '/static/img/cruise/limit_road.png' + random_str(),
-        '/static/img/cruise/limit_water.png' + random_str(),
-        '/static/img/cruise/limit_slope.png' + random_str(),
-        '/static/img/cruise/fuel_lamp_off.png' + random_str(),
-        '/static/img/cruise/fuel_lamp_on.png' + random_str(),
-        '/static/img/cruise/health_lamp_off.png' + random_str(),
-        '/static/img/cruise/health_lamp_on.png' + random_str(),
-        '/static/img/cruise/wind_lamp_off.png' + random_str(),
-        '/static/img/cruise/wind_lamp_on.png' + random_str(),
-        '/static/img/cruise/rad_lamp_off.png' + random_str(),
-        '/static/img/cruise/rad_lamp_on.png' + random_str(),
-        '/static/img/cruise/r_btn.png' + random_str(),
-        '/static/img/cruise/r_btn_over.png' + random_str(),
-        '/static/img/cruise/r_btn_pressed.png' + random_str(),
-        '/static/img/cruise/stop_btn.png' + random_str(),
-        '/static/img/cruise/stop_btn_over.png' + random_str(),
-        '/static/img/cruise/stop_btn_pressed.png' + random_str(),
-        //'/static/img/cruise/cruise_768/cruise_glass.png' + random_str(),
-        //'/static/img/cruise/cruise_768/cruise_port.png' + random_str(),
-        //'/static/img/cruise/cruise_768/dgigits_back_glow.png' + random_str(),
-        //'/static/img/cruise/cruise_768/speed_mark.png' + random_str(),
-        //'/static/img/cruise/cruise_768/limit_mark.png' + random_str(),
-        //'/static/img/cruise/cruise_768/limit_dirt.png' + random_str(),
-        //'/static/img/cruise/cruise_768/limit_wood.png' + random_str(),
-        //'/static/img/cruise/cruise_768/limit_road.png' + random_str(),
-        //'/static/img/cruise/cruise_768/limit_water.png' + random_str(),
-        //'/static/img/cruise/cruise_768/limit_slope.png' + random_str(),
-        //'/static/img/cruise/cruise_768/fuel_lamp_off.png' + random_str(),
-        //'/static/img/cruise/cruise_768/fuel_lamp_on.png' + random_str(),
-        //'/static/img/cruise/cruise_768/health_lamp_off.png' + random_str(),
-        //'/static/img/cruise/cruise_768/health_lamp_on.png' + random_str(),
-        //'/static/img/cruise/cruise_768/wind_lamp_off.png' + random_str(),
-        //'/static/img/cruise/cruise_768/wind_lamp_on.png' + random_str(),
-        //'/static/img/cruise/cruise_768/rad_lamp_off.png' + random_str(),
-        //'/static/img/cruise/cruise_768/rad_lamp_on.png' + random_str(),
-        //'/static/img/cruise/cruise_768/r_btn.png' + random_str(),
-        //'/static/img/cruise/cruise_768/r_btn_over.png' + random_str(),
-        //'/static/img/cruise/cruise_768/r_btn_pressed.png' + random_str(),
-        //'/static/img/cruise/cruise_768/stop_btn.png' + random_str(),
-        //'/static/img/cruise/cruise_768/stop_btn_over.png' + random_str(),
-        //'/static/img/cruise/cruise_768/stop_btn_pressed.png' + random_str(),
 
         '/static/img/fire_control/aim_glass.png' + random_str(),
         '/static/img/fire_widget_buttons/lup_noactive.png' + random_str(),
@@ -215,6 +141,100 @@
         '/static/img/noise/2n3_white.png' + random_str(),
         '/static/img/noise/2n4_white.png' + random_str()
         // todo: не забыть пройтись по папке /static/content/locations/institutions
-    ], complete, 20000);
+    ];
 
+
+    // Предзагрузка для разных разрешений:
+    if ($(window).width() < 1550 || $(window).height() > 880)
+    // загрузка маленького разрешения
+        ll = ll.concat([
+            // Круиз контрол
+            '/static/img/cruise/cruise_768/cruise_glass.png' + random_str(),
+            '/static/img/cruise/cruise_768/cruise_port.png' + random_str(),
+            '/static/img/cruise/cruise_768/dgigits_back_glow.png' + random_str(),
+            '/static/img/cruise/cruise_768/speed_mark.png' + random_str(),
+            '/static/img/cruise/cruise_768/limit_mark.png' + random_str(),
+            '/static/img/cruise/cruise_768/limit_dirt.png' + random_str(),
+            '/static/img/cruise/cruise_768/limit_wood.png' + random_str(),
+            '/static/img/cruise/cruise_768/limit_road.png' + random_str(),
+            '/static/img/cruise/cruise_768/limit_water.png' + random_str(),
+            '/static/img/cruise/cruise_768/limit_slope.png' + random_str(),
+            '/static/img/cruise/cruise_768/fuel_lamp_off.png' + random_str(),
+            '/static/img/cruise/cruise_768/fuel_lamp_on.png' + random_str(),
+            '/static/img/cruise/cruise_768/health_lamp_off.png' + random_str(),
+            '/static/img/cruise/cruise_768/health_lamp_on.png' + random_str(),
+            '/static/img/cruise/cruise_768/wind_lamp_off.png' + random_str(),
+            '/static/img/cruise/cruise_768/wind_lamp_on.png' + random_str(),
+            '/static/img/cruise/cruise_768/rad_lamp_off.png' + random_str(),
+            '/static/img/cruise/cruise_768/rad_lamp_on.png' + random_str(),
+            '/static/img/cruise/cruise_768/r_btn.png' + random_str(),
+            '/static/img/cruise/cruise_768/r_btn_over.png' + random_str(),
+            '/static/img/cruise/cruise_768/r_btn_pressed.png' + random_str(),
+            '/static/img/cruise/cruise_768/stop_btn.png' + random_str(),
+            '/static/img/cruise/cruise_768/stop_btn_over.png' + random_str(),
+            '/static/img/cruise/cruise_768/stop_btn_pressed.png' + random_str(),
+
+            // Зум слайдер
+            '/static/img/control_zoom/zoom_768/zoom_port.png' + random_str(),
+            '/static/img/control_zoom/zoom_768/zoom_glass.png' + random_str(),
+            '/static/img/control_zoom/zoom_768/zoom_mark.png' + random_str(),
+            '/static/img/control_zoom/zoom_768/hide_gadgets.png' + random_str(),
+            '/static/img/control_zoom/zoom_768/unhide_gadgets.png' + random_str(),
+
+            // Свернуть/Развернуть виджеты
+
+            '/static/img/misc_button/768/down_hide_normal.png' + random_str(),
+            '/static/img/misc_button/768/down_hide_hover.png' + random_str(),
+            '/static/img/misc_button/768/down_hide_active.png' + random_str(),
+            '/static/img/misc_button/768/up_hide_normal.png' + random_str(),
+            '/static/img/misc_button/768/up_hide_hover.png' + random_str(),
+            '/static/img/misc_button/768/up_hide_active.png' + random_str(),
+        ]);
+    else
+    // Загрузка нормального разрешения
+        ll = ll.concat([
+            // Круиз контрол
+            '/static/img/cruise/cruise_glass.png' + random_str(),
+            '/static/img/cruise/cruise_port.png' + random_str(),
+            '/static/img/cruise/dgigits_back_glow.png' + random_str(),
+            '/static/img/cruise/speed_mark.png' + random_str(),
+            '/static/img/cruise/limit_mark.png' + random_str(),
+            '/static/img/cruise/limit_dirt.png' + random_str(),
+            '/static/img/cruise/limit_wood.png' + random_str(),
+            '/static/img/cruise/limit_road.png' + random_str(),
+            '/static/img/cruise/limit_water.png' + random_str(),
+            '/static/img/cruise/limit_slope.png' + random_str(),
+            '/static/img/cruise/fuel_lamp_off.png' + random_str(),
+            '/static/img/cruise/fuel_lamp_on.png' + random_str(),
+            '/static/img/cruise/health_lamp_off.png' + random_str(),
+            '/static/img/cruise/health_lamp_on.png' + random_str(),
+            '/static/img/cruise/wind_lamp_off.png' + random_str(),
+            '/static/img/cruise/wind_lamp_on.png' + random_str(),
+            '/static/img/cruise/rad_lamp_off.png' + random_str(),
+            '/static/img/cruise/rad_lamp_on.png' + random_str(),
+            '/static/img/cruise/r_btn.png' + random_str(),
+            '/static/img/cruise/r_btn_over.png' + random_str(),
+            '/static/img/cruise/r_btn_pressed.png' + random_str(),
+            '/static/img/cruise/stop_btn.png' + random_str(),
+            '/static/img/cruise/stop_btn_over.png' + random_str(),
+            '/static/img/cruise/stop_btn_pressed.png' + random_str(),
+
+            // Зум слайдер
+            '/static/img/control_zoom/zoom_port.png' + random_str(),
+            '/static/img/control_zoom/zoom_glass.png' + random_str(),
+            '/static/img/control_zoom/zoom_mark.png' + random_str(),
+            '/static/img/control_zoom/hide_gadgets.png' + random_str(),
+            '/static/img/control_zoom/unhide_gadgets.png' + random_str(),
+
+            // Свернуть/Развернуть виджеты
+            '/static/img/misc_button/down_hide_normal.png' + random_str(),
+            '/static/img/misc_button/down_hide_hover.png' + random_str(),
+            '/static/img/misc_button/down_hide_active.png' + random_str(),
+            '/static/img/misc_button/up_hide_normal.png' + random_str(),
+            '/static/img/misc_button/up_hide_hover.png' + random_str(),
+            '/static/img/misc_button/up_hide_active.png' + random_str(),
+
+        ]);
+
+    preloaderImage.add_list(ll, complete, 20000);
 })();
