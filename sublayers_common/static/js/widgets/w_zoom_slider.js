@@ -204,20 +204,18 @@ var WZoomSlider = (function () {
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
-        var slider = event.data;
         //alert('Свернуть все гаджеты-стекляшки');
         if (wCruiseControl) wCruiseControl.changeVisible(false);
         chat.changeVisible(false);
-        slider.changeVisible(false);
+        if (mapManager && mapManager.zoomSlider) mapManager.zoomSlider.changeVisible(false);
         returnFocusToMap();
     };
 
     WZoomSlider.prototype.razverAll = function (event) {
-        var slider = event.data;
         //alert('Свернуть все гаджеты-стекляшки');
         if (wCruiseControl) wCruiseControl.changeVisible(true);
         chat.changeVisible(true);
-        slider.changeVisible(true);
+        if (mapManager && mapManager.zoomSlider) mapManager.zoomSlider.changeVisible(true);
         returnFocusToMap();
     };
 

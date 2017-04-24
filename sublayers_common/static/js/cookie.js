@@ -379,7 +379,7 @@ var SettingsManager = (function() {
             currentValue: 1.0,
             set_callback: function(new_value) {if (audioManager) audioManager._settings_interface_gain = new_value;},
         },
-
+        /* Настройка графики */
         particles_tracer: {
             name: "particles_tracer",
             page: "graphics",
@@ -390,7 +390,6 @@ var SettingsManager = (function() {
             default: 0.2,
             value: 0,
             currentValue: 0,
-            //currentIndex: 0,
             list_values: [{text: "Мало", value: 0.2}, {text: "Средне", value: 0.05}, {text: "Много", value: 0.01}],
             set_callback: function(new_value) {if (fireEffectManager) fireEffectManager._settings_particles_tracer = new_value;},
         },
@@ -404,7 +403,6 @@ var SettingsManager = (function() {
             default: 1.0,
             value: 0,
             currentValue: 0,
-            //currentIndex: 0,
             list_values: [{text: "Нет", value: 0}, {text: "Короткие", value: 0.5}, {text: "Обычные", value: 1.0}],
             set_callback: function(new_value) {if (mapCanvasManager) mapCanvasManager._settings_particles_tail = new_value;},
         },
@@ -418,7 +416,6 @@ var SettingsManager = (function() {
             default: 1,
             value: 0,
             currentValue: 0,
-            //currentIndex: 0,
             list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
             set_callback: function(new_value) {
                 if (wMapNoise) wMapNoise.activated = new_value == 1;
@@ -435,13 +432,11 @@ var SettingsManager = (function() {
             default: 1,
             value: 0,
             currentValue: 0,
-            //currentIndex: 0,
             list_values: [{text: "Скрыть", value: 0}, {text: "Отображать", value: 1}],
             set_callback: function(new_value) {
                 if (mapManager) mapManager.set_layer_visibility("tiles", new_value == 1);
             },
         },
-
         map_tile_preload: {
             name: "map_tile_preload",
             page: "graphics",
@@ -452,13 +447,340 @@ var SettingsManager = (function() {
             default: 8,
             value: 0,
             currentValue: 0,
-            //currentIndex: 0,
-            list_values: [{text: "Текущий масштаб", value: 0}, {text: "Один масштаб", value: 1}, {text: "два масштаба", value: 2}, {text: "Вся пирамида", value: 8}],
+            list_values: [{text: "Текущий масштаб", value: 0}, {text: "Один масштаб", value: 1}, {text: "Два масштаба", value: 2}, {text: "Вся пирамида", value: 8}],
             set_callback: function(new_value) {
                 if (mapManager) mapManager.set_pyramid_size("tiles", new_value);
             },
         },
+        /* Настройка управления */
+        move_forvard: {
+            name: "move_forvard",
+            page: "control",
+            text_name: "Разгон",
+            text_description: "Разгон",
+            jq_div: null,
+            type: "control",
+            default: 38,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "move_forvard");},
+        },
+        move_backward: {
+            name: "move_backward",
+            page: "control",
+            text_name: "Торможение",
+            text_description: "Торможение",
+            jq_div: null,
+            type: "control",
+            default: 40,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "move_backward");},
+        },
+        move_left: {
+            name: "move_left",
+            page: "control",
+            text_name: "Лево",
+            text_description: "Лево",
+            jq_div: null,
+            type: "control",
+            default: 37,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "move_left");},
+        },
+        move_right: {
+            name: "move_right",
+            page: "control",
+            text_name: "Право",
+            text_description: "Право",
+            jq_div: null,
+            type: "control",
+            default: 39,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "move_right");},
+        },
+        stop: {
+            name: "stop",
+            page: "control",
+            text_name: "stop",
+            text_description: "stop",
+            jq_div: null,
+            type: "control",
+            default: 32,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "stop");},
+        },
+        reverse: {
+            name: "reverse",
+            page: "control",
+            text_name: "Задняя передача",
+            text_description: "Задняя передача",
+            jq_div: null,
+            type: "control",
+            default: 82,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "reverse");},
+        },
+        toggle_auto_fire: {
+            name: "toggle_auto_fire",
+            page: "control",
+            text_name: "toggle_auto_fire",
+            text_description: "toggle_auto_fire",
+            jq_div: null,
+            type: "control",
+            default: 81,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "toggle_auto_fire");},
+        },
+        toggle_fire_widget: {
+            name: "toggle_fire_widget",
+            page: "control",
+            text_name: "toggle_fire_widget",
+            text_description: "toggle_fire_widget",
+            jq_div: null,
+            type: "control",
+            default: 69,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "toggle_fire_widget");},
+        },
+        fire_disc_front: {
+            name: "fire_disc_front",
+            page: "control",
+            text_name: "fire_disc_front",
+            text_description: "fire_disc_front",
+            jq_div: null,
+            type: "control",
+            default: 87,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "fire_disc_front");},
+        },
+        fire_disc_right: {
+            name: "fire_disc_right",
+            page: "control",
+            text_name: "fire_disc_right",
+            text_description: "fire_disc_right",
+            jq_div: null,
+            type: "control",
+            default: 68,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "fire_disc_right");},
+        },
+        fire_disc_back: {
+            name: "fire_disc_back",
+            page: "control",
+            text_name: "fire_disc_back",
+            text_description: "fire_disc_back",
+            jq_div: null,
+            type: "control",
+            default: 83,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "fire_disc_back");},
+        },
+        fire_disc_left: {
+            name: "fire_disc_left",
+            page: "control",
+            text_name: "fire_disc_left",
+            text_description: "fire_disc_left",
+            jq_div: null,
+            type: "control",
+            default: 65,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "fire_disc_left");},
+        },
+        quick_panel_1: {
+            name: "quick_panel_1",
+            page: "control",
+            text_name: "quick_panel_1",
+            text_description: "quick_panel_1",
+            jq_div: null,
+            type: "control",
+            default: 49,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "quick_panel_1");},
+        },
+        quick_panel_2: {
+            name: "quick_panel_2",
+            page: "control",
+            text_name: "quick_panel_2",
+            text_description: "quick_panel_2",
+            jq_div: null,
+            type: "control",
+            default: 50,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "quick_panel_2");},
+        },
+        quick_panel_3: {
+            name: "quick_panel_3",
+            page: "control",
+            text_name: "quick_panel_3",
+            text_description: "quick_panel_3",
+            jq_div: null,
+            type: "control",
+            default: 51,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "quick_panel_3");},
+        },
+        quick_panel_4: {
+            name: "quick_panel_4",
+            page: "control",
+            text_name: "quick_panel_4",
+            text_description: "quick_panel_4",
+            jq_div: null,
+            type: "control",
+            default: 52,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "quick_panel_4");},
+        },
 
+        // Горячие клавиши зума
+        zoom_in: {
+            name: "zoom_in",
+            page: "control",
+            text_name: "zoom_in",
+            text_description: "zoom_in",
+            jq_div: null,
+            type: "control",
+            default: 187,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "zoom_in");},
+        },
+        zoom_out: {
+            name: "zoom_out",
+            page: "control",
+            text_name: "zoom_out",
+            text_description: "zoom_out",
+            jq_div: null,
+            type: "control",
+            default: 189,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "zoom_out");},
+        },
+        zoom_roll_up: {
+            name: "zoom_roll_up",
+            page: "control",
+            text_name: "zoom_roll_up",
+            text_description: "zoom_roll_up",
+            jq_div: null,
+            type: "control",
+            default: 219,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "zoom_roll_up");},
+        },
+        zoom_expand: {
+            name: "zoom_expand",
+            page: "control",
+            text_name: "zoom_expand",
+            text_description: "zoom_expand",
+            jq_div: null,
+            type: "control",
+            default: 221,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "zoom_expand");},
+        },
+
+        // Горячие клавиши окон
+        open_character_info: {
+            name: "open_character_info",
+            page: "control",
+            text_name: "open_character_info",
+            text_description: "open_character_info",
+            jq_div: null,
+            type: "control",
+            default: 67,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_character_info");},
+        },
+        open_vehicle_info: {
+            name: "open_vehicle_info",
+            page: "control",
+            text_name: "open_vehicle_info",
+            text_description: "open_vehicle_info",
+            jq_div: null,
+            type: "control",
+            default: 86,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_vehicle_info");},
+        },
+        open_inventory: {
+            name: "open_inventory",
+            page: "control",
+            text_name: "open_inventory",
+            text_description: "open_inventory",
+            jq_div: null,
+            type: "control",
+            default: 73,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_inventory");},
+        },
+        open_logbook_info: {
+            name: "open_logbook_info",
+            page: "control",
+            text_name: "open_logbook_info",
+            text_description: "open_logbook_info",
+            jq_div: null,
+            type: "control",
+            default: 74,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_logbook_info");},
+        },
+        open_party_info: {
+            name: "open_party_info",
+            page: "control",
+            text_name: "open_party_info",
+            text_description: "open_party_info",
+            jq_div: null,
+            type: "control",
+            default: 80,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_party_info");},
+        },
+        open_radio: {
+            name: "open_radio",
+            page: "control",
+            text_name: "open_radio",
+            text_description: "open_radio",
+            jq_div: null,
+            type: "control",
+            default: 0,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_radio");},
+        },
+        open_options: {
+            name: "open_options",
+            page: "control",
+            text_name: "open_options",
+            text_description: "open_options",
+            jq_div: null,
+            type: "control",
+            default: 79,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "open_options");},
+        },
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
@@ -489,6 +811,9 @@ var SettingsManager = (function() {
                     case "list":
                         this.draw_list_options(option, jq_option, background_class_name);
                         break;
+                    case "control":
+                        this.draw_control_options(option, jq_option, background_class_name);
+                        break;
                     default:
                         console.warn("Not found options type: ", option.type);
                 }
@@ -497,7 +822,7 @@ var SettingsManager = (function() {
                 even_background = ! even_background;
             }
 
-        this.jq_headers.find(".settings-window-menu-item")[0].click();
+        this.jq_headers.find(".settings-window-menu-item")[2].click();
 
         this.btn_set_enable_disable();
     };
@@ -720,6 +1045,80 @@ var SettingsManager = (function() {
         }
         this.btn_set_enable_disable();
     };
+
+
+    // работа с типом control
+    SettingsManager.prototype.draw_control_options = function(option, jq_option, background_class_name) {
+        //console.log("SettingsManager.prototype.draw_control_options", option);
+        jq_option.append('<div class="name control ' + background_class_name + '">' + option.text_name + '</div>');
+        var jq_value_wrap = $('<div class="value control ' + background_class_name + '"></div>');
+        var jq_value = $('<input class="settings-control sublayers-clickable" ' +
+            'onkeyup="settingsManager._handler_list_keyup(`' + option.name + '`, event)" ' +
+            'onkeypress="settingsManager._handler_list_keypress(`' + option.name + '`, event)"' +
+            //'onkeydown="settingsManager._handler_list_keydown(`' + option.name + '`, event)" ' +
+            ';>');
+
+        jq_value_wrap.append(jq_value);
+        jq_option.append(jq_value_wrap);
+        this.refresh_control_options(option);
+    };
+
+    SettingsManager.prototype.refresh_control_options = function(current_option) {
+        //console.log("SettingsManager.prototype.refresh_control_options", option);
+        current_option.jq_div.find("input").val(convertKeyCodeToString(current_option.currentValue));
+
+        // сделать проверку на занятость текущей кнопки
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name) && this.options[opt_name].type == "control" && opt_name != current_option.name){
+                var option = this.options[opt_name];
+                if (option.currentValue == current_option.currentValue) {
+                    // инициировать процедуру изменения опции
+                    option.currentValue = 0;
+                    option.jq_div.find("input").val(convertKeyCodeToString(option.currentValue));
+                    if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+                }
+            }
+    };
+
+     SettingsManager.prototype._handler_list_keypress = function(opt_name, event) {
+        //console.log("SettingsManager.prototype._handler_list_keypress", event.keyCode, opt_name);
+        stopEvent(event);
+        var option = this.options[opt_name];
+        option.jq_div.find("input").val("");
+        return false;
+    };
+
+    SettingsManager.prototype._handler_list_keydown = function(opt_name, event) {
+        console.log("SettingsManager.prototype._handler_list_keydown", event.keyCode, opt_name);
+        // Обновить значение опции
+        stopEvent(event);
+        var option = this.options[opt_name];
+        var s = convertKeyCodeToString(event.keyCode);
+        if (!s) return false;
+        option.jq_div.find("input").val(s).focus();
+        return false;
+    };
+
+    SettingsManager.prototype._handler_list_keyup = function(opt_name, event) {
+        //console.log("SettingsManager.prototype._handler_list_keyup", event.keyCode, opt_name);
+        // Обновить значение опции
+        stopEvent(event);
+        var code = event.keyCode;
+        var option = this.options[opt_name];
+        var s = convertKeyCodeToString(code);
+        if (s == null) return;
+        if (s == "") code = 0;
+        option.jq_div.find("input").val(s).focus();
+
+        if (option.currentValue != code) {
+            option.currentValue = code;
+            this.refresh_control_options(option);
+            if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+        }
+
+        this.btn_set_enable_disable();
+    };
+
 
     return SettingsManager;
 })();
