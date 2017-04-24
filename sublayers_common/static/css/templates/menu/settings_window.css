@@ -109,13 +109,12 @@
     font-size: 12pt;
     height: 20px;
     line-height: 20px;
-    display: none;
 }
 
 .settings-window-description-block .settings-window-description {
     text-align: center;
     font-size: 12pt;
-    height: calc(100% - 20px - 30px);
+    height: calc(100% - 20px - 30px - 32px);
 }
 
 
@@ -168,6 +167,7 @@
 .settings-window-page-btn:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
 .settings-window-page-btn.disable {pointer-events: none; background-color: #082801; color: #0e4b00; border-color: #0e4b00;}
 
+.settings-window-page-btn.settings-default { margin: 0 auto; float: none; }
 
 .settings-window-page {
     position: absolute;
@@ -176,6 +176,8 @@
     box-sizing: border-box;
     display: none;
     padding: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Общая настройка элементов */
@@ -184,7 +186,7 @@
     position: relative;
     width: 100%;
     height: 28px;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -273,4 +275,34 @@
 .settings-elem .settings-list-btn.left {border-right: 6px solid #31c811;}
 .settings-elem .settings-list-btn.right {border-left: 6px solid #31c811;}
 
+
+/* control */
+
+.settings-elem.control .name.control {
+    width: 70%;
+}
+
+.settings-elem.control .value.control {
+    width: calc(100% - 70% - 10px);
+    margin-left: 10px;
+}
+
+.settings-elem.control input {
+    border: 0px solid #000000;
+    height: 22px;
+    width: calc(100% - 8px);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background-color: black;
+    padding-left: 4px;
+    box-sizing: border-box;
+    color: #2ffa00;
+    font: 12pt FreePixel;
+    cursor: url(/static/img/cursors/text.png), text;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    text-align: center;
+}
 

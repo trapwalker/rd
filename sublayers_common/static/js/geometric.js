@@ -256,3 +256,55 @@ function getQuickUserLogin(login) {
     if (parts.length > 1) parts.pop();
     return parts.join('_');
 }
+
+
+function convertKeyCodeToString(keycode) {
+    if (keycode == 0)  // Сброс
+        return "";
+
+    if (keycode >= 48 && keycode <= 57)  // Если это просто цифры
+        return String.fromCharCode(keycode);
+
+    if (keycode >= 65 && keycode <= 90)  // Если это просто буквы
+        return String.fromCharCode(keycode);
+
+    if (keycode == 32)  // Пробел
+        return "Space";
+    if (keycode == 38)  // Стрелка вверх
+        return "Arrow Up";
+    if (keycode == 37)  // Стрелка влево
+        return "Arrow Left";
+    if (keycode == 39)  // Стрелка вправо
+        return "Arrow Right";
+    if (keycode == 40)  // Стрелка вниз
+        return "Arrow Down";
+    if (keycode == 16)  // Shift
+        return "Shift";
+    if (keycode == 17)  // Ctrl
+        return "Ctrl";
+    if (keycode == 18)  // Alt
+        return "Alt";
+    if (keycode == 20)  // Capslock
+        return "CapsLock";
+    if (keycode == 192)  // Тильда
+        return "~";
+    if (keycode == 191)  // /
+        return "/";
+    if (keycode == 220)  // \
+        return "\\";
+    if (keycode == 221)  // ]
+        return "]";
+    if (keycode == 219)  // [
+        return "[";
+    if (keycode == 187)  // +
+        return "+";
+    if (keycode == 189)  // -
+        return "-";
+    if (keycode == 190)  // +
+        return ">";
+    if (keycode == 188)  // -
+        return "<";
+
+
+    return null;
+}

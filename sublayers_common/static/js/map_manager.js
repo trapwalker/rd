@@ -9,12 +9,6 @@ var ConstMinMapZoom = 10;
 var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
-// Для отслеживания состояний нажатия стрелок
-var pressedArrowUp;
-var pressedArrowDown;
-var pressedArrowLeft;
-var pressedArrowRight;
-
 function onMouseUpMap(mouseEventObject) {
     if (mapCanvasManager && mapCanvasManager._mouse_focus_widget)
         mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject);
@@ -34,132 +28,11 @@ function onMouseOutMap(mouseEventObject){
     mapCanvasManager.set_mouse_look(false);
 }
 
-function onKeyDownMap(event) {
-    //console.log('onKeyDownMap', event.keyCode);
-    switch (event.keyCode) {
-        case 27:
-            windowTemplateManager.closeActiveWindow();
-            break;
-        case 13:
-            chat.get_current_input().focus();
-            break;
-        case 37:
-            if (!user.userCar) return;
-            if (!pressedArrowLeft) {
-                pressedArrowLeft = true;
-                var turn = 0;
-                if (pressedArrowLeft) turn++;
-                if (pressedArrowRight) turn--;
-                clientManager.sendTurn(turn);
-            }
-            break;
-        case 38:
-            if (!user.userCar) return;
-            if (!pressedArrowUp) {
-                clientManager.sendSetSpeed(user.userCar.v_forward);
-                if (wCruiseControl) wCruiseControl.startKeyboardControl();
-                pressedArrowUp = true;
-            }
-            break;
-        case 39:
-            if (! user.userCar) return;
-            if (!pressedArrowRight) {
-                pressedArrowRight = true;
-                var turn = 0;
-                if (pressedArrowLeft) turn++;
-                if (pressedArrowRight) turn--;
-                clientManager.sendTurn(turn);
-            }
-            break;
-        case 40:
-            if (! user.userCar) return;
-            if (!pressedArrowDown) {
-                clientManager.sendSetSpeed(user.userCar.v_backward);
-                if (wCruiseControl) wCruiseControl.startKeyboardControl();
-                pressedArrowDown = true;
-            }
-            break;
-        case 72:
-            break;
-        case 84:
-            clientManager.sendTeleportCoord(last_right_click_on_map.x, last_right_click_on_map.y);
-            break;
-        case 87:  // W
-            clientManager.sendFireDischarge('front');
-            break;
-        case 65:  // A
-            clientManager.sendFireDischarge('left');
-            break;
-        case 83:  // S
-            clientManager.sendFireDischarge('back');
-            break;
-        case 68:  // D
-            clientManager.sendFireDischarge('right');
-            break;
-        case 69:  // E
-            break;
-        case 81:  // Q
-            if (wFireController && wFireController.allFire)
-                wFireController.allFire.click();
-            break;
-        case 90:  // Z
-            break;
-        case 49: // 1
-        case 50: // 2
-        case 51: // 3
-        case 52: // 4
-            if (! user.userCar) return;
-            var key = event.keyCode - 48;
-            clientManager.sendActivateQuickItem(key, user.userCar.ID);
-            wFireController.signalQuickConsumerPanel(key);
-            break;
-        case 32:  // Space / Пробел
-            clientManager.sendStopCar();
-            break;
-    }
-}
-
-function onKeyUpMap(event) {
-    //console.log('onKeyUpMap');
-    switch (event.keyCode) {
-        case 37:
-            if (! user.userCar) return;
-            pressedArrowLeft = false;
-            pressedArrowRight = false;
-            var turn = 0;
-            //if (pressedArrowLeft) turn++;
-            //if (pressedArrowRight) turn--;
-            clientManager.sendTurn(turn);
-            break;
-        case 38:
-            if (! user.userCar) return;
-            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-            if (wCruiseControl) wCruiseControl.stopKeyboardControl();
-            pressedArrowUp = false;
-            break;
-        case 39:
-            if (! user.userCar) return;
-            pressedArrowLeft = false;
-            pressedArrowRight = false;
-            var turn = 0;
-            //if (pressedArrowLeft) turn++;
-            //if (pressedArrowRight) turn--;
-            clientManager.sendTurn(turn);
-            break;
-        case 40:
-            if (! user.userCar) return;
-            clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-            if (wCruiseControl) wCruiseControl.stopKeyboardControl();
-            pressedArrowDown = false;
-            break;
-    }
-}
-
 function onMapWheel(event) {
     event = event || window.event;
     var delta = (event.deltaY || event.detail || event.wheelDelta) / 100.;
     if (Math.abs(delta) < 1) delta *= 33; // Для mozilla
-    var zoom = mapManager.newZoomForCalcZoom - delta * 0.15;
+    var zoom = mapManager.newZoomForCalcZoom - delta * mapManager.zoom_wheel_step;
     mapManager.setZoom(zoom);
 }
 
@@ -172,6 +45,8 @@ var MapManager = (function(_super) {
 
     function MapManager() {
         _super.call(this);
+
+        this.zoom_wheel_step = settingsManager.options.zoom_step_value.value;
 
         this.current_zoom = 18;
 
@@ -255,11 +130,14 @@ var MapManager = (function(_super) {
             div: "map2",
             zMin: ConstMinMapZoom,
             zMax: ConstMaxMapZoom,
+            preload_pyramid_lvl: settingsManager.options.map_tile_preload.value,
             x: pos.x,
             y: pos.y,
             zoom: this.current_zoom,
             loadCompleteCB: this.removeFromLoader
         }).init();
+
+        this.set_layer_visibility("tiles", settingsManager.options.map_tile_draw.value == 1);
 
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
@@ -342,6 +220,19 @@ var MapManager = (function(_super) {
 
     MapManager.prototype.getMapSize = function() {
         return new Point(smap.width(), smap.height());
+    };
+
+    MapManager.prototype.set_layer_visibility = function(layer_name, visibility) {
+        var layer = null;
+        for (var i=0; i < smap.renderer.layers.length; i++)
+            if (smap.renderer.layers[i].id == layer_name)
+                layer = smap.renderer.layers[i];
+        if (layer && layer.visibility != visibility) layer.visibility = visibility;
+    };
+
+    MapManager.prototype.set_pyramid_size = function(value) {
+        if (value >= 8) value = this.getMaxZoom() - mapManager.getMinZoom();
+        smap.map.preload_pyramid_lvl = value;
     };
 
     MapManager.prototype.getTopLeftCoords = function(zoom) {

@@ -1,6 +1,3 @@
-var ConstCountTracerPerSecond = 5;      // Количество трасеров в секунду;
-var ConstTracerSpeed = 120;              // Скорость полета трасера (px / s);
-var ConstTracerLength = 8;               // Длина трасера (px);
 var ConstCountFlashlightPerSecond = 10;  // Количество трасеров в секунду;
 var ConstFlashlightPrecision = 50;       // Радиус разлёта вспышек около машинки (px);
 var ConstFlashlightOrientedRadius = 20;  // Радиус в котором вспышка будет направленной (px);
@@ -8,7 +5,6 @@ var ConstFlashlightOrientedRadius = 20;  // Радиус в котором вс�
 var ConstRangeFireDischargeFlashlight = 30;   // Разлет вспышек взрывов при залповой стрельбе (px);
 var ConstCountFireDischargeFlashlight = 3;   // Количество вспышек взрывов при залповой стрельбе (px);
 var ConstDelayFireDischargeFlashlight = 300; // Задержка между дульным пламенем и вспышкой взрыва при залповой стрельбе (ms);
-var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки взрыва при залповой стрельбе (px);
 
 // Список Иконок для всех видов маркеров леафлета
 
@@ -116,6 +112,8 @@ var FireEffectManager = (function () {
         this.controllers_list = []; // хранятся объекты {ctrl: FireAutoEffectController, count: int}
         this.muzzle_flashs = {}; // хранятся FireAutoMuzzleFlashController's
         timeManager.addTimerEvent(this, 'perform');
+
+        this._settings_particles_tracer = settingsManager.options.particles_tracer.value;
     }
 
     FireEffectManager.prototype._findController = function (options) {
@@ -273,6 +271,8 @@ var FireAutoEffectController = (function () {
         this.weapon_animation = [];
         this.set_weapon_animation(options.weapon_animation);
         this.weapon_animation = this.weapon_animation || [ECanvasPointsTracerSimple];
+
+        this.current_particles_tracer = fireEffectManager._settings_particles_tracer;
     }
 
     FireAutoEffectController.prototype.change = function () {
@@ -339,7 +339,7 @@ var FireAutoEffectController = (function () {
                 this.set_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate += options.animation_tracer_rate;
-                this.d_time_t = 0.2 / this.animation_tracer_rate;
+                this.d_time_t = this.current_particles_tracer / this.animation_tracer_rate;
             }
         }
         else {
@@ -347,7 +347,7 @@ var FireAutoEffectController = (function () {
                 this.del_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate -= options.animation_tracer_rate;
-                this.d_time_t = 0.2 / this.animation_tracer_rate;
+                this.d_time_t = this.current_particles_tracer / this.animation_tracer_rate;
             }
         }
     };

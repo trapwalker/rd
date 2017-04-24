@@ -1,0 +1,8 @@
+date: '24.04.2017'
+header:
+  ru: 'Магазин Steam и дата релиза'
+  en: 'Steam Store and release date'
+link: 'steam_store_and_release_date'
+content:
+  ru: '<br><div style="width: 400px; height: 179px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_13.png"></img></div><div style="pointer-events: none;  font-size: 12pt; "><br>Road Dogs обзавелись <a style="pointer-events: auto;" target="_blank" href="http://store.steampowered.com/app/622470">страницей</a> в магазине Steam, на которой указана дата релиза!</div>'
+  en: '<br><div style="width: 400px; height: 179px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_13.png"></img></div><div style="pointer-events: none;  font-size: 12pt; "><br>Road dogs got a <a style="pointer-events: auto;" target="_blank" href="http://store.steampowered.com/app/622470">page</a> in the Steam store on which there is a release date!</div>'
