@@ -139,15 +139,19 @@ class EmbeddedNodeField(EmbeddedDocumentField):
     def __init__(self, document_type='Node', **kwargs):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
 
+    def from_uri(self, instance, uri):
+        reg = instance.__get_registry__()
+        parent = reg.get_node_by_uri(uri)
+        if parent:
+            node = parent.__class__(parent=parent)  # todo: !!! support uri parametrization
+            node.expand_links()
+            return node
+        raise ValueError("Can't create node by URI {!r} in instance {!r}".format(uri, instance))
+
     def __set__(self, instance, value):
         if instance._initialised:
             if isinstance(value, basestring):
-                reg = instance.__get_registry__()  # todo: Избавиться от глобального объекта
-                parent = reg.get_node_by_uri(value)
-                if parent:
-                    value = parent.__class__(parent=parent)
-                else:
-                    assert not instance._initialised
+                value = self.from_uri(instance, value)
 
             # todo: Проверить поддержку инициализации нода из словаря
             if value and not isinstance(value, Node) and not (isinstance(value, basestring) and not instance._initialised):
