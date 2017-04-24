@@ -541,6 +541,7 @@ class Registry(Doc):
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
 
+            # todo: multiple expanding of one node ##optimize
             for node in all_nodes:
                 node.expand_links()
 
