@@ -135,6 +135,8 @@ var MapManager = (function(_super) {
             loadCompleteCB: this.removeFromLoader
         }).init();
 
+        this.set_layer_visibility("tiles", settingsManager.options.map_tile_draw.value == 1);
+
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
 

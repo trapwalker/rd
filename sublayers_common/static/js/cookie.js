@@ -298,10 +298,19 @@ var SettingsManager = (function() {
         this.jq_description = null;
         this.jq_description_header = null;
 
+        this.current_page_name = "";  // Определяет текущую выбранную страницу для восстановления и для default кнопки
+
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
         this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
+
+        this.page_descriptions = {
+            settings_page_graphics: "Настройки графики",
+            settings_page_audio: "Настройки звука",
+            settings_page_control: "Настройки управления",
+            settings_page_other: "Другие настройки",
+        };
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
@@ -822,7 +831,16 @@ var SettingsManager = (function() {
                 even_background = ! even_background;
             }
 
-        this.jq_headers.find(".settings-window-menu-item")[2].click();
+        // Включение первой или запоминание выбранной вкладки
+        if (!this.current_page_name)
+            this.jq_headers.find(".settings-window-menu-item")[0].click();
+        else {
+            var elems = this.jq_headers.find(".settings-window-menu-item");
+            for (var i = 0; i < elems.length; i++) {
+                if ($(elems[i]).data("page_class") == this.current_page_name)
+                    $(elems[i]).click();
+            }
+        }
 
         this.btn_set_enable_disable();
     };
@@ -844,6 +862,18 @@ var SettingsManager = (function() {
                 var option = this.options[opt_name];
                 if (option.value != option.currentValue) {
                     option.currentValue = option.value;
+                    this["refresh_" + option.type + "_options"](option);
+                    if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+                }
+            }
+    };
+
+    SettingsManager.prototype.default_options = function() {
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                var option = this.options[opt_name];
+                if (option.default != option.currentValue && ("settings_page_" + option.page) == this.current_page_name) {
+                    option.currentValue = option.default;
                     this["refresh_" + option.type + "_options"](option);
                     if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
                 }
@@ -920,6 +950,8 @@ var SettingsManager = (function() {
         jq_elem.addClass("active");
         this.jq_pages.find(".settings-window-page").css("display", "none");
         this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
+        this.current_page_name = jq_elem.data("page_class");
+        this.jq_description.text(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype._handler_mouse_over = function(opt_name) {
@@ -932,14 +964,10 @@ var SettingsManager = (function() {
             }
         }
         else {
-            if (opt_name) {
-                this.jq_description_header.css("display", "block");
+            if (opt_name)
                 this.jq_description.text(this.options[opt_name].text_description);
-            }
-            else {
-                this.jq_description_header.css("display", "none");
-                this.jq_description.text("");
-            }
+            else
+                this.jq_description.text(this.page_descriptions[this.current_page_name]);
         }
     };
 
@@ -957,6 +985,7 @@ var SettingsManager = (function() {
         windowTemplateManager.closeUniqueWindow("settings");
     };
 
+    SettingsManager.prototype._handler_click_default = function() {this.default_options(); this.btn_set_enable_disable();};
 
     // работа с типом scale
     SettingsManager.prototype.draw_scale_options = function(option, jq_option, background_class_name) {
