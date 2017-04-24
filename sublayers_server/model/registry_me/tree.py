@@ -32,6 +32,9 @@ from mongoengine.fields import (
     RECURSIVE_REFERENCE_CONSTANT,
 )
 
+CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
+CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
+
 
 class RegistryError(Exception):
     pass
@@ -235,6 +238,52 @@ class Subdoc(EmbeddedDocument):
         # if reg_getter is None or root is self:
         #     raise ValueError('Root instance {!r} has not registry getter'.format(self))
         # return reg_getter()
+
+    def __setattr__(self, key, value):
+        field = self.__class__._fields.get(key)  # todo: support dynamic fields too
+        if value and isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and isinstance(field.field, CONTAINER_FIELD_TYPES):
+            assert self._initialised
+            value = self._expand_field_value(field, value)
+
+        super(Subdoc, self).__setattr__(key, value)
+
+    def _expand_field_value(self, field, value):
+        if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
+            expanded_value = value.expand_links()
+        elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
+            expanded_value = field.from_uri(self, value)
+        elif isinstance(field, ListField):
+            # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
+            expanded_value = value
+            for i, v in enumerate(value):
+                if v:
+                    expanded_value[i] = self._expand_field_value(field.field, v)
+        elif isinstance(field, DictField):
+            expanded_value = value
+            for k, v in value.items():
+                if v:
+                    expanded_value[k] = self._expand_field_value(field.field, v)
+        else:
+            raise ValueError(
+                'Unexpected type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
+
+        return expanded_value
+
+    def expand_links(self):
+        for field_name, field in self._fields.items():
+            if not isinstance(field, CONTAINER_FIELD_TYPES):
+                continue
+
+            if isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and not isinstance(field.field, CONTAINER_FIELD_TYPES):
+                continue
+
+            value = self._data.get(field_name)
+            if not value:
+                continue
+
+            new_value = self._expand_field_value(self, field, value)
+            if new_value is not value:
+                setattr(self, field_name, new_value)
 
 
 ########################################################################################################################
