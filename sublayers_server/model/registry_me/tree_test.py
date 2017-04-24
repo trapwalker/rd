@@ -44,5 +44,4 @@ def test4():
 if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
-    #test3()
-    test4()
+    test3()

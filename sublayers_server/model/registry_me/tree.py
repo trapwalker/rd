@@ -251,6 +251,10 @@ class Subdoc(EmbeddedDocument):
         if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
             value.expand_links()
             expanded_value = value
+        elif isinstance(field, EmbeddedDocumentField) and isinstance(value, dict):
+            expanded_value = field.to_python(value)
+            if hasattr(expanded_value, 'expand_links'):
+                expanded_value.expand_links()
         elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
             expanded_value = field.from_uri(self, value)
         elif isinstance(field, ListField):
