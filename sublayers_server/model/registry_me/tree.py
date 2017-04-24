@@ -217,6 +217,25 @@ class Subdoc(EmbeddedDocument):
 
         return d
 
+    # def root_instance(self):
+    #     # todo: cache it
+    #     last_instance = self
+    #     instance = self
+    #     while instance:
+    #         last_instance = instance
+    #         instance = getattr(instance, '_instance', None)
+    #
+    #     return last_instance
+
+    def __get_registry__(self):
+        return get_global_registry()
+        # todo: cache it
+        # root = self.root_instance()
+        # reg_getter = getattr(root, '__get_registry__')
+        # if reg_getter is None or root is self:
+        #     raise ValueError('Root instance {!r} has not registry getter'.format(self))
+        # return reg_getter()
+
 
 ########################################################################################################################
 class Node(Subdoc):
@@ -277,25 +296,6 @@ class Node(Subdoc):
 
     def node_html(self):  # todo: rename
         return self.node_hash().replace('://', '-').replace('/', '-')
-
-    def root_instance(self):
-        # todo: cache it
-        last_instance = self
-        instance = self
-        while instance:
-            last_instance = instance
-            instance = getattr(instance, '_instance', None)
-
-        return last_instance
-
-    def __get_registry__(self):
-        # todo: cache it
-        root = self.root_instance()
-        reg_getter = getattr(root, '__get_registry__')
-        if reg_getter is None:
-            raise ValueError('Root instance {!r} has not registry getter'.format(self))
-
-        return reg_getter()
 
     def get(self, addr, *defaults):
         if len(defaults) > 1:
