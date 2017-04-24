@@ -11,10 +11,18 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry_me.tree import Node, get_global_registry
+from sublayers_server.model.registry_me.tree import Node, get_global_registry, ListField, EmbeddedNodeField
 
 from pprint import pprint as pp
 from mongoengine import connect
+
+
+class A(Node):
+    pass
+
+class B(Node):
+    it = EmbeddedNodeField(document_type=A)
+    items = ListField(field=EmbeddedNodeField(document_type=A))
 
 
 def test3():
@@ -25,8 +33,16 @@ def test3():
     print(x.parent)
     globals().update(locals())
 
+def test4():
+    import sublayers_server.model.registry_me.classes
+    reg = get_global_registry(path=u'../../../tmp/registry', reload=True)
+    a = reg.get('/registry/a')
+    b = reg.get('/registry/b')
+    print(b)
+    globals().update(locals())
 
 if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
-    test3()
+    #test3()
+    test4()
