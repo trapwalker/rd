@@ -240,16 +240,17 @@ class Subdoc(EmbeddedDocument):
         # return reg_getter()
 
     def __setattr__(self, key, value):
-        field = self.__class__._fields.get(key)  # todo: support dynamic fields too
-        if value and isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and isinstance(field.field, CONTAINER_FIELD_TYPES):
-            assert self._initialised
-            value = self._expand_field_value(field, value)
+        if key != '_initialised' and getattr(self, '_initialised', None):
+            field = self.__class__._fields.get(key)  # todo: support dynamic fields too
+            if value and isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and isinstance(field.field, CONTAINER_FIELD_TYPES):
+                value = self._expand_field_value(field, value)
 
         super(Subdoc, self).__setattr__(key, value)
 
     def _expand_field_value(self, field, value):
         if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
-            expanded_value = value.expand_links()
+            value.expand_links()
+            expanded_value = value
         elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
             expanded_value = field.from_uri(self, value)
         elif isinstance(field, ListField):
@@ -281,7 +282,7 @@ class Subdoc(EmbeddedDocument):
             if not value:
                 continue
 
-            new_value = self._expand_field_value(self, field, value)
+            new_value = self._expand_field_value(field, value)
             if new_value is not value:
                 setattr(self, field_name, new_value)
 
@@ -541,11 +542,7 @@ class Registry(Doc):
                             stack.append((next_path, node))
 
             for node in all_nodes:
-                for field_name, field in node._fields.items():
-                    if isinstance(field, EmbeddedNodeField):
-                        value = node._data.get(field_name, None)
-                        if value and not isinstance(value, Node):
-                            setattr(node, field_name, value)
+                node.expand_links()
 
         log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
 
