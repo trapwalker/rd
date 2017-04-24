@@ -161,7 +161,7 @@ var WCanvasCarMarker = (function (_super) {
         if (car == user.userCar && car.engine_audio) {
             this.audio_object = audioManager.play({
                 name: car.engine_audio.audio_name,
-                gain: 1.0,
+                gain: 1.0 * audioManager._settings_engine_gain,
                 loop: true,
                 playbackRate: car.getAudioEngineRate(clock.getCurrentTime()),
                 priority: 0.1
@@ -268,13 +268,16 @@ var WCanvasCarMarker = (function (_super) {
             this._ps_last_position = car_pos_real;
 
             // Звук двигателя
-            if (this.audio_object)
+            if (this.audio_object) {
                 this.audio_object.source_node.playbackRate.value = mobj.getAudioEngineRate(time);
+                if (this.audio_object.get_gain() != audioManager._settings_engine_gain)
+                    this.audio_object.gain(audioManager._settings_engine_gain);
+            }
 
             // Звук движения назад
             if (this.audio_object_reverse_gear) {
                 if (mobj.getCurrentSpeed(time) < 0)
-                    this.audio_object_reverse_gear.gain(0.3);
+                    this.audio_object_reverse_gear.gain(audioManager._settings_engine_gain * 0.3);
                 else
                     this.audio_object_reverse_gear.gain(0.0);
             }
@@ -368,6 +371,7 @@ var WCanvasCarMarker = (function (_super) {
     };
 
     WCanvasCarMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (mapCanvasManager._settings_particles_tail == 0) return;
         var speed = this.mobj.getCurrentSpeed(time);
         var speed_abs = Math.abs(speed);
         var pos_real = this._last_mobj_position;
@@ -379,8 +383,8 @@ var WCanvasCarMarker = (function (_super) {
             //new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
             //new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
 
-            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000, this.tail_particles_icon_left_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000, this.tail_particles_icon_right_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000 * mapCanvasManager._settings_particles_tail, this.tail_particles_icon_left_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000 * mapCanvasManager._settings_particles_tail, this.tail_particles_icon_right_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
         }
     };
 
@@ -765,6 +769,7 @@ var WCanvasRocketMarkerEffect = (function (_super) {
     };
 
     WCanvasRocketMarkerEffect.prototype.post_redraw = function(ctx, time, client_time) {
+        if (mapCanvasManager._settings_particles_tail == 0) return;
         var speed = this.mobj.getCurrentSpeed(time);
         var speed_abs = Math.abs(speed);
         var pos_real = this._last_mobj_position;
@@ -774,7 +779,7 @@ var WCanvasRocketMarkerEffect = (function (_super) {
             this.tail_particles_last_born_time = time * 1000;
             //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000, "icon-car-tail-1", 2.).start();
 
-            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -5, direction_real, 0.5), Math.PI / 2. + direction_real, 2500, "icon-rocket-tail-03", 0.5, 0.25).start();
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -5, direction_real, 0.5), Math.PI / 2. + direction_real, 2500 * mapCanvasManager._settings_particles_tail, "icon-rocket-tail-03", 0.5, 0.25).start();
         }
     };
 

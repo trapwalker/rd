@@ -8,6 +8,8 @@ var PreloaderImage = (function(){
 
         this.tasks = []; // Список объектов вида: {id, img_url, callback, maxdelay_timer}
         this.callbacks = []; // Список коллбеков
+
+        this.max_loading_count = 5;  // Максимальное количество одновременно загружаемых объектов
     }
 
     PreloaderImage.prototype.get_tasks_by_url = function(img_url) {
@@ -52,19 +54,21 @@ var PreloaderImage = (function(){
             id: this.task_id,
             img_url: img_url,
             callback: callback,
-            maxdelay_timer: null
+            maxdelay_timer: null,
+            img: img
         };
 
         if (maxdelay && maxdelay >= 0) task.maxdelay_timer = setTimeout(this.task_delay_timer.bind(this, this.task_id), maxdelay);
 
         this.tasks.push(task);
 
-        this.set_image_on_load(img, this.load_complete.bind(this, img_url));
+        if (this.count_loading < this.max_loading_count)
+            this.set_image_on_load(img, this.load_complete.bind(this, img_url));
 
     };
 
     PreloaderImage.prototype.load_complete = function(img_url, img) {
-        //console.log('PreloaderImage.prototype.load_complete', img, img_url);
+        //console.log('load_complete', this.count_loading, img_url);
         this.images[this.count_image] = img;
         this.count_image++;
         this.count_loading--;
@@ -80,9 +84,16 @@ var PreloaderImage = (function(){
                 if (this.can_call_callback(task.callback)) task.callback(true); // вызываем конкретный коллбек, если больше нет картинок на этот коллбек
             }
         }
+
+        // Взять следующий таск и попробовать загрузить:
+        if(this.tasks.length) {
+            var t = this.tasks[0];
+            this.set_image_on_load(t.img, this.load_complete.bind(this, t.img_url));
+        }
     };
 
     PreloaderImage.prototype.set_image_on_load = function (img, call_back) {
+        //console.log("set_image_on_load", this.count_loading);
         this.count_loading++;
         this.count_all++;
         if (img.complete) {

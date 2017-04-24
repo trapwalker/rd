@@ -294,9 +294,6 @@ var RadiationCircleEffectRandom = (function (_super) {
 })(RadiationCircleEffect);
 
 
-
-
-
 var RadiationLineEffectRandom = (function (_super) {
     __extends(RadiationLineEffectRandom, _super);
 
