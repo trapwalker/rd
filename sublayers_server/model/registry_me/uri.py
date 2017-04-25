@@ -13,6 +13,7 @@ from collections import OrderedDict
 from operator import itemgetter
 from urllib import splitvalue, quote, unquote
 from pprint import pformat
+import string
 
 
 URI_ENCODING = 'utf-8'
@@ -84,7 +85,61 @@ class URI(tuple):
             anchor = unquote(anchor).decode(URI_ENCODING)
         return scheme, storage, path, params, anchor
 
-    def __new__(cls, scheme=None, storage=None, path=None, params=None, anchor=None):
+    def __new__(cls, *av, **kw):
+        """
+        Create new instance of URI:
+            URI(scheme, storage, path, params, anchor)
+            URI(uri_string, params=dict(param1=111))
+            URI(URI('sch://storage/path/to/node?param0=0&param2=2'), params=dict(param1=111))
+
+        :param av:
+        :param kw:
+        :return:
+        """
+        av2 = []
+        kw0 = {}
+        params1 = {}
+        kw1 = {}
+        LETTERS_SET = set(string.ascii_letters) | set('.-_%')
+        for v in av:
+            if isinstance(v, URI):
+                kw0 = v.asdict()
+            elif isinstance(v, (list, tuple)) and 'path' not in kw:
+                kw['path'] = v
+            elif isinstance(v, dict):
+                params1.update(v)
+            else:
+                if isinstance(v, basestring) and not (set(v) - LETTERS_SET):
+                    if 'scheme' not in kw:
+                        kw['scheme'] = v
+                    elif 'storage' not in kw:
+                        kw['storage'] = v
+                    elif 'anchor' not in kw:
+                        kw['anchor'] = v
+                    else:
+                        av2.append(v)
+                else:
+                    av2.append(v)
+        if av2:
+            assert len(av2) == 1, 'Wrong parameters of URI constructor: {!r}, {!r}.'.format(av, kw)
+            kw1.update(zip(['scheme', 'storage', 'path', 'params', 'anchor'], cls.parse_uri(av2[0])))
+
+        kw0['params'] = dict(kw0.pop('params', {}))
+        kw0['params'].update(dict(kw1.pop('params', {})))
+        kw0.update(kw1)
+        kw0['params'].update(dict(params1))
+        kw0['params'].update(dict(kw.pop('params', {})))
+        kw0.update(kw)
+        return tuple.__new__(cls, (
+            kw0.get('scheme'),
+            kw0.get('storage'),
+            tuple(kw0.get('path')) or (),
+            tuple(kw0.get('params').items()),
+            kw0.get('anchor'),
+        ))
+
+    @classmethod
+    def old__new__(cls, scheme=None, storage=None, path=None, params=None, anchor=None):
         """Create new instance of URI(scheme, storage, path, params, anchor)"""
         if scheme is not None and storage is None and path is None and isinstance(scheme, basestring):
             # полагаем что в scheme передан весь uri в виде строки
