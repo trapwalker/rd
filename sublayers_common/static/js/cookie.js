@@ -913,7 +913,7 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name) && this.options[opt_name].type == "control" && opt_name != current_option.name){
                 var option = this.options[opt_name];
-                if (option.currentValue == current_option.currentValue) {
+                if (option.currentValue == current_option.currentValue && option.currentValue != 0) {
                     // инициировать процедуру изменения опции
                     option.currentValue = 0;
                     option.jq_div.find("input").val(convertKeyCodeToString(option.currentValue));
