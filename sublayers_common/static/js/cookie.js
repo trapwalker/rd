@@ -578,12 +578,16 @@ var SettingsManager = (function() {
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
-        //console.log("SettingsManager.prototype.redraw", this);
+        //console.log("SettingsManager.prototype.redraw");
         // Сначала повесить клики на
         this.jq_headers = jq_main_div.find(".settings-window-header-block");
         this.jq_pages = jq_main_div.find(".settings-window-page-block");
         this.jq_description = jq_main_div.find(".settings-window-description");
         this.jq_description_header = jq_main_div.find(".settings-window-header");
+
+        for (var page_key in this.page_descriptions)
+            if (this.page_descriptions.hasOwnProperty(page_key))
+                this.jq_pages.find("." + page_key).empty();
 
         this.jq_btn_cancel = jq_main_div.find(".settings-window-page-btn.settings-cancel").first();
         this.jq_btn_apply = jq_main_div.find(".settings-window-page-btn.settings-apply").first();
@@ -628,6 +632,11 @@ var SettingsManager = (function() {
         }
 
         this.btn_set_enable_disable();
+    };
+
+
+    SettingsManager.prototype.activate_in_city = function() {
+        locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype.apply_options = function() {
@@ -678,13 +687,29 @@ var SettingsManager = (function() {
     SettingsManager.prototype.btn_set_enable_disable = function() {
         //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
         if (this.test_diffrents()) { // Кнопки доступны
-            this.jq_btn_cancel.removeClass("disable");
-            this.jq_btn_apply.removeClass("disable");
+            if (locationManager.in_location_flag) {
+                locationManager.setBtnState(1, '</br>Применить', true);
+                locationManager.setBtnState(2, '</br>Отменить', true);
+            }
+            else {
+                this.jq_btn_cancel.removeClass("disable");
+                this.jq_btn_apply.removeClass("disable");
+            }
         }
         else {  // Кнопки не доступны
-            this.jq_btn_cancel.addClass("disable");
-            this.jq_btn_apply.addClass("disable");
+            if (locationManager.in_location_flag) {
+                locationManager.setBtnState(1, '</br>Применить', false);
+                locationManager.setBtnState(2, '</br>Отменить', false);
+            }
+            else {
+                this.jq_btn_cancel.addClass("disable");
+                this.jq_btn_apply.addClass("disable");
+            }
         }
+
+
+         if (locationManager.in_location_flag && locationManager.active_screen_name == "menu_screen")
+            locationManager.setBtnState(3, '</br>По умолчанию', true);
     };
 
     SettingsManager.prototype.load = function() {
@@ -736,17 +761,20 @@ var SettingsManager = (function() {
         this.jq_pages.find(".settings-window-page").css("display", "none");
         this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
         this.current_page_name = jq_elem.data("page_class");
-        this.jq_description.text(this.page_descriptions[this.current_page_name]);
+
+        if (locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
+        else
+            this.jq_description.text(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype._handler_mouse_over = function(opt_name) {
         //console.log("SettingsManager.prototype._handler_mouse_enter", opt_name, this.options[opt_name].text_description);
         if (locationManager.in_location_flag) {
-            //
             if (opt_name)
-                console.log(opt_name, " ===>>>> ", this.options[opt_name].text_description);
-            else {
-            }
+                locationManager.location_menu.viewRightPanel(this.options[opt_name].text_description);
+            else
+                locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
         }
         else {
             if (opt_name)
@@ -756,7 +784,7 @@ var SettingsManager = (function() {
         }
     };
 
-    SettingsManager.prototype._handler_click_apply = function() {this.apply_options(); this.btn_set_enable_disable(); };
+    SettingsManager.prototype._handler_click_apply = function() {this.apply_options(); this.btn_set_enable_disable();};
 
     SettingsManager.prototype._handler_click_cancel = function() {
         this.cancel_options();

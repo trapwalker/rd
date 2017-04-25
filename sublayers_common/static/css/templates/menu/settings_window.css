@@ -100,7 +100,7 @@
     font: 12pt Nouveau_IBM;
 }
 
-#townMenuLocation .settings-window-description-block {width: 0;}
+#townMenuLocation .settings-window-description-block {display: none;}
 
 .settings-window-description-block .settings-window-header {
     color: #2ffa00;
