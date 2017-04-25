@@ -1033,9 +1033,6 @@ var ViewMessengerGlass = (function () {
         if (visible != this.chat_visible) {
             this.chat_visible = visible;
 
-            // Звук сворачивания/разворачивания
-            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
-
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
                 this.parentGlass.animate({left: 0}, 1000, function () {
@@ -1048,6 +1045,9 @@ var ViewMessengerGlass = (function () {
                     self.mainCompact.css({display: 'none'});
                 });
                 chat.main_input.val(chat.compact_input.val());
+
+                // Звук разворачивания
+                audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -555}, 1000, function () {
@@ -1060,6 +1060,9 @@ var ViewMessengerGlass = (function () {
                 self.mainCompact.animate({opacity: 1}, 300);
                 chat.compact_input.val(chat.main_input.val());
                 chat._setCompactChat();
+
+                // Звук сворачивания
+                audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
         }
     };

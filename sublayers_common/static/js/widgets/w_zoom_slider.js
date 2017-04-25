@@ -240,9 +240,6 @@ var WZoomSlider = (function () {
         if (visible != this.zoom_visible) {
             this.zoom_visible = visible;
 
-            // Звук сворачивания/разворачивания
-            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
-
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
                 self.parentGlass.animate({left: 0}, 500, function () {
@@ -256,6 +253,8 @@ var WZoomSlider = (function () {
                     self.mainCompact.css({display: 'none'});
                 });
 
+                // Звук разворачивания
+                audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -200}, 500, function () {
@@ -267,6 +266,9 @@ var WZoomSlider = (function () {
                 // и нужно показать портативную версию
                 self.mainCompact.css({display: 'block'});
                 self.mainCompact.animate({opacity: 1}, 300);
+
+                // Звук сворачивания
+                audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
         }
     };

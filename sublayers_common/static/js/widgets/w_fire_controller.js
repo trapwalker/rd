@@ -340,9 +340,6 @@ var WFireController = (function (_super) {
         //console.log('WFireController.prototype.changeVisible');
         var self = this;
 
-        // Звук сворачивания/разворачивания
-        audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
-
         this.fCT.slideToggle("slow", function () {
             if (self.visible) {
                 self.visible = false;
@@ -365,6 +362,11 @@ var WFireController = (function (_super) {
             mapManager.widget_fire_radial_grid.setVisible(is_show_central);
         if (mapManager.widget_fire_sectors)
             mapManager.widget_fire_sectors.setVisible(is_show_central);
+
+        if(is_show_central) // Звук разворачивания
+            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        else // Звук сворачивания
+            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WFireController.prototype.setVisible = function (aVisible) {

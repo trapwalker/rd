@@ -205,9 +205,6 @@ var WCruiseControl = (function (_super) {
         if (visible == this.visible) return;
         var self = this;
 
-        // Звук сворачивания/разворачивания
-        audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
-
         if (this.visible) {
             this.visible = false;
             this.glassDiv.animate({right: -560}, 1000, function () {
@@ -217,6 +214,9 @@ var WCruiseControl = (function (_super) {
                 self.compactView.css({display: 'block'});
                 self.compactView.animate({opacity: 1}, 500);
             });
+
+            // Звук сворачивания
+            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         else {
             this.visible = true;
@@ -229,6 +229,9 @@ var WCruiseControl = (function (_super) {
             self.compactView.animate({opacity: 0}, 500, function () {
                 self.compactView.css({display: 'none'});
             });
+
+            // Звук разворачивания
+            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
     };
 
