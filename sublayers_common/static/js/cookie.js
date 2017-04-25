@@ -525,6 +525,39 @@ var SettingsManager = (function() {
             list_values: [{text: "Медленно", value: 0.2}, {text: "Нормально", value: 0.5}, {text: "Быстро", value: 1}, {text: "Очень быстро", value: 2}],
             set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
         },
+
+        game_color: {
+            name: "game_color",
+            page: "other",
+            text_name: "Палитра интерфейса",
+            text_description: "Изменяет палитру интерфейса. (Experimental**)",
+            jq_div: null,
+            type: "list",
+            default: "none",
+            value: 0,
+            currentValue: 0,
+            list_values: [
+                {
+                    text: "Стандарт",
+                    value: "none"
+                },
+                {
+                    text: "Ч/Б",
+                    value: "grayscale(100%) brightness(1.2) contrast(120%);"
+                },
+                {
+                    text: "Синий",
+                    value: "hue-rotate(80deg);"
+                },
+                {
+                    text: "Жёлтый",
+                    value: "hue-rotate(-80deg);"
+                }
+            ],
+            set_callback: function(new_value) {
+                $("#bodydiv").attr("style", "filter: " + new_value);
+            },
+        },
     };
 
     // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)
