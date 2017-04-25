@@ -142,26 +142,24 @@ class EmbeddedNodeField(EmbeddedDocumentField):
     def __init__(self, document_type='Node', **kwargs):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
 
-    def from_uri(self, instance, uri):
-        reg = instance.__get_registry__()
+    def from_uri(self, uri):
+        reg = get_global_registry()
         parent = reg.get_node_by_uri(uri)
         if parent:
             node = parent.__class__(parent=parent)  # todo: !!! support uri parametrization
             node.expand_links()
             return node
-        raise ValueError("Can't create node by URI {!r} in instance {!r}".format(uri, instance))
+        raise ValueError("Can't create node by URI {!r}".format(uri))
+
+    def to_python(self, value):
+        if isinstance(value, basestring):
+            return self.from_uri(value)
+        return super(EmbeddedNodeField, self).to_python(value)
 
     def __set__(self, instance, value):
         if instance._initialised:
-            if isinstance(value, basestring):
-                value = self.from_uri(instance, value)
+            value = self.to_python(value)
 
-            # todo: Проверить поддержку инициализации нода из словаря
-            if value and not isinstance(value, Node) and not (isinstance(value, basestring) and not instance._initialised):
-                try:
-                    value = self.to_python(value)
-                except mongoengine.errors.InvalidDocumentError as e:
-                    raise e
         super(EmbeddedNodeField, self).__set__(instance, value)
 
 
@@ -256,7 +254,7 @@ class Subdoc(EmbeddedDocument):
             if hasattr(expanded_value, 'expand_links'):
                 expanded_value.expand_links()
         elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
-            expanded_value = field.from_uri(self, value)
+            expanded_value = field.from_uri(value)
         elif isinstance(field, ListField):
             # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
             expanded_value = value
@@ -526,7 +524,10 @@ class Registry(Doc):
 
         raise KeyError('Registry has no root named {!r}'.format(self, root_name))
 
-    get_node_by_uri = get  # todo: remove deprecated
+    def get_node_by_uri(self, uri):
+        if not isinstance(uri, URI):
+            uri = URI(uri)
+        return self.get(uri)
 
     def load(self, path, mongo_store=True):
         all_nodes = []
