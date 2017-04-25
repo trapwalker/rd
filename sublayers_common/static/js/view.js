@@ -5,9 +5,6 @@ $(document).ready(function () {
     else
         textConsoleManager.start('enter');
 
-    // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage();
-
     mapManager._init();
 
     locationManager = new LocationManager();
@@ -46,7 +43,7 @@ $(document).ready(function () {
     });
 
     window.onbeforeunload = function (e) {
-        cookieStorage.save();
+        settingsManager.unload_client();
         radioPlayer.save_setting_to_cookie(true);
     };
 
@@ -152,7 +149,7 @@ $(document).ready(function () {
     initRadioPlayer();
 
     setTimeout(function() {
-        var radio_settings = cookieStorage.getCookie('radio_player');
+        var radio_settings = settingsManager.getCookie('radio_player');
         if (radio_settings){
             try {
                 var settings = radio_settings.split('_');
@@ -295,7 +292,6 @@ var tileLayerShow;
 var controllers;
 var debugMapList = [];
 var carMarkerList;
-var cookieStorage;
 var clientManager;
 var j_connector;
 var ws_connector;
