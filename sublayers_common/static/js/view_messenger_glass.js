@@ -48,7 +48,11 @@ var ViewMessengerGlass = (function () {
         // добавление кнопки 'отправить соосбщение'
         foot_area.append("<div id='VMGEnterButtonDIV'><div id='VMGEnterButton' class='sublayers-clickable'> > </div></div>");
         this.send_btn = $('#VMGEnterButton');
-        this.send_btn.on('click', this.sendMessage);
+        this.send_btn.on('click', function() {
+            chat.sendMessage();
+            // Звук на кнопку отправки сообщения в чат
+            audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        });
 
         // добавление дива с Input
         foot_area.append("<div id='VMGInputArea'></div>");
@@ -346,6 +350,9 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.onClickPageButton = function (event) {
         //console.log('ViewMessengerGlass.prototype.onClickPageButton', event);
         event.data.self.setActivePage(event.data.page);
+
+        // Звук на кнопку активации чата на странице чатов
+        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     // Сделать страницу активной
@@ -419,6 +426,9 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.onClickChatButton = function (event) {
         //console.log('ViewMessengerGlass.prototype.onClickChatButton', event);
         event.data.self.setActiveChat(event.data.chat);
+
+        // Звук на кнопку активации чата
+        audioManager.play({name: "alarm_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     // Сделать чат-комнату активной
@@ -721,6 +731,11 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "TransactionDisableActivateItemTimeoutLogMessage":
                     this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Таймаут активации 1 секунда.');
+                    // TODO: вынести в model_manager
+                    audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                    break;
+                case "TransactionDisableActivateItemNotFoundLogMessage":
+                    this.addMessageToLog('Активации итема: невозможна. Итем не установлен.');
                     // TODO: вынести в model_manager
                     audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     break;

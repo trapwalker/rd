@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.inventory import Consumer
 from sublayers_server.model.events import Event, ItemPreActivationEvent, event_deco
 from sublayers_server.model.messages import Message
+from sublayers_server.model.game_log_messages import TransactionDisableActivateItemNotFoundLogMessage
 
 
 class QuickConsumerPanelInfoMessage(Message):
@@ -116,6 +117,7 @@ class QuickConsumerPanel(object):
         if index in self.quick_items:
             item = self.quick_items[index].item
             if item is None:
+                TransactionDisableActivateItemNotFoundLogMessage(agent=self.owner.owner, time=event.time).post()
                 return
             ItemPreActivationEvent(agent=self.owner.owner,
                                    owner_id=self.owner.id,

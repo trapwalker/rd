@@ -310,6 +310,9 @@ var WCruiseControl = (function (_super) {
         event.data.setSpeedHandleValue(prc);
         clientManager.sendSetSpeed(event.data._getCurrentMaxSpeed() * prc);
         returnFocusToMap();
+
+        // Звук на клик на шкалу
+        // audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
@@ -317,6 +320,9 @@ var WCruiseControl = (function (_super) {
         clientManager.sendStopCar();
         event.data.setSpeedHandleValue(0);
         returnFocusToMap();
+
+        // Звук на кнопку Stop
+        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WCruiseControl.prototype._onClickR = function (event) {
@@ -326,6 +332,9 @@ var WCruiseControl = (function (_super) {
         event.data._setSpeedHandleText(event.data.speedHandlePrc);
         clientManager.sendSetSpeed(currentSpeed);
         returnFocusToMap();
+
+        // Звук на кнопку Reverse
+        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WCruiseControl.prototype.changeReverse = function (reverse) {

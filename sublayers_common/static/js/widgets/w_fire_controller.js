@@ -396,6 +396,9 @@ var WFireController = (function (_super) {
             self.allFire.addClass('fire-control-all-active');
         }
         returnFocusToMap();
+
+        // Звук на кнопку Автострельбы
+        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {
