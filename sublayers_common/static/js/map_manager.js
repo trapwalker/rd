@@ -125,7 +125,7 @@ var MapManager = (function(_super) {
         pos.x = parseFloat(pos.str.split('_')[0]);
         pos.y = parseFloat(pos.str.split('_')[1]);
         // Подключение новой карты
-        this.current_zoom = 18; // todo: cookieStorage.zoom?
+        this.current_zoom = 18; // todo: settings cookieStorage.zoom?
         smap =  slippymap({
             div: "map2",
             zMin: ConstMinMapZoom,

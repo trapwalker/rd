@@ -272,21 +272,9 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.viewMessengerClickSpanUser = function (event) {
         // подстветить все машинки данного пользователя
-        /*
-        var owner = event.data.owner;
+        console.log("ViewMessengerGlass.prototype.viewMessengerClickSpanUser", event);
+        //var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
-
-        if (cookieStorage.optionsSelectAnybody && owner.cars)
-            for (var i = 0; i < owner.cars.length; i++) {
-                if (listMapObject.exist(owner.cars[i].ID)) {
-                    var car = listMapObject.objects[owner.cars[i].ID];
-                    if (car.backLight)
-                        carMarkerList.delFromBackLight(car);
-                    else
-                        carMarkerList.addToBackLight(car);
-                }
-            }
-        */
     };
 
     // Добавление сообщений в окно чата
@@ -1095,8 +1083,8 @@ var ViewMessengerGlass = (function () {
     // вывод исходящих через ws сообщений
     ViewMessengerGlass.prototype.receiveMessageFromModelManager = function (msg) {
         //console.log('ViewMessengerGlass.prototype.receiveMessageFromModelManager');
-        if (cookieStorage.enableLogRPCMessage())
-            this.addMessageToLog(JSON.stringify(msg, null, 4));
+        //if (.())  // todo: settings
+        //    this.addMessageToLog(JSON.stringify(msg, null, 4));
         return true;
     };
 
