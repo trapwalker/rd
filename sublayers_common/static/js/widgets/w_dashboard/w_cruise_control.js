@@ -216,7 +216,7 @@ var WCruiseControl = (function (_super) {
             });
 
             // Звук сворачивания
-            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "widget_motion_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         else {
             this.visible = true;
@@ -231,7 +231,7 @@ var WCruiseControl = (function (_super) {
             });
 
             // Звук разворачивания
-            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "widget_motion_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
     };
 
