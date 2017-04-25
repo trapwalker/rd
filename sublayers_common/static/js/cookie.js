@@ -163,7 +163,7 @@ var SettingsManager = (function() {
             default: 8,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Текущий масштаб", value: 0}, {text: "Один масштаб", value: 1}, {text: "Два масштаба", value: 2}, {text: "Вся пирамида", value: 8}],
+            list_values: [{text: "Текущий", value: 0}, {text: "Один масштаб", value: 1}, {text: "Два масштаба", value: 2}, {text: "Все масштабы", value: 8}],
             set_callback: function(new_value) {
                 if (mapManager) mapManager.set_pyramid_size("tiles", new_value);
             },
@@ -879,7 +879,7 @@ var SettingsManager = (function() {
 
         var curr_index = old_index + dvalue;
         if (curr_index < 0) curr_index = 0;
-        if (curr_index >= option.list_values.length) curr_index = option.list_values.length - 1;
+        if (curr_index >= option.list_values.length) curr_index = curr_index % option.list_values.length;
         if (curr_index != old_index) {
             option.currentValue = option.list_values[curr_index].value;
             this.refresh_list_options(option, curr_index);
@@ -895,9 +895,9 @@ var SettingsManager = (function() {
         jq_option.append('<div class="name control ' + background_class_name + '">' + option.text_name + '</div>');
         var jq_value_wrap = $('<div class="value control ' + background_class_name + '"></div>');
         var jq_value = $('<input class="settings-control sublayers-clickable" ' +
-            'onkeyup="settingsManager._handler_list_keyup(`' + option.name + '`, event)" ' +
-            'onkeypress="settingsManager._handler_list_keypress(`' + option.name + '`, event)"' +
-            //'onkeydown="settingsManager._handler_list_keydown(`' + option.name + '`, event)" ' +
+            'onkeyup="settingsManager._handler_control_keyup(`' + option.name + '`, event)" ' +
+            'onkeypress="settingsManager._handler_control_keypress(`' + option.name + '`, event)"' +
+            //'onkeydown="settingsManager._handler_control_keydown(`' + option.name + '`, event)" ' +
             ';>');
 
         jq_value_wrap.append(jq_value);
@@ -922,16 +922,16 @@ var SettingsManager = (function() {
             }
     };
 
-     SettingsManager.prototype._handler_list_keypress = function(opt_name, event) {
-        //console.log("SettingsManager.prototype._handler_list_keypress", event.keyCode, opt_name);
+     SettingsManager.prototype._handler_control_keypress = function(opt_name, event) {
+        //console.log("SettingsManager.prototype._handler_control_keypress", event.keyCode, opt_name);
         stopEvent(event);
         var option = this.options[opt_name];
         option.jq_div.find("input").val("");
         return false;
     };
 
-    SettingsManager.prototype._handler_list_keydown = function(opt_name, event) {
-        console.log("SettingsManager.prototype._handler_list_keydown", event.keyCode, opt_name);
+    SettingsManager.prototype._handler_control_keydown = function(opt_name, event) {
+        console.log("SettingsManager.prototype._handler_control_keydown", event.keyCode, opt_name);
         // Обновить значение опции
         stopEvent(event);
         var option = this.options[opt_name];
@@ -941,8 +941,8 @@ var SettingsManager = (function() {
         return false;
     };
 
-    SettingsManager.prototype._handler_list_keyup = function(opt_name, event) {
-        //console.log("SettingsManager.prototype._handler_list_keyup", event.keyCode, opt_name);
+    SettingsManager.prototype._handler_control_keyup = function(opt_name, event) {
+        //console.log("SettingsManager.prototype._handler_control_keyup", event.keyCode, opt_name);
         // Обновить значение опции
         stopEvent(event);
         var code = event.keyCode;
