@@ -364,9 +364,9 @@ var WFireController = (function (_super) {
             mapManager.widget_fire_sectors.setVisible(is_show_central);
 
         if(is_show_central) // Звук разворачивания
-            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "widget_motion_battle_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         else // Звук сворачивания
-            audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "widget_motion_battle_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WFireController.prototype.setVisible = function (aVisible) {

@@ -208,9 +208,17 @@ function init_sound() {
 
     // interface
 
-    audioManager.load('widget_motion_001', {url: '/static/audio/interface/widget_motion_001.m4a'}, 0.15);
-    audioManager.load('cannon_reloaded_001', {url: '/static/audio/interface/cannon_reloaded_001.m4a'}, 0.45);
-    audioManager.load('alarm_001', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
-    audioManager.load('path_setting_001', {url: '/static/audio/interface/path_setting_001.m4a'}, 0.1);
+    // widgets motion
+
+    audioManager.load('widget_motion_show', {url: '/static/audio/interface/widget_motion_show_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_hide', {url: '/static/audio/interface/widget_motion_hide_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_battle_show', {url: '/static/audio/interface/widget_motion_battle_show_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_battle_hide', {url: '/static/audio/interface/widget_motion_battle_hide_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_zoom_show', {url: '/static/audio/interface/widget_motion_zoom_show_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_zoom_hide', {url: '/static/audio/interface/widget_motion_zoom_hide_001.m4a'}, 0.15);
+
+    audioManager.load('cannon_reloaded', {url: '/static/audio/interface/cannon_reloaded_001.m4a'}, 0.45);
+    audioManager.load('alarm', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
+    audioManager.load('path_setting', {url: '/static/audio/interface/path_setting_001.m4a'}, 0.1);
 
 }

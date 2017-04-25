@@ -212,7 +212,7 @@ var WWindRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('windAlarmLamp-off');
             this.alarmLamp.addClass('windAlarmLamp-on');
-            this.alarm_sound = audioManager.play({name: "alarm_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
+            this.alarm_sound = audioManager.play({name: "alarm", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('windAlarmLamp-on');

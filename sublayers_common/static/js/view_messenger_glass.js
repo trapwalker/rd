@@ -1047,7 +1047,7 @@ var ViewMessengerGlass = (function () {
                 chat.main_input.val(chat.compact_input.val());
 
                 // Звук разворачивания
-                audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                audioManager.play({name: "widget_motion_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -555}, 1000, function () {
@@ -1062,7 +1062,7 @@ var ViewMessengerGlass = (function () {
                 chat._setCompactChat();
 
                 // Звук сворачивания
-                audioManager.play({name: "widget_motion_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                audioManager.play({name: "widget_motion_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
         }
     };
