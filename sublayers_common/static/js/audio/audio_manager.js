@@ -220,5 +220,8 @@ function init_sound() {
     audioManager.load('cannon_reloaded', {url: '/static/audio/interface/cannon_reloaded_001.m4a'}, 0.45);
     audioManager.load('alarm', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
     audioManager.load('path_setting', {url: '/static/audio/interface/path_setting_001.m4a'}, 0.1);
+    audioManager.load('click', {url: '/static/audio/interface/click_001.m4a'}, 0.1);
+    audioManager.load('autofire_enable', {url: '/static/audio/interface/autofire_enable_001.m4a'}, 0.15);
+    audioManager.load('autofire_disable', {url: '/static/audio/interface/autofire_disable_001.m4a'}, 0.15);
 
 }
