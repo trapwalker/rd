@@ -545,6 +545,7 @@ var WCanvasLootMarker = (function (_super) {
 
     WCanvasLootMarker.prototype.updateIcon = function() {
         //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
+        // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
         if (this.mobj.cls == "POICorpse") {
             var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
