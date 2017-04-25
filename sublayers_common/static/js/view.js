@@ -5,9 +5,6 @@ $(document).ready(function () {
     else
         textConsoleManager.start('enter');
 
-    // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage();
-
     mapManager._init();
 
     locationManager = new LocationManager();
@@ -46,7 +43,7 @@ $(document).ready(function () {
     });
 
     window.onbeforeunload = function (e) {
-        cookieStorage.save();
+        settingsManager.unload_client();
         radioPlayer.save_setting_to_cookie(true);
     };
 
@@ -65,35 +62,49 @@ $(document).ready(function () {
                     clientManager.sendSetAboutSelf(new_text); 
             });
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
         carManager.get_info();
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
         windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null,
             wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
         windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnParty').onclick = function () {
         windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnMain').onclick = function () {
         window.open('/', '_blank');
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnForum').onclick = function () {
         window.open('https://vk.com/road_dogs', '_blank');
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnRadio').onclick = function () {
@@ -101,11 +112,15 @@ $(document).ready(function () {
             radioPlayer.update();
         });
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnOptions').onclick = function () {
         windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager), settingsManager.cancel_options.bind(settingsManager));
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     $('.anti-click-class').click(function(){
@@ -152,7 +167,7 @@ $(document).ready(function () {
     initRadioPlayer();
 
     setTimeout(function() {
-        var radio_settings = cookieStorage.getCookie('radio_player');
+        var radio_settings = settingsManager.getCookie('radio_player');
         if (radio_settings){
             try {
                 var settings = radio_settings.split('_');
@@ -295,7 +310,6 @@ var tileLayerShow;
 var controllers;
 var debugMapList = [];
 var carMarkerList;
-var cookieStorage;
 var clientManager;
 var j_connector;
 var ws_connector;

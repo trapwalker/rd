@@ -95,6 +95,8 @@ var LocationPlaceMenu = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         var item = this.selected_car_inv_item;
 
+        locationManager.setBtnState(3, '</br>Назад', false);
+
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
         if (this.selected_page_name == 'Inventory') {
@@ -110,7 +112,9 @@ var LocationPlaceMenu = (function (_super) {
             }
         }
 
-        locationManager.setBtnState(3, '</br>Назад', false);
+        if (this.selected_page_name == 'Settings') settingsManager.btn_set_enable_disable();
+
+
         locationManager.setBtnState(4, '</br>Выход', true);
     };
 
@@ -118,6 +122,18 @@ var LocationPlaceMenu = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
         this.clearRightPanel();
+    };
+
+    LocationPlaceMenu.prototype.clickBtn = function (btnIndex) {
+        //console.log('LocationManager.prototype.clickBtn', btnIndex);
+        if (this.selected_page_name == "Settings") {
+            if (btnIndex == 1) {settingsManager.apply_options(); settingsManager.btn_set_enable_disable();}
+            if (btnIndex == 2) {settingsManager.cancel_options(); settingsManager.btn_set_enable_disable();}
+            if (btnIndex == 3) {settingsManager.default_options(); settingsManager.btn_set_enable_disable();}
+        }
+
+        if (btnIndex == 4)  // Попытка выйти из города
+            locationManager.clickBtn(btnIndex);
     };
 
     LocationPlaceMenu.prototype.updateInventory = function () {
@@ -154,6 +170,9 @@ var LocationPlaceMenu = (function (_super) {
 
         // Вкладка Пати
         partyManager.redraw(this.jq_main_div);
+
+        // Вкладка Настройки
+        settingsManager.redraw(this.jq_main_div);
 
         _super.prototype.update.call(this, data);
     };
@@ -208,7 +227,7 @@ var LocationPlaceMenu = (function (_super) {
     };
 
     LocationPlaceMenu.menu_buttons_reaction = function (event) {
-        //console.log('.menu-header-item.click - reaction', $(this).data('page_id'), );
+        //console.log('.menu-header-item.click - reaction', $(this).data('page_id'));
         var location = event.data.location;
         var page_id = $(this).data('page_id');
         location.jq_main_div.find('.menu-header-item').removeClass('active');
@@ -216,6 +235,11 @@ var LocationPlaceMenu = (function (_super) {
         $(this).addClass('active');
         location.jq_main_div.find('#locationMenuItem_' + page_id).css('display', 'block');
         location.select_page(page_id);
+
+        if (page_id == "Settings")
+            settingsManager.activate_in_city();
+        else
+            locationManager.panel_right.show({text: ''}, 'description');
     };
 
     return LocationPlaceMenu;

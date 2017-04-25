@@ -786,8 +786,12 @@ var ClientManager = (function () {
          //console.log('ClientManager.prototype.ChangeRadiation ', event);
         if (user.userCar && event.obj_id == user.userCar.ID){
             user.userCar.radiation_dps += event.radiation_dps;
-            if (user.userCar.radiation_dps != 0)
-                new WTextArcade("Вы покидаете поле боя").start();
+            if (user.userCar.radiation_dps != 0.0 && $('#settings_server_mode').text() == 'quick')
+                setTimeout(function() { // Из-за особенностей быстрой игры
+                    if (user.userCar && user.userCar.radiation_dps != 0.0)
+                        new WTextArcade("Вы покидаете поле боя").start();
+                }, 500);
+
         }
         else
             console.warn('Warning! Пришла радиация на неизветную машинку!')

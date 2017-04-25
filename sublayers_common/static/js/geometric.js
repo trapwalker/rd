@@ -259,7 +259,7 @@ function getQuickUserLogin(login) {
 
 
 function convertKeyCodeToString(keycode) {
-    if (keycode == 0)  // Сброс
+    if (keycode == 0 || keycode == 8)  // Сброс || Backspace
         return "";
 
     if (keycode >= 48 && keycode <= 57)  // Если это просто цифры

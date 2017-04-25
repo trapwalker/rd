@@ -100,7 +100,7 @@
     font: 12pt Nouveau_IBM;
 }
 
-#townMenuLocation .settings-window-description-block {width: 0;}
+#townMenuLocation .settings-window-description-block {display: none;}
 
 .settings-window-description-block .settings-window-header {
     color: #2ffa00;
@@ -109,13 +109,12 @@
     font-size: 12pt;
     height: 20px;
     line-height: 20px;
-    display: none;
 }
 
 .settings-window-description-block .settings-window-description {
     text-align: center;
     font-size: 12pt;
-    height: calc(100% - 20px - 30px);
+    height: calc(100% - 20px - 30px - 32px);
 }
 
 
@@ -168,6 +167,7 @@
 .settings-window-page-btn:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
 .settings-window-page-btn.disable {pointer-events: none; background-color: #082801; color: #0e4b00; border-color: #0e4b00;}
 
+.settings-window-page-btn.settings-default { margin: 0 auto; float: none; }
 
 .settings-window-page {
     position: absolute;

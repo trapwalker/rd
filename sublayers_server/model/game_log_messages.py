@@ -156,6 +156,10 @@ class TransactionDisableActivateItemTimeoutLogMessage(TransactionActivateItemLog
     pass
 
 
+class TransactionDisableActivateItemNotFoundLogMessage(Message):
+    pass
+
+
 class TransactionActivateTankLogMessage(TransactionActivateItemLogMessage):
     def as_dict(self):
         d = super(TransactionActivateTankLogMessage, self).as_dict()

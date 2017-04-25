@@ -32,7 +32,7 @@ function onMapWheel(event) {
     event = event || window.event;
     var delta = (event.deltaY || event.detail || event.wheelDelta) / 100.;
     if (Math.abs(delta) < 1) delta *= 33; // Для mozilla
-    var zoom = mapManager.newZoomForCalcZoom - delta * 0.15;
+    var zoom = mapManager.newZoomForCalcZoom - delta * mapManager.zoom_wheel_step;
     mapManager.setZoom(zoom);
 }
 
@@ -45,6 +45,8 @@ var MapManager = (function(_super) {
 
     function MapManager() {
         _super.call(this);
+
+        this.zoom_wheel_step = settingsManager.options.zoom_step_value.value;
 
         this.current_zoom = 18;
 
@@ -123,7 +125,8 @@ var MapManager = (function(_super) {
         pos.x = parseFloat(pos.str.split('_')[0]);
         pos.y = parseFloat(pos.str.split('_')[1]);
         // Подключение новой карты
-        this.current_zoom = 18; // todo: cookieStorage.zoom?
+        this.current_zoom = settingsManager.options.save_current_zoom.value == 1 ? (settingsManager.getCookie("current_zoom") || 18) : ConstMaxMapZoom;
+        this.current_zoom = Math.max(ConstMinMapZoom, Math.min(ConstMaxMapZoom, this.current_zoom));
         smap =  slippymap({
             div: "map2",
             zMin: ConstMinMapZoom,
@@ -134,6 +137,8 @@ var MapManager = (function(_super) {
             zoom: this.current_zoom,
             loadCompleteCB: this.removeFromLoader
         }).init();
+
+        this.set_layer_visibility("tiles", settingsManager.options.map_tile_draw.value == 1);
 
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);

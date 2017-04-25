@@ -1,296 +1,3 @@
-
-var LocalCookieStorage = (function(){
-    function LocalCookieStorage(){
-        // Список параметров и их значений по умолчанию
-        var defOptions = {
-            flagDebug: false,
-            chatVisible: true,
-            chatActiveID: 0,
-            zoom: 18,
-            // Новые опции
-            optionsChatPush: true,
-            optionsChatRPC: true,
-            optionsChatAnswer: true,
-            optionsChatSystemLog: true,
-            optionsMarkerContact: true,
-            optionsMarkerUpdate: true,
-            optionsMapTileVisible: true,
-            optionsFCRotate: true,
-            optionsRMVisible: true,
-            optionsSelectAnybody: false,
-            levelZoomForVisibleLabel: 17,
-            optionsShowID: false,
-            optionsShowDebugLine: true,
-            optionsFriendlyFireEnabled: true,
-            radarVisible: false
-        };
-
-        this.flagDebug = defOptions.flagDebug;
-        this.chatVisible = defOptions.chatVisible;
-        this.chatActiveID = defOptions.chatActiveID;
-        this.zoom = defOptions.zoom;
-        this.historyArray = [];
-
-        // Присвоить новые опции
-        this.optionsChatPush = defOptions.optionsChatPush;
-        this.optionsChatRPC = defOptions.optionsChatRPC;
-        this.optionsChatAnswer = defOptions.optionsChatAnswer;
-        this.optionsChatSystemLog = defOptions.optionsChatSystemLog;
-        this.optionsMarkerContact = defOptions.optionsMarkerContact;
-        this.optionsMarkerUpdate = defOptions.optionsMarkerUpdate;
-        this.optionsMapTileVisible = defOptions.optionsMapTileVisible;
-        this.optionsFCRotate = defOptions.optionsFCRotate;
-        this.optionsRMVisible = defOptions.optionsRMVisible;
-        this.optionsSelectAnybody = defOptions.optionsSelectAnybody;
-        this.levelZoomForVisibleLabel = defOptions.levelZoomForVisibleLabel;
-        this.optionsShowID = defOptions.optionsShowID;
-        this.optionsFriendlyFireEnabled = defOptions.optionsFriendlyFireEnabled;
-        this.optionsShowDebugLine = defOptions.optionsShowDebugLine;
-        this.radarVisible = defOptions.radarVisible;
-
-        // Состояние тягания карты. dragging можно делать только когда машинка мертва
-        this.optionsDraggingMap = false;
-
-
-        //this.param_def_list = {
-        //    flagDebug: false,
-        //    chatVisible: true,
-        //    chatActiveID: 0,
-        //    zoom: 18,
-        //    // Новые опции
-        //    historyArray: [],
-        //    optionsChatPush: true,
-        //    optionsChatRPC: true,
-        //    optionsChatAnswer: true,
-        //    optionsChatSystemLog: true,
-        //    optionsMarkerContact: true,
-        //    optionsMarkerUpdate: true,
-        //    optionsMapTileVisible: true,
-        //    optionsFCRotate: true,
-        //    optionsRMVisible: true,
-        //    optionsSelectAnybody: false,
-        //    levelZoomForVisibleLabel: 17,
-        //    optionsShowID: false,
-        //    optionsShowDebugLine: true,
-        //    optionsFriendlyFireEnabled: true,
-        //    radarVisible: false
-        //};
-        //this.param_value_list = defOptions;
-
-
-        this.load();
-    }
-
-    // Сохранение всех параметров в Cookie
-    LocalCookieStorage.prototype.save = function() {
-        this.setCookie('flagDebug', (this.flagDebug ? 1 : 0));
-        this.setCookie('chatVisible', (chat.getVisible() ? 1 : 0));
-        this.setCookie('chatActiveID', chat._activeChatID);
-        this.setCookie('zoom', mapManager.getZoom());
-        this.setCookie('chatHistory', JSON.stringify(chat._history));
-
-        // Новые куки
-        this.setCookie('optionsChatPush', (this.optionsChatPush ? 1 : 0));
-        this.setCookie('optionsChatRPC', (this.optionsChatRPC ? 1 : 0));
-        this.setCookie('optionsChatAnswer', (this.optionsChatAnswer ? 1 : 0));
-        this.setCookie('optionsChatSystemLog', (this.optionsChatSystemLog ? 1 : 0));
-        this.setCookie('optionsMarkerContact', (this.optionsMarkerContact ? 1 : 0));
-        this.setCookie('optionsMarkerUpdate', (this.optionsMarkerUpdate ? 1 : 0));
-        this.setCookie('optionsMapTileVisible', (this.optionsMapTileVisible ? 1 : 0));
-        this.setCookie('optionsFCRotate', (this.optionsFCRotate ? 1 : 0));
-        this.setCookie('optionsRMVisible', (this.optionsRMVisible ? 1 : 0));
-        this.setCookie('optionsSelectAnybody', (this.optionsSelectAnybody ? 1 : 0));
-        this.setCookie('levelZoomForVisibleLabel', this.levelZoomForVisibleLabel);
-        this.setCookie('optionsShowID', (this.optionsShowID ? 1 : 0));
-        this.setCookie('optionsFriendlyFireEnabled', (this.optionsFriendlyFireEnabled ? 1 : 0));
-        this.setCookie('optionsShowDebugLine', (this.optionsShowDebugLine ? 1 : 0));
-        //this.setCookie('radarVisible', (controllers.fireControl.getVisible() ? 1 : 0));
-
-
-        //for (var key in this.param_value_list)
-        //    if (this.param_def_list.hasOwnProperty(key) && this.param_value_list.hasOwnProperty(key))
-        //        if (this.param_def_list[key] == this.param_value_list[key])
-        //            this.deleteCookie(key);
-        //        else
-        //            this.setCookie(key, this.param_value_list[key]);
-        //    else
-        //        console.warn('Ошибка имени параметра локального хранилища настроек!');
-    };
-
-
-    // Считывание всех параметров из куки всех параметров в Cookie
-    LocalCookieStorage.prototype.load = function(){
-        // Прочесть параметр flagDebug и установить его
-        var cFlagDebug = this.getCookie('flagDebug');
-        if (cFlagDebug !== undefined)
-            this.flagDebug = (cFlagDebug == 1);
-
-
-        // прочесть параметр Видимости чата и установить его
-        var chatVisible = this.getCookie('chatVisible');
-        if (chatVisible !== undefined)
-            this.chatVisible = (chatVisible == 1);
-
-
-        // Прочесть параметр последнего активного чата
-        var chatActiveID = this.getCookie('chatActiveID');
-        if(chatActiveID !== undefined)
-            this.chatActiveID = chatActiveID;
-
-        // Установить последний зум
-        var zoom = this.getCookie('zoom');
-        if (zoom !== undefined)
-            this.zoom = zoom;
-
-        // Считать историю чата
-        var hist = this.getCookie('chatHistory');
-        if (hist !== undefined) {
-            var historyArray = JSON.parse(hist);
-            if (historyArray) {
-                this.historyArray = historyArray;
-            }
-        }
-
-        // Новые куки !
-        // optionsChatPush
-        var optionsChatPush = this.getCookie('optionsChatPush');
-        if (optionsChatPush !== undefined)
-            this.optionsChatPush = (optionsChatPush == 1);
-        //
-        var optionsChatRPC = this.getCookie('optionsChatRPC');
-        if (optionsChatRPC !== undefined)
-            this.optionsChatRPC = (optionsChatRPC == 1);
-        //
-        var optionsChatAnswer = this.getCookie('optionsChatAnswer');
-        if (optionsChatAnswer !== undefined)
-            this.optionsChatAnswer = (optionsChatAnswer == 1);
-        //
-        var optionsChatSystemLog = this.getCookie('optionsChatSystemLog');
-        if (optionsChatSystemLog !== undefined)
-            this.optionsChatSystemLog = (optionsChatSystemLog == 1);
-        //
-        var optionsMarkerContact = this.getCookie('optionsMarkerContact');
-        if (optionsMarkerContact !== undefined)
-            this.optionsMarkerContact = (optionsMarkerContact == 1);
-        //
-        var optionsMarkerUpdate = this.getCookie('optionsMarkerUpdate');
-        if (optionsMarkerUpdate !== undefined)
-            this.optionsMarkerUpdate = (optionsMarkerUpdate == 1);
-        //
-        var optionsMapTileVisible = this.getCookie('optionsMapTileVisible');
-        if (optionsMapTileVisible !== undefined)
-            this.optionsMapTileVisible = (optionsMapTileVisible == 1);
-        //
-        var optionsFCRotate = this.getCookie('optionsFCRotate');
-        if (optionsFCRotate !== undefined)
-            this.optionsFCRotate = (optionsFCRotate == 1);
-        //
-        var optionsRMVisible = this.getCookie('optionsRMVisible');
-        if (optionsRMVisible !== undefined)
-            this.optionsRMVisible = (optionsRMVisible == 1);
-        // optionsSelectAnybody
-        var optionsSelectAnybody = this.getCookie('optionsSelectAnybody');
-        if (optionsSelectAnybody !== undefined)
-            this.optionsSelectAnybody = (optionsSelectAnybody == 1);
-
-        // levelZoomForVisibleLabel
-        var levelZoomForVisibleLabel = this.getCookie('levelZoomForVisibleLabel');
-        if (levelZoomForVisibleLabel !== undefined)
-            this.levelZoomForVisibleLabel = levelZoomForVisibleLabel;
-
-        // optionsSelectAnybody
-        var optionsShowID = this.getCookie('optionsShowID');
-        if (optionsShowID !== undefined)
-            this.optionsShowID = (optionsShowID == 1);
-
-        // optionsShowDebugLine
-        var optionsShowDebugLine = this.getCookie('optionsShowDebugLine');
-        if (optionsShowDebugLine !== undefined)
-            this.optionsShowDebugLine = (optionsShowDebugLine == 1);
-
-        // optionsFriendlyFireEnabled
-        var optionsFriendlyFireEnabled = this.getCookie('optionsFriendlyFireEnabled');
-        if (optionsFriendlyFireEnabled !== undefined)
-            this.optionsFriendlyFireEnabled = (optionsFriendlyFireEnabled == 1);
-
-        // прочесть параметр Видимости чата и установить его
-        var radarVisible = this.getCookie('radarVisible');
-        if (radarVisible !== undefined)
-            this.radarVisible = (radarVisible == 1);
-
-
-        //for (var key in this.param_value_list)
-        //    if (this.param_value_list.hasOwnProperty(key)) {
-        //        var value = this.getCookie(key);
-        //        if (value !== undefined)
-        //            this.param_value_list = value;
-        //    }
-    };
-
-    // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)
-    LocalCookieStorage.prototype.getCookie = function (name) {
-        var matches = document.cookie.match(new RegExp(
-                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-    };
-
-    // устанавливает cookie c именем name и значением value
-    // options - объект с свойствами cookie (expires, path, domain, secure)
-    LocalCookieStorage.prototype.setCookie = function (name, value, options) {
-        options = options || {};
-
-        var expires = options.expires;
-
-        if (typeof expires == "number" && expires) {
-            var d = new Date();
-            d.setTime(d.getTime() + expires * 1000);
-            expires = options.expires = d;
-        }
-        if (expires && expires.toUTCString) {
-            options.expires = expires.toUTCString();
-        }
-
-        value = encodeURIComponent(value);
-
-        var updatedCookie = name + "=" + value;
-
-        for (var propName in options) {
-            updatedCookie += "; " + propName;
-            var propValue = options[propName];
-            if (propValue !== true) {
-                updatedCookie += "=" + propValue;
-            }
-        }
-
-        document.cookie = updatedCookie;
-    };
-
-    // удаляет cookie с именем name
-    LocalCookieStorage.prototype.deleteCookie = function (name) {
-        this.setCookie(name, "", { expires: -1 })
-    };
-
-    // Функции геттеры для считывания состояния
-    // flagDebug
-    LocalCookieStorage.prototype.debugMode = function(){
-        return this.flagDebug;
-    };
-
-    // optionsChatPush
-    LocalCookieStorage.prototype.enableLogPushMessage = function(){
-        return this.flagDebug && this.optionsChatPush;
-    };
-
-    // optionsChatRPC
-    LocalCookieStorage.prototype.enableLogRPCMessage = function(){
-        return this.flagDebug && this.optionsChatRPC;
-    };
-
-    return LocalCookieStorage;
-})();
-
-
 var SettingsManager = (function() {
     function SettingsManager(){
         this.jq_pages = null;
@@ -298,10 +5,19 @@ var SettingsManager = (function() {
         this.jq_description = null;
         this.jq_description_header = null;
 
+        this.current_page_name = "";  // Определяет текущую выбранную страницу для восстановления и для default кнопки
+
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
         this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
+
+        this.page_descriptions = {
+            settings_page_graphics: "Настройки графики",
+            settings_page_audio: "Настройки звука",
+            settings_page_control: "Настройки управления",
+            settings_page_other: "Другие настройки",
+        };
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
@@ -447,7 +163,7 @@ var SettingsManager = (function() {
             default: 8,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Текущий масштаб", value: 0}, {text: "Один масштаб", value: 1}, {text: "Два масштаба", value: 2}, {text: "Вся пирамида", value: 8}],
+            list_values: [{text: "Текущий", value: 0}, {text: "Один масштаб", value: 1}, {text: "Два масштаба", value: 2}, {text: "Все масштабы", value: 8}],
             set_callback: function(new_value) {
                 if (mapManager) mapManager.set_pyramid_size("tiles", new_value);
             },
@@ -781,15 +497,130 @@ var SettingsManager = (function() {
             currentValue: 0,
             set_callback: function(new_value) {controlManager.bind_code(new_value, "open_options");},
         },
+
+        /* Вкладка Другое */
+        save_current_zoom: {
+            name: "save_current_zoom",
+            page: "other",
+            text_name: "Сохранять масштаб",
+            text_description: "Сохранение масштаба между игровыми сессиями",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            set_callback: function(new_value) {},
+        },
+        zoom_step_value: {
+            name: "zoom_step_value",
+            page: "other",
+            text_name: "Скорость масштабирования",
+            text_description: "Скорость масштабирования колсёсиком мышки",
+            jq_div: null,
+            type: "list",
+            default: 0.2,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Медленно", value: 0.2}, {text: "Нормально", value: 0.5}, {text: "Быстро", value: 1}, {text: "Очень быстро", value: 2}],
+            set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
+        },
+
+        game_color: {
+            name: "game_color",
+            page: "other",
+            text_name: "Палитра интерфейса",
+            text_description: "Изменяет палитру интерфейса. (Experimental**)",
+            jq_div: null,
+            type: "list",
+            default: "none",
+            value: 0,
+            currentValue: 0,
+            list_values: [
+                {
+                    text: "Стандарт",
+                    value: "none"
+                },
+                {
+                    text: "Ч/Б",
+                    value: "grayscale(100%) brightness(1.2) contrast(120%);"
+                },
+                {
+                    text: "Синий",
+                    value: "hue-rotate(80deg);"
+                },
+                {
+                    text: "Жёлтый",
+                    value: "hue-rotate(-80deg);"
+                }
+            ],
+            set_callback: function(new_value) {
+                $("#bodydiv").attr("style", "filter: " + new_value);
+            },
+        },
+    };
+
+    // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)
+    SettingsManager.prototype.getCookie = function (name) {
+        var matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    };
+
+    // устанавливает cookie c именем name и значением value
+    // options - объект с свойствами cookie (expires, path, domain, secure)
+    SettingsManager.prototype.setCookie = function (name, value, options) {
+        options = options || {};
+
+        var expires = options.expires;
+
+        if (typeof expires == "number" && expires) {
+            var d = new Date();
+            d.setTime(d.getTime() + expires * 1000);
+            expires = options.expires = d;
+        }
+        if (expires && expires.toUTCString) {
+            options.expires = expires.toUTCString();
+        }
+
+        value = encodeURIComponent(value);
+
+        var updatedCookie = name + "=" + value;
+
+        for (var propName in options) {
+            updatedCookie += "; " + propName;
+            var propValue = options[propName];
+            if (propValue !== true) {
+                updatedCookie += "=" + propValue;
+            }
+        }
+
+        document.cookie = updatedCookie;
+    };
+
+    // удаляет cookie с именем name
+    SettingsManager.prototype.deleteCookie = function (name) {
+        this.setCookie(name, "", { expires: -1 })
+    };
+
+    SettingsManager.prototype.unload_client = function () {
+        // Сохранение разных значений
+        // Зум
+        this.setCookie("current_zoom", mapManager.getZoom().toFixed(2));
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
-        //console.log("SettingsManager.prototype.redraw", this);
+        //console.log("SettingsManager.prototype.redraw");
         // Сначала повесить клики на
         this.jq_headers = jq_main_div.find(".settings-window-header-block");
         this.jq_pages = jq_main_div.find(".settings-window-page-block");
         this.jq_description = jq_main_div.find(".settings-window-description");
         this.jq_description_header = jq_main_div.find(".settings-window-header");
+
+        for (var page_key in this.page_descriptions)
+            if (this.page_descriptions.hasOwnProperty(page_key))
+                this.jq_pages.find("." + page_key).empty();
 
         this.jq_btn_cancel = jq_main_div.find(".settings-window-page-btn.settings-cancel").first();
         this.jq_btn_apply = jq_main_div.find(".settings-window-page-btn.settings-apply").first();
@@ -822,9 +653,23 @@ var SettingsManager = (function() {
                 even_background = ! even_background;
             }
 
-        this.jq_headers.find(".settings-window-menu-item")[2].click();
+        // Включение первой или запоминание выбранной вкладки
+        if (!this.current_page_name)
+            this.jq_headers.find(".settings-window-menu-item")[0].click();
+        else {
+            var elems = this.jq_headers.find(".settings-window-menu-item");
+            for (var i = 0; i < elems.length; i++) {
+                if ($(elems[i]).data("page_class") == this.current_page_name)
+                    $(elems[i]).click();
+            }
+        }
 
         this.btn_set_enable_disable();
+    };
+
+
+    SettingsManager.prototype.activate_in_city = function() {
+        locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype.apply_options = function() {
@@ -850,6 +695,18 @@ var SettingsManager = (function() {
             }
     };
 
+    SettingsManager.prototype.default_options = function() {
+        for (var opt_name in this.options)
+            if (this.options.hasOwnProperty(opt_name)) {
+                var option = this.options[opt_name];
+                if (option.default != option.currentValue && ("settings_page_" + option.page) == this.current_page_name) {
+                    option.currentValue = option.default;
+                    this["refresh_" + option.type + "_options"](option);
+                    if (typeof option.set_callback === "function") option.set_callback(option.currentValue);
+                }
+            }
+    };
+
     SettingsManager.prototype.test_diffrents = function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name)) {
@@ -863,17 +720,33 @@ var SettingsManager = (function() {
     SettingsManager.prototype.btn_set_enable_disable = function() {
         //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
         if (this.test_diffrents()) { // Кнопки доступны
-            this.jq_btn_cancel.removeClass("disable");
-            this.jq_btn_apply.removeClass("disable");
+            if (locationManager.in_location_flag) {
+                locationManager.setBtnState(1, '</br>Применить', true);
+                locationManager.setBtnState(2, '</br>Отменить', true);
+            }
+            else {
+                this.jq_btn_cancel.removeClass("disable");
+                this.jq_btn_apply.removeClass("disable");
+            }
         }
         else {  // Кнопки не доступны
-            this.jq_btn_cancel.addClass("disable");
-            this.jq_btn_apply.addClass("disable");
+            if (locationManager.in_location_flag) {
+                locationManager.setBtnState(1, '</br>Применить', false);
+                locationManager.setBtnState(2, '</br>Отменить', false);
+            }
+            else {
+                this.jq_btn_cancel.addClass("disable");
+                this.jq_btn_apply.addClass("disable");
+            }
         }
+
+
+         if (locationManager.in_location_flag && locationManager.active_screen_name == "menu_screen")
+            locationManager.setBtnState(3, '</br>По умолчанию', true);
     };
 
     SettingsManager.prototype.load = function() {
-        var cookie_str = LocalCookieStorage.prototype.getCookie("rd_settings"); // todo: Забрать из куков
+        var cookie_str = this.getCookie("rd_settings"); // todo: Забрать из куков
         var server_str = ""; // todo: Забрать из html
         var cookie_obj = {};
         var server_obj = {};
@@ -910,7 +783,7 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name))
                 cookie_str = cookie_str + opt_name + "=" + this.options[opt_name].value + "|";
-        LocalCookieStorage.prototype.setCookie("rd_settings", cookie_str);
+        this.setCookie("rd_settings", cookie_str);
     };
 
     // Общие обработчики
@@ -920,30 +793,31 @@ var SettingsManager = (function() {
         jq_elem.addClass("active");
         this.jq_pages.find(".settings-window-page").css("display", "none");
         this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
+        this.current_page_name = jq_elem.data("page_class");
+
+        if (locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
+        else
+            this.jq_description.text(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype._handler_mouse_over = function(opt_name) {
         //console.log("SettingsManager.prototype._handler_mouse_enter", opt_name, this.options[opt_name].text_description);
         if (locationManager.in_location_flag) {
-            //
             if (opt_name)
-                console.log(opt_name, " ===>>>> ", this.options[opt_name].text_description);
-            else {
-            }
+                locationManager.location_menu.viewRightPanel(this.options[opt_name].text_description);
+            else
+                locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
         }
         else {
-            if (opt_name) {
-                this.jq_description_header.css("display", "block");
+            if (opt_name)
                 this.jq_description.text(this.options[opt_name].text_description);
-            }
-            else {
-                this.jq_description_header.css("display", "none");
-                this.jq_description.text("");
-            }
+            else
+                this.jq_description.text(this.page_descriptions[this.current_page_name]);
         }
     };
 
-    SettingsManager.prototype._handler_click_apply = function() {this.apply_options(); this.btn_set_enable_disable(); };
+    SettingsManager.prototype._handler_click_apply = function() {this.apply_options(); this.btn_set_enable_disable();};
 
     SettingsManager.prototype._handler_click_cancel = function() {
         this.cancel_options();
@@ -957,6 +831,7 @@ var SettingsManager = (function() {
         windowTemplateManager.closeUniqueWindow("settings");
     };
 
+    SettingsManager.prototype._handler_click_default = function() {this.default_options(); this.btn_set_enable_disable();};
 
     // работа с типом scale
     SettingsManager.prototype.draw_scale_options = function(option, jq_option, background_class_name) {
@@ -1037,7 +912,7 @@ var SettingsManager = (function() {
 
         var curr_index = old_index + dvalue;
         if (curr_index < 0) curr_index = 0;
-        if (curr_index >= option.list_values.length) curr_index = option.list_values.length - 1;
+        if (curr_index >= option.list_values.length) curr_index = curr_index % option.list_values.length;
         if (curr_index != old_index) {
             option.currentValue = option.list_values[curr_index].value;
             this.refresh_list_options(option, curr_index);
@@ -1053,9 +928,9 @@ var SettingsManager = (function() {
         jq_option.append('<div class="name control ' + background_class_name + '">' + option.text_name + '</div>');
         var jq_value_wrap = $('<div class="value control ' + background_class_name + '"></div>');
         var jq_value = $('<input class="settings-control sublayers-clickable" ' +
-            'onkeyup="settingsManager._handler_list_keyup(`' + option.name + '`, event)" ' +
-            'onkeypress="settingsManager._handler_list_keypress(`' + option.name + '`, event)"' +
-            //'onkeydown="settingsManager._handler_list_keydown(`' + option.name + '`, event)" ' +
+            'onkeyup="settingsManager._handler_control_keyup(`' + option.name + '`, event)" ' +
+            'onkeypress="settingsManager._handler_control_keypress(`' + option.name + '`, event)"' +
+            //'onkeydown="settingsManager._handler_control_keydown(`' + option.name + '`, event)" ' +
             ';>');
 
         jq_value_wrap.append(jq_value);
@@ -1071,7 +946,7 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name) && this.options[opt_name].type == "control" && opt_name != current_option.name){
                 var option = this.options[opt_name];
-                if (option.currentValue == current_option.currentValue) {
+                if (option.currentValue == current_option.currentValue && option.currentValue != 0) {
                     // инициировать процедуру изменения опции
                     option.currentValue = 0;
                     option.jq_div.find("input").val(convertKeyCodeToString(option.currentValue));
@@ -1080,16 +955,16 @@ var SettingsManager = (function() {
             }
     };
 
-     SettingsManager.prototype._handler_list_keypress = function(opt_name, event) {
-        //console.log("SettingsManager.prototype._handler_list_keypress", event.keyCode, opt_name);
+     SettingsManager.prototype._handler_control_keypress = function(opt_name, event) {
+        //console.log("SettingsManager.prototype._handler_control_keypress", event.keyCode, opt_name);
         stopEvent(event);
         var option = this.options[opt_name];
         option.jq_div.find("input").val("");
         return false;
     };
 
-    SettingsManager.prototype._handler_list_keydown = function(opt_name, event) {
-        console.log("SettingsManager.prototype._handler_list_keydown", event.keyCode, opt_name);
+    SettingsManager.prototype._handler_control_keydown = function(opt_name, event) {
+        console.log("SettingsManager.prototype._handler_control_keydown", event.keyCode, opt_name);
         // Обновить значение опции
         stopEvent(event);
         var option = this.options[opt_name];
@@ -1099,8 +974,8 @@ var SettingsManager = (function() {
         return false;
     };
 
-    SettingsManager.prototype._handler_list_keyup = function(opt_name, event) {
-        //console.log("SettingsManager.prototype._handler_list_keyup", event.keyCode, opt_name);
+    SettingsManager.prototype._handler_control_keyup = function(opt_name, event) {
+        //console.log("SettingsManager.prototype._handler_control_keyup", event.keyCode, opt_name);
         // Обновить значение опции
         stopEvent(event);
         var code = event.keyCode;

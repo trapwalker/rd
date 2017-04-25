@@ -175,11 +175,15 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.plusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() + slider.options.step);
+        // Звук на кнопку плюс
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.minusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() - slider.options.step);
+        // Звук на кнопку минус
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.fullscr = function (event) {
@@ -201,6 +205,9 @@ var WZoomSlider = (function () {
 
         // установить фокус на карту
         returnFocusToMap();
+
+        // Звук на кнопку fullscr
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
@@ -232,6 +239,7 @@ var WZoomSlider = (function () {
         var self = this;
         if (visible != this.zoom_visible) {
             this.zoom_visible = visible;
+
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
                 self.parentGlass.animate({left: 0}, 500, function () {
@@ -245,6 +253,8 @@ var WZoomSlider = (function () {
                     self.mainCompact.css({display: 'none'});
                 });
 
+                // Звук разворачивания
+                audioManager.play({name: "widget_motion_zoom_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -200}, 500, function () {
@@ -256,6 +266,9 @@ var WZoomSlider = (function () {
                 // и нужно показать портативную версию
                 self.mainCompact.css({display: 'block'});
                 self.mainCompact.animate({opacity: 1}, 300);
+
+                // Звук сворачивания
+                audioManager.play({name: "widget_motion_zoom_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
         }
     };

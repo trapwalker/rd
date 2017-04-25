@@ -204,6 +204,7 @@ var WCruiseControl = (function (_super) {
         //console.log('WCruiseControl.prototype.changeVisible');
         if (visible == this.visible) return;
         var self = this;
+
         if (this.visible) {
             this.visible = false;
             this.glassDiv.animate({right: -560}, 1000, function () {
@@ -213,6 +214,9 @@ var WCruiseControl = (function (_super) {
                 self.compactView.css({display: 'block'});
                 self.compactView.animate({opacity: 1}, 500);
             });
+
+            // Звук сворачивания
+            audioManager.play({name: "widget_motion_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         else {
             this.visible = true;
@@ -225,6 +229,9 @@ var WCruiseControl = (function (_super) {
             self.compactView.animate({opacity: 0}, 500, function () {
                 self.compactView.css({display: 'none'});
             });
+
+            // Звук разворачивания
+            audioManager.play({name: "widget_motion_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
     };
 
@@ -306,6 +313,9 @@ var WCruiseControl = (function (_super) {
         event.data.setSpeedHandleValue(prc);
         clientManager.sendSetSpeed(event.data._getCurrentMaxSpeed() * prc);
         returnFocusToMap();
+
+        // Звук на клик на шкалу
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WCruiseControl.prototype._onClickStop = function (event) {
@@ -313,6 +323,9 @@ var WCruiseControl = (function (_super) {
         clientManager.sendStopCar();
         event.data.setSpeedHandleValue(0);
         returnFocusToMap();
+
+        // Звук на кнопку Stop
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WCruiseControl.prototype._onClickR = function (event) {
@@ -322,6 +335,9 @@ var WCruiseControl = (function (_super) {
         event.data._setSpeedHandleText(event.data.speedHandlePrc);
         clientManager.sendSetSpeed(currentSpeed);
         returnFocusToMap();
+
+        // Звук на кнопку Reverse
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WCruiseControl.prototype.changeReverse = function (reverse) {
