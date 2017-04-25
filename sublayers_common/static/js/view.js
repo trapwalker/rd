@@ -43,7 +43,7 @@ $(document).ready(function () {
     });
 
     window.onbeforeunload = function (e) {
-        //cookieStorage.save();
+        settingsManager.unload_client();
         radioPlayer.save_setting_to_cookie(true);
     };
 

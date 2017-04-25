@@ -20,51 +20,6 @@ var SettingsManager = (function() {
         };
     }
 
-
-    // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)
-    SettingsManager.prototype.getCookie = function (name) {
-        var matches = document.cookie.match(new RegExp(
-                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-    };
-
-    // устанавливает cookie c именем name и значением value
-    // options - объект с свойствами cookie (expires, path, domain, secure)
-    SettingsManager.prototype.setCookie = function (name, value, options) {
-        options = options || {};
-
-        var expires = options.expires;
-
-        if (typeof expires == "number" && expires) {
-            var d = new Date();
-            d.setTime(d.getTime() + expires * 1000);
-            expires = options.expires = d;
-        }
-        if (expires && expires.toUTCString) {
-            options.expires = expires.toUTCString();
-        }
-
-        value = encodeURIComponent(value);
-
-        var updatedCookie = name + "=" + value;
-
-        for (var propName in options) {
-            updatedCookie += "; " + propName;
-            var propValue = options[propName];
-            if (propValue !== true) {
-                updatedCookie += "=" + propValue;
-            }
-        }
-
-        document.cookie = updatedCookie;
-    };
-
-    // удаляет cookie с именем name
-    SettingsManager.prototype.deleteCookie = function (name) {
-        this.setCookie(name, "", { expires: -1 })
-    };
-
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
     SettingsManager.prototype.options = {
         /* Настройка звуков */
@@ -547,8 +502,8 @@ var SettingsManager = (function() {
         save_current_zoom: {
             name: "save_current_zoom",
             page: "other",
-            text_name: "save_current_zoom",
-            text_description: "save_current_zoom",
+            text_name: "Сохранять масштаб",
+            text_description: "Сохранение масштаба между игровыми сессиями",
             jq_div: null,
             type: "list",
             default: 1,
@@ -560,16 +515,66 @@ var SettingsManager = (function() {
         zoom_step_value: {
             name: "zoom_step_value",
             page: "other",
-            text_name: "zoom_step_value",
-            text_description: "zoom_step_value",
+            text_name: "Скорость масштабирования",
+            text_description: "Скорость масштабирования колсёсиком мышки",
             jq_div: null,
             type: "list",
             default: 0.2,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "0.2", value: 0.2}, {text: "0.5", value: 0.5}, {text: "1", value: 1}, {text: "2", value: 2}, {text: "3", value: 3}],
+            list_values: [{text: "Медленно", value: 0.2}, {text: "Нормально", value: 0.5}, {text: "Быстро", value: 1}, {text: "Очень быстро", value: 2}],
             set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
         },
+    };
+
+    // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)
+    SettingsManager.prototype.getCookie = function (name) {
+        var matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    };
+
+    // устанавливает cookie c именем name и значением value
+    // options - объект с свойствами cookie (expires, path, domain, secure)
+    SettingsManager.prototype.setCookie = function (name, value, options) {
+        options = options || {};
+
+        var expires = options.expires;
+
+        if (typeof expires == "number" && expires) {
+            var d = new Date();
+            d.setTime(d.getTime() + expires * 1000);
+            expires = options.expires = d;
+        }
+        if (expires && expires.toUTCString) {
+            options.expires = expires.toUTCString();
+        }
+
+        value = encodeURIComponent(value);
+
+        var updatedCookie = name + "=" + value;
+
+        for (var propName in options) {
+            updatedCookie += "; " + propName;
+            var propValue = options[propName];
+            if (propValue !== true) {
+                updatedCookie += "=" + propValue;
+            }
+        }
+
+        document.cookie = updatedCookie;
+    };
+
+    // удаляет cookie с именем name
+    SettingsManager.prototype.deleteCookie = function (name) {
+        this.setCookie(name, "", { expires: -1 })
+    };
+
+    SettingsManager.prototype.unload_client = function () {
+        // Сохранение разных значений
+        // Зум
+        this.setCookie("current_zoom", mapManager.getZoom().toFixed(2));
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
