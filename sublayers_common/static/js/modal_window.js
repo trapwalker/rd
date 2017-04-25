@@ -73,9 +73,6 @@ var ModalWindow = (function () {
         this.modalWelcome.removeClass('modal-window-welcome-show');
         this.modalWelcome.addClass('modal-window-hide');
 
-        this.modalOptions.removeClass('modal-window-options-show');
-        this.modalOptions.addClass('modal-window-hide');
-
         this.modalDeath.removeClass('modal-window-death-show');
         this.modalDeath.addClass('modal-window-hide');
 
