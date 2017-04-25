@@ -9,6 +9,7 @@ var WWindRadial = (function (_super) {
         _super.call(this, [car]);
         this.car = car;
         this.current_interface_size = interface_scale_big;
+        this.alarm_sound = null;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WFuelRadial' + (-generator_ID.getID());
@@ -211,10 +212,12 @@ var WWindRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('windAlarmLamp-off');
             this.alarmLamp.addClass('windAlarmLamp-on');
+            this.alarm_sound = audioManager.play({name: "alarm_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('windAlarmLamp-on');
             this.alarmLamp.addClass('windAlarmLamp-off');
+            if (this.alarm_sound) this.alarm_sound.stop();
         }
     };
 
@@ -281,6 +284,7 @@ var WWindRadial = (function (_super) {
         $('#' + this.div_id).remove();
         this.alarmLamp.remove();
         this.car = null;
+        if (this.alarm_sound) this.alarm_sound.stop();
         _super.prototype.delFromVisualManager.call(this);
     };
 
