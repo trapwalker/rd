@@ -63,14 +63,14 @@ $(document).ready(function () {
             });
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
         carManager.get_info();
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
@@ -78,33 +78,33 @@ $(document).ready(function () {
             wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
         windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnParty').onclick = function () {
         windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnMain').onclick = function () {
         window.open('/', '_blank');
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnForum').onclick = function () {
         window.open('https://vk.com/road_dogs', '_blank');
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnRadio').onclick = function () {
@@ -113,14 +113,14 @@ $(document).ready(function () {
         });
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnOptions').onclick = function () {
         windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager), settingsManager.cancel_options.bind(settingsManager));
         returnFocusToMap();
         // Звук на клик по кнопке меню
-        audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     $('.anti-click-class').click(function(){

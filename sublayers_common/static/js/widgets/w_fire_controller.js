@@ -390,17 +390,20 @@ var WFireController = (function (_super) {
             self.autoShoot = false;
             self._setAutoShootingEnable(false);
             self.allFire.removeClass('fire-control-all-active');
+
+            // Звук на отключение Автострельбы
+            audioManager.play({name: "autofire_disable", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         else {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
             self.autoShoot = true;
             self._setAutoShootingEnable(true);
             self.allFire.addClass('fire-control-all-active');
+
+            // Звук на включение Автострельбы
+            audioManager.play({name: "autofire_enable", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         returnFocusToMap();
-
-        // Звук на кнопку Автострельбы
-        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WFireController.prototype._getSVGPathSide = function (radiusPath, isDischarge, isAuto) {

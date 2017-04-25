@@ -176,14 +176,14 @@ var WZoomSlider = (function () {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() + slider.options.step);
         // Звук на кнопку плюс
-        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.minusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() - slider.options.step);
-        // Звук на кнопку плюс
-        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        // Звук на кнопку минус
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.fullscr = function (event) {
@@ -207,7 +207,7 @@ var WZoomSlider = (function () {
         returnFocusToMap();
 
         // Звук на кнопку fullscr
-        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.sverAll = function (event) {

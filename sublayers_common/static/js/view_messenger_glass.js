@@ -51,7 +51,7 @@ var ViewMessengerGlass = (function () {
         this.send_btn.on('click', function() {
             chat.sendMessage();
             // Звук на кнопку отправки сообщения в чат
-            audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         });
 
         // добавление дива с Input
@@ -352,7 +352,7 @@ var ViewMessengerGlass = (function () {
         event.data.self.setActivePage(event.data.page);
 
         // Звук на кнопку активации чата на странице чатов
-        audioManager.play({name: "cannon_reloaded_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     // Сделать страницу активной
@@ -428,7 +428,7 @@ var ViewMessengerGlass = (function () {
         event.data.self.setActiveChat(event.data.chat);
 
         // Звук на кнопку активации чата
-        audioManager.play({name: "alarm_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     // Сделать чат-комнату активной
