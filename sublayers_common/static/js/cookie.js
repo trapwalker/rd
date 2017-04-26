@@ -368,7 +368,7 @@ var SettingsManager = (function() {
             text_description: "Сбор лута",
             jq_div: null,
             type: "control",
-            default: 71,
+            default: 70,
             value: 0,
             currentValue: 0,
             set_callback: function(new_value) {controlManager.bind_code(new_value, "get_loot");},
