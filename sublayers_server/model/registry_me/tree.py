@@ -249,6 +249,8 @@ class Subdoc(EmbeddedDocument):
         if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
             value.expand_links()
             expanded_value = value
+        elif isinstance(field, EmbeddedDocumentField) and isinstance(value, EmbeddedDocument):
+            expanded_value = value
         elif isinstance(field, EmbeddedDocumentField) and isinstance(value, dict):
             expanded_value = field.to_python(value)
             if hasattr(expanded_value, 'expand_links'):
@@ -476,6 +478,9 @@ class Node(Subdoc):
 ########################################################################################################################
 
 def addr2path(addr):
+    if isinstance(addr, URI):
+        return addr.path
+
     if isinstance(addr, tuple):
         return addr
 
@@ -527,7 +532,12 @@ class Registry(Doc):
     def get_node_by_uri(self, uri):
         if not isinstance(uri, URI):
             uri = URI(uri)
-        return self.get(uri)
+        params = uri.params
+        uri.replace(params=())
+        node = self.get(uri)
+        for k, v in params:
+            setattr(node, k, v)
+        return node
 
     def load(self, path, mongo_store=True):
         all_nodes = []

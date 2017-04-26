@@ -8,13 +8,13 @@ from sublayers_server.model.registry_me.classes.weapons import Weapon  # todo: �
 from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry_me.classes.inventory import InventoryField
 from sublayers_server.model.registry_me.odm_position import PositionField
-from sublayers_server.model.registry_me.tree import Node, Subdoc, RegistryLinkField
+from sublayers_server.model.registry_me.tree import Node, Subdoc, RegistryLinkField, EmbeddedNodeField
 
 from mongoengine import IntField, StringField, FloatField, EmbeddedDocumentField, ListField
 from math import pi
 
 
-class SlotField(EmbeddedDocumentField):
+class SlotField(EmbeddedNodeField):
     LOCK = "reg:///registry/items/slot_item/_lock"
 
     def __init__(self, document_type='sublayers_server.model.registry_me.classes.item.SlotItem', reinst=True, **kw):
