@@ -361,6 +361,18 @@ var SettingsManager = (function() {
             currentValue: 0,
             set_callback: function(new_value) {controlManager.bind_code(new_value, "quick_panel_4");},
         },
+        get_loot: {
+            name: "get_loot",
+            page: "control",
+            text_name: "Сбор лута",
+            text_description: "Сбор лута",
+            jq_div: null,
+            type: "control",
+            default: 71,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "get_loot");},
+        },
 
         // Горячие клавиши зума
         zoom_in: {

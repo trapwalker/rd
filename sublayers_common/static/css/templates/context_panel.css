@@ -21,6 +21,10 @@
 #cpBarterInfoInvite { background: transparent url('/static/img/context_panel/map_deal_hover.png') 50% 50% no-repeat; }
 #cpBarterInfoInvite:active { background: transparent url('/static/img/context_panel/map_deal_press.png') 50% 50% no-repeat; }
 
+#cpGetLootIcon:hover { background: transparent url('/static/img/context_panel/map_pickup.png') 50% 50% no-repeat; }
+#cpGetLootIcon { background: transparent url('/static/img/context_panel/map_pickup_hover.png') 50% 50% no-repeat; }
+#cpGetLootIcon:active { background: transparent url('/static/img/context_panel/map_pickup_press.png') 50% 50% no-repeat; }
+
 .cp_button_icon {
     position: relative;
     float: left;
