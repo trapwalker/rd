@@ -361,6 +361,18 @@ var SettingsManager = (function() {
             currentValue: 0,
             set_callback: function(new_value) {controlManager.bind_code(new_value, "quick_panel_4");},
         },
+        get_loot: {
+            name: "get_loot",
+            page: "control",
+            text_name: "Сбор лута",
+            text_description: "Сбор лута",
+            jq_div: null,
+            type: "control",
+            default: 70,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "get_loot");},
+        },
 
         // Горячие клавиши зума
         zoom_in: {
@@ -911,7 +923,7 @@ var SettingsManager = (function() {
                 old_index = i;
 
         var curr_index = old_index + dvalue;
-        if (curr_index < 0) curr_index = 0;
+        if (curr_index < 0) curr_index = option.list_values.length - 1;
         if (curr_index >= option.list_values.length) curr_index = curr_index % option.list_values.length;
         if (curr_index != old_index) {
             option.currentValue = option.list_values[curr_index].value;

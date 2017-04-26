@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 import tornado.gen
 
 from sublayers_common.handlers.base import BaseHandler
+from sublayers_server.model.poi_loot_objects import POICorpse
 
 
 class MenuCarHandler(BaseHandler):
@@ -46,8 +47,33 @@ class PersonInfoHandler(BaseHandler):
             self.send_error(status_code=404)
             return
         agent.log.info('open PersonInfoHandler for person_name={}'.format(person_name))
+        # print 'open PersonInfoHandler for person_name={}'.format(person_name)
         if mode == 'city':
             self.render("person_info_chat.html", agent=person)
         elif mode == 'map':
-            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=agent.example.exp)
-            self.render("menu/person_window.html", agent=person, lvl=lvl)
+            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=person.example.exp)
+            car = None if person.car is None else person.car.example
+            self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)
+
+
+class PersonInfoCorpseHandler(BaseHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        if agent is None:
+            log.warning('Agent not found in database')
+            self.send_error(status_code=404)
+            return
+        container_id = self.get_argument("container_id")
+        container = None
+        if container_id:
+            container = self.application.srv.objects.get(long(container_id))
+        if container is None or not isinstance(container, POICorpse) or not container.agent_donor:
+            self.send_error(status_code=404)
+            return
+        person = container.agent_donor
+        car = container.donor_car
+        # print 'open PersonInfoCorpseHandler for person={}'.format(person)
+        agent.log.info('open PersonInfoCorpseHandler for person={}'.format(person))
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=person.example.exp)
+        self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)

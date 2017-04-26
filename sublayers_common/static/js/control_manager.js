@@ -21,6 +21,7 @@ var ControlManager = (function () {
         this.bind_code(settingsManager.options["quick_panel_2"].value ,"quick_panel_2");
         this.bind_code(settingsManager.options["quick_panel_3"].value ,"quick_panel_3");
         this.bind_code(settingsManager.options["quick_panel_4"].value ,"quick_panel_4");
+        this.bind_code(settingsManager.options["get_loot"].value ,"get_loot");
 
         this.bind_code(settingsManager.options["zoom_in"].value ,"zoom_in");
         this.bind_code(settingsManager.options["zoom_out"].value ,"zoom_out");
@@ -165,6 +166,13 @@ var ControlManager = (function () {
                 if (!user.userCar) return;
                 clientManager.sendActivateQuickItem(4, user.userCar.ID);
                 wFireController.signalQuickConsumerPanel(4);
+            },
+        },
+
+        get_loot: {
+            down: function () {
+                if (!user.userCar || !contextPanel) return;
+                contextPanel.get_loot_observer.activate();
             },
         },
 

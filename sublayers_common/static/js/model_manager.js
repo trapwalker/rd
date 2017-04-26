@@ -217,6 +217,7 @@ var ClientManager = (function () {
 
             if (car.cls == "POICorpse") {
                 car.direction = event.object.car_direction + Math.PI / 2.;
+                car._agent_login = event.object.agent_login
                 new WCanvasLootMarker(car);
             }
 
@@ -1737,6 +1738,17 @@ var ClientManager = (function () {
             params: {
                 owner_id: owner_id
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendMassiveLootAround = function () {
+        //console.log('ClientManager.prototype.sendMassiveLootAround');
+        var mes = {
+            call: "massive_loot_around",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

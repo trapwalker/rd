@@ -16,7 +16,7 @@ from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGet
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent,
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent, MassiveLootAroundEvent,
     LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent, TakeItemInventoryEvent, TakeAllInventoryEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
@@ -646,6 +646,11 @@ class AgentAPI(API):
         self.agent.log.info('try take item_pos={} from owner_id={} to other_id={}'.format(position, owner_id, other_id))
         TakeItemInventoryEvent(agent=self.agent, owner_id=owner_id, position=position, other_id=other_id,
                                time=self.agent.server.get_time()).post()
+
+    @public_method
+    def massive_loot_around(self):
+        self.agent.log.info('try massive_loot_around')
+        MassiveLootAroundEvent(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def get_balance_cls(self, balance_cls_name):
