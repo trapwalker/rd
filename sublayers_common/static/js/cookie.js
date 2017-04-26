@@ -911,7 +911,7 @@ var SettingsManager = (function() {
                 old_index = i;
 
         var curr_index = old_index + dvalue;
-        if (curr_index < 0) curr_index = 0;
+        if (curr_index < 0) curr_index = option.list_values.length - 1;
         if (curr_index >= option.list_values.length) curr_index = curr_index % option.list_values.length;
         if (curr_index != old_index) {
             option.currentValue = option.list_values[curr_index].value;
