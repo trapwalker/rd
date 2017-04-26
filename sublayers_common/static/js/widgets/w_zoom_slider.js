@@ -64,10 +64,12 @@ var WZoomSlider = (function () {
                 mapManager.onZoomEnd();
                 mapManager.set_coord({z: 18 - event.offsetY / self.zoomHeightOfScale * self.count_zoom});
             }
+            returnFocusToMap();
         });
         jq_nodeBar.on('click', function(event) {
             mapManager.onZoomEnd();
             mapManager.set_coord({z: 18 - event.offsetY / self.zoomHeightOfScale * self.count_zoom});
+            returnFocusToMap();
         });
 
         // Создание и добавление текста Zoom вертикально расположенного на виджете
@@ -175,6 +177,7 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.plusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() + slider.options.step);
+        returnFocusToMap();
         // Звук на кнопку плюс
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
@@ -182,6 +185,7 @@ var WZoomSlider = (function () {
     WZoomSlider.prototype.minusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() - slider.options.step);
+        returnFocusToMap();
         // Звук на кнопку минус
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
