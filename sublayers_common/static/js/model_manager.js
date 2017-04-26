@@ -1743,6 +1743,17 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendMassiveLootAround = function () {
+        //console.log('ClientManager.prototype.sendMassiveLootAround');
+        var mes = {
+            call: "massive_loot_around",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendTakeItemInventory = function (owner_id, position, other_id) {
         //console.log('ClientManager.prototype.sendTakeItemInventory', owner_id, position, other_id);
         var mes = {

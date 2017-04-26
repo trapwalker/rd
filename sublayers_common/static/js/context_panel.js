@@ -381,7 +381,7 @@ var GetLootObserver = (function(_super){
 
     GetLootObserver.prototype.activate = function() {
         if (! this._is_active) return;
-        console.log('GetLootObserver.prototype.activate');
+        clientManager.sendMassiveLootAround();
     };
 
     return GetLootObserver;
