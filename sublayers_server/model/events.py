@@ -523,8 +523,10 @@ class TakeAllInventoryEvent(Event):
         items = start_inventory.get_all_items()
 
         for item_rec in items:
-            if not item_rec['item'].set_inventory(inventory=end_inventory, time=self.time):
-                return
+            # if not item_rec['item'].set_inventory(inventory=end_inventory, time=self.time):
+            #     return
+            # Попробовать раскидать каждый итем
+            item_rec['item'].set_inventory_with_scatter(inventory=end_inventory, time=self.time)
 
 
 class MassiveLootAroundEvent(Event):
@@ -556,8 +558,10 @@ class MassiveLootAroundEvent(Event):
             if container_inventory and self.agent in container_inventory.managers and container_inventory is not car_inventory:
                 items = container_inventory.get_all_items()
                 for item_rec in items:
-                    if not item_rec['item'].set_inventory(inventory=car_inventory, time=self.time):
-                        return
+                    # if not item_rec['item'].set_inventory(inventory=car_inventory, time=self.time):
+                    #     return
+                    # Попробовать раскидать каждый итем
+                    item_rec['item'].set_inventory_with_scatter(inventory=car_inventory, time=self.time)
 
 
 class TakeItemInventoryEvent(Event):

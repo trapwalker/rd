@@ -455,6 +455,50 @@ class ItemState(object):
     def set_inventory_event(self, event, inventory, position=None, make_change=True):
         self.set_inventory(time=event.time, inventory=inventory, position=position, make_change=make_change)
 
+    # todo: нужно очень хорошо тестировать и очень аккуратно пользоваться
+    def set_inventory_with_scatter(self, time, inventory, position=None, make_change=True):
+        assert not self.limbo
+        # log.debug('IteemState.set_inventory for %s ', self)
+        old_inventory = self.inventory
+        if inventory is old_inventory:
+            return self.change_position(position=position, time=time)
+
+        if inventory is None:
+            if old_inventory is not None:
+                old_inventory.del_item(item=self, time=time)
+            # отправить всем потребителям месагу о том, что итем кончился
+            consumers = self.consumers[:]
+            for consumer in consumers:
+                consumer.on_empty_item(item=self, time=time, action=None)
+            self.inventory = inventory
+            return True
+
+        # Досыпание итемов:
+        # Проходить по всему инвентарю в поисках итемов и докидывать в них себя, как только мы кончимся - удалить себя из старого инвентаря
+        self_start_val = self.val(t=time)
+        for target in inventory.get_items():
+            if not target.limbo and self.example.parent == target.example.parent:
+                self_dval = target.add_another_item(item=self, time=time, count=self.max_val)
+                self_start_val -= self_dval
+                if self_start_val <= 0.0:
+                    return True
+
+        # todo: возможно данную часть необходимо реализовать в отдельном эвенте
+        # Если досыпание не разбросало итем по остальным, то попробовать положить в свободную ячейку
+        if inventory.add_item(item=self, position=position, time=time, make_change=make_change):
+            if old_inventory is not None:
+                old_inventory.del_item(item=self, time=time)
+
+            # отправить всем потребителям месагу о том, что итем кончился
+            consumers = self.consumers[:]
+            for consumer in consumers:
+                consumer.on_empty_item(item=self, time=time, action=None)
+
+            self.inventory = inventory
+            return True
+        else:
+            return False
+
     def div_item(self, count, time, inventory, position):
         assert not self.limbo
         assert (position is None) or ((position is not None) and (inventory is not None))
@@ -483,7 +527,7 @@ class ItemState(object):
                     self.set_inventory(time=time, inventory=None)
                     item.set_inventory(time=time, inventory=item1_inventory, position=item1_position)
                     self.set_inventory(time=time, inventory=item2_inventory, position=item2_position)
-            return
+            return 0.0
 
         self_val = self.val(t=time)
         item_val = min(item.val(t=time), count)
@@ -503,6 +547,7 @@ class ItemState(object):
             if self.inventory != item.inventory:
                 item.inventory.on_change(event.time)
         Event(server=self.server, time=time + 0.001, callback_after=change_inventories).post()
+        return d_value
 
     def change_position(self, position, time):
         assert not self.limbo
