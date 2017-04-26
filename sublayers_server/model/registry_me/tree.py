@@ -536,6 +536,9 @@ class Registry(Doc):
         uri.replace(params=())
         node = self.get(uri)
         for k, v in params:
+            field = node._fields.get(k, None)
+            if field:
+                v = field.to_python(v)
             setattr(node, k, v)
         return node
 
