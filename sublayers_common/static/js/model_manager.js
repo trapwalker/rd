@@ -217,6 +217,7 @@ var ClientManager = (function () {
 
             if (car.cls == "POICorpse") {
                 car.direction = event.object.car_direction + Math.PI / 2.;
+                car._agent_login = event.object.agent_login
                 new WCanvasLootMarker(car);
             }
 

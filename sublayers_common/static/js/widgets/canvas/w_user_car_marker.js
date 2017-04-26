@@ -588,7 +588,7 @@ var WCanvasNicknameMarker = (function (_super) {
     function WCanvasNicknameMarker(mobj, w_car_marker) {
         _super.call(this, mobj, w_car_marker);
         this.obj_id = mobj.ID;
-        this._nickname = "test_nickname";
+        this._nickname = mobj._agent_login;
         this.w_car_marker = w_car_marker;
         this._offset = new Point(0, -15);
         this._font = "8pt MICRADI";
@@ -598,6 +598,7 @@ var WCanvasNicknameMarker = (function (_super) {
 
     WCanvasNicknameMarker.prototype.redraw = function(ctx, time){
         //console.log('WCanvasNicknameMarker.prototype.redraw', time);
+        if (!this._nickname) return;
         var focused = mapCanvasManager._mouse_focus_widget == this;
         ctx.save();
         var ctx_car_pos = summVector(this.w_car_marker._last_car_ctx_pos || this.w_car_marker._last_mobj_ctx_pos, this._offset);
@@ -608,7 +609,7 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = this._font;
-        ctx.fillStyle = focused ? 'rgba(255, 20, 20, 0.8)' : 'rgba(42, 253, 10, 0.6)';
+        ctx.fillStyle = focused ? 'rgba(42, 253, 10, 0.9)' : 'rgba(42, 253, 10, 0.6)';
         ctx.fillText(this._nickname, 0, 0);
         ctx.restore();
     };
@@ -626,9 +627,27 @@ var WCanvasNicknameMarker = (function (_super) {
     };
 
     WCanvasNicknameMarker.prototype.click_handler = function(event) {
-        console.log('WCanvasNicknameMarker.prototype.click_handler');
-        //windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
-        //returnFocusToMap();
+        //console.log('WCanvasNicknameMarker.prototype.click_handler');
+        if (!this._nickname) return;
+
+        windowTemplateManager.openUniqueWindow(
+            'corpse_info_' + this._nickname,
+            '/corpse_info',
+            {container_id: this.obj_id},
+            function(jq_window) {
+                jq_window.find('.person-window-btn').click(function(){
+                    if (user.party)
+                        clientManager.sendInvitePartyFromTemplate($(this).data('name'));
+                    else {
+                        modalWindow.modalDialogInfoShow({
+                            caption: 'Error Message',
+                            header: 'Вы не в пати',
+                            body_text: 'Для приглашения других игроков создайте пати'
+                        });
+                    }
+                });
+            }
+        );
     };
 
     return WCanvasNicknameMarker;

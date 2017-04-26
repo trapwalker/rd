@@ -1,6 +1,5 @@
 {% set window_caption = 'Nuke:\PersonInfo>' + agent.print_login() %}
 
-{% set car = None if agent.car is None else agent.car.example %}
 <div class="personWindow-main">
     {% include ../drag_close_header.html %}
     <div class="person-window-wrap">
@@ -9,7 +8,7 @@
                 {% if car %}
                     {% include ../location/car_info_img_ext.html %}
                     <div class="town-back-interlacing"></div>
-                    <div class="person-window-car-name">{{ agent.car.example.title }}</div>
+                    <div class="person-window-car-name">{{ car.title }}</div>
                 {% else %}
                     <div class="car-info-block-picture-main default-car">
                         <div class="car-info-block-picture default-car" style="background: url({{ static_url('content/mobiles/cars/car_default.png') }}) no-repeat center; z-index: 1"></div>

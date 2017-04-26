@@ -36,7 +36,7 @@ from sublayers_server.handlers.client_connector import AgentSocketHandler
 from sublayers_server.handlers.pages import PlayHandler, MobilePlayHandler
 from sublayers_server.handlers.mobile import MobileHeaderHandler, MobileContentHandler
 
-from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler, MenuCarHandler
+from sublayers_server.handlers.main_car_info import MainCarInfoHandler, PersonInfoHandler, MenuCarHandler, PersonInfoCorpseHandler
 from sublayers_server.handlers.main_menu_inventory import MainInventoryHandler, BarterInventoryHandler, \
     ContainerInventoryHandler
 from sublayers_server.handlers.main_menu_nucoil import MainMenuNucoilHandler
@@ -121,6 +121,7 @@ class Application(BaseApplication):
             (r"/api/container", ContainerInventoryHandler),
             (r"/api/barter", BarterInventoryHandler),
             (r"/api/person_info", PersonInfoHandler),
+            (r"/api/corpse_info", PersonInfoCorpseHandler),
 
             (r"/api/menu_character", MenuCharacterHandler),
             (r"/api/menu_car", MenuCarHandler),
