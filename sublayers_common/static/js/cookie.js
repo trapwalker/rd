@@ -540,7 +540,7 @@ var SettingsManager = (function() {
 
         game_color: {
             name: "game_color",
-            page: "other",
+            page: "graphics",
             text_name: "Палитра интерфейса",
             text_description: "Изменяет палитру интерфейса. (Experimental**)",
             jq_div: null,
