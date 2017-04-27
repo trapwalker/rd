@@ -556,9 +556,12 @@ var WCanvasLootMarker = (function (_super) {
         if (this.mobj.cls == "POICorpse") {
             var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
+            this.icon_backlight = iconsLeaflet.getIcon("icon_corpse_backlight");
         }
-        else
+        else {
             this.icon_obj = iconsLeaflet.getIcon("icon_loot");
+            this.icon_backlight = iconsLeaflet.getIcon("icon_loot_backlight");
+        }
         if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;
@@ -570,7 +573,7 @@ var WCanvasLootMarker = (function (_super) {
 
         this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
 
-        this.icon_backlight = iconsLeaflet.getIcon("icon_car_focused");
+
     };
 
     WCanvasLootMarker.prototype.click_handler = function(event) {

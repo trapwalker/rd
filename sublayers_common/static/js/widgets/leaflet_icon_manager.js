@@ -36,6 +36,8 @@ var LeafletIconManager = (function(){
 
         // Лут
         this.load_new_icon('icon_loot', '/static/img/map_icons/loot.png', [24, 17]);
+        this.load_new_icon('icon_loot_backlight', '/static/img/map_icons/loot_backlight.png', [39, 39]);
+        this.load_new_icon('icon_corpse_backlight', '/static/img/char_icons/dead/corpse_backlight.png', [53, 53]);
 
         // Новые иконки машин
         this.load_new_icon('icon_party_arrow', '/static/img/char_icons/party/arrow.png', [53, 53]);
