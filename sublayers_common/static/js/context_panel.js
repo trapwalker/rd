@@ -361,22 +361,24 @@ var GetLootObserver = (function(_super){
 
     GetLootObserver.prototype.on_add_obj = function(mobj) {
         _super.prototype.on_add_obj.call(this, mobj);
-        //console.log('Добавлен статический объект: ', mobj);
-        // Теперь обновить вёрстку в зависимости от размера списка observing_list
         if (this.observing_list.length > 0) {
             this.obs_btn.addClass('active');
             this._is_active = true;
         }
+        // Включить подсветку лута
+        var marker = visualManager.getVobjByType(mobj, WCanvasLootMarker);
+        if (marker) marker.is_backlight = true;
     };
 
     GetLootObserver.prototype.on_del_obj = function(mobj) {
         _super.prototype.on_del_obj.call(this, mobj);
-        //console.log('Удалён статический объект: ', mobj);
-        // Теперь обновить вёрстку в зависимости от размера списка observing_list
         if (this.observing_list.length <= 0) {
             this.obs_btn.removeClass('active');
             this._is_active = false;
         }
+        // Выключить подсветку лута
+        var marker = visualManager.getVobjByType(mobj, WCanvasLootMarker);
+        if (marker) marker.is_backlight = false;
     };
 
     GetLootObserver.prototype.activate = function() {

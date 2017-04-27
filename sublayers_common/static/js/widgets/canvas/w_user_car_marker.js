@@ -539,6 +539,9 @@ var WCanvasLootMarker = (function (_super) {
     __extends(WCanvasLootMarker, _super);
 
     function WCanvasLootMarker(mobj) {
+        this.icon_backlight = null;
+        this.is_backlight = false;
+
         _super.call(this, mobj);
         this.obj_id = mobj.ID;
 
@@ -566,6 +569,8 @@ var WCanvasLootMarker = (function (_super) {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
+
+        this.icon_backlight = iconsLeaflet.getIcon("icon_car_focused");
     };
 
     WCanvasLootMarker.prototype.click_handler = function(event) {
@@ -576,6 +581,15 @@ var WCanvasLootMarker = (function (_super) {
 
     WCanvasLootMarker.prototype._get_rotate_angle = function (time) {
         return 0;
+    };
+
+    WCanvasLootMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (! this.is_backlight || ! this.icon_backlight) return;
+        var ctx_car_pos = this._last_car_ctx_pos || this._last_mobj_ctx_pos;
+        ctx.save();
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        ctx.drawImage(this.icon_backlight.img, -this.icon_backlight.iconSize[0] >> 1, -this.icon_backlight.iconSize[1] >> 1);
+        ctx.restore();
     };
 
     return WCanvasLootMarker;
