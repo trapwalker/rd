@@ -539,19 +539,29 @@ var WCanvasLootMarker = (function (_super) {
     __extends(WCanvasLootMarker, _super);
 
     function WCanvasLootMarker(mobj) {
+        this.icon_backlight = null;
+        this.is_backlight = false;
+
         _super.call(this, mobj);
         this.obj_id = mobj.ID;
+
+        if (mobj.cls == "POICorpse")
+            new WCanvasNicknameMarker(mobj, this);
     }
 
     WCanvasLootMarker.prototype.updateIcon = function() {
         //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
         // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
+        this.cm_z_index = 10;
         if (this.mobj.cls == "POICorpse") {
             var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
+            this.icon_backlight = iconsLeaflet.getIcon("icon_corpse_backlight");
         }
-        else
+        else {
             this.icon_obj = iconsLeaflet.getIcon("icon_loot");
+            this.icon_backlight = iconsLeaflet.getIcon("icon_loot_backlight");
+        }
         if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;
@@ -562,19 +572,110 @@ var WCanvasLootMarker = (function (_super) {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
+
+
     };
 
     WCanvasLootMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
-        windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
         returnFocusToMap();
+        if (! user.userCar) return;
+        if (this.is_backlight) // Если мы в радиусе доступа, то открыть окно
+            windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
+        else { // Попробовать подъехать к цели
+            var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
+            var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
+            p = normVector(p, r);
+            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        }
     };
 
     WCanvasLootMarker.prototype._get_rotate_angle = function (time) {
         return 0;
     };
 
+    WCanvasLootMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (! this.is_backlight || ! this.icon_backlight) return;
+        var ctx_car_pos = this._last_car_ctx_pos || this._last_mobj_ctx_pos;
+        ctx.save();
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        ctx.drawImage(this.icon_backlight.img, -this.icon_backlight.iconSize[0] >> 1, -this.icon_backlight.iconSize[1] >> 1);
+        ctx.restore();
+    };
+
     return WCanvasLootMarker;
+})(WCanvasMarker);
+
+
+var WCanvasNicknameMarker = (function (_super) {
+    __extends(WCanvasNicknameMarker, _super);
+
+    function WCanvasNicknameMarker(mobj, w_car_marker) {
+        _super.call(this, mobj, w_car_marker);
+        this.obj_id = mobj.ID;
+        this._nickname = mobj._agent_login;
+        this.w_car_marker = w_car_marker;
+        this._offset = new Point(0, -15);
+        this._font = "8pt MICRADI";
+        this._text_height = 8; // Высота зависит от размера шрифта
+        this._text_width = 8 * this._nickname.length; // Ширина также зависит от размера шрифта
+    }
+
+    WCanvasNicknameMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasNicknameMarker.prototype.redraw', time);
+        if (!this._nickname) return;
+        var focused = mapCanvasManager._mouse_focus_widget == this;
+        ctx.save();
+        var ctx_car_pos = summVector(this.w_car_marker._last_car_ctx_pos || this.w_car_marker._last_mobj_ctx_pos, this._offset);
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y - 3);
+        this._last_mobj_ctx_pos = ctx_car_pos;
+        this._last_mobj_position = this.w_car_marker._last_mobj_position;
+        // Вывод лейбла
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = this._font;
+        ctx.fillStyle = focused ? 'rgba(42, 253, 10, 0.9)' : 'rgba(42, 253, 10, 0.6)';
+        ctx.fillText(this._nickname, 0, 0);
+        ctx.restore();
+    };
+
+    WCanvasNicknameMarker.prototype.mouse_test = function(time) {
+        //console.log('WCanvasMarker.prototype.mouse_test');
+        var distance = subVector(this._last_mobj_ctx_pos, mapCanvasManager._mouse_client);
+        return Math.abs(distance.x) < this._text_width && Math.abs(distance.y) < this._text_height;
+    };
+
+    WCanvasNicknameMarker.prototype.updateIcon = function () {
+        //console.log('WCanvasNicknameMarker.prototype.updateIcon');
+        // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
+        this.cm_z_index = 9;
+    };
+
+    WCanvasNicknameMarker.prototype.click_handler = function(event) {
+        //console.log('WCanvasNicknameMarker.prototype.click_handler');
+        if (!this._nickname) return;
+
+        windowTemplateManager.openUniqueWindow(
+            'corpse_info_' + this._nickname,
+            '/corpse_info',
+            {container_id: this.obj_id},
+            function(jq_window) {
+                jq_window.find('.person-window-btn').click(function(){
+                    if (user.party)
+                        clientManager.sendInvitePartyFromTemplate($(this).data('name'));
+                    else {
+                        modalWindow.modalDialogInfoShow({
+                            caption: 'Error Message',
+                            header: 'Вы не в пати',
+                            body_text: 'Для приглашения других игроков создайте пати'
+                        });
+                    }
+                });
+            }
+        );
+    };
+
+    return WCanvasNicknameMarker;
 })(WCanvasMarker);
 
 

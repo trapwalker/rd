@@ -523,8 +523,45 @@ class TakeAllInventoryEvent(Event):
         items = start_inventory.get_all_items()
 
         for item_rec in items:
-            if not item_rec['item'].set_inventory(inventory=end_inventory, time=self.time):
-                return
+            # if not item_rec['item'].set_inventory(inventory=end_inventory, time=self.time):
+            #     return
+            # Попробовать раскидать каждый итем
+            item_rec['item'].set_inventory_with_scatter(inventory=end_inventory, time=self.time)
+
+
+class MassiveLootAroundEvent(Event):
+    def __init__(self, agent, **kw):
+        super(MassiveLootAroundEvent, self).__init__(server=agent.server, **kw)
+        self.agent = agent
+
+    def on_perform(self):
+        super(MassiveLootAroundEvent, self).on_perform()
+        car = self.agent.car
+        if not car:
+            return
+        car_inventory = car.inventory  # Получаем свой инвентарь
+
+        # Обойти все видимые объекты и лут рядом с собой отсортировать по удалённости
+        from sublayers_server.model.poi_loot_objects import POIContainer
+        car_position = car.position(self.time)
+        containers = []  # Список пар (container, distance)
+        for vo in car.visible_objects:
+            if isinstance(vo, POIContainer):
+                containers.append((vo, car_position.distance(vo.position(self.time))))
+
+        # Сортировка пар (container, distance) по расстоянию
+        containers.sort(key=lambda x: x[1])
+
+        # Собираем итемы пока не переполнится наш инвентарь
+        for container, distance in containers:
+            container_inventory = container.inventory
+            if container_inventory and self.agent in container_inventory.managers and container_inventory is not car_inventory:
+                items = container_inventory.get_all_items()
+                for item_rec in items:
+                    # if not item_rec['item'].set_inventory(inventory=car_inventory, time=self.time):
+                    #     return
+                    # Попробовать раскидать каждый итем
+                    item_rec['item'].set_inventory_with_scatter(inventory=car_inventory, time=self.time)
 
 
 class TakeItemInventoryEvent(Event):

@@ -167,7 +167,11 @@ class POICorpse(POIContainer):
         self.donor_v = donor_v
         self.donor_param_aggregate = donor_example.param_aggregate(example_agent=None)
         self.tasks = []
-        self.agent_viewer = agent_viewer
+        self.agent_viewer = agent_viewer  # Для шаринга видимости этому агенту некоторое время
+        self.agent_login = "" if not agent_viewer else agent_viewer.print_login()
+
+        self.agent_donor = agent_viewer  # Для запоминания чей именно это труп
+        self.donor_car = donor_example  # Для запоминания example мёртвой машинки
 
         self.state = MotionState(t=time, **self.init_state_params())
         self.cur_motion_task = None
@@ -218,6 +222,7 @@ class POICorpse(POIContainer):
             p_obs_range_rate_min=1.0,
             sub_class_car=self.sub_class_car,
             car_direction=self.car_direction,
+            agent_login=self.agent_login,
         )
         return d
 
