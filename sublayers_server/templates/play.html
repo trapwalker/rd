@@ -230,6 +230,44 @@
     <script src="{{ static_url('js/text_console.js') }}"></script>
 
     <script src="{{ static_url('js/effects/effect_location_laser_animation.js') }}"></script>
+
+    <svg class="defs-only" style="display: none">
+        <filter id="red" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="300" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+        <filter id="orange" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="340" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+        <filter id="yellow" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="0" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+        <filter id="green" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="50" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+        <filter id="cyan" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="100" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+        <filter id="blue" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="150" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+        <filter id="purple" color-interpolation-filters="sRGB" x="0" y="0" height="100%" width="100%">
+            <feColorMatrix type="matrix"    values="0.343 0.669 0.119 0 0 0.249 0.626 0.130 0 0 0.172 0.334 0.111 0 0 0 0 0 1 0" />
+            <feColorMatrix type="hueRotate" values="200" />
+            <fecolormatrix type="saturate"  values="3"  />
+        </filter>
+    </svg>
 </head>
 <body>
 <div id="bodydiv" spellcheck="false">

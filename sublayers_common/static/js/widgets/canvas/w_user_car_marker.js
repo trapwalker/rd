@@ -539,6 +539,9 @@ var WCanvasLootMarker = (function (_super) {
     __extends(WCanvasLootMarker, _super);
 
     function WCanvasLootMarker(mobj) {
+        this.icon_backlight = null;
+        this.is_backlight = false;
+
         _super.call(this, mobj);
         this.obj_id = mobj.ID;
 
@@ -553,9 +556,12 @@ var WCanvasLootMarker = (function (_super) {
         if (this.mobj.cls == "POICorpse") {
             var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
+            this.icon_backlight = iconsLeaflet.getIcon("icon_corpse_backlight");
         }
-        else
+        else {
             this.icon_obj = iconsLeaflet.getIcon("icon_loot");
+            this.icon_backlight = iconsLeaflet.getIcon("icon_loot_backlight");
+        }
         if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;
@@ -566,16 +572,35 @@ var WCanvasLootMarker = (function (_super) {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
+
+
     };
 
     WCanvasLootMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
-        windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
         returnFocusToMap();
+        if (! user.userCar) return;
+        if (this.is_backlight) // Если мы в радиусе доступа, то открыть окно
+            windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
+        else { // Попробовать подъехать к цели
+            var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
+            var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
+            p = normVector(p, r);
+            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        }
     };
 
     WCanvasLootMarker.prototype._get_rotate_angle = function (time) {
         return 0;
+    };
+
+    WCanvasLootMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (! this.is_backlight || ! this.icon_backlight) return;
+        var ctx_car_pos = this._last_car_ctx_pos || this._last_mobj_ctx_pos;
+        ctx.save();
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        ctx.drawImage(this.icon_backlight.img, -this.icon_backlight.iconSize[0] >> 1, -this.icon_backlight.iconSize[1] >> 1);
+        ctx.restore();
     };
 
     return WCanvasLootMarker;
