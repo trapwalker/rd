@@ -538,20 +538,52 @@ var SettingsManager = (function() {
             currentValue: 0,
             list_values: [
                 {
-                    text: "Стандарт",
+                    text: "Стандартная",
                     value: "none"
                 },
                 {
                     text: "Ч/Б",
-                    value: "grayscale(100%) brightness(1.2) contrast(120%);"
+                    value: "grayscale(100%);"
                 },
                 {
-                    text: "Синий",
-                    value: "hue-rotate(80deg);"
+                    text: "Ч/Б (контр)",
+                    value: "grayscale(100%) brightness(1.25) contrast(125%);"
                 },
                 {
-                    text: "Жёлтый",
-                    value: "hue-rotate(-80deg);"
+                    text: "Сепия",
+                    value: "sepia(100%);"
+                },
+                {
+                    text: "Сепия (контр)",
+                    value: "sepia(100%) brightness(1.25) contrast(125%);"
+                },
+                {
+                    text: "Красная",
+                    value: "url(#red);"
+                },
+                {
+                    text: "Оранжевая",
+                    value: "url(#orange);"
+                },
+                {
+                    text: "Желтая",
+                    value: "url(#yellow);"
+                },
+                {
+                    text: "Зеленая",
+                    value: "url(#green);"
+                },
+                {
+                    text: "Голубая",
+                    value: "url(#cyan);"
+                },
+                {
+                    text: "Синяя",
+                    value: "url(#blue);"
+                },
+                {
+                    text: "Фиолетовая",
+                    value: "url(#purple);"
                 }
             ],
             set_callback: function(new_value) {
