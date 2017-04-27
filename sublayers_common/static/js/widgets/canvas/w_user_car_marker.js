@@ -575,8 +575,16 @@ var WCanvasLootMarker = (function (_super) {
 
     WCanvasLootMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
-        windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
         returnFocusToMap();
+        if (! user.userCar) return;
+        if (this.is_backlight) // Если мы в радиусе доступа, то открыть окно
+            windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
+        else { // Попробовать подъехать к цели
+            var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
+            var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
+            p = normVector(p, r);
+            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        }
     };
 
     WCanvasLootMarker.prototype._get_rotate_angle = function (time) {
