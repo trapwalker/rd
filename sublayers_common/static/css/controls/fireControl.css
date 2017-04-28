@@ -261,3 +261,14 @@
 .fire-control-all-active {
     background-image: url("/static/img/fire_control/fire_widget_indicator/indicator_active.png");
 }
+
+
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
+    .fire-control-parent {
+        transform: scale(0.75);
+        bottom: 171px;
+        margin-left: -132px;
+    }
+}
+
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {}
