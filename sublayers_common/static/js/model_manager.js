@@ -2386,7 +2386,7 @@ var ClientManager = (function () {
             call: "quick_play_again",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_index: modalWindow._modalQuickGamePoints_current_car_index
+                car_index: modalWindow._modalQuickGamePoints_current_car_index || 0
             }
         };
         rpcCallList.add(mes);

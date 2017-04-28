@@ -86,6 +86,9 @@ class AgentConsoleNamespace(Namespace):
     def die(self):
         self.agent.die(time=self.agent.server.get_time())
 
+    def gg(self):  # good game
+        self.agent.die(time=self.agent.server.get_time())
+
     def damage(self, value=0):
         self.agent.hit(int(value))
 
@@ -951,7 +954,7 @@ class AgentAPI(API):
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 
     @public_method
-    def quick_play_again(self, car_index):
+    def quick_play_again(self, car_index=0):
         self.agent.log.info('quick_play_again with index: %s', car_index)
         def callback(*kw):
             api.update_agent_api(time=api.agent.server.get_time())
