@@ -106,7 +106,6 @@
     background-color: #000000;
 }
 
-
 /* Все css стили всех модальных оконо в этой месте!*/
 
 /* css стили для окна приветствия */
@@ -546,19 +545,18 @@
 #divisionItemBtnMinus {left: 0;}
 #divisionItemBtnPlus {right: 0;}
 
+
 /* Окно завершения быстрой игры */
 #modalQuickGamePointsPage {
-    width: 1200px;
-    height: 654px;
-    background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;
+    width: 826px;
+    height: 504px;
+    /*background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;*/
 }
 
 .qg-pp-graphic-wrap {
     position: absolute;
     width: 826px;
     height: 504px;
-    top: 57px;
-    left: 137px;
 }
 
 .qg-pp-again-btn {
@@ -609,16 +607,26 @@
     background: transparent url('/static/img/modal_window_image/btn2_press.png') 100% 100% no-repeat;
 }
 
+.qg-pp-left-info {
+    position: relative;
+    float: left;
+    height: calc(100% - 25px);
+    box-sizing: border-box;
+    width: 240px;
+    border-width: 0 0 0 1px;
+    border-style: solid;
+    border-image: linear-gradient(to bottom, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+}
+
 .qg-pp-block {
     position: relative;
     float: left;
-    margin: 2px 0 0 2px;
-    height: calc(100% - 30px);
-    border: 1px solid #0e4b00;
+    height: calc(100% - 4px);
     box-sizing: border-box;
 }
 .qg-pp-block.left {
-    width: calc(100% - 246px);
+    width: 100%;
     padding: 4px 8px;
     overflow: hidden;
 
@@ -664,7 +672,7 @@
 }
 .qg-pp-table-col.place { width: 78px; }
 .qg-pp-table-col.name { width: 298px; }
-.qg-pp-table-col.score { width: 158px; }
+.qg-pp-table-col.score { width: 150px; }
 
 .qg-pp-block-left-table {
     position: relative;
@@ -705,16 +713,17 @@
     font-size: 18px;
 }
 .qg-pp-block-right.top {
-    height: 330px;
-    padding-top: 28px;
-    border-width: 0 0 1px 0;
+    height: 275px;
+    padding-top: 12px;
+}
+.qg-pp-block-right.bottom {
+    height: 70px;
+    padding-top: 8px;
+    border-width: 1px 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
     border-image-slice: 1;
-}
-.qg-pp-block-right.bottom {
-    height: calc(100% - 330px);
-    padding-top: 40px;
+    margin-bottom: 15px;
 }
 
 .qg-pp-block-right-top-scull {
@@ -723,11 +732,12 @@
     height: 184px;
     margin: 0 auto;
     background: transparent url('/static/img/modal_window_image/skull.png') 100% 100% no-repeat;
+    top: 12px;
 }
 
 .qg-pp-block-right-top-label {
     position: relative;
-    margin-top: 50px;
+    margin-top: 40px;
     width: 100%;
 }
 
@@ -755,6 +765,91 @@
 }
 
 
+.window-records-qg-wrap {
+    position: relative;
+    margin: 2px auto;
+    border: 1px solid #0e4b00;
+    box-sizing: border-box;
+    width: calc(100% - 4px);
+    height: calc(100% - 30px);
+}
+
+.window-records-qg-header-block {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 25px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+}
+
+.window-records-qg-menu-item {
+    position: relative;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    float: left;
+    margin: 4px 0 0 10px;
+    padding: 0 15px 0 15px;
+    box-sizing: border-box;
+}
+.window-records-qg-menu-item.active, .window-records-qg-menu-item:hover { color: #2ffa00; }
+.window-records-qg-menu-item.active {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00),
+                      linear-gradient(45deg, #0e4b00 25%, transparent 25%, transparent 74%, #0e4b00 75%, #0e4b00);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.window-records-qg-menu-item.active:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 2px;
+    top: 2px;
+    border-top: 5px solid transparent;
+    border-left: 5px solid #2ffa00;
+    border-bottom: 5px solid transparent;
+}
+.window-records-qg-menu-item.active:after {
+    content: ' ';
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #2ffa00;
+    border-bottom: 5px solid transparent;
+}
+
+.qg-pp-graphic-wrap .windowDragCloseHeader-close {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    height: 14px;
+    width: 14px;
+    background: transparent url(/static/img/windows/close_cross/cross.png) 50% 50% no-repeat;
+    box-sizing: border-box;
+}
+
+.qg-pp-graphic-wrap .windowDragCloseHeader-close:hover {
+background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
+}
+.qg-pp-graphic-wrap .windowDragCloseHeader-close:active {
+background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
+}
+
+
+.window-records-qg-context {
+    position: relative;
+    float: left;
+    width: calc(100% - 246px);
+    height: calc(100% - 25px);
+}
+
 #quickGamePagePointPointsChangeCar, #quickGamePagePointPointsRecords {
     position: absolute;
     width: 100%;
@@ -775,6 +870,7 @@
     width: 17px;
     height: 24px;
     top: 170px;
+    z-index: 10;
 }
 
 .window-records-qg-all-cars .window-records-qg-car-name {
@@ -783,7 +879,7 @@
 
 .window-records-qg-slide-arrow.left {
     background: transparent url(/static/static_site/img/btn_slide_left.png) no-repeat 100% 100%;
-    left: 80px;
+    left: 60px;
 }
 
 .window-records-qg-slide-arrow.left:hover {
@@ -796,7 +892,7 @@
 
 .window-records-qg-slide-arrow.right {
     background: transparent url(/static/static_site/img/btn_slide_right.png) no-repeat 100% 100%;
-    right: 80px;
+    right: 60px;
 }
 
 .window-records-qg-slide-arrow.right:hover {
@@ -810,11 +906,41 @@
 
 #quickGamePagePointPointsChangeCar .car-info-block-info{
     height: 180px;
-    margin-top: 30px;
+    margin-top: 29px;
+    width: 559px;
+    left: -36px;
 }
 
 #quickGamePagePointPointsChangeCar .car-info-block-picture-main {
     top: 15px;
+}
+
+#quickGamePagePointPointsChangeCar .car-info-block-item-wrap {
+    float: left;
+    margin: 10px 25px;
+}
+
+
+#quickGamePointsPageBtnCancel, #quickGamePointsPageBtnOK {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    border: 1px solid #0e4b00;
+    background-color: #082801;
+    box-sizing: border-box;
+    width: 200px;
+    height: 30px;
+    margin: 0 auto 12px auto;
+    line-height: 30px;
+    text-align: center;
+    font-size: 18px;
+}
+#quickGamePointsPageBtnCancel:hover, #quickGamePointsPageBtnOK:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
+
+
+#quickGamePagePointPointsChangeCar .car-info-block-body-right-menu {
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
 }
 
 /* Окно запроса на прохождение обучения в быстрой игре */
