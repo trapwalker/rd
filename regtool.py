@@ -12,12 +12,12 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
-from sublayers_server.test_iolop import io_loop, start
-from sublayers_server.model.registry import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry.tree import Root
+from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
+from sublayers_server.model.registry_me.tree import Registry, get_global_registry
 
-import tornado.gen
+from mongoengine import connect
 import click
+import json
 from pprint import pprint as pp
 
 
@@ -26,36 +26,38 @@ from pprint import pprint as pp
 @click.option('--fixtures', '-x', is_flag=True, default=False, help='Fixtures reload')
 @click.option('--reset', '-r', is_flag=True, default=False, help='Reset game data')
 def cli(clean, fixtures, reset):
+    db = connect(db='test_me')
     if clean or fixtures or reset:
-        io_loop.add_callback(do, clean, fixtures, reset)
-        start()
+        do(clean, fixtures, reset)
     else:
         click.echo('Nothing to do')
-        return
 
 
-@tornado.gen.coroutine
 def do(clean, fixtures, reset):
     if clean:
         click.echo('Full registry cleaning...')
-        count = yield Root.objects.delete()
+        count = Registry.objects.delete()
         click.echo('Clean registry: %s' % count)
 
     if fixtures:
         click.echo('Cleaning of fixtures...')
-        count = yield Root.objects.filter({'fixtured': True}).delete()
+        count = Registry.objects.delete()
         click.echo('Deleted fixture objects: %s' % count)
 
         click.echo('Loading registry fixtures to DB...')
-        reg = yield Root.load(path=os.path.join(project_root, u'sublayers_world', u'registry'))
+        reg = get_global_registry(path=os.path.join(project_root, u'sublayers_world', u'registry'), reload=True)
         click.echo('Loading registry fixtures DONE')  # todo: show timing and counts
+
+
+        with open('registry.json', 'w') as f:
+            #json.dump(reg.to_mongo(use_db_field=False), f, indent=2, ensure_ascii=False)
+            js = reg.to_json(indent=4, ensure_ascii=False)
+            f.write(js.encode('utf-8'))
 
     if reset:
         click.echo('Saved registry objects cleaning...')
-        count = yield Root.objects.filter({'fixtured': False}).delete()
+        count = classes.agents.Agent.objects.filter({'fixtured': False}).delete()
         click.echo('Deleted objects: %s' % count)
-
-    io_loop.add_callback(lambda: io_loop.stop())
 
 
 if __name__ == '__main__':
