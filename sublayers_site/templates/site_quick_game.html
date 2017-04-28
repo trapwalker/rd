@@ -10,7 +10,8 @@
             </div>
             <div class="window-qg-content-nickname-block">
                 <div class="window-qg-content-nickname-label">{{ _('sqg_nickname') }}></div>
-                <input class="window-qg-content-nickname-input" type="text" id="quick_game_nickname" autocomplete="off"
+                <input maxlength="15" onkeyup="quickNicknameOnKeyup(this, event)"
+                      class="window-qg-content-nickname-input" type="text" id="quick_game_nickname" autocomplete="off"
                        {% if current_user %}
                            {% set quick_game_user = current_user if current_user.quick else None %}
                            {% if quick_game_user %}
