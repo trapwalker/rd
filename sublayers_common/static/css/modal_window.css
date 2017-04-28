@@ -825,7 +825,7 @@
     border-bottom: 5px solid transparent;
 }
 
-.qg-pp-graphic-wrap .windowDragCloseHeader-close {
+.qg-pp-graphic-wrap .windowDragCloseHeader-close, .qg-mt-graphic-wrap .windowDragCloseHeader-close {
     position: absolute;
     right: 6px;
     top: 6px;
@@ -835,10 +835,10 @@
     box-sizing: border-box;
 }
 
-.qg-pp-graphic-wrap .windowDragCloseHeader-close:hover {
+.qg-pp-graphic-wrap .windowDragCloseHeader-close:hover, .qg-mt-graphic-wrap .windowDragCloseHeader-close:hover {
 background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
 }
-.qg-pp-graphic-wrap .windowDragCloseHeader-close:active {
+.qg-pp-graphic-wrap .windowDragCloseHeader-close:active, .qg-mt-graphic-wrap .windowDragCloseHeader-close:active {
 background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
 }
 
@@ -945,17 +945,15 @@ background: transparent url('/static/img/windows/close_cross/cross_pressed.png')
 
 /* Окно запроса на прохождение обучения в быстрой игре */
 #modalQuickGameMapTeachingPage {
-    width: 1200px;
-    height: 654px;
-    background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;
+    width: 760px;
+    height: 546px;
+    /*background: transparent url('/static/img/modal_window_image/monitor.png') 100% 100% no-repeat;*/
 }
 
 .qg-mt-graphic-wrap {
     position: absolute;
-    width: 826px;
-    height: 504px;
-    top: 57px;
-    left: 137px;
+    width: 760px;
+    height: 546px;
 }
 
 .qg-mt-fight-btn {
@@ -1015,12 +1013,36 @@ background: transparent url('/static/img/windows/close_cross/cross_pressed.png')
     padding: 14px 30px;
     text-align: center;
     color: #2ffa00;
-    border-width: 1px 0 0 0;
+    border-width: 1px 0 1px 0;
     border-style: solid;
     border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
     border-image-slice: 1;
     box-sizing: border-box;
 }
+
+.start-qg-text-quest {
+    position: relative;
+    width: 100%;
+    color: #2ffa00;
+    text-align: center;
+}
+
+#quickGameMapTeachingPageBtnOK, #quickGameMapTeachingPageBtnCancel {
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    border: 1px solid #0e4b00;
+    background-color: #082801;
+    box-sizing: border-box;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 18px;
+    position: relative;
+    float: left;
+    margin: 14px 87px 0 87px;
+}
+#quickGameMapTeachingPageBtnOK:hover, #quickGameMapTeachingPageBtnCancel:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
+
 
 /* Окно активации итемов */
 
