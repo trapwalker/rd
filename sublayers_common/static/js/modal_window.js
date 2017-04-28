@@ -521,7 +521,7 @@ var ModalWindow = (function () {
         this._modalQuickGamePoints_current_car_index = 0;
 
         this.modalQuickGamePoints.draggable({
-            cancel: '.qg-pp-graphic-wrap',
+            cancel: '.window-records-qg-wrap',
             containment: "parent"
         });
     };
@@ -609,6 +609,10 @@ var ModalWindow = (function () {
             $(this).addClass("active");
         });
 
+        // Клик на крестик
+        this.modalQuickGamePoints.find(".windowDragCloseHeader-close").first().off("click");
+        this.modalQuickGamePoints.find(".windowDragCloseHeader-close").first().click(function() {btn_ok.click()});
+
         // Показать бывшую машинку юзера
 
         modalWindow._modalQuickGamePoints_current_car_index = options.current_car_index;
@@ -643,7 +647,7 @@ var ModalWindow = (function () {
         // Загрузить информацию из документа в див
         this.modalQuickGameMapTeaching.load('/static/modal_window/modalQuickGameMapTeachingPage.html', function(){});
         this.modalQuickGameMapTeaching.draggable({
-            cancel: '.qg-mt-graphic-wrap',
+            cancel: '.qg-mt-block',
             containment: "parent"
         });
     };
@@ -675,6 +679,9 @@ var ModalWindow = (function () {
             if (typeof(cb_cancel) === 'function')
                 cb_cancel(event);
         });
+
+        this.modalQuickGameMapTeaching.find(".windowDragCloseHeader-close").first().off("click");
+        this.modalQuickGameMapTeaching.find(".windowDragCloseHeader-close").first().click(function() {btn_cancel.click()});
     };
 
     ModalWindow.prototype.modalQuickGameMapTeachingPageHide = function() {
