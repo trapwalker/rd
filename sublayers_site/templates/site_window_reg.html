@@ -125,74 +125,82 @@
     function RegisterBtnClick() {
         var email = document.getElementById('reg_email').value;
         var password = document.getElementById('reg_password').value;
-        $.ajax({
-            url: location.protocol + '//' + location.host + '/login',
-            method: 'POST',
-            data: {
-                email: email,
-                password: password,
-                action: 'reg',
-                _xsrf: getCookie('_xsrf')
-            },
-            success: function(data) {
-                consoleWReg.add_message('user', _('con_wreg_msg22'), true);
-                if (data.status == 'success') {
-                    consoleWReg.add_message('system', _('con_wreg_msg23'));
-                    GetUserInfo();
-                    audioManager.play('button_screen_press');
-                    return;
-                }
-                audioManager.play('error_1');
-                if (data.status == 'fail_wrong_input') {
-                    consoleWReg.add_message('system', _('con_wreg_msg24'));
+        var r_email = new RegExp(/[^@]+@[^@]+\.[a-zA-Z]{2,6}/);
+        if(r_email.test(email))
+            $.ajax({
+                url: location.protocol + '//' + location.host + '/login',
+                method: 'POST',
+                data: {
+                    email: email,
+                    password: password,
+                    action: 'reg',
+                    _xsrf: getCookie('_xsrf')
+                },
+                success: function(data) {
+                    consoleWReg.add_message('user', _('con_wreg_msg22'), true);
+                    if (data.status == 'success') {
+                        consoleWReg.add_message('system', _('con_wreg_msg23'));
+                        GetUserInfo();
+                        audioManager.play('button_screen_press');
+                        return;
+                    }
+                    audioManager.play('error_1');
+                    if (data.status == 'fail_wrong_input') {
+                        consoleWReg.add_message('system', _('con_wreg_msg24'));
+                        document.getElementById('reg_email').focus();
+                    }
+                    if (data.status == 'fail_exist_email') {
+                        consoleWReg.add_message('system', _('con_wreg_msg25'));
+                        document.getElementById('reg_email').focus();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    consoleWReg.add_message('user', _('con_wreg_msg26'), true);
+                    consoleWReg.add_message('system', _('con_wreg_msg27'));
+                    audioManager.play('error_1');
                     document.getElementById('reg_email').focus();
                 }
-                if (data.status == 'fail_exist_email') {
-                    consoleWReg.add_message('system', _('con_wreg_msg25'));
-                    document.getElementById('reg_email').focus();
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                consoleWReg.add_message('user', _('con_wreg_msg26'), true);
-                consoleWReg.add_message('system', _('con_wreg_msg27'));
-                audioManager.play('error_1');
-                document.getElementById('reg_email').focus();
-            }
-        });
+            });
+        else
+            consoleWReg.add_message('system', _('con_wreg_msg24'));
     }
 
     function AuthorisationBtnClick() {
         var email = document.getElementById('auth_email').value;
         var password = document.getElementById('auth_password').value;
-        $.ajax({
-            url: location.protocol + '//' + location.host + '/login',
-            method: 'POST',
-            data: {
-                email: email,
-                password: password,
-                action: 'auth',
-                _xsrf: getCookie('_xsrf')
-            },
-            success: function(data) {
-                consoleWReg.add_message('user', _('con_wreg_msg28'), true);
-                if (data.status == 'success') {
-                    consoleWReg.add_message('system', _('con_wreg_msg29'));
-                    GetUserInfo();
-                    audioManager.play('button_screen_press');
-                }
-                else {
-                    consoleWReg.add_message('system', _('con_wreg_msg30'));
+        var r_email = new RegExp(/[^@]+@[^@]+\.[a-zA-Z]{2,6}/);
+        if(r_email.test(email))
+            $.ajax({
+                url: location.protocol + '//' + location.host + '/login',
+                method: 'POST',
+                data: {
+                    email: email,
+                    password: password,
+                    action: 'auth',
+                    _xsrf: getCookie('_xsrf')
+                },
+                success: function(data) {
+                    consoleWReg.add_message('user', _('con_wreg_msg28'), true);
+                    if (data.status == 'success') {
+                        consoleWReg.add_message('system', _('con_wreg_msg29'));
+                        GetUserInfo();
+                        audioManager.play('button_screen_press');
+                    }
+                    else {
+                        consoleWReg.add_message('system', _('con_wreg_msg30'));
+                        audioManager.play('error_1');
+                        document.getElementById('auth_email').focus();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    consoleWReg.add_message('user', _('con_wreg_msg31'), true);
+                    consoleWReg.add_message('system', _('con_wreg_msg32'));
                     audioManager.play('error_1');
                     document.getElementById('auth_email').focus();
                 }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                consoleWReg.add_message('user', _('con_wreg_msg31'), true);
-                consoleWReg.add_message('system', _('con_wreg_msg32'));
-                audioManager.play('error_1');
-                document.getElementById('auth_email').focus();
-            }
-        });
+            });
+        else
+            consoleWReg.add_message('system', _('con_wreg_msg24'));
     }
 
     function RestorePasswordBtnClick() {

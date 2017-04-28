@@ -69,6 +69,7 @@ class Unit(Observer):
 
         # загрузка инвенторя
         self.inventory = self.example.inventory.create_model(server=self.server, time=time, owner=self)
+        self.inventory.add_change_call_back(method=self.on_change_inventory_cb)
         if owner:
             self.inventory.add_manager(agent=owner)
 
@@ -285,6 +286,9 @@ class Unit(Observer):
         # перестать стрелять своими автоматическими секторами (!!! не через Ивент !!!)
         self.on_fire_auto_enable(enable=False, time=event.time, event=event)
 
+        # отписаться от изменения инвентаря
+        self.inventory.del_change_call_back(method=self.on_change_inventory_cb)
+
         # снять все таски стрельбы по нам
         tasks = self.tasks[:]
         for task in tasks:
@@ -358,6 +362,11 @@ class Unit(Observer):
         self.example.set_frag(dvalue=1)  # начисляем фраг машинке
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
         self.example.set_exp(dvalue=d_car_exp, time=event.time) # начисляем опыт машинке
+
+    def on_change_inventory_cb(self, inventory, time):
+        for weapon in self.weapon_list():
+            if weapon.item is None and weapon.last_item_balance_cls is not None:
+                weapon.try_recharge(inventory=inventory, time=time)
 
 
 class Mobile(Unit):
@@ -497,11 +506,8 @@ class Mobile(Unit):
 class Bot(Mobile):
     def __init__(self, time, **kw):
         super(Bot, self).__init__(time=time, **kw)
-
         # Панель быстрого доступа (колбэк нужен чтобы "перезаряжать" панель когда мы подбираем новые итемы)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
-        self.inventory.add_change_call_back(method=self.quick_consumer_panel.on_change_inventory_cb)
-
         self.start_shield_event = None
 
         # self.current_item_action ивент для активации итемов, единовременно игрок (а точнее его машинка) может
@@ -510,8 +516,11 @@ class Bot(Mobile):
         self.current_item_action = None
         self.last_activation_time = None
 
+    def on_change_inventory_cb(self, inventory, time):
+        self.quick_consumer_panel.on_change_inventory_cb(inventory=inventory, time=time)
+        super(Bot, self).on_change_inventory_cb(inventory=inventory, time=time)
+
     def on_before_delete(self, event):
-        self.inventory.del_change_call_back(method=self.quick_consumer_panel.on_change_inventory_cb)
         super(Bot, self).on_before_delete(event=event)
 
     def as_dict(self, time):
