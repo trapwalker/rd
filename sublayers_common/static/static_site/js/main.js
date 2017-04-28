@@ -790,3 +790,13 @@ function onPlayerError(event) {
     videoPlayerReadyState = false;
 }
 
+function quickNicknameOnKeyup(element, event) {
+    var str = element.value;
+    var new_str = "";
+    if (str.length) {
+        new_str = str[0].replace(/[^A-Za-z]/, '');
+        for (var i = 1; i < Math.min(str.length, $(element).attr("maxlength")); i++)
+            new_str = new_str + str[i].replace(/[^a-zA-Z\d]*/, '');
+    }
+    element.value = new_str;
+}
