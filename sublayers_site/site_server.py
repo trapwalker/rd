@@ -37,8 +37,8 @@ from sublayers_site.handlers.audio_test import GetAudioTest
 from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
 
-import sublayers_server.model.registry.classes  #autoregistry classes
-from sublayers_server.model.registry.tree import Root
+import sublayers_server.model.registry_me.classes  #autoregistry classes
+from sublayers_server.model.registry_me.tree import Root
 from sublayers_site.news import NewsManager
 from sublayers_site.site_locale import load_locale_objects
 

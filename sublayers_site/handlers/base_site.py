@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
-from sublayers_server.model.registry.classes.agents import Agent
+from sublayers_server.model.registry_me.classes.agents import Agent
 
 import tornado.web
 import tornado.gen

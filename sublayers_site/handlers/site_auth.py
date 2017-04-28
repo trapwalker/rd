@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
-from sublayers_server.model.registry.classes.agents import Agent
+from sublayers_server.model.registry_me.classes.agents import Agent
 
 from tornado.web import HTTPError
 from tornado.httpclient import AsyncHTTPClient

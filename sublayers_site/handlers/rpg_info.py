@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
-from sublayers_server.model.registry.classes.agents import Agent
-from sublayers_server.model.registry.classes.perks import Perk
+from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_server.model.registry_me.classes.perks import Perk
 from sublayers_server.model.utils import serialize
 
 import tornado.web
