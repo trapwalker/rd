@@ -193,6 +193,13 @@ class WeaponAuto(Weapon):
     def get_enable(self):
         return self.is_enable
 
+    def set_item(self, time, **kw):
+        super(WeaponAuto, self).set_item(time=time, **kw)
+        # снова включить стрельбу для этого оружия, если оно не стреляет! Список целей есть только в секторе
+        if len(self.targets) == 0:
+            for target in self.sector.target_list:
+                 self.add_car(car=target, time=time)
+
 
 class WeaponDischarge(Weapon):
     def __init__(self, dmg, area_dmg, time_recharge, **kw):
