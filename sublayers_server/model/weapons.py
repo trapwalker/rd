@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
 from sublayers_server.model.game_log_messages import WeaponAmmoFinishedLogMessage
 from sublayers_server.model.inventory import Consumer
-from sublayers_server.model.events import Event, FireDischargeEffectEvent
+from sublayers_server.model.events import Event, FireDischargeEffectEvent, event_deco
 from sublayers_server.model.quest_events import OnMakeDmg
 
 
@@ -25,6 +25,8 @@ class Weapon(Consumer):
         self.sector = sector
         self.example = example
         sector.add_weapon(self)
+
+        self.last_item_balance_cls = None  # Последний закончившийся итем.
 
     @property
     def classname(self):
@@ -54,6 +56,7 @@ class Weapon(Consumer):
 
     def on_empty_item(self, item, time, action):
         balance_cls_list = []
+        self.last_item_balance_cls = item.example.parent
         if self.swap:
             balance_cls_list = self.items_cls_list
         else:
@@ -63,6 +66,12 @@ class Weapon(Consumer):
         # Отправить сообщение если можно о том, что закончились патроны
         if self.item is None and self.owner.owner:
             WeaponAmmoFinishedLogMessage(agent=self.owner.owner, time=time, weapon=self).post()
+
+    @event_deco
+    def try_recharge(self, event, inventory):
+        item = inventory.get_item_by_cls(balance_cls_list=[self.last_item_balance_cls], time=event.time, min_value=-self.dv)
+        if item is not None:
+            self.set_item(item=item, time=event.time)
 
     def add_car(self, car, time):
         pass
