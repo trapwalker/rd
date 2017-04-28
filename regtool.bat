@@ -1,2 +1,2 @@
 
-python.bat regtool.py %*
+python.bat regtool.py reg reload

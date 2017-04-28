@@ -21,44 +21,62 @@ import json
 from pprint import pprint as pp
 
 
-@click.command()
-@click.option('--clean', '-c', is_flag=True, default=False, help='Full registry clean')
-@click.option('--fixtures', '-x', is_flag=True, default=False, help='Fixtures reload')
-@click.option('--reset', '-r', is_flag=True, default=False, help='Reset game data')
-def cli(clean, fixtures, reset):
-    db = connect(db='test_me')
-    if clean or fixtures or reset:
-        do(clean, fixtures, reset)
-    else:
-        click.echo('Nothing to do')
+CONTEXT_SETTINGS = dict(
+    default_map={'db': 'test_me'},
+)
 
 
-def do(clean, fixtures, reset):
-    if clean:
-        click.echo('Full registry cleaning...')
-        count = Registry.objects.delete()
-        click.echo('Clean registry: %s' % count)
-
-    if fixtures:
-        click.echo('Cleaning of fixtures...')
-        count = Registry.objects.delete()
-        click.echo('Deleted fixture objects: %s' % count)
-
-        click.echo('Loading registry fixtures to DB...')
-        reg = get_global_registry(path=os.path.join(project_root, u'sublayers_world', u'registry'), reload=True)
-        click.echo('Loading registry fixtures DONE')  # todo: show timing and counts
+@click.group(context_settings=CONTEXT_SETTINGS)
+@click.option('--db', help='Database name')
+#@click.option('--fixtures', '-x', is_flag=True, default=False, help='Fixtures reload')
+#@click.option('--reset', '-r', is_flag=True, default=False, help='Reset game data')
+@click.pass_context
+def cli(ctx, db):
+    ctx.obj['db'] = db
+    db = connect(db='db')
 
 
-        with open('registry.json', 'w') as f:
-            #json.dump(reg.to_mongo(use_db_field=False), f, indent=2, ensure_ascii=False)
-            js = reg.to_json(indent=4, ensure_ascii=False)
-            f.write(js.encode('utf-8'))
+@cli.group(name='reg')
+@click.pass_context
+def reg(ctx):
+    """Operations with game registry"""
+    pass
 
-    if reset:
-        click.echo('Saved registry objects cleaning...')
-        count = classes.agents.Agent.objects.filter({'fixtured': False}).delete()
-        click.echo('Deleted objects: %s' % count)
+
+@reg.command(name='clean')
+@click.pass_context
+def reg_clean(ctx):
+    """Full cleaning of game registry from DB"""
+    click.echo('Full registry cleaning...')
+    count = Registry.objects.delete()
+    click.echo('Clean registry: %s' % count)
+
+
+@reg.command(name='reload')
+@click.option('--export', '-x', default=None, help='Export registry tree to the file')
+@click.pass_context
+def reg_reload(ctx, export):
+    """Clean registry DB, load them from FS and save to DB"""
+    click.echo('Cleaning of fixtures...')
+    count = Registry.objects.delete()
+    click.echo('Deleted fixture objects: %s' % count)
+
+    click.echo('Loading registry fixtures to DB...')
+    r = get_global_registry(path=os.path.join(project_root, u'sublayers_world', u'registry'), reload=True)
+    click.echo('Loading registry fixtures DONE')  # todo: show timing and counts
+
+    if export:
+        reg_export(r, export)
+
+
+def reg_export(registry, fn):
+        try:
+            with open(fn, 'w') as f:
+                js = registry.to_json(indent=4, ensure_ascii=False)
+                f.write(js.encode('utf-8'))
+        except IOError as f:
+            click.echo("Can't use file {!r} to write json data".format(fn) , err=True)
 
 
 if __name__ == '__main__':
-    cli(sys.argv[1:])
+    cli(sys.argv[1:], obj={})

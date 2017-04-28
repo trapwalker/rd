@@ -552,7 +552,7 @@ class Registry(Doc):
                 if node:
                     if owner is None:
                         self.root = node
-                        log.debug('Setup root: {!r}'.format(node))
+                        # log.debug('Setup root: {!r}'.format(node))
                     all_nodes.append(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
