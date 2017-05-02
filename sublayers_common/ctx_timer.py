@@ -35,6 +35,7 @@ class Timer(object):
         self.log_stop = log_stop
         self.timestamp_start = None
         self.timestamp_stop = None
+        self._it_is_decorator = False
         self.__dict__.update(kw)
 
     @property
@@ -46,6 +47,7 @@ class Timer(object):
         return None if self.timestamp_stop is None else datetime.fromtimestamp(self.timestamp_stop)
 
     def start(self):
+        assert not self._it_is_decorator, "You can't start Timer instance used as decorator."
         t = time.time()
         self.timestamp_start = t
         if self.log_start:
@@ -89,9 +91,11 @@ class Timer(object):
         self.stop()
 
     def __call__(self, func):
+        self._it_is_decorator = True
         @wraps(func)
         def closure(*av, **kw):
             timer = copy(self)
+            timer._it_is_decorator = False
             if timer.name is None:  # TODO: ##OPTIMIZE extract from closure
                 # todo: call number store
                 timer.name = 'FUNC {func.func_name} [{fn}:{func.func_code.co_firstlineno}]'.format(
@@ -121,8 +125,9 @@ if __name__ == '__main__':
                 print(timer.duration)
                 pass
 
+    deco = Timer()
     # functions decoration usage:
-    @Timer()
+    @deco
     def test_routine2():
         print('test_routine2')
 
