@@ -55,41 +55,56 @@ $(document).ready(function () {
     returnFocusToMap();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
-        windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
-            function(jq_window_div) {
-                var new_text = jq_window_div.find('textarea').first().val();
-                if (user.example_agent.about_self != new_text)
-                    clientManager.sendSetAboutSelf(new_text); 
-            });
+        if (windowTemplateManager.isOpen('character'))
+            windowTemplateManager.closeUniqueWindow('character');
+        else
+            windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
+                function (jq_window_div) {
+                    var new_text = jq_window_div.find('textarea').first().val();
+                    if (user.example_agent.about_self != new_text)
+                        clientManager.sendSetAboutSelf(new_text);
+                });
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
-        carManager.get_info();
+        if (windowTemplateManager.isOpen('car_info'))
+            windowTemplateManager.closeUniqueWindow('car_info');
+        else
+            carManager.get_info();
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
-        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null,
-            wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
+        if (windowTemplateManager.isOpen('inventory_info'))
+            windowTemplateManager.closeUniqueWindow('inventory_info');
+        else
+            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null,
+                wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
-        windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
+        if (windowTemplateManager.isOpen('map_journal'))
+            windowTemplateManager.closeUniqueWindow('map_journal');
+        else
+            windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnParty').onclick = function () {
-        windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
+        if (windowTemplateManager.isOpen('party'))
+            windowTemplateManager.closeUniqueWindow('party');
+        else
+            windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
@@ -108,7 +123,10 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnRadio').onclick = function () {
-        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, function () {
+         if (windowTemplateManager.isOpen('radio'))
+            windowTemplateManager.closeUniqueWindow('radio');
+        else
+            windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, function () {
             radioPlayer.update();
         });
         returnFocusToMap();
@@ -117,7 +135,10 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnOptions').onclick = function () {
-        windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager), settingsManager.cancel_options.bind(settingsManager));
+        if (windowTemplateManager.isOpen('settings'))
+            windowTemplateManager.closeUniqueWindow('settings');
+        else
+            windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager), settingsManager.cancel_options.bind(settingsManager));
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
