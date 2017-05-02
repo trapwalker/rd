@@ -184,6 +184,9 @@ var WCanvasCarMarker = (function (_super) {
         this.tail_particles_size_end = 0.8;
 
         this._set_car_tail();
+
+        this.nickname_marker = new WCanvasNicknameMarker(mobj, this);
+        this.update_nickname();
     }
 
     WCanvasCarMarker.prototype._set_car_tail = function() {
@@ -231,28 +234,13 @@ var WCanvasCarMarker = (function (_super) {
 
     WCanvasCarMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasCarMarker.prototype.click_handler', event);
-        var owner = this.mobj.owner ? this.mobj.owner : user;
-
-        var print_login = owner.quick ? getQuickUserLogin(owner.login) : owner.login;
-
-        windowTemplateManager.openUniqueWindow(
-            'person_info_' + print_login,
-            '/person_info',
-            {person: owner.login, mode: 'map'},
-            function(jq_window) {
-                jq_window.find('.person-window-btn').click(function(){
-                    if (user.party)
-                        clientManager.sendInvitePartyFromTemplate($(this).data('name'));
-                    else {
-                        modalWindow.modalDialogInfoShow({
-                            caption: 'Error Message',
-                            header: 'Вы не в пати',
-                            body_text: 'Для приглашения других игроков создайте пати'
-                        });
-                    }
-                });
-            }
-        );
+        if (!user.userCar) return;
+        if (this.mobj == user.userCar) return;
+        // Попробовать подъехать к цели
+        var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
+        var r = 15;
+        p = normVector(p, r);
+        clientManager.sendGoto(summVector(p, this._last_mobj_position));
     };
 
     WCanvasCarMarker.prototype.redraw = function(ctx, time, client_time){
@@ -341,26 +329,6 @@ var WCanvasCarMarker = (function (_super) {
             ctx.restore(); // Возврат после поворота
         }
 
-        // Вывод лейбла
-        if (mobj.owner || mobj == user.userCar) {
-            var owner = mobj.owner || user;
-            var label_str = '';
-            if (owner.quick)
-                label_str = getQuickUserLogin(owner.login);
-            else {
-                var party_str = "";
-                if (owner.party != null) party_str = '[' + owner.party.name + ']';
-                label_str = owner.login + party_str;
-            }
-
-            ctx.textAlign = "center";
-            ctx.textBaseline = "center";
-            ctx.font = "8pt MICRADI";
-            ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
-            //ctx.fillText(label_str, 0, this.old_ctx_car_pos.y - ((this.old_ctx_car_pos.y >> 1) << 1) - 15.0);
-            ctx.fillText(label_str, 0, -15);
-        }
-
         if (focused && this.icon_obj_focused) {
             ctx.drawImage(this.icon_obj_focused.img, -this.icon_obj_focused.iconSize[0] >> 1, -this.icon_obj_focused.iconSize[1] >> 1);
         }
@@ -390,6 +358,7 @@ var WCanvasCarMarker = (function (_super) {
 
     WCanvasCarMarker.prototype.delFromVisualManager = function () {
         //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
+        this.nickname_marker = null;
         if (this.audio_object)
             audioManager.stop(0.0, this.audio_object);
         if (this.audio_object_reverse_gear)
@@ -472,6 +441,28 @@ var WCanvasCarMarker = (function (_super) {
         this.icon_obj_focused = iconsLeaflet.getIcon("icon_car_focused");
 
         this.icon_size_min_div_2 = Math.min(this.icon_obj.iconSize[0], this.icon_obj.iconSize[1]) >> 1;
+
+        // Обновить никнейм
+        this.update_nickname();
+    };
+
+    WCanvasCarMarker.prototype.update_nickname = function() {
+        var car = this.mobj;
+        // Обновить никнейм
+        if (this.nickname_marker && (car.owner || car == user.userCar)) {
+            var owner = car.owner || user;
+            var label_str = owner.login;
+            if (owner.quick)
+                label_str = getQuickUserLogin(owner.login);
+            //else {
+            var party_str = "";
+            if (owner.party != null) party_str = '[' + owner.party.name + ']';
+            label_str = label_str + party_str;
+            //}
+
+            if (this.nickname_marker._nickname != label_str)
+                this.nickname_marker.set_nickname(label_str);
+        }
     };
 
     return WCanvasCarMarker;
@@ -610,16 +601,20 @@ var WCanvasLootMarker = (function (_super) {
 var WCanvasNicknameMarker = (function (_super) {
     __extends(WCanvasNicknameMarker, _super);
 
-    function WCanvasNicknameMarker(mobj, w_car_marker) {
+    function WCanvasNicknameMarker(mobj, w_car_marker, nickname) {
         _super.call(this, mobj, w_car_marker);
         this.obj_id = mobj.ID;
-        this._nickname = mobj._agent_login;
         this.w_car_marker = w_car_marker;
+        this.set_nickname(nickname);
+    }
+
+    WCanvasNicknameMarker.prototype.set_nickname = function (nickname) {
+        this._nickname = nickname || this.mobj._agent_login || "";
         this._offset = new Point(0, -15);
         this._font = "8pt MICRADI";
         this._text_height = 8; // Высота зависит от размера шрифта
         this._text_width = 8 * this._nickname.length; // Ширина также зависит от размера шрифта
-    }
+    };
 
     WCanvasNicknameMarker.prototype.redraw = function(ctx, time){
         //console.log('WCanvasNicknameMarker.prototype.redraw', time);
@@ -652,27 +647,53 @@ var WCanvasNicknameMarker = (function (_super) {
     };
 
     WCanvasNicknameMarker.prototype.click_handler = function(event) {
-        //console.log('WCanvasNicknameMarker.prototype.click_handler');
+        //console.log('WCanvasNicknameMarker.prototype.click_handler', this._nickname, this.mobj.cls);
         if (!this._nickname) return;
 
-        windowTemplateManager.openUniqueWindow(
-            'corpse_info_' + this._nickname,
-            '/corpse_info',
-            {container_id: this.obj_id},
-            function(jq_window) {
-                jq_window.find('.person-window-btn').click(function(){
-                    if (user.party)
-                        clientManager.sendInvitePartyFromTemplate($(this).data('name'));
-                    else {
-                        modalWindow.modalDialogInfoShow({
-                            caption: 'Error Message',
-                            header: 'Вы не в пати',
-                            body_text: 'Для приглашения других игроков создайте пати'
+        switch (this.mobj.cls) {
+            case "POICorpse":
+                windowTemplateManager.openUniqueWindow(
+                    'corpse_info_' + this._nickname,
+                    '/corpse_info',
+                    {container_id: this.obj_id},
+                    function (jq_window) {
+                        jq_window.find('.person-window-btn').click(function () {
+                            if (user.party)
+                                clientManager.sendInvitePartyFromTemplate($(this).data('name'));
+                            else {
+                                modalWindow.modalDialogInfoShow({
+                                    caption: 'Error Message',
+                                    header: 'Вы не в пати',
+                                    body_text: 'Для приглашения других игроков создайте пати'
+                                });
+                            }
                         });
                     }
-                });
-            }
-        );
+                );
+                break;
+            case "Bot":
+                var owner = this.mobj.owner ? this.mobj.owner : user;
+                var print_login = owner.quick ? getQuickUserLogin(owner.login) : owner.login;
+                windowTemplateManager.openUniqueWindow(
+                    'person_info_' + print_login,
+                    '/person_info',
+                    {person: owner.login, mode: 'map'},
+                    function (jq_window) {
+                        jq_window.find('.person-window-btn').click(function () {
+                            if (user.party)
+                                clientManager.sendInvitePartyFromTemplate($(this).data('name'));
+                            else {
+                                modalWindow.modalDialogInfoShow({
+                                    caption: 'Error Message',
+                                    header: 'Вы не в пати',
+                                    body_text: 'Для приглашения других игроков создайте пати'
+                                });
+                            }
+                        });
+                    }
+                );
+                break;
+        }
     };
 
     return WCanvasNicknameMarker;

@@ -458,6 +458,7 @@ var ClientManager = (function () {
 
             user.userCar = mcar;
             mcar.sub_class_car = event.car.sub_class_car;
+            mcar.cls = event.car.cls;
             mapCanvasManager.on_new_map_size();
 
             // Установка звука движка
