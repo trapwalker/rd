@@ -55,8 +55,10 @@ var ControlManager = (function () {
             },
             up: function () {
                 if (!user.userCar) return;
-                clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-                if (wCruiseControl) wCruiseControl.stopKeyboardControl();
+                if (wCruiseControl && wCruiseControl.keyBoardControl) {
+                    clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
+                    wCruiseControl.stopKeyboardControl();
+                }
                 controlManager.pressed_move_forward = false;
             },
         },
@@ -71,8 +73,10 @@ var ControlManager = (function () {
             },
             up: function () {
                 if (!user.userCar) return;
-                clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
-                if (wCruiseControl) wCruiseControl.stopKeyboardControl();
+                if (wCruiseControl && wCruiseControl.keyBoardControl) {
+                    clientManager.sendSetSpeed(user.userCar.getCurrentSpeed(clock.getCurrentTime()));
+                    wCruiseControl.stopKeyboardControl();
+                }
                 controlManager.pressed_move_backward = false;
             },
         },
