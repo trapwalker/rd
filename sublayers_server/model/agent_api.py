@@ -90,7 +90,7 @@ class AgentConsoleNamespace(Namespace):
         self.agent.die(time=self.agent.server.get_time())
 
     def damage(self, value=0):
-        self.agent.hit(int(value))
+        self.agent.hit(time=self.agent.server.get_time(), value=int(value))
 
     def kick(self, *av):
         for name in av:
