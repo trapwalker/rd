@@ -5,6 +5,7 @@ import sys
 import logging
 log = logging.getLogger(__name__)
 
+__ALL__ = ['Timer',]
 
 if __name__ == '__main__':
     log = logging.getLogger()
@@ -16,6 +17,7 @@ import os
 import time
 from datetime import datetime
 from functools import wraps
+from copy import copy
 
 
 class Timer(object):
@@ -76,7 +78,9 @@ class Timer(object):
 
         at_time = self.timestamp_stop or time.time()
         return at_time - self.timestamp_start
-    
+
+    # todo: cumulative_duration of multiple start/stop laps
+
     def __enter__(self):
         self.start()
         return self
@@ -84,32 +88,23 @@ class Timer(object):
     def __exit__(self, ex_type, ex_value, traceback):
         self.stop()
 
-
-def timer_deco(*timer_av, **timer_kw):
-    def deco(func):
+    def __call__(self, func):
         @wraps(func)
         def closure(*av, **kw):
-            timer = Timer(*timer_av, **timer_kw)
+            timer = copy(self)
             if timer.name is None:  # TODO: ##OPTIMIZE extract from closure
                 # todo: call number store
                 timer.name = 'FUNC {func.func_name} [{fn}:{func.func_code.co_firstlineno}]'.format(
                     func=func,
                     fn=os.path.basename(func.func_code.co_filename),
                 )
-                
+
             with timer:
                 return func(*av, **kw)
 
         return closure
 
-    # if not need to timer configuration, we can use @timer_deco without brackets
-    if not timer_kw and len(timer_av) == 1 and callable(timer_av[0]):
-        func = timer_av[0]
-        timer_av = []
-        return deco(func)
-        
-    return deco
-        
+
 
 if __name__ == '__main__':
     import sys
@@ -127,8 +122,9 @@ if __name__ == '__main__':
                 pass
 
     # functions decoration usage:
-    @timer_deco()
-    def test_routine():
-        pass
+    @Timer()
+    def test_routine2():
+        print('test_routine2')
 
-    test_routine()
+    test_routine2()
+    test_routine2()
