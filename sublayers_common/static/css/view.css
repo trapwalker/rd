@@ -387,3 +387,39 @@ input:focus {
 .town-build-path-text {
     pointer-events: none;
 }
+
+.debug-info-text {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    color: #2afd0a;
+    font: 10pt MICRADI;
+    opacity: 0.6;
+}
+
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
+    #divMainMenu {
+        left: 90px;
+    }
+
+    .main-menu-btn-up {
+        font: 9pt MICRADI;
+        margin: 0 12px 0 12px;
+    }
+
+    .debug-info-text {
+        right: 10px;
+        font: 8pt MICRADI;
+    }
+}
+
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {
+    #divMainMenu {
+        left: 80px;
+    }
+
+    .main-menu-btn-up {
+        margin: 0 8px 0 8px;
+    }
+}
+
