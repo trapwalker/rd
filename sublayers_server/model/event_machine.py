@@ -80,10 +80,12 @@ class Server(object):
             self.quick_game_cars_proto = []
             self.quick_game_bot_cars_proto = []
             self.quick_game_bot_agents_proto = []
-            self.quick_game_start_pos = Point(12484108, 27010266)  # Координаты быстрой игры
-            self.quick_game_play_radius = 2000                     # Радиус быстрой игры
-            self.quick_game_death_radius = self.quick_game_play_radius * 20
 
+            self.quick_game_start_pos = Point(0, 0)
+            self.quick_game_play_radius = 0
+            self.quick_game_respawn_bots_pos = Point(0, 0)
+            self.quick_game_respawn_bots_radius = 0
+            self.quick_game_death_radius = 0
 
             # self.ioloop.add_callback(callback=self.load_registry)
 
@@ -137,18 +139,27 @@ class Server(object):
         if options.mode == 'basic':
             self.on_load_poi(event)
         elif options.mode == 'quick':
+            # Установка стартовых значений
+            world_settings = self.reg['world_settings']
+            self.quick_game_start_pos = world_settings.quick_game_start_pos.as_point()
+            self.quick_game_play_radius = world_settings.quick_game_play_radius
+            self.quick_game_respawn_bots_pos = world_settings.quick_game_respawn_bots_pos.as_point()
+            self.quick_game_respawn_bots_radius = world_settings.quick_game_respawn_bots_radius
+            self.quick_game_death_radius = self.quick_game_play_radius * 20
+
+            # Установка POI объектов быстрой игры
             self.on_load_poi_quick_mode(event)
 
             # Создание экземпляров машинок игроков для быстрой игры
-            for car_proto in self.reg['world_settings'].quick_game_cars:
+            for car_proto in world_settings.quick_game_cars:
                 self.quick_game_cars_proto.append(car_proto)
 
             # Создание экземпляров машинок ботов для быстрой игры
-            for car_proto in self.reg['world_settings'].quick_game_bot_cars:
+            for car_proto in world_settings.quick_game_bot_cars:
                 self.quick_game_bot_cars_proto.append(car_proto)
 
             # Получение экземпляров агентов ботов для быстрой игры
-            for agent_ex in self.reg['world_settings'].quick_game_bot_agents:
+            for agent_ex in world_settings.quick_game_bot_agents:
                 self.quick_game_bot_agents_proto.append(agent_ex)
 
             # Создание AIQuickBot'ов
@@ -199,6 +210,7 @@ class Server(object):
         # Установка точек-респаунов
         respawns_root = self.reg['poi/quick_game_poi/quick_game_respawn']
         for rs_exm in respawns_root:
+            respawns_root.position = self.quick_game_start_pos
             MapRespawn(time=event.time, example=rs_exm, server=self)
 
     @tornado.gen.coroutine
