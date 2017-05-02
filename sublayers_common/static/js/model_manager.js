@@ -74,6 +74,7 @@ var ClientManager = (function () {
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
                 var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
+                owner.cls = data.cls;
                 return ownerList.add(owner);
             }
         return null;

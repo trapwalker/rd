@@ -202,6 +202,12 @@ var InviteBarterObserver = (function(_super){
         this.obs_btn.removeClass('active');
     }
 
+    InviteBarterObserver.prototype.addModelObject = function (mobj) {
+        // Отключение значка "Начать бартер" для ботов
+        if (mobj.owner && mobj.owner.cls != "AIQuickAgent")
+            _super.prototype.addModelObject.call(this, mobj);
+    };
+
     InviteBarterObserver.prototype.on_add_obj = function(mobj) {
         _super.prototype.on_add_obj.call(this, mobj);
         //console.log('Добавлен Bot объект: ', mobj);
