@@ -25,6 +25,7 @@ var WFireController = (function (_super) {
         this.autoShoot = false;
         this.sides = [];
         this.visible = true;
+        this.setting_rotate_sectors = settingsManager.options.rotate_fire_sectors.value == 1;
         this.combatState = true;
         this.rotateAngle = 0;
         this.halfSectorWidth = gradToRad(ConstFireControllerSectorWidth / 2.);
@@ -570,7 +571,8 @@ var WFireController = (function (_super) {
 
         // Вращаем виджет
         var userCarDirection = this.car.getCurrentDirection(time);
-        this._setRotation(userCarDirection);
+        var userCarDirection_sectors = this.setting_rotate_sectors ? userCarDirection : -Math.PI / 2;
+        this._setRotation(userCarDirection_sectors);
 
         // Анимация перезарядки
         for (var i = 0; i < this.sides.length; i++) {
@@ -601,15 +603,15 @@ var WFireController = (function (_super) {
             car.angle = angleVectorRadCCW(subVector(carPosition, userCarPosition));
 
             if (car._wfc_side)
-                if (this._carInSide(car, car._wfc_side, userCarPosition, userCarDirection))
-                    this._updateCarPoint(car._wfc_side, car, userCarDirection);
+                if (this._carInSide(car, car._wfc_side, userCarPosition, userCarDirection)) // расчёт с реальным углом
+                    this._updateCarPoint(car._wfc_side, car, userCarDirection_sectors);  // апдейт с реальным для отрисовки
                 else
                     this._deleteCarPoint(car);
 
             for (var j = 0; (j < this.sides.length) && (!car._wfc_side); j++) {
                 var side = this.sides[j];
-                if (this._carInSide(car, side, userCarPosition, userCarDirection))
-                    this._updateCarPoint(side, car);
+                if (this._carInSide(car, side, userCarPosition, userCarDirection)) // расчёт с реальным углом
+                    this._updateCarPoint(side, car, userCarDirection_sectors); // апдейт с реальным для отрисовки
             }
         }
     };

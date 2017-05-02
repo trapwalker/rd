@@ -537,6 +537,24 @@ var SettingsManager = (function() {
             list_values: [{text: "Медленно", value: 0.2}, {text: "Нормально", value: 0.5}, {text: "Быстро", value: 1}, {text: "Очень быстро", value: 2}],
             set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
         },
+        rotate_fire_sectors: {
+            name: "rotate_fire_sectors",
+            page: "other",
+            text_name: "Вращение секторов боевого виджета",
+            text_description: "Вращение секторов боевого виджета",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            set_callback: function (new_value) {
+                if (wFireController) {
+                    wFireController.setting_rotate_sectors = new_value == 1;
+                    wFireController.change();
+                }
+            },
+        },
 
         game_color: {
             name: "game_color",

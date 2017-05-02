@@ -47,10 +47,10 @@ $(document).ready(function () {
         radioPlayer.save_setting_to_cookie(true);
     };
 
-    if ($('#settings_server_mode').text() == 'quick')
-        chat.setActivePage(chat.page_log);
-    else
-        chat.setActivePage(chat.page_global);
+    //if ($('#settings_server_mode').text() == 'quick')
+    //    chat.setActivePage(chat.page_log);
+    //else
+    chat.setActivePage(chat.page_global);
 
     returnFocusToMap();
 

@@ -74,6 +74,7 @@ var ClientManager = (function () {
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
                 var owner = new Owner(data.uid, data.login, party, (data.cls === "QuickUser") || (data.cls === "TeachingUser"));
+                owner.cls = data.cls;
                 return ownerList.add(owner);
             }
         return null;
@@ -458,6 +459,7 @@ var ClientManager = (function () {
 
             user.userCar = mcar;
             mcar.sub_class_car = event.car.sub_class_car;
+            mcar.cls = event.car.cls;
             mapCanvasManager.on_new_map_size();
 
             // Установка звука движка
