@@ -4,13 +4,11 @@ var ModalWindow = (function () {
         // - divs.parent - див для создания всего механизма модельных окон
         // - divs.back - див для бекграунда
         // - divs.modalWelcome - див для модального окна приветствия
-        // - divs.modalOptions - див для модального окна настроек
         // - divs.modalDeath - див для модального окна смерти игрока
 
         this.parent = $('#' + divs.parent);
         this.back = $('#' + divs.back);
         this.modalWelcome = $('#' + divs.modalWelcome);
-        this.modalOptions = $('#' + divs.modalOptions);
         this.modalDeath = $('#' + divs.modalDeath);
         this.modalRestart = $('#' + divs.modalRestart);
         this.modalDialogInfo = $('#modalInfoPage');
@@ -24,7 +22,6 @@ var ModalWindow = (function () {
         this.parent.addClass('modal-window-parent');
         this.back.addClass('modal-window-hide');
         this.modalWelcome.addClass('modal-window-hide');
-        this.modalOptions.addClass('modal-window-hide');
         this.modalDeath.addClass('modal-window-hide');
         this.modalRestart.addClass('modal-window-hide');
         this.modalDialogInfo.addClass('modal-window-hide');
@@ -36,7 +33,6 @@ var ModalWindow = (function () {
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
-        this.modalOptionsLoad();
         this.modalDeathLoad();
         this.modalRestartLoad();
         this.modalDialogInfoLoad();
@@ -76,9 +72,6 @@ var ModalWindow = (function () {
 
         this.modalWelcome.removeClass('modal-window-welcome-show');
         this.modalWelcome.addClass('modal-window-hide');
-
-        this.modalOptions.removeClass('modal-window-options-show');
-        this.modalOptions.addClass('modal-window-hide');
 
         this.modalDeath.removeClass('modal-window-death-show');
         this.modalDeath.addClass('modal-window-hide');
@@ -150,96 +143,6 @@ var ModalWindow = (function () {
 
         });
     };
-
-
-    ModalWindow.prototype.modalOptionsShow = function () {
-        // включить фон
-        this._modalBackShow();
-        // включить модальное окно modalOptions
-        this.modalOptions.removeClass('modal-window-hide');
-        this.modalOptions.addClass('modal-window-options-show');
-        // считать все данные из CookieStorage и занести галочками сюда
-        optionsFlagDebug.checked = cookieStorage.flagDebug ? true : false;
-        optionsChatPush.checked = cookieStorage.optionsChatPush ? true : false;
-        optionsChatRPC.checked = cookieStorage.optionsChatRPC ? true : false;
-        optionsChatAnswer.checked = cookieStorage.optionsChatAnswer ? true : false;
-        optionsChatSystemLog.checked = cookieStorage.optionsChatSystemLog ? true : false;
-        optionsMarkerContact.checked = cookieStorage.optionsMarkerContact ? true : false;
-        optionsMarkerUpdate.checked = cookieStorage.optionsMarkerUpdate ? true : false;
-        optionsMapTileVisible.checked = cookieStorage.optionsMapTileVisible ? true : false;
-        optionsFCRotate.checked = cookieStorage.optionsFCRotate ? true : false;
-        optionsRMVisible.checked = cookieStorage.optionsRMVisible ? true : false;
-        optionsSelectAnybody.checked = cookieStorage.optionsSelectAnybody ? true: false;
-        optionsLevelForVisibleLabel.value = cookieStorage.levelZoomForVisibleLabel;
-        optionsShowID.checked = cookieStorage.optionsShowID;
-        optionsFriendlyFireEnabled.checked = cookieStorage.optionsFriendlyFireEnabled;
-        optionsShowDebugLine.checked = cookieStorage.optionsShowDebugLine;
-    };
-
-    ModalWindow.prototype.modalOptionsHide = function(saveOptions){
-        // выключить фон
-        this._modalBackHide();
-        // выключить модальное окно Welcome
-        this.modalOptions.removeClass('modal-window-options-show');
-        this.modalOptions.addClass('modal-window-hide');
-        // Загрузить данные в куки сторадж, если saveOptions == true
-        if(saveOptions) {
-            // Опции, не требующие действий
-            cookieStorage.optionsRMVisible = optionsRMVisible.checked ? true : false;
-            cookieStorage.optionsMarkerContact = optionsMarkerContact.checked ? true : false;
-            cookieStorage.optionsMarkerUpdate = optionsMarkerUpdate.checked ? true : false;
-            cookieStorage.optionsFriendlyFireEnabled = optionsFriendlyFireEnabled.checked ? true : false;
-            cookieStorage.optionsShowDebugLine = optionsShowDebugLine.checked ? true : false;
-
-            // Считать флаг дебаг. Если false, то стереть маркеры апдейтов и контактов
-            cookieStorage.flagDebug = optionsFlagDebug.checked ? true : false;
-
-            // TODO Развыделить все машинки и снова выделить только партийные
-            cookieStorage.optionsSelectAnybody = optionsSelectAnybody.checked ? true : false;
-
-            // Опции чата. Нужно присваивать и потом удалять или добавлять чат
-            cookieStorage.optionsChatPush = optionsChatPush.checked ? true : false;
-            cookieStorage.optionsChatRPC = optionsChatRPC.checked ? true : false;
-            cookieStorage.optionsChatAnswer = optionsChatAnswer.checked ? true : false;
-            cookieStorage.optionsChatSystemLog = optionsChatSystemLog.checked ? true : false;
-            //chat.manageSystemChats(cookieStorage);
-
-            /*
-            // Скрыть или показать тайловый уровень в зависимости от настроек опций
-            cookieStorage.optionsMapTileVisible = optionsMapTileVisible.checked ? true : false;
-            TileLaterSet();
-
-            // просто повернуть на 0 (или 90, или минус 90 - узнать!) и присвоить
-            cookieStorage.optionsFCRotate = optionsFCRotate.checked ? true : false;
-            controllers.fireControl.setRotated(cookieStorage.optionsFCRotate);
-
-            // считать данные о масштабе для отображения лейблов маркера
-            cookieStorage.levelZoomForVisibleLabel = optionsLevelForVisibleLabel.value;
-
-            // optionsShowID переделать шапку, в зависимости от результата
-            cookieStorage.optionsShowID = optionsShowID.checked ? true : false;
-            */
-        }
-        returnFocusToMap();
-    };
-
-    ModalWindow.prototype.modalOptionsLoad = function () {
-        // Загрузить информацию из документа в див
-        var self = this;
-        this.modalOptions.load('/static/modal_window/optionsPage.html', function(){
-            // Назначить кнопку закрытия окна
-            $('#optionsPageCloseButton').on('click', {modal: self}, function(event){
-                event.data.modal.modalOptionsHide(true);
-            });
-
-            $('#optionsPageCancelButton').on('click', {modal: self}, function(event){
-                event.data.modal.modalOptionsHide();
-            });
-
-        });
-
-    };
-
 
     ModalWindow.prototype.modalDeathShow = function () {
         // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
@@ -618,7 +521,7 @@ var ModalWindow = (function () {
         this._modalQuickGamePoints_current_car_index = 0;
 
         this.modalQuickGamePoints.draggable({
-            cancel: '.qg-pp-graphic-wrap',
+            cancel: '.window-records-qg-wrap',
             containment: "parent"
         });
     };
@@ -706,6 +609,10 @@ var ModalWindow = (function () {
             $(this).addClass("active");
         });
 
+        // Клик на крестик
+        this.modalQuickGamePoints.find(".windowDragCloseHeader-close").first().off("click");
+        this.modalQuickGamePoints.find(".windowDragCloseHeader-close").first().click(function() {btn_ok.click()});
+
         // Показать бывшую машинку юзера
 
         modalWindow._modalQuickGamePoints_current_car_index = options.current_car_index;
@@ -740,7 +647,7 @@ var ModalWindow = (function () {
         // Загрузить информацию из документа в див
         this.modalQuickGameMapTeaching.load('/static/modal_window/modalQuickGameMapTeachingPage.html', function(){});
         this.modalQuickGameMapTeaching.draggable({
-            cancel: '.qg-mt-graphic-wrap',
+            cancel: '.qg-mt-block',
             containment: "parent"
         });
     };
@@ -772,6 +679,9 @@ var ModalWindow = (function () {
             if (typeof(cb_cancel) === 'function')
                 cb_cancel(event);
         });
+
+        this.modalQuickGameMapTeaching.find(".windowDragCloseHeader-close").first().off("click");
+        this.modalQuickGameMapTeaching.find(".windowDragCloseHeader-close").first().click(function() {btn_cancel.click()});
     };
 
     ModalWindow.prototype.modalQuickGameMapTeachingPageHide = function() {

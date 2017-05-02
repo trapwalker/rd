@@ -1,0 +1,8 @@
+date: '20.04.2017'
+header:
+  ru: 'Обновление v0.130.2999'
+  en: 'Update v0.130.2999'
+link: 'update_v0_130_2999'
+content:
+  ru: '<div style="pointer-events: none;  font-size: 9pt; "><img src="/static/static_site/news/news_img/dog_news.png" width="120" height="110" style=" float: right; "></img><br>- Добавлена предзагрузка тайлов карты.<br>- Добавлен плавный зум карты.<br>- Добавлена координатная сетка на базе тайлов.<br>- Исправлен баг с зависанием звука.<br>- Улучшены пылевые шлейфы.<br>- Добавлена поддержка низких разрешений (1366x768, 16:9)<br>- Добавлены 11 единиц транспорта в основную игру: GMC Scenicruiser, International 9800, Peterbilt 369, M113A1, M1126, Honda Hornet, Triumph America, Chrysler New Yorker, Gelandewagen, Chevrolet Express, GMC Savana.<br><br><br></div><div style="width: 400px; height: 1989px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_12.png"></img></div>'
+  en: '<div style="pointer-events: none;  font-size: 9pt; "><img src="/static/static_site/news/news_img/dog_news.png" width="120" height="110" style=" float: right; "></img><br>- Added preloading of map tiles.<br>- Added a smooth map zooming.<br>- Added a tile based grid.<br>- Fixed bug with freeze of the sound.<br>- Improved dusty trails.<br>- HUD-optimization for lower resolutions (1366x768, 16:9)<br>- Added 11 vehicles to the main game: GMC Scenicruiser, International 9800, Peterbilt 369, M113A1, M1126, Honda Hornet, Triumph America, Chrysler New Yorker, Gelandewagen, Chevrolet Express, GMC Savana.<br><br><br></div><div style="width: 400px; height: 1989px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_12.png"></img></div>'

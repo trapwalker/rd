@@ -5,9 +5,6 @@ $(document).ready(function () {
     else
         textConsoleManager.start('enter');
 
-    // Загрузка Cookie
-    cookieStorage = new LocalCookieStorage();
-
     mapManager._init();
 
     locationManager = new LocationManager();
@@ -35,7 +32,6 @@ $(document).ready(function () {
     user = new User(1);
     ownerList = new OwnerList();
 
-
     ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
 
     rpcCallList = new RPCCallList();
@@ -47,7 +43,7 @@ $(document).ready(function () {
     });
 
     window.onbeforeunload = function (e) {
-        cookieStorage.save();
+        settingsManager.unload_client();
         radioPlayer.save_setting_to_cookie(true);
     };
 
@@ -59,49 +55,93 @@ $(document).ready(function () {
     returnFocusToMap();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
-        windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
-            function(jq_window_div) {
-                var new_text = jq_window_div.find('textarea').first().val();
-                if (user.example_agent.about_self != new_text)
-                    clientManager.sendSetAboutSelf(new_text); 
-            });
+        if (windowTemplateManager.isOpen('character'))
+            windowTemplateManager.closeUniqueWindow('character');
+        else
+            windowTemplateManager.openUniqueWindow('character', '/menu_character', null, characterManager.redraw,
+                function (jq_window_div) {
+                    var new_text = jq_window_div.find('textarea').first().val();
+                    if (user.example_agent.about_self != new_text)
+                        clientManager.sendSetAboutSelf(new_text);
+                });
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
-        carManager.get_info();
+        if (windowTemplateManager.isOpen('car_info'))
+            windowTemplateManager.closeUniqueWindow('car_info');
+        else
+            carManager.get_info();
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
-        windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null,
-            wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
+        if (windowTemplateManager.isOpen('inventory_info'))
+            windowTemplateManager.closeUniqueWindow('inventory_info');
+        else
+            windowTemplateManager.openUniqueWindow('inventory_info', '/inventory', null,
+                wFireController.switchOnConsumerPanel, wFireController.switchOffConsumerPanel);
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
-        windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
+        if (windowTemplateManager.isOpen('map_journal'))
+            windowTemplateManager.closeUniqueWindow('map_journal');
+        else
+            windowTemplateManager.openUniqueWindow('map_journal', '/menu_journal', null, journalManager.redraw);
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnParty').onclick = function () {
-        windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
+        if (windowTemplateManager.isOpen('party'))
+            windowTemplateManager.closeUniqueWindow('party');
+        else
+            windowTemplateManager.openUniqueWindow('party', '/menu_party', null, partyManager.redraw);
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnMain').onclick = function () {
         window.open('/', '_blank');
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnForum').onclick = function () {
         window.open('https://vk.com/road_dogs', '_blank');
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     document.getElementById('divMainMenuBtnRadio').onclick = function () {
-        windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, function () {
+         if (windowTemplateManager.isOpen('radio'))
+            windowTemplateManager.closeUniqueWindow('radio');
+        else
+            windowTemplateManager.openUniqueWindow('radio', '/menu_radio', null, function () {
             radioPlayer.update();
         });
         returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+    };
+
+    document.getElementById('divMainMenuBtnOptions').onclick = function () {
+        if (windowTemplateManager.isOpen('settings'))
+            windowTemplateManager.closeUniqueWindow('settings');
+        else
+            windowTemplateManager.openUniqueWindow('settings', '/menu_settings', null, settingsManager.redraw.bind(settingsManager), settingsManager.cancel_options.bind(settingsManager));
+        returnFocusToMap();
+        // Звук на клик по кнопке меню
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     $('.anti-click-class').click(function(){
@@ -148,7 +188,7 @@ $(document).ready(function () {
     initRadioPlayer();
 
     setTimeout(function() {
-        var radio_settings = cookieStorage.getCookie('radio_player');
+        var radio_settings = settingsManager.getCookie('radio_player');
         if (radio_settings){
             try {
                 var settings = radio_settings.split('_');
@@ -159,8 +199,7 @@ $(document).ready(function () {
             }
         }
     }, 1000);
-
-    //audioManager.set_general_gain(0.1);
+    
 
     // Интервал запроса пинга
     setInterval(function(){
@@ -170,6 +209,9 @@ $(document).ready(function () {
 
     resourceLoadManager.load_complete_init = true;
     resourceLoadManager.del(null);
+
+
+    setTimeout(function() {settingsManager.options.game_color.set_callback(settingsManager.options.game_color.value)}, 10);
 });
 
 var index_notes_test = 0;
@@ -252,14 +294,12 @@ var img1;
 var window_scaled_prc = 1.0;
 
 
-
-
 $(window).resize(resizeWindowHandler);
 
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
-    interface_scale_big = $(window).width() > 1366;
+    interface_scale_big = ($(window).width()) > 1550 && ($(window).height() > 880);
     var scale_prc_w_width = $(window).width() / 1920;
     var scale_prc_w_height = $(window).height() / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
@@ -269,7 +309,6 @@ function resizeWindowHandler() {
         window_scaled_prc = scale_prc;
     }
     if (teachingMapManager) teachingMapManager.redraw();
-    if (mapCanvasManager) mapCanvasManager.on_new_map_size();
     if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
 }
 
@@ -295,7 +334,6 @@ var tileLayerShow;
 var controllers;
 var debugMapList = [];
 var carMarkerList;
-var cookieStorage;
 var clientManager;
 var j_connector;
 var ws_connector;

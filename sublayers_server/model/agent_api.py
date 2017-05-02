@@ -16,7 +16,7 @@ from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGet
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
     Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
-    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent,
+    HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent, MassiveLootAroundEvent,
     LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent, TakeItemInventoryEvent, TakeAllInventoryEvent)
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
@@ -84,6 +84,9 @@ class AgentConsoleNamespace(Namespace):
                 self.write(u'You are not in party')
 
     def die(self):
+        self.agent.die(time=self.agent.server.get_time())
+
+    def gg(self):  # good game
         self.agent.die(time=self.agent.server.get_time())
 
     def damage(self, value=0):
@@ -648,6 +651,11 @@ class AgentAPI(API):
                                time=self.agent.server.get_time()).post()
 
     @public_method
+    def massive_loot_around(self):
+        self.agent.log.info('try massive_loot_around')
+        MassiveLootAroundEvent(agent=self.agent, time=self.agent.server.get_time()).post()
+
+    @public_method
     def get_balance_cls(self, balance_cls_name):
         pass
         # log.info('agent %s want get balance_cls_name %s', self.agent, balance_cls_name)
@@ -946,7 +954,7 @@ class AgentAPI(API):
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 
     @public_method
-    def quick_play_again(self, car_index):
+    def quick_play_again(self, car_index=0):
         self.agent.log.info('quick_play_again with index: %s', car_index)
         def callback(*kw):
             api.update_agent_api(time=api.agent.server.get_time())

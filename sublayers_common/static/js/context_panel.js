@@ -15,11 +15,13 @@ var ContextPanel = (function () {
         this.location_observer = new EnterToLocationObserver();
         this.invite_barter_observer = new InviteBarterObserver();
         this.activate_barter_manager = new CPActivateBarterManager();
+        this.get_loot_observer = new GetLootObserver();
     }
 
     ContextPanel.prototype.addModelObject = function(mobj) {
         this.location_observer.addModelObject(mobj);
         this.invite_barter_observer.addModelObject(mobj);
+        this.get_loot_observer.addModelObject(mobj);
     };
 
     return ContextPanel;
@@ -336,3 +338,53 @@ var CPActivateBarterManager = (function () {
 
     return CPActivateBarterManager;
 })();
+
+
+var GetLootObserver = (function(_super){
+    __extends(GetLootObserver, _super);
+    function GetLootObserver() {
+        _super.call(this, user.userCar, ['POICorpse', 'POILoot'], 50);
+        // Вешаем клик на див с икнонкой
+        this.obs_btn = $('#cpGetLootIcon');
+        this.obs_btn.click(function() {
+            if (contextPanel) contextPanel.get_loot_observer.activate();
+        });
+        this.obs_btn.removeClass('active');
+        this._is_active = false;
+    }
+
+    GetLootObserver.prototype._get_compare_distance = function(mobj, time) {
+        if (mobj.hasOwnProperty('p_observing_range'))
+            return mobj.p_observing_range * mobj.p_observing_range;
+        return _super.prototype._get_compare_distance.call(this, mobj, time);
+    };
+
+    GetLootObserver.prototype.on_add_obj = function(mobj) {
+        _super.prototype.on_add_obj.call(this, mobj);
+        if (this.observing_list.length > 0) {
+            this.obs_btn.addClass('active');
+            this._is_active = true;
+        }
+        // Включить подсветку лута
+        var marker = visualManager.getVobjByType(mobj, WCanvasLootMarker);
+        if (marker) marker.is_backlight = true;
+    };
+
+    GetLootObserver.prototype.on_del_obj = function(mobj) {
+        _super.prototype.on_del_obj.call(this, mobj);
+        if (this.observing_list.length <= 0) {
+            this.obs_btn.removeClass('active');
+            this._is_active = false;
+        }
+        // Выключить подсветку лута
+        var marker = visualManager.getVobjByType(mobj, WCanvasLootMarker);
+        if (marker) marker.is_backlight = false;
+    };
+
+    GetLootObserver.prototype.activate = function() {
+        if (! this._is_active) return;
+        clientManager.sendMassiveLootAround();
+    };
+
+    return GetLootObserver;
+})(DistanceObserver);

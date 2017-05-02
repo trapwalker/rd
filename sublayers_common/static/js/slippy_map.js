@@ -40,7 +40,8 @@
                 zMax: 18,
                 cacheValues: true,
                 preloadMargin: 0,
-                loadCompleteCB: null
+                loadCompleteCB: null,
+                preload_pyramid_lvl: 8,
             };
             /* merge defaults and options */
             if (typeof options === "object") {
@@ -60,7 +61,8 @@
                 preloadMargin: options.preloadMargin,
                 zMin : options.zMin,
                 zMax : options.zMax,
-                maxImageLoadingCount : 30,
+                maxImageLoadingCount : 5,
+                preload_pyramid_lvl: options.preload_pyramid_lvl,
                 init: function () {
                     var coords;
                     if ($.document.getElementById(options.div)) {
@@ -156,11 +158,11 @@
                         map.renderer.load_queue = [];
                         var zi = $.Math.ceil(map.position.z);
                         map.renderer.add_zoom_to_queue(zi);
-                        for (var i = 1; i <= map.zMax - map.zMin; i++) {
+                        for (var i = 1; i <= map.preload_pyramid_lvl; i++) {
                             if (zi + i <= map.zMax) map.renderer.add_zoom_to_queue(zi + i);
                             if (zi - i >= map.zMin) map.renderer.add_zoom_to_queue(zi - i);
                         }
-
+                        
                         // начать грузить тайлы
                         for (var i = 0; i < map.maxImageLoadingCount; i++)
                             map.renderer.next_load_tile();
@@ -216,6 +218,7 @@
                     layers: [
                         { /* repaint canvas */
                             id: 'tiles',
+                            visibility: true,
                             callback: function (viewport) {
                                 var maxTileNumber, tileDone, x, y, xoff, yoff, tileKey, encodeIndex;
                                 encodeIndex = map.renderer.encodeIndex;
@@ -284,6 +287,7 @@
                         },
                         { /* repaint canvas - grid */
                             id: 'grid',
+                            visibility: true,
                             callback: function (viewport) {
                                 var t, x, y, xoff, yoff;
                                 var view_width = viewport.w;
@@ -344,8 +348,8 @@
                         ctx.save();
                         ctx.clearRect(0, 0, viewport.w, viewport.h);
                         ctx.scale(viewport.zf, viewport.zf);
-                        map.renderer.layers[0].callback(viewport);
-                        map.renderer.layers[1].callback(viewport);
+                        if (map.renderer.layers[0].visibility) map.renderer.layers[0].callback(viewport);
+                        if (map.renderer.layers[1].visibility) map.renderer.layers[1].callback(viewport);
 
                         ctx.restore();
 
@@ -505,7 +509,6 @@
                     map.position.center(coords);
                     map.position.is_init = true;
                     map.renderer.refresh_load();
-
                     return this;
                 },
                 center: function (coords, options) {

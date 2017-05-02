@@ -151,24 +151,6 @@ body{
     background: transparent url('/static/img/misc_button/btn_no_fullscreen_pressed.png') 100% 100% no-repeat;
 }
 
-#buttonOptions {
-    position: absolute;
-    top: 100px;
-    right: 15px;
-    width: 62px;
-    height: 62px;
-    background: transparent url('/static/img/misc_button/btn_options_normal.png') 100% 100% no-repeat;
-    display: none;
-}
-
-#buttonOptions:hover {
-    background: transparent url('/static/img/misc_button/btn_options_over.png') 100% 100% no-repeat;
-}
-
-#buttonOptions:active {
-    background: transparent url('/static/img/misc_button/btn_options_pressed.png') 100% 100% no-repeat;
-}
-
 input:focus {
     outline: none;
 }
@@ -270,6 +252,8 @@ input:focus {
     z-index: 2000;
     background-color: rgba(0, 0, 0, 0.8);
 }
+
+.anti-click-class { pointer-events: auto; }
 
 @media screen and (max-width: 1367px) {
     #activeTownDiv {

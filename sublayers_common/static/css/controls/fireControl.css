@@ -19,6 +19,28 @@
     bottom: -225px
 }
 
+#divForFireControlNotClick1 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 150px;
+}
+#divForFireControlNotClick2 {
+    position: absolute;
+    bottom: 0;
+    right: 100px;
+    width: 186px;
+    height: 200px;
+}
+#divForFireControlNotClick3 {
+    position: absolute;
+    bottom: 0;
+    right: 325px;
+    width: 100px;
+    height: 150px;
+}
+
 .fire-control-undroppable-area {
     position: absolute;
     width: 65px;
@@ -91,6 +113,7 @@
 #fireControlQuickBtn4 { top: 10px; left: 4px; transform: rotate(14deg); }
 
 #divForSVG {
+    position: absolute;
     margin-left: 118px;
     margin-top: 22px;
 }
@@ -216,8 +239,6 @@
     stroke-width: 1px;
 }
 
-
-
 .fire-control-all {
     background-color: rgba(14, 75, 0, 0.6);
     background-image: url("/static/img/fire_control/fire_widget_indicator/indicator_off.png");
@@ -242,12 +263,12 @@
 }
 
 
-
-@media screen and (max-width: 1366px) {
-
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
     .fire-control-parent {
         transform: scale(0.75);
         bottom: 171px;
         margin-left: -132px;
     }
 }
+
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {}

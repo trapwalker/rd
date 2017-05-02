@@ -28,6 +28,12 @@
     pointer-events: none;
 }
 
+#divForZoomNotClick {
+    position: absolute;
+    width: 105px;
+    height: 350px;
+}
+
 /* Оконтовка для непосредственно зума: кнопки плюс и минус, текст, шкала, каретка и тд */
 #zoomSliderMainDivWrapper {
     position: relative;
@@ -79,6 +85,13 @@
     pointer-events: auto;
 }
 
+#Zoom_sliderScale {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
 #Zoom_btnMinus {
     pointer-events: auto;
     height: 15px;
@@ -92,6 +105,7 @@
     font-size: 50pt;
     background-color: rgba(0, 255, 85, 0.10);
     top: 12px;
+    overflow: hidden;
 }
 
 #ZoomBtnMinusSpan {
@@ -136,7 +150,6 @@
     border-radius: 30%;
 }
 
-
 #Zoom_btnPlus:hover {
     color: white;
 }
@@ -144,8 +157,6 @@
 #Zoom_btnPlus:active {
 
 }
-
-
 
 #Zoom_btnMinus:hover {
     color: white;
@@ -212,7 +223,6 @@
     background-color: rgba(0, 255, 85, 0.20);
 }
 
-
 /* Кнопка сворачивания гаджета зума */
 #ZoomPortHideBtn {
     pointer-events: auto;
@@ -228,15 +238,12 @@
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
 }
-
 .hideBtnDownLeft:hover {
     background: transparent url('/static/img/misc_button/down_hide_hover.png') 50% 50% no-repeat;
 }
-
 .hideBtnDownLeft:active {
     background: transparent url('/static/img/misc_button/down_hide_active.png') 50% 50% no-repeat;
 }
-
 
 .hideBtnUpLeft {
     height: 36px;
@@ -245,24 +252,12 @@
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
 }
-
 .hideBtnUpLeft:hover {
     background: transparent url('/static/img/misc_button/up_hide_hover.png') 50% 50% no-repeat;
 }
-
 .hideBtnUpLeft:active {
     background: transparent url('/static/img/misc_button/up_hide_active.png') 50% 50% no-repeat;
 }
-
-
-
-
-
-
-
-
-
-
 
 /* Настройка портативного (свёрнутого) режима зума */
 
@@ -354,7 +349,6 @@
     opacity: 0.3;
 }
 
-
 #ZoomTextDivCompact {
     position: absolute;
     left: 24px;
@@ -368,9 +362,130 @@
     /*Если что, то смотреть прозрачность в коде, так как она там стоит = 0.5!!! Функция зуммирования!*/
 }
 
-@media screen and (max-width: 1366px) {
 
-    .slider-zoom-parent {
-        transform: scale(0.75);
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
+    #zoomSliderMainDivHardware {
+        width: 21px;
+        height: 322px;
+        background: transparent url('/static/img/control_zoom/zoom_768/zoom_port.png') 100% 100% no-repeat;
     }
+
+    #zoomSliderMainDivGlass {
+        width: 89px;
+        height: 273px;
+        background: transparent url('/static/img/control_zoom/zoom_768/zoom_glass.png') 100% 100% no-repeat;
+    }
+
+    #divForZoomNotClick { width: 80px; height: 260px; }
+
+    #Zoom_sliderBar { height: 120px; width: 48px; top: 4px; }
+
+    #Zoom_slider {
+        background: transparent url('/static/img/control_zoom/zoom_768/zoom_mark.png') 100% 100% no-repeat;
+        width: 29px;
+        height: 21px;
+        left: 20px;
+    }
+
+    #DivForBtnSVALLInsideZoom {
+        height: 26px;
+        width: 56px;
+        background: rgba(0, 255, 85, 0.10) url('/static/img/control_zoom/zoom_768/hide_gadgets.png') 50% 50% no-repeat;
+        left: 12px;
+        top: 6px;
+    }
+
+    #DivForBtnFSCRInsideZoom {
+        height: 26px;
+        width: 56px;
+        font: 10pt MICRADI;
+        padding-top: 3px;
+        left: 12px;
+        top: 12px;
+    }
+
+    #ZoomTextDiv {
+        height: 16px;
+        width: 32px;
+        margin-bottom: 5px;
+    }
+
+    #ZoomTextZoomValue {
+        font: 12pt MICRADI;
+        left: -11px;
+    }
+
+    #Zoom_btnPlus {
+        height: 12px;
+        width: 28px;
+        left: 5px;
+    }
+
+    #ZoomBtnPlusSpan {
+       font-size: 18px;
+    }
+
+    #Zoom_btnMinus {
+        height: 12px;
+        width: 28px;
+        left: 5px;
+        top: 9px;
+    }
+
+    #ZoomBtnMinusSpan {
+        margin-top: -14px;
+    }
+
+    #zoomSliderMainDivWrapper {top: 16px; padding-left: 18px; }
+
+    #DivForBtnRazverALLInsideZoomCompact {
+        height: 20px;
+        width: 40px;
+        background: transparent url('/static/img/control_zoom/unhide_gadgets.png') 50% 50% no-repeat;
+        left: 10px;
+        opacity: 0.5;
+    }
+
+    #DivForBtnFSCRInsideZoomCompact {
+        height: 20px;
+        width: 40px;
+        font: 7pt MICRADI;
+        padding-top: 5px;
+        margin-top: 5px;
+        left: 10px;
+        opacity: 0.5;
+    }
+
+    #spanZoomZoomText { top: 126px; left: -7px; font: 8pt MICRADI;}
+
+    #ZoomPortHideBtn {top: 280px; left: -3px;}
+
+    .hideBtnDownLeft {
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/down_hide_normal.png') 50% 50% no-repeat;
+    }
+    .hideBtnDownLeft:hover {
+        background: transparent url('/static/img/misc_button/768/down_hide_hover.png') 50% 50% no-repeat;
+    }
+    .hideBtnDownLeft:active {
+        background: transparent url('/static/img/misc_button/768/down_hide_active.png') 50% 50% no-repeat;
+    }
+
+    .hideBtnUpLeft {
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/up_hide_normal.png') 50% 50% no-repeat;
+    }
+    .hideBtnUpLeft:hover {
+        background: transparent url('/static/img/misc_button/768/up_hide_hover.png') 50% 50% no-repeat;
+    }
+    .hideBtnUpLeft:active {
+        background: transparent url('/static/img/misc_button/768/up_hide_active.png') 50% 50% no-repeat;
+    }
+}
+
+
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {
+    .slider-zoom-parent {transform: scale(0.75);}
 }

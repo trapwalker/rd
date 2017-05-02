@@ -161,7 +161,7 @@ var WCanvasCarMarker = (function (_super) {
         if (car == user.userCar && car.engine_audio) {
             this.audio_object = audioManager.play({
                 name: car.engine_audio.audio_name,
-                gain: 1.0,
+                gain: 1.0 * audioManager._settings_engine_gain,
                 loop: true,
                 playbackRate: car.getAudioEngineRate(clock.getCurrentTime()),
                 priority: 0.1
@@ -178,7 +178,10 @@ var WCanvasCarMarker = (function (_super) {
 
         this.tail_particles_interval_stay = 5000;  // Время между генерациями при скорости = 0
         this.tail_particles_last_born_time = 0;
-        this.tail_particles_icon_name = "icon-car-tail-3";
+        this.tail_particles_icon_left_name = "icon-car-tail-06l-35";
+        this.tail_particles_icon_right_name = "icon-car-tail-06r-35";
+        this.tail_particles_size_start = 0.45;
+        this.tail_particles_size_end = 0.8;
 
         this._set_car_tail();
     }
@@ -186,31 +189,40 @@ var WCanvasCarMarker = (function (_super) {
     WCanvasCarMarker.prototype._set_car_tail = function() {
         var car = this.mobj;
         switch (car.sub_class_car) {
-            case 'artillery':
-            case 'armored':
-            case 'btrs':
-            case 'buses':
-            case 'trucks':
-            case 'tanks':
-            case 'tractors':
-                // Тяжёлые
-                this.tail_particles_interval_stay = 4000;
-                this.tail_particles_icon_name = "icon-car-tail-3";
+            case 'motorcycles':
+            case 'quadbikes':
+            case 'buggies':
+                // Лёгкие
+                this.tail_particles_interval_stay = 6000;
+                this.tail_particles_size_start = 0.25;
+                this.tail_particles_size_end = 0.6;
+                this.tail_particles_icon_left_name = "icon-car-tail-06l-25";
+                this.tail_particles_icon_right_name = "icon-car-tail-06r-25";
                 break;
-            case 'cars':
             case 'sports':
+            case 'cars':
             case 'offroad':
             case 'vans':
                 // Средние
                 this.tail_particles_interval_stay = 5000;
-                this.tail_particles_icon_name = "icon-car-tail-3";
+                this.tail_particles_size_start = 0.45;
+                this.tail_particles_size_end = 0.8;
+                this.tail_particles_icon_left_name = "icon-car-tail-06l-35";
+                this.tail_particles_icon_right_name = "icon-car-tail-06r-35";
                 break;
-            case 'buggies':
-            case 'motorcycles':
-            case 'quadbikes':
-                // Лёгкие
-                this.tail_particles_interval_stay = 8000;
-                this.tail_particles_icon_name = "icon-car-tail-1";
+            case 'armored':
+            case 'btrs':
+            case 'artillery':
+            case 'tanks':
+            case 'buses':
+            case 'trucks':
+            case 'tractors':
+                // Тяжёлые
+                this.tail_particles_interval_stay = 4000;
+                this.tail_particles_size_start = 0.65;
+                this.tail_particles_size_end = 1.0;
+                this.tail_particles_icon_left_name = "icon-car-tail-06l-45";
+                this.tail_particles_icon_right_name = "icon-car-tail-06r-45";
                 break;
             default:
                 console.log('Не найдена иконка. Установлена стандартная. ', car.sub_class_car);
@@ -256,13 +268,16 @@ var WCanvasCarMarker = (function (_super) {
             this._ps_last_position = car_pos_real;
 
             // Звук двигателя
-            if (this.audio_object)
+            if (this.audio_object) {
                 this.audio_object.source_node.playbackRate.value = mobj.getAudioEngineRate(time);
+                if (this.audio_object.get_gain() != audioManager._settings_engine_gain)
+                    this.audio_object.gain(audioManager._settings_engine_gain);
+            }
 
             // Звук движения назад
             if (this.audio_object_reverse_gear) {
                 if (mobj.getCurrentSpeed(time) < 0)
-                    this.audio_object_reverse_gear.gain(0.3);
+                    this.audio_object_reverse_gear.gain(audioManager._settings_engine_gain * 0.3);
                 else
                     this.audio_object_reverse_gear.gain(0.0);
             }
@@ -356,6 +371,7 @@ var WCanvasCarMarker = (function (_super) {
     };
 
     WCanvasCarMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (mapCanvasManager._settings_particles_tail == 0) return;
         var speed = this.mobj.getCurrentSpeed(time);
         var speed_abs = Math.abs(speed);
         var pos_real = this._last_mobj_position;
@@ -364,8 +380,11 @@ var WCanvasCarMarker = (function (_super) {
             this.tail_particles_last_born_time = time * 1000;
             var angle_of_tail = normalizeAngleRad2(Math.PI / 2. + direction_real);
             //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, 10, angle_of_tail, 0.5), direction_real, 2000, 2.5).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
-            new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+            //new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail + 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+            //new ECanvasCarTail(summVector(pos_real, polarPoint(8 + 4 * Math.random(), normalizeAngleRad2(angle_of_tail - 0.2))), direction_real + Math.PI / 2., 2000, this.tail_particles_icon_name, 1, 0.45).start();
+
+            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000 * mapCanvasManager._settings_particles_tail, this.tail_particles_icon_left_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
+            new ECanvasCarTail(summVector(pos_real, polarPoint(7 + 5 * Math.random(), normalizeAngleRad2(angle_of_tail))), direction_real, 2000 * mapCanvasManager._settings_particles_tail, this.tail_particles_icon_right_name, this.tail_particles_size_end, this.tail_particles_size_start).start();
         }
     };
 
@@ -520,18 +539,29 @@ var WCanvasLootMarker = (function (_super) {
     __extends(WCanvasLootMarker, _super);
 
     function WCanvasLootMarker(mobj) {
+        this.icon_backlight = null;
+        this.is_backlight = false;
+
         _super.call(this, mobj);
         this.obj_id = mobj.ID;
+
+        if (mobj.cls == "POICorpse")
+            new WCanvasNicknameMarker(mobj, this);
     }
 
     WCanvasLootMarker.prototype.updateIcon = function() {
         //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
+        // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
+        this.cm_z_index = 10;
         if (this.mobj.cls == "POICorpse") {
             var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
+            this.icon_backlight = iconsLeaflet.getIcon("icon_corpse_backlight");
         }
-        else
+        else {
             this.icon_obj = iconsLeaflet.getIcon("icon_loot");
+            this.icon_backlight = iconsLeaflet.getIcon("icon_loot_backlight");
+        }
         if (! this.icon_obj) return;
         this.duration = 1000;
         this.frame_count = this.icon_obj.frames;
@@ -542,19 +572,110 @@ var WCanvasLootMarker = (function (_super) {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
+
+
     };
 
     WCanvasLootMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
-        windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
         returnFocusToMap();
+        if (! user.userCar) return;
+        if (this.is_backlight) // Если мы в радиусе доступа, то открыть окно
+            windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
+        else { // Попробовать подъехать к цели
+            var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
+            var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
+            p = normVector(p, r);
+            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        }
     };
 
     WCanvasLootMarker.prototype._get_rotate_angle = function (time) {
         return 0;
     };
 
+    WCanvasLootMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (! this.is_backlight || ! this.icon_backlight) return;
+        var ctx_car_pos = this._last_car_ctx_pos || this._last_mobj_ctx_pos;
+        ctx.save();
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y);
+        ctx.drawImage(this.icon_backlight.img, -this.icon_backlight.iconSize[0] >> 1, -this.icon_backlight.iconSize[1] >> 1);
+        ctx.restore();
+    };
+
     return WCanvasLootMarker;
+})(WCanvasMarker);
+
+
+var WCanvasNicknameMarker = (function (_super) {
+    __extends(WCanvasNicknameMarker, _super);
+
+    function WCanvasNicknameMarker(mobj, w_car_marker) {
+        _super.call(this, mobj, w_car_marker);
+        this.obj_id = mobj.ID;
+        this._nickname = mobj._agent_login;
+        this.w_car_marker = w_car_marker;
+        this._offset = new Point(0, -15);
+        this._font = "8pt MICRADI";
+        this._text_height = 8; // Высота зависит от размера шрифта
+        this._text_width = 8 * this._nickname.length; // Ширина также зависит от размера шрифта
+    }
+
+    WCanvasNicknameMarker.prototype.redraw = function(ctx, time){
+        //console.log('WCanvasNicknameMarker.prototype.redraw', time);
+        if (!this._nickname) return;
+        var focused = mapCanvasManager._mouse_focus_widget == this;
+        ctx.save();
+        var ctx_car_pos = summVector(this.w_car_marker._last_car_ctx_pos || this.w_car_marker._last_mobj_ctx_pos, this._offset);
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y - 3);
+        this._last_mobj_ctx_pos = ctx_car_pos;
+        this._last_mobj_position = this.w_car_marker._last_mobj_position;
+        // Вывод лейбла
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = this._font;
+        ctx.fillStyle = focused ? 'rgba(42, 253, 10, 0.9)' : 'rgba(42, 253, 10, 0.6)';
+        ctx.fillText(this._nickname, 0, 0);
+        ctx.restore();
+    };
+
+    WCanvasNicknameMarker.prototype.mouse_test = function(time) {
+        //console.log('WCanvasMarker.prototype.mouse_test');
+        var distance = subVector(this._last_mobj_ctx_pos, mapCanvasManager._mouse_client);
+        return Math.abs(distance.x) < this._text_width && Math.abs(distance.y) < this._text_height;
+    };
+
+    WCanvasNicknameMarker.prototype.updateIcon = function () {
+        //console.log('WCanvasNicknameMarker.prototype.updateIcon');
+        // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
+        this.cm_z_index = 9;
+    };
+
+    WCanvasNicknameMarker.prototype.click_handler = function(event) {
+        //console.log('WCanvasNicknameMarker.prototype.click_handler');
+        if (!this._nickname) return;
+
+        windowTemplateManager.openUniqueWindow(
+            'corpse_info_' + this._nickname,
+            '/corpse_info',
+            {container_id: this.obj_id},
+            function(jq_window) {
+                jq_window.find('.person-window-btn').click(function(){
+                    if (user.party)
+                        clientManager.sendInvitePartyFromTemplate($(this).data('name'));
+                    else {
+                        modalWindow.modalDialogInfoShow({
+                            caption: 'Error Message',
+                            header: 'Вы не в пати',
+                            body_text: 'Для приглашения других игроков создайте пати'
+                        });
+                    }
+                });
+            }
+        );
+    };
+
+    return WCanvasNicknameMarker;
 })(WCanvasMarker);
 
 
@@ -750,13 +871,17 @@ var WCanvasRocketMarkerEffect = (function (_super) {
     };
 
     WCanvasRocketMarkerEffect.prototype.post_redraw = function(ctx, time, client_time) {
+        if (mapCanvasManager._settings_particles_tail == 0) return;
         var speed = this.mobj.getCurrentSpeed(time);
         var speed_abs = Math.abs(speed);
         var pos_real = this._last_mobj_position;
         var direction_real = this._last_mobj_direction;
+        this.tail_particles_interval_stay = 3000;
         if (speed_abs > 1.0 && this.tail_particles_interval_stay && this.tail_particles_last_born_time + this.tail_particles_interval_stay / speed_abs < time * 1000) {
             this.tail_particles_last_born_time = time * 1000;
-            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000, "icon-car-tail-1", 2.).start();
+            //new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -8, direction_real, 0.5), direction_real, 3000, "icon-car-tail-1", 2.).start();
+
+            new ECanvasCarTail(getRadialRandomPointWithAngle(pos_real, -5, direction_real, 0.5), Math.PI / 2. + direction_real, 2500 * mapCanvasManager._settings_particles_tail, "icon-rocket-tail-03", 0.5, 0.25).start();
         }
     };
 

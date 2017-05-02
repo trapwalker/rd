@@ -1,0 +1,31 @@
+{% set window_caption = 'Nuke:\Settings>' %}
+<div class="settingsWindow-main town-back-interlacing-nocontent">
+    {% include ../drag_close_header.html %}
+    <div class="settings-window-wrap">
+        <div class="settings-window-header-block">
+            <div class="settings-window-menu-item" data-page_class="settings_page_graphics" onclick="settingsManager._handler_click_header(this)">Графика</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_audio" onclick="settingsManager._handler_click_header(this)">Звук</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_control" onclick="settingsManager._handler_click_header(this)">Управление</div>
+            <div class="settings-window-menu-item" data-page_class="settings_page_other" onclick="settingsManager._handler_click_header(this)">Другое</div>
+        </div>
+        <div class="settings-window-description-block">
+            <div class="settings-window-header">Описание:</div>
+            <div class="settings-window-description"></div>
+            <div class="settings-window-page-btn sublayer-clickable settings-default" onclick="settingsManager._handler_click_default();">По умолчанию</div>
+        </div>
+        <div class="settings-window-page-block-wrap">
+            <div class="settings-window-page-block">
+                <div class="settings-window-page settings_page_graphics"></div>
+                <div class="settings-window-page settings_page_audio"></div>
+                <div class="settings-window-page settings_page_control"></div>
+                <div class="settings-window-page settings_page_other"></div>
+            </div>
+            <div class="settings-window-page-btn-block">
+                <div class="settings-window-page-btn sublayer-clickable settings-apply" onclick="settingsManager._handler_click_apply();">Применить</div>
+                <div class="settings-window-page-btn sublayer-clickable settings-cancel" onclick="settingsManager._handler_click_cancel();">Отменить</div>
+                <div class="settings-window-page-btn sublayer-clickable settings-ok" onclick="settingsManager._handler_click_ok();">OK</div>
+            </div>
+        </div>
+
+    </div>
+</div>

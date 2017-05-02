@@ -2,14 +2,14 @@
  * Виджет слайдер зума
 */
 
-var ConstZoomHeightOfScale = 170; // в пикселах, высота шкалы
-
-
 var WZoomSlider = (function () {
     function WZoomSlider() {
         this.mapMng = mapManager;
+        this.current_interface_size = interface_scale_big;
+        this.zoomHeightOfScale = this.current_interface_size ? 170 : 120; // в пикселах, высота шкалы
+        this.slider_margin_top = this.current_interface_size ? 13.5 : 10;
         this.count_zoom = mapManager.getMaxZoom() - mapManager.getMinZoom();
-        this.px_on_zoom = ConstZoomHeightOfScale / (this.count_zoom);
+        this.px_on_zoom = this.zoomHeightOfScale / (this.count_zoom);
         this.zoom_visible = true;
 
         this.options = {
@@ -23,7 +23,7 @@ var WZoomSlider = (function () {
         };
         var mainParent = $('#' + this.options.parentDiv);
         mainParent.append('<div id="zoomSliderMainDivHardware"></div>');
-        mainParent.append('<div id="zoomSliderMainDivGlass"></div>');
+        mainParent.append('<div id="zoomSliderMainDivGlass"><div id="divForZoomNotClick" class="anti-click-class"></div></div>');
         mainParent.addClass('slider-zoom-parent sublayers-clickable');
         var parentGlass = $('#zoomSliderMainDivGlass');
         var parentPort = $('#zoomSliderMainDivHardware');
@@ -51,6 +51,7 @@ var WZoomSlider = (function () {
         parent.append(jq_nodePlus);
         parent.append(jq_nodeBar);
         jq_nodeBar.append(this.jq_slider);
+        jq_nodeBar.append('<div id="Zoom_sliderScale"></div>');
         parent.append(jq_nodeMinus);
         jq_nodePlus.on('click', {self: this}, this.plusFunc);
         jq_nodeMinus.on('click', {self: this}, this.minusFunc);
@@ -61,12 +62,14 @@ var WZoomSlider = (function () {
         jq_nodeBar.on('mousemove', function(event) {
             if (event.buttons == 1) {
                 mapManager.onZoomEnd();
-                mapManager.set_coord({z: 18 - event.offsetY / ConstZoomHeightOfScale * self.count_zoom});
+                mapManager.set_coord({z: 18 - event.offsetY / self.zoomHeightOfScale * self.count_zoom});
             }
+            returnFocusToMap();
         });
         jq_nodeBar.on('click', function(event) {
             mapManager.onZoomEnd();
-            mapManager.set_coord({z: 18 - event.offsetY / ConstZoomHeightOfScale * self.count_zoom});
+            mapManager.set_coord({z: 18 - event.offsetY / self.zoomHeightOfScale * self.count_zoom});
+            returnFocusToMap();
         });
 
         // Создание и добавление текста Zoom вертикально расположенного на виджете
@@ -105,8 +108,9 @@ var WZoomSlider = (function () {
     }
 
     WZoomSlider.prototype.drawScale = function(){
-        var draw = SVG('Zoom_sliderBar');
-        var height = ConstZoomHeightOfScale;
+        $("#Zoom_sliderScale").empty();
+        var draw = SVG('Zoom_sliderScale');
+        var height = this.zoomHeightOfScale;
         var width_large_line = 35;
         var count_zoom = this.count_zoom;
         var px_on_zoom = this.px_on_zoom;
@@ -156,28 +160,34 @@ var WZoomSlider = (function () {
         }
     };
 
-    WZoomSlider.prototype.setZoom = function(new_zoom){
+    WZoomSlider.prototype.setZoom = function(new_zoom, need_redraw){
         // Установка зума в слайдере извне
         //console.log('WZoomSlider.prototype.setZoom');
         // текст, который нужно вывести
         var new_str = new_zoom.toFixed(1) + 'x';
         var old_str = this.jq_zoom_text_value.text();
-        if(old_str != new_str) {
+        if(old_str != new_str || need_redraw) {
             this.jq_zoom_text_value.text(new_str);
             this.jq_zoom_text_value_compact.text(new_str);
             // Установка каретки
-            this.jq_slider.css("top", (ConstZoomHeightOfScale - this.px_on_zoom * (new_zoom - this.options.min) - 13.5).toFixed(0) + "px");
+            this.jq_slider.css("top", (this.zoomHeightOfScale - this.px_on_zoom * (new_zoom - this.options.min) - this.slider_margin_top).toFixed(0) + "px");
         }
     };
 
     WZoomSlider.prototype.plusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() + slider.options.step);
+        returnFocusToMap();
+        // Звук на кнопку плюс
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.minusFunc = function (event) {
         var slider = event.data.self;
         slider.mapMng.setZoom(slider.mapMng.getZoom() - slider.options.step);
+        returnFocusToMap();
+        // Звук на кнопку минус
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.fullscr = function (event) {
@@ -199,23 +209,24 @@ var WZoomSlider = (function () {
 
         // установить фокус на карту
         returnFocusToMap();
+
+        // Звук на кнопку fullscr
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
-        var slider = event.data;
         //alert('Свернуть все гаджеты-стекляшки');
         if (wCruiseControl) wCruiseControl.changeVisible(false);
         chat.changeVisible(false);
-        slider.changeVisible(false);
+        if (mapManager && mapManager.zoomSlider) mapManager.zoomSlider.changeVisible(false);
         returnFocusToMap();
     };
 
     WZoomSlider.prototype.razverAll = function (event) {
-        var slider = event.data;
         //alert('Свернуть все гаджеты-стекляшки');
         if (wCruiseControl) wCruiseControl.changeVisible(true);
         chat.changeVisible(true);
-        slider.changeVisible(true);
+        if (mapManager && mapManager.zoomSlider) mapManager.zoomSlider.changeVisible(true);
         returnFocusToMap();
     };
 
@@ -232,6 +243,7 @@ var WZoomSlider = (function () {
         var self = this;
         if (visible != this.zoom_visible) {
             this.zoom_visible = visible;
+
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
                 self.parentGlass.animate({left: 0}, 500, function () {
@@ -245,6 +257,8 @@ var WZoomSlider = (function () {
                     self.mainCompact.css({display: 'none'});
                 });
 
+                // Звук разворачивания
+                audioManager.play({name: "widget_motion_zoom_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -200}, 500, function () {
@@ -256,8 +270,21 @@ var WZoomSlider = (function () {
                 // и нужно показать портативную версию
                 self.mainCompact.css({display: 'block'});
                 self.mainCompact.animate({opacity: 1}, 300);
+
+                // Звук сворачивания
+                audioManager.play({name: "widget_motion_zoom_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
         }
+    };
+
+    WZoomSlider.prototype._resize_view = function(width, height) {
+        if (this.current_interface_size == interface_scale_big) return;
+        this.current_interface_size = interface_scale_big;
+        this.zoomHeightOfScale = this.current_interface_size ? 170 : 120; // в пикселах, высота шкалы
+        this.slider_margin_top = this.current_interface_size ? 13.5 : 10;
+        this.px_on_zoom = this.zoomHeightOfScale / (this.count_zoom);
+        this.drawScale();
+        mapManager.zoomSlider.setZoom(mapManager.getZoom(), true);
     };
 
     return WZoomSlider;

@@ -1,6 +1,3 @@
-var ConstCountTracerPerSecond = 5;      // Количество трасеров в секунду;
-var ConstTracerSpeed = 120;              // Скорость полета трасера (px / s);
-var ConstTracerLength = 8;               // Длина трасера (px);
 var ConstCountFlashlightPerSecond = 10;  // Количество трасеров в секунду;
 var ConstFlashlightPrecision = 50;       // Радиус разлёта вспышек около машинки (px);
 var ConstFlashlightOrientedRadius = 20;  // Радиус в котором вспышка будет направленной (px);
@@ -8,7 +5,6 @@ var ConstFlashlightOrientedRadius = 20;  // Радиус в котором вс�
 var ConstRangeFireDischargeFlashlight = 30;   // Разлет вспышек взрывов при залповой стрельбе (px);
 var ConstCountFireDischargeFlashlight = 3;   // Количество вспышек взрывов при залповой стрельбе (px);
 var ConstDelayFireDischargeFlashlight = 300; // Задержка между дульным пламенем и вспышкой взрыва при залповой стрельбе (ms);
-var ConstFireDischargeFlashlightRadius = 6;  // Размер вспышки взрыва при залповой стрельбе (px);
 
 // Список Иконок для всех видов маркеров леафлета
 
@@ -116,6 +112,8 @@ var FireEffectManager = (function () {
         this.controllers_list = []; // хранятся объекты {ctrl: FireAutoEffectController, count: int}
         this.muzzle_flashs = {}; // хранятся FireAutoMuzzleFlashController's
         timeManager.addTimerEvent(this, 'perform');
+
+        this._settings_particles_tracer = settingsManager.options.particles_tracer.value;
     }
 
     FireEffectManager.prototype._findController = function (options) {
@@ -227,15 +225,17 @@ var FireEffectManager = (function () {
                 var rate = 0.6 + (0.6 - 0.8) * Math.random();
                 audioManager.play({
                     name: audio_name,
-                    gain: 0.4,
+                    gain: 0.4 * audioManager._settings_discharge_fire_gain,
                     playbackRate: rate,
                     priority: 0.8
                 });
             }
             else {
-                var distance = 2000;
+                var distance;
                 if (user.userCar)
-                    var distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+                    distance = distancePoints(user.userCar.getCurrentCoord(clock.getCurrentTime()), options.pos_subj);
+                else
+                    distance = distancePoints(mapManager.getMapCenter(), options.pos_subj);
                 if (distance <= 2000) {
                     // 0.01/0.4 - минимальная/максимальная громкость звука
                     var gain = 0.01 + (0.4 - 0.01) * (1 - distance / 2000);
@@ -243,7 +243,7 @@ var FireEffectManager = (function () {
                     var rate = 0.2 + (0.4 - 0.2) * Math.random();
                     audioManager.play({
                         name: audio_name,
-                        gain: gain,
+                        gain: gain * audioManager._settings_discharge_fire_gain,
                         playbackRate: rate,
                         priority: 0.5
                     });
@@ -271,6 +271,8 @@ var FireAutoEffectController = (function () {
         this.weapon_animation = [];
         this.set_weapon_animation(options.weapon_animation);
         this.weapon_animation = this.weapon_animation || [ECanvasPointsTracerSimple];
+
+        this.current_particles_tracer = fireEffectManager._settings_particles_tracer;
     }
 
     FireAutoEffectController.prototype.change = function () {
@@ -337,7 +339,7 @@ var FireAutoEffectController = (function () {
                 this.set_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate += options.animation_tracer_rate;
-                this.d_time_t = 0.2 / this.animation_tracer_rate;
+                this.d_time_t = this.current_particles_tracer / this.animation_tracer_rate;
             }
         }
         else {
@@ -345,7 +347,7 @@ var FireAutoEffectController = (function () {
                 this.del_weapon_animation(options.weapon_animation);
             if (options.animation_tracer_rate) {
                 this.animation_tracer_rate -= options.animation_tracer_rate;
-                this.d_time_t = 0.2 / this.animation_tracer_rate;
+                this.d_time_t = this.current_particles_tracer / this.animation_tracer_rate;
             }
         }
     };
@@ -381,11 +383,18 @@ var FireAutoAudioController = (function () {
             var base_autofire_priority = 0.8;
             var subj = visualManager.getModelObject(self.owner.subj);
             var audio_cls = PlayAudioObject;
-            if (user.userCar && subj && user.userCar != subj) {
+
+            if (!user.userCar) gain = 0; // Если своей машинки нет
+
+            // Если стрельба не своя
+            if (subj && user.userCar != subj) {
                 base_autofire_priority = 0.5;
-                if (!subj) return;
                 var t = clock.getCurrentTime();
-                var distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
+                var distance;
+                if (user.userCar)
+                    distance = distancePoints(user.userCar.getCurrentCoord(t), subj.getCurrentCoord(t));
+                else
+                    distance = distancePoints(mapManager.getMapCenter(), subj.getCurrentCoord(t));
                 if (distance <= 1000) {
                     // 0.3/0.4 - минимальная/максимальная громкость звука
                     gain = 0.3 + (0.4 - 0.3) * (1 - distance / 1000);
@@ -395,10 +404,11 @@ var FireAutoAudioController = (function () {
                     gain = 0;
                 audio_cls = PlayAudioObjectLowEq;
             }
+
             var delay = 1000. / self.weapon_speed; // задержка между очередями скорострельности
             self.curren_play_object = audioManager.play({
                 name: name,
-                gain: gain,
+                gain: gain * audioManager._settings_auto_fire_gain,
                 callback: self.start.bind(self, delay),
                 priority: base_autofire_priority,
                 cls: audio_cls,

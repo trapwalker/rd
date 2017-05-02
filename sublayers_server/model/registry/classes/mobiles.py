@@ -306,7 +306,7 @@ class Car(Mobile):
     hangar_car = StringField(caption=u"Представление машинки в ангаре")
     image_scale = StringField(
         caption=u"Масштаб машинки для отрисовки обвеса: small, middle, big",
-        default="middle", tags="client",
+        tags="client",
     )
     mechanic_engine = StringField(caption=u"Представление двигателя у механника")
     mechanic_transmission = StringField(caption=u"Представление трансмиссии у механника")

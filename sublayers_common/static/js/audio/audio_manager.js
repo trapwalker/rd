@@ -7,6 +7,14 @@ var AudioManager = (function () {
         this.queue = [];
         this.queue_size = 10;
         this.queue_tail_size = 5;
+
+        // settings
+        this.general_gain = settingsManager.options.general_gain.value;
+        this._settings_auto_fire_gain =  settingsManager.options.auto_fire_gain.value;
+        this._settings_discharge_fire_gain =  settingsManager.options.discharge_fire_gain.value;
+        this._settings_bang_gain =  settingsManager.options.bang_gain.value;
+        this._settings_engine_gain =  settingsManager.options.engine_gain.value;
+        this._settings_interface_gain =  settingsManager.options.interface_gain.value;
     }
 
     // Воспроизведение
@@ -197,5 +205,23 @@ function init_sound() {
     audioManager.load('engine_heavy_001', {url: '/static/audio/engines/engine_heavy_001.m4a'}, 0.075);
     audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.m4a'}, 0.075);
     audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.m4a'}, 0.075);
+
+    // interface
+
+    // widgets motion
+
+    audioManager.load('widget_motion_show', {url: '/static/audio/interface/widget_motion_show_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_hide', {url: '/static/audio/interface/widget_motion_hide_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_battle_show', {url: '/static/audio/interface/widget_motion_battle_show_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_battle_hide', {url: '/static/audio/interface/widget_motion_battle_hide_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_zoom_show', {url: '/static/audio/interface/widget_motion_zoom_show_001.m4a'}, 0.15);
+    audioManager.load('widget_motion_zoom_hide', {url: '/static/audio/interface/widget_motion_zoom_hide_001.m4a'}, 0.15);
+
+    audioManager.load('cannon_reloaded', {url: '/static/audio/interface/cannon_reloaded_001.m4a'}, 0.45);
+    audioManager.load('alarm', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
+    audioManager.load('path_setting', {url: '/static/audio/interface/path_setting_001.m4a'}, 0.1);
+    audioManager.load('click', {url: '/static/audio/interface/click_001.m4a'}, 0.1);
+    audioManager.load('autofire_enable', {url: '/static/audio/interface/autofire_enable_001.m4a'}, 0.15);
+    audioManager.load('autofire_disable', {url: '/static/audio/interface/autofire_disable_001.m4a'}, 0.15);
 
 }

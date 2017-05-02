@@ -41,6 +41,9 @@ var WFireController = (function (_super) {
         $('#fireControlArea').append(
             '<div id="fireControlAreaRumble">' +
                 '<div id="fireControlTop">' +
+                    '<div id="divForFireControlNotClick1" class="anti-click-class"></div>' +
+                    '<div id="divForFireControlNotClick2" class="anti-click-class"></div>' +
+                    '<div id="divForFireControlNotClick3" class="anti-click-class"></div>' +
                     '<div id="divForSVG"></div>' +
                     '<div id="divForCanvas">' +
                         '<canvas id="fireControlRadarCanvas" class="fire-controll-canvas"></canvas>' +
@@ -336,6 +339,7 @@ var WFireController = (function (_super) {
     WFireController.prototype.changeVisible = function () {
         //console.log('WFireController.prototype.changeVisible');
         var self = this;
+
         this.fCT.slideToggle("slow", function () {
             if (self.visible) {
                 self.visible = false;
@@ -358,6 +362,11 @@ var WFireController = (function (_super) {
             mapManager.widget_fire_radial_grid.setVisible(is_show_central);
         if (mapManager.widget_fire_sectors)
             mapManager.widget_fire_sectors.setVisible(is_show_central);
+
+        if(is_show_central) // Звук разворачивания
+            audioManager.play({name: "widget_motion_battle_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        else // Звук сворачивания
+            audioManager.play({name: "widget_motion_battle_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
@@ -381,12 +390,18 @@ var WFireController = (function (_super) {
             self.autoShoot = false;
             self._setAutoShootingEnable(false);
             self.allFire.removeClass('fire-control-all-active');
+
+            // Звук на отключение Автострельбы
+            audioManager.play({name: "autofire_disable", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         else {
             //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
             self.autoShoot = true;
             self._setAutoShootingEnable(true);
             self.allFire.addClass('fire-control-all-active');
+
+            // Звук на включение Автострельбы
+            audioManager.play({name: "autofire_enable", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
         returnFocusToMap();
     };

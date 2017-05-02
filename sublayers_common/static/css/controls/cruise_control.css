@@ -25,6 +25,27 @@
     background-position: center;
 }
 
+#divForCruiseNotClick1 {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 165px;
+    height: 470px;
+}
+#divForCruiseNotClick2 {
+    position: absolute;
+    bottom: 0;
+    right: 165px;
+    width: 160px;
+    height: 160px;
+}
+#divForCruiseNotClick3 {
+    position: absolute;
+    bottom: 0;
+    right: 325px;
+    width: 195px;
+    height: 145px;
+}
 
 #cruiseControlVisibleButtonDiv {
     pointer-events: auto;
@@ -40,11 +61,9 @@
     transform: rotate(90deg);
     -webkit-transform: rotate(-90deg);
 }
-
 .hideBtnDownRight:hover {
     background: transparent url('/static/img/misc_button/down_hide_hover.png') 50% 50% no-repeat;
 }
-
 .hideBtnDownRight:active {
     background: transparent url('/static/img/misc_button/down_hide_active.png') 50% 50% no-repeat;
 }
@@ -56,11 +75,9 @@
     transform: rotate(90deg);
     -webkit-transform: rotate(-90deg);
 }
-
 .hideBtnUpRight:hover {
     background: transparent url('/static/img/misc_button/up_hide_hover.png') 50% 50% no-repeat;
 }
-
 .hideBtnUpRight:active {
     background: transparent url('/static/img/misc_button/up_hide_active.png') 50% 50% no-repeat;
 }
@@ -96,18 +113,20 @@
 
 #cruiseControlSpeedMainDiv {
     position: absolute;
-    bottom: 450px;
-    right: 150px;
+    width: 160px;
+    height: 470px;
+    bottom: 0px;
+    right: 0px;
     color: #2afd0a;
     font-family: Gruppo-Regular;
 }
 
 #cruiseControlTopDiv {
     position: absolute;
-    top: -5px;
+    top: 19px;
     width: 56px;
     height: 63px;
-    left: 43px;
+    left: 53px;
     background: transparent url('/static/img/cruise/dgigits_back_glow.png') 100% 100% no-repeat;
     background-position: center;
 }
@@ -118,7 +137,6 @@
     width: 60%;
     height: 100%;
 }
-
 #cruiseControlTopTextPositionDiv2 {
     position: relative;
     float: left;
@@ -134,7 +152,6 @@
     right: 0px;
     top: 23px;
 }
-
 #cruiseControlTopTextDiv2 {
     position: relative;
     font-size: 13pt;
@@ -146,7 +163,8 @@
 
 #cruiseControlMediumDiv {
     position: absolute;
-    top: 30px;
+    top: 55px;
+    left: 10px;
     width: 100%;
     height: 352px;
 }
@@ -236,7 +254,6 @@
     margin-top: 4px;
     margin-bottom: 4px;
 }
-
 #cruiseControlZoneWoodIconDiv {
     position: relative;
     display: none;
@@ -246,7 +263,6 @@
     margin-top: 4px;
     margin-bottom: 4px;
 }
-
 #cruiseControlZoneRoadIconDiv {
     position: relative;
     display: none;
@@ -256,7 +272,6 @@
     margin-top: 4px;
     margin-bottom: 4px;
 }
-
 #cruiseControlZoneWaterIconDiv {
     position: relative;
     display: none;
@@ -266,7 +281,6 @@
     margin-top: 4px;
     margin-bottom: 4px;
 }
-
 #cruiseControlZoneSlopeIconDiv {
     position: relative;
     display: none;
@@ -287,7 +301,6 @@
     transform: rotate(-90deg);
     -webkit-transform: rotate(-90deg);
 }
-
 #spanLimitText2 {
     position: absolute;
     letter-spacing: 1px;
@@ -304,63 +317,196 @@
 
 #cruiseControlReverseDiv {
     position: absolute;
-    top: 397px;
-    left: 18px;
+    bottom: 15px;
+    right: 95px;
     width: 33px;
     height: 32px;
     background: transparent url('/static/img/cruise/r_btn.png') 100% 100% no-repeat;
     pointer-events: auto;
 }
-
 #cruiseControlReverseDiv:hover {
     background: transparent url('/static/img/cruise/r_btn_over.png') 100% 100% no-repeat;
 }
-
 #cruiseControlReverseDiv:active {
     background: transparent url('/static/img/cruise/r_btn_pressed.png') 100% 100% no-repeat;
 }
 
 #cruiseControlStopDiv {
     position: absolute;
-    top: 390px;
-    left: 60px;
+    bottom: 15px;
+    right: 20px;
     width: 70px;
     height: 39px;
     background: transparent url('/static/img/cruise/stop_btn.png') 100% 100% no-repeat;
     pointer-events: auto;
 }
-
 #cruiseControlStopDiv:hover {
     background: transparent url('/static/img/cruise/stop_btn_over.png') 100% 100% no-repeat;
 }
-
 #cruiseControlStopDiv:active {
     background: transparent url('/static/img/cruise/stop_btn_pressed.png') 100% 100% no-repeat;
 }
 
 #spanZoomZoomText1 {
     position: absolute;
-    top: 296px;
-    right: -117px;
+    top: 320px;
     white-space: nowrap;
     font: 8pt MICRADI;
     color: rgba(42, 253, 10, 0.50);
     transform: rotate(-90deg);
     -webkit-transform: rotate(-90deg);
 }
-
 #spanZoomZoomText2 {
     position: absolute;
-    top: 370px;
-    right: -92px;
+    top: 395px;
+    left: 72px;
     white-space: nowrap;
     font: 7pt MICRADI;
     color: rgba(42, 253, 10, 0.50);
 }
 
-@media screen and (max-width: 1366px) {
 
-    .cruise-control-main {
-        transform: scale(0.75);
+@media screen and (max-width: 1550px), screen and (max-height: 880px) {
+    .cruise-control-glass {
+        width: 427px;
+        height: 378px;
+        background: transparent url('/static/img/cruise/cruise_768/cruise_glass.png') 100% 100% no-repeat;
     }
+
+    .cruise-control-hardware {
+        width: 21px;
+        height: 447px;
+        background: transparent url('/static/img/cruise/cruise_768/cruise_port.png') 100% 100% no-repeat;
+    }
+
+    #cruiseControlVisibleButtonDiv { top: 34px; left: -6px; }
+
+    .hideBtnDownRight {
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/down_hide_normal.png') 50% 50% no-repeat;
+    }
+    .hideBtnDownRight:hover { background: transparent url('/static/img/misc_button/768/down_hide_hover.png') 50% 50% no-repeat; }
+    .hideBtnDownRight:active { background: transparent url('/static/img/misc_button/768/down_hide_active.png') 50% 50% no-repeat; }
+
+    .hideBtnUpRight {
+        height: 21px;
+        width: 28px;
+        background: transparent url('/static/img/misc_button/768/up_hide_normal.png') 50% 50% no-repeat;
+    }
+    .hideBtnUpRight:hover { background: transparent url('/static/img/misc_button/768/up_hide_hover.png') 50% 50% no-repeat; }
+    .hideBtnUpRight:active { background: transparent url('/static/img/misc_button/768/up_hide_active.png') 50% 50% no-repeat; }
+
+    #divForCruiseNotClick1 { width: 130px; height: 360px; }
+    #divForCruiseNotClick2 { right: 130px; width: 140px; height: 120px; }
+    #divForCruiseNotClick3 { right: 270px; width: 130px; height: 110px; }
+
+    #cruiseControlSpeedMainDiv { width: 130px; height: 360px; }
+
+    #cruiseControlTopDiv {
+        position: absolute;
+        width: 39px;
+        height: 41px;
+        top: 7px;
+        left: 52px;
+        background: transparent url(/static/img/cruise/cruise_768/dgigits_back_glow.png) 100% 100% no-repeat;
+    }
+
+    #cruiseControlTopTextDiv1 { font-size: 14pt; top: 11px; }
+    #cruiseControlTopTextDiv2 { font-size: 11pt; top: 14px; left: 1px; }
+
+    #cruiseControlMediumDiv { height: 290px; top: 30px; left: 0px; }
+
+    .cruise-control-speedHandleArea {
+        position: absolute;
+        width: 49px;
+        left: 15px;
+        height: 100%;
+    }
+
+    .cruise-control-speedHandle {
+        width: 49px;
+        height: 21px;
+        background: transparent url(/static/img/cruise/cruise_768/speed_mark.png) 100% 100% no-repeat;
+    }
+
+    #cruiseControlSpeedHandleDiv1 { font-size: 12pt; right: calc(50% - 3px); top: 1px; }
+    #cruiseControlSpeedHandleDiv2 { font-size: 9pt; right: 13px; top: 4px; }
+
+    .cruise-control-zoneArea { width: 45px; left: 80px; }
+
+    #cruiseControlZoneHandleArrow {
+        width: 42px;
+        height: 23px;
+        background: transparent url(/static/img/cruise/cruise_768/limit_mark.png) 100% 100% no-repeat;
+    }
+
+    #cruiseControlZoneHandleDiv { left: 7px; }
+
+    #cruiseControlZoneIconAreaDiv { left: 18px; }
+
+    #cruiseControlZoneDirtIconDiv {
+        width: 12px;
+        height: 6px;
+        background: transparent url('/static/img/cruise/cruise_768/limit_dirt.png') 100% 100% no-repeat;
+    }
+    #cruiseControlZoneWoodIconDiv {
+        width: 12px;
+        height: 11px;
+        background: transparent url('/static/img/cruise/cruise_768/limit_wood.png') 100% 100% no-repeat;
+    }
+    #cruiseControlZoneRoadIconDiv {
+        width: 12px;
+        height: 11px;
+        background: transparent url('/static/img/cruise/cruise_768/limit_road.png') 100% 100% no-repeat;
+    }
+    #cruiseControlZoneWaterIconDiv {
+        width: 15px;
+        height: 5px;
+        background: transparent url('/static/img/cruise/cruise_768/limit_water.png') 100% 100% no-repeat;
+    }
+    #cruiseControlZoneSlopeIconDiv {
+        width: 12px;
+        height: 11px;
+        background: transparent url('/static/img/cruise/cruise_768/limit_slope.png') 100% 100% no-repeat;
+    }
+
+    #spanLimitText1 { top: 251px; right: 14px; font: 6pt MICRADI; }
+    #spanLimitText2 { top: 165px; right: -85px; font-size: 8pt; }
+
+    #cruiseControlReverseDiv {
+        bottom: 7px;
+        right: 75px;
+        width: 24px;
+        height: 22px;
+        background: transparent url('/static/img/cruise/cruise_768/r_btn.png') 100% 100% no-repeat;
+    }
+    #cruiseControlReverseDiv:hover {
+        background: transparent url('/static/img/cruise/cruise_768/r_btn_over.png') 100% 100% no-repeat;
+    }
+    #cruiseControlReverseDiv:active {
+        background: transparent url('/static/img/cruise/cruise_768/r_btn_pressed.png') 100% 100% no-repeat;
+    }
+
+    #cruiseControlStopDiv {
+        bottom: 7px;
+        right: 17px;
+        width: 50px;
+        height: 27px;
+        background: transparent url(/static/img/cruise/cruise_768/stop_btn.png) 100% 100% no-repeat;
+    }
+    #cruiseControlStopDiv:hover {
+        background: transparent url('/static/img/cruise/cruise_768/stop_btn_over.png') 100% 100% no-repeat;
+    }
+    #cruiseControlStopDiv:active {
+        background: transparent url('/static/img/cruise/cruise_768/stop_btn_pressed.png') 100% 100% no-repeat;
+    }
+
+    #spanZoomZoomText1 { top: 245px; font: 7pt MICRADI; }
+    #spanZoomZoomText2 { top: 310px; left: 62px; font: 6pt MICRADI; }
+}
+
+
+@media screen and (max-width: 1250px), screen and (max-height: 670px) {
+    .cruise-control-main { transform: scale(0.75); }
 }

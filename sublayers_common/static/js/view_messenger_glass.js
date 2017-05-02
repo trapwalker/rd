@@ -20,7 +20,7 @@ var ViewMessengerGlass = (function () {
         // вёрстка
         var mainParent = $('#chatAreaGlass');
         mainParent.append('<div id="VMGDivHardware"></div>');
-        mainParent.append('<div id="VMGMainDivGlass"></div>');
+        mainParent.append('<div id="VMGMainDivGlass"><div id="divForChatNotClick" class="anti-click-class"></div></div>');
         this.parentGlass = $('#VMGMainDivGlass');
         this.parentGlass.append('<div id="VMGDivWrapChat"></div>');
         this.chatWrapDiv = $('#VMGDivWrapChat');
@@ -48,7 +48,11 @@ var ViewMessengerGlass = (function () {
         // добавление кнопки 'отправить соосбщение'
         foot_area.append("<div id='VMGEnterButtonDIV'><div id='VMGEnterButton' class='sublayers-clickable'> > </div></div>");
         this.send_btn = $('#VMGEnterButton');
-        this.send_btn.on('click', this.sendMessage);
+        this.send_btn.on('click', function() {
+            chat.sendMessage();
+            // Звук на кнопку отправки сообщения в чат
+            audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        });
 
         // добавление дива с Input
         foot_area.append("<div id='VMGInputArea'></div>");
@@ -272,21 +276,9 @@ var ViewMessengerGlass = (function () {
 
     ViewMessengerGlass.prototype.viewMessengerClickSpanUser = function (event) {
         // подстветить все машинки данного пользователя
-        /*
-        var owner = event.data.owner;
+        console.log("ViewMessengerGlass.prototype.viewMessengerClickSpanUser", event);
+        //var owner = event.data.owner;
         // TODO: Разобраться что делать с выделениями. Пока выделяется, если можно выделять
-
-        if (cookieStorage.optionsSelectAnybody && owner.cars)
-            for (var i = 0; i < owner.cars.length; i++) {
-                if (listMapObject.exist(owner.cars[i].ID)) {
-                    var car = listMapObject.objects[owner.cars[i].ID];
-                    if (car.backLight)
-                        carMarkerList.delFromBackLight(car);
-                    else
-                        carMarkerList.addToBackLight(car);
-                }
-            }
-        */
     };
 
     // Добавление сообщений в окно чата
@@ -358,6 +350,9 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.onClickPageButton = function (event) {
         //console.log('ViewMessengerGlass.prototype.onClickPageButton', event);
         event.data.self.setActivePage(event.data.page);
+
+        // Звук на кнопку активации чата на странице чатов
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     // Сделать страницу активной
@@ -431,6 +426,9 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype.onClickChatButton = function (event) {
         //console.log('ViewMessengerGlass.prototype.onClickChatButton', event);
         event.data.self.setActiveChat(event.data.chat);
+
+        // Звук на кнопку активации чата
+        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
 
     // Сделать чат-комнату активной
@@ -729,12 +727,17 @@ var ViewMessengerGlass = (function () {
                 case "TransactionDisableActivateItemLogMessage":
                     this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Необходимо выполнение следующих условий: ' + msg.activate_comment + '.');
                     // TODO: вынести в model_manager
-                    audioManager.play({name: "error_1", gain: 1.0, priority: 1.0});
+                    audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     break;
                 case "TransactionDisableActivateItemTimeoutLogMessage":
                     this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Таймаут активации 1 секунда.');
                     // TODO: вынести в model_manager
-                    audioManager.play({name: "error_1", gain: 1.0, priority: 1.0});
+                    audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                    break;
+                case "TransactionDisableActivateItemNotFoundLogMessage":
+                    this.addMessageToLog('Активации итема: невозможна. Итем не установлен.');
+                    // TODO: вынести в model_manager
+                    audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     break;
                 case "TransactionActivateTankLogMessage":
                     this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
@@ -1029,6 +1032,7 @@ var ViewMessengerGlass = (function () {
         var self = this;
         if (visible != this.chat_visible) {
             this.chat_visible = visible;
+
             if (visible) { // нужно показать
                 self.parentGlass.css({display: 'block'});
                 this.parentGlass.animate({left: 0}, 1000, function () {
@@ -1041,6 +1045,9 @@ var ViewMessengerGlass = (function () {
                     self.mainCompact.css({display: 'none'});
                 });
                 chat.main_input.val(chat.compact_input.val());
+
+                // Звук разворачивания
+                audioManager.play({name: "widget_motion_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
             else { // нужно скрыть
                 this.parentGlass.animate({left: -555}, 1000, function () {
@@ -1053,6 +1060,9 @@ var ViewMessengerGlass = (function () {
                 self.mainCompact.animate({opacity: 1}, 300);
                 chat.compact_input.val(chat.main_input.val());
                 chat._setCompactChat();
+
+                // Звук сворачивания
+                audioManager.play({name: "widget_motion_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             }
         }
     };
@@ -1095,8 +1105,8 @@ var ViewMessengerGlass = (function () {
     // вывод исходящих через ws сообщений
     ViewMessengerGlass.prototype.receiveMessageFromModelManager = function (msg) {
         //console.log('ViewMessengerGlass.prototype.receiveMessageFromModelManager');
-        if (cookieStorage.enableLogRPCMessage())
-            this.addMessageToLog(JSON.stringify(msg, null, 4));
+        //if (.())  // todo: settings
+        //    this.addMessageToLog(JSON.stringify(msg, null, 4));
         return true;
     };
 

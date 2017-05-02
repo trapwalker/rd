@@ -217,6 +217,7 @@ var ClientManager = (function () {
 
             if (car.cls == "POICorpse") {
                 car.direction = event.object.car_direction + Math.PI / 2.;
+                car._agent_login = event.object.agent_login
                 new WCanvasLootMarker(car);
             }
 
@@ -477,11 +478,11 @@ var ClientManager = (function () {
 
             // Круиз
             wCruiseControl = new WCruiseControl(mcar, 'cruiseControlGlassDiv');
-            new WAltmetrRadial(mcar, 'divForAltmetrRadial');
-            new WHPRadial(mcar, 'divForHpAndFuelRadials');
-            new WFuelRadial(mcar, 'divForHpAndFuelRadials');
-            new WRadiationRadial(mcar, 'divForRadAndWindRadials');
-            new WWindRadial(mcar, 'divForRadAndWindRadials');
+            wAltmetrControl = new WAltmetrRadial(mcar, 'divForAltmetrRadial');
+            wHPControl = new WHPRadial(mcar, 'divForHpAndFuelRadials');
+            wFuelControl = new WFuelRadial(mcar, 'divForHpAndFuelRadials');
+            wRadiationControl = new WRadiationRadial(mcar, 'divForRadAndWindRadials');
+            wWindControl = new WWindRadial(mcar, 'divForRadAndWindRadials');
 
             // todo: сделать также зависимось от бортов
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
@@ -499,7 +500,8 @@ var ClientManager = (function () {
             if (!wObservingRange) wObservingRange = new WObservingRange();
             wObservingRange.addModelObject(mcar);
 
-            if (!wRadiationEffect) wRadiationEffect = new WRadiationEffect();
+            //if (!wRadiationEffect) wRadiationEffect = new WRadiationEffect();
+            if (!wRadiationNoise) wRadiationNoise = new WRadiationNoise();
 
             // Инициализация контекстной панели
             contextPanel = new ContextPanel();
@@ -507,7 +509,6 @@ var ClientManager = (function () {
             // Инициализация мап-зума
             var curr_cord = mcar.getCurrentCoord(clock.getCurrentTime());
             mapManager.set_coord({x: curr_cord.x, y: curr_cord.y});
-            mapManager.redraw();
         }
     };
 
@@ -685,7 +686,7 @@ var ClientManager = (function () {
                 // 0.2/0.4 - границы рандома рэйта
                 var rate = 0.2 + (0.4 - 0.2) * Math.random();
 
-                audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.8});
+                audioManager.play({name: "shot_03", gain: gain * audioManager._settings_bang_gain, playbackRate: rate, priority: 0.8});
             }
         }
         else {
@@ -768,7 +769,7 @@ var ClientManager = (function () {
             var gain = 0.2 + (1.0 - 0.2) * (1. - distance/2000.);
             // 0.35/0.6 - границы рэйта
             var rate = 0.6 - (0.6 - 0.35) * (1. - distance/2000.);
-            audioManager.play({name: "shot_03", gain: gain, playbackRate: rate, priority: 0.7});
+            audioManager.play({name: "shot_03", gain: gain * audioManager._settings_bang_gain, playbackRate: rate, priority: 0.7});
 
         }
     };
@@ -786,6 +787,12 @@ var ClientManager = (function () {
          //console.log('ClientManager.prototype.ChangeRadiation ', event);
         if (user.userCar && event.obj_id == user.userCar.ID){
             user.userCar.radiation_dps += event.radiation_dps;
+            if (user.userCar.radiation_dps != 0.0 && $('#settings_server_mode').text() == 'quick')
+                setTimeout(function() { // Из-за особенностей быстрой игры
+                    if (user.userCar && user.userCar.radiation_dps != 0.0)
+                        new WTextArcade("Вы покидаете поле боя").start();
+                }, 500);
+
         }
         else
             console.warn('Warning! Пришла радиация на неизветную машинку!')
@@ -1347,7 +1354,7 @@ var ClientManager = (function () {
         var vo = visualManager.getVobjByType(power_up, WCanvasAnimateMarkerPowerUp);
         if (!vo) return;
         vo._power_up_overdown = power_up._icon_name.replace("icon-power-up-", "effect-power-up-off-");
-        audioManager.play({name: "powerup_001", gain: 1.0, priority: 1.0});
+        audioManager.play({name: "powerup_001", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
 };
 
     // Активация итема
@@ -1367,7 +1374,7 @@ var ClientManager = (function () {
         //console.log("ClientManager.prototype.SuccessActivateItem", event);
         // Воспроизвести звук активации итема
         if (event.item.activate_success_audio) {
-            audioManager.play({name: event.item.activate_success_audio, gain: 1.0});
+            audioManager.play({name: event.item.activate_success_audio, gain: 1.0 * audioManager._settings_interface_gain});
         }
     };
 
@@ -1731,6 +1738,17 @@ var ClientManager = (function () {
             params: {
                 owner_id: owner_id
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendMassiveLootAround = function () {
+        //console.log('ClientManager.prototype.sendMassiveLootAround');
+        var mes = {
+            call: "massive_loot_around",
+            rpc_call_id: rpcCallList.getID(),
+            params: {}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
@@ -2368,7 +2386,7 @@ var ClientManager = (function () {
             call: "quick_play_again",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                car_index: modalWindow._modalQuickGamePoints_current_car_index
+                car_index: modalWindow._modalQuickGamePoints_current_car_index || 0
             }
         };
         rpcCallList.add(mes);
