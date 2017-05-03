@@ -41,7 +41,7 @@ var RadioPlayer = (function () {
         this.playing = false;
         this.play_started = false;
 
-        this.news_text = 'ЗДЕСЬ МОГЛА БЫТЬ ВАША РЕКЛАМА! ТЕЛ. 555-555-555';
+        this.news_text = 'ВЕЩАНИЕ ВЕДЕТСЯ В ТЕСТОВОМ РЕЖИМЕ';
 
         // timeout на загрузку радио при старте проигрывания
         this.timer_for_buffer = null;
