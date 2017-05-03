@@ -243,6 +243,14 @@ var MapManager = (function(_super) {
         return subVector(c, mulScalVector(map_size, koeff));
     };
 
+    MapManager.prototype.getMouseCoords = function() {
+        var top_left = this.getTopLeftCoords(mapManager.getZoom());
+        var mouse = mapCanvasManager._mouse_client;
+        var zoom = this.getZoom();
+        var koeff = Math.pow(2., (ConstMaxMapZoom - zoom));
+        return summVector(top_left, mulScalVector(mouse, koeff));
+    };
+
     // =============================== Zoom
 
     MapManager.prototype.getMaxZoom = function() {
