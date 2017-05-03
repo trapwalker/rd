@@ -730,9 +730,10 @@ class QuickUser(User):
             self.quick_game_bot_kills += 1
         else:
             self.quick_game_kills += 1
-        # добавить хп своей машинке
+        # добавить хп и бензина своей машинке
         if self.car:
-            self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
+            self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 5))  # 20 % от максимального HP своей машинки
+            self.car.set_fuel(time=event.time, df=round(self.car.fuel_state.max_fuel / 4))  # 25 % от максимального HP своей машинки
         # Отправка сообщения об убийстве кого-то
         if target.main_agent:
             QuickGameArcadeTextMessage(agent=self, time=event.time,
