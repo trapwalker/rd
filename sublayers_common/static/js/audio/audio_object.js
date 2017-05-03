@@ -79,31 +79,7 @@ var PlayAudioObject = (function () {
         this.start_gain = gain;
         this.priority = priority || 0;
 
-        this.end_time_out = null;
-
-        //this.gain(gain);  // Установка звука для данного gainNode
-
-        current_source.onended = PlayAudioObject.prototype.ended.bind(this);
-
-        parent.current_objects_playing.push(this);
-        audioManager.add_playobject(this);
-
-        // Попытка запуска
-        try {
-            offset = offset === undefined ? null : offset;
-            var t = context.currentTime + (time === undefined ? 0 : time);
-            duration = duration ? duration : undefined;
-            if (typeof(current_source.start) == 'function') // Если это нормальный браузер
-                current_source.start(t, offset, duration);
-            else // Если это сафари
-                current_source.noteOn(t);
-
-            if (! loop)
-                this.end_time_out = setTimeout( PlayAudioObject.prototype.stop.bind(this, 0, true), Math.ceil(duration || this.source_node.buffer.duration || 0.01) * 1000 + 3000);
-        }
-        catch (e) {
-            console.warn('Ошибка при попытке старта аудио объекта', e);
-        }
+        this._start(time, loop, offset, duration);
     }
 
     PlayAudioObject.prototype.stop = function (time, call_onended) {
@@ -157,6 +133,31 @@ var PlayAudioObject = (function () {
         if (this.gain_node.gain.value != value)
             this.gain_node.gain.value = value;
         return true;
+    };
+
+    PlayAudioObject.prototype._start = function (time, loop, offset, duration) {
+        var current_source = this.source_node;
+        var context = audioManager.get_ctx();
+        this.end_time_out = null;
+        current_source.onended = this.ended.bind(this);
+        this.parent.current_objects_playing.push(this);
+        audioManager.add_playobject(this);
+        // Попытка запуска
+        try {
+            offset = offset === undefined ? null : offset;
+            var t = context.currentTime + (time === undefined ? 0 : time);
+            duration = duration ? duration : undefined;
+            if (typeof(current_source.start) == 'function') // Если это нормальный браузер
+                current_source.start(t, offset, duration);
+            else // Если это сафари
+                current_source.noteOn(t);
+
+            if (! loop)
+                this.end_time_out = setTimeout( this.stop.bind(this, 0, true), Math.ceil(duration || this.source_node.buffer.duration || 0.01) * 1000 + 3000);
+        }
+        catch (e) {
+            console.warn('Ошибка при попытке старта аудио объекта', e);
+        }
     };
 
     PlayAudioObject.prototype.get_gain = function () {return this.gain_node.gain.value; };
@@ -231,30 +232,7 @@ var PlayAudioObjectLowEq = (function (_super) {
         this.start_gain = gain;
         this.priority = priority || 0;
 
-        //this.gain(gain);  // Установка звука для данного gainNode
-
-        this.end_time_out = null;
-
-        current_source.onended = PlayAudioObjectLowEq.prototype.ended.bind(this);
-
-        parent.current_objects_playing.push(this);
-        audioManager.add_playobject(this);
-
-        // Попытка запуска
-        try {
-            offset = offset === undefined ? null : offset;
-            var t = context.currentTime + (time === undefined ? 0 : time);
-            duration = duration ? duration : undefined;
-            if (typeof(current_source.start) == 'function') // Если это нормальный браузер
-                current_source.start(t, offset, duration);
-            else // Если это сафари
-                current_source.noteOn(t);
-            if (! loop)
-                this.end_time_out = setTimeout(PlayAudioObjectLowEq.prototype.stop.bind(this, 0, true), Math.ceil(duration || this.source_node.buffer.duration || 0.01) * 1000 + 3000);
-        }
-        catch (e) {
-            console.warn('Ошибка при попытке старта аудио объекта', e);
-        }
+        this._start(time, loop, offset, duration);
     }
 
     return PlayAudioObjectLowEq;

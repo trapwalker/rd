@@ -385,7 +385,7 @@ var ViewMessengerGlass = (function () {
             pageArea: $('<div id="chatAreaGlobal" class="VMGChatOutArea"></div>'),
             pageControl: $(''),
             chatArea: $('<div id="textAreaGlobal" class="VMGTextOutArea"></div>'),
-            pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Chat</div>'),
+            pageButton: $('<div id="pageButtonGlobal" class="VMGpageButton sublayers-clickable">Чат</div>'),
             chat: null
         };
 
@@ -874,7 +874,7 @@ var ViewMessengerGlass = (function () {
 
         var page = {
             pageArea: $('<div id="chatAreaParty" class="VMGChatOutArea"></div>'),
-            pageButton: $('<div id="pageButtonParty" class="VMGpageButton sublayers-clickable">Party</div>'),
+            pageButton: $('<div id="pageButtonParty" class="VMGpageButton sublayers-clickable">Отряд</div>'),
             pageControl: $(),
             chat: chat,
             buttons: null
@@ -1078,7 +1078,7 @@ var ViewMessengerGlass = (function () {
 
         var page = {
             pageArea: $('<div id="chatAreaLog" class="VMGChatOutArea"></div>'),
-            pageButton: $('<div id="pageButtonLog" class="VMGpageButton sublayers-clickable">GameLog</div>'),
+            pageButton: $('<div id="pageButtonLog" class="VMGpageButton sublayers-clickable">Лог</div>'),
             chat: null,
             log_chat: chat
         };
@@ -1160,7 +1160,7 @@ var ViewMessengerGlass = (function () {
 
         var page = {
             pageArea: $('<div id="chatAreaSys" class="VMGChatOutArea"></div>'),
-            pageButton: $('<div id="pageButtonSys" class="VMGpageButton sublayers-clickable">System</div>'),
+            pageButton: $('<div id="pageButtonSys" class="VMGpageButton sublayers-clickable">Система</div>'),
             chat: null,
             log_chat: chat
         };

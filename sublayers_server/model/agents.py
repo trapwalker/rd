@@ -730,9 +730,10 @@ class QuickUser(User):
             self.quick_game_bot_kills += 1
         else:
             self.quick_game_kills += 1
-        # добавить хп своей машинке
+        # добавить хп и бензина своей машинке
         if self.car:
-            self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 10))  # 10 % от максимального HP своей машинки
+            self.car.set_hp(time=event.time, dhp=-round(self.car.max_hp / 5))  # 20 % от максимального HP своей машинки
+            self.car.set_fuel(time=event.time, df=round(self.car.fuel_state.max_fuel / 4))  # 25 % от максимального HP своей машинки
         # Отправка сообщения об убийстве кого-то
         if target.main_agent:
             QuickGameArcadeTextMessage(agent=self, time=event.time,
@@ -780,14 +781,14 @@ class QuickUser(User):
             user.start_position = None
         else:
             # Радиус появления игроков в быстрой игре
-            self.example.car.position = self._next_respawn_point or Point.random_gauss(self.server.quick_game_start_pos, 750)
+            self.example.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
 
         self.example.current_location = None
         self.current_location = None
 
     def on_die(self, event, **kw):
         super(QuickUser, self).on_die(event=event, **kw)
-        self._next_respawn_point = Point.random_gauss(self.server.quick_game_start_pos, 750)
+        self._next_respawn_point = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
         SetMapCenterMessage(agent=self, time=event.time, center=self._next_respawn_point).post()  # send message to load map
 
     def print_login(self):

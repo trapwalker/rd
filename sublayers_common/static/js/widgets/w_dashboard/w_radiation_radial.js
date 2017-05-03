@@ -277,6 +277,18 @@ var WRadiationRadial = (function (_super) {
     WRadiationRadial.prototype.change = function () {
         //console.log('WRadiationRadial.prototype.change');
         this.draw_fill_area(this.car.radiation_dps / this.max_radiation_dps);
+
+        if (this.car.radiation_dps > 0) {
+            if (!this.alarmLampState) {
+                this.alarmLampState = true;
+                this.draw_alarmLamp();
+            }
+        }
+        else
+            if (this.alarmLampState) {
+                this.alarmLampState = false;
+                this.draw_alarmLamp();
+            }
     };
 
     WRadiationRadial.prototype.delFromVisualManager = function () {
