@@ -45,8 +45,7 @@ class QuickGamePowerUpSimple(Observer):
     def power_up(self, target, time):
         self._can_use = False
         target.main_agent.log.info("%s activated for %s", self, target)
-        for agent in self.subscribed_agents:
-            PowerUpAnimateHide(agent=agent, time=time, subj=self).post()
+        PowerUpAnimateHide(agent=target.main_agent, time=time, subj=self).post()
 
         if isinstance(target.main_agent, QuickUser):
             target.main_agent.bonus_points += 10
