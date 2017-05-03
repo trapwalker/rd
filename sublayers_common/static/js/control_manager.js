@@ -36,6 +36,9 @@ var ControlManager = (function () {
         this.bind_code(settingsManager.options["open_radio"].value ,"open_radio");
         this.bind_code(settingsManager.options["open_options"].value ,"open_options");
 
+        this.bind_code(settingsManager.options["use_teleport"].value ,"use_teleport");
+        this.bind_code(settingsManager.options["save_tiles"].value ,"save_tiles");
+
         // Для отслеживания состояний Зажатия Кнопок движения
         this.pressed_move_forward = false;
         this.pressed_move_backward = false;
@@ -200,6 +203,24 @@ var ControlManager = (function () {
         open_party_info: {down: function() {$("#divMainMenuBtnParty").click()}},
         open_radio: {down: function() {$("#divMainMenuBtnRadio").click()}},
         open_options: {down: function() {$("#divMainMenuBtnOptions").click()}},
+
+        // Горячие клавиши админских возможностей (показываются только при cht_bGod = 1)
+        use_teleport: {
+            down: function () {
+                if (settingsManager.cht_bGod && mapCanvasManager && mapManager) {
+                    var target = mapManager.getMouseCoords();
+                    clientManager.sendTeleportCoord(target.x, target.y);
+                }
+            }
+        },
+        save_tiles: {
+            down: function () {
+                if (settingsManager.cht_bGod && mapCanvasManager && mapManager) {
+                    var target = mapManager.getMouseCoords();
+                    clientManager.sendTileCoord(target.x, target.y);
+                }
+            }
+        },
     };
 
     ControlManager.prototype.bind_code = function(keycode, func_name) {

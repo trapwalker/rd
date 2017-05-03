@@ -15,7 +15,7 @@ import shutil
 # http://sublayers.net/map/18/48876/106134.jpg
 def get_tiles_admin(ax, ay):
 
-    download_str = 'http://sublayers.net/map/{}/{}/{}.jpg'.format
+    download_str = 'http://roaddogs.ru/map/{}/{}/{}.jpg'.format
 
     start_tile = Tileid2(long(ax), long(ay), 26)
     http = HTTPClient()
