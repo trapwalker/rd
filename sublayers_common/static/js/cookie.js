@@ -601,38 +601,38 @@ var SettingsManager = (function() {
                     text: "Стандартная",
                     value: "none"
                 },
-                {
-                    text: "Ч/Б",
-                    value: "grayscale(100%);"
-                },
-                {
-                    text: "Ч/Б (контр)",
-                    value: "grayscale(100%) brightness(1.25) contrast(125%);"
-                },
+                // {
+                //     text: "Ч/Б",
+                //     value: "grayscale(100%);"
+                // },
+                // {
+                //     text: "Ч/Б (контр)",
+                //     value: "grayscale(100%) brightness(1.25) contrast(125%);"
+                // },
                 {
                     text: "Сепия",
                     value: "sepia(100%);"
                 },
-                {
-                    text: "Сепия (контр)",
-                    value: "sepia(100%) brightness(1.25) contrast(125%);"
-                },
-                {
-                    text: "Красная",
-                    value: "url(#red);"
-                },
-                {
-                    text: "Оранжевая",
-                    value: "url(#orange);"
-                },
+                // {
+                //     text: "Сепия (контр)",
+                //     value: "sepia(100%) brightness(1.25) contrast(125%);"
+                // },
+                // {
+                //     text: "Красная",
+                //     value: "url(#red);"
+                // },
+                // {
+                //     text: "Оранжевая",
+                //     value: "url(#orange);"
+                // },
                 {
                     text: "Желтая",
                     value: "url(#yellow);"
                 },
-                {
-                    text: "Зеленая",
-                    value: "url(#green);"
-                },
+                // {
+                //     text: "Зеленая",
+                //     value: "url(#green);"
+                // },
                 {
                     text: "Голубая",
                     value: "url(#cyan);"
@@ -640,11 +640,11 @@ var SettingsManager = (function() {
                 {
                     text: "Синяя",
                     value: "url(#blue);"
-                },
-                {
-                    text: "Фиолетовая",
-                    value: "url(#purple);"
                 }
+                // ,{
+                //     text: "Фиолетовая",
+                //     value: "url(#purple);"
+                // }
             ],
             set_callback: function(new_value) {
                 $("#bodydiv").attr("style", "filter: " + new_value);
