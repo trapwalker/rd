@@ -117,8 +117,23 @@ class FireSector(Sector):
 
     def fire_auto(self, target_list, time):
         old_target_list = set(self.target_list)
-        for target in (old_target_list - target_list):
-            self.out_car(target=target, time=time)
+        # for target in (old_target_list - target_list):
+        #     self.out_car(target=target, time=time)
+        # for target in target_list:
+        #     if self._test_target_in_sector(target=target, time=time):
+        #         self.add_car(target=target, time=time)
+        #     else:
+        #         self.out_car(target=target, time=time)
+
+        # todo: удалить если будут такие же ошибки, как раньше, и расскоментить то, что выше
+        # target_list - по факту что сейчас видит объект
+        # old_target_list - что есть в секторе при прошлой проверке
+        # 1 - если есть что-то в old_target_list, чего нет в target_list - перестать стрелять
+        old_target_list2 = self.target_list[:]
+        for target in old_target_list2:
+            if target not in target_list:
+                self.out_car(target=target, time=time)
+        # 2 - для всех объектов в target_list сделать проверку их наличия в секторе
         for target in target_list:
             if self._test_target_in_sector(target=target, time=time):
                 self.add_car(target=target, time=time)
@@ -154,7 +169,7 @@ class FireSector(Sector):
         if target in self.target_list:
             owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
             if owner:
-                owner.log.info('Sector {} Del Target {} car_owner={}  time={}'.format(self, target, owner, time))
+                owner.log.info('Sector {} Del Target {} time={}'.format(self, target, time))
             self.target_list.remove(target)
             self._fire_auto_end(target=target, time=time)
 
@@ -162,7 +177,7 @@ class FireSector(Sector):
         if target not in self.target_list:
             owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
             if owner:
-                owner.log.info('Sector {} Add Target {} car_owner={}  time={}'.format(self, target, owner, time))
+                owner.log.info('Sector {} Add Target {} time={}'.format(self, target, time))
             self.target_list.append(target)
             self._fire_auto_start(target=target, time=time)
 

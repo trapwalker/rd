@@ -10,6 +10,8 @@ var SettingsManager = (function() {
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
+        this.cht_bGod = this.getCookie("cht_bGod") == "1" ? 1 : 0; // Определяет можно ли телепортироваться и загружать тайлы
+
         this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
 
         this.page_descriptions = {
@@ -510,6 +512,34 @@ var SettingsManager = (function() {
             set_callback: function(new_value) {controlManager.bind_code(new_value, "open_options");},
         },
 
+        // Горячие клавиши админских возможностей (показываются только при cht_bGod = 1)
+        use_teleport: {
+            admin_mode: true,
+            name: "use_teleport",
+            page: "control",
+            text_name: "Телепорт",
+            text_description: "Телепортироваться по координатам курсора мыши",
+            jq_div: null,
+            type: "control",
+            default: 84,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "use_teleport");},
+        },
+        save_tiles: {
+            admin_mode: true,
+            name: "save_tiles",
+            page: "control",
+            text_name: "Выгрузка тайлов",
+            text_description: "Сформировать архив тайлов для загрузки на клиент (по координатам курсора мыши)",
+            jq_div: null,
+            type: "control",
+            default: 72,
+            value: 0,
+            currentValue: 0,
+            set_callback: function(new_value) {controlManager.bind_code(new_value, "save_tiles");},
+        },
+
         /* Вкладка Другое */
         save_current_zoom: {
             name: "save_current_zoom",
@@ -571,38 +601,38 @@ var SettingsManager = (function() {
                     text: "Стандартная",
                     value: "none"
                 },
-                {
-                    text: "Ч/Б",
-                    value: "grayscale(100%);"
-                },
-                {
-                    text: "Ч/Б (контр)",
-                    value: "grayscale(100%) brightness(1.25) contrast(125%);"
-                },
+                // {
+                //     text: "Ч/Б",
+                //     value: "grayscale(100%);"
+                // },
+                // {
+                //     text: "Ч/Б (контр)",
+                //     value: "grayscale(100%) brightness(1.25) contrast(125%);"
+                // },
                 {
                     text: "Сепия",
                     value: "sepia(100%);"
                 },
-                {
-                    text: "Сепия (контр)",
-                    value: "sepia(100%) brightness(1.25) contrast(125%);"
-                },
-                {
-                    text: "Красная",
-                    value: "url(#red);"
-                },
-                {
-                    text: "Оранжевая",
-                    value: "url(#orange);"
-                },
+                // {
+                //     text: "Сепия (контр)",
+                //     value: "sepia(100%) brightness(1.25) contrast(125%);"
+                // },
+                // {
+                //     text: "Красная",
+                //     value: "url(#red);"
+                // },
+                // {
+                //     text: "Оранжевая",
+                //     value: "url(#orange);"
+                // },
                 {
                     text: "Желтая",
                     value: "url(#yellow);"
                 },
-                {
-                    text: "Зеленая",
-                    value: "url(#green);"
-                },
+                // {
+                //     text: "Зеленая",
+                //     value: "url(#green);"
+                // },
                 {
                     text: "Голубая",
                     value: "url(#cyan);"
@@ -610,11 +640,11 @@ var SettingsManager = (function() {
                 {
                     text: "Синяя",
                     value: "url(#blue);"
-                },
-                {
-                    text: "Фиолетовая",
-                    value: "url(#purple);"
                 }
+                // ,{
+                //     text: "Фиолетовая",
+                //     value: "url(#purple);"
+                // }
             ],
             set_callback: function(new_value) {
                 $("#bodydiv").attr("style", "filter: " + new_value);
@@ -670,6 +700,8 @@ var SettingsManager = (function() {
         // Сохранение разных значений
         // Зум
         this.setCookie("current_zoom", mapManager.getZoom().toFixed(2));
+        // Админский режим
+        this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0")
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
@@ -691,28 +723,30 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name)){
                 var option = this.options[opt_name];
-                var page = this.jq_pages.find(".settings_page_" + option.page).first();
-                var jq_option = $('<div class="settings-elem ' + option.type + '" onmouseenter="settingsManager._handler_mouse_over(`' + opt_name + '`)" onmouseleave="settingsManager._handler_mouse_over()"></div>');
-                option.jq_div = jq_option;
+                if (!option.admin_mode || this.cht_bGod) {
+                    var page = this.jq_pages.find(".settings_page_" + option.page).first();
+                    var jq_option = $('<div class="settings-elem ' + option.type + '" onmouseenter="settingsManager._handler_mouse_over(`' + opt_name + '`)" onmouseleave="settingsManager._handler_mouse_over()"></div>');
+                    option.jq_div = jq_option;
 
-                var background_class_name = even_background ? "trainer-light-back" : "trainer-dark-back";
+                    var background_class_name = even_background ? "trainer-light-back" : "trainer-dark-back";
 
-                switch (option.type){
-                    case "scale":
-                        this.draw_scale_options(option, jq_option, background_class_name);
-                        break;
-                    case "list":
-                        this.draw_list_options(option, jq_option, background_class_name);
-                        break;
-                    case "control":
-                        this.draw_control_options(option, jq_option, background_class_name);
-                        break;
-                    default:
-                        console.warn("Not found options type: ", option.type);
+                    switch (option.type) {
+                        case "scale":
+                            this.draw_scale_options(option, jq_option, background_class_name);
+                            break;
+                        case "list":
+                            this.draw_list_options(option, jq_option, background_class_name);
+                            break;
+                        case "control":
+                            this.draw_control_options(option, jq_option, background_class_name);
+                            break;
+                        default:
+                            console.warn("Not found options type: ", option.type);
+                    }
+                    page.append(jq_option);
+
+                    even_background = !even_background;
                 }
-                page.append(jq_option);
-
-                even_background = ! even_background;
             }
 
         // Включение первой или запоминание выбранной вкладки
@@ -837,6 +871,7 @@ var SettingsManager = (function() {
                 if (cookie_obj.hasOwnProperty(opt_name)) value = cookie_obj[opt_name];
                 option.value = option.currentValue = value;
             }
+
         return false;
     };
 

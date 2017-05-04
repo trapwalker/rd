@@ -13,6 +13,8 @@ var WCruiseControl = (function (_super) {
         this.reverse = false;
         this.current_interface_size = interface_scale_big;
 
+        this.last_change_speed_time = 0;
+
         // Механизм скрытия
         this.visible = true;
         this.glassDiv = $('#cruiseControlGlassDiv');
@@ -454,9 +456,11 @@ var WCruiseControl = (function (_super) {
         //console.log('WCruiseControl.prototype.change');
         //return;
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
+        var cl_time = clock.getClientTime();
         if (Math.abs(currentSpeed - this.lastSpeed) > 0.1) {
             // Сохраняем последнюю скорость
             this.lastSpeed = currentSpeed;
+            this.last_change_speed_time = cl_time;
 
             // Обновление шкалы скорости
             var prc = 0;
@@ -473,6 +477,17 @@ var WCruiseControl = (function (_super) {
             if (this.keyBoardControl) {
                 this.setSpeedHandleValue(prc);
                 this.changeReverse(this.lastSpeed < 0)
+            }
+        }
+        else {
+            if (controlManager.pressed_move_forward || controlManager.pressed_move_backward) {
+                if (cl_time - this.last_change_speed_time > 500) {
+                    wCruiseControl.stopKeyboardControl();
+                    wCruiseControl.setSpeedHandleValue(1.0);
+                }
+            }
+            else {
+                this.last_change_speed_time = cl_time;
             }
         }
     };

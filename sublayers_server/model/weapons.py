@@ -55,6 +55,10 @@ class Weapon(Consumer):
         return item.example.parent in self.items_cls_list
 
     def on_empty_item(self, item, time, action):
+        owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
+        if owner:
+            owner.log.info('on_empty item <{}> for consumer <{}> time={}'.format(item, self, time))
+
         balance_cls_list = []
         self.last_item_balance_cls = item.example.parent
         if self.swap:
@@ -66,6 +70,9 @@ class Weapon(Consumer):
         # Отправить сообщение если можно о том, что закончились патроны
         if self.item is None and self.owner.owner:
             WeaponAmmoFinishedLogMessage(agent=self.owner.owner, time=time, weapon=self).post()
+        else:
+            if owner:
+                owner.log.info('new_item_set item <{}> consumer <{}> time={}'.format(self.item, self, time))
 
     @event_deco
     def try_recharge(self, event, inventory):

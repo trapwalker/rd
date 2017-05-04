@@ -24,6 +24,11 @@ class WorldSettings(Root):
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'))
 
     quick_game_bot_count = IntField(caption=u"Количество ботов в быстрой игре")
+    quick_game_start_pos = PositionField(caption=u"Центр быстрой игры")
+    quick_game_play_radius = IntField(caption=u"Радиус быстрой игры")
+    quick_game_respawn_bots_pos = PositionField(caption=u"Центр респа игроков")
+    quick_game_respawn_bots_radius = IntField(caption=u"Радиус респа игроков")
+
     quick_game_bot_cars = ListField(
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.mobiles.Car'))
     quick_game_bot_agents = ListField(

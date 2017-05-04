@@ -41,6 +41,7 @@
 }
 .healthAlarmLamp-on {
     background: transparent url('/static/img/cruise/health_lamp_on.png') 100% 100% no-repeat;
+    animation: alarmLampAnimation 0.75s linear infinite;
 }
 
 .w-fuel-radial-parent {
@@ -62,7 +63,9 @@
 }
 .fuelAlarmLamp-on {
     background: transparent url('/static/img/cruise/fuel_lamp_on.png') 100% 100% no-repeat;
+    animation: alarmLampAnimation 0.75s linear infinite;
 }
+
 
 .w-radiation-radial-parent {
     position: absolute;
@@ -82,6 +85,7 @@
 }
 .radiationAlarmLamp-on {
     background: transparent url('/static/img/cruise/rad_lamp_on.png') 100% 100% no-repeat;
+    animation: alarmLampAnimation 0.75s linear infinite;
 }
 
 .w-wind-radial-parent {
@@ -112,6 +116,19 @@
     pointer-events: none;
 }
 
+
+
+@keyframes alarmLampAnimation {
+    0% {
+        opacity:1;
+    }
+    50% {
+        opacity:0.4;
+    }
+    100% {
+        opacity:1;
+    }
+}
 
 @media screen and (max-width: 1550px), screen and (max-height: 880px) {
     #divForHpAndFuelRadials { right: 113px; width: 115px; height: 115px; }

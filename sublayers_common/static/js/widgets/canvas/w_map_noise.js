@@ -142,7 +142,7 @@ var WRadiationNoise = (function (_super) {
         _super.call(this, []);
         this.frame_rate = 5;
 
-        this.radiation_dps_max = 5; // Уровень урона радиаций после которого (включительно) шум показывается без прозрачности
+        this.radiation_dps_max = 2; // Уровень урона радиаций после которого (включительно) шум показывается без прозрачности
         this.radiation_d_dps_max = 0.1; // Максимальный уровень приращения дамага за кадр
         this.target_radiation_dps = 0; // Целевой дамаг
         this.current_radiation_dps = 0; // Текущий дамаг

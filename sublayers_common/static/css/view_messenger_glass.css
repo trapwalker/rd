@@ -176,11 +176,25 @@
 .VMGpageButton.active:after { content: " >"; }
 .VMGpageButton:hover { color: #2ffa00; }
 .VMGpageButton.wait {
-    animation: blink-animation-page 1s steps(2, start) infinite;
-    -webkit-animation: blink-animation-page 1s steps(2, start) infinite;
+    animation: blink-animation-page 1s infinite;
+    -webkit-animation: blink-animation-page 1s infinite;
 }
-@keyframes blink-animation-page { to { color: #000000; background-color: #0e4b00; } }
-@-webkit-keyframes blink-animation-page { to { color: #000000; background-color: #0e4b00; } }
+
+/*@keyframes blink-animation-page { to { color: #000000; background-color: #0e4b00; } }*/
+/*@-webkit-keyframes blink-animation-page { to { color: #000000; background-color: #0e4b00; } }*/
+
+@keyframes blink-animation-page {
+    0%   {color: #31c811; background-color: transparent;}
+    49%  {color: #31c811; background-color: transparent;}
+    50%  {color: #000000; background-color: #31c811;}
+    100% {color: #000000; background-color: #31c811;}
+}
+@-webkit-keyframes blink-animation-page {
+    0%   {color: #31c811; background-color: transparent;}
+    49%  {color: #31c811; background-color: transparent;}
+    50%  {color: #000000; background-color: #31c811;}
+    100% {color: #000000; background-color: #31c811;}
+}
 
 .VMGTextOutArea {
     position: relative;

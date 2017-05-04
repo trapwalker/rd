@@ -50,7 +50,7 @@ class PlayHandler(BaseHandler):
                 if agent and agent.car:
                     coord = agent.car.position(time=self.application.srv.get_time())
                 else:
-                    coord = Point.random_gauss(self.application.srv.quick_game_start_pos, 750)
+                    coord = Point.random_point(self.application.srv.quick_game_start_pos, self.application.srv.quick_game_respawn_bots_radius)
                 user.start_position = Position(coord.x, coord.y)
                 yield user.save()
                 if (not user.quick) and (user.teaching_state != "map"):

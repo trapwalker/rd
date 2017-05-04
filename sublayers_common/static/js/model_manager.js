@@ -1458,6 +1458,9 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendFireDischarge');
         if (!user.userCar) return;
         if(! wFireController.visible) return;
+        var side_obj = user.userCar.fireSidesMng.sides[side];
+        if (!side_obj || !side_obj.isDischarge) return;
+        if (side_obj.last_shoot + side_obj.sideRecharge > clock.getCurrentTime()) return;
         var mes = {
             call: "fire_discharge",
             rpc_call_id: rpcCallList.getID(),
@@ -2342,7 +2345,7 @@ var ClientManager = (function () {
 
     // Teleport
     ClientManager.prototype.sendTeleportCoord = function(x, y) {
-        console.log('ClientManager.prototype.sendTeleportCoord');
+        console.log('ClientManager.prototype.sendTeleportCoord', x, y);
         var mes = {
             call: "teleport",
             rpc_call_id: rpcCallList.getID(),
