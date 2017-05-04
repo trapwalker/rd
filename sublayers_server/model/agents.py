@@ -266,7 +266,7 @@ class Agent(Object):
             self._disconnect_timeout_event = None
             log.info('Connection of agent %s restored. Disconnect timeout cancelled.', self)
         else:
-            log.info('Agent %s connected', self)
+            log.info('Agent %s connected. Agents on server: %s', self, len(self.server.agents))
 
         if self.api:
             connection.api = self.api
@@ -293,7 +293,11 @@ class Agent(Object):
         # self.subscriptions.on_disconnect(agent=self, time=event.time)
         if self.car:
             self.car.displace(time=event.time)
-        log.info('Agent %s displaced by disconnect timeout', self)
+        log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
+
+        # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
+        del self.server.agents[str(self.user._id)]
+        del self.server.agents_by_name[self.user.name]
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
