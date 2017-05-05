@@ -29,9 +29,10 @@
         }
 
         .messages-record .name { width: 25%; }
-        .messages-record .count {width: 20%; text-align: right;}
-        .messages-record .average {width: 20%; text-align: right;}
-        .messages-record .summ {width: 20%; text-align: right;}
+        .messages-record .count {width: 10%; text-align: right;}
+        .messages-record .average {width: 15%; text-align: right;}
+        .messages-record .summ {width: 15%; text-align: right;}
+        .messages-record .duration {width: 15%; text-align: right;}
 
 
     </style>
@@ -46,7 +47,10 @@
             <div class="count">Count</div>
             <div class="average">Average</div>
             <div class="summ">Summ</div>
+            <div class="duration">Sending Average</div>
         </div>
+    {% else %}
+        No message stats
     {% end %}
     {% import datetime %}
     {% set i = 0 %}
@@ -69,9 +73,12 @@
             {% else %}
                 <div class="summ">{{ summ  }}</div>
             {% end %}
+
+            <div class="duration">{{ round(messages_metrics[rec]["duration"] / messages_metrics[rec]["count"], 4) }}</div>
         </div>
         {% set i += 1 %}
     {% end %}
 
 </div>
+<script>setInterval(function () {location.reload();}, 60000);</script>
 </body>

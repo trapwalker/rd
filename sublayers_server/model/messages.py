@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from uuid import UUID
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
+from sublayers_common.ctx_timer import Timer
 
 import math
 import os.path
@@ -47,7 +48,8 @@ class Message(object):
         if connection:
             if connection.ws_connection:
                 data = serialize(make_push_package([self]))
-                connection.send(data)
+                with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
+                    connection.send(data)
 
                 len_data = len(data)
                 cl_name = self.classname
@@ -56,10 +58,12 @@ class Message(object):
                     count = self.messages_metrics[cl_name]["count"]
                     self.messages_metrics[cl_name]["average"] = (average * count + len_data) / (count + 1)
                     self.messages_metrics[cl_name]["count"] += 1
+                    self.messages_metrics[cl_name]["duration"] += message_send_timer.duration
                 else:
                     self.messages_metrics[cl_name] = {
                         "average": len_data,
-                        "count": 1
+                        "count": 1,
+                        "duration": message_send_timer.duration
                     }
 
         else:

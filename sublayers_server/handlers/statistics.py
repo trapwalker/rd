@@ -22,7 +22,7 @@ class ServerStatisticsHandler(BaseHandler):
                 if isinstance(agent, AI):
                     quick_game_bot_info.append(agent)
 
-        self.render("module_entry_server_stats.html", server_stat=server_stat, quick_game_bot_info=quick_game_bot_info)
+        self.render("statistics/module_entry_server_stats.html", server_stat=server_stat, quick_game_bot_info=quick_game_bot_info)
 
     def post(self):
         action = self.get_argument('action', None)
