@@ -82,18 +82,18 @@ class AgentProfile(Node):
 
     # Механизм перков
     perks = ListField(
-        field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),
         caption=u'Список прокачанных перков',
-        reinst=True,
+        einst=True,
     )
 
     # Механизм скилов
-    exp_table = EmbeddedNodeField(
+    exp_table = RegistryLinkField(
         caption=u"Таблица опыта",
         default='reg:///registry/rpg_settings/exptable',
         document_type='sublayers_server.model.registry_me.classes.exptable.ExpTable',
     )
-    role_class = EmbeddedNodeField(  # todo: Проверить нужно ли декларировать default
+    role_class = RegistryLinkField(  # todo: Проверить нужно ли декларировать default
         caption=u"Ролевой класс",
         document_type='sublayers_server.model.registry_me.classes.role_class.RoleClass',
     )
@@ -390,3 +390,7 @@ class Agent(Doc):
     user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
     login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
     profile = EmbeddedNodeField(caption=u'Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
+
+    def __init__(self, *av, **kw):
+        super(Agent, self).__init__(*av, **kw)
+        assert isinstance(self.profile, AgentProfile)
