@@ -290,6 +290,8 @@ class Subdoc(EmbeddedDocument):
             if new_value is not value:
                 setattr(self, field_name, new_value)
 
+        return self
+
 
 ########################################################################################################################
 class Node(Subdoc):
