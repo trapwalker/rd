@@ -804,17 +804,17 @@ var WCanvasAnimateMarkerPowerUp = (function (_super) {
     };
 
     WCanvasAnimateMarkerPowerUp.prototype.getVisibleState = function (time) {
-        if (user.userCar && user.userCar.getObservingRange(time) <= distancePoints(this.position, user.userCar.getCurrentCoord(time)))
-            return 0.2;
-        else
+        if (wObservingRange && wObservingRange.in_observing_range(this.position))
             return 1.0;
+        else
+            return 0.2;
     };
 
     WCanvasAnimateMarkerPowerUp.prototype._get_frame_num = function (time, client_time) {
-        if (user.userCar && user.userCar.getObservingRange(time) <= distancePoints(this.position, user.userCar.getCurrentCoord(time)))
-            return 0;
-        else
+        if (wObservingRange && wObservingRange.in_observing_range(this.position))
             return _super.prototype._get_frame_num.call(this, time, client_time);
+        else
+            return 0;
     };
 
     WCanvasAnimateMarkerPowerUp.prototype.updateIcon = function() {

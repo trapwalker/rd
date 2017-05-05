@@ -62,6 +62,18 @@ var WObservingRange = (function (_super) {
         //wObservingRange = null;
     };
 
+    WObservingRange.prototype.in_observing_range = function (position) {
+        var time = clock.getCurrentTime();
+        for (var i = 0; i < this._model_objects.length; i++) {
+            var car = this._model_objects[i];
+            var car_pos = car.getCurrentCoord(time);
+            var observing_range = car.getObservingRange(time);
+            if (observing_range * observing_range > distancePoints2(car_pos, position))
+                return true;
+        }
+        return false;
+    };
+
     return WObservingRange;
 })(VisualObject);
 
