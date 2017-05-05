@@ -38,10 +38,15 @@ def test4():
     reg = get_global_registry(path=u'../../../tmp/registry', reload=True)
     a = reg.get('/registry/a')
     b = reg.get('/registry/b')
-    print(b)
+    c = B(it=dict(
+        #_cls='A',
+        parent='/registry/a',
+        name='a___',
+    ))
+    c.expand_links()
     globals().update(locals())
 
 if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
-    test3()
+    test4()
