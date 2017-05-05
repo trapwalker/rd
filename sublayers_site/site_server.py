@@ -24,7 +24,7 @@ import tornado.options
 import tornado.web
 from tornado.options import options
 
-import settings
+from sublayers_site import settings
 
 import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler, RegisterOldUsersOnForum, SetForumUserAuth
@@ -38,7 +38,7 @@ from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
 
 import sublayers_server.model.registry_me.classes  #autoregistry classes
-from sublayers_server.model.registry_me.tree import Root
+from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_site.news import NewsManager
 from sublayers_site.site_locale import load_locale_objects
 
@@ -75,14 +75,8 @@ class Application(BaseApplication):
         tornado.ioloop.IOLoop.instance().add_callback(self.on_init_site_structure)
 
     def on_init_site_structure(self):
-        def load_registry_done_callback(all_registry_items):
-            self.reg = Root.objects.get_cached('reg:///registry')
-            log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
-            from datetime import datetime
-            print('Road Dogs Site load !', str(datetime.now()))
-            log.info('Site server READY')
-
-        Root.objects.filter(uri={'$ne': None}).find_all(callback=load_registry_done_callback)
+        self.reg = get_global_registry(options.world_path, reload=False)
+        log.info('Site server READY')
 
 
 def main():
