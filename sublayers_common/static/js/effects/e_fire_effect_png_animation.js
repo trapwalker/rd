@@ -19,6 +19,7 @@ var ECanvasAnimationPNG = (function () {
         this.scale_icon_x = 1.0;
         this.scale_icon_y = 1.0;
         this.infinity_animation = false;
+        this._globalAlpha = 1.0;
     }
 
     ECanvasAnimationPNG.prototype._get_frame_num = function (time) {
@@ -50,6 +51,7 @@ var ECanvasAnimationPNG = (function () {
     ECanvasAnimationPNG.prototype.redraw = function (ctx, time) {
         if (! this.infinity_animation && time >= this.start_time + this.duration / 1000.) return;
         ctx.save();
+        ctx.globalAlpha = this._globalAlpha;
         var img_obj = this.effect_image_obj;
         var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         ctx.translate(ctx_pos.x, ctx_pos.y);
@@ -80,6 +82,8 @@ var ECanvasDischargeFirePNG_1 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = 0.2; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasDischargeFirePNG_1
@@ -99,6 +103,8 @@ var ECanvasDischargeFirePNG_2 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = 0.2; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasDischargeFirePNG_2
@@ -118,6 +124,8 @@ var ECanvasDischargeFirePNG_3_dbl = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = 0.2; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasDischargeFirePNG_3_dbl
@@ -176,6 +184,8 @@ var ECanvasHeavyBangPNG_1 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasHeavyBangPNG_1
@@ -195,6 +205,8 @@ var ECanvasHeavyBangPNG_2 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasHeavyBangPNG_2
@@ -214,6 +226,8 @@ var ECanvasHeavyBangPNG_3 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasHeavyBangPNG_3
@@ -271,6 +285,8 @@ var ECanvasHeavyBangOrientedPNG_1 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = -1.0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4; 
     }
 
     return ECanvasHeavyBangOrientedPNG_1
@@ -290,6 +306,8 @@ var ECanvasHeavyBangOrientedPNG_2 = (function (_super) {
         this.frame_width = this.effect_image_obj.size[1]; // размер одного кадра
         this.offset_x = -1.0; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
+
+        this._globalAlpha = wObservingRange && wObservingRange.in_observing_range(position) ? 1.0 : 0.4;  
     }
 
     return ECanvasHeavyBangOrientedPNG_2
