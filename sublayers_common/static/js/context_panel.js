@@ -354,6 +354,7 @@ var GetLootObserver = (function(_super){
         this.obs_btn = $('#cpGetLootIcon');
         this.obs_btn.click(function() {
             if (contextPanel) contextPanel.get_loot_observer.activate();
+            returnFocusToMap();
         });
         this.obs_btn.removeClass('active');
         this._is_active = false;
