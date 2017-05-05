@@ -624,6 +624,7 @@ class Root(Node):
 
 REGISTRY = None
 
+@Timer(logger=log, log_start=None, log_stop='Registry fetched in {timer.duration}s')
 def get_global_registry(path=None, reload=False):
     global REGISTRY
     if REGISTRY is None:
@@ -633,9 +634,13 @@ def get_global_registry(path=None, reload=False):
             reload = True
 
         if reload:
+            log.info('Registry reloading start')
             Registry.objects.filter({}).delete()
             if path:
                 REGISTRY.load(path)
+                log.info('Registry reloading done')
+            else:
+                log.warning("Registry path unspecified. It's empty now!")
 
     return REGISTRY
 ########################################################################################################################
