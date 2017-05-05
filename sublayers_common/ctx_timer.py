@@ -20,13 +20,14 @@ from functools import wraps
 from copy import copy
 
 
+# todo: Progress tracking feature (estimate, stage, progress bar, stage comment)
 class Timer(object):
     def __init__(
             self,
             name=None,
             logger=log,
-            log_start='Timer {self.name!r} started at {self.time_start}',
-            log_stop='Timer {self.name!r} stopped at {self.time_stop}. Duration is {self.duration}s',
+            log_start='Timer {timer.name!r} started at {timer.time_start}',
+            log_stop='Timer {timer.name!r} stopped at {timer.time_stop}. Duration is {timer.duration}s',
             **kw
         ):
         self.name = name
@@ -50,15 +51,15 @@ class Timer(object):
         assert not self._it_is_decorator, "You can't start Timer instance used as decorator."
         t = time.time()
         self.timestamp_start = t
-        if self.log_start:
-            self.logger.debug(self.log_start.format(self=self))
+        if self.logger and self.log_start:
+            self.logger.debug(self.log_start.format(timer=self))
         return t
 
     def stop(self):
         t = time.time()
         self.timestamp_stop = t
-        if self.log_stop:
-            self.logger.debug(self.log_stop.format(self=self))
+        if self.logger and self.log_stop:
+            self.logger.debug(self.log_stop.format(timer=self))
         return t
 
     @property
@@ -123,11 +124,9 @@ if __name__ == '__main__':
         for i in xrange(task_size):
             if i % (task_size / 10) == 0:
                 print(timer.duration)
-                pass
 
-    deco = Timer()
     # functions decoration usage:
-    @deco
+    Timer(name='test2')
     def test_routine2():
         print('test_routine2')
 
