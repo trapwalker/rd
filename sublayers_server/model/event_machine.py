@@ -66,6 +66,7 @@ class Server(object):
         # todo: blocking of init of servers with same uid
 
         self.reg = None  # Registry(name='registry')
+        self.server_mode = options.mode
         # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
 
         self.zones = []

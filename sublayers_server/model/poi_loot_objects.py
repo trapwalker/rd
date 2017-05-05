@@ -19,7 +19,7 @@ class DelPOIContainerEvent(Objective):
 
     def on_perform(self):
         super(DelPOIContainerEvent, self).on_perform()
-        if len(self.container.inventory.managers) > 0:
+        if len(self.container.inventory.managers) > 0 and self.server.server_mode == "basic":
             DelPOIContainerEvent(container=self.container, time=self.time + self.container.life_time).post()
         else:
             self.container.delete(time=self.time)
