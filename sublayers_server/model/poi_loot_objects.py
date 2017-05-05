@@ -56,7 +56,8 @@ class CreatePOILootEvent(Event):
 
         # заполнить инвентарь сундука
         for item in self.items:
-            item.set_inventory(time=self.time, inventory=stash.inventory)
+            if not item.limbo and item.val(t=self.time) > 1.0:
+                item.set_inventory(time=self.time, inventory=stash.inventory)
 
 
 class CreatePOICorpseEvent(Event):
