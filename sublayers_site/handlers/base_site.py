@@ -24,20 +24,22 @@ class BaseSiteHandler(BaseHandler):
         html_car_img = None
         name_car = None
         html_agent = None
-         # todo: убрать un_cache, когда заработает reload
-        agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
-        if agent_example:
-            agent_example.un_cache()
-            agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
-        else:
+        # todo: Убедиться, что агент не берется из кеша, а грузится из базы заново
+        agent_example = Agent.objects.get(user_id=str(user._id))
+        if not agent_example:
             # info: создание пустого агента для отображения на сайте
-            agent_example = self.application.reg['agents/user'].instantiate(
-                name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id),
-                abstract=False,
-            )
-            yield agent_example.load_references()
-            yield agent_example.save(upsert=True)
-            role_class_ex = self.application.reg['rpg_settings/role_class/chosen_one']
+            agent_example = Agent(
+                login=user.name,
+                user_id=str(user._id),
+                profile=dict(
+                    parent='/registry/agents/user',
+                    name=str(user._id),
+                    role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+                ),
+            ).expand_links()
+
+            agent_example.save(upsert=True)
+            role_class_ex = self.application.reg['/registry/rpg_settings/role_class/chosen_one']
             agent_example.role_class = role_class_ex
 
             for class_skill in role_class_ex.class_skills:
