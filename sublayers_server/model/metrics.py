@@ -94,5 +94,23 @@ class MovingAverageMetric(Metric):
         return self._val
 
 
+# Метрика для расчёта максимальных значений за какое-то время. Использовать только для объектов-синглтонов !!!
+class MaxValueByTimeMetric(Metric):
+    u"""Метрика для расчёта средних значений. Использовать только для объектов-синглтонов !!!"""
+    def __init__(self, dtime=1.0, **kw):
+        super(MaxValueByTimeMetric, self).__init__(**kw)
+        self.dtime = dtime
+        self._val = 0.0
+        self._next_update = 0.0
+
+    def call(self, value, stat_log, time):
+        super(MaxValueByTimeMetric, self).call(stat_log=stat_log, time=time)
+        if value > self._val or self._next_update < time:
+            self._next_update = time + self.dtime
+            self._val = value
+
+    def value(self, stat_log):
+        return self._val
+
 if __name__ == '__main__':
     pass
