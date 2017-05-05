@@ -46,7 +46,22 @@ class Message(object):
         # log.debug('Send message: %s to %r', self, self.agent.user.name)
         if connection:
             if connection.ws_connection:
-                connection.send(serialize(make_push_package([self])))
+                data = serialize(make_push_package([self]))
+                connection.send(data)
+
+                len_data = len(data)
+                cl_name = self.classname
+                if self.messages_metrics.get(cl_name, None):
+                    average = self.messages_metrics[cl_name]["average"]
+                    count = self.messages_metrics[cl_name]["count"]
+                    self.messages_metrics[cl_name]["average"] = (average * count + len_data) / (count + 1)
+                    self.messages_metrics[cl_name]["count"] += 1
+                else:
+                    self.messages_metrics[cl_name] = {
+                        "average": len_data,
+                        "count": 1
+                    }
+
         else:
             # todo: refactoring
             from sublayers_server.model.ai_quick_agent import AIQuickAgent
@@ -72,6 +87,8 @@ class Message(object):
             time=self.time,
             comment=self.comment,
         )
+
+    messages_metrics = dict()
 
 
 class InitTime(Message):
