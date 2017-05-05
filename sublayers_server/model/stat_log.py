@@ -13,8 +13,7 @@ class StatLogger(dict):
     s_units_on = metrics.IncMetric(name='s_units_on', doc=u"Кол-во активных (живых) юнитов на сервере")
     s_events_all = metrics.IncMetric(name='s_events_all', doc=u"Кол-во созданных событий")
     s_events_on = metrics.IncMetric(name='s_events_on', doc=u"Кол-во событий в очереди")
-    s_events_lag_max = metrics.ValueMetric(name='s_events_lag_max', doc=u"Максимальное отставание событий")
-    s_events_lag_cur = metrics.ValueMetric(name='s_events_lag_cur', doc=u"Текущее отставание событий")
+    s_events_lag_max = metrics.MaxValueByTimeMetric(name='s_events_lag_max', dtime=20, doc=u"Максимальное отставание событий")
     s_events_lag_mid = metrics.MovingAverageMetric(name='s_events_lag_mid', doc=u"Среднее отставание событий")
 
 

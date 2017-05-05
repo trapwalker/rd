@@ -364,7 +364,6 @@ class Server(object):
             s_events_all=st.get_metric('s_events_all'),
             s_events_on=st.get_metric('s_events_on'),
             s_events_lag_max=st.get_metric('s_events_lag_max'),
-            s_events_lag_cur=st.get_metric('s_events_lag_cur'),
             s_events_lag_mid=st.get_metric('s_events_lag_mid'),
         )
 
