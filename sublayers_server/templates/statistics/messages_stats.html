@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Server Message Statistics</title>
+
+    <style>
+        #bots_info {
+            position: relative;
+            float: left;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .messages-record {
+            position: relative;
+            float: left;
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+        }
+        .messages-record.even { background-color: #f5f5f5; }
+
+        .messages-record div {
+            position: relative;
+            float: left;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .messages-record .name { width: 25%; }
+        .messages-record .count {width: 10%; text-align: right;}
+        .messages-record .average {width: 15%; text-align: right;}
+        .messages-record .summ {width: 15%; text-align: right;}
+        .messages-record .duration {width: 15%; text-align: right;}
+
+
+    </style>
+
+
+</head>
+<body>
+<div id="bots_info">
+    {% if messages_metrics %}
+        <div class="messages-record even">
+            <div class="name">Class</div>
+            <div class="count">Count</div>
+            <div class="average">Average</div>
+            <div class="summ">Summ</div>
+            <div class="duration">Sending Average</div>
+        </div>
+    {% else %}
+        No message stats
+    {% end %}
+    {% import datetime %}
+    {% set i = 0 %}
+    {% for rec in messages_metrics.keys() %}
+        <div class="messages-record {{ 'even' if i % 2 else ''  }}">
+            <div class="name">{{ rec }}</div>
+            <div class="count">{{ messages_metrics[rec]["count"] }}</div>
+
+            {% if messages_metrics[rec]["average"] > 1000 %}
+                <div class="average">{{ messages_metrics[rec]["average"] / 1000 }} KB</div>
+            {% else %}
+                <div class="average">{{ messages_metrics[rec]["average"]  }}</div>
+            {% end %}
+
+            {% set summ = messages_metrics[rec]["average"] * messages_metrics[rec]["count"] %}
+            {% if summ > 1000000 %}
+                <div class="summ">{{ summ / 1000000 }} MB</div>
+            {% elif summ > 1000 %}
+                <div class="summ">{{ summ / 1000 }} KB</div>
+            {% else %}
+                <div class="summ">{{ summ  }}</div>
+            {% end %}
+
+            <div class="duration">{{ round(messages_metrics[rec]["duration"] / messages_metrics[rec]["count"], 4) }}</div>
+        </div>
+        {% set i += 1 %}
+    {% end %}
+
+</div>
+<script>setInterval(function () {location.reload();}, 60000);</script>
+</body>

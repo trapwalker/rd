@@ -141,7 +141,7 @@ var WSConnector = (function(_super){
         var dec_time = clock.getCurrentTime() - time_start;
         if (dec_time > this.decode_time) {
             this.decode_time = dec_time;
-            if (dec_time > 0.03) {
+            if (dec_time > 0.01) {
                 console.warn('Превышено максимальное время разбора сообщения от сервера: ', this.decode_time, mes);
                 var mes_type = "ws_message";
                 if (mes.hasOwnProperty("body") && mes.body.hasOwnProperty("events") && mes.body.events) {

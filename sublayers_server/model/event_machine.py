@@ -20,6 +20,8 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry.tree import Root
 
 from sublayers_common.user_profile import User as UserProfile
+from sublayers_common.ctx_timer import Timer
+
 
 import os
 import sys
@@ -66,6 +68,7 @@ class Server(object):
         # todo: blocking of init of servers with same uid
 
         self.reg = None  # Registry(name='registry')
+        self.server_mode = options.mode
         # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
 
         self.zones = []
@@ -363,8 +366,8 @@ class Server(object):
             s_events_all=st.get_metric('s_events_all'),
             s_events_on=st.get_metric('s_events_on'),
             s_events_lag_max=st.get_metric('s_events_lag_max'),
-            s_events_lag_cur=st.get_metric('s_events_lag_cur'),
             s_events_lag_mid=st.get_metric('s_events_lag_mid'),
+            s_message_send_max=st.get_metric('s_message_send_max')
         )
 
     memsize = sys.getsizeof
@@ -407,9 +410,12 @@ class LocalServer(Server):
         if self.is_terminated:
             return
 
-        while message_queue:
-            message_queue.popleft().send()  # todo: async sending by ioloop
+        if len(message_queue):
+            with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
+                while message_queue:
+                    message_queue.popleft().send()  # todo: async sending by ioloop
             # todo: mass sending optimizations over separated chat server
+                self.stat_log.s_message_send_max(time=self.get_time(), value=message_send_timer.duration)
 
         while timeline and not timeline.head.actual:
             timeline.get()
