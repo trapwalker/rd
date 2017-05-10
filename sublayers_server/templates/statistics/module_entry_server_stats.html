@@ -7,6 +7,18 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
     <style>
+        #server_stat_bar {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            border-bottom: 1px solid black;
+            background-color: gainsboro;
+        }
+
+        #server_stat_bar button {
+            margin: 5px 0 0 10px;
+        }
+
         #server_statistic {
             position: relative;
             float: left;
@@ -81,6 +93,10 @@
 
 </head>
 <body>
+<div id="server_stat_bar">
+    <button onclick="location.href = 'stat/messages';">Messages</button>
+    <button onclick="location.href = 'stat/events';">Events</button>
+</div>
 <div id="server_statistic">
     <div class="path">
         <h3>Эвенты</h3>
