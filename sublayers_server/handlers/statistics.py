@@ -48,7 +48,7 @@ class ServerStatForSite(BaseHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.finish({
             's_agents_on': stat_log.get_metric('s_agents_on'),
-            's_units_on': stat_log.get_metric('s_units_on')
+            's_observers_on': stat_log.get_metric('s_observers_on')
         })
 
 
