@@ -7,6 +7,18 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
     <style>
+        #server_stat_bar {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            border-bottom: 1px solid black;
+            background-color: gainsboro;
+        }
+
+        #server_stat_bar button {
+            margin: 5px 0 0 10px;
+        }
+
         #server_statistic {
             position: relative;
             float: left;
@@ -81,6 +93,10 @@
 
 </head>
 <body>
+<div id="server_stat_bar">
+    <button onclick="location.href = 'stat/messages';">Messages</button>
+    <button onclick="location.href = 'stat/events';">Events</button>
+</div>
 <div id="server_statistic">
     <div class="path">
         <h3>Эвенты</h3>
@@ -94,8 +110,8 @@
         <h3>Агенты и Юниты</h3>
         <div class="server-stat-elem">Всего Агентов:<br><span id="s_agents_all">{{ round(server_stat['s_agents_all'], 3) }}</span></div>
         <div class="server-stat-elem">Агентов онлайн:<br><span id="s_agents_on">{{ round(server_stat['s_agents_on'], 3) }}</span></div>
-        <div class="server-stat-elem">Юнитов создано:<br><span id="s_units_all">{{ round(server_stat['s_units_all'], 3) }}</span></div>
-        <div class="server-stat-elem">Юнитов на карте:<br><span id="s_units_on">{{ round(server_stat['s_units_on'], 3) }}</span></div>
+        <div class="server-stat-elem">Обсёрверов создано:<br><span id="s_observers_all">{{ round(server_stat['s_observers_all'], 3) }}</span></div>
+        <div class="server-stat-elem">Обсёрверов на карте:<br><span id="s_observers_on">{{ round(server_stat['s_observers_on'], 3) }}</span></div>
     </div>
 </div>
 <div id="bots_info">

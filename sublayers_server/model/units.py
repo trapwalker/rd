@@ -75,11 +75,6 @@ class Unit(Observer):
 
         self.setup_weapons(time=time)
 
-        # обновляем статистику сервера
-        server_stat = self.server.stat_log
-        server_stat.s_units_all(time=time, delta=1.0)
-        server_stat.s_units_on(time=time, delta=1.0)
-
     def direction(self, time):
         return self._direction
 
@@ -298,9 +293,6 @@ class Unit(Observer):
         # дроп машинки из агента и пати (в которой находится агент)
         if self.owner:
             self.owner.drop_car(car=self, time=event.time, drop_owner=False)
-
-        # обновляем статистику по живым юнитам
-        self.server.stat_log.s_units_on(time=event.time, delta=-1.0)
 
         # очистка всех визиторов из инвентаря машинки
         self.inventory.del_all_visitors(time=event.time)
