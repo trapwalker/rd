@@ -128,7 +128,7 @@ class Event(object):
             curr_lag = perform_start_time - self.time
             assert curr_lag >= 0.0, '{}'.format(curr_lag)
             stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
-            stat_log.s_events_lag_max(time=self.time, value=curr_lag)
+            stat_log.s_events_lag_max(time=self.time, value=curr_lag, comment=self.classname)
 
             if self.callback_before is not None:
                 self.callback_before(event=self)

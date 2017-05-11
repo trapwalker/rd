@@ -96,6 +96,10 @@
 <div id="server_stat_bar">
     <button onclick="location.href = 'stat/messages';">Messages</button>
     <button onclick="location.href = 'stat/events';">Events</button>
+
+    <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1hour&color=black';">Ресурсы: 1 час</button>
+    <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=6hour&color=black';">Ресурсы: 6 часов</button>
+    <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1days&color=black';">Ресурсы: 1 день</button>
 </div>
 <div id="server_statistic">
     <div class="path">
@@ -104,6 +108,7 @@
         <div class="server-stat-elem">Всего обработано эвентов:<br><span id="s_events_all">{{ round(server_stat['s_events_all'], 3) }}</span></div>
         <div class="server-stat-elem">Средний лаг Эвентов:<br><span id="s_events_lag_mid">{{ round(server_stat['s_events_lag_mid'], 3) }}</span></div>
         <div class="server-stat-elem">Максимальный лаг:<br><span id="s_events_lag_max">{{ round(server_stat['s_events_lag_max'], 3) }}</span></div>
+        <div class="server-stat-elem">Event lag name:<br><span id="s_events_lag_max_comment">{{ server_stat['s_events_lag_max_comment'] }}</span></div>
         <div class="server-stat-elem">Рассылка:<br><span id="s_message_send_max">{{ round(server_stat['s_message_send_max'], 4) }}</span></div>
     </div>
     <div class="path">
@@ -163,7 +168,12 @@
                     for(var key in data) {
                         var elem = $('#'+key);
                         if (elem){
-                            elem.text(data[key].toFixed(3))
+                            try {
+                                elem.text(data[key].toFixed(3))
+                            }
+                            catch (e) {
+                                elem.text(data[key])
+                            }
                         }
                     }
                 }

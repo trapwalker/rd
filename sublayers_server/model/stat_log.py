@@ -21,6 +21,10 @@ class StatLogger(dict):
     def get_metric(self, metric):
         return getattr(self, metric).value()
 
+    def get_metric_obj(self, metric):
+        m = getattr(self, metric)
+        return None if m is None else m.metric
+
 
 if __name__ == '__main__':
     pass
