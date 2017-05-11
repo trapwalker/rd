@@ -496,6 +496,9 @@ var WCanvasStaticTownMarker = (function (_super) {
                     case 'reg:///registry/poi/locations/towns/whitehill':
                         icon_name = 'city_whitehill';
                         break;
+                    case 'reg:///registry/poi/locations/towns/paloma':
+                        icon_name = 'city_paloma';
+                        break;
                     default:
                         icon_name = 'city';
                 }
