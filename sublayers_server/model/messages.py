@@ -130,21 +130,23 @@ class Die(Message):
 class QuickGameDie(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
-    def __init__(self, obj, **kw):
+    def __init__(self, obj, points, **kw):
         """
         @param sublayers_server.model.agents.Agent author: Sender of message
         @param unicode text: message text
         """
         super(QuickGameDie, self).__init__(**kw)
         self.obj = obj
+        self.points = points
 
     def as_dict(self):
         d = super(QuickGameDie, self).as_dict()
         quick_users = list(self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(1000))
-        points = self.agent.get_quick_game_points(time=self.time)
+        points = self.points
         record_index = self.agent.server.app.db.quick_game_records.find({"points": {"$gte": points}, "time": {"$lte": self.time}}).count()
 
         d.update(
+            login=self.agent.print_login(),
             points=points,
             record_index=record_index + 1,
             object=self.obj.as_dict(time=self.time),

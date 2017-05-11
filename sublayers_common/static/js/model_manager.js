@@ -645,6 +645,7 @@ var ClientManager = (function () {
             modalWindow.modalQuickGamePointsPageShow({
                 quick_users: event.quick_users,
                 points: event.points,
+                login: event.login,
                 record_index: event.record_index,
                 current_car_index: event.current_car_index,
                 callback_ok: function () {

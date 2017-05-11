@@ -366,6 +366,7 @@ class Server(object):
             s_events_all=st.get_metric('s_events_all'),
             s_events_on=st.get_metric('s_events_on'),
             s_events_lag_max=st.get_metric('s_events_lag_max'),
+            s_events_lag_max_comment=st.get_metric_obj('s_events_lag_max').comment,
             s_events_lag_mid=st.get_metric('s_events_lag_mid'),
             s_message_send_max=st.get_metric('s_message_send_max')
         )
