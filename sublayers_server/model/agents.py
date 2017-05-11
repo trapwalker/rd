@@ -53,6 +53,7 @@ class Agent(Object):
         self.user = user
         self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
         self.server.agents_by_name[user.name] = self
+        self._logger_file_handler = None
         self._logger = self.setup_logger()
         self.car = None
         self.slave_objects = []  # дроиды
@@ -278,12 +279,15 @@ class Agent(Object):
         self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
 
     def on_disconnect(self, connection):
-        self.log.info('on_disconnect {}'.format(connection))
-        timeout = options.disconnect_timeout
-        log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
-        # todo: Измерять длительность подключения ##defend ##realize
-        t = self.server.get_time()
-        self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
+        if self.connection is connection:
+            self.log.info('on_disconnect {}'.format(connection))
+            timeout = options.disconnect_timeout
+            log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
+            # todo: Измерять длительность подключения ##defend ##realize
+            t = self.server.get_time()
+            self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
+        else:
+            log.warn('Disconnected for agent %s. But agent have another connection', self)
 
     @event_deco
     def on_disconnect_timeout(self, event):
@@ -296,8 +300,21 @@ class Agent(Object):
         log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
 
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
-        del self.server.agents[str(self.user._id)]
-        del self.server.agents_by_name[self.user.name]
+        if self.server.agents.get(str(self.user._id), None):
+            del self.server.agents[str(self.user._id)]
+        else:
+            log.warn("Agent %s with key %s not found in server.agents", self, str(self.user._id))
+
+        if self.server.agents_by_name.get(self.user.name, None):
+            del self.server.agents_by_name[self.user.name]
+        else:
+            log.warn("Agent %s with key %s not found in server.agents_by_name", self, self.user.name)
+
+        self.after_delete(event.time)
+
+    def after_delete(self, time):
+        # for clear logger
+        pass
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -644,7 +661,12 @@ class User(Agent):
         fileHandler.setFormatter(formatter)
         l.setLevel(level)
         l.addHandler(fileHandler)
+        self._logger_file_handler = fileHandler
         return l
+
+    def after_delete(self, time):
+        self._logger.removeHandler(self._logger_file_handler)
+        self._logger_file_handler = None
 
 
 class AI(Agent):
