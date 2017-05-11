@@ -7,7 +7,7 @@ from sublayers_server.model.agents import User, QuickUser, TeachingUser
 from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.registry.classes.agents import Agent
+from sublayers_server.model.registry_me.classes.agents import Agent
 
 import tornado.web
 from random import randint
@@ -28,7 +28,7 @@ class ServerAPI(API):
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=False, teaching_flag=False)
-            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False, teaching_flag=False).find_all()
+            agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=False, teaching_flag=False).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))

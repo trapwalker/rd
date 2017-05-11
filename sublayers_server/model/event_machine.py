@@ -266,40 +266,36 @@ class Server(object):
 
     @tornado.gen.coroutine
     def load_test_accounts(self):
-        from sublayers_server.model.registry.classes.agents import Agent
+        from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
         import os
         from os.path import isfile, join
         import yaml
 
         file_name = join(os.getcwd(), 'account_test.yaml')
-        if isfile(file_name):
-            with open(file_name) as data_file:
-                data = yaml.load(data_file)
-                if data.get('accounts', None) and len(data['accounts']):
-                    tester_accounts = data['accounts']
-                else:
-                    log.warning('Tester Accounts not found in file account_test.yaml')
-                    return
-        else:
+        if not isfile(file_name):
             log.warning('File account_test.yaml not found.')
             return
 
-        tester_count = len(tester_accounts)
+        with open(file_name) as data_file:
+            tester_accounts = yaml.load(data_file).get('accounts', [])
+
+        if not tester_accounts:
+            log.warning('account_test.yaml is not contains any accounts')
         # Создать ботов
         avatar_list = self.reg['world_settings'].avatar_list
         role_class_list = self.reg['world_settings'].role_class_order
-        for i in range(0, tester_count):
+        for acc in tester_accounts:
             # Найти или создать профиль
-            name = tester_accounts[i]['nickname']
+            name = acc['nickname']
             user = yield UserProfile.get_by_name(name=name)
             if user is None:
-                user = UserProfile(name=name, email=tester_accounts[i]['login'], raw_password=str(tester_accounts[i]['password']))
-                user.avatar_link = avatar_list[random.randint(0, len(avatar_list) - 1)]
+                user = UserProfile(name=name, email=acc['login'], raw_password=str(acc['password']))
+                user.avatar_link = random.choice(avatar_list)
                 user.registration_status = 'register'
                 user.is_tester = True
                 yield user.save()
-                log.info('Test account created: %s', tester_accounts[i]['login'])
+                log.info('Test account created: %s', acc['login'])
 
             # Создать AIQuickAgent
             agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
@@ -312,7 +308,7 @@ class Server(object):
                 )
                 yield agent_exemplar.load_references()
                 yield agent_exemplar.save(upsert=True)
-                agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
+                agent_exemplar.role_class = random.choice(role_class_list)
                 agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
                 agent_exemplar.set_exp(time=self.get_time(), value=1005)
                 agent_exemplar.driving.value = 20

@@ -10,7 +10,7 @@ from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.registry_me.tree import Node, Doc, Subdoc, EmbeddedNodeField, RegistryLinkField
 
-from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField
+from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField
 
 from itertools import chain
 
@@ -390,6 +390,8 @@ class Agent(Doc):
     user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
     login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
     profile = EmbeddedNodeField(caption=u'Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
+    teaching_flag = BooleanField(caption=u'Является ли этот агент агентом обучения')
+    quick_flag = BooleanField(caption=u'Является ли этот агент агентом быстрой игры')
 
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)

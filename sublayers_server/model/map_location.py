@@ -9,11 +9,11 @@ from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage, PreEnterToLocation
 )
 from sublayers_server.model.game_log_messages import LocationLogMessage
-from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry_me.uri import URI
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.events import ActivateLocationChats, Event, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
-from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
+from sublayers_server.model.registry_me.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
 
 from tornado.options import options
