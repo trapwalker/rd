@@ -14,7 +14,6 @@ import datetime
 
 
 class GetUserInfoHandler(BaseSiteHandler):
-    @tornado.gen.coroutine
     def post(self):
         user = self.current_user
         user_info = dict()
@@ -26,13 +25,13 @@ class GetUserInfoHandler(BaseSiteHandler):
             self.finish({'user_status': 'quick_user', 'user_name': user.name})
             return
 
-        user_info = yield self._get_car(user=user)
+        user_info = self._get_car(user=user)
         agent_info = user_info.get('user_info', dict())
 
         created = None
         if user.date_created is None:
             user.date_created = datetime.datetime.now()
-            yield user.save()
+            user.save()
             log.warn('User dont have date_created. Setup now Date')
 
         created = mktime(user.date_created.timetuple()) * 1000

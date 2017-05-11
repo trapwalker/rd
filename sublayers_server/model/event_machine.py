@@ -14,11 +14,9 @@ from sublayers_server.model.map_location import RadioPoint, Town, GasStation, Ma
 from sublayers_server.model.radiation import StationaryRadiation
 from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
-import sublayers_server.model.registry.classes  # todo: autoregistry classes
+import sublayers_server.model.registry_me.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
-
-from sublayers_server.model.registry.tree import Root
-
+from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_common.user_profile import User as UserProfile
 from sublayers_common.ctx_timer import Timer
 
@@ -90,17 +88,8 @@ class Server(object):
             self.quick_game_respawn_bots_radius = 0
             self.quick_game_death_radius = 0
 
-            # self.ioloop.add_callback(callback=self.load_registry)
-
-    @async_call_deco
-    def load_registry(self):
-        def load_registry_done_callback(all_registry_items):
-            self.reg = Root.objects.get_cached('reg:///registry')
-            log.debug('Registry loaded successfully: %s nodes', len(all_registry_items))
-            self.load_world()
-
-        # Root.load(path=os.path.join(options.world_path), load_registry_done_callback)
-        Root.objects.find_all(callback=load_registry_done_callback)
+        self.reg = get_global_registry(path=options.world_path, reload=False)
+        log.debug('Registry loading done')
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -218,7 +207,7 @@ class Server(object):
 
     @tornado.gen.coroutine
     def load_ai_quick_bots(self):
-        from sublayers_server.model.registry.classes.agents import Agent
+        from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
 
         bot_count = self.reg['world_settings'].quick_game_bot_count

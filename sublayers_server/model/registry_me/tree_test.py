@@ -27,7 +27,7 @@ class B(Node):
 
 def test3():
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../sublayers_world/registry', reload=True)
+    reg = get_global_registry(path=u'../../../sublayers_world/registry', reload=False)
     x = reg.get_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
     print(x.parent)
@@ -47,6 +47,6 @@ def test4():
     globals().update(locals())
 
 if __name__ == '__main__':
-    db = connect(db='test_me')
+    db = connect(db='mongodb://localhost/test_me')
     log.info('Use `test_me` db')
-    test4()
+    test3()

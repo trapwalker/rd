@@ -28,7 +28,6 @@ from sublayers_server.model.chat_room import (
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
-from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
 from sublayers_server.model.quest_events import OnNote, OnQuestChange
 from tornado.options import options
 

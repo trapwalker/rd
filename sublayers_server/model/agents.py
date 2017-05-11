@@ -9,10 +9,10 @@ from sublayers_server.model.units import Unit
 from sublayers_server.model.weapon_objects.mine import BangMine
 from counterset import CounterSet
 from map_location import MapLocation
-from sublayers_server.model.registry.uri import URI
-from sublayers_server.model.registry.tree import Node
-from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
-from sublayers_server.model.registry.classes.trader import Trader
+from sublayers_server.model.registry_me.uri import URI
+from sublayers_server.model.registry_me.tree import Node
+from sublayers_server.model.registry_me.classes.inventory import LoadInventoryEvent
+from sublayers_server.model.registry_me.classes.trader import Trader
 
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (

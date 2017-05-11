@@ -18,7 +18,6 @@ from sublayers_site.site_locale import locale
 
 
 class BaseSiteHandler(BaseHandler):
-    @tornado.gen.coroutine
     def _get_car(self, user):
         user_info = dict(name=user.name)
         html_car_img = None
@@ -38,17 +37,13 @@ class BaseSiteHandler(BaseHandler):
                 ),
             ).expand_links()
 
-            agent_example.save(upsert=True)
-            role_class_ex = self.application.reg['/registry/rpg_settings/role_class/chosen_one']
-            agent_example.role_class = role_class_ex
-
-            for class_skill in role_class_ex.class_skills:
+            for class_skill in agent_example.profile.role_class.class_skills:
                 # todo: Перебирать объекты реестра
                 if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                    skill = getattr(agent_example, class_skill.target)
+                    skill = getattr(agent_example.profile, class_skill.target)
                     skill.mod = class_skill
 
-            yield agent_example.save(upsert=True)
+            agent_example.save()
 
         ex_car = None
         if agent_example:
@@ -71,8 +66,12 @@ class BaseSiteHandler(BaseHandler):
                     "../sublayers_server/templates/person",
                     namespace=self.get_template_namespace()
                 ).load("person_site_info.html")
-                html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user,
-                                                          user_lang=self.user_lang)
+                html_agent = template_agent_info.generate(
+                    agent_example=agent_example,
+                    with_css=False,
+                    curr_user=user,
+                    user_lang=self.user_lang,
+                )
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
             ex_car = agent_example.car
@@ -85,12 +84,12 @@ class BaseSiteHandler(BaseHandler):
             ).load("car_info_ext_wrap.html")
             html_car_img = template_img.generate(car=ex_car)
 
-        raise tornado.gen.Return(dict(
+        return dict(
             user_info=user_info,
             html_car_img=html_car_img,
             name_car=None if ex_car is None else ex_car.name_car,
-            html_agent=html_agent
-        ))
+            html_agent=html_agent,
+        )
 
     def _get_quick_game(self):
         car_templates_list = []

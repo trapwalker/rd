@@ -25,7 +25,7 @@ import tornado.websocket
 from tornado.options import options
 from urlparse import urlparse
 from pymongo import MongoClient
-from motorengine import connect as db_connect
+from mongoengine import connect as db_connect
 
 from sublayers_common import service_tools
 
@@ -54,7 +54,6 @@ class BaseApplication(tornado.web.Application):
             db=dsn.path.lstrip('/'),
             host=dsn.hostname,
             port=dsn.port,
-            io_loop=tornado.ioloop.IOLoop.instance(),
         )
         self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 

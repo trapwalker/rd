@@ -9,8 +9,8 @@ import datetime
 import random
 import re
 import tornado.gen
-from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
-from sublayers_server.model.registry.odm_position import PositionField
+from mongoengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
+from sublayers_server.model.registry_me.odm_position import PositionField
 
 
 class User(Document):
@@ -153,65 +153,3 @@ def test_pass(password, verification_data, encoding='utf-8'):
     hash_func.update(password)
     hash_func.update(salt)
     return hash_digest == hash_func.hexdigest()
-
-
-if __name__ == '__main__':
-    import sys
-    #log.addHandler(logging.StreamHandler(sys.stderr))
-    log.setLevel(logging.DEBUG)
-    import tornado.ioloop
-    import tornado.gen
-    from motorengine import connect
-    import random
-
-    class Cnt(object):
-        def __init__(self, v=0):
-            self.c = v
-
-        def inc(self, v=1):
-            self.c += v
-            return self.c
-
-        def __str__(self):
-            return '<{}>'.format(self.c)
-
-    io_loop = tornado.ioloop.IOLoop.instance()
-    connect("rd2", host="localhost", port=27017, io_loop=io_loop)
-
-    @tornado.gen.coroutine
-    def get_user(id):
-        user = yield User.objects.get(id)
-        raise tornado.gen.Return(user)
-
-    @tornado.gen.coroutine
-    def test():
-        log.debug('user profile test start')
-        u = User(email='{}@example.com'.format(random.randint(0, 1000)))
-        log.info('Make: %r', u)
-        yield u.save()
-
-        users = yield User.objects.find_all()
-        for i, user in enumerate(users):
-            print i, repr(user)
-
-        log.debug('No more users yet.')
-
-        oid = ObjectId('56fd3f497ee5fe16d83121df')
-        u = yield get_user(oid)
-        log.debug('user by id: %r', u)
-
-        globals().update(locals())
-
-    tornado.ioloop.IOLoop.instance().add_callback(test)
-    #test()
-
-    c = Cnt(0)
-
-    tornado.ioloop.PeriodicCallback(lambda: (
-        c.inc() and (
-            log.debug('alive %s', c)
-            or io_loop._timeouts
-            or io_loop.stop()
-        )), 500).start()
-    io_loop.start()
-    log.debug('Terminate')

@@ -10,7 +10,7 @@ import tornado.template
 
 from sublayers_common.user_profile import User
 from sublayers_common.handlers.base import BaseHandler
-from sublayers_server.model.registry.classes.mobiles import Car as RegCar
+from sublayers_server.model.registry_me.classes.mobiles import Car as RegCar
 
 
 class APIGetCarInfoHandler(BaseHandler):
