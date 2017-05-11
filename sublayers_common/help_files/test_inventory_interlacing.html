@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+    <style>
+
+        @font-face {
+            font-family: Nouveau_IBM;
+            src: url("http://roaddogs.ru/static/fonts/Nouveau_IBM.ttf");
+        }
+
+
+        body {
+            background: #030f00;
+            color: white;
+            padding-top: 20px;
+            padding-left: 20px;
+        }
+
+        .path {
+            position: relative;
+            float: left;
+            width: 520px;
+            height: 500px;
+            margin-right: 20px;
+            border: 2px solid #00F150;
+            text-align: center;
+        }
+
+        .path label {
+            position: relative;
+            color: #2afd0a;
+            font-size: 18pt;
+        }
+        
+        .path .img_container {
+            position: relative;
+            width: 492px;
+            height: 328px;
+        }
+
+
+        .interlacing {
+            filter: brightness(100%);
+            -webkit-filter: brightness(100%);
+        }
+
+        .interlacing::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.45) 49%, rgba(0, 0, 0, 0) 51%, rgba(0, 0, 0, 0) 100%);
+            z-index: 2;
+            background-size: 100% 2px;
+            pointer-events: none;
+        }
+
+        .inventory_wrapper {
+            box-sizing: border-box;
+            padding: 20px 0 0 20px;
+        }
+
+        .item-wrap {
+            position: relative;
+            box-sizing: border-box;
+            background-color: #082801;
+            border: 1px solid #0e4b00;
+            width: 140px;
+            height: 100px;
+            float: left;
+            margin: 0 25px 15px 0;
+        }
+
+        .item {
+            position: relative;
+            width: 140px;
+            height: 100px;
+        }
+
+        .item-name {
+            position: absolute;
+            box-sizing: border-box;
+            padding: 5px 0px 0px 5px;
+            color: #31c811;
+            font: 11pt Nouveau_IBM;
+            z-index: 6;
+        }
+
+        .item-picture {
+            position: absolute;
+            top: 25px;
+            right: 5px;
+            height: 70px;
+            width: 130px;
+            pointer-events: none;
+            background: transparent url("test.png") 100% 100% no-repeat;
+        }
+
+
+        .settings {
+            position: relative;
+            width: 100%;
+            height: 30px;
+        }
+
+        .settings label {
+            position: relative;
+            float: left;
+            color: #2ffa00;
+            width: 50px;
+        }
+
+        .settings input {
+            width: 425px;
+        }
+
+    </style>
+
+
+</head>
+<body>
+<div class="settings">
+    <label>Name</label>
+    <input id="input_item_name" type="text" value="test name">
+    <button onclick="set_name()">OK</button>
+</div>
+<div class="settings">
+    <label>File</label>
+    <input id="input_item_pic" type="text" value="test.png">
+    <button onclick="set_pic()">OK</button>
+</div>
+
+<div class="main">
+    <div class="path original">
+        <label>Original</label>
+        <div class="inventory_wrapper">
+            <div class="item-wrap">
+                <div class="item">
+                    <div class="item-name"></div>
+                    <div class="item-picture"></div>
+                </div>
+            </div>
+            <div class="item-wrap">
+                <div class="item">
+                    <div class="item-name"></div>
+                    <div class="item-picture"></div>
+                </div>
+            </div>
+            <div class="item-wrap">
+                <div class="item">
+                    <div class="item-name"></div>
+                    <div class="item-picture"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="path">
+        <label>Web Interlacing</label>
+        <div class="inventory_wrapper">
+            <div class="item-wrap interlacing">
+                <div class="item">
+                    <div class="item-name"></div>
+                    <div class="item-picture"></div>
+                </div>
+            </div>
+            <div class="item-wrap interlacing">
+                <div class="item">
+                    <div class="item-name"></div>
+                    <div class="item-picture"></div>
+                </div>
+            </div>
+            <div class="item-wrap interlacing">
+                <div class="item">
+                    <div class="item-name"></div>
+                    <div class="item-picture"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function set_name() {
+        var name = $("#input_item_name").val();
+        $(".item-name").text(name);
+    }
+
+
+    function set_pic() {
+        var name = $("#input_item_pic").val();
+//        var background = 'transparent url("' + name + '") 100% 100% no-repeat;';
+        var background = 'url("' + name + '")';
+        console.log(background);
+        $(".item-picture").css("background-image", background);
+        console.log($(".item-picture"));
+    }
+
+    $(document).ready(function (){
+        set_name();
+        set_pic();
+    })
+
+
+</script>
+</body>
+</html>
