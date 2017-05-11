@@ -9,6 +9,7 @@ from sublayers_common.handlers.base import BaseHandler
 from tornado.options import options
 from sublayers_server.model.agents import AI
 from sublayers_server.model.messages import Message
+from sublayers_server.model.events import Event
 
 
 class ServerStatisticsHandler(BaseHandler):
@@ -48,7 +49,7 @@ class ServerStatForSite(BaseHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.finish({
             's_agents_on': stat_log.get_metric('s_agents_on'),
-            's_units_on': stat_log.get_metric('s_units_on')
+            's_observers_on': stat_log.get_metric('s_observers_on')
         })
 
 
@@ -56,3 +57,10 @@ class ServerStatMessagesHandler(BaseHandler):
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
         self.render("statistics/messages_stats.html", messages_metrics=Message.messages_metrics)
+
+
+class ServerStatEventsHandler(BaseHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        events_metrics = sorted(Event.events_metrics.values(), key=lambda rec: rec["count"], reverse=True)
+        self.render("statistics/events_stats.html", events_metrics=events_metrics)

@@ -10,6 +10,7 @@ from sublayers_server.model.messages import (FireDischargeEffect, StrategyModeIn
 from sublayers_server.model.game_log_messages import (TransactionCancelActivateItemLogMessage,
                                                       TransactionDisableActivateItemLogMessage,
                                                       TransactionDisableActivateItemTimeoutLogMessage)
+from sublayers_common.ctx_timer import Timer
 from functools import total_ordering, wraps, partial
 
 
@@ -120,24 +121,42 @@ class Event(object):
         assert self.actual
         log.debug('RUN    %s', self)
 
-        stat_log = self.server.stat_log
-        stat_log.s_events_on(time=self.time, delta=-1.0)
-        perform_start_time = self.server.get_time()
-        curr_lag = perform_start_time - self.time
-        assert curr_lag >= 0.0, '{}'.format(curr_lag)
-        stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
-        stat_log.s_events_lag_max(time=self.time, value=curr_lag)
+        with Timer(name='event_perform_timer', log_start=None, logger=None, log_stop=None) as event_perform_timer:
+            stat_log = self.server.stat_log
+            stat_log.s_events_on(time=self.time, delta=-1.0)
+            perform_start_time = self.server.get_time()
+            curr_lag = perform_start_time - self.time
+            assert curr_lag >= 0.0, '{}'.format(curr_lag)
+            stat_log.s_events_lag_mid(time=self.time, value=curr_lag)
+            stat_log.s_events_lag_max(time=self.time, value=curr_lag, comment=self.classname)
 
-        if self.callback_before is not None:
-            self.callback_before(event=self)
-        self.on_perform()
-        if self.callback_after is not None:
-            self.callback_after(event=self)
+            if self.callback_before is not None:
+                self.callback_before(event=self)
+            self.on_perform()
+            if self.callback_after is not None:
+                self.callback_after(event=self)
 
-            # todo: set metrics #self.server.get_time() - perform_start_time
+        cl_name = self.classname
+        duration = event_perform_timer.duration
+        if self.events_metrics.get(cl_name, None):
+            self.events_metrics[cl_name]["count"] += 1
+            self.events_metrics[cl_name]["duration"] += duration
+            if self.events_metrics[cl_name]["duration_max"] < duration or self.time - self.events_metrics[cl_name]["duration_max_last_upd"] > 20.0:
+                self.events_metrics[cl_name]["duration_max"] = duration
+                self.events_metrics[cl_name]["duration_max_last_upd"] = self.time
+        else:
+            self.events_metrics[cl_name] = {
+                "name": cl_name,
+                "count": 1,
+                "duration": duration,
+                "duration_max": duration,
+                "duration_max_last_upd": self.time,
+            }
 
     def on_perform(self):
         pass
+
+    events_metrics = dict()
 
 
 class Objective(Event):

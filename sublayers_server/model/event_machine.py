@@ -350,11 +350,12 @@ class Server(object):
             s_agents_all=st.get_metric('s_agents_all'),
             # s_agents_on=st.get_metric('s_agents_on'),
             s_agents_on=len(self.app.clients),
-            s_units_all=st.get_metric('s_units_all'),
-            s_units_on=st.get_metric('s_units_on'),
+            s_observers_all=st.get_metric('s_observers_all'),
+            s_observers_on=st.get_metric('s_observers_on'),
             s_events_all=st.get_metric('s_events_all'),
             s_events_on=st.get_metric('s_events_on'),
             s_events_lag_max=st.get_metric('s_events_lag_max'),
+            s_events_lag_max_comment=st.get_metric_obj('s_events_lag_max').comment,
             s_events_lag_mid=st.get_metric('s_events_lag_mid'),
             s_message_send_max=st.get_metric('s_message_send_max')
         )

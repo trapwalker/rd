@@ -212,8 +212,8 @@ class VisibleObject(PointObject):
 
 
 class Observer(VisibleObject):
-    def __init__(self, **kw):
-        super(Observer, self).__init__(**kw)
+    def __init__(self, time, **kw):
+        super(Observer, self).__init__(time=time, **kw)
         Parameter(original=self._param_aggregate['p_observing_range'],
                   name='p_observing_range',
                   owner=self)
@@ -222,6 +222,11 @@ class Observer(VisibleObject):
                   owner=self)
         self.watched_agents = CounterSet()
         self.visible_objects = []
+
+        # обновляем статистику сервера
+        server_stat = self.server.stat_log
+        server_stat.s_observers_all(time=time, delta=1.0)
+        server_stat.s_observers_on(time=time, delta=1.0)
 
     def get_observing_range(self, time):
         return self.params.get('p_observing_range').value
@@ -251,6 +256,9 @@ class Observer(VisibleObject):
         for agent in self.watched_agents:
             log.debug('Warning !!! Try to drop observer for agent %s', agent)
             agent.drop_observer(self)
+
+        # обновляем статистику по живым юнитам
+        self.server.stat_log.s_observers_on(time=event.time, delta=-1.0)
 
         super(Observer, self).on_before_delete(event=event)
 

@@ -12,6 +12,7 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_city', '/static/img/map_icons/map_ico_city.png', [26, 29]);
         this.load_new_icon('icon_city_whitehill', '/static/img/map_icons/wh_marker.png', [111, 114]);
         this.load_new_icon('icon_city_prior', '/static/img/map_icons/prior_marker.png', [111, 114]);
+        this.load_new_icon('icon_city_paloma', '/static/img/map_icons/paloma_marker.png', [111, 114]);
 
         // Создание иконки заправочной станции
         this.load_new_icon('icon_station', '/static/img/map_icons/gs_marker.png', [91, 94]);

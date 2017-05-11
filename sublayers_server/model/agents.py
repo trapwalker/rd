@@ -53,6 +53,7 @@ class Agent(Object):
         self.user = user
         self.server.agents[str(user._id)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
         self.server.agents_by_name[user.name] = self
+        self._logger_file_handler = None
         self._logger = self.setup_logger()
         self.car = None
         self.slave_objects = []  # дроиды
@@ -308,6 +309,12 @@ class Agent(Object):
             del self.server.agents_by_name[self.user.name]
         else:
             log.warn("Agent %s with key %s not found in server.agents_by_name", self, self.user.name)
+
+        self.after_delete(event.time)
+
+    def after_delete(self, time):
+        # for clear logger
+        pass
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -654,7 +661,12 @@ class User(Agent):
         fileHandler.setFormatter(formatter)
         l.setLevel(level)
         l.addHandler(fileHandler)
+        self._logger_file_handler = fileHandler
         return l
+
+    def after_delete(self, time):
+        self._logger.removeHandler(self._logger_file_handler)
+        self._logger_file_handler = None
 
 
 class AI(Agent):

@@ -9,9 +9,10 @@ from functools import partial
 class Metric(object):
     __st1r_template__ = 'metric::{self.classname}[{time}]'
 
-    def __init__(self, name=None, doc=None):
+    def __init__(self, name=None, doc=None, comment=None):
         self.name = name or self.classname
         self.doc = doc
+        self.comment = comment
 
     def __get__(self, obj, types):
         # todo: docstring generation
@@ -103,11 +104,12 @@ class MaxValueByTimeMetric(Metric):
         self._val = 0.0
         self._next_update = 0.0
 
-    def call(self, value, stat_log, time):
+    def call(self, value, stat_log, time, comment=None):
         super(MaxValueByTimeMetric, self).call(stat_log=stat_log, time=time)
         if value > self._val or self._next_update < time:
             self._next_update = time + self.dtime
             self._val = value
+            self.comment = comment
 
     def value(self, stat_log):
         return self._val
