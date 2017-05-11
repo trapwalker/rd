@@ -549,10 +549,14 @@ var ModalWindow = (function () {
         var quick_users = options.quick_users;
         var jq_table = this.modalQuickGamePoints.find('.qg-pp-block-left-table').first();
         jq_table.empty();
+        var record_login = options.login;
+        var record_points = options.points;
+        var has_record_in_table = false;
         for(var i = 0; i < quick_users.length; i++) {
             color_class = color_class == 'qg-pp-light-back' ? 'qg-pp-dark-back' : 'qg-pp-light-back';
             var qu = quick_users[i];
-            var my_record_str = options.record_index == i + 1 ? "my-record" : "";
+            var my_record_str = record_login == qu.name && record_points == qu.points ? "my-record" : "";
+            if (my_record_str) has_record_in_table = true;
             var jq_line = $(
                 '<div class="qg-pp-block-left-table-line ' + my_record_str + '">' +
                     '<div class="qg-pp-table-col place ' + color_class + '">' + (i + 1) + '</div>' +
@@ -565,7 +569,7 @@ var ModalWindow = (function () {
 
         // Запуск анимации для скроллинга к своему рекорду
         jq_table.scrollTop(0);
-        if (options.record_index >= 0 && options.record_index <= quick_users.length) {
+        if (has_record_in_table) {
             jq_table.animate({
                 scrollTop: $(".qg-pp-block-left-table-line.my-record").first().offset().top - 400
             }, 2000);
