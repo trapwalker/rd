@@ -17,6 +17,10 @@ class StatLogger(dict):
     s_events_lag_mid = metrics.MovingAverageMetric(name='s_events_lag_mid', doc=u"Среднее отставание событий")
     s_message_send_max = metrics.MaxValueByTimeMetric(name='s_message_send_max', dtime=10, doc=u"Максимальное время рассылки сообщений")
 
+    s_events_stat_log = metrics.ServerIntervalEventsMetric(name='s_events_stat_log', doc=u"Метрика расчёта max, average и count эвентов")
+    s_messages_stat_log_count = metrics.IncMetric(name='s_messages_stat_log_count', doc=u"Метрика расчёта количества сообщений")
+    s_messages_stat_log_dur = metrics.IncMetric(name='s_messages_stat_log_dur', doc=u"Метрика расчёта времени отправки сообщений")
+
 
     def get_metric(self, metric):
         return getattr(self, metric).value()
