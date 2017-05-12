@@ -174,6 +174,7 @@ class Server(object):
         print('Load world complete !')
         if options.server_stat_log_interval > 0:
             self.server_stat_log(server=self, time=event.time + options.server_stat_log_interval)
+            self.logger_statlog = logging.getLogger('statlog')
 
     def on_load_poi(self, event):
         # загрузка радиоточек
@@ -398,8 +399,8 @@ class Server(object):
 
         self.stat_log.s_messages_stat_log_dur(time=time, delta=-mes_dur)
         self.stat_log.s_messages_stat_log_count(time=time, delta=-mes_count)
-
-        log_str = "{time}|{observers}|{agent_online}|{ev_count_performed}|{max_ev_lag}|{average_ev_lag}|{mes_count}|{mes_dur}".format(
+        # todo: write dict to log extra
+        log_str = "{time};{observers};{agent_online};{ev_count_performed};{max_ev_lag};{average_ev_lag};{mes_count};{mes_dur}".format(
             time=time,
             observers=observers,
             agent_online=agent_online,
@@ -409,9 +410,7 @@ class Server(object):
             mes_count=mes_count,
             mes_dur=mes_dur,
         )
-
-        print(log_str)
-
+        self.logger_statlog.info(log_str)
         self.server_stat_log(time=self.get_time() + options.server_stat_log_interval, server=self)
 
 
