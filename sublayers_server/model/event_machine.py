@@ -416,7 +416,7 @@ class LocalServer(Server):
                 while message_queue:
                     message_queue.popleft().send()  # todo: async sending by ioloop
             # todo: mass sending optimizations over separated chat server
-                self.stat_log.s_message_send_max(time=self.get_time(), value=message_send_timer.duration)
+            self.stat_log.s_message_send_max(time=self.get_time(), value=message_send_timer.duration)
 
         while timeline and not timeline.head.actual:
             timeline.get()

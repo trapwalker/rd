@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Server Events Statistics</title>
+    <title>Server Handlers Statistics</title>
 
     <style>
         #bots_info {
@@ -12,26 +12,26 @@
             margin-top: 10px;
         }
 
-        .events-record {
+        .handlers-record {
             position: relative;
             float: left;
             width: 100%;
             height: 30px;
             line-height: 30px;
         }
-        .events-record.even { background-color: #f5f5f5; }
+        .handlers-record.even { background-color: #f5f5f5; }
 
-        .events-record div {
+        .handlers-record div {
             position: relative;
             float: left;
             overflow: hidden;
             text-align: center;
         }
 
-        .events-record .name { width: 25%; }
-        .events-record .count {width: 10%; text-align: right;}
-        .events-record .max-by-time {width: 20%; text-align: right;}
-        .events-record .duration {width: 20%; text-align: right;}
+        .handlers-record .name { width: 25%; }
+        .handlers-record .count {width: 10%; text-align: right;}
+        .handlers-record .max-by-time {width: 20%; text-align: right;}
+        .handlers-record .duration {width: 20%; text-align: right;}
 
 
     </style>
@@ -40,20 +40,20 @@
 </head>
 <body>
 <div id="bots_info">
-    {% if events_metrics %}
-        <div class="events-record even">
+    {% if handlers_metrics %}
+        <div class="handlers-record even">
             <div class="name">Class</div>
             <div class="count">Count</div>
             <div class="max-by-time">Max Last 20 sec</div>
             <div class="duration">Perform Average</div>
         </div>
     {% else %}
-        No events stats
+        No handlers stats
     {% end %}
     {% import datetime %}
     {% set i = 0 %}
-    {% for rec in events_metrics %}
-        <div class="events-record {{ 'even' if i % 2 else ''  }}">
+    {% for rec in handlers_metrics %}
+        <div class="handlers-record {{ 'even' if i % 2 else ''  }}">
             <div class="name">{{ rec["name"] }}</div>
             <div class="count">{{ rec["count"] }}</div>
             <div class="max-by-time">{{ round(rec["duration_max"], 4) }}</div>
