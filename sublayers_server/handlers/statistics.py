@@ -64,3 +64,10 @@ class ServerStatEventsHandler(BaseHandler):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
         events_metrics = sorted(Event.events_metrics.values(), key=lambda rec: rec["count"], reverse=True)
         self.render("statistics/events_stats.html", events_metrics=events_metrics)
+
+
+class ServerStatHandlersHandler(BaseHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        handlers_metrics = sorted(BaseHandler.handlers_metrics.values(), key=lambda rec: rec["count"], reverse=True)
+        self.render("statistics/handlers_stats.html", handlers_metrics=handlers_metrics)

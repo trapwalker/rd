@@ -63,6 +63,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         agent.log.info(self.request.headers["User-Agent"])
         self._do_ping()
 
+        self.on_timer_for_stat()
+
     def on_close(self):
         log.info('Socket %r closed (agent=%s)', self, self.agent)
         self._disable_ping()

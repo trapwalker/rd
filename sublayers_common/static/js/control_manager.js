@@ -126,50 +126,50 @@ var ControlManager = (function () {
             },
         },
         stop: {
-            down: function() {clientManager.sendStopCar();},
+            up: function() {clientManager.sendStopCar();},
         },
         reverse: {
-            down: function() {if (wCruiseControl) wCruiseControl.reverseDiv.click();},
+            up: function() {if (wCruiseControl) wCruiseControl.reverseDiv.click();},
         },
 
         toggle_auto_fire: {
-            down: function () {
+            up: function () {
                 if (wFireController && wFireController.allFire)
                     wFireController.allFire.click();
             }
         },
         toggle_fire_widget: {
-            down: function () {if (wFireController)wFireController.changeVisible();}
+            up: function () {if (wFireController)wFireController.changeVisible();}
         },
 
-        fire_disc_front: {down: function() {clientManager.sendFireDischarge('front')}},
-        fire_disc_right: {down: function() {clientManager.sendFireDischarge('right')}},
-        fire_disc_back: {down: function() {clientManager.sendFireDischarge('back')}},
-        fire_disc_left: {down: function() {clientManager.sendFireDischarge('left')}},
+        fire_disc_front: {up: function() {clientManager.sendFireDischarge('front')}},
+        fire_disc_right: {up: function() {clientManager.sendFireDischarge('right')}},
+        fire_disc_back: {up: function() {clientManager.sendFireDischarge('back')}},
+        fire_disc_left: {up: function() {clientManager.sendFireDischarge('left')}},
 
         quick_panel_1: {
-            down: function () {
+            up: function () {
                 if (!user.userCar) return;
                 clientManager.sendActivateQuickItem(1, user.userCar.ID);
                 wFireController.signalQuickConsumerPanel(1);
             },
         },
         quick_panel_2: {
-            down: function () {
+            up: function () {
                 if (!user.userCar) return;
                 clientManager.sendActivateQuickItem(2, user.userCar.ID);
                 wFireController.signalQuickConsumerPanel(2);
             },
         },
         quick_panel_3: {
-            down: function () {
+            up: function () {
                 if (!user.userCar) return;
                 clientManager.sendActivateQuickItem(3, user.userCar.ID);
                 wFireController.signalQuickConsumerPanel(3);
             },
         },
         quick_panel_4: {
-            down: function () {
+            up: function () {
                 if (!user.userCar) return;
                 clientManager.sendActivateQuickItem(4, user.userCar.ID);
                 wFireController.signalQuickConsumerPanel(4);
@@ -177,36 +177,36 @@ var ControlManager = (function () {
         },
 
         get_loot: {
-            down: function () {
+            up: function () {
                 if (!user.userCar || !contextPanel) return;
                 contextPanel.get_loot_observer.activate();
             },
         },
 
         // Горячие клавиши зум-слайдера
-        zoom_in: {down: function() {if (mapManager) mapManager.setZoom(mapManager.getZoom() + mapManager.zoomSlider.options.step)}},
-        zoom_out: {down: function() {if (mapManager) mapManager.setZoom(mapManager.getZoom() - mapManager.zoomSlider.options.step)}},
-        zoom_roll_up: {down: function() {
+        zoom_in: {up: function() {if (mapManager) mapManager.setZoom(mapManager.getZoom() + mapManager.zoomSlider.options.step)}},
+        zoom_out: {up: function() {if (mapManager) mapManager.setZoom(mapManager.getZoom() - mapManager.zoomSlider.options.step)}},
+        zoom_roll_up: {up: function() {
             if (!wCruiseControl || !mapManager || !mapManager.zoomSlider) return;
             mapManager.zoomSlider.sverAll();
         }},
-        zoom_expand: {down: function() {
+        zoom_expand: {up: function() {
             if (!wCruiseControl || !mapManager || !mapManager.zoomSlider) return;
             mapManager.zoomSlider.razverAll();
         }},
 
         // Горячие клавиши для верхнего меню
-        open_character_info: {down: function() {$("#divMainMenuBtnCharacter").click()}},
-        open_vehicle_info: {down: function() {$("#divMainMenuBtnCar").click()}},
-        open_inventory: {down: function() {$("#divMainMenuBtnInventory").click()}},
-        open_logbook_info: {down: function() {$("#divMainMenuBtnJournal").click()}},
-        open_party_info: {down: function() {$("#divMainMenuBtnParty").click()}},
-        open_radio: {down: function() {$("#divMainMenuBtnRadio").click()}},
-        open_options: {down: function() {$("#divMainMenuBtnOptions").click()}},
+        open_character_info: {up: function() {$("#divMainMenuBtnCharacter").click()}},
+        open_vehicle_info: {up: function() {$("#divMainMenuBtnCar").click()}},
+        open_inventory: {up: function() {$("#divMainMenuBtnInventory").click()}},
+        open_logbook_info: {up: function() {$("#divMainMenuBtnJournal").click()}},
+        open_party_info: {up: function() {$("#divMainMenuBtnParty").click()}},
+        open_radio: {up: function() {$("#divMainMenuBtnRadio").click()}},
+        open_options: {up: function() {$("#divMainMenuBtnOptions").click()}},
 
         // Горячие клавиши админских возможностей (показываются только при cht_bGod = 1)
         use_teleport: {
-            down: function () {
+            up: function () {
                 if (settingsManager.cht_bGod && mapCanvasManager && mapManager) {
                     var target = mapManager.getMouseCoords();
                     clientManager.sendTeleportCoord(target.x, target.y);
@@ -214,7 +214,7 @@ var ControlManager = (function () {
             }
         },
         save_tiles: {
-            down: function () {
+            up: function () {
                 if (settingsManager.cht_bGod && mapCanvasManager && mapManager) {
                     var target = mapManager.getMouseCoords();
                     clientManager.sendTileCoord(target.x, target.y);
