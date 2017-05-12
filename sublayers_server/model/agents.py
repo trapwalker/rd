@@ -702,13 +702,13 @@ class QuickUser(User):
 
         self._next_respawn_point = None
 
-    def _add_quick_game_record(self, time):
+    def _add_quick_game_record(self, points, time):
         # pymongo add to quick_game_records
         self.record_id = self.server.app.db.quick_game_records.insert(
             {
                 'name': self.print_login(),
                 'user_uid': self.user.id,
-                'points': self.get_quick_game_points(time),
+                'points': points,
                 'time': self.server.get_time()
             }
         )
@@ -741,8 +741,9 @@ class QuickUser(User):
                      self.quick_game_bot_kills * self.quick_game_koeff_bot_kills) + self.bonus_points
 
     def send_die_message(self, event, unit):
-        self._add_quick_game_record(time=event.time)
-        QuickGameDie(agent=self, obj=unit, time=event.time).post()
+        points = self.get_quick_game_points(event.time)
+        self._add_quick_game_record(points=points, time=event.time)
+        QuickGameDie(agent=self, obj=unit, points=points, time=event.time).post()
 
     def on_kill(self, event, target, killer):
         self.log.info('{}:: on_kill {} and killer={}'.format(self, target, killer))
