@@ -161,6 +161,9 @@ class Server(object):
             # self.ioloop.add_callback(callback=self.load_test_accounts)
 
         print('Load world complete !')
+        if options.server_stat_log_interval > 0:
+            self.server_stat_log(server=self, time=event.time + options.server_stat_log_interval)
+            self.logger_statlog = logging.getLogger('statlog')
 
     def on_load_poi(self, event):
         # загрузка радиоточек
@@ -364,6 +367,37 @@ class Server(object):
             agent.save(time=time)
         log.debug('=' * 10 + ' Server SAVE end   ' + '=' * 10)
 
+    @event_deco
+    def server_stat_log(self, event, **kw):
+        # Формат CSV-файла
+        # time; observers; agent_online; ev_count_performed; max_ev_lag; average_ev_lag; mes_count; mes_dur;
+        st = self.stat_log
+        time = event.time
+        observers = st.get_metric('s_observers_on')
+        agent_online = len(self.app.clients)
+
+        max_ev_lag, average_ev_lag, ev_count_performed = st.get_metric('s_events_stat_log')
+        st.get_metric_obj('s_events_stat_log').clear()
+
+        mes_count = st.get_metric("s_messages_stat_log_count")
+        mes_dur = st.get_metric("s_messages_stat_log_dur")
+
+        self.stat_log.s_messages_stat_log_dur(time=time, delta=-mes_dur)
+        self.stat_log.s_messages_stat_log_count(time=time, delta=-mes_count)
+        # todo: write dict to log extra
+        log_str = "{time};{observers};{agent_online};{ev_count_performed};{max_ev_lag};{average_ev_lag};{mes_count};{mes_dur}".format(
+            time=time,
+            observers=observers,
+            agent_online=agent_online,
+            ev_count_performed=ev_count_performed,
+            max_ev_lag=max_ev_lag,
+            average_ev_lag=average_ev_lag,
+            mes_count=mes_count,
+            mes_dur=mes_dur,
+        )
+        self.logger_statlog.info(log_str)
+        self.server_stat_log(time=self.get_time() + options.server_stat_log_interval, server=self)
+
 
 class EServerAlreadyStarted(errors.EIllegal):
     pass
@@ -397,11 +431,15 @@ class LocalServer(Server):
             return
 
         if len(message_queue):
+            count = len(message_queue)
             with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
                 while message_queue:
                     message_queue.popleft().send()  # todo: async sending by ioloop
             # todo: mass sending optimizations over separated chat server
-                self.stat_log.s_message_send_max(time=self.get_time(), value=message_send_timer.duration)
+            time=self.get_time()
+            self.stat_log.s_message_send_max(time=time, value=message_send_timer.duration)
+            self.stat_log.s_messages_stat_log_count(time=time, delta=count)
+            self.stat_log.s_messages_stat_log_dur(time=time, delta=message_send_timer.duration)
 
         while timeline and not timeline.head.actual:
             timeline.get()

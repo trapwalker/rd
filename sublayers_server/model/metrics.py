@@ -114,5 +114,49 @@ class MaxValueByTimeMetric(Metric):
     def value(self, stat_log):
         return self._val
 
+
+# Метрика для расчёта максимального значения, среднего и количества Ивентов
+class ServerIntervalEventsMetric(Metric):
+    def __init__(self, **kw):
+        super(ServerIntervalEventsMetric, self).__init__(**kw)
+        self.values_list = []
+
+    def call(self, stat_log, value, **kw):
+        super(ServerIntervalEventsMetric, self).call(stat_log=stat_log, **kw)
+        self.values_list.append(value)
+
+    def value(self, stat_log):
+        max_value = max(self.values_list)
+        count = len(self.values_list)
+        average = sum(self.values_list) / count
+        return max_value, average, count
+
+    def clear(self):
+        self.values_list = []
+
+
+# Метрика для расчёта максимального значения, среднего и количества Сообщений
+class ServerIntervalMessagesMetric(Metric):
+    def __init__(self, **kw):
+        super(ServerIntervalMessagesMetric, self).__init__(**kw)
+        self.dur = 0
+        self.count = 0
+
+    def call(self, stat_log, value, dur, **kw):
+        super(ServerIntervalMessagesMetric, self).call(stat_log=stat_log, **kw)
+        self.dur += dur
+        self.count += value
+
+    def value(self, stat_log):
+        duration = self.dur
+        count = self.count
+        self.dur = 0
+        self.count = 0
+        return count, duration
+
+    def clear(self):
+        self.values_list = []
+
+
 if __name__ == '__main__':
     pass

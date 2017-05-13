@@ -38,7 +38,7 @@ class Message(object):
         self.comment = comment
 
     def post(self):
-        if self.agent is not None:
+        if self.agent is not None and self.agent.connection is not None:
             self.agent.server.post_message(self)
 
     def send(self):

@@ -25,6 +25,7 @@ settings_local.py
 *.egg
 env/
 resources.bin/*
+log/stat/*
 *.log
 sublayers_client/model.js
 *.log.*
