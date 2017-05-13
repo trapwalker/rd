@@ -4,9 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.agents import User, QuickUser, TeachingUser
-from bson.objectid import ObjectId
 from sublayers_server.model.api_tools import API
-from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.classes.agents import Agent
 
 import tornado.web
@@ -20,7 +18,6 @@ class ServerAPI(API):
         """
         self.server = server
 
-    @tornado.gen.coroutine
     def get_agent(self, user, make=False, do_disconnect=False):
         """
         @rtype sublayers_server.model.agents.Agent

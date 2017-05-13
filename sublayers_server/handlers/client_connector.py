@@ -8,15 +8,9 @@ import json
 import tornado.ioloop
 import tornado.websocket
 import tornado.web
-import tornado.gen
-
-from sublayers_common.handlers.base import BaseHandler
-
 from tornado.options import options
 
-from random import randint
-
-from sublayers_common.user_profile import User
+from sublayers_common.handlers.base import BaseHandler
 
 
 WS_PING_INTERVAL = 25  # (сек.) интервал пинга клиента через веб-сокет.
@@ -33,7 +27,6 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         # todo: reject connections from wrong servers
         return True
 
-    @tornado.gen.coroutine
     def open(self):
         # todo: make agent_init event
         print 'new connect open !!!'
@@ -51,9 +44,9 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
         if options.mode == 'basic':
             if not user.quick:
-                agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+                agent = srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
         elif options.mode == 'quick':
-            agent = yield srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
+            agent = srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
 
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit

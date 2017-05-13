@@ -3,9 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado
-import tornado.web
-import tornado.gen
 import tornado.template
 
 from sublayers_common.user_profile import User
@@ -14,27 +11,27 @@ from sublayers_server.model.registry_me.classes.mobiles import Car as RegCar
 
 
 class APIGetCarInfoHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
+        # todo: ##REFACTORING
         print('Error! Site API called!')
         log.info('Error! Site API called!')
 
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
-        user = yield User.get_by_name(username)
+        user = User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         agent = self.application.srv.api.get_agent(user)  # todo: ##fix get offline (unloaded) agent
         if not agent:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         ex_car = agent.example.car
         if not ex_car:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         self.render('location/car_info_img_ext.html', car=ex_car)
 
@@ -63,16 +60,16 @@ class APIGetCarInfoHandler2(BaseHandler):
 
 class APIGetUserInfoHandler(BaseHandler):
     u"""Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой"""
-    @tornado.gen.coroutine
     def get(self):
+        # todo: ##REFACTORING
         print('Error! Site API called!')
         log.info('Error! Site API called!')
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
-        user = yield User.get_by_name(username)
+        user = User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         user_info = dict(name=username)
         html_car_img = None
@@ -132,21 +129,21 @@ class APIGetUserInfoHandler(BaseHandler):
 
 
 class APIGetUserInfoHandler2(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
+        # todo: ##REFACTORING
         print('Error! Site API called!')
         log.info('Error! Site API called!')
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
-        user = yield User.get_by_name(username)
+        user = User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         agent = self.application.srv.api.get_agent(user, make=True)
         if not agent:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         self.render('person/person_site_info.html', agent_example=agent.example, with_css=True,
                     user_lang=self.user_lang)

@@ -8,7 +8,6 @@ import hashlib
 import datetime
 import random
 import re
-import tornado.gen
 from mongoengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
 from sublayers_server.model.registry_me.odm_position import PositionField
 
@@ -79,16 +78,12 @@ class User(Document):
             return self.auth.standard.email
 
     @classmethod
-    @tornado.gen.coroutine
     def get_by_name(cls, name):
-        users = yield cls.objects.filter({'name': name}).find_all()
-        raise tornado.gen.Return(users and users[0] or None)
+        return cls.objects.filter({'name': name}).first()
 
     @classmethod
-    @tornado.gen.coroutine
     def get_by_email(cls, email):
-        users = yield cls.objects.filter({'auth.standard.email': email}).find_all()
-        raise tornado.gen.Return(users and users[0] or None)
+        return cls.objects.filter({'auth.standard.email': email}).first()
 
     def as_document(self):
         d = self.__dict__.copy()
@@ -106,24 +101,17 @@ class User(Document):
     def __str__(self):
         return '<{self.__class__.__name__}({self.name})>'.format(self=self)
 
-    @tornado.gen.coroutine
     def assign_ordinal_number(self):
         if self.ordinal_number is None:
             # Получить всех пользователей, отсортировать по self.ordinal_number и получить максимальное число
-            new_user = User()
-            new_user.save()
-
-            users = yield User.objects.filter(
+            users = User.objects.filter(
                 {'ordinal_number': {'$exists': True, '$ne': None},}
-            ).order_by('ordinal_number', -1).limit(3).find_all()
+            ).order_by('ordinal_number', -1).limit(3).all()
 
-            if len(users):
-                self.ordinal_number = users[0].ordinal_number + 1
-            else:
-                self.ordinal_number = 1
-            yield self.save()
-            raise tornado.gen.Return(self.ordinal_number)
-        raise tornado.gen.Return(self.ordinal_number)
+            self.ordinal_number = (users[0].ordinal_number + 1) if len(users) else 1
+            self.save()
+
+        return self.ordinal_number
 
 
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):

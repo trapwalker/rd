@@ -14,13 +14,13 @@ from sublayers_server.model.registry_me.odm_position import Position
 
 
 class PlayHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
         user = self.current_user
+        # todo: ##REFACTORING
         if user:
             if options.mode == 'basic':
                 coord = None
-                agent = yield self.application.srv.api.get_agent(user=user, make=True, do_disconnect=False)
+                agent = self.application.srv.api.get_agent(user=user, make=True, do_disconnect=False)
                 if not agent:
                     self.redirect(self.get_login_url())
                     return
@@ -52,7 +52,7 @@ class PlayHandler(BaseHandler):
                 else:
                     coord = Point.random_point(self.application.srv.quick_game_start_pos, self.application.srv.quick_game_respawn_bots_radius)
                 user.start_position = Position(coord.x, coord.y)
-                yield user.save()
+                user.save()
                 if (not user.quick) and (user.teaching_state != "map"):
                     log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
                     self.redirect('/play')
@@ -65,8 +65,7 @@ class PlayHandler(BaseHandler):
 
 
 class MobilePlayHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
-        yield self._quick_registration()
+        self._quick_registration()
         options = self.application.options
         self.render("mobile/play.html", ws_port=options.ws_port, map_link=options.map_link, host_name=options.mobile_host)

@@ -59,7 +59,7 @@ class StandardLoginHandler(BaseSiteHandler):
         if action == 'reg':
             yield self._registration()
         elif action == 'quick_reg':
-            yield self._quick_registration()
+            self._quick_registration()
         elif action == 'auth':
             yield self._authorisation()
         elif action == 'next':
