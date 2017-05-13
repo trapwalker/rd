@@ -233,13 +233,13 @@ class Server(object):
                 yield user.save()
 
             # Создать AIQuickAgent
-            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            agent_exemplar = yield Agent.objects.get(user_id=str(user._id))
             if agent_exemplar is None:
                 agent_exemplar = self.quick_game_bot_agents_proto[
                     random.randint(0, len(self.quick_game_bot_agents_proto) - 1)]
                 agent_exemplar = agent_exemplar.instantiate(
                     login=user.name,
-                    profile_id=str(user._id),
+                    user_id=str(user._id),
                     name=str(user._id),
                     fixtured=False,
                 )
@@ -301,11 +301,11 @@ class Server(object):
                 log.info('Test account created: %s', acc['login'])
 
             # Создать AIQuickAgent
-            agent_exemplar = yield Agent.objects.get(profile_id=str(user._id))
+            agent_exemplar = yield Agent.objects.get(user_id=str(user._id))
             if agent_exemplar is None:
                 agent_exemplar = self.reg['agents/user/quick'].instantiate(
                     login=user.name,
-                    profile_id=str(user._id),
+                    user_id=str(user._id),
                     name=str(user._id),
                     fixtured=False,
                 )

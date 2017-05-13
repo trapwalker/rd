@@ -24,13 +24,13 @@ class ServerAPI(API):
         """
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
-            # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=False, teaching_flag=False)
+            # agent_exemplar = yield Agent.objects.get(user_id=str(user._id), quick_flag=False, teaching_flag=False)
             agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=False, teaching_flag=False).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
                 agent_exemplar = self.server.reg['agents/user'].instantiate(
-                    name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id),
+                    name=str(user._id), login=user.name, fixtured=False, user_id=str(user._id),
                     abstract=False,
                 )
                 yield agent_exemplar.load_references()
@@ -68,14 +68,14 @@ class ServerAPI(API):
         assert user.quick
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
-            # agent_exemplar = yield Agent.objects.get(profile_id=str(user._id), quick_flag=True)
-            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=True, teaching_flag=False).find_all()
+            # agent_exemplar = yield Agent.objects.get(user_id=str(user._id), quick_flag=True)
+            agent_exemplar = yield Agent.objects.filter(user_id=str(user._id), quick_flag=True, teaching_flag=False).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
                 agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     #storage=self.application.reg_agents,
                     login=user.name,
-                    profile_id=str(user._id),
+                    user_id=str(user._id),
                     name=str(user._id),
                     fixtured=False,
                 )
@@ -127,16 +127,16 @@ class ServerAPI(API):
 
         if not agent:
             # Если нет подключённого агента, то мы не ищем в базе, а просто создаём нового!
-            agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=True).find_all()
+            agent_exemplar = yield Agent.objects.filter(user_id=str(user._id), quick_flag=True).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
 
-            main_agent_exemplar = yield Agent.objects.filter(profile_id=str(user._id), quick_flag=False).find_all()
+            main_agent_exemplar = yield Agent.objects.filter(user_id=str(user._id), quick_flag=False).find_all()
             main_agent_exemplar = main_agent_exemplar and main_agent_exemplar[0] or None
 
             if agent_exemplar is None:
                 agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
                     login=user.name,
-                    profile_id=str(user._id),
+                    user_id=str(user._id),
                     name=str(user._id),
                     fixtured=False,
                 )

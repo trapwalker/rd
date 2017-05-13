@@ -82,19 +82,20 @@ class StandardLoginHandler(BaseSiteHandler):
         ):
             self.finish({'status': 'fail_wrong_input'})
             return
-        if (yield User.get_by_email(email=email)):
+
+        if User.get_by_email(email=email):
             self.finish({'status': 'fail_exist_email'})
             return
 
         user = User(email=email, raw_password=password)
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
-        result = yield user.save()
+        user.save()
 
-        agent_example = yield Agent.objects.get(profile_id=str(user._id))
+        agent_example = Agent.objects.get(user_id=str(user._id))
         if agent_example is None:
             agent_example = self.application.reg['agents/user'].instantiate(
                 #storage=self.application.reg_agents,
-                profile_id=str(user._id),
+                user_id=str(user._id),
                 name=str(user._id),
                 fixtured=False,
             )
@@ -226,7 +227,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
-            agent_ex = yield Agent.objects.get(profile_id=str(user._id))
+            agent_ex = yield Agent.objects.get(user_id=str(user._id))
             if agent_ex is None:  # todo: Определить вероятность такой проблемы, реализовать пути решения
                 # todo: warning
                 self.send_error(status_code=404)
