@@ -52,6 +52,7 @@ define("disconnect_timeout", default=60, help="Timeout of displacing by disconne
 define("world_path", default='../sublayers_world', help="Path to world data", type=str)
 define("zones_disable", default=False, help="Zones activation disable", type=bool)
 define("server_stat_log_interval", default=10, help="Server stat log interval", type=int)
+define("statistic_path", default='../sublayers_common/static/log/stat/', help="Server stat log path", type=str)
 
 define("quick_debug", default=False, help="quick debug flag", type=bool)
 

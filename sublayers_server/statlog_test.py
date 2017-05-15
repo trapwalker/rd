@@ -9,14 +9,6 @@ from collections import OrderedDict
 
 statlog = logging.getLogger('statlog')
 
-d = OrderedDict(
-    a=13,
-    b=15,
-    c='123',
-    d='x="13"',
-    e='asd;zxc'
-)
-
 
 CSV_SPLITTER = ';'
 CSV_QUOTE = '"'
@@ -36,9 +28,19 @@ def prepare_value(value):
     return value
 
 
-msg = CSV_SPLITTER.join(
-    map(prepare_value, d.values())
-)
+if __name__ == '__main__':
 
-statlog.info(msg, extra=d)
+    d = OrderedDict(
+        a=13,
+        b=15,
+        c='123',
+        d='x="13"',
+        e='asd;zxc'
+    )
+
+    msg = CSV_SPLITTER.join(
+        map(prepare_value, d.values())
+    )
+
+    statlog.info(msg, extra=d)
 
