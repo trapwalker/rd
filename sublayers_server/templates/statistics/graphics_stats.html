@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Highstock Example</title>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
+
+<body>
+    <div id="container1" style="height: 400px; min-width: 310px"></div>
+    <div id="container2" style="height: 400px; min-width: 310px"></div>
+    <div id="container3" style="height: 400px; min-width: 310px"></div>
+
+    <script>
+        var load_count = 5;
+        var is_load_count = 0;
+
+        var data_observers = [];
+        var data_agents = [];
+        var data_events = [];
+
+        function wait() {
+            console.log('Ожидание загрузки лог файлов ' + is_load_count + ' из ' + load_count + '.');
+            if (is_load_count == load_count) draw();
+            else setTimeout(wait, 50);
+        }
+
+        function draw() {
+            console.log("Вывод графиков (" + data_agents.length + ", " + data_observers.length + ", " + data_events.length + ").");
+
+            // Строим графики
+            Highcharts.chart('container1', {
+                chart: { zoomType: 'x' },
+                title: { text: 'Количество Агентов' },
+                xAxis: { type: 'datetime' },
+                yAxis: { title: { text: 'шт.' } },
+                legend: { enabled: false },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [ [0, Highcharts.getOptions().colors[0]],
+                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                   ]},
+                        marker: { radius: 2 },
+                        lineWidth: 1,
+                        states: { hover: { lineWidth: 1 } },
+                        threshold: null
+                    }
+                },
+                series: [{
+                    type: 'area',
+                    name: 'Count Agents',
+                    data: data_agents
+                }]
+            });
+
+            Highcharts.chart('container2', {
+                chart: { zoomType: 'x' },
+                title: { text: 'Количество Обсерверов' },
+                xAxis: { type: 'datetime' },
+                yAxis: { title: { text: 'шт.' } },
+                legend: { enabled: false },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [ [0, Highcharts.getOptions().colors[0]],
+                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                   ]},
+                        marker: { radius: 2 },
+                        lineWidth: 1,
+                        states: { hover: { lineWidth: 1 } },
+                        threshold: null
+                    }
+                },
+                series: [{
+                    type: 'area',
+                    name: 'Count Observers',
+                    data: data_observers
+                }]
+            });
+
+            Highcharts.chart('container3', {
+                chart: { zoomType: 'x' },
+                title: { text: 'Количество Ивентов' },
+                xAxis: { type: 'datetime' },
+                yAxis: { title: { text: 'шт.' } },
+                legend: { enabled: false },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [ [0, Highcharts.getOptions().colors[0]],
+                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                   ]},
+                        marker: { radius: 2 },
+                        lineWidth: 1,
+                        states: { hover: { lineWidth: 1 } },
+                        threshold: null
+                    }
+                },
+                series: [{
+                    type: 'area',
+                    name: 'Count Events',
+                    data: data_events
+                }]
+            });
+        }
+
+        $(document).ready(function () {
+            // Получаем список всех доступных файлов
+            var file_list = [];
+            {% for file_name in file_list %}
+                file_list.push("../static/log/stat/" + "{{ file_name }}");
+            {% end %}
+            file_list.push("../static/log/stat/stat.csv");
+
+            // Скачиваем и подготавливаем последние load_count штук
+            if (load_count > file_list.length) load_count = file_list.length;
+            for (var i = 0; i < load_count; i++)
+                $.get(file_list[file_list.length - 1 - i], {},
+                    function(rec) {
+                        is_load_count++;
+                        var line_rec = rec.split("\n");
+                        for (var j = 0; j < line_rec.length; j++) {
+                            var rec = line_rec[j].split(";");
+                            data_observers.push([parseInt(rec[0]), parseInt(rec[1])]);
+                            data_agents.push([parseInt(rec[0]), parseInt(rec[2])]);
+                            data_events.push([parseInt(rec[0]), parseInt(rec[3])]);
+                        }
+                    });
+
+            // Ждем пока все загрузится и рисуем
+            wait();
+        });
+
+    </script>
+</body>
+
+</html>

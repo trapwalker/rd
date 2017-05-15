@@ -3,7 +3,9 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado.web
+import glob
+import os
+import fnmatch
 
 from sublayers_common.handlers.base import BaseHandler
 from tornado.options import options
@@ -71,3 +73,10 @@ class ServerStatHandlersHandler(BaseHandler):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
         handlers_metrics = sorted(BaseHandler.handlers_metrics.values(), key=lambda rec: rec["count"], reverse=True)
         self.render("statistics/handlers_stats.html", handlers_metrics=handlers_metrics)
+
+
+class ServerStatGraphicsHandler(BaseHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        file_list = fnmatch.filter(os.listdir(options.statistic_path), 'stat.csv.*')
+        self.render("statistics/graphics_stats.html", file_list=file_list)
