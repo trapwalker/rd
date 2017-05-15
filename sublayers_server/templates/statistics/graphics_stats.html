@@ -11,9 +11,15 @@
 
 
     <style>
-        .graph {height: 400px; min-width: 310px;}
+        .graph-wrap {position: relative; height: 400px; min-width: 310px;}
+
+        .graph {position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}
+
+        .graph-wrap.hide {height: 40px; }
 
         button {height: 20px; z-index: 2;}
+
+        .graph-wrap button {position: absolute;}
     </style>
 
 </head>
@@ -28,25 +34,39 @@
     {% if not file_list %}
         <h1>Данные отсутствуют.</h1>
     {% else %}
-    <div id="container1" class="graph"></div>
+    <div class="graph-wrap">
+        <div id="container1" class="graph"></div>
+    </div>
 
-    <button data-container_id="container2" onclick="toogleGraphVisibility(this)">Количество Обсерверов</button>
-    <div id="container2" class="graph"></div>
+    <div class="graph-wrap">
+        <button data-container_id="container2" onclick="toogleGraphVisibility(this)">Количество Обсерверов</button>
+        <div id="container2" class="graph"></div>
+    </div>
 
-    <button data-container_id="container3" onclick="toogleGraphVisibility(this)">Количество Ивентов</button>
-    <div id="container3" class="graph"></div>
+    <div class="graph-wrap">
+        <button data-container_id="container3" onclick="toogleGraphVisibility(this)">Количество Ивентов</button>
+        <div id="container3" class="graph"></div>
+    </div>
 
-    <button data-container_id="container4" onclick="toogleGraphVisibility(this)">Cредний эвент лаг</button>
-    <div id="container4" class="graph"></div>
+    <div class="graph-wrap">
+        <button data-container_id="container4" onclick="toogleGraphVisibility(this)">Cредний эвент лаг</button>
+        <div id="container4" class="graph"></div>
+    </div>
 
-    <button data-container_id="container5" onclick="toogleGraphVisibility(this)">Максимальный эвент лаг</button>
-    <div id="container5" class="graph"></div>
+    <div class="graph-wrap">
+        <button data-container_id="container5" onclick="toogleGraphVisibility(this)">Максимальный эвент лаг</button>
+        <div id="container5" class="graph"></div>
+    </div>
 
-    <button data-container_id="container6" onclick="toogleGraphVisibility(this)">Время отправки сообщений</button>
-    <div id="container6" class="graph"></div>
+    <div class="graph-wrap">
+        <button data-container_id="container6" onclick="toogleGraphVisibility(this)">Время отправки сообщений</button>
+        <div id="container6" class="graph"></div>
+    </div>
 
-    <button data-container_id="container7" onclick="toogleGraphVisibility(this)">Количество Мессаджей</button>
-    <div id="container7" class="graph"></div>
+    <div class="graph-wrap">
+        <button data-container_id="container7" onclick="toogleGraphVisibility(this)">Количество Мессаджей</button>
+        <div id="container7" class="graph"></div>
+    </div>
     {% end %}
 
     <script>
@@ -79,6 +99,8 @@
             // Строим графики
             Highcharts.stockChart('container1', {
                 chart: {
+                    marginLeft: 93,
+                    marginRight: 26,
                     animation: false,
                     zoomType: 'x',
                     events: {
@@ -131,7 +153,7 @@
 
             // Количество Обсерверов
             all_charts.push(Highcharts.chart('container2', {
-                chart: {zoomType: 'x', animation: false,},
+                chart: {zoomType: 'x', animation: false, marginLeft: 80,},
                 title: {text: 'Количество Обсерверов'},
                 xAxis: {type: 'datetime'},
                 yAxis: {
@@ -162,7 +184,7 @@
 
             // Количество Ивентов
             all_charts.push(Highcharts.chart('container3', {
-                chart: {zoomType: 'x', animation: false,},
+                chart: {zoomType: 'x', animation: false, marginLeft: 80,},
                 title: {text: 'Количество Ивентов'},
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'шт.'}, min: 0},
@@ -190,7 +212,7 @@
 
             // Средний эвент лаг
             all_charts.push(Highcharts.chart('container4', {
-                chart: {zoomType: 'x', animation: false,},
+                chart: {zoomType: 'x', animation: false, marginLeft: 80,},
                 title: {text: 'Средний эвент лаг'},
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
@@ -220,7 +242,7 @@
 
             // Максимальный эвент лаг
             all_charts.push(Highcharts.chart('container5', {
-                chart: {zoomType: 'x', animation: false,},
+                chart: {zoomType: 'x', animation: false, marginLeft: 80,},
                 title: {text: 'Максимальный эвент лаг'},
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
@@ -250,7 +272,7 @@
 
             // Время отправки сообщений
             all_charts.push(Highcharts.chart('container6', {
-                chart: {zoomType: 'x', animation: false,},
+                chart: {zoomType: 'x', animation: false, marginLeft: 80,},
                 title: {text: 'Время отправки сообщений'},
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
@@ -278,7 +300,7 @@
 
             // Количество Мессаджей
             all_charts.push(Highcharts.chart('container7', {
-                chart: {zoomType: 'x', animation: false,},
+                chart: {zoomType: 'x', animation: false, marginLeft: 80,},
                 title: {text: 'Количество Мессаджей'},
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'шт.'}, min: 0},
@@ -360,8 +382,9 @@
 
         function toogleGraphVisibility(elem) {
             var jq_elem = $(elem);
-            var graph = $("#" + jq_elem.data("container_id"));
-            graph.toggle();
+            //var graph = $("#" + jq_elem.data("container_id"));
+            //graph.toggle();
+            jq_elem.parent().toggleClass("hide");
         }
 
         function loadNewDates() {
