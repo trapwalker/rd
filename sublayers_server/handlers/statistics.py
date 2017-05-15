@@ -126,4 +126,5 @@ class ServerStatGraphicsHandler(BaseHandler):
         if today == end_date:
             file_list.append("stat.csv")
 
-        self.render("statistics/graphics_stats.html", file_list=file_list)
+        self.render("statistics/graphics_stats.html", file_list=file_list, start_date=str(start_date),
+                    end_date=str(end_date))

@@ -19,6 +19,11 @@
 </head>
 
 <body>
+    <div style="text-align: center;">
+        ОТ: <input type="date" id="start_date" min="2017-05-12" max="2020-12-31" value="{{ start_date }}">
+        ДО: <input type="date" id="end_date" min="2017-05-12" max="2020-12-31" value="{{ end_date }}">
+        <button onclick="loadNewDates()">Перейти</button>
+    </div>
 
     {% if not file_list %}
         <h1>Данные отсутствуют.</h1>
@@ -358,6 +363,13 @@
             var graph = $("#" + jq_elem.data("container_id"));
             graph.toggle();
         }
+
+        function loadNewDates() {
+            var start_date = $("#start_date").val();
+            var end_date = $("#end_date").val();
+            window.location = location.origin + location.pathname + "?start=" + start_date + "&end=" + end_date;
+        }
+
 
     </script>
 </body>
