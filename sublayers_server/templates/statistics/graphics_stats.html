@@ -16,6 +16,10 @@
     <div id="container1" style="height: 400px; min-width: 310px"></div>
     <div id="container2" style="height: 400px; min-width: 310px"></div>
     <div id="container3" style="height: 400px; min-width: 310px"></div>
+    <div id="container4" style="height: 400px; min-width: 310px"></div>
+    <div id="container5" style="height: 400px; min-width: 310px"></div>
+    <div id="container6" style="height: 400px; min-width: 310px"></div>
+    <div id="container7" style="height: 400px; min-width: 310px"></div>
 
     <script>
         var load_count = 5;
@@ -24,6 +28,10 @@
         var data_observers = [];
         var data_agents = [];
         var data_events = [];
+        var max_ev_lag = [];
+        var average_ev_lag = [];
+        var mes_count = [];
+        var mes_dur = [];
 
         var all_charts = [];
 
@@ -93,25 +101,27 @@
                 }],
             });
 
+            // Количество Обсерверов
             all_charts.push(Highcharts.chart('container2', {
-                chart: { zoomType: 'x', animation: false,},
-                title: { text: 'Количество Обсерверов' },
-                xAxis: { type: 'datetime' },
+                chart: {zoomType: 'x', animation: false,},
+                title: {text: 'Количество Обсерверов'},
+                xAxis: {type: 'datetime'},
                 yAxis: {
-                    title: { text: 'шт.' },
+                    title: {text: 'шт.'},
                     min: 0
                 },
-                legend: { enabled: false },
+                legend: {enabled: false},
                 plotOptions: {
                     area: {
                         fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [ [0, Highcharts.getOptions().colors[0]],
-                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                   ]},
-                        marker: { radius: 2 },
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
                         lineWidth: 1,
-                        states: { hover: { lineWidth: 1 } },
+                        states: {hover: {lineWidth: 1}},
                         threshold: null
                     }
                 },
@@ -122,22 +132,24 @@
                 }]
             }));
 
+            // Количество Ивентов
             all_charts.push(Highcharts.chart('container3', {
-                chart: { zoomType: 'x', animation: false,},
-                title: { text: 'Количество Ивентов' },
-                xAxis: { type: 'datetime' },
-                yAxis: { title: { text: 'шт.', min: 0 } },
-                legend: { enabled: false },
+                chart: {zoomType: 'x', animation: false,},
+                title: {text: 'Количество Ивентов'},
+                xAxis: {type: 'datetime'},
+                yAxis: {title: {text: 'шт.'}, min: 0},
+                legend: {enabled: false},
                 plotOptions: {
                     area: {
                         fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [ [0, Highcharts.getOptions().colors[0]],
-                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                   ]},
-                        marker: { radius: 2 },
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
                         lineWidth: 1,
-                        states: { hover: { lineWidth: 1 } },
+                        states: {hover: {lineWidth: 1}},
                         threshold: null
                     }
                 },
@@ -146,7 +158,123 @@
                     name: 'Count Events',
                     data: data_events
                 }]
-           }));
+            }));
+
+            // Средний эвент лаг
+            all_charts.push(Highcharts.chart('container4', {
+                chart: {zoomType: 'x', animation: false,},
+                title: {text: 'Средний эвент лаг'},
+                xAxis: {type: 'datetime'},
+                yAxis: {title: {text: 'с.'}, min: 0},
+                legend: {enabled: false},
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: [
+                    {
+                        type: 'line',
+                        name: 'average_ev_lag',
+                        data: average_ev_lag
+                    }
+                ]
+            }));
+
+            // Максимальный эвент лаг
+            all_charts.push(Highcharts.chart('container5', {
+                chart: {zoomType: 'x', animation: false,},
+                title: {text: 'Максимальный эвент лаг'},
+                xAxis: {type: 'datetime'},
+                yAxis: {title: {text: 'с.'}, min: 0},
+                legend: {enabled: false},
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: [
+                    {
+                        type: 'line',
+                        name: 'max_ev_lag',
+                        data: max_ev_lag
+                    }
+                ]
+            }));
+
+            // Время отправки сообщений
+            all_charts.push(Highcharts.chart('container6', {
+                chart: {zoomType: 'x', animation: false,},
+                title: {text: 'Время отправки сообщений'},
+                xAxis: {type: 'datetime'},
+                yAxis: {title: {text: 'с.'}, min: 0},
+                legend: {enabled: false},
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: [{
+                    type: 'area',
+                    name: 'Sending Duration',
+                    data: mes_dur
+                }]
+            }));
+
+            // Количество Мессаджей
+            all_charts.push(Highcharts.chart('container7', {
+                chart: {zoomType: 'x', animation: false,},
+                title: {text: 'Количество Мессаджей'},
+                xAxis: {type: 'datetime'},
+                yAxis: {title: {text: 'шт.'}, min: 0},
+                legend: {enabled: false},
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: [{
+                    type: 'area',
+                    name: 'Count Messages',
+                    data: mes_count
+                }]
+            }));
         }
 
         $(document).ready(function () {
@@ -172,6 +300,11 @@
                                 data_observers.push([time, parseInt(rec[1])]);
                                 data_agents.push([time, parseInt(rec[2])]);
                                 data_events.push([time, parseInt(rec[3])]);
+
+                                max_ev_lag.push([time, parseInt(rec[4])]);
+                                average_ev_lag.push([time, parseInt(rec[5])]);
+                                mes_count.push([time, parseInt(rec[6])]);
+                                mes_dur.push([time, parseInt(rec[7])]);
                             }
                         }
                     });
@@ -192,7 +325,10 @@
             data_observers.sort(compare);
             data_agents.sort(compare);
             data_events.sort(compare);
-
+            max_ev_lag.sort(compare);
+            average_ev_lag.sort(compare);
+            mes_count.sort(compare);
+            mes_dur.sort(compare);
         }
 
     </script>
