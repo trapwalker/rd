@@ -6,7 +6,10 @@
     <title>Highstock Example</title>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+
+
 </head>
 
 <body>
@@ -22,6 +25,8 @@
         var data_agents = [];
         var data_events = [];
 
+        var all_charts = [];
+
         function wait() {
             console.log('Ожидание загрузки лог файлов ' + is_load_count + ' из ' + load_count + '.');
             if (is_load_count == load_count) {
@@ -36,13 +41,36 @@
             console.log("Вывод графиков (" + data_agents.length + ", " + data_observers.length + ", " + data_events.length + ").");
 
             // Строим графики
-            Highcharts.chart('container1', {
-                chart: { zoomType: 'x' },
+            Highcharts.stockChart('container1', {
+                chart: {
+                    animation: false,
+                    zoomType: 'x',
+                    events: {
+                        redraw: function (event) {
+                            // log the min and max of the primary, datetime x-axis
+                            //console.log(
+                            //        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', event.xAxis[0].min),
+                            //        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', event.xAxis[0].max)
+                            //);
+
+                            //console.log(g2);
+                            var x_min = this.xAxis[0].min;
+                            var x_max = this.xAxis[0].max;
+                            for (var i = 0; i < all_charts.length; i++) {
+                                var c = all_charts[i];
+                                c.xAxis[0].update({min: x_min, max: x_max});
+                            }
+                            }
+                    }
+                },
                 title: { text: 'Количество Агентов' },
-                xAxis: { type: 'datetime' },
+                xAxis: {
+                    type: 'datetime',
+                },
                 yAxis: {
                     title: { text: 'шт.' },
-                    tickInterval: 1
+                    min: 0,
+                    opposite: false,
                 },
                 legend: { enabled: false },
                 plotOptions: {
@@ -62,14 +90,17 @@
                     type: 'area',
                     name: 'Count Agents',
                     data: data_agents
-                }]
+                }],
             });
 
-            Highcharts.chart('container2', {
-                chart: { zoomType: 'x' },
+            all_charts.push(Highcharts.chart('container2', {
+                chart: { zoomType: 'x', animation: false,},
                 title: { text: 'Количество Обсерверов' },
                 xAxis: { type: 'datetime' },
-                yAxis: { title: { text: 'шт.' } },
+                yAxis: {
+                    title: { text: 'шт.' },
+                    min: 0
+                },
                 legend: { enabled: false },
                 plotOptions: {
                     area: {
@@ -89,13 +120,13 @@
                     name: 'Count Observers',
                     data: data_observers
                 }]
-            });
+            }));
 
-            Highcharts.chart('container3', {
-                chart: { zoomType: 'x' },
+            all_charts.push(Highcharts.chart('container3', {
+                chart: { zoomType: 'x', animation: false,},
                 title: { text: 'Количество Ивентов' },
                 xAxis: { type: 'datetime' },
-                yAxis: { title: { text: 'шт.' } },
+                yAxis: { title: { text: 'шт.', min: 0 } },
                 legend: { enabled: false },
                 plotOptions: {
                     area: {
@@ -115,7 +146,7 @@
                     name: 'Count Events',
                     data: data_events
                 }]
-            });
+           }));
         }
 
         $(document).ready(function () {
