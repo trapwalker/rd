@@ -10,16 +10,35 @@
     <script src="http://code.highcharts.com/stock/highstock.js"></script>
 
 
+    <style>
+        .graph {height: 400px; min-width: 310px;}
+
+        button {height: 20px; z-index: 2;}
+    </style>
+
 </head>
 
 <body>
-    <div id="container1" style="height: 400px; min-width: 310px"></div>
-    <div id="container2" style="height: 400px; min-width: 310px"></div>
-    <div id="container3" style="height: 400px; min-width: 310px"></div>
-    <div id="container4" style="height: 400px; min-width: 310px"></div>
-    <div id="container5" style="height: 400px; min-width: 310px"></div>
-    <div id="container6" style="height: 400px; min-width: 310px"></div>
-    <div id="container7" style="height: 400px; min-width: 310px"></div>
+    <div id="container1" class="graph"></div>
+
+    <button data-container_id="container2" onclick="toogleGraphVisibility(this)">Количество Обсерверов</button>
+    <div id="container2" class="graph"></div>
+
+    <button data-container_id="container3" onclick="toogleGraphVisibility(this)">Количество Ивентов</button>
+    <div id="container3" class="graph"></div>
+
+    <button data-container_id="container4" onclick="toogleGraphVisibility(this)">Cредний эвент лаг</button>
+    <div id="container4" class="graph"></div>
+
+    <button data-container_id="container5" onclick="toogleGraphVisibility(this)">Максимальный эвент лаг</button>
+    <div id="container5" class="graph"></div>
+
+    <button data-container_id="container6" onclick="toogleGraphVisibility(this)">Время отправки сообщений</button>
+    <div id="container6" class="graph"></div>
+
+    <button data-container_id="container7" onclick="toogleGraphVisibility(this)">Количество Мессаджей</button>
+    <div id="container7" class="graph"></div>
+
 
     <script>
         var load_count = 5;
@@ -329,6 +348,12 @@
             average_ev_lag.sort(compare);
             mes_count.sort(compare);
             mes_dur.sort(compare);
+        }
+
+        function toogleGraphVisibility(elem) {
+            var jq_elem = $(elem);
+            var graph = $("#" + jq_elem.data("container_id"));
+            graph.toggle();
         }
 
     </script>
