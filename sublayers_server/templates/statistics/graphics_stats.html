@@ -19,6 +19,10 @@
 </head>
 
 <body>
+
+    {% if not file_list %}
+        <h1>Данные отсутствуют.</h1>
+    {% else %}
     <div id="container1" class="graph"></div>
 
     <button data-container_id="container2" onclick="toogleGraphVisibility(this)">Количество Обсерверов</button>
@@ -38,7 +42,7 @@
 
     <button data-container_id="container7" onclick="toogleGraphVisibility(this)">Количество Мессаджей</button>
     <div id="container7" class="graph"></div>
-
+    {% end %}
 
     <script>
         var load_count = 5;
@@ -184,7 +188,7 @@
                 chart: {zoomType: 'x', animation: false,},
                 title: {text: 'Средний эвент лаг'},
                 xAxis: {type: 'datetime'},
-                yAxis: {title: {text: 'с.'}, min: 0},
+                yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
                 plotOptions: {
                     area: {
@@ -214,7 +218,7 @@
                 chart: {zoomType: 'x', animation: false,},
                 title: {text: 'Максимальный эвент лаг'},
                 xAxis: {type: 'datetime'},
-                yAxis: {title: {text: 'с.'}, min: 0},
+                yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
                 plotOptions: {
                     area: {
@@ -244,7 +248,7 @@
                 chart: {zoomType: 'x', animation: false,},
                 title: {text: 'Время отправки сообщений'},
                 xAxis: {type: 'datetime'},
-                yAxis: {title: {text: 'с.'}, min: 0},
+                yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
                 plotOptions: {
                     area: {
@@ -301,13 +305,13 @@
             var file_list = [];
             {% for file_name in file_list %}
                 file_list.push("../static/log/stat/" + "{{ file_name }}");
+                console.log("{{ file_name }}");
             {% end %}
-            file_list.push("../static/log/stat/stat.csv");
 
-            // Скачиваем и подготавливаем последние load_count штук
-            if (load_count > file_list.length) load_count = file_list.length;
-            for (var i = 0; i < load_count; i++)
-                $.get(file_list[file_list.length - 1 - i], {},
+            // Скачиваем и подготавливаем все файлы из списка
+            load_count = file_list.length;
+            for (var i = 0; i < file_list.length; i++)
+                $.get(file_list[i], {},
                     function(rec) {
                         is_load_count++;
                         var line_rec = rec.split("\n");
@@ -319,7 +323,6 @@
                                 data_observers.push([time, parseInt(rec[1])]);
                                 data_agents.push([time, parseInt(rec[2])]);
                                 data_events.push([time, parseInt(rec[3])]);
-
                                 max_ev_lag.push([time, parseInt(rec[4])]);
                                 average_ev_lag.push([time, parseInt(rec[5])]);
                                 mes_count.push([time, parseInt(rec[6])]);
@@ -329,7 +332,7 @@
                     });
 
             // Ждем пока все загрузится и рисуем
-            wait();
+            if (load_count) wait();
         });
 
 

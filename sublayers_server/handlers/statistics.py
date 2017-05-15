@@ -78,5 +78,52 @@ class ServerStatHandlersHandler(BaseHandler):
 class ServerStatGraphicsHandler(BaseHandler):
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
-        file_list = fnmatch.filter(os.listdir(options.statistic_path), 'stat.csv.*')
+        from datetime import date, timedelta
+
+        def daterange(start_date, end_date):
+            for n in range(int ((end_date - start_date).days)):
+                yield start_date + timedelta(n)
+            yield end_date
+
+        file_list_all = fnmatch.filter(os.listdir(options.statistic_path), 'stat.csv.*')
+        file_list = []
+        today = date.today()
+
+        start_date_arg = self.get_argument("start", None)
+        start_date = today
+        if start_date_arg:
+            arr = start_date_arg.split("-")
+            try:
+                start_date = date(int(arr[0]), int(arr[1]), int(arr[2]))
+            except:
+                log.warning("Invalid date format %s", start_date_arg)
+
+        end_date_arg = self.get_argument("end", None)
+        end_date = today
+        if end_date_arg:
+            arr = end_date_arg.split("-")
+            try:
+                end_date = date(int(arr[0]), int(arr[1]), int(arr[2]))
+            except:
+                log.warning("Invalid date format %s", end_date_arg)
+
+        last_days = self.get_argument("last_days", None)
+        if last_days:
+            try:
+                last_days = int(last_days) - 1
+                if last_days >= 0:
+                    start_date = today - timedelta(days=last_days)
+                    end_date = today
+            except:
+                log.warning("Invalid last_days format %s", last_days)
+
+        for single_date in daterange(start_date, end_date):
+            curr_date_str = single_date.strftime("%Y-%m-%d")
+            for file_name in file_list_all:
+                if file_name.find(curr_date_str) >= 0:
+                    file_list.append(file_name)
+
+        if today == end_date:
+            file_list.append("stat.csv")
+
         self.render("statistics/graphics_stats.html", file_list=file_list)
