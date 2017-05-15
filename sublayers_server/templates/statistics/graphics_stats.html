@@ -24,8 +24,12 @@
 
         function wait() {
             console.log('Ожидание загрузки лог файлов ' + is_load_count + ' из ' + load_count + '.');
-            if (is_load_count == load_count) draw();
-            else setTimeout(wait, 50);
+            if (is_load_count == load_count) {
+                sort_data();
+                draw();
+            }
+            else
+                setTimeout(wait, 100);
         }
 
         function draw() {
@@ -36,7 +40,10 @@
                 chart: { zoomType: 'x' },
                 title: { text: 'Количество Агентов' },
                 xAxis: { type: 'datetime' },
-                yAxis: { title: { text: 'шт.' } },
+                yAxis: {
+                    title: { text: 'шт.' },
+                    tickInterval: 1
+                },
                 legend: { enabled: false },
                 plotOptions: {
                     area: {
@@ -128,15 +135,34 @@
                         var line_rec = rec.split("\n");
                         for (var j = 0; j < line_rec.length; j++) {
                             var rec = line_rec[j].split(";");
-                            data_observers.push([parseInt(rec[0]), parseInt(rec[1])]);
-                            data_agents.push([parseInt(rec[0]), parseInt(rec[2])]);
-                            data_events.push([parseInt(rec[0]), parseInt(rec[3])]);
+                            var time = parseFloat(rec[0]) * 1000;
+                            //time = new Date(time);
+                            if (time) {
+                                data_observers.push([time, parseInt(rec[1])]);
+                                data_agents.push([time, parseInt(rec[2])]);
+                                data_events.push([time, parseInt(rec[3])]);
+                            }
                         }
                     });
 
             // Ждем пока все загрузится и рисуем
             wait();
         });
+
+
+        function sort_data() {
+            function compare(a, b) {
+                if (a[0] < b[0])
+                    return -1;
+                if (a[0] > b[0])
+                    return 1;
+                return 0;
+            }
+            data_observers.sort(compare);
+            data_agents.sort(compare);
+            data_events.sort(compare);
+
+        }
 
     </script>
 </body>
