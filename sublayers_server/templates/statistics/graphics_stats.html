@@ -350,10 +350,10 @@
                                 data_observers.push([time, parseInt(rec[1])]);
                                 data_agents.push([time, parseInt(rec[2])]);
                                 data_events.push([time, parseInt(rec[3])]);
-                                max_ev_lag.push([time, parseInt(rec[4])]);
-                                average_ev_lag.push([time, parseInt(rec[5])]);
+                                max_ev_lag.push([time, parseFloat(rec[4])]);
+                                average_ev_lag.push([time, parseFloat(rec[5])]);
                                 mes_count.push([time, parseInt(rec[6])]);
-                                mes_dur.push([time, parseInt(rec[7])]);
+                                mes_dur.push([time, parseFloat(rec[7])]);
                             }
                         }
                     });

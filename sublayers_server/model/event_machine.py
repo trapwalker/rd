@@ -404,11 +404,11 @@ class Server(object):
             time=time,
             observers=observers,
             agent_online=agent_online,
-            ev_count_performed=ev_count_performed,
+            ev_count_performed=ev_count_performed / options.server_stat_log_interval,
             max_ev_lag=max_ev_lag,
             average_ev_lag=average_ev_lag,
-            mes_count=mes_count,
-            mes_dur=mes_dur,
+            mes_count=mes_count / options.server_stat_log_interval,
+            mes_dur=mes_dur / options.server_stat_log_interval,
         )
         self.logger_statlog.info(log_str)
         self.server_stat_log(time=self.get_time() + options.server_stat_log_interval, server=self)
