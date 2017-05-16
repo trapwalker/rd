@@ -87,6 +87,10 @@ class ServerStatGraphicsHandler(BaseHandler):
 
         file_list_all = fnmatch.filter(os.listdir(options.statistic_path), 'stat.csv.*')
         file_list = []
+
+        event_file_list_all = fnmatch.filter(os.listdir(options.statistic_path), 'stat_events.csv.*')
+        event_file_list = []
+
         today = date.today()
 
         start_date_arg = self.get_argument("start", None)
@@ -123,11 +127,16 @@ class ServerStatGraphicsHandler(BaseHandler):
                 if file_name.find(curr_date_str) >= 0:
                     file_list.append(file_name)
 
+            for file_name in event_file_list_all:
+                if file_name.find(curr_date_str) >= 0:
+                    event_file_list.append(file_name)
+
         if today == end_date:
             file_list.append("stat.csv")
+            event_file_list.append("stat_events.csv")
 
-        self.render("statistics/graphics_stats.html", file_list=file_list, start_date=str(start_date),
-                    end_date=str(end_date))
+        self.render("statistics/graphics_stats.html", file_list=file_list, event_file_list=event_file_list,
+                    start_date=str(start_date), end_date=str(end_date))
 
 
 class ServerStatEventGraphicsHandler(BaseHandler):
