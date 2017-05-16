@@ -12,7 +12,7 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation, MapRespawn
 from sublayers_server.model.radiation import StationaryRadiation
-from sublayers_server.model.events import LoadWorldEvent, event_deco
+from sublayers_server.model.events import LoadWorldEvent, event_deco, Event
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
@@ -175,6 +175,7 @@ class Server(object):
         if options.server_stat_log_interval > 0:
             self.server_stat_log(server=self, time=event.time + options.server_stat_log_interval)
             self.logger_statlog = logging.getLogger('statlog')
+            self.logger_statlog_events = logging.getLogger('statlog_events')
 
     def on_load_poi(self, event):
         # загрузка радиоточек
@@ -412,6 +413,49 @@ class Server(object):
         )
         self.logger_statlog.info(log_str)
         self.server_stat_log(time=self.get_time() + options.server_stat_log_interval, server=self)
+
+        self.server_stat_log_events(event)
+
+
+    def server_stat_log_events(self, event):
+        # Формат CSV-файла
+        # time; EventName; count; perf_time_average; perf_time_max; lag_time_average; lag_time_max; perf_time_summ
+        def get_event_str(events_metrics, event_name):
+            e = events_metrics[event_name]
+            count = len(e["event_perf_time_interval"])
+            if count > 0:
+                summ_perf_time = sum(e["event_perf_time_interval"])
+                max_perf_time = max(e["event_perf_time_interval"])
+                max_lag_time = max(e["event_lag_interval"])
+                average_lag_time = sum(e["event_lag_interval"]) / count
+                average_perf_time = summ_perf_time / count
+            else:
+                average_perf_time = 0
+                average_lag_time = 0
+                summ_perf_time = 0
+                max_perf_time = 0
+                max_lag_time = 0
+
+            e["event_perf_time_interval"] = []
+            e["event_lag_interval"] = []
+
+            return "{event_name};{count};{perf_time_average};{perf_time_max};{perf_time_summ};{lag_time_max};{lag_time_average};".format(
+                event_name=event_name,
+                count=count / options.server_stat_log_interval,
+                perf_time_average=average_perf_time,
+                perf_time_max=max_perf_time,
+                perf_time_summ=summ_perf_time / options.server_stat_log_interval,
+                lag_time_average=average_lag_time,
+                lag_time_max=max_lag_time,
+            )
+
+        events_metrics = event.events_metrics
+
+        log_str = "{};".format(event.time)
+        for event_name in events_metrics.keys():
+            log_str = "{}{}".format(log_str, get_event_str(events_metrics, event_name))
+
+        self.logger_statlog_events.info(log_str)
 
 
 class EServerAlreadyStarted(errors.EIllegal):
