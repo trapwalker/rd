@@ -56,7 +56,7 @@ from sublayers_server.handlers.context_panel import ContextPanelListHandler
 
 from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatForSite, ServerStatMessagesHandler,
                                                   ServerStatEventsHandler, ServerStatHandlersHandler,
-                                                  ServerStatGraphicsHandler)
+                                                  ServerStatGraphicsHandler, ServerStatEventGraphicsHandler)
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
 from sublayers_server.model.event_machine import LocalServer
 
@@ -121,6 +121,7 @@ class Application(BaseApplication):
             (r"/stat/events", ServerStatEventsHandler),
             (r"/stat/handlers", ServerStatHandlersHandler),
             (r"/stat/graphics", ServerStatGraphicsHandler),
+            (r"/stat/event_graphics", ServerStatEventGraphicsHandler),
 
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),

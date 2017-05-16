@@ -441,7 +441,7 @@ class Server(object):
 
             return "{event_name};{count};{perf_time_average};{perf_time_max};{perf_time_summ};{lag_time_max};{lag_time_average};".format(
                 event_name=event_name,
-                count=count / options.server_stat_log_interval,
+                count= 1. * count / options.server_stat_log_interval,
                 perf_time_average=average_perf_time,
                 perf_time_max=max_perf_time,
                 perf_time_summ=summ_perf_time / options.server_stat_log_interval,
