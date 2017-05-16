@@ -53,23 +53,21 @@ class StandardLoginHandler(BaseSiteHandler):
     def get(self):
         self.redirect('/#start')
 
-    @tornado.gen.coroutine
     def post(self):
         action = self.get_argument('action', None)
         if action == 'reg':
-            yield self._registration()
+            self._registration()
         elif action == 'quick_reg':
             self._quick_registration()
         elif action == 'auth':
-            yield self._authorisation()
+            self._authorisation()
         elif action == 'next':
-            yield self._next_reg_step()
+            self._next_reg_step()
         elif action == 'back':
-            yield self._back_reg_step()
+            self._back_reg_step()
         else:
             raise HTTPError(405, log_message='Wrong action {}.'.format(action))
 
-    @tornado.gen.coroutine
     def _registration(self):
         clear_all_cookie(self)
         email = self.get_argument('email', None)
@@ -93,16 +91,17 @@ class StandardLoginHandler(BaseSiteHandler):
 
         agent_example = Agent.objects.get(user_id=str(user._id))
         if agent_example is None:
-            agent_example = self.application.reg['agents/user'].instantiate(
+            agent_example = Agent(
                 #storage=self.application.reg_agents,
                 user_id=str(user._id),
-                name=str(user._id),
-                fixtured=False,
+                teaching_flag=False,
+                quick_flag=False,
+                profile=dict(
+                    name=str(user._id),
+                    parent='agents/user',
+                ),
             )
-            yield agent_example.load_references()
-            agent_example.teaching_flag = False
-            agent_example.quick_flag = False
-            yield agent_example.save(upsert=True)
+            agent_example.save(upsert=True)
 
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -111,7 +110,6 @@ class StandardLoginHandler(BaseSiteHandler):
 
         self.finish({'status': 'success'})
 
-    @tornado.gen.coroutine
     def _quick_registration(self):
         qg_car_index = self.get_argument('qg_car_index', 0)
         nickname = self.get_argument('username', None)
@@ -120,10 +118,10 @@ class StandardLoginHandler(BaseSiteHandler):
         if self.current_user:
             quick_user = self.current_user if self.current_user.quick else None
             if quick_user:
-                if '_'.join(quick_user.name.split('_')[:-1]) == nickname:
+                if '_'.join(quick_user.name.split('_')[:-1]) == nickname:  # todo: Вынести эту логику в явном виде
                     quick_user.car_index = qg_car_index
                     quick_user.teaching_state = ''
-                    yield quick_user.save()
+                    quick_user.save()
                     self.finish({'status': u'Такой пользователь существует'})
                     return
 
@@ -143,16 +141,16 @@ class StandardLoginHandler(BaseSiteHandler):
         login_free = False
         email = u''
         password = str(randint(0,999999))
-        username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
         while not login_free:
+            username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
             email = u'{}@{}'.format(username, username)
-            login_free = ((yield User.get_by_email(email=email)) is None) and \
-                         ((yield User.get_by_name(name=username)) is None)
-            if not login_free:
-                username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
+            login_free = (
+                User.get_by_email(email=email) is None and
+                User.get_by_name(name=username) is None
+            )
 
         user = User(name=username, email=email, raw_password=password, car_index=qg_car_index, quick=True)
-        result = yield user.save()
+        user.save()
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
@@ -179,7 +177,6 @@ class StandardLoginHandler(BaseSiteHandler):
         else:
             raise tornado.gen.Return(res.get('u_id'))
 
-    @tornado.gen.coroutine
     def _authorisation(self):
         clear_all_cookie(self)
         email = self.get_argument('email', None)
@@ -188,7 +185,7 @@ class StandardLoginHandler(BaseSiteHandler):
             self.finish({'status': 'fail'})
             return
 
-        user = yield User.get_by_email(email=email)
+        user = User.get_by_email(email=email)
         if not user:
             self.finish({'status': 'fail'})
             return
@@ -202,7 +199,6 @@ class StandardLoginHandler(BaseSiteHandler):
         # return self.redirect("/")
         self.finish({'status': 'success'})
 
-    @tornado.gen.coroutine
     def _next_reg_step(self):
         user = self.current_user
         if user is None or not isinstance(user, User):
@@ -216,19 +212,25 @@ class StandardLoginHandler(BaseSiteHandler):
             class_node_hash = self.get_argument('class_node_hash', None)
 
             # todo: проверить ник на допустимые символы
-            if ((avatar_index is None) or (class_index is None) or (class_node_hash is None) or
-                    (username is None) or (not isinstance(username, basestring)) or
-                    (username == '') or (len(username) > 100)):
+            if (
+                avatar_index is None or
+                class_index is None or
+                class_node_hash is None or
+                username is None or
+                not isinstance(username, basestring) or
+                username == '' or
+                len(username) > 100
+            ):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
             # Проверяем свободен ли ник
-            if (user.name != username) and (yield User.get_by_name(name=username)):
+            if user.name != username and User.get_by_name(name=username):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
-            agent_ex = yield Agent.objects.get(user_id=str(user._id))
-            if agent_ex is None:  # todo: Определить вероятность такой проблемы, реализовать пути решения
+            agent_ex = Agent.objects.get(user_id=str(user._id))
+            if agent_ex is None:  # todo: Определить вероятность такой проблемы, рассмотреть пути решения
                 # todo: warning
                 self.send_error(status_code=404)
                 return
@@ -238,8 +240,8 @@ class StandardLoginHandler(BaseSiteHandler):
             role_class_ex = None
             try:
                 avatar_index = int(avatar_index)
-                avatar_link = self.application.reg['world_settings'].avatar_list[avatar_index]
-                role_class_ex = self.application.reg.objects.get_cached(class_node_hash)
+                avatar_link = self.application.reg.get('world_settings').avatar_list[avatar_index]
+                role_class_ex = self.application.reg.get(class_node_hash)
             except:
                 # todo: Обработать исключение правильно
                 self.finish({'status': 'fail_wrong_input'})
@@ -256,14 +258,14 @@ class StandardLoginHandler(BaseSiteHandler):
             user.avatar_link = avatar_link
             user.name = username
             user.registration_status = 'settings'
-            yield agent_ex.save()
-            yield user.save()
+            agent_ex.save()
+            user.save()
             self.finish({'status': 'success'})
 
         elif user.registration_status == 'settings':
             # todo: обработать скилы и перки
             user.registration_status = 'chip'
-            yield user.save()
+            user.save()
 
             # Устанавливаем порядковый номер пользователя
             ordinal_number = yield user.assign_ordinal_number()
@@ -294,10 +296,9 @@ class StandardLoginHandler(BaseSiteHandler):
             #     return
             self.set_cookie("forum_user", get_forum_cookie_str(username))
 
-            yield user.save()
+            user.save()
             self.finish({'status': 'success'})
 
-    @tornado.gen.coroutine
     def _back_reg_step(self):
         user = self.current_user
         if user is None or not isinstance(user, User):
@@ -310,16 +311,16 @@ class StandardLoginHandler(BaseSiteHandler):
             clear_all_cookie(self)
         elif user.registration_status == 'settings':
             user.registration_status = 'nickname'
-            yield user.save()
+            user.save()
         elif user.registration_status == 'chip':
             user.registration_status = 'settings'
-            yield user.save()
+            user.save()
 
 
 class RegisterOldUsersOnForum(StandardLoginHandler):
     @tornado.gen.coroutine
     def get(self):
-        users = yield User.objects.filter({}).find_all()
+        users = User.objects.filter({}).find_all()
         count_regs = 0
         for user in users:
             # регистрация на форуме
