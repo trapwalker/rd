@@ -39,54 +39,77 @@
     </div>
 
     <div class="graph-wrap">
-        <button data-container_id="container2" onclick="toogleGraphVisibility(this)">Количество Обсерверов</button>
+        <button data-container_id="container2" onclick="toggleGraphVisibility(this)">Количество Обсерверов</button>
         <div id="container2" class="graph"></div>
     </div>
 
     <div class="graph-wrap">
-        <button data-container_id="container3" onclick="toogleGraphVisibility(this)">Количество Ивентов</button>
+        <button data-container_id="container3" onclick="toggleGraphVisibility(this)">Количество Ивентов</button>
         <div id="container3" class="graph"></div>
     </div>
 
     <div class="graph-wrap">
-        <button data-container_id="container4" onclick="toogleGraphVisibility(this)">Cредний эвент лаг</button>
+        <button data-container_id="container4" onclick="toggleGraphVisibility(this)">Cредний эвент лаг</button>
         <div id="container4" class="graph"></div>
     </div>
 
     <div class="graph-wrap">
-        <button data-container_id="container5" onclick="toogleGraphVisibility(this)">Максимальный эвент лаг</button>
+        <button data-container_id="container5" onclick="toggleGraphVisibility(this)">Максимальный эвент лаг</button>
         <div id="container5" class="graph"></div>
     </div>
 
     <div class="graph-wrap">
-        <button data-container_id="container6" onclick="toogleGraphVisibility(this)">Время отправки сообщений</button>
+        <button data-container_id="container6" onclick="toggleGraphVisibility(this)">Время отправки сообщений</button>
         <div id="container6" class="graph"></div>
     </div>
 
     <div class="graph-wrap">
-        <button data-container_id="container7" onclick="toogleGraphVisibility(this)">Количество Мессаджей</button>
+        <button data-container_id="container7" onclick="toggleGraphVisibility(this)">Количество Мессаджей</button>
         <div id="container7" class="graph"></div>
+    </div>
+
+    <div class="graph-wrap">
+        <button onclick="toggleGraphVisibility(this)">Количество Ивентов</button>
+        <div id="container8" class="graph"></div>
+    </div>
+
+    <div class="graph-wrap">
+        <button onclick="toggleGraphVisibility(this)">Время выполнения Ивентов</button>
+        <div id="container9" class="graph"></div>
+    </div>
+
+    <div class="graph-wrap">
+        <button onclick="toggleGraphVisibility(this)">Максимальный лаг эвентов</button>
+        <div id="container10" class="graph"></div>
+    </div>
+
+    <div class="graph-wrap">
+        <button onclick="toggleGraphVisibility(this)">Средний лаг эвентов</button>
+        <div id="container11" class="graph"></div>
     </div>
     {% end %}
 
     <script>
-        var load_count = 5;
-        var is_load_count = 0;
+        var need_load_count = 0;
+        var curr_loaded = 0;
 
-        var data_observers = [];
+        var stat_data_observers = [];
         var data_agents = [];
-        var data_events = [];
+        var stat_data_events = [];
         var max_ev_lag = [];
         var average_ev_lag = [];
         var mes_count = [];
         var mes_dur = [];
 
+        var data_events = {};
+
         var all_charts = [];
 
         function wait() {
-            console.log('Ожидание загрузки лог файлов ' + is_load_count + ' из ' + load_count + '.');
-            if (is_load_count == load_count) {
-                sort_data();
+            console.log('Ожидание загрузки лог файлов ' + curr_loaded + ' из ' + need_load_count + '.');
+            if (curr_loaded == need_load_count) {
+                sort_stat_data();
+                sort_event_data();
                 draw();
             }
             else
@@ -94,7 +117,13 @@
         }
 
         function draw() {
-            console.log("Вывод графиков (" + data_agents.length + ", " + data_observers.length + ", " + data_events.length + ").");
+            console.log("Вывод графиков (" + data_agents.length + ").");
+
+            Highcharts.setOptions({
+                global: {
+                    timezoneOffset: -3 * 60
+                }
+            });
 
             // Строим графики
             Highcharts.stockChart('container1', {
@@ -178,7 +207,7 @@
                 series: [{
                     type: 'area',
                     name: 'Count Observers',
-                    data: data_observers
+                    data: stat_data_observers
                 }]
             }));
 
@@ -206,7 +235,7 @@
                 series: [{
                     type: 'area',
                     name: 'Count Events',
-                    data: data_events
+                    data: stat_data_events
                 }]
             }));
 
@@ -325,45 +354,206 @@
                     data: mes_count
                 }]
             }));
+
+
+            // Вывод Детальной инфы по эвентам
+            function get_series(name) {
+                var res = [];
+                for (var key in data_events)
+                    if (data_events.hasOwnProperty(key)) {
+                        res.push({
+                            type: 'line',
+                            name: key,
+                            data: data_events[key][name]
+                        });
+                    }
+                return res;
+            }
+
+            var series = [];
+            series = get_series("count");
+            all_charts.push(Highcharts.chart('container8', {
+                chart: {zoomType: 'x', animation: false, marginLeft: 80},
+                title: { text: 'Количество Ивентов' },
+                xAxis: { type: 'datetime' },
+                yAxis: {
+                    title: { text: 'шт/сек' },
+                    min: 0,
+                },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [ [0, Highcharts.getOptions().colors[0]],
+                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                                   ]},
+                        marker: { radius: 2 },
+                        lineWidth: 1,
+                        states: { hover: { lineWidth: 1 } },
+                        threshold: null
+                    }
+                },
+                series: series,
+            }));
+
+            // Суммарное время выполнения
+            series = get_series("perform");
+            all_charts.push(Highcharts.chart('container9', {
+                chart: {zoomType: 'x', animation: false, marginLeft: 80},
+                title: {text: 'Суммарное время выполнения'},
+                xAxis: {type: 'datetime'},
+                yAxis: {
+                    title: {text: 'сек/сек'},
+                    min: 0
+                },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: series
+            }));
+
+            // Максимальный лаг эвентов
+            series = get_series("max_lag");
+            all_charts.push(Highcharts.chart('container10', {
+                chart: {zoomType: 'x', animation: false, marginLeft: 80},
+                title: {text: 'Максимальный лаг эвентов'},
+                xAxis: {type: 'datetime'},
+                yAxis: {
+                    title: {text: 'сек/сек'},
+                    min: 0
+                },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: series
+            }));
+
+            // Средний лаг эвентов
+            series = get_series("average_lag");
+            all_charts.push(Highcharts.chart('container11', {
+                chart: {zoomType: 'x', animation: false, marginLeft: 80},
+                title: {text: 'Средний лаг эвентов'},
+                xAxis: {type: 'datetime'},
+                yAxis: {
+                    title: {text: 'сек/сек'},
+                    min: 0
+                },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
+                            stops: [[0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        marker: {radius: 2},
+                        lineWidth: 1,
+                        states: {hover: {lineWidth: 1}},
+                        threshold: null
+                    }
+                },
+                series: series
+            }));
         }
 
         $(document).ready(function () {
             // Получаем список всех доступных файлов
             var file_list = [];
             {% for file_name in file_list %}
-                file_list.push("../static/log/stat/" + "{{ file_name }}");
-                console.log("{{ file_name }}");
+                file_list.push("../static/log/stat/" + "{{ file_name }}" + "?" + (new Date().getTime()));
+            {% end %}
+
+            var events_file_list = [];
+            {% for file_name in event_file_list %}
+                events_file_list.push("../static/log/stat/" + "{{ file_name }}" + "?" + (new Date().getTime()));
             {% end %}
 
             // Скачиваем и подготавливаем все файлы из списка
-            load_count = file_list.length;
+            need_load_count += file_list.length;
             for (var i = 0; i < file_list.length; i++)
                 $.get(file_list[i], {},
                     function(rec) {
-                        is_load_count++;
+                        curr_loaded++;
                         var line_rec = rec.split("\n");
                         for (var j = 0; j < line_rec.length; j++) {
                             var rec = line_rec[j].split(";");
                             var time = parseFloat(rec[0]) * 1000;
                             //time = new Date(time);
                             if (time) {
-                                data_observers.push([time, parseInt(rec[1])]);
+                                stat_data_observers.push([time, parseInt(rec[1])]);
                                 data_agents.push([time, parseInt(rec[2])]);
-                                data_events.push([time, parseInt(rec[3])]);
-                                max_ev_lag.push([time, parseInt(rec[4])]);
-                                average_ev_lag.push([time, parseInt(rec[5])]);
+                                stat_data_events.push([time, parseInt(rec[3])]);
+                                max_ev_lag.push([time, parseFloat(rec[4])]);
+                                average_ev_lag.push([time, parseFloat(rec[5])]);
                                 mes_count.push([time, parseInt(rec[6])]);
-                                mes_dur.push([time, parseInt(rec[7])]);
+                                mes_dur.push([time, parseFloat(rec[7])]);
+                            }
+                        }
+                    });
+
+
+            // Скачиваем и подготавливаем все файлы из списка статистики эвентов
+            need_load_count += events_file_list.length;
+            for (var i = 0; i < events_file_list.length; i++)
+                $.get(events_file_list[i], {},
+                    function(rec) {
+                        curr_loaded++;
+                        var line_rec = rec.split("\n");
+                        for (var j = 0; j < line_rec.length; j++) {
+                            var rec = line_rec[j].split(";");
+                            var time = parseFloat(rec[0]) * 1000;
+                            if (time) {
+                                var count_block = Math.floor((rec.length - 1) / 7);
+                                for (var k = 0; k < count_block; k++) {
+                                    var event_name = rec[1 + k * 7];
+                                    var event_count = parseFloat(rec[1 + k * 7 + 1]);
+                                    var event_perform = parseFloat(rec[1 + k * 7 + 4]);
+                                    var max_lag =  parseFloat(rec[1 + k * 7 + 5]);
+                                    var average_lag = parseFloat(rec[1 + k * 7 + 6]);
+                                    if (!data_events.hasOwnProperty(event_name))
+                                        data_events[event_name] = {
+                                            count: [],
+                                            perform: [],
+                                            max_lag: [],
+                                            average_lag: [],
+                                        };
+                                    data_events[event_name].count.push([time, event_count]);
+                                    data_events[event_name].perform.push([time, event_perform]);
+                                    data_events[event_name].max_lag.push([time, max_lag]);
+                                    data_events[event_name].average_lag.push([time, average_lag]);
+                                }
                             }
                         }
                     });
 
             // Ждем пока все загрузится и рисуем
-            if (load_count) wait();
+            if (need_load_count) wait();
         });
 
 
-        function sort_data() {
+        function sort_stat_data() {
             function compare(a, b) {
                 if (a[0] < b[0])
                     return -1;
@@ -371,16 +561,33 @@
                     return 1;
                 return 0;
             }
-            data_observers.sort(compare);
+            stat_data_observers.sort(compare);
             data_agents.sort(compare);
-            data_events.sort(compare);
+            stat_data_events.sort(compare);
             max_ev_lag.sort(compare);
             average_ev_lag.sort(compare);
             mes_count.sort(compare);
             mes_dur.sort(compare);
         }
 
-        function toogleGraphVisibility(elem) {
+        function sort_event_data() {
+            function compare(a, b) {
+                if (a[0] < b[0])
+                    return -1;
+                if (a[0] > b[0])
+                    return 1;
+                return 0;
+            }
+            for (var key in data_events)
+                if (data_events.hasOwnProperty(key)) {
+                    data_events[key].count.sort(compare);
+                    data_events[key].perform.sort(compare);
+                    data_events[key].max_lag.sort(compare);
+                    data_events[key].average_lag.sort(compare);
+                }
+        }
+
+        function toggleGraphVisibility(elem) {
             var jq_elem = $(elem);
             //var graph = $("#" + jq_elem.data("container_id"));
             //graph.toggle();

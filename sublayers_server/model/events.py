@@ -145,6 +145,9 @@ class Event(object):
             if self.events_metrics[cl_name]["duration_max"] < duration or self.time - self.events_metrics[cl_name]["duration_max_last_upd"] > 20.0:
                 self.events_metrics[cl_name]["duration_max"] = duration
                 self.events_metrics[cl_name]["duration_max_last_upd"] = self.time
+
+                self.events_metrics[cl_name]["event_perf_time_interval"].append(duration)
+                self.events_metrics[cl_name]["event_lag_interval"].append(curr_lag)
         else:
             self.events_metrics[cl_name] = {
                 "name": cl_name,
@@ -152,6 +155,9 @@ class Event(object):
                 "duration": duration,
                 "duration_max": duration,
                 "duration_max_last_upd": self.time,
+
+                "event_perf_time_interval": [duration],
+                "event_lag_interval": [curr_lag],
             }
 
     def on_perform(self):
