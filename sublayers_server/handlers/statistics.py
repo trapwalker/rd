@@ -50,7 +50,7 @@ class ServerStatForSite(BaseHandler):
         stat_log = self.application.srv.stat_log
         self.set_header("Access-Control-Allow-Origin", "*")
         self.finish({
-            's_agents_on': stat_log.get_metric('s_agents_on'),
+            's_agents_on': len(self.application.clients),
             's_observers_on': stat_log.get_metric('s_observers_on')
         })
 
