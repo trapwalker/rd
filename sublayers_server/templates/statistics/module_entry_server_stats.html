@@ -86,120 +86,116 @@
         .ai-bot-record .life-time {width: 12%;}
         .ai-bot-record .bot-type {width: 15%;}
         .ai-bot-record .car {width: 15%;}
-
-
     </style>
-
-
 </head>
+
 <body>
-<div id="server_stat_bar">
-    <button onclick="location.href = 'stat/messages';">Messages</button>
-    <button onclick="location.href = 'stat/events';">Events</button>
-    <button onclick="location.href = 'stat/handlers';">Handlers</button>
+    <div id="server_stat_bar">
+        <button onclick="location.href = 'stat/messages';">Messages</button>
+        <button onclick="location.href = 'stat/events';">Events</button>
+        <button onclick="location.href = 'stat/handlers';">Handlers</button>
+        <button onclick="location.href = 'stat/graphics';">Graphics</button>
 
-    <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1hour&color=black';">Ресурсы: 1 час</button>
-    <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=6hour&color=black';">Ресурсы: 6 часов</button>
-    <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1days&color=black';">Ресурсы: 1 день</button>
-</div>
-<div id="server_statistic">
-    <div class="path">
-        <h3>Эвенты</h3>
-        <div class="server-stat-elem">Эвентов в очереди:<br><span id="s_events_on">{{ round(server_stat['s_events_on'], 3) }}</span></div>
-        <div class="server-stat-elem">Всего обработано эвентов:<br><span id="s_events_all">{{ round(server_stat['s_events_all'], 3) }}</span></div>
-        <div class="server-stat-elem">Средний лаг Эвентов:<br><span id="s_events_lag_mid">{{ round(server_stat['s_events_lag_mid'], 3) }}</span></div>
-        <div class="server-stat-elem">Максимальный лаг:<br><span id="s_events_lag_max">{{ round(server_stat['s_events_lag_max'], 3) }}</span></div>
-        <div class="server-stat-elem">Event lag name:<br><span id="s_events_lag_max_comment">{{ server_stat['s_events_lag_max_comment'] }}</span></div>
-        <div class="server-stat-elem">Рассылка:<br><span id="s_message_send_max">{{ round(server_stat['s_message_send_max'], 4) }}</span></div>
+        <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1hour&color=black';">Ресурсы: 1 час</button>
+        <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=6hour&color=black';">Ресурсы: 6 часов</button>
+        <button onclick="location.href = 'http://roaddogs.ru:8080/monitorix-cgi/monitorix.cgi?mode=localhost&graph=all&when=1days&color=black';">Ресурсы: 1 день</button>
     </div>
-    <div class="path">
-        <h3>Агенты и Юниты</h3>
-        <div class="server-stat-elem">Всего Агентов:<br><span id="s_agents_all">{{ round(server_stat['s_agents_all'], 3) }}</span></div>
-        <div class="server-stat-elem">Агентов онлайн:<br><span id="s_agents_on">{{ round(server_stat['s_agents_on'], 3) }}</span></div>
-        <div class="server-stat-elem">Обсёрверов создано:<br><span id="s_observers_all">{{ round(server_stat['s_observers_all'], 3) }}</span></div>
-        <div class="server-stat-elem">Обсёрверов на карте:<br><span id="s_observers_on">{{ round(server_stat['s_observers_on'], 3) }}</span></div>
+
+    <div id="server_statistic">
+        <div class="path">
+            <h3>Эвенты</h3>
+            <div class="server-stat-elem">Эвентов в очереди:<br><span id="s_events_on">{{ round(server_stat['s_events_on'], 3) }}</span></div>
+            <div class="server-stat-elem">Всего обработано эвентов:<br><span id="s_events_all">{{ round(server_stat['s_events_all'], 3) }}</span></div>
+            <div class="server-stat-elem">Средний лаг Эвентов:<br><span id="s_events_lag_mid">{{ round(server_stat['s_events_lag_mid'], 3) }}</span></div>
+            <div class="server-stat-elem">Максимальный лаг:<br><span id="s_events_lag_max">{{ round(server_stat['s_events_lag_max'], 3) }}</span></div>
+            <div class="server-stat-elem">Event lag name:<br><span id="s_events_lag_max_comment">{{ server_stat['s_events_lag_max_comment'] }}</span></div>
+            <div class="server-stat-elem">Рассылка:<br><span id="s_message_send_max">{{ round(server_stat['s_message_send_max'], 4) }}</span></div>
+        </div>
+        <div class="path">
+            <h3>Агенты и Юниты</h3>
+            <div class="server-stat-elem">Всего Агентов:<br><span id="s_agents_all">{{ round(server_stat['s_agents_all'], 3) }}</span></div>
+            <div class="server-stat-elem">Агентов онлайн:<br><span id="s_agents_on">{{ round(server_stat['s_agents_on'], 3) }}</span></div>
+            <div class="server-stat-elem">Обсёрверов создано:<br><span id="s_observers_all">{{ round(server_stat['s_observers_all'], 3) }}</span></div>
+            <div class="server-stat-elem">Обсёрверов на карте:<br><span id="s_observers_on">{{ round(server_stat['s_observers_on'], 3) }}</span></div>
+        </div>
     </div>
-</div>
-<div id="bots_info">
-    {% if quick_game_bot_info %}
-        <div class="ai-bot-record even">
-            <div class="name">Имя</div>
-            <div class="online">Онлайн</div>
-            <div class="worked">Respawn</div>
-            <div class="kills">Убийств</div>
-            <div class="deaths">Смертей</div>
-            <div class="time">Время</div>
-            <div class="life-time">Сред.Время</div>
-            <div class="bot-type">Бот</div>
-            <div class="car">Машинка</div>
-        </div>
-    {% end %}
-    {% import datetime %}
-    {% set i = 0 %}
-    {% for bot in quick_game_bot_info %}
-        <div class="ai-bot-record {{ 'even' if i % 2 else ''  }}">
-            <div class="name">{{ bot.print_login() }}</div>
-            <div class="online">
-                <div class="circle {{ 'on' if bot.car else '' }}"></div>
+
+    <div id="bots_info">
+        {% if quick_game_bot_info %}
+            <div class="ai-bot-record even">
+                <div class="name">Имя</div>
+                <div class="online">Онлайн</div>
+                <div class="worked">Respawn</div>
+                <div class="kills">Убийств</div>
+                <div class="deaths">Смертей</div>
+                <div class="time">Время</div>
+                <div class="life-time">Сред.Время</div>
+                <div class="bot-type">Бот</div>
+                <div class="car">Машинка</div>
             </div>
-            <div class="worked">
-                <input type="checkbox" {{ "checked" if bot.worked else "" }} onclick="sendChangeWorkedBot('{{ bot.user.name }}')"/>
+        {% end %}
+        {% import datetime %}
+        {% set i = 0 %}
+        {% for bot in quick_game_bot_info %}
+            <div class="ai-bot-record {{ 'even' if i % 2 else ''  }}">
+                <div class="name">{{ bot.print_login() }}</div>
+                <div class="online">
+                    <div class="circle {{ 'on' if bot.car else '' }}"></div>
+                </div>
+                <div class="worked">
+                    <input type="checkbox" {{ "checked" if bot.worked else "" }} onclick="sendChangeWorkedBot('{{ bot.user.name }}')"/>
+                </div>
+                <div class="kills">{{ bot._quick_bot_kills }}</div>
+                <div class="deaths">{{ bot._quick_bot_deaths }}</div>
+                <div class="time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time))) }}</div>
+                <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time / (1 if bot._quick_bot_deaths == 0 else bot._quick_bot_deaths)))) }}</div>
+                <div class="bot-type">{{ bot.example.parent.uri.replace('reg:///registry/agents/user/', '') }}</div>
+                <div class="car">{{ bot._car_proto.name_car }}</div>
             </div>
-            <div class="kills">{{ bot._quick_bot_kills }}</div>
-            <div class="deaths">{{ bot._quick_bot_deaths }}</div>
-            <div class="time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time))) }}</div>
-            <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time / (1 if bot._quick_bot_deaths == 0 else bot._quick_bot_deaths)))) }}</div>
-            <div class="bot-type">{{ bot.example.parent.uri.replace('reg:///registry/agents/user/', '') }}</div>
-            <div class="car">{{ bot._car_proto.name_car }}</div>
-        </div>
-        {% set i += 1 %}
-    {% end %}
+            {% set i += 1 %}
+        {% end %}
+    </div>
 
-</div>
-
-
-<script>
-    $(document).ready(function () {
-        setInterval(function () {
-            $.ajax({
-                url: location.href,
-                method: 'POST',
-                data: {action: 'bot_refresh', _xsrf: getCookie('_xsrf')},
-                success: function (data) {
-                    for(var key in data) {
-                        var elem = $('#'+key);
-                        if (elem){
-                            try {
-                                elem.text(data[key].toFixed(3))
-                            }
-                            catch (e) {
-                                elem.text(data[key])
+    <script>
+        $(document).ready(function () {
+            setInterval(function () {
+                $.ajax({
+                    url: location.href,
+                    method: 'POST',
+                    data: {action: 'bot_refresh', _xsrf: getCookie('_xsrf')},
+                    success: function (data) {
+                        for(var key in data) {
+                            var elem = $('#'+key);
+                            if (elem){
+                                try {
+                                    elem.text(data[key].toFixed(3))
+                                }
+                                catch (e) {
+                                    elem.text(data[key])
+                                }
                             }
                         }
                     }
+                });
+            }, 10000);
+
+          setInterval(function () {location.reload();}, 60000);
+        });
+
+        function getCookie(name) {
+            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+            return r ? r[1] : undefined;
+        }
+
+        function sendChangeWorkedBot(bot_name) {
+            $.ajax({
+                url: location.href,
+                method: 'POST',
+                data: {action: 'bot_change', bot_name: bot_name, _xsrf: getCookie('_xsrf')},
+                success: function (data) {
+                    location.reload();
                 }
             });
-        }, 10000);
-
-      setInterval(function () {location.reload();}, 60000);
-
-    });
-
-    function getCookie(name) {
-        var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-        return r ? r[1] : undefined;
-    }
-
-    function sendChangeWorkedBot(bot_name) {
-        $.ajax({
-            url: location.href,
-            method: 'POST',
-            data: {action: 'bot_change', bot_name: bot_name, _xsrf: getCookie('_xsrf')},
-            success: function (data) {
-                location.reload();
-            }
-        });
-    }
-
-</script>
+        }
+    </script>
 </body>
