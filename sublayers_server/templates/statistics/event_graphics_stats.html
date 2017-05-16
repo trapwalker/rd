@@ -85,6 +85,12 @@
                 return res;
             }
 
+            Highcharts.setOptions({
+                global: {
+                    timezoneOffset: -3 * 60
+                }
+            });
+
             var series = [];
             series = get_series("count");
             Highcharts.chart('container1', {

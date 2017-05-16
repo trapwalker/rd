@@ -96,6 +96,12 @@
         function draw() {
             console.log("Вывод графиков (" + data_agents.length + ", " + data_observers.length + ", " + data_events.length + ").");
 
+            Highcharts.setOptions({
+                global: {
+                    timezoneOffset: -3 * 60
+                }
+            });
+
             // Строим графики
             Highcharts.stockChart('container1', {
                 chart: {
