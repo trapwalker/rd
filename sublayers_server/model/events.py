@@ -41,13 +41,6 @@ class Event(object):
 
     _unumber_counter = 0
 
-    # class __metaclass__(type):
-    #     def __new__(meta, name, bases, dct):
-    #         klass = type.__new__(meta, name, bases, dct)
-    #         print name
-    #         return klass
-
-
     @classmethod
     def _gen_unumber(cls):
         # todo: thread lock

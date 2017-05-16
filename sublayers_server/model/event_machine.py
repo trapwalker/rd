@@ -21,6 +21,7 @@ from sublayers_server.model.registry.tree import Root
 
 from sublayers_common.user_profile import User as UserProfile
 from sublayers_common.ctx_timer import Timer
+from sublayers_common.handlers.base import BaseHandler
 
 
 import os
@@ -423,18 +424,18 @@ class Server(object):
         def get_event_str(events_metrics, event_name):
             e = events_metrics[event_name]
             count = len(e["event_perf_time_interval"])
+            average_perf_time = 0
+            average_lag_time = 0
+            summ_perf_time = 0
+            max_perf_time = 0
+            max_lag_time = 0
             if count > 0:
                 summ_perf_time = sum(e["event_perf_time_interval"])
                 max_perf_time = max(e["event_perf_time_interval"])
-                max_lag_time = max(e["event_lag_interval"])
-                average_lag_time = sum(e["event_lag_interval"]) / count
                 average_perf_time = summ_perf_time / count
-            else:
-                average_perf_time = 0
-                average_lag_time = 0
-                summ_perf_time = 0
-                max_perf_time = 0
-                max_lag_time = 0
+                if e.get("event_lag_interval", None) and len(e["event_lag_interval"]) > 0:
+                    max_lag_time = max(e["event_lag_interval"])
+                    average_lag_time = sum(e["event_lag_interval"]) / count
 
             e["event_perf_time_interval"] = []
             e["event_lag_interval"] = []
@@ -449,11 +450,15 @@ class Server(object):
                 lag_time_max=max_lag_time,
             )
 
-        events_metrics = event.events_metrics
-
         log_str = "{};".format(event.time)
+
+        events_metrics = event.events_metrics
         for event_name in events_metrics.keys():
             log_str = "{}{}".format(log_str, get_event_str(events_metrics, event_name))
+
+        handlers_metrics = BaseHandler.handlers_metrics
+        for event_name in handlers_metrics.keys():
+            log_str = "{}{}".format(log_str, get_event_str(handlers_metrics, event_name))
 
         self.logger_statlog_events.info(log_str)
 

@@ -61,6 +61,8 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
             if self.handlers_metrics[cl_name]["duration_max"] < duration or current_time - self.handlers_metrics[cl_name]["duration_max_last_upd"] > 20.0:
                 self.handlers_metrics[cl_name]["duration_max"] = duration
                 self.handlers_metrics[cl_name]["duration_max_last_upd"] = current_time
+
+                self.handlers_metrics[cl_name]["event_perf_time_interval"].append(duration)
         else:
             self.handlers_metrics[cl_name] = {
                 "name": cl_name,
@@ -68,6 +70,8 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
                 "duration": duration,
                 "duration_max": duration,
                 "duration_max_last_upd": current_time,
+
+                "event_perf_time_interval": [duration]
             }
         self._handler_start_time = None
 
