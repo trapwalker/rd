@@ -585,6 +585,36 @@ var SettingsManager = (function() {
                 }
             },
         },
+        /*Дебаг-инфо*/
+        fps_rate: {
+            name: "fps_rate",
+            page: "other",
+            text_name: "fps_rate",
+            text_description: "fps_rate",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "1", value: 1}, {text: "2", value: 2}, {text: "10", value: 10}, {text: "auto", value: null}],
+            set_callback: function (new_value) {
+                timeManager.timerStop();
+                timeManager.timerStart(new_value);
+            },
+        },
+        auto_resurrection: {
+            name: "auto_resurrection",
+            page: "other",
+            text_name: "auto_resurrection",
+            text_description: "auto_resurrection",
+            jq_div: null,
+            type: "list",
+            default: 0,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            set_callback: function (new_value) {},
+        },
 
         game_color: {
             name: "game_color",

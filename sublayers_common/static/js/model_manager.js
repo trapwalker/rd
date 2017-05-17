@@ -659,6 +659,16 @@ var ClientManager = (function () {
         }, 200);
 
         new WTextArcade("Крушение").start();
+
+        // Запуск авто-воскрешения
+        if (settingsManager.options["auto_resurrection"].value) {
+            setTimeout(function() {
+                if (!user.userCar) {
+                    clientManager.sendQuickPlayAgain();
+                    modalWindow.modalQuickGamePointsPageHide();
+                }
+            }, 5000);
+        }
     };
 
     ClientManager.prototype.SetMapCenterMessage = function (event) {
