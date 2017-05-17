@@ -29,8 +29,15 @@ if __name__ == '__main__':
     process = Process(pid)
 
     if process:
-        print(process.memory_info())
-        print(process.memory_percent(), '%')
+        print('Mem info:', process.memory_info())
+        print('Mem%:    ', process.memory_percent(), '%')
+        print('CPU%:    ', process.cpu_percent(), '%')
+
+        process.cpu_percent()
+        for i in range(10):
+            for j in xrange(10**6):
+                j*=j
+            print('CPU%:    ', process.cpu_percent(), '%')
     else:
         print('Process info is unreacable. May be OS is not supported...')
    
