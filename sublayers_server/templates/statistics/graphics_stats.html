@@ -11,11 +11,7 @@
 
 
     <style>
-        .graph-wrap {position: relative; height: 400px; min-width: 310px;}
-
-        .graph {position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}
-
-        .graph-wrap.hide {height: 40px; }
+        .graph-wrap {position: relative; height: 400px; min-width: 310px; border-bottom: 2px solid orange;}
 
         button {height: 20px; z-index: 2;}
 
@@ -135,7 +131,7 @@
 
         var data_events = {};
 
-        var all_charts = [];
+        var all_charts = [];  // container_name: {chart, visib;le}
 
         function wait() {
             console.log('Ожидание загрузки лог файлов ' + curr_loaded + ' из ' + need_load_count + '.');
@@ -166,13 +162,14 @@
                     zoomType: 'x',
                     events: {
                         redraw: function (event) {
-                            var current_global_x_min = this.xAxis[0].min;
-                            var current_global_x_max = this.xAxis[0].max;
+                            current_global_x_min = this.xAxis[0].min;
+                            current_global_x_max = this.xAxis[0].max;
                             for (var i = 0; i < all_charts.length; i++) {
                                 var c = all_charts[i];
-                                c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
+                                if ($(c.container).parent().css("display") == "block")
+                                    c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
                             }
-                            }
+                        }
                     }
                 },
                 title: { text: 'Количество Агентов' },
@@ -185,19 +182,6 @@
                     opposite: false,
                 },
                 legend: { enabled: false },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [ [0, Highcharts.getOptions().colors[0]],
-                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                   ]},
-                        marker: { radius: 2 },
-                        lineWidth: 1,
-                        states: { hover: { lineWidth: 1 } },
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Agents',
@@ -215,20 +199,6 @@
                     min: 0
                 },
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Observers',
@@ -243,20 +213,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'шт.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Events',
@@ -271,20 +227,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [
                     {
                         type: 'line',
@@ -301,20 +243,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [
                     {
                         type: 'line',
@@ -331,20 +259,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Sending Duration',
@@ -359,20 +273,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'шт.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Messages',
@@ -405,19 +305,6 @@
                     title: { text: 'шт/сек' },
                     min: 0,
                 },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [ [0, Highcharts.getOptions().colors[0]],
-                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                   ]},
-                        marker: { radius: 2 },
-                        lineWidth: 1,
-                        states: { hover: { lineWidth: 1 } },
-                        threshold: null
-                    }
-                },
                 series: series,
             }));
 
@@ -430,20 +317,6 @@
                 yAxis: {
                     title: {text: 'сек/сек'},
                     min: 0
-                },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
                 },
                 series: series
             }));
@@ -458,20 +331,6 @@
                     title: {text: 'сек/сек'},
                     min: 0
                 },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: series
             }));
 
@@ -484,20 +343,6 @@
                 yAxis: {
                     title: {text: 'сек/сек'},
                     min: 0
-                },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
                 },
                 series: series
             }));
@@ -622,6 +467,11 @@
             if (elem.checked) {
                 // Показать график
                 $("#" + container_name).css("display", "block");
+                for (var i = 0; i < all_charts.length; i++) {
+                    var c = all_charts[i];
+                    if ($(c.container).parent().attr("id") == container_name)
+                        c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
+                }
             }
             else {
                 // Скрыть график
