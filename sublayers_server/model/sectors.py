@@ -54,6 +54,8 @@ class Sector(object):
             fi=self.fi,
         )
 
+    id = property(id)
+
 
 class FireSector(Sector):
     def __init__(self, **kw):
@@ -67,7 +69,7 @@ class FireSector(Sector):
         self.owner.fire_sectors.append(self)
 
     def __str__(self):
-        return 'FireSector[{}|auto={}|disch={}]'.format(self.side, self.is_auto(), self.is_discharge())
+        return 'FireSector<{}>[{}|auto={}|disch={}]'.format(self.id, self.side, self.is_auto(), self.is_discharge())
 
     def as_dict(self):
         d = super(FireSector, self).as_dict()
@@ -177,7 +179,7 @@ class FireSector(Sector):
         if target not in self.target_list:
             owner = None if self.owner is None or self.owner.main_agent is None else self.owner.main_agent
             if owner:
-                owner.log.info('Sector {} Add Target {} time={}'.format(self, target, time))
+                owner.log.info('{} Add Target {} time={}'.format(self, target, time))
             self.target_list.append(target)
             self._fire_auto_start(target=target, time=time)
 
