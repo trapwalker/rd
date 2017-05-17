@@ -60,37 +60,37 @@
         <div class="dropdown-header">Graphics</div>
         <div class="dropdown-content">
             <label for="check_cont1">Количество Агентов</label>
-            <input data-cnt name="check_cont1"  onclick="toggleCheckBoxGraphVisibility(this, 'container1')" type="checkbox" checked>
+            <input class="box" name="check_cont1"  onclick="toggleCheckBoxGraphVisibility(this, 'container1')" type="checkbox" checked>
             <br>
             <label for="check_cont2">Количество Обсерверов</label>
-            <input data-cnt name="check_cont2"  onclick="toggleCheckBoxGraphVisibility(this, 'container2')" type="checkbox" checked>
+            <input class="box" name="check_cont2"  onclick="toggleCheckBoxGraphVisibility(this, 'container2')" type="checkbox" checked>
             <br>
             <label for="check_cont3">Количество Ивентов</label>
-            <input data-cnt name="check_cont3"  onclick="toggleCheckBoxGraphVisibility(this, 'container3')" type="checkbox" checked>
+            <input class="box" name="check_cont3"  onclick="toggleCheckBoxGraphVisibility(this, 'container3')" type="checkbox" checked>
             <br>
             <label for="check_cont4">Cредний эвент лаг</label>
-            <input data-cnt name="check_cont4"  onclick="toggleCheckBoxGraphVisibility(this, 'container4')" type="checkbox" checked>
+            <input class="box" name="check_cont4"  onclick="toggleCheckBoxGraphVisibility(this, 'container4')" type="checkbox" checked>
             <br>
             <label for="check_cont5">Максимальный эвент лаг</label>
-            <input data-cnt name="check_cont5"  onclick="toggleCheckBoxGraphVisibility(this, 'container5')" type="checkbox" checked>
+            <input class="box" name="check_cont5"  onclick="toggleCheckBoxGraphVisibility(this, 'container5')" type="checkbox" checked>
             <br>
             <label for="check_cont6">Время отправки сообщений</label>
-            <input data-cnt name="check_cont6"  onclick="toggleCheckBoxGraphVisibility(this, 'container6')" type="checkbox" checked>
+            <input class="box" name="check_cont6"  onclick="toggleCheckBoxGraphVisibility(this, 'container6')" type="checkbox" checked>
             <br>
             <label for="check_cont7">Количество Мессаджей</label>
-            <input data-cnt name="check_cont7"  onclick="toggleCheckBoxGraphVisibility(this, 'container7')" type="checkbox" checked>
+            <input class="box" name="check_cont7"  onclick="toggleCheckBoxGraphVisibility(this, 'container7')" type="checkbox" checked>
             <br>
             <label for="check_cont8">Количество Ивентов</label>
-            <input data-cnt name="check_cont8"  onclick="toggleCheckBoxGraphVisibility(this, 'container8')" type="checkbox" checked>
+            <input class="box" name="check_cont8"  onclick="toggleCheckBoxGraphVisibility(this, 'container8')" type="checkbox" checked>
             <br>
             <label for="check_cont9">Время выполнения Ивентов</label>
-            <input data-cnt name="check_cont9"  onclick="toggleCheckBoxGraphVisibility(this, 'container9')" type="checkbox" checked>
+            <input class="box" name="check_cont9"  onclick="toggleCheckBoxGraphVisibility(this, 'container9')" type="checkbox" checked>
             <br>
             <label for="check_cont10">Максимальный лаг эвентов</label>
-            <input data-cnt name="check_cont10"  onclick="toggleCheckBoxGraphVisibility(this, 'container10')" type="checkbox" checked>
+            <input class="box" name="check_cont10"  onclick="toggleCheckBoxGraphVisibility(this, 'container10')" type="checkbox" checked>
             <br>
             <label for="check_cont11">Средний лаг эвентов</label>
-            <input data-cnt name="check_cont11"  onclick="toggleCheckBoxGraphVisibility(this, 'container11')" type="checkbox" checked>
+            <input class="box" name="check_cont11"  onclick="toggleCheckBoxGraphVisibility(this, 'container11')" type="checkbox" checked>
             <br>
         </div>
     </div>
@@ -349,6 +349,15 @@
                 },
                 series: series
             }));
+
+
+
+            // отключение тех графиков, которые не активны сейчас
+            setTimeout(function() {
+                $("input.box").each(function () {
+                    toggleCheckBoxGraphVisibility(this, "container" + $(this).attr('name').replace("check_cont", ""));
+                });
+            }, 100);
         }
 
         $(document).ready(function () {
@@ -423,6 +432,22 @@
 
             // Ждем пока все загрузится и рисуем
             if (need_load_count) wait();
+
+            // Смотрим на куки и чекбоксы.
+            // Установка при загрузке
+            $("input.box").each(function () {
+                var mycookie = getCookie($(this).attr('name'));
+                if (mycookie != undefined && mycookie != null && (mycookie == "true" || mycookie == "false")) {
+                    this.checked = mycookie == "true";
+                }
+            });
+
+            // Эвент на изменение, чтоб в куки писать
+            $("input.box").change(function () {
+                //console.log(this.checked);
+                setCookie($(this).attr("name"), this.checked);
+            });
+            
         });
 
 
@@ -467,26 +492,60 @@
 
 
         function toggleCheckBoxGraphVisibility(elem, container_name) {
-            if (elem.checked) {
-                // Показать график
-                $("#" + container_name).css("display", "block");
-                for (var i = 0; i < all_charts.length; i++) {
-                    var c = all_charts[i];
-                    if ($(c.container).parent().attr("id") == container_name)
-                        c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
-                }
-            }
-            else {
-                // Скрыть график
-                $("#" + container_name).css("display", "none");
-            }
-            
+            if (elem.checked)                 
+                show_graph(container_name);  // Показать график
+            else                 
+                hide_graph(container_name);  // Скрыть график
         }
+
+
+        function show_graph(container_name) {
+            $("#" + container_name).css("display", "block");
+            for (var i = 0; i < all_charts.length; i++) {
+                var c = all_charts[i];
+                if ($(c.container).parent().attr("id") == container_name)
+                    c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
+            }
+        }
+        
+        function hide_graph(container_name) {$("#" + container_name).css("display", "none");}
 
         function loadNewDates() {
             var start_date = $("#start_date").val();
             var end_date = $("#end_date").val();
             window.location = location.origin + location.pathname + "?start=" + start_date + "&end=" + end_date;
+        }
+
+
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp(
+                    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
+        function setCookie(name, value, options) {
+            options = options || {};
+            var expires = options.expires;
+            if (typeof expires == "number" && expires) {
+                var d = new Date();
+                d.setTime(d.getTime() + expires * 1000);
+                expires = options.expires = d;
+            }
+            if (expires && expires.toUTCString) {
+                options.expires = expires.toUTCString();
+            }
+
+            value = encodeURIComponent(value);
+            var updatedCookie = name + "=" + value;
+            for (var propName in options) {
+                updatedCookie += "; " + propName;
+                var propValue = options[propName];
+                if (propValue !== true) {
+                    updatedCookie += "=" + propValue;
+                }
+            }
+            document.cookie = updatedCookie;
         }
 
 
