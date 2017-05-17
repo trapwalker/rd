@@ -413,7 +413,7 @@ var ClientManager = (function () {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 this.sendGetPartyInfo(event.agent.party.name);
             }
-            timeManager.timerStart();
+            timeManager.timerStart(settingsManager.options["fps_rate"].value);
             for (var i = 0; i < event.notes.length; i++)
                 this._createNote(event.notes[i]);
         }
@@ -659,6 +659,16 @@ var ClientManager = (function () {
         }, 200);
 
         new WTextArcade("Крушение").start();
+
+        // Запуск авто-воскрешения
+        if (settingsManager.options["auto_resurrection"].value) {
+            setTimeout(function() {
+                if (!user.userCar) {
+                    clientManager.sendQuickPlayAgain();
+                    modalWindow.modalQuickGamePointsPageHide();
+                }
+            }, 5000);
+        }
     };
 
     ClientManager.prototype.SetMapCenterMessage = function (event) {

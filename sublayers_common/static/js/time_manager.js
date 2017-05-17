@@ -83,6 +83,7 @@ var ConstSetFPSTimeout = 5000; // Время (мс), через которое �
 
 var TimeManager = (function () {
     function TimeManager() {
+        this._need_fps = 0; // ФПС который будет пытаться выдерживать клиент (если <= 0 то брать requestAnimationFrame)
         this._fps_interval = 0;
         this._fps_all_time = 0;
         this._redraw_time  = 0;
@@ -113,16 +114,18 @@ var TimeManager = (function () {
     // ТАЙМЕР
 
     // Запуск таймера
-    TimeManager.prototype.timerStart = function () {
+    TimeManager.prototype.timerStart = function (fps) {
         //console.log('TimeManager.prototype.timerStart');
         var self = this;
         if (this.is_started) return;
         this.is_started = true;
-        setTimeout(function() { timeManager._timer = timeManager._interval_perform(); }, 10);
-
-        //this._timer = setInterval(function () {
-        //    self._interval_perform();
-        //}, this._interval)
+        if (fps && (fps > 0)) {
+            this._need_fps = fps;
+            this._interval = 1000 / this._need_fps;
+            this._timer = setInterval(function () { self._interval_perform(); }, this._interval)
+        }
+        else
+            setTimeout(function() { timeManager._interval_perform(); }, 10);
     };
 
     // Остановка таймера
@@ -130,8 +133,11 @@ var TimeManager = (function () {
         //console.log('TimeManager.prototype.timerStop');
         if (! this.is_started) return;
         this.is_started = false;
-        window.cancelAnimationFrame(this._timer);
-         //clearInterval(this._timer);
+        if (this._need_fps && (this._need_fps > 0))
+            clearInterval(this._timer);
+        else
+            window.cancelAnimationFrame(this._timer);
+        this._need_fps = 0;
     };
 
     // Функция таймера
@@ -167,7 +173,8 @@ var TimeManager = (function () {
         mapCanvasManager.redraw(time);
         locationManager.location_canvas_manager.redraw(time);
 
-        return requestAnimationFrame(timeManager._interval_perform);
+        if (timeManager._need_fps <= 0)
+            timeManager._timer = requestAnimationFrame(timeManager._interval_perform);
 
         //var d_time = clock.getClientTime() - time_start;
         //if (d_time > this.render_time)

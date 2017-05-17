@@ -191,7 +191,7 @@ class WeaponAuto(Weapon):
     def on_start(self, item, time):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
         if owner:
-            owner.log.info('on_start WeaponAuto: item<{}> time={} len_sector_targets={}'.format(item, time, len(self.sector.target_list)))
+            owner.log.info('on_start {}: item<{}> time={} len_sector_targets={}'.format(self, item, time, len(self.sector.target_list)))
         super(WeaponAuto, self).on_start(item=item, time=time)
         for car in self.sector.target_list:
             self._start_fire_to_car(car=car, time=time)
@@ -199,7 +199,7 @@ class WeaponAuto(Weapon):
     def on_stop(self, item, time):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
         if owner:
-            owner.log.info('on_stop WeaponAuto: item<{}> time={} len_targets={}'.format(item, time, len(self.targets)))
+            owner.log.info('on_stop {}: item<{}> time={} len_targets={}'.format(self, item, time, len(self.targets)))
 
         super(WeaponAuto, self).on_stop(item=item, time=time)
         targets = self.targets[:]
