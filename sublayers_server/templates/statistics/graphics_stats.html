@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Highstock Example</title>
+    <title>Roaddogs Server Stat</title>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
@@ -11,15 +11,41 @@
 
 
     <style>
-        .graph-wrap {position: relative; height: 400px; min-width: 310px;}
-
-        .graph {position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}
-
-        .graph-wrap.hide {height: 40px; }
+        .graph-wrap {position: relative; height: 400px; min-width: 310px; border-bottom: 2px solid orange;}
 
         button {height: 20px; z-index: 2;}
 
         .graph-wrap button {position: absolute;}
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-header {
+            background-color: rgb(222, 135, 31);
+            height: 30px;
+            line-height: 30px;
+            width: 80px;
+            text-align: center;
+            box-sizing: border-box;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 300px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            padding: 12px 16px;
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 
 </head>
@@ -30,63 +56,61 @@
         ДО: <input type="date" id="end_date" min="2017-05-12" max="2020-12-31" value="{{ end_date }}">
         <button onclick="loadNewDates()">Перейти</button>
     </div>
+    <div class="dropdown">
+        <div class="dropdown-header">Graphics</div>
+        <div class="dropdown-content">
+            <label for="check_cont1">Количество Агентов</label>
+            <input class="box" name="check_cont1"  onclick="toggleCheckBoxGraphVisibility(this, 'container1')" type="checkbox" checked>
+            <br>
+            <label for="check_cont2">Количество Обсерверов</label>
+            <input class="box" name="check_cont2"  onclick="toggleCheckBoxGraphVisibility(this, 'container2')" type="checkbox" checked>
+            <br>
+            <label for="check_cont3">Количество Ивентов</label>
+            <input class="box" name="check_cont3"  onclick="toggleCheckBoxGraphVisibility(this, 'container3')" type="checkbox" checked>
+            <br>
+            <label for="check_cont4">Cредний эвент лаг</label>
+            <input class="box" name="check_cont4"  onclick="toggleCheckBoxGraphVisibility(this, 'container4')" type="checkbox" checked>
+            <br>
+            <label for="check_cont5">Максимальный эвент лаг</label>
+            <input class="box" name="check_cont5"  onclick="toggleCheckBoxGraphVisibility(this, 'container5')" type="checkbox" checked>
+            <br>
+            <label for="check_cont6">Время отправки сообщений</label>
+            <input class="box" name="check_cont6"  onclick="toggleCheckBoxGraphVisibility(this, 'container6')" type="checkbox" checked>
+            <br>
+            <label for="check_cont7">Количество Мессаджей</label>
+            <input class="box" name="check_cont7"  onclick="toggleCheckBoxGraphVisibility(this, 'container7')" type="checkbox" checked>
+            <br>
+            <label for="check_cont8">Количество Ивентов</label>
+            <input class="box" name="check_cont8"  onclick="toggleCheckBoxGraphVisibility(this, 'container8')" type="checkbox" checked>
+            <br>
+            <label for="check_cont9">Время выполнения Ивентов</label>
+            <input class="box" name="check_cont9"  onclick="toggleCheckBoxGraphVisibility(this, 'container9')" type="checkbox" checked>
+            <br>
+            <label for="check_cont10">Максимальный лаг эвентов</label>
+            <input class="box" name="check_cont10"  onclick="toggleCheckBoxGraphVisibility(this, 'container10')" type="checkbox" checked>
+            <br>
+            <label for="check_cont11">Средний лаг эвентов</label>
+            <input class="box" name="check_cont11"  onclick="toggleCheckBoxGraphVisibility(this, 'container11')" type="checkbox" checked>
+            <br>
+        </div>
+    </div>
 
     {% if not file_list %}
         <h1>Данные отсутствуют.</h1>
     {% else %}
-    <div class="graph-wrap">
-        <div id="container1" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button data-container_id="container2" onclick="toggleGraphVisibility(this)">Количество Обсерверов</button>
-        <div id="container2" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button data-container_id="container3" onclick="toggleGraphVisibility(this)">Количество Ивентов</button>
-        <div id="container3" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button data-container_id="container4" onclick="toggleGraphVisibility(this)">Cредний эвент лаг</button>
-        <div id="container4" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button data-container_id="container5" onclick="toggleGraphVisibility(this)">Максимальный эвент лаг</button>
-        <div id="container5" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button data-container_id="container6" onclick="toggleGraphVisibility(this)">Время отправки сообщений</button>
-        <div id="container6" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button data-container_id="container7" onclick="toggleGraphVisibility(this)">Количество Мессаджей</button>
-        <div id="container7" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button onclick="toggleGraphVisibility(this)">Количество Ивентов</button>
-        <div id="container8" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button onclick="toggleGraphVisibility(this)">Время выполнения Ивентов</button>
-        <div id="container9" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button onclick="toggleGraphVisibility(this)">Максимальный лаг эвентов</button>
-        <div id="container10" class="graph"></div>
-    </div>
-
-    <div class="graph-wrap">
-        <button onclick="toggleGraphVisibility(this)">Средний лаг эвентов</button>
-        <div id="container11" class="graph"></div>
-    </div>
+    
+        <div id="container1" class="graph-wrap"></div>
+        <div id="container2" class="graph-wrap"></div>
+        <div id="container3" class="graph-wrap"></div>
+        <div id="container4" class="graph-wrap"></div>
+        <div id="container5" class="graph-wrap"></div>
+        <div id="container6" class="graph-wrap"></div>
+        <div id="container7" class="graph-wrap"></div>
+        <div id="container8" class="graph-wrap"></div>
+        <div id="container9" class="graph-wrap"></div>
+        <div id="container10" class="graph-wrap"></div>
+        <div id="container11" class="graph-wrap"></div>
+    
     {% end %}
 
     <script>
@@ -101,9 +125,13 @@
         var mes_count = [];
         var mes_dur = [];
 
+
+        var current_global_x_min = 0;
+        var current_global_x_max = 0;
+
         var data_events = {};
 
-        var all_charts = [];
+        var all_charts = [];  // container_name: {chart, visib;le}
 
         function wait() {
             console.log('Ожидание загрузки лог файлов ' + curr_loaded + ' из ' + need_load_count + '.');
@@ -126,7 +154,7 @@
             });
 
             // Строим графики
-            Highcharts.stockChart('container1', {
+            var main_highstock = Highcharts.stockChart('container1', {
                 chart: {
                     marginLeft: 93,
                     marginRight: 26,
@@ -134,20 +162,14 @@
                     zoomType: 'x',
                     events: {
                         redraw: function (event) {
-                            // log the min and max of the primary, datetime x-axis
-                            //console.log(
-                            //        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', event.xAxis[0].min),
-                            //        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', event.xAxis[0].max)
-                            //);
-
-                            //console.log(g2);
-                            var x_min = this.xAxis[0].min;
-                            var x_max = this.xAxis[0].max;
+                            current_global_x_min = this.xAxis[0].min;
+                            current_global_x_max = this.xAxis[0].max;
                             for (var i = 0; i < all_charts.length; i++) {
                                 var c = all_charts[i];
-                                c.xAxis[0].update({min: x_min, max: x_max});
+                                if ($(c.container).parent().css("display") == "block")
+                                    c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
                             }
-                            }
+                        }
                     }
                 },
                 title: { text: 'Количество Агентов' },
@@ -160,25 +182,15 @@
                     opposite: false,
                 },
                 legend: { enabled: false },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [ [0, Highcharts.getOptions().colors[0]],
-                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                   ]},
-                        marker: { radius: 2 },
-                        lineWidth: 1,
-                        states: { hover: { lineWidth: 1 } },
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Agents',
                     data: data_agents
                 }],
             });
+
+            current_global_x_min = main_highstock.xAxis[0].min;
+            current_global_x_max = main_highstock.xAxis[0].max;
 
             // Количество Обсерверов
             all_charts.push(Highcharts.chart('container2', {
@@ -190,20 +202,6 @@
                     min: 0
                 },
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Observers',
@@ -218,20 +216,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'шт.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Events',
@@ -246,20 +230,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [
                     {
                         type: 'line',
@@ -276,20 +246,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [
                     {
                         type: 'line',
@@ -306,20 +262,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'сек.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Sending Duration',
@@ -334,20 +276,6 @@
                 xAxis: {type: 'datetime'},
                 yAxis: {title: {text: 'шт.'}, min: 0},
                 legend: {enabled: false},
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: [{
                     type: 'area',
                     name: 'Count Messages',
@@ -380,19 +308,6 @@
                     title: { text: 'шт/сек' },
                     min: 0,
                 },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                            stops: [ [0, Highcharts.getOptions().colors[0]],
-                                     [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                   ]},
-                        marker: { radius: 2 },
-                        lineWidth: 1,
-                        states: { hover: { lineWidth: 1 } },
-                        threshold: null
-                    }
-                },
                 series: series,
             }));
 
@@ -405,20 +320,6 @@
                 yAxis: {
                     title: {text: 'сек/сек'},
                     min: 0
-                },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
                 },
                 series: series
             }));
@@ -433,20 +334,6 @@
                     title: {text: 'сек/сек'},
                     min: 0
                 },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: series
             }));
 
@@ -460,22 +347,17 @@
                     title: {text: 'сек/сек'},
                     min: 0
                 },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-                            stops: [[0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {radius: 2},
-                        lineWidth: 1,
-                        states: {hover: {lineWidth: 1}},
-                        threshold: null
-                    }
-                },
                 series: series
             }));
+
+
+
+            // отключение тех графиков, которые не активны сейчас
+            setTimeout(function() {
+                $("input.box").each(function () {
+                    toggleCheckBoxGraphVisibility(this, "container" + $(this).attr('name').replace("check_cont", ""));
+                });
+            }, 100);
         }
 
         $(document).ready(function () {
@@ -550,6 +432,22 @@
 
             // Ждем пока все загрузится и рисуем
             if (need_load_count) wait();
+
+            // Смотрим на куки и чекбоксы.
+            // Установка при загрузке
+            $("input.box").each(function () {
+                var mycookie = getCookie($(this).attr('name'));
+                if (mycookie != undefined && mycookie != null && (mycookie == "true" || mycookie == "false")) {
+                    this.checked = mycookie == "true";
+                }
+            });
+
+            // Эвент на изменение, чтоб в куки писать
+            $("input.box").change(function () {
+                //console.log(this.checked);
+                setCookie($(this).attr("name"), this.checked);
+            });
+            
         });
 
 
@@ -589,15 +487,65 @@
 
         function toggleGraphVisibility(elem) {
             var jq_elem = $(elem);
-            //var graph = $("#" + jq_elem.data("container_id"));
-            //graph.toggle();
             jq_elem.parent().toggleClass("hide");
         }
+
+
+        function toggleCheckBoxGraphVisibility(elem, container_name) {
+            if (elem.checked)                 
+                show_graph(container_name);  // Показать график
+            else                 
+                hide_graph(container_name);  // Скрыть график
+        }
+
+
+        function show_graph(container_name) {
+            $("#" + container_name).css("display", "block");
+            for (var i = 0; i < all_charts.length; i++) {
+                var c = all_charts[i];
+                if ($(c.container).parent().attr("id") == container_name)
+                    c.xAxis[0].update({min: current_global_x_min, max: current_global_x_max});
+            }
+        }
+        
+        function hide_graph(container_name) {$("#" + container_name).css("display", "none");}
 
         function loadNewDates() {
             var start_date = $("#start_date").val();
             var end_date = $("#end_date").val();
             window.location = location.origin + location.pathname + "?start=" + start_date + "&end=" + end_date;
+        }
+
+
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp(
+                    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
+        function setCookie(name, value, options) {
+            options = options || {};
+            var expires = options.expires;
+            if (typeof expires == "number" && expires) {
+                var d = new Date();
+                d.setTime(d.getTime() + expires * 1000);
+                expires = options.expires = d;
+            }
+            if (expires && expires.toUTCString) {
+                options.expires = expires.toUTCString();
+            }
+
+            value = encodeURIComponent(value);
+            var updatedCookie = name + "=" + value;
+            for (var propName in options) {
+                updatedCookie += "; " + propName;
+                var propValue = options[propName];
+                if (propValue !== true) {
+                    updatedCookie += "=" + propValue;
+                }
+            }
+            document.cookie = updatedCookie;
         }
 
 

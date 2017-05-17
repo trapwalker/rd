@@ -180,8 +180,8 @@ var WCanvasCarMarker = (function (_super) {
         this.tail_particles_last_born_time = 0;
         this.tail_particles_icon_left_name = "icon-car-tail-06l-35";
         this.tail_particles_icon_right_name = "icon-car-tail-06r-35";
-        this.tail_particles_size_start = 0.45;
-        this.tail_particles_size_end = 0.8;
+        this.tail_particles_size_start = 0.4;
+        this.tail_particles_size_end = 0.75;
 
         this._set_car_tail();
 
@@ -197,8 +197,8 @@ var WCanvasCarMarker = (function (_super) {
             case 'buggies':
                 // Лёгкие
                 this.tail_particles_interval_stay = 6000;
-                this.tail_particles_size_start = 0.25;
-                this.tail_particles_size_end = 0.6;
+                this.tail_particles_size_start = 0.2;
+                this.tail_particles_size_end = 0.55;
                 this.tail_particles_icon_left_name = "icon-car-tail-06l-25";
                 this.tail_particles_icon_right_name = "icon-car-tail-06r-25";
                 break;
@@ -208,8 +208,8 @@ var WCanvasCarMarker = (function (_super) {
             case 'vans':
                 // Средние
                 this.tail_particles_interval_stay = 5000;
-                this.tail_particles_size_start = 0.45;
-                this.tail_particles_size_end = 0.8;
+                this.tail_particles_size_start = 0.4;
+                this.tail_particles_size_end = 0.75;
                 this.tail_particles_icon_left_name = "icon-car-tail-06l-35";
                 this.tail_particles_icon_right_name = "icon-car-tail-06r-35";
                 break;
@@ -222,8 +222,8 @@ var WCanvasCarMarker = (function (_super) {
             case 'tractors':
                 // Тяжёлые
                 this.tail_particles_interval_stay = 4000;
-                this.tail_particles_size_start = 0.65;
-                this.tail_particles_size_end = 1.0;
+                this.tail_particles_size_start = 0.75;
+                this.tail_particles_size_end = 1.1;
                 this.tail_particles_icon_left_name = "icon-car-tail-06l-45";
                 this.tail_particles_icon_right_name = "icon-car-tail-06r-45";
                 break;
