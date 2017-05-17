@@ -413,7 +413,7 @@ var ClientManager = (function () {
                 user.party = new OwnerParty(event.agent.party.id, event.agent.party.name);
                 this.sendGetPartyInfo(event.agent.party.name);
             }
-            timeManager.timerStart();
+            timeManager.timerStart(settingsManager.options["fps_rate"].value);
             for (var i = 0; i < event.notes.length; i++)
                 this._createNote(event.notes[i]);
         }

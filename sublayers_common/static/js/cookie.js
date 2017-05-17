@@ -615,6 +615,19 @@ var SettingsManager = (function() {
             list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
             set_callback: function (new_value) {},
         },
+        auto_simple_bot: {
+            name: "auto_simple_bot",
+            page: "other",
+            text_name: "auto_simple_bot",
+            text_description: "auto_simple_bot",
+            jq_div: null,
+            type: "list",
+            default: 0,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            set_callback: function (new_value) {},
+        },
 
         game_color: {
             name: "game_color",
