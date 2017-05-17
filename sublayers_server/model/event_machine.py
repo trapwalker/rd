@@ -460,6 +460,16 @@ class Server(object):
         for event_name in handlers_metrics.keys():
             log_str = "{}{}".format(log_str, get_event_str(handlers_metrics, event_name))
 
+        log_str = "{}{}".format(log_str, get_event_str(
+            events_metrics={
+                "OutherLoop": {
+                    "event_perf_time_interval": self._outher_loop_time_arr
+                }
+            },
+            event_name="OutherLoop")
+        )
+        self._outher_loop_time_arr = []
+
         self.logger_statlog_events.info(log_str)
 
 
@@ -479,6 +489,8 @@ class LocalServer(Server):
         self.is_terminated = False
         self.app = app
         self.periodic = None
+        self.outher_loop_time = 0
+        self._outher_loop_time_arr = []
 
     def __getstate__(self):
         d = super(LocalServer, self).__getstate__()
@@ -493,14 +505,14 @@ class LocalServer(Server):
         # Выйти, если завершён поток
         if self.is_terminated:
             return
-
+        time = self.get_time()
+        self._outher_loop_time_arr.append(time - self.outher_loop_time)
         if len(message_queue):
             count = len(message_queue)
             with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
                 while message_queue:
                     message_queue.popleft().send()  # todo: async sending by ioloop
             # todo: mass sending optimizations over separated chat server
-            time=self.get_time()
             self.stat_log.s_message_send_max(time=time, value=message_send_timer.duration)
             self.stat_log.s_messages_stat_log_count(time=time, delta=count)
             self.stat_log.s_messages_stat_log_dur(time=time, delta=message_send_timer.duration)
@@ -531,11 +543,13 @@ class LocalServer(Server):
             t = self.get_time() - t
 
         self.ioloop.add_callback(callback=self.event_loop)
+        self.outher_loop_time = self.get_time()
 
     def start(self):
         # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
         # self.periodic.start()
         self.ioloop.add_callback(callback=self.event_loop)
+        self.outher_loop_time = self.get_time()
         self.is_terminated = False
         log.info('---- Game server Started ' + '-' * 50 + '\n')
 
