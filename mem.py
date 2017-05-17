@@ -25,10 +25,12 @@ def Process(pid=None):
 if __name__ == '__main__':
     pid = sys.argv[1:]
     pid = pid and pid[0] or None
+
     process = Process(pid)
 
     if process:
         print(process.memory_info())
+        print(process.memory_percent(), '%')
     else:
         print('Process info is unreacable. May be OS is not supported...')
    
