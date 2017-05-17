@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Highstock Example</title>
+    <title>Roaddogs Server Stat</title>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
@@ -154,7 +154,7 @@
             });
 
             // Строим графики
-            Highcharts.stockChart('container1', {
+            var main_highstock = Highcharts.stockChart('container1', {
                 chart: {
                     marginLeft: 93,
                     marginRight: 26,
@@ -188,6 +188,9 @@
                     data: data_agents
                 }],
             });
+
+            current_global_x_min = main_highstock.xAxis[0].min;
+            current_global_x_max = main_highstock.xAxis[0].max;
 
             // Количество Обсерверов
             all_charts.push(Highcharts.chart('container2', {
