@@ -512,6 +512,15 @@ var ClientManager = (function () {
             var curr_cord = mcar.getCurrentCoord(clock.getCurrentTime());
             mapManager.set_coord({x: curr_cord.x, y: curr_cord.y});
         }
+
+
+        // Если авто-воскрешение включено, то включить автострельбу
+        if (settingsManager.options["auto_resurrection"].value) {
+            setTimeout(function () {
+                // Включить авто-стрельбу
+                controlManager.actions.toggle_auto_fire.up();
+            }, 3000);
+        }
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -665,7 +674,7 @@ var ClientManager = (function () {
             setTimeout(function() {
                 if (!user.userCar) {
                     clientManager.sendQuickPlayAgain();
-                    modalWindow.modalQuickGamePointsPageHide();
+                    modalWindow.modalQuickGamePointsPageHide();                    
                 }
             }, 5000);
         }
