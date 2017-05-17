@@ -593,7 +593,7 @@ var SettingsManager = (function() {
             text_description: "fps_rate",
             jq_div: null,
             type: "list",
-            default: 1,
+            default: null,
             value: 0,
             currentValue: 0,
             list_values: [{text: "1", value: 1}, {text: "2", value: 2}, {text: "10", value: 10}, {text: "auto", value: null}],
