@@ -19,6 +19,7 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_common.user_profile import User as UserProfile
 from sublayers_common.ctx_timer import Timer
+from sublayers_common.handlers.base import BaseHandler
 
 
 import os
@@ -408,25 +409,25 @@ class Server(object):
         def get_event_str(events_metrics, event_name):
             e = events_metrics[event_name]
             count = len(e["event_perf_time_interval"])
+            average_perf_time = 0
+            average_lag_time = 0
+            summ_perf_time = 0
+            max_perf_time = 0
+            max_lag_time = 0
             if count > 0:
                 summ_perf_time = sum(e["event_perf_time_interval"])
                 max_perf_time = max(e["event_perf_time_interval"])
-                max_lag_time = max(e["event_lag_interval"])
-                average_lag_time = sum(e["event_lag_interval"]) / count
                 average_perf_time = summ_perf_time / count
-            else:
-                average_perf_time = 0
-                average_lag_time = 0
-                summ_perf_time = 0
-                max_perf_time = 0
-                max_lag_time = 0
+                if e.get("event_lag_interval", None) and len(e["event_lag_interval"]) > 0:
+                    max_lag_time = max(e["event_lag_interval"])
+                    average_lag_time = sum(e["event_lag_interval"]) / count
 
             e["event_perf_time_interval"] = []
             e["event_lag_interval"] = []
 
             return "{event_name};{count};{perf_time_average};{perf_time_max};{perf_time_summ};{lag_time_max};{lag_time_average};".format(
                 event_name=event_name,
-                count=count / options.server_stat_log_interval,
+                count= 1. * count / options.server_stat_log_interval,
                 perf_time_average=average_perf_time,
                 perf_time_max=max_perf_time,
                 perf_time_summ=summ_perf_time / options.server_stat_log_interval,
@@ -434,11 +435,25 @@ class Server(object):
                 lag_time_max=max_lag_time,
             )
 
-        events_metrics = event.events_metrics
-
         log_str = "{};".format(event.time)
+
+        events_metrics = event.events_metrics
         for event_name in events_metrics.keys():
             log_str = "{}{}".format(log_str, get_event_str(events_metrics, event_name))
+
+        handlers_metrics = BaseHandler.handlers_metrics
+        for event_name in handlers_metrics.keys():
+            log_str = "{}{}".format(log_str, get_event_str(handlers_metrics, event_name))
+
+        log_str = "{}{}".format(log_str, get_event_str(
+            events_metrics={
+                "OutherLoop": {
+                    "event_perf_time_interval": self._outher_loop_time_arr
+                }
+            },
+            event_name="OutherLoop")
+        )
+        self._outher_loop_time_arr = []
 
         self.logger_statlog_events.info(log_str)
 
@@ -459,6 +474,8 @@ class LocalServer(Server):
         self.is_terminated = False
         self.app = app
         self.periodic = None
+        self.outher_loop_time = 0
+        self._outher_loop_time_arr = []
 
     def __getstate__(self):
         d = super(LocalServer, self).__getstate__()
@@ -473,14 +490,14 @@ class LocalServer(Server):
         # Выйти, если завершён поток
         if self.is_terminated:
             return
-
+        time = self.get_time()
+        self._outher_loop_time_arr.append(time - self.outher_loop_time)
         if len(message_queue):
             count = len(message_queue)
             with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
                 while message_queue:
                     message_queue.popleft().send()  # todo: async sending by ioloop
             # todo: mass sending optimizations over separated chat server
-            time=self.get_time()
             self.stat_log.s_message_send_max(time=time, value=message_send_timer.duration)
             self.stat_log.s_messages_stat_log_count(time=time, delta=count)
             self.stat_log.s_messages_stat_log_dur(time=time, delta=message_send_timer.duration)
@@ -511,11 +528,13 @@ class LocalServer(Server):
             t = self.get_time() - t
 
         self.ioloop.add_callback(callback=self.event_loop)
+        self.outher_loop_time = self.get_time()
 
     def start(self):
         # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
         # self.periodic.start()
         self.ioloop.add_callback(callback=self.event_loop)
+        self.outher_loop_time = self.get_time()
         self.is_terminated = False
         log.info('---- Game server Started ' + '-' * 50 + '\n')
 

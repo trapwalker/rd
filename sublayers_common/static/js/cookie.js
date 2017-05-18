@@ -20,6 +20,13 @@ var SettingsManager = (function() {
             settings_page_control: "Настройки управления",
             settings_page_other: "Другие настройки",
         };
+
+
+        // Если включён авто-бот
+        setTimeout(function () {
+            if (settingsManager.options["auto_simple_bot"].value)
+                settingsManager.options["auto_simple_bot"].set_callback(true);
+        }, 2000);
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
@@ -582,6 +589,101 @@ var SettingsManager = (function() {
                 if (wFireController) {
                     wFireController.setting_rotate_sectors = new_value == 1;
                     wFireController.change();
+                }
+            },
+        },
+        /*Дебаг-инфо*/
+        fps_rate: {
+            name: "fps_rate",
+            page: "other",
+            text_name: "fps_rate",
+            text_description: "fps_rate",
+            jq_div: null,
+            type: "list",
+            default: 0,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "1", value: 1}, {text: "2", value: 2}, {text: "10", value: 10}, {text: "auto", value: 0}],
+            set_callback: function (new_value) {
+                timeManager.timerStop();
+                timeManager.timerStart(new_value);
+            },
+        },
+        auto_resurrection: {
+            name: "auto_resurrection",
+            page: "other",
+            text_name: "auto_resurrection",
+            text_description: "auto_resurrection",
+            jq_div: null,
+            type: "list",
+            default: "",
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            set_callback: function (new_value) {},
+        },
+        auto_simple_bot: {
+            name: "auto_simple_bot",
+            page: "other",
+            text_name: "auto_simple_bot",
+            text_description: "auto_simple_bot",
+            jq_div: null,
+            type: "list",
+            default: "",
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            bot_reaction_handler: null,
+            bot_reaction: function () {
+                settingsManager.options["auto_simple_bot"].bot_reaction_handler = null;
+                if (!settingsManager.options["auto_simple_bot"].currentValue) return;
+                settingsManager.options["auto_simple_bot"].bot_reaction_handler =
+                    setTimeout(settingsManager.options["auto_simple_bot"].bot_reaction, 2000);
+
+                if (!user.userCar) return;
+                // Рандомно выбрать цель движения
+                if (Math.random() > 0.5 || user.userCar.getCurrentSpeed(clock.getCurrentTime()) < 5) {
+                    var curr_pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
+                    var random_point = polarPoint(Math.random() * 300, Math.random() * Math.PI * 2.);
+                    clientManager.sendGoto(summVector(curr_pos, random_point));
+                }
+                // Рандомно стрельнуть
+                if (Math.random() > 0.7) {
+                    controlManager.actions.fire_disc_front.up();
+                }
+
+                 // Юзнуть подбор лута
+                if (Math.random() > 0.7)
+                    controlManager.actions.get_loot.up();
+
+                // Юзнуть аптечку если нужно
+                if (user.userCar.getCurrentHP(clock.getCurrentTime()) < 20)
+                    controlManager.actions.quick_panel_4.up();
+
+                // Поставить мину
+                if (Math.random() > 0.9)
+                    controlManager.actions.quick_panel_1.up();
+
+                // Поставить туррель
+                if (Math.random() > 0.9)
+                    controlManager.actions.quick_panel_2.up();
+
+                // Запустить ракету
+                if (Math.random() > 0.9)
+                    controlManager.actions.quick_panel_3.up();
+
+            },
+            set_callback: function (new_value) {
+                if (new_value) {
+                    if (settingsManager.options["auto_simple_bot"].bot_reaction_handler) {
+                        clearTimeout(settingsManager.options["auto_simple_bot"].bot_reaction_handler);
+                        settingsManager.options["auto_simple_bot"].bot_reaction_handler = null;
+                    }
+                    settingsManager.options["auto_simple_bot"].bot_reaction();
+                }
+                else {
+                    clearTimeout(settingsManager.options["auto_simple_bot"].bot_reaction_handler);
+                    settingsManager.options["auto_simple_bot"].bot_reaction_handler = null;
                 }
             },
         },
