@@ -27,7 +27,7 @@ class PlayHandler(BaseHandler):
                 if agent.car:
                     coord = agent.car.position(time=self.application.srv.get_time())
                 elif agent.current_location:
-                    coord = agent.current_location.example.profile.position
+                    coord = agent.current_location.example.position
                 elif agent.example.profile.car:
                     coord = agent.example.profile.car.position
 

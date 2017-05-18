@@ -77,7 +77,7 @@ class Agent(Object):
 
         # текущий город, если агент не в городе то None
         self._current_location = None
-        self.current_location = example.current_location
+        self.current_location = example.profile.current_location
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
@@ -154,11 +154,11 @@ class Agent(Object):
 
         # todo: реализовать возможность устанавливать в качестве локации координаты? ##realize ##quest
         self._current_location = location
-        self.example.current_location = example_location
+        self.example.profile.current_location = example_location
 
     @property
     def balance(self):
-        return self.example.balance
+        return self.example.profile.balance
 
     def on_save(self, time):
         self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
@@ -810,7 +810,7 @@ class QuickUser(User):
             # Радиус появления игроков в быстрой игре
             self.example.profile.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
 
-        self.example.current_location = None
+        self.example.profile.current_location = None
         self.current_location = None
 
     def on_die(self, event, **kw):

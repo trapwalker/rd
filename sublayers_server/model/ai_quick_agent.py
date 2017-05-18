@@ -59,7 +59,7 @@ class AIQuickAgent(AI):
             # Добавить свою машинку на карту
             self.example.profile.car = self._car_proto.instantiate(fixtured=False)
             yield self.example.profile.car.load_references()
-            self.example.current_location = None
+            self.example.profile.current_location = None
             self.current_location = None
             self.example.profile.car.position = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius) # Радиус появления ботов в быстрой игре
 
