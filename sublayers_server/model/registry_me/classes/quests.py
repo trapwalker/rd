@@ -213,7 +213,6 @@ class QuestState(Node):
 
 
 class Quest(Node):
-    __not_a_fields__ = ['_states_map', '_go_state_name', '_global_context', '_local_context', '_error']
     first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states          = ListField(
@@ -295,6 +294,14 @@ class Quest(Node):
     # @agent.setter
     # def agent(self, value):
     #     self.__dict__['_agent'] = value
+
+    def __init__(self, **kw):
+        super(Quest, self).__init__(**kw)
+        self._go_state_name = None
+        self._states_map = None
+        self._global_context = None
+        self._local_context = None
+        self._error = None
 
     def _set_error_status(self, handler, event, e):
         self._error = True
@@ -457,7 +464,7 @@ class Quest(Node):
         self.current_state = new_state_id
         self.do_state_enter(new_state, event)
 
-        agent_model = self.agent and self.agent._agent_model
+        agent_model = self.agent and self.agent.profile._agent_model
         if agent_model:
             QuestUpdateMessage(agent=agent_model, time=event.time, quest=self).post()
             if self.status == 'active' and old_status is None:  # quest started
@@ -560,26 +567,26 @@ class Quest(Node):
     def can_give_items(self, items, event):
         if not self.agent.car:
             return False
-        if self.agent._agent_model:
-            self.agent._agent_model.inventory.save_to_example(time=event.time)
+        if self.agent.profile._agent_model:
+            self.agent.profile._agent_model.inventory.save_to_example(time=event.time)
         return len(items) <= (self.agent.car.inventory.size - len(self.agent.car.inventory.items))
 
     def give_items(self, items, event):
         if not self.can_give_items(items=items, event=event):
             return False
-        total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
+        total_inventory_list = None if self.agent.profile._agent_model.inventory is None else self.agent.profile._agent_model.inventory.example.total_item_type_info()
         for item in items:
             self.agent.car.inventory.items.append(item)
-        if self.agent._agent_model:
-            self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
+        if self.agent.profile._agent_model:
+            self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def can_take_items(self, items, event):
         if not self.agent.car:
             return False
 
-        if self.agent._agent_model:
-            self.agent._agent_model.inventory.save_to_example(time=event.time)
+        if self.agent.profile._agent_model:
+            self.agent.profile._agent_model.inventory.save_to_example(time=event.time)
 
         assortment = self.agent.car.inventory.total_item_type_info()
         for item in items:
@@ -593,16 +600,16 @@ class Quest(Node):
     def take_items(self, items, event):
         if not self.can_take_items(items=items, event=event):
             return False
-        total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
+        total_inventory_list = None if self.agent.profile._agent_model.inventory is None else self.agent.profile._agent_model.inventory.example.total_item_type_info()
         for item in items:
             self.agent.car.inventory.del_item(item=item, count=item.amount)
-        if self.agent._agent_model:
-            self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
+        if self.agent.profile._agent_model:
+            self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def npc_replica(self, npc, replica, event):
-        if self.agent._agent_model:
-            messages.NPCReplicaMessage(agent=self.agent._agent_model, npc=npc, replica=replica, time=event.time).post()
+        if self.agent.profile._agent_model:
+            messages.NPCReplicaMessage(agent=self.agent.profile._agent_model, npc=npc, replica=replica, time=event.time).post()
 
     def generate_reward(self):
         self.reward_money = self.total_reward_money * self.money_coef
@@ -729,8 +736,8 @@ class AIQuickQuest(Quest):
 
     def get_next_route_point(self):
         if not self.route:
-            return Point.random_point(self.agent._agent_model.server.quick_game_start_pos,
-                                      self.agent._agent_model.server.quick_game_play_radius)
+            return Point.random_point(self.agent.profile._agent_model.server.quick_game_start_pos,
+                                      self.agent.profile._agent_model.server.quick_game_play_radius)
         if self.route_index + 1 >= len(self.route):
             self.route_index = 0
         else:

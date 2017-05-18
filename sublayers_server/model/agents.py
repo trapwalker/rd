@@ -44,7 +44,7 @@ class Agent(Object):
         super(Agent, self).__init__(time=time, **kw)
         self.example = example
         if example:
-            example._agent_model = self
+            example.profile._agent_model = self
         self._disconnect_timeout_event = None
         # self.subscriptions = SubscriptionList()
         self.observers = CounterSet()

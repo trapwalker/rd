@@ -103,8 +103,7 @@ class Price(object):
                 self.is_lot = True
 
 
-class Trader(Institution):
-    __not_a_fields__ = ['_current_list']
+class Trader(Institution):    
     # Навык торговли торговца 0..300
     trading = IntField(caption=u"Навык торговли", default=0)
 

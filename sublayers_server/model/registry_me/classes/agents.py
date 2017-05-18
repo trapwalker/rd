@@ -38,7 +38,6 @@ class RelationshipRec(Subdoc):
 
 class AgentProfile(Node):
     '''Inheritable data about agent'''
-    __not_a_fields__ = ['_agent_model']
     about_self = StringField(default=u'', caption=u'О себе', tags={'client'})
 
     # Карма и отношения
@@ -222,6 +221,7 @@ class AgentProfile(Node):
 
     def __init__(self, **kw):
         super(AgentProfile, self).__init__(**kw)
+        # todo: move '_agent_model' attribute to Agent
         self._agent_model = None
 
     def get_relationship(self, npc):
@@ -234,6 +234,7 @@ class AgentProfile(Node):
         return rel_rec.get_relationship(agent=self)
 
     def set_relationship(self, time, npc, dvalue):
+        # todo: move method to Agent from AgentProfile
         self.get_relationship(npc)
         relation = None
         for relation_rec in self.npc_rel_list:

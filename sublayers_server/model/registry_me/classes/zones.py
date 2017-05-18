@@ -19,7 +19,6 @@ import os
 
 
 class Zone(Node):
-    __not_a_fields__ = ['is_active']
     effects = ListField(
         caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.effects.Effect'),
@@ -28,12 +27,16 @@ class Zone(Node):
 
     def __init__(self, **kw):
         super(Zone, self).__init__(**kw)
-        self.is_active = False
+        self._is_active = False
+
+    @property
+    def is_active(self):
+        return self._is_active
 
     def activate(self, server, time):
         assert not self.abstract  # нельзя активировать абстрактные зоны
         InsertNewServerZone(server=server, time=time, zone=self).post()
-        self.is_active = True
+        self._is_active = True
 
     def send_message(self, obj, active, time):
         if obj.owner:
@@ -84,11 +87,9 @@ class FileZone(Zone):
 
 
 class TilesetZone(FileZone):
-    __not_a_fields__ = ['ts']
-
     def __init__(self, **kw):
         super(TilesetZone, self).__init__(**kw)
-        self.ts = None
+        self._ts = None
 
     def activate(self, server, time):
         if self._load_from_file():
@@ -98,7 +99,7 @@ class TilesetZone(FileZone):
         file_path = os.path.join(options.world_path, self.path)
         try:
             with open(file_path) as f:
-                self.ts = Tileset(f)
+                self._ts = Tileset(f)
         except Exception as e:
             log.warning("Can not load zone %s from %r: %s", self.name, file_path, e)
             return
@@ -108,11 +109,10 @@ class TilesetZone(FileZone):
 
     def get_value(self, obj, time):
         position = obj.position(time=time)
-        return self.ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8))
+        return self._ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8))
 
 
 class RasterZone(FileZone):
-    __not_a_fields__ = ['_picker']
     pixel_depth = IntField(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
     extension = StringField(default='.jpg', caption=u'Расширение тайлов')
     channel = IntField(
