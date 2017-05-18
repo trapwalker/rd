@@ -551,7 +551,7 @@ var ConsoleFirstEnter = (function (_super) {
     };
 
     ConsoleFirstEnter.prototype.start = function() {
-        console.log('ConsoleFirstEnter.prototype.start', this);
+        //console.log('ConsoleFirstEnter.prototype.start', this);
         if (!this._is_started) {
             resourceLoadManager.add(this);  // todo: обсудить
             _super.prototype.start.call(this);
