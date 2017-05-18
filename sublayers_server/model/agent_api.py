@@ -112,13 +112,13 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.example.set_balance(time=self.agent.server.get_time(), new_balance=value)
+            self.agent.example.profile.set_balance(time=self.agent.server.get_time(), new_balance=value)
 
         self.write('You have {} money.'.format(self.agent.balance))
         return self.agent.balance
 
     def exp(self, value):
-        self.agent.example.set_exp(dvalue=int(value), time=self.agent.server.get_time())
+        self.agent.example.profile.set_exp(dvalue=int(value), time=self.agent.server.get_time())
 
     def param(self, name=None):
         if name and self.agent.car:
@@ -127,7 +127,7 @@ class AgentConsoleNamespace(Namespace):
                 'Agent %s  have param %s = %s',
                 self.agent,
                 name,
-                self.agent.car.example.get_modify_value(param_name=name, example_agent=self.agent.example),
+                self.agent.car.example.profile.get_modify_value(param_name=name, example_agent=self.agent.example),
             )
 
     def save(self):
@@ -144,7 +144,7 @@ class AgentConsoleNamespace(Namespace):
             agent = agents_by_name.get(name_to_reset, None)
             if agent:
                 self.api.send_kick(username=name_to_reset)
-                agent.example.reset()
+                agent.example.profile.reset()
 
     # def quest(self, *args):
     #     if not args:
@@ -164,7 +164,7 @@ class AgentConsoleNamespace(Namespace):
     #             log.debug('Quest %s started', quest)
 
     def qi(self):
-        for quest in self.agent.example.quests:
+        for quest in self.agent.example.profile.quests:
             log.info('QUEST: {}'.format(quest))
 
 
@@ -418,7 +418,7 @@ class AgentAPI(API):
             return
 
         # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город
-        last_town = self.agent.example.last_town
+        last_town = self.agent.example.profile.last_town
         self.agent.current_location = last_town
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
@@ -853,7 +853,7 @@ class AgentAPI(API):
     @public_method
     def set_about_self(self, text):
         self.agent.log.info('set_about_self text={!r}'.format(text))
-        self.agent.example.about_self = text
+        self.agent.example.profile.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Квесты
@@ -865,22 +865,22 @@ class AgentAPI(API):
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
         uid = UUID(uid)
 
-        note = self.agent.example.get_note(uid)
+        note = self.agent.example.profile.get_note(uid)
         if not note:
             log.warning('Note #{} is not found'.format(uid))
             return
 
         server = self.agent.server
 
-        for q in self.agent.example.quests_active:
+        for q in self.agent.example.profile.quests_active:
             OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result).post()
 
     @public_method
     def quest_activate(self, quest_uid):
         self.agent.log.info('quest_activate quest_uid={}'.format(quest_uid))
-        self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
+        self.agent.example.profile.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
         # todo: данный эвент должен вызываться при смене состояния квеста
-        for q in self.agent.example.quests_active:
+        for q in self.agent.example.profile.quests_active:
             server = self.agent.server
             OnQuestChange(server=server, quest=q, time=server.get_time() + 0.5, target_quest_uid=quest_uid).post()
 

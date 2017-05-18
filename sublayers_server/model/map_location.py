@@ -72,7 +72,7 @@ class MapLocation(Observer):
                 new_quest = quest.instantiate(abstract=False, hirer=head)
                 new_quest.agent = agent.example
                 if new_quest.generate(event=event):
-                    agent.example.add_quest(quest=new_quest, time=event.time)
+                    agent.example.profile.add_quest(quest=new_quest, time=event.time)
                 else:
                     del new_quest
 

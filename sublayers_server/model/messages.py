@@ -106,7 +106,7 @@ class InitAgent(Message):
         d = super(InitAgent, self).as_dict()
         d.update(
             agent=self.agent.as_dict(time=self.time),
-            notes=[note.as_client_dict() for note in self.agent.example.notes]
+            notes=[note.as_client_dict() for note in self.agent.example.profile.notes]
         )
         return d
 
@@ -909,33 +909,33 @@ class UserExampleSelfRPGMessage(Message):
     def as_dict(self):
         d = super(UserExampleSelfRPGMessage, self).as_dict()
         agent = self.agent
-        cur_exp = agent.example.exp
-        lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=cur_exp)
+        cur_exp = agent.example.profile.exp
+        lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.profile.exp_table.by_exp(exp=cur_exp)
         rpg_info = dict(
             cur_lvl=math.floor(lvl / 10),
             cur_exp=cur_exp,
-            cur_lvl_exp=agent.example.exp_table.user_exp_by_lvl(lvl=lvl),
+            cur_lvl_exp=agent.example.profile.exp_table.user_exp_by_lvl(lvl=lvl),
             next_lvl_exp=next_lvl_exp,
+            # todo: ##REFACTORING
+            all_skill_points=(lvl + agent.example.profile.role_class.start_free_point_skills),  # без учета купленныых!!!
+            driving        =agent.example.profile.driving        .as_client_dict(),
+            shooting       =agent.example.profile.shooting       .as_client_dict(),
+            masking        =agent.example.profile.masking        .as_client_dict(),
+            leading        =agent.example.profile.leading        .as_client_dict(),
+            trading        =agent.example.profile.trading        .as_client_dict(),
+            engineering    =agent.example.profile.engineering    .as_client_dict(),
+            buy_driving    =agent.example.profile.buy_driving    .as_client_dict(),
+            buy_shooting   =agent.example.profile.buy_shooting   .as_client_dict(),
+            buy_masking    =agent.example.profile.buy_masking    .as_client_dict(),
+            buy_leading    =agent.example.profile.buy_leading    .as_client_dict(),
+            buy_trading    =agent.example.profile.buy_trading    .as_client_dict(),
+            buy_engineering=agent.example.profile.buy_engineering.as_client_dict(),
 
-            all_skill_points=(lvl + agent.example.role_class.start_free_point_skills),  # без учета купленныых!!!
-            driving=agent.example.driving.as_client_dict(),
-            shooting=agent.example.shooting.as_client_dict(),
-            masking=agent.example.masking.as_client_dict(),
-            leading=agent.example.leading.as_client_dict(),
-            trading=agent.example.trading.as_client_dict(),
-            engineering=agent.example.engineering.as_client_dict(),
-            buy_driving=agent.example.buy_driving.as_client_dict(),
-            buy_shooting=agent.example.buy_shooting.as_client_dict(),
-            buy_masking=agent.example.buy_masking.as_client_dict(),
-            buy_leading=agent.example.buy_leading.as_client_dict(),
-            buy_trading=agent.example.buy_trading.as_client_dict(),
-            buy_engineering=agent.example.buy_engineering.as_client_dict(),
-
-            all_perks_points=math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks,
+            all_perks_points=math.floor(lvl / 10) + agent.example.profile.role_class.start_free_point_perks,
             perks=[
                 dict(
                     perk=perk.as_client_dict(),
-                    active=perk in agent.example.perks,
+                    active=perk in agent.example.profile.perks,
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ) for perk in agent.server.reg['rpg_settings/perks'].deep_iter()
             ],
@@ -1052,16 +1052,16 @@ class QuestsInitMessage(Message):
     def as_dict(self):
         d = super(QuestsInitMessage, self).as_dict()
         d.update(
-            quests=[quest.as_client_dict() for quest in self.agent.example.quests],
+            quests=[quest.as_client_dict() for quest in self.agent.example.profile.quests],
         )
         q = d['quests'] and d['quests'][0] or None
         #if q and q['hirer'] is None:
         #    log.error(
         #        '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
         #        self.__class__, q,
-        #        self.agent.example.quests_unstarted,
-        #        self.agent.example.quests_active,
-        #        self.agent.example.quests_ended,
+        #        self.agent.example.profile.quests_unstarted,
+        #        self.agent.example.profile.quests_active,
+        #        self.agent.example.profile.quests_ended,
         #    )
         return d
 
@@ -1126,7 +1126,7 @@ class ParkingInfoMessage(NPCInfoMessage):
                 car_parking_price=npc.get_car_price(car),
                 html_car_table=template_table.generate(car=car),
                 html_car_img=template_img.generate(car=car),
-            ) for car in agent.example.get_car_list_by_npc(npc)])
+            ) for car in agent.example.profile.get_car_list_by_npc(npc)])
         return d
 
 
@@ -1183,20 +1183,21 @@ class InteractionInfoMessage(Message):
     def as_dict(self):
         d = super(InteractionInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.example.exp)
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.profile.exp_table.by_exp(exp=player.example.profile.exp)
         if player:
             d.update(
                 avatar=player.user.avatar_link,
-                about_self=player.example.about_self,
+                about_self=player.example.profile.about_self,
                 lvl=lvl,
-                role_class=player.example.role_class.title,
+                role_class=player.example.profile.role_class.title,
                 karma=0,  # todo: убрать заглушку
-                driving=player.example.driving.calc_value(),
-                shooting=player.example.shooting.calc_value(),
-                masking=player.example.masking.calc_value(),
-                leading=player.example.leading.calc_value(),
-                trading=player.example.trading.calc_value(),
-                engineering=player.example.engineering.calc_value(),
+                # todo: ##REFACTORING
+                driving=player.example.profile.driving.calc_value(),
+                shooting=player.example.profile.shooting.calc_value(),
+                masking=player.example.profile.masking.calc_value(),
+                leading=player.example.profile.leading.calc_value(),
+                trading=player.example.profile.trading.calc_value(),
+                engineering=player.example.profile.engineering.calc_value(),
             )
 
             # Еслли есть машинка то отправить ее шаблоны и имя
@@ -1225,20 +1226,21 @@ class PartyUserInfoMessage(Message):
     def as_dict(self):
         d = super(PartyUserInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.exp_table.by_exp(exp=player.example.exp)
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.profile.exp_table.by_exp(exp=player.example.profile.exp)
         if player:
             d.update(
                 name=self.player_nick,
                 avatar=player.user.avatar_link,
                 lvl=lvl,
-                role_class=player.example.role_class.title,
+                role_class=player.example.profile.role_class.title,
                 karma=0,  # todo: убрать заглушку
-                driving=player.example.driving.calc_value(),
-                shooting=player.example.shooting.calc_value(),
-                masking=player.example.masking.calc_value(),
-                leading=player.example.leading.calc_value(),
-                trading=player.example.trading.calc_value(),
-                engineering=player.example.engineering.calc_value(),
+                # todo: ##REFACTORING
+                driving=player.example.profile.driving.calc_value(),
+                shooting=player.example.profile.shooting.calc_value(),
+                masking=player.example.profile.masking.calc_value(),
+                leading=player.example.profile.leading.calc_value(),
+                trading=player.example.profile.trading.calc_value(),
+                engineering=player.example.profile.engineering.calc_value(),
             )
 
             # Еслли есть машинка то отправить ее шаблоны и имя
@@ -1268,8 +1270,8 @@ class ChangeAgentKarma(Message):
     def as_dict(self):
         relations = []
         if self.agent.current_location:
-            relations = [dict(npc_node_hash=npc.node_hash(), relation=self.agent.example.get_relationship(npc=npc))
-                         for npc in self.agent.current_location.example.get_npc_list()]
+            relations = [dict(npc_node_hash=npc.node_hash(), relation=self.agent.example.profile.get_relationship(npc=npc))
+                         for npc in self.agent.current_location.example.profile.get_npc_list()]
         d = super(ChangeAgentKarma, self).as_dict()
         d.update(relations=relations)
         return d

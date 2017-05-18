@@ -150,7 +150,7 @@ class WeaponAuto(Weapon):
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, weapon=self, sector=self.sector, action=True, time=time).post()
         # todo: пробросить сюда Ивент
-        self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
+        self.owner.main_agent.example.profile.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
         # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
@@ -277,7 +277,7 @@ class WeaponDischarge(Weapon):
         # Засчитывается только урон по видимым целям
         if len(self.sector.target_list) > 0:
             # todo: пробросить сюда Ивент
-            self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
+            self.owner.main_agent.example.profile.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
         for car in self.sector.target_list:
             dmg = self.calc_dmg(car=car, is_crit=is_crit, time=time)

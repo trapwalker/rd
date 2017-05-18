@@ -334,7 +334,7 @@ class TransactionGasStation(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return
-        agent.example.set_balance(time=self.time, delta=-sum_fuel)
+        agent.example.profile.set_balance(time=self.time, delta=-sum_fuel)
         # проверив всё, можем приступить к заливке топлива
         ex_car.fuel = ex_car.fuel + self.fuel  # наполнить бак
 
@@ -356,7 +356,7 @@ class TransactionGasStation(TransactionTownNPC):
 
         # Эвент квестов
         if self.fuel > 0:
-            self.agent.example.on_event(event=self, cls=quest_events.OnGasStationFuel)
+            self.agent.example.profile.on_event(event=self, cls=quest_events.OnGasStationFuel)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -386,7 +386,7 @@ class TransactionHangarSell(TransactionTownNPC):
                                        info_string=info_string).post()
 
         log_car = self.agent.example.profile.car
-        self.agent.example.set_balance(time=self.time, delta=self.agent.example.profile.car.price)
+        self.agent.example.profile.set_balance(time=self.time, delta=self.agent.example.profile.car.price)
         self.agent.example.profile.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
@@ -439,11 +439,11 @@ class TransactionHangarBuy(TransactionTownNPC):
             car_example.last_location = self.agent.current_location.example
             self.agent.example.profile.car = car_example
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
-            self.agent.example.set_balance(time=self.time, delta=-car_proto.price)
+            self.agent.example.profile.set_balance(time=self.time, delta=-car_proto.price)
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
 
             # Эвент квестов
-            self.agent.example.on_event(event=self, cls=quest_events.OnBuyCar)
+            self.agent.example.profile.on_event(event=self, cls=quest_events.OnBuyCar)
             TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -500,7 +500,7 @@ class TransactionParkingSelect(TransactionTownNPC):
             agent_ex.car_list.remove(car_list[self.car_number])
             agent_ex.car.last_parking_npc = None
 
-            agent.example.set_balance(time=self.time, delta=-summ_for_paying)
+            agent.example.profile.set_balance(time=self.time, delta=-summ_for_paying)
 
             messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
@@ -631,7 +631,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Эвент для квестов
-        self.agent.example.on_event(event=self, cls=quest_events.OnArmorerTransaction)
+        self.agent.example.profile.on_event(event=self, cls=quest_events.OnArmorerTransaction)
 
         # Информация о транзакции
         now_date = datetime.now()
@@ -773,7 +773,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
                                      replica=u'Недопустимое значение ремонта!').post()
             return
         ex_car.hp = ex_car.hp + self.hp
-        agent.example.set_balance(time=self.time, delta=-repair_cost)
+        agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
 
         messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
 
@@ -987,7 +987,7 @@ class TransactionTraderApply(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return
-        agent.example.set_balance(time=self.time, delta=sale_price - buy_price)
+        agent.example.profile.set_balance(time=self.time, delta=sale_price - buy_price)
 
         # Перезагружаем модельный инвентарь
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
@@ -1009,7 +1009,7 @@ class TransactionTraderApply(TransactionTownNPC):
                                     price=(buy_price - sale_price)).post()
 
         # Эвент для квестов
-        self.agent.example.on_event(event=self, cls=quest_events.OnTraderTransaction)
+        self.agent.example.profile.on_event(event=self, cls=quest_events.OnTraderTransaction)
 
 
 class TransactionSetRPGState(TransactionTownNPC):
@@ -1050,10 +1050,10 @@ class TransactionSetRPGState(TransactionTownNPC):
         perk_count = 0
 
         # Проверяем не превышает ли количество запрашиваемых очков навыков допустимое значение
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.exp_table.by_exp(exp=agent.example.exp)
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = agent.example.profile.exp_table.by_exp(exp=agent.example.profile.exp)
         self.lvl = lvl
 
-        max_sp = lvl + agent.example.role_class.start_free_point_skills
+        max_sp = lvl + agent.example.profile.role_class.start_free_point_skills
         for buy_skill in self.buy_skills.values():
             max_sp += buy_skill
 
@@ -1067,7 +1067,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             return  # todo: warning
 
         # Проверяем перки
-        max_p = math.floor(lvl / 10) + agent.example.role_class.start_free_point_perks
+        max_p = math.floor(lvl / 10) + agent.example.profile.role_class.start_free_point_perks
         cur_p = 0
         for perk_node_hash in self.perks:
             if self.perks[perk_node_hash][u'state']:
@@ -1111,7 +1111,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         # Проверка факта сброса перков
         if price == 0:
-            for perk in agent.example.perks:
+            for perk in agent.example.profile.perks:
                 if not self.perks[perk.node_hash()][u'state']:
                     price += npc.drop_price
                     break
@@ -1128,36 +1128,37 @@ class TransactionSetRPGState(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return
-        agent.example.set_balance(time=self.time, delta=-price)
+        agent.example.profile.set_balance(time=self.time, delta=-price)
 
         # Устанавливаем состояние
-        self.agent.example.driving.value = self.skills[u'driving']
-        self.agent.example.shooting.value = self.skills[u'shooting']
-        self.agent.example.masking.value = self.skills[u'masking']
-        self.agent.example.leading.value = self.skills[u'leading']
-        self.agent.example.trading.value = self.skills[u'trading']
-        self.agent.example.engineering.value = self.skills[u'engineering']
+        self.agent.example.profile.driving.value = self.skills[u'driving']
+        self.agent.example.profile.shooting.value = self.skills[u'shooting']
+        self.agent.example.profile.masking.value = self.skills[u'masking']
+        self.agent.example.profile.leading.value = self.skills[u'leading']
+        self.agent.example.profile.trading.value = self.skills[u'trading']
+        self.agent.example.profile.engineering.value = self.skills[u'engineering']
 
-        self.agent.example.buy_driving.value = self.buy_skills[u'buy_driving']
-        self.agent.example.buy_shooting.value = self.buy_skills[u'buy_shooting']
-        self.agent.example.buy_masking.value = self.buy_skills[u'buy_masking']
-        self.agent.example.buy_leading.value = self.buy_skills[u'buy_leading']
-        self.agent.example.buy_trading.value = self.buy_skills[u'buy_trading']
-        self.agent.example.buy_engineering.value = self.buy_skills[u'buy_engineering']
+        self.agent.example.profile.buy_driving.value = self.buy_skills[u'buy_driving']
+        self.agent.example.profile.buy_shooting.value = self.buy_skills[u'buy_shooting']
+        self.agent.example.profile.buy_masking.value = self.buy_skills[u'buy_masking']
+        self.agent.example.profile.buy_leading.value = self.buy_skills[u'buy_leading']
+        self.agent.example.profile.buy_trading.value = self.buy_skills[u'buy_trading']
+        self.agent.example.profile.buy_engineering.value = self.buy_skills[u'buy_engineering']
+        # todo: ##REFACTORING
 
         for perk_node_hash in self.perks:
             perk_rec = self.perks[perk_node_hash]
             if perk_rec[u'state']:
-                if perk_rec['perk'] not in agent.example.perks:
-                    agent.example.perks.append(perk_rec['perk'])
+                if perk_rec['perk'] not in agent.example.profile.perks:
+                    agent.example.profile.perks.append(perk_rec['perk'])
                     perk_count += 1
             else:
-                if perk_rec['perk'] in agent.example.perks:
-                    agent.example.perks.remove(perk_rec['perk'])
+                if perk_rec['perk'] in agent.example.profile.perks:
+                    agent.example.profile.perks.remove(perk_rec['perk'])
 
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
-        self.agent.example.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
+        self.agent.example.profile.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
 
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
@@ -1190,7 +1191,7 @@ class BagExchangeStartEvent(TransactionTownNPC):
             ).post()
             return  # todo: Пометить жулика
 
-        car_list = [car for car in agent.example.get_car_list_by_npc(npc)]
+        car_list = [car for car in agent.example.profile.get_car_list_by_npc(npc)]
 
         target_car_ex = None
         for car in car_list:
@@ -1207,7 +1208,7 @@ class BagExchangeStartEvent(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
             return  # todo: Пометить жулика
-        agent.example.set_balance(time=self.time, delta=-car_price)
+        agent.example.profile.set_balance(time=self.time, delta=-car_price)
         target_car_ex.date_setup_parking = time.mktime(datetime.now().timetuple())
 
         # Создать инвентарь

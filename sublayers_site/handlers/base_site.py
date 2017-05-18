@@ -47,21 +47,21 @@ class BaseSiteHandler(BaseHandler):
 
         ex_car = None
         if agent_example:
-            user_info['driving'] = agent_example.driving.value
-            user_info['shooting'] = agent_example.shooting.value
-            user_info['masking'] = agent_example.masking.value
-            user_info['engineering'] = agent_example.engineering.value
-            user_info['trading'] = agent_example.trading.value
-            user_info['leading'] = agent_example.leading.value
-            user_info['about_self'] = agent_example.about_self  # Досье
-            user_info['balance'] = agent_example.balance
-            user_info['class'] = '' if agent_example.role_class is None else agent_example.role_class.description
+            user_info['driving']     = agent_example.profile.driving.value
+            user_info['shooting']    = agent_example.profile.shooting.value
+            user_info['masking']     = agent_example.profile.masking.value
+            user_info['engineering'] = agent_example.profile.engineering.value
+            user_info['trading']     = agent_example.profile.trading.value
+            user_info['leading']     = agent_example.profile.leading.value
+            user_info['about_self']  = agent_example.profile.about_self  # Досье
+            user_info['balance']     = agent_example.profile.balance
+            user_info['class'] = '' if agent_example.profile.role_class is None else agent_example.profile.role_class.description
 
             # todo: научиться получать эти параметры
-            user_info['lvl'] = agent_example.get_lvl()
-            user_info['karma'] = agent_example.karma_name(lang=self.user_lang)
+            user_info['lvl'] = agent_example.profile.get_lvl()
+            user_info['karma'] = agent_example.profile.karma_name(lang=self.user_lang)
             # Не формировать темплейт пользователя, пока не установлен ролевой класс
-            if agent_example.role_class:
+            if agent_example.profile.role_class:
                 template_agent_info = tornado.template.Loader(
                     "../sublayers_server/templates/person",
                     namespace=self.get_template_namespace()

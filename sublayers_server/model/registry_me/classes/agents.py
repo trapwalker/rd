@@ -278,7 +278,7 @@ class AgentProfile(Node):
         )
 
     def as_client_dict(self):
-        d = super(Agent, self).as_client_dict()
+        d = super(AgentProfile, self).as_client_dict()
         for name, calc_value in self.iter_skills():
             d[name] = calc_value
         d['role_class'] = '' if self.role_class is None else self.role_class.description
@@ -397,3 +397,9 @@ class Agent(Doc):
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)
         assert isinstance(self.profile, AgentProfile)
+
+    def as_client_dict(self):
+        d = self.profile.as_client_dict()
+        d.update(login=self.login)
+        return d
+
