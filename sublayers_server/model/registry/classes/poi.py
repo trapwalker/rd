@@ -123,6 +123,8 @@ class Town(MapLocation):
         res = []
         for building in self.buildings:
             res.extend(building.instances)
+            if building.head not in res:
+                res.append(building.head)
         return res
 
     def get_npc_by_type(self, type):

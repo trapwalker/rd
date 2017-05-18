@@ -19,7 +19,6 @@ var Connector = (function(){
 
     Connector.prototype.encodeMessage = function(){};
 
-
     return Connector;
 })();
 
@@ -87,10 +86,11 @@ var WSConnector = (function(_super){
                     });
                     // Автореконнект
                     var reconnect_interval;
-
+                    var ping_link = window.location.protocol + "//" + location.hostname +
+                                    $('#settings_server_mode_link_path').text() + '/site_stat';
                     function refresh_server_stat_request() {
                         $.ajax({
-                            url: window.location.protocol + "//" + location.hostname + '/site_stat',
+                            url: ping_link,
                             success: function() {
                                 window.location.reload();
                             },
@@ -98,14 +98,7 @@ var WSConnector = (function(_super){
                         });
                     }
                     reconnect_interval = setInterval(refresh_server_stat_request, 3000);
-
-
-
-
-
-
-}
-
+                }
                 //alert('Код: ' + event.code + ' причина: ' + event.reason);
             };
 
