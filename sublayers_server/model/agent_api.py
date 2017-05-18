@@ -408,7 +408,7 @@ class AgentAPI(API):
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
-        if self.agent.example.car and not self.agent.car:
+        if self.agent.example.profile.car and not self.agent.car:
             self.make_car(time=time)
 
         if self.agent.car:
@@ -428,7 +428,7 @@ class AgentAPI(API):
             return
 
     def make_car(self, time):
-        self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
+        self.car = Bot(time=time, example=self.agent.example.profile.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
     @public_method

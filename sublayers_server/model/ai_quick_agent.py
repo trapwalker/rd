@@ -56,13 +56,13 @@ class AIQuickAgent(AI):
     def on_timer_restart_car(self, event):
         if self.worked and len(self.server.app.clients) * 2 < self.server.reg['world_settings'].quick_game_bot_count:
             # Добавить свою машинку на карту
-            self.example.car = self._car_proto.instantiate(fixtured=False)
-            yield self.example.car.load_references()
+            self.example.profile.car = self._car_proto.instantiate(fixtured=False)
+            yield self.example.profile.car.load_references()
             self.example.current_location = None
             self.current_location = None
-            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius) # Радиус появления ботов в быстрой игре
+            self.example.profile.car.position = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius) # Радиус появления ботов в быстрой игре
 
-            car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
+            car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
             self.car.fire_auto_enable(enable=True, time=event.time + 0.1)
 

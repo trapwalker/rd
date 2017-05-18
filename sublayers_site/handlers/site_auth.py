@@ -98,10 +98,9 @@ class StandardLoginHandler(BaseSiteHandler):
                 quick_flag=False,
                 profile=dict(
                     name=str(user._id),
-                    parent='agents/user',
+                    parent='/registry/agents/user',
                 ),
-            )
-            agent_example.save(upsert=True)
+            ).save(upsert=True)
 
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -268,7 +267,7 @@ class StandardLoginHandler(BaseSiteHandler):
             user.save()
 
             # Устанавливаем порядковый номер пользователя
-            ordinal_number = yield user.assign_ordinal_number()
+            ordinal_number = user.assign_ordinal_number()
             if ordinal_number is None:
                 log.warning('Dont set Ordinal_number for user')
 

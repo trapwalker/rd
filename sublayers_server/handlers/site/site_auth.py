@@ -38,19 +38,17 @@ class BaseLoginHandler(BaseHandler):
 
 
 class StandardLoginHandler(BaseLoginHandler):
-    @tornado.gen.coroutine
     def post(self):
         action = self.get_argument('action', None)
         if action == 'reg':
-            res = yield self._registration()
+            res = self._registration()
         elif action == 'auth':
-            res = yield self._authorisation()
+            res = self._authorisation()
         else:
             raise HTTPError(405, log_message='Wrong action {}.'.format(action))
 
-        raise tornado.gen.Return(res)
+        return res
 
-    @tornado.gen.coroutine
     def _registration(self):
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
@@ -64,37 +62,35 @@ class StandardLoginHandler(BaseLoginHandler):
         ):
             raise HTTPError(400, log_message='Wrong auth data.')
 
-        user = yield User.get_by_email(email=email)
+        user = User.get_by_email(email=email)
         if user:
-            raise tornado.gen.Return(self.login_error_redirect(msg=u"Пользователь с таким email уже зарегистрирован."))
+            return self.login_error_redirect(msg=u"Пользователь с таким email уже зарегистрирован.")
 
-        user = yield User.get_by_name(name=username)
+        user = User.get_by_name(name=username)
         if user:
-            raise tornado.gen.Return(self.login_error_redirect(msg=u"Пользователь с таким именем уже зарегистрирован."))
+            return self.login_error_redirect(msg=u"Пользователь с таким именем уже зарегистрирован.")
 
         # todo: check username unical
-        user = User(name=username, raw_password=password, email=email)
-        yield user.save()
+        user = User(name=username, raw_password=password, email=email).save()
         self.set_secure_cookie("user", str(user.id))
         log.debug('User %s created sucessfully', user)
-        raise tornado.gen.Return(self.redirect("/"))
+        return self.redirect("/")
 
-    @tornado.gen.coroutine
     def _authorisation(self):
         email = self.get_argument('email', None)
         password = self.get_argument('password', None)
         if not email or not password:
             raise HTTPError(400, log_message='Wrong auth data.')
 
-        user = yield User.get_by_email(email=email)
+        user = User.get_by_email(email=email)
         if not user:
-            raise tornado.gen.Return(self.login_error_redirect(msg=u"Пользователь с таким email не найден."))
+            return self.login_error_redirect(msg=u"Пользователь с таким email не найден.")
 
         if not user.check_password(password):
-            raise tornado.gen.Return(self.login_error_redirect(msg=u"Неверный email или пароль."))
+            return self.login_error_redirect(msg=u"Неверный email или пароль.")
 
         self.set_secure_cookie("user", str(user.id))
-        raise tornado.gen.Return(self.redirect("/"))
+        return self.redirect("/")
 
 
 # class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):

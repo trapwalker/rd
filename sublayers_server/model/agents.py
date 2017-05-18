@@ -165,9 +165,9 @@ class Agent(Object):
         if self.car:
             # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
             self.car.on_save(time)
-            self.example.car = self.car.example
+            self.example.profile.car = self.car.example
         # elif self.current_location is None:  # todo: wtf ?!
-        #     self.example.car = None
+        #     self.example.profile.car = None
         # todo: save chats, party...
         # self.example.save()
         agent = self
@@ -534,8 +534,8 @@ class Agent(Object):
                 self.inventory.save_to_example(time=time)
             self.inventory.del_all_visitors(time=time)
             self.inventory = None
-        if self.example.car:
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, total_inventory=total_inventory,
+        if self.example.profile.car:
+            LoadInventoryEvent(agent=self, inventory=self.example.profile.car.inventory, total_inventory=total_inventory,
                                time=time, make_game_log=make_game_log).post()
 
     def on_enter_location(self, location, event):
@@ -548,11 +548,11 @@ class Agent(Object):
         if self.car:  # Вход в город и раздеплой машинки
             self.car.example.last_location = location.example
             self.car.displace(time=event.time)
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
-        elif self.example.car and self.inventory:  # Обновление клиента (re-enter)
+            LoadInventoryEvent(agent=self, inventory=self.example.profile.car.inventory, time=event.time + 0.01, make_game_log=False).post()
+        elif self.example.profile.car and self.inventory:  # Обновление клиента (re-enter)
             self.inventory.send_inventory(agent=self, time=event.time)
-        elif self.example.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
-            LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
+        elif self.example.profile.car and self.inventory is None:  # Загрузка агента с машинкой сразу в город
+            LoadInventoryEvent(agent=self, inventory=self.example.profile.car.inventory, time=event.time + 0.01, make_game_log=False).post()
 
         # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
 
@@ -800,15 +800,15 @@ class QuickUser(User):
             user.car_index = 0
         else:
             user.car_index = int(user.car_index)
-        self.example.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
-        yield self.example.car.load_references()
+        self.example.profile.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
+        yield self.example.profile.car.load_references()
 
         if user.start_position:
-            self.example.car.position = user.start_position
+            self.example.profile.car.position = user.start_position
             user.start_position = None
         else:
             # Радиус появления игроков в быстрой игре
-            self.example.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
+            self.example.profile.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
 
         self.example.current_location = None
         self.current_location = None

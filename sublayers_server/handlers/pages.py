@@ -27,9 +27,9 @@ class PlayHandler(BaseHandler):
                 if agent.car:
                     coord = agent.car.position(time=self.application.srv.get_time())
                 elif agent.current_location:
-                    coord = agent.current_location.example.position
-                elif agent.example.car:
-                    coord = agent.example.car.position
+                    coord = agent.current_location.example.profile.position
+                elif agent.example.profile.car:
+                    coord = agent.example.profile.car.position
 
                 # todo: убрать все что касается is_tester
                 if not user.quick and not user.is_tester:

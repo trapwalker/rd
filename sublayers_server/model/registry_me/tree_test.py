@@ -30,7 +30,6 @@ def test3():
     reg = get_global_registry(path=u'../../../sublayers_world/registry', reload=False)
     x = reg.get_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
-    print(x.parent)
     globals().update(locals())
 
 def test4():
@@ -47,6 +46,6 @@ def test4():
     globals().update(locals())
 
 if __name__ == '__main__':
-    db = connect(db='mongodb://localhost/test_me')
+    db = connect(db='test_me')
     log.info('Use `test_me` db')
     test3()

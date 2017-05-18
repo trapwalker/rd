@@ -244,7 +244,7 @@ class Unit(Observer):
         if self.owner:
             self.owner.example.set_balance(time=event.time, delta=self.example.price)
             # todo: возможно это нужно перенести (!)
-            self.owner.example.car = None
+            self.owner.example.profile.car = None
 
         if not self.inventory.is_empty():
             self.post_die_loot(event)

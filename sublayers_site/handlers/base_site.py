@@ -35,7 +35,7 @@ class BaseSiteHandler(BaseHandler):
                     name=str(user._id),
                     role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
                 ),
-            ).expand_links()
+            )
 
             for class_skill in agent_example.profile.role_class.class_skills:
                 # todo: Перебирать объекты реестра
@@ -74,7 +74,7 @@ class BaseSiteHandler(BaseHandler):
                 )
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
-            ex_car = agent_example.car
+            ex_car = agent_example.profile.car
             if ex_car:
                 user_info['position'] = ex_car.position.as_point().as_tuple()
 

@@ -476,6 +476,10 @@ class Node(Subdoc):
 
         return i if obj else -1
 
+    def instantiate(self, **kw):
+        assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
+        return self.__class__(parent=self, **kw).expand_links()
+
 
 ########################################################################################################################
 
@@ -626,7 +630,6 @@ class Root(Node):
 
 REGISTRY = None
 
-@Timer(logger=log, log_start=None, log_stop='Registry fetched in {timer.duration}s')
 def get_global_registry(path=None, reload=False):
     global REGISTRY
     if REGISTRY is None:

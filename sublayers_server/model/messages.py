@@ -866,7 +866,7 @@ class JournalParkingInfoMessage(Message):
             ),
             location=car.last_location.node_hash(),
             location_name=car.last_location.title,
-        ) for car in self.agent.example.car_list])
+        ) for car in self.agent.example.profile.car_list])
         return d
 
 
@@ -950,7 +950,7 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
         d = super(UserExampleSelfShortMessage, self).as_dict()
         agent = self.agent
         user = agent.user
-        ex_car = agent.example.car
+        ex_car = agent.example.profile.car
 
         d['user_name'] = user.name
         d['avatar_link'] = user.avatar_link
@@ -976,21 +976,21 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
             # Информация для оружейника
             car_npc_info['armorer_slots'] = [
                 dict(name=k, value=v and v.as_client_dict())
-                for k, v in self.agent.example.car.iter_slots(tags='armorer')
+                for k, v in self.agent.example.profile.car.iter_slots(tags='armorer')
             ]
             car_npc_info['armorer_slots_flags'] = [
                 dict(name=name, value=getter and getter())
-                for name, attr, getter in self.agent.example.car.iter_attrs(tags='slot_limit')
+                for name, attr, getter in self.agent.example.profile.car.iter_attrs(tags='slot_limit')
             ]
             # Информация для механика
             car_npc_info['mechanic_slots'] = [
                 dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
-                for k, v, attr in self.agent.example.car.iter_slots2(tags='mechanic')
+                for k, v, attr in self.agent.example.profile.car.iter_slots2(tags='mechanic')
             ]
             # Информация для тюнера
             car_npc_info['tuner_slots'] = [
                 dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
-                for k, v, attr in self.agent.example.car.iter_slots2(tags='tuner')
+                for k, v, attr in self.agent.example.profile.car.iter_slots2(tags='tuner')
             ]
 
             d['car_npc_info'] = car_npc_info
@@ -1001,7 +1001,7 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
 class UserExampleSelfMessage(UserExampleSelfShortMessage):
     def as_dict(self):
         d = super(UserExampleSelfMessage, self).as_dict()
-        ex_car = self.agent.example.car
+        ex_car = self.agent.example.profile.car
         if ex_car:
             template_armorer_car = tornado.template.Loader(
                 "../sublayers_common/",
@@ -1152,8 +1152,8 @@ class TraderInfoMessage(NPCInfoMessage):
 
         d['agent_balance'] = self.agent.balance
         d['trader_assortment'] = npc.get_trader_assortment(agent=self.agent)
-        if self.agent.example.car:
-            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.car.inventory.items)
+        if self.agent.example.profile.car:
+            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.profile.car.inventory.items)
         else:
             d['agent_assortment'] = []
         return d
@@ -1200,7 +1200,7 @@ class InteractionInfoMessage(Message):
             )
 
             # Еслли есть машинка то отправить ее шаблоны и имя
-            if player.example.car:
+            if player.example.profile.car:
                 template_table = tornado.template.Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
@@ -1210,9 +1210,9 @@ class InteractionInfoMessage(Message):
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")
                 d.update(
-                    car_name = player.example.car.title,
-                    html_car_table=template_table.generate(car=player.example.car),
-                    html_car_img=template_img.generate(car=player.example.car)
+                    car_name = player.example.profile.car.title,
+                    html_car_table=template_table.generate(car=player.example.profile.car),
+                    html_car_img=template_img.generate(car=player.example.profile.car)
                 )
         return d
 
@@ -1242,14 +1242,14 @@ class PartyUserInfoMessage(Message):
             )
 
             # Еслли есть машинка то отправить ее шаблоны и имя
-            if player.example.car:
+            if player.example.profile.car:
                 template_img = tornado.template.Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")
                 d.update(
-                    car_name = player.example.car.title,
-                    html_car_img=template_img.generate(car=player.example.car)
+                    car_name = player.example.profile.car.title,
+                    html_car_img=template_img.generate(car=player.example.profile.car)
                 )
         return d
 

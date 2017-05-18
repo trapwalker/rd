@@ -27,7 +27,7 @@ class MainCarInfoHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        self.render("main_car_info_window.html", car=agent.example.car)
+        self.render("main_car_info_window.html", car=agent.example.profile.car)
 
 
 class PersonInfoHandler(BaseHandler):
@@ -49,7 +49,7 @@ class PersonInfoHandler(BaseHandler):
         if mode == 'city':
             self.render("person_info_chat.html", agent=person)
         elif mode == 'map':
-            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=person.example.exp)
+            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.profile.exp_table.by_exp(exp=person.example.profile.exp)
             car = None if person.car is None else person.car.example
             self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)
 
@@ -72,5 +72,5 @@ class PersonInfoCorpseHandler(BaseHandler):
         car = container.donor_car
         # print 'open PersonInfoCorpseHandler for person={}'.format(person)
         agent.log.info('open PersonInfoCorpseHandler for person={}'.format(person))
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.exp_table.by_exp(exp=person.example.exp)
+        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.profile.exp_table.by_exp(exp=person.example.profile.exp)
         self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)

@@ -7,8 +7,6 @@ from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 
 from bson.objectid import ObjectId, InvalidId
-import tornado
-
 from time import mktime
 import datetime
 
@@ -51,14 +49,12 @@ class GetUserInfoHandler(BaseSiteHandler):
 
 
 class GetUserInfoByIDHandler(BaseSiteHandler):
-    @tornado.gen.coroutine
     def post(self):
-        pass
         user_id = self.get_argument('user_id', None)
         if user_id:
             user = None
             try:
-                user = yield User.objects.get(ObjectId(user_id))
+                user = User.objects.get(ObjectId(user_id))
             except InvalidId as e:
                 log.warning('User resolve error: %r', e)
             if user:

@@ -28,7 +28,7 @@ class APIGetCarInfoHandler(BaseHandler):
             self.send_error(404)
             return
 
-        ex_car = agent.example.car
+        ex_car = agent.example.profile.car
         if not ex_car:
             self.send_error(404)
             return
@@ -84,20 +84,20 @@ class APIGetUserInfoHandler(BaseHandler):
             agent = self.application.srv.api.get_agent(user, make=True)
         # agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example
         if agent:
-            user_info['driving'] = agent.example.driving.value
-            user_info['shooting'] = agent.example.shooting.value
-            user_info['masking'] = agent.example.masking.value
-            user_info['engineering'] = agent.example.engineering.value
-            user_info['trading'] = agent.example.trading.value
-            user_info['leading'] = agent.example.leading.value
-            user_info['about_self'] = agent.example.about_self  # Досье
+            user_info['driving'    ] = agent.example.profile.driving.value
+            user_info['shooting'   ] = agent.example.profile.shooting.value
+            user_info['masking'    ] = agent.example.profile.masking.value
+            user_info['engineering'] = agent.example.profile.engineering.value
+            user_info['trading'    ] = agent.example.profile.trading.value
+            user_info['leading'    ] = agent.example.profile.leading.value
+            user_info['about_self' ] = agent.example.profile.about_self  # Досье
             user_info['balance'] = agent.balance
             # todo: сделать пересылку правильных параметров
             user_info['lvl'] = '5'
 
             user_info['class'] = ''
-            if agent.example.role_class:
-                user_info['class'] = agent.example.role_class.description
+            if agent.example.profile.role_class:
+                user_info['class'] = agent.example.profile.role_class.description
             user_info['karma'] = '138'
 
             template_agent_info = tornado.template.Loader(
@@ -108,7 +108,7 @@ class APIGetUserInfoHandler(BaseHandler):
                                                       user_lang=self.user_lang)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
-            ex_car = agent.example.car
+            ex_car = agent.example.profile.car
             if ex_car:
                 name_car = ex_car.name_car
                 user_info['position'] = ex_car.position.as_tuple()

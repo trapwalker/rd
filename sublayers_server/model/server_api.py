@@ -8,7 +8,7 @@ from sublayers_server.model.api_tools import API
 from sublayers_server.model.registry_me.classes.agents import Agent
 
 import tornado.web
-from random import randint
+import random
 
 
 class ServerAPI(API):
@@ -29,22 +29,24 @@ class ServerAPI(API):
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
-                agent_exemplar = self.server.reg['agents/user'].instantiate(
-                    name=str(user._id), login=user.name, fixtured=False, user_id=str(user._id),
-                    abstract=False,
-                )
-                yield agent_exemplar.load_references()
-                yield agent_exemplar.save(upsert=True)
-                role_class_ex = self.server.reg['rpg_settings/role_class/chosen_one']
-                agent_exemplar.role_class = role_class_ex
+                # todo: doit
+                agent_exemplar = Agent(
+                    login=user.name,
+                    user_id=str(user._id),
+                    profile=dict(
+                        parent='/registry/agents/user',
+                        name=str(user._id),
+                        role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+                    ),
+                ).save()
 
-                for class_skill in role_class_ex.class_skills:
+                for class_skill in agent_exemplar.profile.role_class.class_skills():
                     # todo: Перебирать объекты реестра
                     if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
                         skill = getattr(agent_exemplar, class_skill.target)
                         skill.mod = class_skill
 
-                yield agent_exemplar.save(upsert=True)
+                agent_exemplar.save()
                 log.debug('New agent exemplar: %s', agent_exemplar)
 
             # todo: rename User to UserAgent
@@ -60,41 +62,30 @@ class ServerAPI(API):
                 if agent.connection:
                     agent.connection.close()
             # log.info('Server API: Old Agent given: %s', agent_id)
-        raise tornado.gen.Return(agent)
+        return agent
 
-    @tornado.gen.coroutine
     def get_agent_quick_game(self, user, do_disconnect=False):
         # User здесь обязательно QuickUser
         assert user.quick
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
             # agent_exemplar = yield Agent.objects.get(user_id=str(user._id), quick_flag=True)
-            agent_exemplar = yield Agent.objects.filter(user_id=str(user._id), quick_flag=True, teaching_flag=False).find_all()
+            agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=True, teaching_flag=False).find_all()
+            # todo: assert by multiagent
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
-                    #storage=self.application.reg_agents,
+                role_class_list = self.server.reg.get('world_settings').role_class_order
+                assert role_class_list, 'role_class_list is empty in server settings'
+                agent_exemplar = Agent(
                     login=user.name,
                     user_id=str(user._id),
-                    name=str(user._id),
-                    fixtured=False,
-                )
-                yield agent_exemplar.load_references()
-                yield agent_exemplar.save(upsert=True)
-                role_class_list = self.server.reg['world_settings'].role_class_order
-                agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
-
-                agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
-                agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
-                agent_exemplar.driving.value = 20
-                agent_exemplar.shooting.value = 20
-                agent_exemplar.masking.value = 20
-                agent_exemplar.leading.value = 20
-                agent_exemplar.trading.value = 20
-                agent_exemplar.engineering.value = 20
-                agent_exemplar.quick_flag = True
-                agent_exemplar.teaching_flag = False
-                yield agent_exemplar.save(upsert=True)
+                    profile=dict(
+                        parent='/registry/agents/user/quick',
+                        name=str(user._id),
+                        role_class=random.choice(role_class_list),
+                        karma=random.randint(-80, 80),
+                    ),
+                ).save()
 
             log.debug('QuickUser agent exemplar: %s', agent_exemplar)
             agent = QuickUser(
@@ -108,12 +99,11 @@ class ServerAPI(API):
 
         # Установить рандомную аватарку
         avatar_list = self.server.reg['world_settings'].avatar_list
-        user.avatar_link = avatar_list[randint(0, len(avatar_list) - 1)]
+        user.avatar_link = random.choice(avatar_list)
+        log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.profile.car)
 
-        log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
-
-        if agent.example.car is None or agent.car is None:
-            yield agent.init_example_car()
+        if agent.example.profile.car is None or agent.car is None:
+            agent.init_example_car()
         else:
             if agent and do_disconnect:
                 if agent.connection:
@@ -187,8 +177,8 @@ class ServerAPI(API):
         else:
             agent.user = user  # Обновить юзера
 
-        log.info('User INFO: %s [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.car)
-        if agent.example.car is None or agent.car is None:
+        log.info('User INFO: %s [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.profile.car)
+        if agent.example.profile.car is None or agent.car is None:
             yield agent.init_example_car()
         else:
             if agent and do_disconnect:
