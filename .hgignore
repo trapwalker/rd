@@ -5,6 +5,7 @@ syntax: glob
 *.bmp
 *.bak
 temp/*
+_stat/
 -/*
 *.old.json
 *.sqlite3
