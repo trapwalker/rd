@@ -203,7 +203,7 @@
             // Получаем список всех доступных файлов
             var file_list = [];
             {% for file_name in file_list %}
-                file_list.push("../static/log/stat/" + "{{ file_name }}");
+                file_list.push("../static/stat/" + "{{ file_name }}");
                 console.log("{{ file_name }}");
             {% end %}
 
