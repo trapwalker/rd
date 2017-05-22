@@ -194,7 +194,8 @@ class WeaponAuto(Weapon):
             owner.log.info('on_start {}: item<{}> time={} len_sector_targets={}'.format(self, item, time, len(self.sector.target_list)))
         super(WeaponAuto, self).on_start(item=item, time=time)
         for car in self.sector.target_list:
-            self._start_fire_to_car(car=car, time=time)
+            if car not in self.targets:
+                self._start_fire_to_car(car=car, time=time)
 
     def on_stop(self, item, time):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner

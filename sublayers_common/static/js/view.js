@@ -148,7 +148,6 @@ $(document).ready(function () {
         returnFocusToMap();
     });
 
-
     img.push(new Image());
     img.push(new Image());
     img.push(new Image());
@@ -209,7 +208,6 @@ $(document).ready(function () {
 
     resourceLoadManager.load_complete_init = true;
     resourceLoadManager.del(null);
-
 
     setTimeout(function() {settingsManager.options.game_color.set_callback(settingsManager.options.game_color.value)}, 10);
 });

@@ -426,7 +426,7 @@ class Server(object):
             e["event_perf_time_interval"] = []
             e["event_lag_interval"] = []
 
-            return "{event_name};{count};{perf_time_average};{perf_time_max};{perf_time_summ};{lag_time_max};{lag_time_average};".format(
+            return "{event_name};{count};{perf_time_average:.5f};{perf_time_max:.5f};{perf_time_summ:.5f};{lag_time_max:.5f};{lag_time_average:.5f};".format(
                 event_name=event_name,
                 count= 1. * count / options.server_stat_log_interval,
                 perf_time_average=average_perf_time,

@@ -364,12 +364,12 @@
             // Получаем список всех доступных файлов
             var file_list = [];
             {% for file_name in file_list %}
-                file_list.push("../static/log/stat/" + "{{ file_name }}" + "?" + (new Date().getTime()));
+                file_list.push("../static/stat/" + "{{ file_name }}" + "?" + (new Date().getTime()));
             {% end %}
 
             var events_file_list = [];
             {% for file_name in event_file_list %}
-                events_file_list.push("../static/log/stat/" + "{{ file_name }}" + "?" + (new Date().getTime()));
+                events_file_list.push("../static/stat/" + "{{ file_name }}" + "?" + (new Date().getTime()));
             {% end %}
 
             // Скачиваем и подготавливаем все файлы из списка
