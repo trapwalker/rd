@@ -747,8 +747,11 @@ class DeliveryQuestSimple(DeliveryQuest):
         return self.distance_table.get_distance(town1=town1, town2=town2)
 
     def init_deadline(self, distance):
-        self.deadline = 20
-        # self.deadline = distance / 14.  # todo: округлить до красивого времени (кратно 5 минутам)
+        # Время выделенное на квест в секундах
+        all_time = distance / 14
+
+        # Время выделенное на квест кратно 5 минутам
+        self.deadline = (all_time / 300) * 300 + 300 if (all_time % 300) > 0 else 0
 
 
 class AIQuickQuest(Quest):
