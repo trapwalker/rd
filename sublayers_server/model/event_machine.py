@@ -210,14 +210,11 @@ class Server(object):
             respawns_root.position = self.quick_game_start_pos
             MapRespawn(time=event.time, example=rs_exm, server=self)
 
-    @tornado.gen.coroutine
     def load_ai_quick_bots(self):
         from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
 
-        bot_count = self.reg['world_settings'].quick_game_bot_count
-        if not bot_count:
-            bot_count = 0
+        bot_count = self.reg['world_settings'].quick_game_bot_count or 0
         # Создать ботов
         avatar_list = self.reg['world_settings'].avatar_list
         role_class_list = self.reg['world_settings'].role_class_order
@@ -225,38 +222,40 @@ class Server(object):
         car_proto_list_len = len(car_proto_list)
         current_machine_index = 0
         bots_names = self.reg['world_settings'].quick_game_bots_nick
-        for i in range(0, bot_count):
+        for i in xrange(bot_count):
             # Найти или создать профиль
-            name = 'quick_bot_{}'.format(i) if i >= len(bots_names) else bots_names[i]
-            user = yield UserProfile.get_by_name(name=name)
+            name = bots_names[i] if bots_names and i < len(bots_names) else 'quick_bot_{}'.format(i)
+            user = UserProfile.get_by_name(name=name)
             if user is None:
-                user = UserProfile(name=name, email='quick_bot_{}@1'.format(i), raw_password='1')
-                user.avatar_link = avatar_list[random.randint(0, len(avatar_list) - 1)]
-                yield user.save()
+                user = UserProfile(
+                    name=name,
+                    email='quick_bot_{}@1'.format(i),
+                    raw_password='1',
+                    avatar_link=random.choice(avatar_list),
+                ).save()
 
             # Создать AIQuickAgent
-            agent_exemplar = yield Agent.objects.get(user_id=str(user._id))
+            agent_exemplar = Agent.objects.get(user_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.quick_game_bot_agents_proto[
-                    random.randint(0, len(self.quick_game_bot_agents_proto) - 1)]
-                agent_exemplar = agent_exemplar.instantiate(
-                    login=user.name,
+                assert self.quick_game_bot_agents_proto
+                agent_exemplar = Agent(
                     user_id=str(user._id),
-                    name=str(user._id),
-                    fixtured=False,
+                    login=user.name,
+                    profile=random.choice(self.quick_game_bot_agents_proto).instantiate(
+                        name=str(user._id),
+                        role_class=random.choice(role_class_list),
+                        karma=random.randint(-80, 80),
+                        _exp=1005,
+                    ),
                 )
-                yield agent_exemplar.load_references()
-
-                agent_exemplar.role_class = role_class_list[random.randint(0, len(role_class_list) - 1)]
-                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
-                agent_exemplar.set_exp(time=self.get_time(), value=1005)
-                agent_exemplar.driving.value = random.randint(20, 40)
-                agent_exemplar.shooting.value = random.randint(20, 40)
-                agent_exemplar.masking.value = random.randint(20, 40)
-                agent_exemplar.leading.value = random.randint(20, 40)
-                agent_exemplar.trading.value = random.randint(20, 40)
-                agent_exemplar.engineering.value = random.randint(20, 40)
-                yield agent_exemplar.save(upsert=True)
+                # todo: ##REFACTORING
+                agent_exemplar.profile.driving.value = random.randint(20, 40)
+                agent_exemplar.profile.shooting.value = random.randint(20, 40)
+                agent_exemplar.profile.masking.value = random.randint(20, 40)
+                agent_exemplar.profile.leading.value = random.randint(20, 40)
+                agent_exemplar.profile.trading.value = random.randint(20, 40)
+                agent_exemplar.profile.engineering.value = random.randint(20, 40)
+                agent_exemplar.save()
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
             car_proto = car_proto_list[current_machine_index % car_proto_list_len]
@@ -269,7 +268,6 @@ class Server(object):
                 car_proto=car_proto
             )
 
-    @tornado.gen.coroutine
     def load_test_accounts(self):
         from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
@@ -293,38 +291,41 @@ class Server(object):
         for acc in tester_accounts:
             # Найти или создать профиль
             name = acc['nickname']
-            user = yield UserProfile.get_by_name(name=name)
+            user = UserProfile.get_by_name(name=name)
             if user is None:
-                user = UserProfile(name=name, email=acc['login'], raw_password=str(acc['password']))
-                user.avatar_link = random.choice(avatar_list)
-                user.registration_status = 'register'
-                user.is_tester = True
-                yield user.save()
+                user = UserProfile(
+                    name=name,
+                    email=acc['login'],
+                    raw_password=str(acc['password']),
+                    avatar_link=random.choice(avatar_list),
+                    registration_status='register',
+                    is_tester=True,
+                ).save()
                 log.info('Test account created: %s', acc['login'])
 
+            # todo: ##REFACTORING
             # Создать AIQuickAgent
-            agent_exemplar = yield Agent.objects.get(user_id=str(user._id))
+            agent_exemplar = Agent.objects.get(user_id=str(user._id))
             if agent_exemplar is None:
-                agent_exemplar = self.reg['agents/user/quick'].instantiate(
-                    login=user.name,
+                agent_exemplar = Agent(
                     user_id=str(user._id),
-                    name=str(user._id),
-                    fixtured=False,
+                    login=user.name,
+                    quick_flag=True,
+                    teaching_flag=False,
+                    profile=self.reg.get('registry/agents/user/quick').instantiate(
+                        name=str(user._id),
+                        role_class=random.choice(role_class_list),
+                        karma=random.randint(-80, 80),
+                        _exp=1005,
+                    ),
                 )
-                yield agent_exemplar.load_references()
-                yield agent_exemplar.save(upsert=True)
-                agent_exemplar.role_class = random.choice(role_class_list)
-                agent_exemplar.set_karma(time=self.get_time(), value=random.randint(-80, 80))
-                agent_exemplar.set_exp(time=self.get_time(), value=1005)
-                agent_exemplar.driving.value = 20
-                agent_exemplar.shooting.value = 20
-                agent_exemplar.masking.value = 20
-                agent_exemplar.leading.value = 20
-                agent_exemplar.trading.value = 20
-                agent_exemplar.engineering.value = 20
-                agent_exemplar.quick_flag = True
-                agent_exemplar.teaching_flag = False
-                yield agent_exemplar.save(upsert=True)
+                agent_exemplar.profile.driving.value = 20
+                agent_exemplar.profile.shooting.value = 20
+                agent_exemplar.profile.masking.value = 20
+                agent_exemplar.profile.leading.value = 20
+                agent_exemplar.profile.trading.value = 20
+                agent_exemplar.profile.engineering.value = 20
+                agent_exemplar.save(upsert=True)
 
     def post_message(self, message):
         """
