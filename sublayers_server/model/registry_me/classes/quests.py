@@ -233,7 +233,7 @@ class Quest(Node):
     list_icon   = StringField(tags={'client'}, caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
     level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = DateTimeField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
-    deadline    = DateTimeField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
     hirer       = RegistryLinkField(
         tags={'client'}, caption=u'Заказчик', doc=u'NPC-заказчик квеста',

@@ -23,4 +23,6 @@ import notes
 
 import quick_game_items
 
+import disttable
+
 #import _test
