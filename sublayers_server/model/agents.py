@@ -618,12 +618,9 @@ class Agent(Object):
 
     def set_teaching_state(self, state):
         user = self.user
-        agent = self
-        def callback(*kw):
-            # log.info('teaching test for user <{}> changed: {}'.format(user.name, state))
-            agent.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
         user.teaching_state = state
-        tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
+        user.save()
+        self.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
 
 
 # todo: Переименовать в UserAgent
@@ -784,7 +781,6 @@ class QuickUser(User):
 
         QuickGameChangePoints(agent=self, time=event.time).post()
 
-    @tornado.gen.coroutine
     def init_example_car(self):
         user = self.user
         # log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
@@ -793,15 +789,15 @@ class QuickUser(User):
         try:
             user.car_index = int(user.car_index)
         except:
+            log.warning('Wrong QuickGame car index format %r', user.car_index)
             user.car_index = 0
 
-        if user.car_index < 0 or user.car_index >= len(self.server.quick_game_cars_proto):
-            log.warning('Unknown QuickGame car index %s', user.car_index)
+        _count_qg_cars = len(self.server.quick_game_cars_proto)
+        if not (0 <= user.car_index < _count_qg_cars):
+            log.warning('Wrong QuickGame car index %r: not in interval [0..%r)', user.car_index, _count_qg_cars)
             user.car_index = 0
-        else:
-            user.car_index = int(user.car_index)
-        self.example.profile.car = self.server.quick_game_cars_proto[user.car_index].instantiate(fixtured=False)
-        yield self.example.profile.car.load_references()
+
+        self.example.profile.car = self.server.quick_game_cars_proto[user.car_index].instantiate()
 
         if user.start_position:
             self.example.profile.car.position = user.start_position

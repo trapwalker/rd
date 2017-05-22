@@ -1071,7 +1071,7 @@ class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):
         super(NPCInfoMessage, self).__init__(**kw)
         self.npc_node_hash = npc_node_hash
-        self.npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
+        self.npc = self.agent.server.reg.get(self.npc_node_hash)
 
     def as_dict(self):
         d = super(NPCInfoMessage, self).as_dict()

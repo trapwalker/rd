@@ -179,7 +179,7 @@ class ServerAPI(API):
 
         log.info('User INFO: %s [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.profile.car)
         if agent.example.profile.car is None or agent.car is None:
-            yield agent.init_example_car()
+            agent.init_example_car()
         else:
             if agent and do_disconnect:
                 if agent.connection:

@@ -6,9 +6,6 @@ log = logging.getLogger(__name__)
 from datetime import datetime, timedelta
 import time
 import math
-
-from tornado.ioloop import IOLoop
-import tornado.gen
 from uuid import UUID
 
 from sublayers_server.model.events import Event
@@ -45,17 +42,6 @@ class TransactionEvent(Event):
         super(TransactionEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
 
-    def on_perform(self):
-        super(TransactionEvent, self).on_perform()
-        IOLoop.instance().add_future(future=self.on_perform_async(), callback=self.on_done_perform_async)
-
-    @tornado.gen.coroutine
-    def on_perform_async(self):
-        pass
-
-    def on_done_perform_async(self, *av, **kw):
-        pass
-
 
 class TransactionActivateItem(TransactionEvent):
     # todo: присвоить правильный __str__template, чтобы было видно какой итем активирован
@@ -74,9 +60,8 @@ class TransactionActivateItem(TransactionEvent):
 
 # todo: ##REFACTOR IT
 class TransactionActivateTank(TransactionActivateItem):
-    @tornado.gen.coroutine
-    def on_perform_async(self):
-        yield super(TransactionActivateTank, self).on_perform_async()
+    def on_perform(self):
+        super(TransactionActivateTank, self).on_perform()
 
         # todo: Сделать возможным запуск в городе
         if self.agent.current_location is not None:
@@ -256,7 +241,8 @@ class TransactionTownNPC(TransactionEvent):
 
     def get_npc_available_transaction(self, npc_type):
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
+        # todo: ##REFACTORING
+        npc = self.agent.server.reg.get(self.npc_node_hash, None)
         error = False
         if npc is None:
             log.warning('%r NPC not found: %s', self, self.npc_node_hash)
@@ -298,10 +284,9 @@ class TransactionGasStation(TransactionTownNPC):
         self.fuel = fuel
         self.tank_list = tank_list
 
-    @tornado.gen.coroutine
-    def on_perform_async(self):
+    def on_perform(self):
         # todo: Сделать единый механизм проверки консистентности и валидности состояния агента для всех транзакций
-        yield super(TransactionGasStation, self).on_perform_async()
+        super(TransactionGasStation, self).on_perform()
 
         npc = self.get_npc_available_transaction(npc_type='npc_gas_station')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
@@ -316,8 +301,10 @@ class TransactionGasStation(TransactionTownNPC):
             self.fuel = 0
         if ex_car.max_fuel < self.fuel + ex_car.fuel:
             log.warning('%r try to use many fuel (%s), than can', self, self.fuel)
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Недопустимое кол-во топлива!').post()
+            messages.NPCReplicaMessage(
+                agent=self.agent, time=self.time, npc=npc,
+                replica=u'Недопустимое кол-во топлива!',
+            ).post()
             return
 
         # Сохраняем текущий инвентарь в экзампл
@@ -331,8 +318,10 @@ class TransactionGasStation(TransactionTownNPC):
         sum_fuel = math.ceil(sum_fuel)
         if sum_fuel > agent.balance:
             self.repair_example_inventory()
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+            messages.NPCReplicaMessage(
+                agent=self.agent, time=self.time, npc=npc,
+                replica=u'У вас недостаточно стредств!',
+            ).post()
             return
         agent.example.profile.set_balance(time=self.time, delta=-sum_fuel)
         # проверив всё, можем приступить к заливке топлива
@@ -356,6 +345,7 @@ class TransactionGasStation(TransactionTownNPC):
 
         # Эвент квестов
         if self.fuel > 0:
+            # todo: Может быть правильнее вынести вызов обработчика в отдельный эвент?
             self.agent.example.profile.on_event(event=self, cls=quest_events.OnGasStationFuel)
 
         # Информация о транзакции
@@ -398,9 +388,8 @@ class TransactionHangarBuy(TransactionTownNPC):
         super(TransactionHangarBuy, self).__init__(**kw)
         self.car_number = car_number
 
-    @tornado.gen.coroutine
-    def on_perform_async(self):
-        yield super(TransactionHangarBuy, self).on_perform_async()
+    def on_perform(self):
+        super(TransactionHangarBuy, self).on_perform()
 
         npc = self.get_npc_available_transaction(npc_type='hangar')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
@@ -408,7 +397,7 @@ class TransactionHangarBuy(TransactionTownNPC):
 
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.objects.get_cached(uri=self.npc_node_hash)
+        npc = self.agent.server.reg.get(self.npc_node_hash)
         if len(npc.car_list) <= self.car_number:
             log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -668,9 +657,10 @@ class TransactionMechanicApply(TransactionTownNPC):
         for slot_name in self.mechanic_slots.keys():
             new_item_in_slot = self.mechanic_slots[slot_name]['example']
             slot = getattr(agent.example.profile.car.__class__, slot_name)
+            # todo: assert isinstance(slot, Slot) ##SEQR
             proto_item = None
             if new_item_in_slot:
-                proto_item = self.agent.server.reg.objects.get_cached(uri=new_item_in_slot['node_hash'])
+                proto_item = self.agent.server.reg.get(new_item_in_slot['node_hash'])
 
             if slot and proto_item:
                 # Все элементы slot.tags входят в (принадлежат) proto_item.tags
@@ -812,9 +802,10 @@ class TransactionTunerApply(TransactionTownNPC):
         for slot_name in self.tuner_slots.keys():
             new_item_in_slot = self.tuner_slots[slot_name]['example']
             slot = getattr(agent.example.profile.car.__class__, slot_name)
+            # todo: assert isinstance(slot, Slot) ##SEQR
             proto_item = None
             if new_item_in_slot:
-                proto_item = self.agent.server.reg.objects.get_cached(uri=new_item_in_slot['node_hash'])
+                proto_item = self.agent.server.reg.get(new_item_in_slot['node_hash'])
 
             if slot and proto_item:
                 # Все элементы slot.tags входят в (принадлежат) proto_item.tags
@@ -895,9 +886,8 @@ class TransactionTraderApply(TransactionTownNPC):
         self.trader_table = [dict(uid=UUID(rec['uid']), count=rec['count']) for rec in trader_table]  # this should be a list[{uid: <uid>, node_hash: <node_hash>}]
         self.position = 0
 
-    @tornado.gen.coroutine
-    def on_perform_async(self):
-        yield super(TransactionTraderApply, self).on_perform_async()
+    def on_perform(self):
+        super(TransactionTraderApply, self).on_perform()
 
         npc = self.get_npc_available_transaction(npc_type='trader')
         if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):

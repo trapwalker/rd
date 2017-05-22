@@ -26,7 +26,6 @@ import os
 import sys
 import random
 import tornado.ioloop
-import tornado.gen
 from time import sleep
 from threading import Thread
 from collections import deque
