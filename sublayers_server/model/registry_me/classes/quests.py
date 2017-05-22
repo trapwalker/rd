@@ -678,11 +678,13 @@ class KillerQuest(Quest):
 
 
 class DeliveryQuest(Quest):
+    reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
+    distance_table = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.disttable.DistTable')
+
     recipient_list = ListField(
         default=[],
         caption=u"Список возможных получателей доставки",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
-        reinst=True,
     )
     recipient = RegistryLinkField(
         caption=u'Получатель доставки',
