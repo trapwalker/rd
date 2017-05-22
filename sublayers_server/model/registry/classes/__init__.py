@@ -17,6 +17,7 @@ import world
 import trader
 
 import quests
+import quests1
 import teaching_quest
 
 import notes
