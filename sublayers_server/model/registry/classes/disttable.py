@@ -21,7 +21,7 @@ class DistTownPair(Subdoc):
 
 class DistTable(Root):
     table = ListField(
-        caption=u'Таблица опыта пользователя',
+        caption=u'Таблица расстояний между локациями',
         base_field=EmbeddedDocumentField(embedded_document_type=DistTownPair),
     )
 
