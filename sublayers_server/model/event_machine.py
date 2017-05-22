@@ -234,12 +234,13 @@ class Server(object):
                 ).save()
 
             # Создать AIQuickAgent
-            agent_exemplar = Agent.objects.get(user_id=str(user._id))
+            agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
             if agent_exemplar is None:
                 assert self.quick_game_bot_agents_proto
                 agent_exemplar = Agent(
                     user_id=str(user._id),
                     login=user.name,
+                    quick_flag=options.mode == 'quick',
                     profile=random.choice(self.quick_game_bot_agents_proto).instantiate(
                         name=str(user._id),
                         role_class=random.choice(role_class_list),
@@ -304,14 +305,14 @@ class Server(object):
 
             # todo: ##REFACTORING
             # Создать AIQuickAgent
-            agent_exemplar = Agent.objects.get(user_id=str(user._id))
+            agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
             if agent_exemplar is None:
                 agent_exemplar = Agent(
                     user_id=str(user._id),
                     login=user.name,
-                    quick_flag=True,
+                    quick_flag=options.mode == 'quick',
                     teaching_flag=False,
-                    profile=self.reg.get('registry/agents/user/quick').instantiate(
+                    profile=self.reg.get('registry/agents/user/quick').instantiate(  # todo: get right User parent
                         name=str(user._id),
                         role_class=random.choice(role_class_list),
                         karma=random.randint(-80, 80),
@@ -324,7 +325,7 @@ class Server(object):
                 agent_exemplar.profile.leading.value = 20
                 agent_exemplar.profile.trading.value = 20
                 agent_exemplar.profile.engineering.value = 20
-                agent_exemplar.save(upsert=True)
+                agent_exemplar.save()
 
     def post_message(self, message):
         """
