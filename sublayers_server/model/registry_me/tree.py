@@ -548,10 +548,12 @@ class Registry(Doc):
             setattr(node, k, v)
         return node
 
-    def load(self, path, mongo_store=True):
+    def load(self, path):
+        path = os.path.join(path, 'registry')
+        log.debug('Registry FS loading start from: %r', path)
         all_nodes = []
         stack = deque([(path, None)])
-        with Timer(name='registryFS loader', logger=log) as timer:
+        with Timer(logger=None) as timer:
             while stack:
                 pth, owner = stack.pop()
                 node = self._load_node_from_fs(pth, owner)
@@ -569,7 +571,8 @@ class Registry(Doc):
             for node in all_nodes:
                 node.expand_links()
 
-        log.info('Registry loading DONE: {} nodes ({:.3f}s).'.format(len(all_nodes), timer.duration))
+        log.info('Registry FS loading DONE: {} nodes from {!r} ({:.3f}s).'.format(len(all_nodes), path, timer.duration))
+        return self
 
     def _load_node_from_fs(self, path, owner=None):
         assert isinstance(path, unicode), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
@@ -630,22 +633,30 @@ class Root(Node):
 
 REGISTRY = None
 
-def get_global_registry(path=None, reload=False):
+def get_global_registry(path=None, reload=False, save_loaded=True):
     global REGISTRY
-    if REGISTRY is None:
-        REGISTRY = Registry.objects.first()
-        if REGISTRY is None or reload:
-            REGISTRY = Registry()
-            reload = True
+    if reload:
+        REGISTRY = None
 
-        if reload:
-            log.info('Registry reloading start')
+    if REGISTRY is None and not reload:
+        with Timer(logger=None) as t:
+            REGISTRY = Registry.objects.first()
+            log.debug('Registry {}fetched from DB ({:.3f}s).'.format('is NOT ' if REGISTRY is None else '', t.duration))
+
+    if REGISTRY is None:
+        with Timer(logger=None) as t:
             Registry.objects.filter({}).delete()
-            if path:
-                REGISTRY.load(path)
-                log.info('Registry reloading done')
-            else:
-                log.warning("Registry path unspecified. It's empty now!")
+            log.debug('Registry DB cleaned ({:.3f}s).'.format(t.duration))
+
+        REGISTRY = Registry()
+        if path:
+            REGISTRY.load(path)
+            if save_loaded:
+                with Timer(logger=None) as t:
+                    REGISTRY.save()
+                    log.debug('Registry saved to DB ({:.3f}s).'.format(t.duration))
+        else:
+            log.warning("Registry path unspecified. It's empty now!")
 
     return REGISTRY
 ########################################################################################################################

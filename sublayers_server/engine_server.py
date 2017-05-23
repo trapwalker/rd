@@ -15,7 +15,7 @@ sys.path.append(parent_folder(__file__))
 import logging.config
 
 logging.config.fileConfig("logging.conf")
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 import tornado.escape
 import tornado.ioloop
@@ -91,9 +91,6 @@ class Application(BaseApplication):
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
         self.srv = LocalServer(app=self)
-        log.debug('server instance init')
-        self.srv.start()
-        log.info('ENGINE LOOP STARTED: mode={options.mode}'.format(options=options) + '-' * 50)
         self.clients = []
         self.chat = []
         # todo: truncate chat history
@@ -154,6 +151,25 @@ class Application(BaseApplication):
             (r"/interlacing", TestInterlacingHandler),
         ])
 
+    def start(self):
+        self.srv.start()
+        try:
+            self.listen(options.port)
+        except socket.error as e:
+            log.critical(e)
+            print e
+        except Exception as e:
+            log.critical(e)
+            print e
+        else:
+            log.debug('==== IOLoop START ' + '=' * 32)
+            tornado.ioloop.IOLoop.instance().start()
+            log.debug('==== IOLoop FINISHED ' + '=' * 29)
+        finally:
+            log.debug('==== finally before stop')
+            self.stop()
+            log.debug('==== finally after stop')
+
     def on_stop(self):
         if self.srv.is_active:
             self.srv.stop()
@@ -163,28 +179,12 @@ class Application(BaseApplication):
 
 
 def main():
-    log.info('\n\n\n' + '==' * 70)
+    log.info('\n\n\n' + '=' * 67)
     settings.load('server.conf')
     service_tools.pidfile_save(options.pidfile)
     app = Application()
     # service_tools.set_terminate_handler(app.stop)
-    try:
-        log.info('port %s listening', options.port)
-        app.listen(options.port)
-    except socket.error as e:
-        log.critical(e)
-        print e
-    except Exception as e:
-        log.critical(e)
-        print e
-    else:
-        log.debug('====== ioloop start')
-        tornado.ioloop.IOLoop.instance().start()
-        log.debug('====== ioloop finished')
-    finally:
-        log.debug('====== finally before stop')
-        app.stop()
-        log.debug('====== finally after stop')
+    app.start()
 
 
 if __name__ == "__main__":

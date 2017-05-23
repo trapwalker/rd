@@ -12,7 +12,7 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation, MapRespawn
 from sublayers_server.model.radiation import StationaryRadiation
-from sublayers_server.model.events import LoadWorldEvent, event_deco, Event
+from sublayers_server.model.events import LoadWorldEvent, event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry_me.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
@@ -88,8 +88,7 @@ class Server(object):
             self.quick_game_respawn_bots_radius = 0
             self.quick_game_death_radius = 0
 
-        self.reg = get_global_registry(path=options.world_path, reload=False)
-        log.debug('Registry loading done')
+        self.reg = get_global_registry(path=options.world_path, reload=False, save_loaded=True)
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -537,11 +536,16 @@ class LocalServer(Server):
         self.ioloop.add_callback(callback=self.event_loop)
         self.outher_loop_time = self.get_time()
         self.is_terminated = False
-        log.info('---- Game server Started ' + '-' * 50 + '\n')
+        log.info('---- Game server started: ' + '-' * 24)
+        log.info('    Mode   : %s', options.mode)
+        log.info('    Service: %s', options.service_name)
+        log.info('    Port   : %s', options.port)
+        log.info('    PID    : %s', os.getpid())
+        log.info('-' * 50)
 
     def stop(self, timeout=None):
         # self.periodic.stop()
-        log.info('---- Game server finished ' + '-' * 50 + '\n')
+        log.info('---- Game server finished ' + '-' * 25 + '\n')
         self.is_terminated = True
         # if self.app:
         #     self.app.stop()  # todo: checkit
