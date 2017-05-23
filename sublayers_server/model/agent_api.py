@@ -31,8 +31,6 @@ from sublayers_server.model.console import Namespace, Console, LogStream, Stream
 from sublayers_server.model.quest_events import OnNote, OnQuestChange
 from tornado.options import options
 
-import tornado.gen
-
 # todo: Проверить допустимость значений входных параметров
 
 import random
@@ -953,16 +951,14 @@ class AgentAPI(API):
     @public_method
     def quick_play_again(self, car_index=0):
         self.agent.log.info('quick_play_again with index: %s', car_index)
-        def callback(*kw):
-            api.update_agent_api(time=api.agent.server.get_time())
-
         api = self
         if (options.mode != 'quick') or (self.agent.car is not None):
             # todo: зафиксировать факт жульничества
             log.warning('Lie!!!!')
             return
         self.agent.user.car_index = car_index
-        tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
+        self.agent.init_example_car()
+        api.update_agent_api(time=api.agent.server.get_time())
 
     @public_method
     def quick_teaching_answer(self, teaching):
