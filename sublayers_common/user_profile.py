@@ -8,7 +8,10 @@ import hashlib
 import datetime
 import random
 import re
-from mongoengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
+from mongoengine import (
+    Document, EmbeddedDocument, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField,
+)
+
 from sublayers_server.model.registry_me.odm_position import PositionField
 
 
@@ -18,14 +21,14 @@ class User(Document):
     :type auth: AuthData
     """
 
-    class AuthData(Document):
+    class AuthData(EmbeddedDocument):
 
-        class AuthStandard(Document):
+        class AuthStandard(EmbeddedDocument):
             email = StringField()
             password = StringField()
 
             def __init__(self, raw_password=None, **kw):
-                Document.__init__(self, **kw)
+                EmbeddedDocument.__init__(self, **kw)
                 if raw_password:
                     self.set_password(raw_password)
 

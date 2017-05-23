@@ -23,7 +23,7 @@ class DistTownPair(Subdoc):
 class DistTable(Node):
     table = ListField(
         caption=u'Таблица расстояний между локациями',
-        field=EmbeddedDocumentField(embedded_document_type=DistTownPair),
+        field=EmbeddedDocumentField(document_type=DistTownPair),
     )
 
     def get_distance(self, town1, town2):
