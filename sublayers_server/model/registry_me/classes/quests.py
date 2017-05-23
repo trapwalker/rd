@@ -254,10 +254,10 @@ class Quest(Node):
         caption=u"Журнал квеста",
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
-    total_reward_money = FloatField(caption=u'Общая сумма награды в нукойнах')
+    total_reward_money = IntField(caption=u'Общая сумма награды в нукойнах')
     karma_coef = FloatField(caption=u'Часть кармы от общей награды')
     money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
-    reward_money = FloatField(caption=u'Сумма денежной награды', tags={'client'})
+    reward_money = IntField(caption=u'Сумма денежной награды', tags='client')
     reward_karma = FloatField(caption=u'Величина кармической награды')
     reward_items = ListField(
         default=[],
@@ -576,7 +576,7 @@ class Quest(Node):
             return False
         total_inventory_list = None if self.agent.profile._agent_model.inventory is None else self.agent.profile._agent_model.inventory.example.total_item_type_info()
         for item in items:
-            self.agent.car.inventory.items.append(item)
+            self.agent.car.inventory.items.append(item.instantiate(amount=item.amount))
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
@@ -612,8 +612,8 @@ class Quest(Node):
             messages.NPCReplicaMessage(agent=self.agent.profile._agent_model, npc=npc, replica=replica, time=event.time).post()
 
     def generate_reward(self):
-        self.reward_money = self.total_reward_money * self.money_coef
-        self.reward_karma = self.total_reward_money * self.karma_coef / 1000.
+        self.reward_money = round(self.total_reward_money * self.money_coef)
+        self.reward_karma = self.total_reward_money * self.karma_coef / 1000
 
         if len(self.reward_items_list) > 0:
             self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
@@ -716,7 +716,6 @@ class DeliveryQuest(Quest):
             reinst=True,
             tags={'client'},
         ),
-        reinst=True,
     )
 
     def as_client_dict(self):
@@ -745,3 +744,23 @@ class AIQuickQuest(Quest):
         else:
             self.route_index = self.route_index + 1
         return self.route[self.route_index].as_point()
+
+    def use_heal(self, time):
+        agent_model = self.agent and self.agent.profile._agent_model
+        if not agent_model:
+            return
+        car = agent_model.car
+        if not car:
+            return
+        inventory = car.inventory
+        if not inventory:
+            return
+        from sublayers_server.model.events import ItemPreActivationEvent
+        # Найти любую аптечку в инвентаре и использовать её
+        position = None
+        for item_rec in inventory.get_all_items():
+            if item_rec["item"].example.is_ancestor(agent_model.server.reg['items/usable/build_set']):
+                position = item_rec["position"]
+        if position:
+            ItemPreActivationEvent(agent=agent_model, owner_id=car.uid, position=position, target_id=car.uid,
+                                   time=time).post()
