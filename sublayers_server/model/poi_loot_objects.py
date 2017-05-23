@@ -103,10 +103,7 @@ class POIContainer(Observer):
     def __init__(self, server, time, life_time=None, example=None, inventory_size=None, position=None, **kw):
         assert (example is not None) or ((inventory_size is not None) and (position is not None))
         if example is None:
-            example = server.reg['poi/stash'].instantiate(
-                position=position, 
-                fixtured=False,
-            )
+            example = server.reg.get('/registry/poi/stash').instantiate(position=position)
             self.inventory_size = inventory_size
         super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
         self.example.profile.inventory.size = self.inventory_size

@@ -50,7 +50,7 @@ class AIQuickAgent(AI):
         InitAIQuickCar(ai=self, time=time).post()
 
     def on_timer_restart_car(self, event):
-        # if self.worked and len(self.server.app.clients) * 2 < self.server.reg['world_settings'].quick_game_bot_count:
+        # if self.worked and len(self.server.app.clients) * 2 < self.server.reg.get('/registry/world_settings').quick_game_bot_count:
         if self.worked:
             # Добавить свою машинку на карту
             self.example.profile.car = self._car_proto.instantiate()

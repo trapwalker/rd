@@ -305,7 +305,6 @@ class Node(Subdoc):
     parent = RegistryLinkField(document_type='self', not_inherited=True)
     owner = RegistryLinkField(document_type='self', not_inherited=True)
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
-    #fixtured = BooleanField(default=False, not_inherited=True, doc=u"Признак объекта из файлового репозитория реестра")
     #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
     title = StringField(caption=u"Название", tags={"client"})
@@ -370,6 +369,14 @@ class Node(Subdoc):
             return defaults[0]
 
         raise KeyError('Node {!r} has no subnode {}'.format(self, path))
+
+    def deep_iter(self, reject_abstract=True):
+        queue = [self]
+        while queue:
+            item = queue.pop()
+            queue.extend(item.subnodes)
+            if not item.abstract or not reject_abstract:
+                yield item
 
     def __getattribute__(self, item):
         if item not in {
@@ -595,7 +602,6 @@ class Registry(Doc):
         attrs.setdefault('name', os.path.basename(path.strip('\/')))
         attrs.setdefault('parent', owner)
         attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
-        #attrs.setdefault('fixtured', True)
         class_name = attrs.get('_cls')
 
         if not class_name:  # TODO: remove deprecated '__cls__' attribute support

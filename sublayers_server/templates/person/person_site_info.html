@@ -78,45 +78,45 @@
             <div class="person-info-chat-person-up-right-info">
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_lvl') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">[{{ agent_example.get_lvl() }}]</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">[{{ agent_example.profile.get_lvl() }}]</div>
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_class') }}</div>
                     <div class="person-info-chat-person-string-item-part right value-color">
                         {% if user_lang == 'en' %}
-                            {{ agent_example.role_class.description__en }}
+                            {{ agent_example.profile.role_class.description__en }}
                         {% else %}
-                            {{ agent_example.role_class.description__ru }}
+                            {{ agent_example.profile.role_class.description__ru }}
                         {% end %}
                     </div>
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_karma') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.karma_name(lang=user_lang) }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.karma_name(lang=user_lang) }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_driving') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.driving.calc_value() }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.driving.calc_value() }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_shooting') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.shooting.calc_value() }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.shooting.calc_value() }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_masking') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.masking.calc_value() }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.masking.calc_value() }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_engineering') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.engineering.calc_value() }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.engineering.calc_value() }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_trading') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.trading.calc_value() }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.trading.calc_value() }}</div>
                 </div>
                 <div class="person-info-chat-person-string-item odd">
                     <div class="person-info-chat-person-string-item-part left">{{ _('tpsi_leading') }}</div>
-                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.leading.calc_value() }}</div>
+                    <div class="person-info-chat-person-string-item-part right value-color">{{ agent_example.profile.leading.calc_value() }}</div>
                 </div>
             </div>
         </div>

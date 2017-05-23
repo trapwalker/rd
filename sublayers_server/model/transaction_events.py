@@ -423,7 +423,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
-            car_example = car_proto.instantiate(fixtured=False,)  # todo: check to remove "fixtured" flag
+            car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.profile.car = car_example
@@ -1012,19 +1012,20 @@ class TransactionSetRPGState(TransactionTownNPC):
 
     def is_available_perk(self, perk_node_hash):
         perk_rec = self.perks[perk_node_hash]
-        ex_agent = self.agent.example
-        if ((perk_rec['perk'].driving_req > ex_agent.driving.calc_value(value=self.skills[u'driving'])) or
-            (perk_rec['perk'].masking_req > ex_agent.masking.calc_value(value=self.skills[u'masking'])) or
-            (perk_rec['perk'].shooting_req > ex_agent.shooting.calc_value(value=self.skills[u'shooting'])) or
-            (perk_rec['perk'].leading_req > ex_agent.leading.calc_value(value=self.skills[u'leading'])) or
-            (perk_rec['perk'].trading_req > ex_agent.trading.calc_value(value=self.skills[u'trading'])) or
-            (perk_rec['perk'].engineering_req > ex_agent.engineering.calc_value(value=self.skills[u'engineering'])) or
+        profile = self.agent.example.profile
+        # todo: ##REFACTORING
+        if ((perk_rec['perk'].driving_req > profile.driving.calc_value(value=self.skills[u'driving'])) or
+            (perk_rec['perk'].masking_req > profile.masking.calc_value(value=self.skills[u'masking'])) or
+            (perk_rec['perk'].shooting_req > profile.shooting.calc_value(value=self.skills[u'shooting'])) or
+            (perk_rec['perk'].leading_req > profile.leading.calc_value(value=self.skills[u'leading'])) or
+            (perk_rec['perk'].trading_req > profile.trading.calc_value(value=self.skills[u'trading'])) or
+            (perk_rec['perk'].engineering_req > profile.engineering.calc_value(value=self.skills[u'engineering'])) or
             (perk_rec['perk'].level_req > self.lvl)):
             return False
 
         for perk_id in perk_rec['perk'].perks_req:
-            perk_req = self.agent.server.reg[perk_id]
-            if not self.perks[perk_req.node_hash()][u'state']:
+            perk_req = self.agent.server.reg.get(perk_id)
+            if not self.perks[perk_req.node_hash()][u'state']:  # todo: ##REVIEW Menkent
                 return False
         return True
 
@@ -1067,7 +1068,7 @@ class TransactionSetRPGState(TransactionTownNPC):
                                      replica=u'Текущее значение перков недопустимо!').post()
             return  # todo: warning
 
-        for perk in agent.server.reg['rpg_settings/perks'].deep_iter():
+        for perk in agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
             self.perks[perk.node_hash()].update(perk=perk)
 
         for perk_node_hash in self.perks:
@@ -1078,7 +1079,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         for buy_skill_name in self.buy_skills:
             if hasattr(self.agent.example, buy_skill_name):
-                buy_skill = getattr(self.agent.example, buy_skill_name, None)
+                buy_skill = getattr(self.agent.example.profile, buy_skill_name, None)
                 if self.buy_skills[buy_skill_name] < buy_skill.value:
                     messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'Недопустимое значение покупных навыков!').post()
@@ -1091,9 +1092,11 @@ class TransactionSetRPGState(TransactionTownNPC):
         old_sp = 0
         for skill_name in self.skills:
             if hasattr(agent.example, skill_name):
-                ex_skill = getattr(agent.example, skill_name, None)
-                need_value = ex_skill.value + (self.buy_skills[u'buy_' + skill_name] -
-                                               getattr(self.agent.example, 'buy_' + skill_name).value)
+                ex_skill = getattr(agent.example.profile, skill_name, None)
+                need_value = ex_skill.value + (
+                    self.buy_skills[u'buy_' + skill_name] -
+                    getattr(self.agent.example.profile, 'buy_' + skill_name).value
+                )
                 old_sp += ex_skill.value
                 if self.skills[skill_name] < need_value:
                     price += npc.drop_price
@@ -1109,8 +1112,8 @@ class TransactionSetRPGState(TransactionTownNPC):
         # Проверка факта покупки очков навыков
         for buy_skill_name in self.buy_skills:
             if hasattr(agent.example, buy_skill_name):
-                buy_skill = getattr(agent.example, buy_skill_name, None)
-                for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
+                buy_skill = getattr(agent.example.profile, buy_skill_name, None)
+                for val in xrange(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
                     price += buy_skill.price[val].price
                     buy_skill_count += 1
 

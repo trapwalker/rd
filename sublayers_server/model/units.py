@@ -452,7 +452,7 @@ class Mobile(Unit):
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
-            ef = self.server.reg['effects/fuel/empty']
+            ef = self.server.reg.get('/registry/effects/fuel/empty', None)
             if ef:
                 ef.done(owner=self, time=time)  # снять эффект
 
@@ -466,7 +466,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        ef = self.server.reg['effects/fuel/empty']
+        ef = self.server.reg.get('/registry/effects/fuel/empty', None)
         if ef:
             ef.start(owner=self, time=event.time)
 

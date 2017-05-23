@@ -150,7 +150,7 @@ class AgentConsoleNamespace(Namespace):
     #     elif args[0] == 'get':
     #         for q in args[1:]:
     #             try:
-    #                 q = self.agent.server.reg[q]
+    #                 q = self.agent.server.reg.get(q)
     #             except:
     #                 log.error('Quest %s is not found', q)
     #                 raise

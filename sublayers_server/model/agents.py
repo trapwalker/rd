@@ -632,7 +632,7 @@ class User(Agent):
 
     @event_deco
     def create_teaching_quest(self, event):
-        quest_parent = self.server.reg['quests/teaching']
+        quest_parent = self.server.reg.get('/registry/quests/teaching')
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
         new_quest.agent = self.example
         if new_quest.generate(event=event):
@@ -839,7 +839,7 @@ class TeachingUser(QuickUser):
             StartQuickGame(agent=self, time=self.server.get_time()).post()
 
     def has_active_teaching_quest(self):
-        quest_parent = self.server.reg['quests/teaching_map']
+        quest_parent = self.server.reg.get('/registry/quests/teaching_map')
         for q in self.example.quests_active:
             if q.parent == quest_parent and q.status == 'active':
                 return True
@@ -847,7 +847,7 @@ class TeachingUser(QuickUser):
 
     @event_deco
     def create_teaching_quest_map(self, event):
-        quest_parent = self.server.reg['quests/teaching_map']
+        quest_parent = self.server.reg.get('/registry/quests/teaching_map')
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
         new_quest.agent = self.example
         if new_quest.generate(event=event):

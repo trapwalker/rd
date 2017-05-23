@@ -100,7 +100,7 @@ class Server(object):
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        for zone in sorted(list(self.reg['zones']) or [], key=lambda a_zone: a_zone.order_key):
+        for zone in sorted(list(self.reg.get('/registry/zones', [])), key=lambda a_zone: a_zone.order_key):
             try:
                 if not zone.is_active:
                     log.debug('Zone %s activation start', zone)
@@ -131,7 +131,7 @@ class Server(object):
             self.on_load_poi(event)
         elif options.mode == 'quick':
             # Установка стартовых значений
-            world_settings = self.reg['world_settings']
+            world_settings = self.reg.get('/registry/world_settings')
             self.quick_game_start_pos = world_settings.quick_game_start_pos.as_point()
             self.quick_game_play_radius = world_settings.quick_game_play_radius
             self.quick_game_respawn_bots_pos = world_settings.quick_game_respawn_bots_pos.as_point()
@@ -167,43 +167,43 @@ class Server(object):
 
     def on_load_poi(self, event):
         # загрузка радиоточек
-        towers_root = self.reg['poi/radio_towers']
-        for rt_exm in towers_root:
+        towers_root = self.reg.get('/registry/poi/radio_towers')
+        for rt_exm in towers_root.subnodes:
             RadioPoint(time=event.time, example=rt_exm, server=self)
 
         # загрузка городов
-        towns_root = self.reg['poi/locations/towns']
-        for t_exm in towns_root:
+        towns_root = self.reg.get('/registry/poi/locations/towns')
+        for t_exm in towns_root.subnodes:
             Town(time=event.time, server=self, example=t_exm)
 
         # загрузка заправочных станций
-        gs_root = self.reg['poi/locations/gas_stations']
-        for gs_exm in gs_root:
+        gs_root = self.reg.get('/registry/poi/locations/gas_stations')
+        for gs_exm in gs_root.subnodes:
             GasStation(time=event.time, server=self, example=gs_exm)
 
             # todo: Сделать загрузку стационарных точек радиации
 
     def on_load_poi_quick_mode(self, event):
         # загрузка радиоточки
-        tower = self.reg['poi/quick_game_poi/quick_game_radio_tower']
+        tower = self.reg.get('/registry/poi/quick_game_poi/quick_game_radio_tower')
         if tower:
             tower.position = self.quick_game_start_pos
             RadioPoint(time=event.time, example=tower, server=self)
 
         # Установка точки радиации-быстрой игры
-        quick_rad = self.reg['poi/quick_game_poi/quick_game_radiation_area']
+        quick_rad = self.reg.get('/registry/poi/quick_game_poi/quick_game_radiation_area')
         if quick_rad:
             quick_rad.p_observing_range = self.quick_game_death_radius
             quick_rad.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad, server=self)
-        quick_rad_anti = self.reg['poi/quick_game_poi/quick_game_radiation_area_anti']
+        quick_rad_anti = self.reg.get('/registry/poi/quick_game_poi/quick_game_radiation_area_anti')
         if quick_rad_anti:
             quick_rad_anti.p_observing_range = self.quick_game_play_radius
             quick_rad_anti.position = self.quick_game_start_pos
             StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
 
         # Установка точек-респаунов
-        respawns_root = self.reg['poi/quick_game_poi/quick_game_respawn']
+        respawns_root = self.reg.get('/registry/poi/quick_game_poi/quick_game_respawn')
         for rs_exm in respawns_root:
             respawns_root.position = self.quick_game_start_pos
             MapRespawn(time=event.time, example=rs_exm, server=self)
@@ -212,14 +212,15 @@ class Server(object):
         from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
 
-        bot_count = self.reg['world_settings'].quick_game_bot_count or 0
+        # todo: ##OPTIMIZE
+        bot_count = self.reg.get('/registry/world_settings').quick_game_bot_count or 0
         # Создать ботов
-        avatar_list = self.reg['world_settings'].avatar_list
-        role_class_list = self.reg['world_settings'].role_class_order
+        avatar_list = self.reg.get('/registry/world_settings').avatar_list
+        role_class_list = self.reg.get('/registry/world_settings').role_class_order
         car_proto_list = self.quick_game_bot_cars_proto
         car_proto_list_len = len(car_proto_list)
         current_machine_index = 0
-        bots_names = self.reg['world_settings'].quick_game_bots_nick
+        bots_names = self.reg.get('/registry/world_settings').quick_game_bots_nick
         for i in xrange(bot_count):
             # Найти или создать профиль
             name = bots_names[i] if bots_names and i < len(bots_names) else 'quick_bot_{}'.format(i)
@@ -285,8 +286,8 @@ class Server(object):
         if not tester_accounts:
             log.warning('account_test.yaml is not contains any accounts')
         # Создать ботов
-        avatar_list = self.reg['world_settings'].avatar_list
-        role_class_list = self.reg['world_settings'].role_class_order
+        avatar_list = self.reg.get('/registry/world_settings').avatar_list
+        role_class_list = self.reg.get('/registry/world_settings').role_class_order
         for acc in tester_accounts:
             # Найти или создать профиль
             name = acc['nickname']

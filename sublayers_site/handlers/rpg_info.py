@@ -27,7 +27,7 @@ class GetRPGInfoHandler(BaseSiteHandler):
 
     def post(self):
         class_list = []
-        for role_class in self.application.reg['world_settings'].role_class_order:
+        for role_class in self.application.reg.get('/registry/world_settings').role_class_order:
             class_list.append(dict(
                 description=role_class.description,
                 description__en=role_class.description__en,
@@ -44,7 +44,7 @@ class GetRPGInfoHandler(BaseSiteHandler):
             ))
         self.finish({
             'class_list': class_list,
-            'avatar_list': self.application.reg['world_settings'].avatar_list
+            'avatar_list': self.application.reg.get('/registry/world_settings').avatar_list
         })
 
 

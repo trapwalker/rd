@@ -222,7 +222,7 @@ class MapRespawn(Observer):
             return
         resp_object_proto = respawn_objects[random.randint(0, len(respawn_objects) - 1)]
         pos = Point.random_point(self.position(event.time), self.example.respawn_radius)
-        # resp_object_ex = resp_object_proto.instantiate(fixtured=False)
+        # resp_object_ex = resp_object_proto.instantiate()
         # yield resp_object_ex.load_references()
         # log.info('respawn [%s] %s %s %s', self, event.time, resp_object_proto.model_class_name, pos)
         klass = self.get_respawn_cls(resp_object_proto.model_class_name)

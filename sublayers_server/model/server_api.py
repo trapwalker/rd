@@ -7,7 +7,6 @@ from sublayers_server.model.agents import User, QuickUser, TeachingUser
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.registry_me.classes.agents import Agent
 
-import tornado.web
 import random
 
 
@@ -43,7 +42,7 @@ class ServerAPI(API):
                 for class_skill in agent_exemplar.profile.role_class.class_skills():
                     # todo: Перебирать объекты реестра
                     if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                        skill = getattr(agent_exemplar, class_skill.target)
+                        skill = getattr(agent_exemplar.profile, class_skill.target)
                         skill.mod = class_skill
 
                 agent_exemplar.save()
@@ -70,11 +69,9 @@ class ServerAPI(API):
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
         if not agent:
             # agent_exemplar = yield Agent.objects.get(user_id=str(user._id), quick_flag=True)
-            agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=True, teaching_flag=False).find_all()
-            # todo: assert by multiagent
-            agent_exemplar = agent_exemplar and agent_exemplar[0] or None
+            agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=True, teaching_flag=False).first()
             if agent_exemplar is None:
-                role_class_list = self.server.reg.get('world_settings').role_class_order
+                role_class_list = self.server.reg.get('/registry/world_settings').role_class_order
                 assert role_class_list, 'role_class_list is empty in server settings'
                 agent_exemplar = Agent(
                     login=user.name,
@@ -98,7 +95,7 @@ class ServerAPI(API):
             agent.user = user  # Обновить юзера
 
         # Установить рандомную аватарку
-        avatar_list = self.server.reg['world_settings'].avatar_list
+        avatar_list = self.server.reg.get('/registry/world_settings').avatar_list
         user.avatar_link = random.choice(avatar_list)
         log.info('QuickGameUser INFO: %s    [car_index=%s,  car=%s]', user.name, user.car_index, agent.example.profile.car)
 
@@ -109,64 +106,60 @@ class ServerAPI(API):
                 if agent.connection:
                     agent.connection.close()
             # log.info('Server API: Old Agent given: %s', agent_id)
-        raise tornado.gen.Return(agent)
+        return agent
 
-    @tornado.gen.coroutine
     def get_agent_teaching(self, user, do_disconnect=False):
         agent = self.server.agents.get(str(user._id), None)  # todo: raise exceptions if absent but not make
 
         if not agent:
             # Если нет подключённого агента, то мы не ищем в базе, а просто создаём нового!
-            agent_exemplar = yield Agent.objects.filter(user_id=str(user._id), quick_flag=True).find_all()
-            agent_exemplar = agent_exemplar and agent_exemplar[0] or None
-
-            main_agent_exemplar = yield Agent.objects.filter(user_id=str(user._id), quick_flag=False).find_all()
-            main_agent_exemplar = main_agent_exemplar and main_agent_exemplar[0] or None
+            agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=True).first()
+            main_agent_exemplar = Agent.objects.filter(user_id=str(user._id), quick_flag=False).first()
 
             if agent_exemplar is None:
-                agent_exemplar = self.server.reg['agents/user/quick'].instantiate(
+                agent_exemplar = Agent(
                     login=user.name,
                     user_id=str(user._id),
-                    name=str(user._id),
-                    fixtured=False,
+                    quick_flag=user.quick,
+                    #fixtured=False,  # todo: add `'fixtured' flag to Agent
+
+                    profile=self.server.reg.get('/registry/agents/user/quick').instantiate(
+                        name=str(user._id),
+                        role_class=random.choice(self.server.reg.get('/registry/world_settings').role_class_order),
+                    ),
                 )
-                yield agent_exemplar.load_references()
-                role_class_list = self.server.reg['world_settings'].role_class_order
-                agent_exemplar.role_class = role_class_list[randint(0, len(role_class_list) - 1)]
-
-                agent_exemplar.quick_flag = user.quick
-
                 # Если был найден агент из основной игры, то скопировать всю информацию из него
                 if main_agent_exemplar:
+                    # todo: Agent profile cloning mechanism
                     # review: возможно нужно каждый отдельно реинстанцировать
-                    agent_exemplar.driving = main_agent_exemplar.driving
-                    agent_exemplar.shooting = main_agent_exemplar.shooting
-                    agent_exemplar.masking = main_agent_exemplar.masking
-                    agent_exemplar.leading = main_agent_exemplar.leading
-                    agent_exemplar.trading = main_agent_exemplar.trading
-                    agent_exemplar.engineering = main_agent_exemplar.engineering
-                    agent_exemplar.perks = main_agent_exemplar.perks
-                    agent_exemplar.role_class = main_agent_exemplar.role_class
+                    agent_exemplar.profile.driving     = main_agent_exemplar.profile.driving
+                    agent_exemplar.profile.shooting    = main_agent_exemplar.profile.shooting
+                    agent_exemplar.profile.masking     = main_agent_exemplar.profile.masking
+                    agent_exemplar.profile.leading     = main_agent_exemplar.profile.leading
+                    agent_exemplar.profile.trading     = main_agent_exemplar.profile.trading
+                    agent_exemplar.profile.engineering = main_agent_exemplar.profile.engineering
+                    agent_exemplar.profile.perks       = main_agent_exemplar.profile.perks
+                    agent_exemplar.profile.role_class  = main_agent_exemplar.profile.role_class
                 else:
                     if not user.quick:
                         log.warning('Agent from main server not founded for user: {}'.format(user.name))
-                    agent_exemplar.set_karma(time=self.server.get_time(), value=randint(-80, 80))
-                    agent_exemplar.set_exp(time=self.server.get_time(), value=1005)
-                    agent_exemplar.driving.value = 20
-                    agent_exemplar.shooting.value = 20
-                    agent_exemplar.masking.value = 20
-                    agent_exemplar.leading.value = 20
-                    agent_exemplar.trading.value = 20
-                    agent_exemplar.engineering.value = 20
+                    agent_exemplar.profile.set_karma(time=self.server.get_time(), value=random.randint(-80, 80))
+                    agent_exemplar.profile.set_exp(time=self.server.get_time(), value=1005)
+                    agent_exemplar.profile.driving.value = 20
+                    agent_exemplar.profile.shooting.value = 20
+                    agent_exemplar.profile.masking.value = 20
+                    agent_exemplar.profile.leading.value = 20
+                    agent_exemplar.profile.trading.value = 20
+                    agent_exemplar.profile.engineering.value = 20
 
                     # Если пользователь из быстрой игры то установить рандомную аватарку
                     if agent_exemplar.quick_flag:
-                        avatar_list = self.server.reg['world_settings'].avatar_list
-                        user.avatar_link = avatar_list[randint(0, len(avatar_list) - 1)]
+                        avatar_list = self.server.reg.get('/registry/world_settings').avatar_list
+                        user.avatar_link = random.choice(avatar_list)
             else:
                 log.warning('Agent founded {}'.format(user.name))
 
-            yield agent_exemplar.save()
+            agent_exemplar.save()
             agent = TeachingUser(
                 # agent=TeachingUser(
                 server=self.server,
@@ -185,4 +178,4 @@ class ServerAPI(API):
                 if agent.connection:
                     agent.connection.close()
             # log.info('Server API: Old Agent given: %s', agent_id)
-        raise tornado.gen.Return(agent)
+        return agent

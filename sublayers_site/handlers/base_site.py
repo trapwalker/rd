@@ -93,13 +93,13 @@ class BaseSiteHandler(BaseHandler):
 
     def _get_quick_game(self):
         car_templates_list = []
-
+        # todo: Extract path to settings
         template_car = tornado.template.Loader(
             "../sublayers_server/templates/site",
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")
 
-        for car_proto in self.application.reg['world_settings'].quick_game_cars:
+        for car_proto in self.application.reg.get('/registry/world_settings').quick_game_cars:
             html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)

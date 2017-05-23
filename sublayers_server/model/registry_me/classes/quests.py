@@ -759,8 +759,7 @@ class AIQuickQuest(Quest):
         # Найти любую аптечку в инвентаре и использовать её
         position = None
         for item_rec in inventory.get_all_items():
-            if item_rec["item"].example.is_ancestor(agent_model.server.reg['items/usable/build_set']):
+            if item_rec["item"].example.is_ancestor(agent_model.server.reg.get('/registry/items/usable/build_set')):
                 position = item_rec["position"]
         if position:
-            ItemPreActivationEvent(agent=agent_model, owner_id=car.uid, position=position, target_id=car.uid,
-                                   time=time).post()
+            ItemPreActivationEvent(agent=agent_model, owner_id=car.uid, position=position, target_id=car.uid, time=time).post()

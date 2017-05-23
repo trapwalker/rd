@@ -46,11 +46,7 @@ class APIGetCarInfoHandler2(BaseHandler):
             self.send_error(404)
             return
 
-        ex_car = None
-        try:
-            ex_car = self.application.srv.reg[uri]
-        except:  # todo: catch specify exception ##refactor
-            pass
+        ex_car = self.application.srv.reg.get(uri, None)
 
         if not ex_car or not isinstance(ex_car, RegCar):  # todo: log warning if uri link is not car
             self.send_error(404)
