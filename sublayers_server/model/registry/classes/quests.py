@@ -250,10 +250,10 @@ class Quest(Root):
         caption=u"Журнал квеста",
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
-    total_reward_money = FloatField(caption=u'Общая сумма награды в нукойнах')
+    total_reward_money = IntField(caption=u'Общая сумма награды в нукойнах')
     karma_coef = FloatField(caption=u'Часть кармы от общей награды')
     money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
-    reward_money = FloatField(caption=u'Сумма денежной награды', tags='client')
+    reward_money = IntField(caption=u'Сумма денежной награды', tags='client')
     reward_karma = FloatField(caption=u'Величина кармической награды')
     reward_items = ListField(
         default=[],
@@ -460,7 +460,6 @@ class Quest(Root):
             if self.status == 'end' and old_status == 'active':  # quest finished
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
 
-
     def make_global_context(self):
         ctx = dict(
             quest=self,
@@ -564,7 +563,7 @@ class Quest(Root):
             return False
         total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
         for item in items:
-            self.agent.car.inventory.items.append(item)
+            self.agent.car.inventory.items.append(item.instantiate(amount=item.amount))
         if self.agent._agent_model:
             self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
@@ -580,6 +579,7 @@ class Quest(Root):
         for item in items:
             if assortment.get(item.node_hash(), None) is None:
                 return False
+            print assortment[item.node_hash()], item.amount
             assortment[item.node_hash()] -= item.amount
             if assortment[item.node_hash()] < 0:
                 return False
@@ -600,8 +600,8 @@ class Quest(Root):
             messages.NPCReplicaMessage(agent=self.agent._agent_model, npc=npc, replica=replica, time=event.time).post()
 
     def generate_reward(self):
-        self.reward_money = self.total_reward_money * self.money_coef
-        self.reward_karma = self.total_reward_money * self.karma_coef / 1000.
+        self.reward_money = round(self.total_reward_money * self.money_coef)
+        self.reward_karma = self.total_reward_money * self.karma_coef / 1000
 
         if len(self.reward_items_list) > 0:
             self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
@@ -704,7 +704,6 @@ class DeliveryQuest(Quest):
             reinst=True,
             tags='client',
         ),
-        reinst=True,
     )
 
     def as_client_dict(self):
