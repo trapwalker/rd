@@ -426,12 +426,6 @@ class ActivateLocationChats(Event):
         self.location.activate_chats(event=self)
 
 
-class LoadWorldEvent(Event):
-    def on_perform(self):
-        super(LoadWorldEvent, self).on_perform()
-        self.server.on_load_world(self)
-
-
 class InsertNewServerZone(Event):
     def __init__(self, zone, **kw):
         super(InsertNewServerZone, self).__init__(**kw)

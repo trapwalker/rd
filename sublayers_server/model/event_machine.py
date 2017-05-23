@@ -12,7 +12,7 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation, MapRespawn
 from sublayers_server.model.radiation import StationaryRadiation
-from sublayers_server.model.events import LoadWorldEvent, event_deco
+from sublayers_server.model.events import event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry_me.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
@@ -89,6 +89,7 @@ class Server(object):
             self.quick_game_death_radius = 0
 
         self.reg = get_global_registry(path=options.world_path, reload=False, save_loaded=True)
+        self.load_world()
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -116,9 +117,6 @@ class Server(object):
                 log.exception('Loading zone %s error: %s', zone, e)
 
     def load_world(self):
-        LoadWorldEvent(server=self, time=self.get_time()).post()  # todo: remove deprecated event
-
-    def on_load_world(self, event):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
 
         # создание зон
