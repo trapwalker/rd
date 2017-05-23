@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry_me.classes import notes
-from sublayers_server.model.registry_me.tree import Node, Doc, Subdoc, EmbeddedNodeField, RegistryLinkField
+from sublayers_server.model.registry_me.tree import Node, Subdoc, EmbeddedNodeField, RegistryLinkField
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
@@ -679,7 +679,7 @@ class KillerQuest(Quest):
 
 class DeliveryQuest(Quest):
     reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
-    distance_table = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.disttable.DistTable')
+    distance_table = RegistryLinkField(document_type='sublayers_server.model.registry.classes.disttable.DistTable')
 
     recipient_list = ListField(
         default=[],
