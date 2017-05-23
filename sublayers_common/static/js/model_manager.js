@@ -2390,6 +2390,17 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendCancelQuest = function (quest_id) {
+        //console.log('ClientManager.prototype.sendCancelQuest', quest_id);
+        var mes = {
+            call: "quest_cancel",
+            rpc_call_id: rpcCallList.getID(),
+            params: {quest_uid: quest_id}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.SendQuestNoteAction = function (note_uid, note_result) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', note_uid, note_result);
         var mes = {

@@ -43,6 +43,9 @@ class OnQuestChange(QuestEvent):
         self.target_quest_uid = target_quest_uid
 
 
+class OnCancel(QuestEvent): pass
+
+
 class OnDie(QuestEvent): pass
 
 
@@ -62,6 +65,7 @@ class OnAIOut(QuestEvent):
 
 
 class OnAppendCar(QuestEvent): pass
+
 
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass

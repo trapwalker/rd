@@ -28,7 +28,7 @@ from sublayers_server.model.chat_room import (
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
-from sublayers_server.model.quest_events import OnNote, OnQuestChange
+from sublayers_server.model.quest_events import OnNote, OnQuestChange, OnCancel
 from tornado.options import options
 
 # todo: Проверить допустимость значений входных параметров
@@ -881,6 +881,16 @@ class AgentAPI(API):
         for q in self.agent.example.profile.quests_active:
             server = self.agent.server
             OnQuestChange(server=server, quest=q, time=server.get_time() + 0.5, target_quest_uid=quest_uid).post()
+
+    @public_method
+    def quest_cancel(self, quest_uid):
+        self.agent.log.info('quest_cancel quest_uid={}'.format(quest_uid))
+        quest = self.agent.example.get_quest(uid=UUID(quest_uid))
+        if quest:
+            server = self.agent.server
+            OnCancel(server=server, quest=quest, time=server.get_time()).post()
+        else:
+            self.agent.log.error('Try cancel unavailable quest quest_uid={}'.format(quest_uid))
 
     # Запрос инфы о другом игроке
 
