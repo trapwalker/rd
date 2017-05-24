@@ -557,6 +557,7 @@ var WCanvasStaticTownMarker = (function (_super) {
         ctx.lineWidth = 4;
         ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
         ctx.stroke();
+        ctx.closePath();
         ctx.restore();
     };
 
