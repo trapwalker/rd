@@ -230,8 +230,8 @@ class Quest(Root):
     on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
         стартового состояния. Любое исключение в скрипте отменяет принятие квеста. Исключение Cancel тихо отменяет.''')
     caption     = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text        = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short  = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    text        = StringField(tags='client', caption=u'Текст, сопровождающий квест для журнала', doc=u'Может строиться и меняться по шаблону')
+    text_short  = StringField(tags='client', caption=u'Короткий текст квеста для реплики npc', doc=u'Может строиться и меняться по шаблону')
     typename    = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon   = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
     level       = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
@@ -705,6 +705,20 @@ class DeliveryQuest(Quest):
             tags='client',
         ),
     )
+
+    def init_text(self):
+        self.text_short = u"Доставьте груз в гороод {}.".format(
+            self.recipient.hometown.title,
+            self.reward_money
+            # ', '.join([item.title for item in self.reward_items]),
+        )
+        self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc.".format(
+            ', '.join([item.title for item in self.delivery_set]),
+            self.recipient.title,
+            self.recipient.hometown.title,
+            self.reward_money
+            # ', '.join([item.title for item in self.reward_items]),
+        )
 
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()

@@ -260,7 +260,7 @@ var QuestJournalManager = (function () {
             '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
                 '<div class="building-quest-list-item-caption">' + quest.caption + '</div>' +
                 '<div class="building-quest-list-item-lvl">Уровень: ' + quest.level + '</div>' +
-                '<div class="building-quest-list-item-description">' + quest.text + '</div>' +
+                '<div class="building-quest-list-item-description">' + quest.text_short + '</div>' +
                 '<div class="building-quest-list-item-time">00:00:00</div>' +
             '</div>');
         return jq_quest_block;
