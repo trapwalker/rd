@@ -30,6 +30,7 @@ from sublayers_server import uimodules
 
 from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
+from sublayers_common.ctx_timer import Timer
 
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
@@ -54,16 +55,16 @@ from sublayers_server.handlers.site.site_auth import (
 )
 from sublayers_server.handlers.context_panel import ContextPanelListHandler
 
-from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatForSite, ServerStatMessagesHandler,
-                                                  ServerStatEventsHandler, ServerStatHandlersHandler,
-                                                  ServerStatGraphicsHandler, ServerStatEventGraphicsHandler)
+from sublayers_server.handlers.statistics import (
+    ServerStatisticsHandler, ServerStatForSite, ServerStatMessagesHandler, ServerStatEventsHandler,
+    ServerStatHandlersHandler, ServerStatGraphicsHandler, ServerStatEventGraphicsHandler,
+)
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
-from sublayers_server.model.event_machine import LocalServer
+from sublayers_server.model.event_machine import BasicLocalServer, QuickLocalServer
 
 from sublayers_server.handlers.site_api import (
     APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
 )
-
 from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
 
 
@@ -89,12 +90,17 @@ class Application(BaseApplication):
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
-
-        self.srv = LocalServer(app=self)
+        self.init_handlers()
         self.clients = []
-        self.chat = []
-        # todo: truncate chat history
+        self.chat = []  # todo: truncate chat history
 
+        _server_class = dict(quick=QuickLocalServer, basic=BasicLocalServer)[options.mode]
+        self.srv = _server_class(app=self)
+        with Timer(logger=None) as t:
+            self.srv.load_world()
+            log.info('World loading DONE ({:.3f}s).'.format(t.duration))
+
+    def init_handlers(self):
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта
             (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),

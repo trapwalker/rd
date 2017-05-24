@@ -26,8 +26,6 @@ import os
 import sys
 import random
 import tornado.ioloop
-from time import sleep
-from threading import Thread
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 from functools import partial, wraps
@@ -46,6 +44,14 @@ def async_call_deco(f):
     return closure
 
 
+class EServerAlreadyStarted(errors.EIllegal):
+    pass
+
+
+class EServerIsNotStarted(errors.EIllegal):
+    pass
+
+########################################################################################################################
 class Server(object):
     def __init__(self, uid=None):
         """
@@ -89,7 +95,6 @@ class Server(object):
             self.quick_game_death_radius = 0
 
         self.reg = get_global_registry(path=options.world_path, reload=False, save_loaded=True)
-        self.load_world()
 
     def __getstate__(self):
         d = self.__dict__.copy()
@@ -118,212 +123,11 @@ class Server(object):
 
     def load_world(self):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
-
         # создание зон
-        if not options.zones_disable:
-            self.init_zones(time=event.time)
-        else:
+        if options.zones_disable:
             log.info('Zones activation disabled')
-
-        if options.mode == 'basic':
-            self.on_load_poi(event)
-        elif options.mode == 'quick':
-            # Установка стартовых значений
-            world_settings = self.reg.get('/registry/world_settings')
-            self.quick_game_start_pos = world_settings.quick_game_start_pos.as_point()
-            self.quick_game_play_radius = world_settings.quick_game_play_radius
-            self.quick_game_respawn_bots_pos = world_settings.quick_game_respawn_bots_pos.as_point()
-            self.quick_game_respawn_bots_radius = world_settings.quick_game_respawn_bots_radius
-            self.quick_game_death_radius = self.quick_game_play_radius * 20
-
-            # Установка POI объектов быстрой игры
-            self.on_load_poi_quick_mode(event)
-
-            # Создание экземпляров машинок игроков для быстрой игры
-            for car_proto in world_settings.quick_game_cars:
-                self.quick_game_cars_proto.append(car_proto)
-
-            # Создание экземпляров машинок ботов для быстрой игры
-            for car_proto in world_settings.quick_game_bot_cars:
-                self.quick_game_bot_cars_proto.append(car_proto)
-
-            # Получение экземпляров агентов ботов для быстрой игры
-            for agent_ex in world_settings.quick_game_bot_agents:
-                self.quick_game_bot_agents_proto.append(agent_ex)
-
-            # Создание AIQuickBot'ов
-            self.ioloop.add_callback(callback=self.load_ai_quick_bots)
-
-            # Создание Тестовых аккаунтов
-            # self.ioloop.add_callback(callback=self.load_test_accounts)
-
-        print('Load world complete !')
-        if options.server_stat_log_interval > 0:
-            self.server_stat_log(server=self, time=event.time + options.server_stat_log_interval)
-            self.logger_statlog = logging.getLogger('statlog')
-            self.logger_statlog_events = logging.getLogger('statlog_events')
-
-    def on_load_poi(self, event):
-        # загрузка радиоточек
-        towers_root = self.reg.get('/registry/poi/radio_towers')
-        for rt_exm in towers_root.subnodes:
-            RadioPoint(time=event.time, example=rt_exm, server=self)
-
-        # загрузка городов
-        towns_root = self.reg.get('/registry/poi/locations/towns')
-        for t_exm in towns_root.subnodes:
-            Town(time=event.time, server=self, example=t_exm)
-
-        # загрузка заправочных станций
-        gs_root = self.reg.get('/registry/poi/locations/gas_stations')
-        for gs_exm in gs_root.subnodes:
-            GasStation(time=event.time, server=self, example=gs_exm)
-
-            # todo: Сделать загрузку стационарных точек радиации
-
-    def on_load_poi_quick_mode(self, event):
-        # загрузка радиоточки
-        tower = self.reg.get('/registry/poi/quick_game_poi/quick_game_radio_tower')
-        if tower:
-            tower.position = self.quick_game_start_pos
-            RadioPoint(time=event.time, example=tower, server=self)
-
-        # Установка точки радиации-быстрой игры
-        quick_rad = self.reg.get('/registry/poi/quick_game_poi/quick_game_radiation_area')
-        if quick_rad:
-            quick_rad.p_observing_range = self.quick_game_death_radius
-            quick_rad.position = self.quick_game_start_pos
-            StationaryRadiation(time=event.time, example=quick_rad, server=self)
-        quick_rad_anti = self.reg.get('/registry/poi/quick_game_poi/quick_game_radiation_area_anti')
-        if quick_rad_anti:
-            quick_rad_anti.p_observing_range = self.quick_game_play_radius
-            quick_rad_anti.position = self.quick_game_start_pos
-            StationaryRadiation(time=event.time, example=quick_rad_anti, server=self)
-
-        # Установка точек-респаунов
-        respawns_root = self.reg.get('/registry/poi/quick_game_poi/quick_game_respawn')
-        for rs_exm in respawns_root:
-            respawns_root.position = self.quick_game_start_pos
-            MapRespawn(time=event.time, example=rs_exm, server=self)
-
-    def load_ai_quick_bots(self):
-        from sublayers_server.model.registry_me.classes.agents import Agent
-        from sublayers_server.model.ai_quick_agent import AIQuickAgent
-
-        # todo: ##OPTIMIZE
-        bot_count = self.reg.get('/registry/world_settings').quick_game_bot_count or 0
-        # Создать ботов
-        avatar_list = self.reg.get('/registry/world_settings').avatar_list
-        role_class_list = self.reg.get('/registry/world_settings').role_class_order
-        car_proto_list = self.quick_game_bot_cars_proto
-        car_proto_list_len = len(car_proto_list)
-        current_machine_index = 0
-        bots_names = self.reg.get('/registry/world_settings').quick_game_bots_nick
-        for i in xrange(bot_count):
-            # Найти или создать профиль
-            name = bots_names[i] if bots_names and i < len(bots_names) else 'quick_bot_{}'.format(i)
-            user = UserProfile.get_by_name(name=name)
-            if user is None:
-                user = UserProfile(
-                    name=name,
-                    email='quick_bot_{}@1'.format(i),
-                    raw_password='1',
-                    avatar_link=random.choice(avatar_list),
-                ).save()
-
-            # Создать AIQuickAgent
-            agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
-            if agent_exemplar is None:
-                assert self.quick_game_bot_agents_proto
-                agent_exemplar = Agent(
-                    user_id=str(user._id),
-                    login=user.name,
-                    quick_flag=options.mode == 'quick',
-                    profile=random.choice(self.quick_game_bot_agents_proto).instantiate(
-                        name=str(user._id),
-                        role_class=random.choice(role_class_list),
-                        karma=random.randint(-80, 80),
-                        _exp=1005,
-                    ),
-                )
-                # todo: ##REFACTORING
-                agent_exemplar.profile.driving.value = random.randint(20, 40)
-                agent_exemplar.profile.shooting.value = random.randint(20, 40)
-                agent_exemplar.profile.masking.value = random.randint(20, 40)
-                agent_exemplar.profile.leading.value = random.randint(20, 40)
-                agent_exemplar.profile.trading.value = random.randint(20, 40)
-                agent_exemplar.profile.engineering.value = random.randint(20, 40)
-                agent_exemplar.save()
-
-            # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
-            car_proto = car_proto_list[current_machine_index % car_proto_list_len]
-            current_machine_index += 1
-            ai_agent = AIQuickAgent(
-                server=self,
-                user=user,
-                time=self.get_time(),
-                example=agent_exemplar,
-                car_proto=car_proto
-            )
-
-    def load_test_accounts(self):
-        from sublayers_server.model.registry_me.classes.agents import Agent
-        from sublayers_server.model.ai_quick_agent import AIQuickAgent
-        import os
-        from os.path import isfile, join
-        import yaml
-
-        file_name = join(os.getcwd(), 'account_test.yaml')
-        if not isfile(file_name):
-            log.warning('File account_test.yaml not found.')
-            return
-
-        with open(file_name) as data_file:
-            tester_accounts = yaml.load(data_file).get('accounts', [])
-
-        if not tester_accounts:
-            log.warning('account_test.yaml is not contains any accounts')
-        # Создать ботов
-        avatar_list = self.reg.get('/registry/world_settings').avatar_list
-        role_class_list = self.reg.get('/registry/world_settings').role_class_order
-        for acc in tester_accounts:
-            # Найти или создать профиль
-            name = acc['nickname']
-            user = UserProfile.get_by_name(name=name)
-            if user is None:
-                user = UserProfile(
-                    name=name,
-                    email=acc['login'],
-                    raw_password=str(acc['password']),
-                    avatar_link=random.choice(avatar_list),
-                    registration_status='register',
-                    is_tester=True,
-                ).save()
-                log.info('Test account created: %s', acc['login'])
-
-            # todo: ##REFACTORING
-            # Создать AIQuickAgent
-            agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
-            if agent_exemplar is None:
-                agent_exemplar = Agent(
-                    user_id=str(user._id),
-                    login=user.name,
-                    quick_flag=options.mode == 'quick',
-                    teaching_flag=False,
-                    profile=self.reg.get('registry/agents/user/quick').instantiate(  # todo: get right User parent
-                        name=str(user._id),
-                        role_class=random.choice(role_class_list),
-                        karma=random.randint(-80, 80),
-                        _exp=1005,
-                    ),
-                )
-                agent_exemplar.profile.driving.value = 20
-                agent_exemplar.profile.shooting.value = 20
-                agent_exemplar.profile.masking.value = 20
-                agent_exemplar.profile.leading.value = 20
-                agent_exemplar.profile.trading.value = 20
-                agent_exemplar.profile.engineering.value = 20
-                agent_exemplar.save()
+        else:
+            self.init_zones(time=self.get_time())
 
     def post_message(self, message):
         """
@@ -363,10 +167,12 @@ class Server(object):
     memsize = sys.getsizeof
 
     def save(self, time):
-        log.debug('=' * 10 + ' Server SAVE start ' + '=' * 10)
-        for agent in self.agents.values():
-            agent.save(time=time)
-        log.debug('=' * 10 + ' Server SAVE end   ' + '=' * 10)
+        log.debug('==== Server save ' + '=' * 33)
+        with Timer(logger=None) as t:
+            for agent in self.agents.values():
+                agent.save(time=time)
+
+            log.debug('Server save DONE ({:.3f}s).'.format(t.duration))
 
     @event_deco
     def server_stat_log(self, event, **kw):
@@ -456,15 +262,7 @@ class Server(object):
 
         self.logger_statlog_events.info(log_str)
 
-
-class EServerAlreadyStarted(errors.EIllegal):
-    pass
-
-
-class EServerIsNotStarted(errors.EIllegal):
-    pass
-
-
+########################################################################################################################
 class LocalServer(Server):
     def __init__(self, app=None, **kw):
         super(LocalServer, self).__init__(**kw)
@@ -475,6 +273,9 @@ class LocalServer(Server):
         self.periodic = None
         self.outher_loop_time = 0
         self._outher_loop_time_arr = []
+        # stat loggers init
+        self.logger_statlog = logging.getLogger('statlog')
+        self.logger_statlog_events = logging.getLogger('statlog_events')
 
     def __getstate__(self):
         d = super(LocalServer, self).__getstate__()
@@ -530,6 +331,9 @@ class LocalServer(Server):
         self.outher_loop_time = self.get_time()
 
     def start(self):
+        if options.server_stat_log_interval > 0:
+            self.server_stat_log(server=self, time=self.get_time() + options.server_stat_log_interval)
+
         # self.periodic = tornado.ioloop.PeriodicCallback(callback=self.event_loop, callback_time=10)
         # self.periodic.start()
         self.ioloop.add_callback(callback=self.event_loop)
@@ -569,3 +373,204 @@ class LocalServer(Server):
     def reset_user(self, user=None):
         if user is None:
             pass
+
+    # def load_test_accounts(self):
+    #     from sublayers_server.model.registry_me.classes.agents import Agent
+    #     from sublayers_server.model.ai_quick_agent import AIQuickAgent
+    #     import os
+    #     from os.path import isfile, join
+    #     import yaml
+    #
+    #     file_name = join(os.getcwd(), 'account_test.yaml')
+    #     if not isfile(file_name):
+    #         log.warning('File account_test.yaml not found.')
+    #         return
+    #
+    #     with open(file_name) as data_file:
+    #         tester_accounts = yaml.load(data_file).get('accounts', [])
+    #
+    #     if not tester_accounts:
+    #         log.warning('account_test.yaml is not contains any accounts')
+    #     # Создать ботов
+    #     avatar_list = self.reg.get('/registry/world_settings').avatar_list
+    #     role_class_list = self.reg.get('/registry/world_settings').role_class_order
+    #     for acc in tester_accounts:
+    #         # Найти или создать профиль
+    #         name = acc['nickname']
+    #         user = UserProfile.get_by_name(name=name)
+    #         if user is None:
+    #             user = UserProfile(
+    #                 name=name,
+    #                 email=acc['login'],
+    #                 raw_password=str(acc['password']),
+    #                 avatar_link=random.choice(avatar_list),
+    #                 registration_status='register',
+    #                 is_tester=True,
+    #             ).save()
+    #             log.info('Test account created: %s', acc['login'])
+    #
+    #         # todo: ##REFACTORING
+    #         # Создать AIQuickAgent
+    #         agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
+    #         if agent_exemplar is None:
+    #             agent_exemplar = Agent(
+    #                 user_id=str(user._id),
+    #                 login=user.name,
+    #                 quick_flag=options.mode == 'quick',
+    #                 teaching_flag=False,
+    #                 profile=self.reg.get('registry/agents/user/quick').instantiate(  # todo: get right User parent
+    #                     name=str(user._id),
+    #                     role_class=random.choice(role_class_list),
+    #                     karma=random.randint(-80, 80),
+    #                     _exp=1005,
+    #                 ),
+    #             )
+    #             agent_exemplar.profile.driving.value = 20
+    #             agent_exemplar.profile.shooting.value = 20
+    #             agent_exemplar.profile.masking.value = 20
+    #             agent_exemplar.profile.leading.value = 20
+    #             agent_exemplar.profile.trading.value = 20
+    #             agent_exemplar.profile.engineering.value = 20
+    #             agent_exemplar.save()
+
+
+########################################################################################################################
+class BasicLocalServer(LocalServer):
+    def load_world(self):
+        super(BasicLocalServer, self).load_world()
+
+        # загрузка радиоточек
+        t = self.get_time()
+        towers_root = self.reg.get('/registry/poi/radio_towers')
+        for rt_exm in towers_root.subnodes:
+            RadioPoint(time=t, example=rt_exm, server=self)
+
+        # загрузка городов
+        towns_root = self.reg.get('/registry/poi/locations/towns')
+        for t_exm in towns_root.subnodes:
+            Town(time=t, server=self, example=t_exm)
+
+        # загрузка заправочных станций
+        gs_root = self.reg.get('/registry/poi/locations/gas_stations')
+        for gs_exm in gs_root.subnodes:
+            GasStation(time=t, server=self, example=gs_exm)
+
+       # todo: Сделать загрузку стационарных точек радиации
+
+
+########################################################################################################################
+class QuickLocalServer(LocalServer):
+    def load_world(self):
+        super(QuickLocalServer, self).load_world()
+        t = self.get_time()
+        # Установка параметров быстрой игры
+        world_settings = self.reg.get('/registry/world_settings')
+        self.quick_game_start_pos = world_settings.quick_game_start_pos.as_point()
+        self.quick_game_play_radius = world_settings.quick_game_play_radius
+        self.quick_game_respawn_bots_pos = world_settings.quick_game_respawn_bots_pos.as_point()
+        self.quick_game_respawn_bots_radius = world_settings.quick_game_respawn_bots_radius
+        self.quick_game_death_radius = self.quick_game_play_radius * 20
+
+        # Установка POI объектов быстрой игры
+        ## загрузка радиоточки
+        tower = self.reg.get('/registry/poi/quick_game_poi/quick_game_radio_tower', None)
+        if tower:
+            tower.position = self.quick_game_start_pos
+            RadioPoint(time=t, example=tower, server=self)
+
+        ## Установка точки радиации-быстрой игры
+        quick_rad = self.reg.get('/registry/poi/quick_game_poi/quick_game_radiation_area', None)
+        if quick_rad:
+            quick_rad.p_observing_range = self.quick_game_death_radius
+            quick_rad.position = self.quick_game_start_pos
+            StationaryRadiation(time=t, example=quick_rad, server=self)
+
+        quick_rad_anti = self.reg.get('/registry/poi/quick_game_poi/quick_game_radiation_area_anti', None)
+        if quick_rad_anti:
+            quick_rad_anti.p_observing_range = self.quick_game_play_radius
+            quick_rad_anti.position = self.quick_game_start_pos
+            StationaryRadiation(time=t, example=quick_rad_anti, server=self)
+
+        ## Установка точек-респаунов
+        respawns_root = self.reg.get('/registry/poi/quick_game_poi/quick_game_respawn')
+        for rs_exm in respawns_root:
+            respawns_root.position = self.quick_game_start_pos
+            MapRespawn(time=t, example=rs_exm, server=self)
+
+
+        # Создание экземпляров машинок игроков для быстрой игры
+        for car_proto in world_settings.quick_game_cars:
+            self.quick_game_cars_proto.append(car_proto)
+
+        # Создание экземпляров машинок ботов для быстрой игры
+        for car_proto in world_settings.quick_game_bot_cars:
+            self.quick_game_bot_cars_proto.append(car_proto)
+
+        # Получение экземпляров агентов ботов для быстрой игры
+        for agent_ex in world_settings.quick_game_bot_agents:
+            self.quick_game_bot_agents_proto.append(agent_ex)
+
+        # Создание AIQuickBot'ов
+        with Timer(logger=None) as tm:
+            self.load_ai_quick_bots()
+            log.info('Quick bots loaded DONE ({:.3f}s)'.format(tm.duration))
+
+    def load_ai_quick_bots(self):
+        from sublayers_server.model.registry_me.classes.agents import Agent
+        from sublayers_server.model.ai_quick_agent import AIQuickAgent
+
+        # todo: ##OPTIMIZE
+        bot_count = self.reg.get('/registry/world_settings').quick_game_bot_count or 0
+        # Создать ботов
+        avatar_list = self.reg.get('/registry/world_settings').avatar_list
+        role_class_list = self.reg.get('/registry/world_settings').role_class_order
+        car_proto_list = self.quick_game_bot_cars_proto
+        car_proto_list_len = len(car_proto_list)
+        current_machine_index = 0
+        bots_names = self.reg.get('/registry/world_settings').quick_game_bots_nick
+        for i in xrange(bot_count):
+            # Найти или создать профиль
+            name = bots_names[i] if bots_names and i < len(bots_names) else 'quick_bot_{}'.format(i)
+            user = UserProfile.get_by_name(name=name)
+            if user is None:
+                user = UserProfile(
+                    name=name,
+                    email='quick_bot_{}@1'.format(i),
+                    raw_password='1',
+                    avatar_link=random.choice(avatar_list),
+                ).save()
+
+            # Создать AIQuickAgent
+            agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
+            if agent_exemplar is None:
+                assert self.quick_game_bot_agents_proto
+                agent_exemplar = Agent(
+                    user_id=str(user._id),
+                    login=user.name,
+                    quick_flag=options.mode == 'quick',
+                    profile=random.choice(self.quick_game_bot_agents_proto).instantiate(
+                        name=str(user._id),
+                        role_class=random.choice(role_class_list),
+                        karma=random.randint(-80, 80),
+                        _exp=1005,
+                    ),
+                )
+                # todo: ##REFACTORING
+                agent_exemplar.profile.driving.value = random.randint(20, 40)
+                agent_exemplar.profile.shooting.value = random.randint(20, 40)
+                agent_exemplar.profile.masking.value = random.randint(20, 40)
+                agent_exemplar.profile.leading.value = random.randint(20, 40)
+                agent_exemplar.profile.trading.value = random.randint(20, 40)
+                agent_exemplar.profile.engineering.value = random.randint(20, 40)
+                agent_exemplar.save()
+
+            # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
+            car_proto = car_proto_list[current_machine_index % car_proto_list_len]
+            current_machine_index += 1
+            ai_agent = AIQuickAgent(
+                server=self,
+                user=user,
+                time=self.get_time(),
+                example=agent_exemplar,
+                car_proto=car_proto
+            )
