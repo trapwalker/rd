@@ -394,7 +394,10 @@ class Node(Subdoc):
                 if field and not getattr(field, 'not_inherited', False) and item not in self._data:
                     parent = self.parent
                     default = field.default
-                    return parent and getattr(parent, item, default() if callable(default) else default)
+                    if parent:
+                        return getattr(parent, item, default() if callable(default) else default)
+                    else:
+                        return default() if callable(default) else default
 
         return super(Node, self).__getattribute__(item)
 
