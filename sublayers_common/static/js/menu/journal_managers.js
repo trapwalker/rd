@@ -8,6 +8,7 @@ var JournalManager = (function () {
     }
 
     JournalManager.prototype.redraw = function(jq_main_div) {
+        //console.log("JournalManager.prototype.redraw");
         var self = journalManager;
         if (jq_main_div.find('.journal-page-button-block').length == 0) return;
         if (jq_main_div)
@@ -25,7 +26,7 @@ var JournalManager = (function () {
         self.jq_main_div.find('.journal-page-button-block')[0].click();
 
         self.parking.redraw();
-        //self.quests.redraw();
+        self.quests.redraw();
     };
 
     return JournalManager;
@@ -166,6 +167,12 @@ var QuestJournalManager = (function () {
         this.jq_active_group = null;
         this.jq_completed_group = null;
         this.jq_failed_group = null;
+
+        // Выбранный (Выделенный) сейчас квест
+        this._selected_quest = null;
+
+        // Таймер отрисовки изменений выбранного квеста (например dead-line и тд)
+        this._refresh_timer = null;
     }
 
     QuestJournalManager.prototype.addQuest = function(quest) {
@@ -190,11 +197,10 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.getQuest = function(quest_uid) {
         //console.log('QuestManager.prototype.getQuest', quest);
-        if (quest_uid && this.quests.hasOwnProperty(quest_uid)) {
+        if (quest_uid && this.quests.hasOwnProperty(quest_uid))
             return this.quests[quest_uid];
-        }
-        else
-            console.error('Квест с данным uid не найден:', quest_uid);
+        console.error('Квест с данным uid не найден:', quest_uid);
+        return null;
     };
 
     QuestJournalManager.prototype.update = function(quest) {
@@ -238,6 +244,11 @@ var QuestJournalManager = (function () {
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
         var hirer_photo = quest.hirer ?  quest.hirer.photo : '';
         var hirer_name = quest.hirer ?  quest.hirer.title : '';
+        // Время старта квеста, плюс 100 лет
+        var start_quest_date = new Date(quest.starttime * 1000);
+        start_quest_date.setFullYear(start_quest_date.getFullYear() + 100);
+        var start_quest_date_s = start_quest_date.toLocaleString('ru');
+
         var jq_quest_info_block = $(
             '<div class="journal-quest-info-block" data-quest_id="' + quest.uid + '">' +
                 '<div class="journal-quest-info-block-main-block">' +
@@ -245,14 +256,33 @@ var QuestJournalManager = (function () {
                         '<div class="npc-name-div"><span class="npc-name">' + hirer_name + '</span></div>' +
                     '</div>' +
                     '<div class="journal-quest-info-block-main-description-block">' +
-                        '<div class="journal-quest-info-block-main-description-start-date">00.00.0000; 00:00:00</div>' +
+                        '<div class="journal-quest-info-block-main-description-start-date">' + start_quest_date_s + '</div>' +
                         '<div class="journal-quest-info-block-main-description">Описание:<br>' + quest.text + '</div>' +
-                        '<div class="journal-quest-info-block-main-description-end-date">Осталось времени: 00:00:00</div>' +
+                        '<div class="journal-quest-info-block-main-description-end-date">Осталось времени: <span>00:00:00</span></div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="journal-quest-info-block-log-block">События:</div>' +
             '</div>');
         return jq_quest_info_block;
+    };
+
+    QuestJournalManager.prototype.on_refresh_selected = function () {
+        if (! this._selected_quest) return;
+        if (this._selected_quest.status != "active") return; // Обновляются только активные квесты
+        var quest = this._selected_quest;
+        var lost_time_str = '';
+        if (quest.deadline) {
+            var start_time = quest.starttime;
+            var finish_time = start_time + quest.deadline;
+            var lost_time = finish_time - clock.getCurrentTime();
+            if (lost_time < 0) lost_time = 0;
+            lost_time_str = toHHMMSS(lost_time * 1000);
+        }
+        else {
+            lost_time_str = '-:-';
+        }
+
+        this._selected_quest.jq_journal_info.find(".journal-quest-info-block-main-description-end-date").find('span').text(lost_time_str);
     };
 
     QuestJournalManager.prototype._create_building_quest_block = function(quest) {
@@ -261,7 +291,7 @@ var QuestJournalManager = (function () {
                 '<div class="building-quest-list-item-caption">' + quest.caption + '</div>' +
                 '<div class="building-quest-list-item-lvl">Уровень: ' + quest.level + '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text_short + '</div>' +
-                '<div class="building-quest-list-item-time">00:00:00</div>' +
+                '<div class="building-quest-list-item-time">' + toHHMMSS(quest.deadline * 1000) + '</div>' +
             '</div>');
         return jq_quest_block;
     };
@@ -285,6 +315,8 @@ var QuestJournalManager = (function () {
             this.jq_completed_group.find('.journal-menu-counter').first().text(this.completed_count);
             this.jq_failed_group.find('.journal-menu-counter').first().text(this.failed_count);
         }
+
+        if (this._selected_quest == quest) this._selected_quest = null;
     };
 
     QuestJournalManager.prototype.redraw_quest = function(quest_id) {
@@ -360,6 +392,10 @@ var QuestJournalManager = (function () {
                             jq_elem.addClass('active');
                     });
 
+                    // Сделать этот квест как выбранный (Selected)
+                    journalManager.quests._selected_quest = journalManager.quests.getQuest(quest_id);
+                    journalManager.quests.on_refresh_selected();
+
                     // Вызвать обновление teachingManager
                     teachingManager.redraw();
                 });
@@ -387,6 +423,12 @@ var QuestJournalManager = (function () {
         for (var key in this.quests)
             if (this.quests.hasOwnProperty(key))
                 this.clear_quest(key);
+
+        // Выбранный сейчас квест и ссылка на него
+        this._selected_quest = null;
+        // Запустить таймер, если ещё не запущен
+        if (!this._refresh_timer) this._refresh_timer = setInterval(function(){journalManager.quests.on_refresh_selected()}, 1000);
+
 
         // Добавляем "Активные" "Выполненные" "Проваленные"
         this.active_count = 0;
@@ -434,6 +476,11 @@ var QuestJournalManager = (function () {
         for (var key in this.quests)
             if (this.quests.hasOwnProperty(key))
                 this.delQuest(key);
+
+        if (this._refresh_timer) {
+            clearInterval(this._refresh_timer);
+            this._refresh_timer = null;
+        }
     };
 
 
