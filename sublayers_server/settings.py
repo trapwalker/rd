@@ -60,3 +60,4 @@ define("mode", default="basic", help="server mode. available values: basic, quic
 
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)
+define("reg_reload", default=False, help="Reload registry", type=bool)

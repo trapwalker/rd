@@ -94,7 +94,7 @@ class Server(object):
             self.quick_game_respawn_bots_radius = 0
             self.quick_game_death_radius = 0
 
-        self.reg = get_global_registry(path=options.world_path, reload=False, save_loaded=True)
+        self.reg = get_global_registry(path=options.world_path, reload=options.reg_reload, save_loaded=True)
 
     def __getstate__(self):
         d = self.__dict__.copy()
