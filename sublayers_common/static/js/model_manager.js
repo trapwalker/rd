@@ -257,6 +257,7 @@ var ClientManager = (function () {
                     obj.title = event.object.example.title || 'GasStation';
                     obj.direction = - 2 * Math.PI;
                     obj_marker = new WCanvasStaticTownMarker(obj); // виджет маркера
+                    obj.p_enter_range = event.object.example.p_enter_range;
                     break;
                 case 'QuickGamePowerUpFullHeal':
                 case 'QuickGamePowerUpFullFuel':

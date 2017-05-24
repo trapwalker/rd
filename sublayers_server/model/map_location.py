@@ -52,9 +52,10 @@ class MapLocation(Observer):
         # Свалка
         self.inventory = Inventory(max_size=100, owner=self)
 
-    def can_come(self, agent):
+    def can_come(self, agent, time):
         if agent.api.car:
-            return agent.api.car in self.visible_objects
+            distance = self.position(time).distance(agent.api.car.position(time))
+            return agent.api.car in self.visible_objects and distance < self.example.p_enter_range
         return False
 
     def activate_chats(self, event):

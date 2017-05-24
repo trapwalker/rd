@@ -90,6 +90,7 @@ class MapPowerUpAddItems(MapPowerUp):
 
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
+    p_enter_range = FloatField(caption=u"Радиус входа в город", tags="parameter param_aggregate client")
 
 
 class Building(Subdoc):

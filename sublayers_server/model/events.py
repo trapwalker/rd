@@ -371,7 +371,7 @@ class EnterToMapLocation(Event):
     def on_perform(self):
         super(EnterToMapLocation, self).on_perform()
         obj = self.server.objects.get(self.obj_id)
-        if obj and obj.can_come(agent=self.agent):
+        if obj and obj.can_come(agent=self.agent, time=self.time):
             obj.on_enter(agent=self.agent, event=self)
         else:
             log.warning('agent %s try to enter the location %s, but access denied', self.agent, obj)

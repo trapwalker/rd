@@ -490,7 +490,6 @@ var WCanvasStaticTownMarker = (function (_super) {
         return mouse_p.x > min_x && mouse_p.x < max_x && mouse_p.y > min_y && mouse_p.y < max_y;
     };
 
-
     WCanvasStaticTownMarker.prototype.updateIcon = function() {
         //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
         var mobj = this.mobj;
@@ -540,10 +539,11 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     WCanvasStaticTownMarker.prototype.post_redraw = function(ctx, time, client_time) {
         if (! user.userCar) return;
+        if (mapManager.getZoom() < 15) return;
         // Рассчёт дистанции между машинкой юзера и городом
         var u_car_pos = user.userCar.getCurrentCoord(time);
         var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
-        if (distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) return;
+        if (mapCanvasManager._mouse_focus_widget != this && distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) return;
 
         // Если мы в зумировании, то рисовать круг с прозрачностью
         var opacity = mapCanvasManager.real_zoom -  15.;
@@ -555,9 +555,8 @@ var WCanvasStaticTownMarker = (function (_super) {
         ctx.strokeStyle = "#31c811";
         //ctx.setLineDash([10, 10]);
         ctx.lineWidth = 4;
-        ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, this.mobj.p_observing_range / mapCanvasManager.zoom_koeff, 0, 2 * Math.PI);
+        ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
         ctx.stroke();
-        ctx.closePath();
         ctx.restore();
     };
 
