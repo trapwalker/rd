@@ -351,8 +351,6 @@ class ItemState(object):
         self.limbo = False
         self.is_alive = True  # костыль для тасков
 
-        self._id = id(self)
-
     id = property(id)
 
     def _fix_item_state(self, t=None, dt=0.0):
@@ -585,7 +583,6 @@ class Consumer(object):
         self.is_call_start = False
         self.is_call_stop = False
         self.is_started = False
-        self._id = id(self)
 
     id = property(id)
 

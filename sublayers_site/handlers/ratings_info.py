@@ -6,9 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 
-import tornado.gen
 
-
+#todo: ##REFACTORING
 def compare_function_for_traiders(a, b):
     return -1
 
@@ -40,7 +39,6 @@ def compare_function_for_adventurers(a, b):
 
 
 class GetRatingInfo(BaseSiteHandler):
-    @tornado.gen.coroutine
     def post(self):
         rating_name = self.get_argument('rating_name', None)
         if rating_name is None:
@@ -66,9 +64,9 @@ class GetRatingInfo(BaseSiteHandler):
             cmp_func = compare_function_for_adventurers
 
         # todo: принять в аргументе имя рейтинга и как-то обработтать это в поиске
-        rate_users = yield User.objects.filter({'quick': False, 'registration_status': 'register'}).limit(50).find_all()
+        rate_users = User.objects.filter(quick=False, registration_status='register').limit(50).find_all()
         # todo: load agents for all users
-        # agent_exemplar = self.server.reg_agents.get([str(user._id)])
+        # agent_exemplar = self.server.reg_agents.get([user.pk])
 
         log.debug('GetRatingInfo len of rate_users: %s', len(rate_users))
 

@@ -60,7 +60,7 @@ class ChatRoomPrivateCreateEvent(Event):
 
     def on_perform(self):
         super(ChatRoomPrivateCreateEvent, self).on_perform()
-        # assert False, '# todo: Get agent by user._id'
+        # assert False, '# todo: Get agent by user.pk'
         recipient = self.server.agents_by_name.get(str(self.recipient_login), None)
         if not recipient:
             log.warning('Agent with login %r not found', self.recipient_login)

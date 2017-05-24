@@ -651,7 +651,7 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
 
     if REGISTRY is None:
         with Timer(logger=None) as t:
-            Registry.objects.filter({}).delete()
+            Registry.objects.all().delete()
             log.debug('Registry DB cleaned ({:.3f}s).'.format(t.duration))
 
         REGISTRY = Registry()

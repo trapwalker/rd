@@ -8,8 +8,6 @@ from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_server.model.registry_me.classes.perks import Perk
 from sublayers_server.model.utils import serialize
 
-import tornado.web
-
 
 class GetRPGInfoHandler(BaseSiteHandler):
     def get_perk_rec(self, reg_obj):
@@ -104,21 +102,23 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         for perk in del_list:
             agent_ex.perks.remove(perk)
 
-    @tornado.gen.coroutine
     def _set_perk(self, agent_ex):
         perk_uri = self.get_argument('perk_node', None)
         if not perk_uri:
             return
-        perk = yield Perk.objects.get(uri=perk_uri)
+        perk = self.application.reg.get(perk_uri)
+        assert isinstance(perk, Perk)
 
-        if perk in agent_ex.perks:
+        if perk in agent_ex.profile.perks:
             # Значит просто выключить
-            agent_ex.perks.remove(perk)
+            agent_ex.profile.perks.remove(perk)
         else:
-            if (agent_ex.role_class.start_free_point_perks - len(agent_ex.perks) > 0) and perk.can_apply(agent_ex):
-                agent_ex.perks.append(perk)
+            if (  # TODO: ##REVIEW menkent, abbir
+                (agent_ex.profile.role_class.start_free_point_perks - len(agent_ex.profile.perks) > 0) and
+                perk.can_apply(agent_ex.profile)
+            ):
+                agent_ex.profile.perks.append(perk)
 
-    @tornado.gen.coroutine
     def post(self):
         action = self.get_argument('action', None)
         user = self.current_user
@@ -126,10 +126,10 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             self.finish({'status': 'User not auth'})
             return
         # todo: убрать un_cache, когда заработает reload
-        agent_ex = yield Agent.objects.get(user_id=str(user._id), reload=True)
+        agent_ex = Agent.objects.get(user_id=user.pk, reload=True)
         if agent_ex:
-            agent_ex.un_cache()
-            agent_ex = yield Agent.objects.get(user_id=str(user._id), reload=True)
+            agent_ex.profile.un_cache()
+            agent_ex = Agent.objects.get(user_id=user.pk, reload=True)
         if agent_ex is None:
             self.finish({'status': 'Agent not found'})
             return         
@@ -139,9 +139,9 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
         if action == 'dec_skill':
             self._dec_skill(agent_ex)
         elif action == 'set_perk':
-            yield self._set_perk(agent_ex)
+            self._set_perk(agent_ex)
         else:
             pass
 
-        yield agent_ex.save()
+        agent_ex.save()
         self.finish(serialize(self.get_full_site_rpg_settings(agent_ex)))

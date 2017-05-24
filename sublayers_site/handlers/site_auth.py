@@ -8,11 +8,8 @@ from sublayers_common.user_profile import User
 from sublayers_server.model.registry_me.classes.agents import Agent
 
 from tornado.web import HTTPError
-from tornado.httpclient import AsyncHTTPClient
-import tornado.gen
-import urllib
+#from tornado.httpclient import AsyncHTTPClient
 import hashlib
-import json
 from tornado.options import options
 from random import randint
 
@@ -89,15 +86,15 @@ class StandardLoginHandler(BaseSiteHandler):
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         user.save()
 
-        agent_example = Agent.objects.get(user_id=str(user._id))
+        agent_example = Agent.objects.get(user_id=user.pk)
         if agent_example is None:
             agent_example = Agent(
                 #storage=self.application.reg_agents,
-                user_id=str(user._id),
+                user_id=user.pk,
                 teaching_flag=False,
                 quick_flag=False,
                 profile=dict(
-                    name=str(user._id),
+                    name=str(user.pk),
                     parent='/registry/agents/user',
                 ),
             ).save(upsert=True)
@@ -155,26 +152,26 @@ class StandardLoginHandler(BaseSiteHandler):
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
         self.finish({'status': u'Временный пользователь создан'})
 
-    @tornado.gen.coroutine
-    def _forum_setup(self, data):
-        http = AsyncHTTPClient()
-
-        body = urllib.urlencode({
-            "user_email": data['user_email'],
-            "username": data['username'],
-            "user_password": data['user_password'],
-        })
-
-        response = yield http.fetch(request=options.forum_auth_script, method="POST",
-                              headers={'Content-Type': 'application/x-www-form-urlencoded'}, body=body)
-
-        res = json.loads(response.body)
-
-        if res.get('error', None):
-            log.info('Forum register failed with error: {}'.format(res['error']))
-            raise tornado.gen.Return(False)
-        else:
-            raise tornado.gen.Return(res.get('u_id'))
+    # @tornado.gen.coroutine
+    # def _forum_setup(self, data):
+    #     http = AsyncHTTPClient()
+    #
+    #     body = urllib.urlencode({
+    #         "user_email": data['user_email'],
+    #         "username": data['username'],
+    #         "user_password": data['user_password'],
+    #     })
+    #
+    #     response = yield http.fetch(request=options.forum_auth_script, method="POST",
+    #                           headers={'Content-Type': 'application/x-www-form-urlencoded'}, body=body)
+    #
+    #     res = json.loads(response.body)
+    #
+    #     if res.get('error', None):
+    #         log.info('Forum register failed with error: {}'.format(res['error']))
+    #         raise tornado.gen.Return(False)
+    #     else:
+    #         raise tornado.gen.Return(res.get('u_id'))
 
     def _authorisation(self):
         clear_all_cookie(self)
@@ -228,7 +225,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
-            agent_ex = Agent.objects.get(user_id=str(user._id))
+            agent_ex = Agent.objects.get(user_id=user.pk)
             if agent_ex is None:  # todo: Определить вероятность такой проблемы, рассмотреть пути решения
                 # todo: warning
                 self.send_error(status_code=404)
@@ -316,29 +313,28 @@ class StandardLoginHandler(BaseSiteHandler):
             user.save()
 
 
-class RegisterOldUsersOnForum(StandardLoginHandler):
-    @tornado.gen.coroutine
-    def get(self):
-        users = User.objects.filter({}).find_all()
-        count_regs = 0
-        for user in users:
-            # регистрация на форуме
-            email = user.auth.standard.email
-            username = user.name
-            password = user.auth.standard.password
-            if isinstance(password, unicode):
-                password = password.encode('utf-8')
-
-            forum_id = yield self._forum_setup({
-                'user_email': email,
-                'username': username,
-                'user_password': password,
-            })
-            if forum_id:
-                self.write("{}  register<br>".format(str(user.name)))
-                count_regs += 1
-
-        self.finish('done! {} users registered on forum'.format(count_regs))
+# class RegisterOldUsersOnForum(StandardLoginHandler):
+#     def get(self):
+#         users = User.objects.filter({}).find_all()
+#         count_regs = 0
+#         for user in users:
+#             # регистрация на форуме
+#             email = user.auth.standard.email
+#             username = user.name
+#             password = user.auth.standard.password
+#             if isinstance(password, unicode):
+#                 password = password.encode('utf-8')
+#
+#             forum_id = yield self._forum_setup({
+#                 'user_email': email,
+#                 'username': username,
+#                 'user_password': password,
+#             })
+#             if forum_id:
+#                 self.write("{}  register<br>".format(str(user.name)))
+#                 count_regs += 1
+#
+#         self.finish('done! {} users registered on forum'.format(count_regs))
 
 
 class SetForumUserAuth(StandardLoginHandler):

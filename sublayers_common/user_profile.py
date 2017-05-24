@@ -64,10 +64,6 @@ class User(Document):
         if email:
             self.auth.standard.email = email
 
-    @property
-    def id(self):
-        return self._id
-
     def check_password(self, password):
         if not self.auth:
             return
@@ -82,11 +78,11 @@ class User(Document):
 
     @classmethod
     def get_by_name(cls, name):
-        return cls.objects.filter({'name': name}).first()
+        return cls.objects.filter(name=name).first()
 
     @classmethod
     def get_by_email(cls, email):
-        return cls.objects.filter({'auth.standard.email': email}).first()
+        return cls.objects.filter(auth__standard__email=email).first()
 
     def as_document(self):
         d = self.__dict__.copy()
@@ -95,7 +91,7 @@ class User(Document):
 
     def __repr__(self):
         args = self.to_son()
-        args['_id'] = self._id
+        args['_id'] = self.pk
         return '{self.__class__.__name__}({args})'.format(
             self=self,
             args=', '.join(('{}={!r}'.format(k, v) for k, v in args.items())),

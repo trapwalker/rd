@@ -6,12 +6,8 @@ log = logging.getLogger(__name__)
 from sublayers_common.handlers.base import BaseHandler
 from sublayers_server.model.registry_me.classes.agents import Agent
 
-import tornado.web
-import tornado.gen
-from tornado.options import options
 import tornado.template
-from tornado.httpclient import AsyncHTTPClient
-from bson.objectid import ObjectId, InvalidId
+#from tornado.httpclient import AsyncHTTPClient
 from functools import partial
 
 from sublayers_site.site_locale import locale
@@ -24,15 +20,15 @@ class BaseSiteHandler(BaseHandler):
         name_car = None
         html_agent = None
         # todo: Убедиться, что агент не берется из кеша, а грузится из базы заново
-        agent_example = Agent.objects.get(user_id=str(user._id))
+        agent_example = Agent.objects.get(user_id=user.pk)
         if not agent_example:
             # info: создание пустого агента для отображения на сайте
             agent_example = Agent(
                 login=user.name,
-                user_id=str(user._id),
+                user_id=user.pk,
                 profile=dict(
                     parent='/registry/agents/user',
-                    name=str(user._id),
+                    name=str(user.pk),
                     role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
                 ),
             )
@@ -111,9 +107,8 @@ class BaseSiteHandler(BaseHandler):
         )
         return namespace
 
-    @tornado.gen.coroutine
     def prepare(self):
-        yield super(BaseSiteHandler, self).prepare()
+        super(BaseSiteHandler, self).prepare()
         user_lang = self.get_cookie('lang', None)
         # если cookie с языком не задана, то смотреть на host
         if user_lang is None:

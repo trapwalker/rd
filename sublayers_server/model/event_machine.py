@@ -411,15 +411,15 @@ class LocalServer(Server):
     #
     #         # todo: ##REFACTORING
     #         # Создать AIQuickAgent
-    #         agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
+    #         agent_exemplar = Agent.objects.flter(user_id=user.pk, quick_flag=options.mode == 'quick').first()
     #         if agent_exemplar is None:
     #             agent_exemplar = Agent(
-    #                 user_id=str(user._id),
+    #                 user_id=user.pk,
     #                 login=user.name,
     #                 quick_flag=options.mode == 'quick',
     #                 teaching_flag=False,
     #                 profile=self.reg.get('registry/agents/user/quick').instantiate(  # todo: get right User parent
-    #                     name=str(user._id),
+    #                     name=str(user.pk),
     #                     role_class=random.choice(role_class_list),
     #                     karma=random.randint(-80, 80),
     #                     _exp=1005,
@@ -493,7 +493,7 @@ class QuickLocalServer(LocalServer):
 
         ## Установка точек-респаунов
         respawns_root = self.reg.get('/registry/poi/quick_game_poi/quick_game_respawn')
-        for rs_exm in respawns_root:
+        for rs_exm in respawns_root.subnodes:
             respawns_root.position = self.quick_game_start_pos
             MapRespawn(time=t, example=rs_exm, server=self)
 
@@ -541,15 +541,15 @@ class QuickLocalServer(LocalServer):
                 ).save()
 
             # Создать AIQuickAgent
-            agent_exemplar = Agent.objects.first(user_id=str(user._id), quick_flag=options.mode == 'quick')
+            agent_exemplar = Agent.objects.filter(user_id=user.pk, quick_flag=options.mode == 'quick').first()
             if agent_exemplar is None:
                 assert self.quick_game_bot_agents_proto
                 agent_exemplar = Agent(
-                    user_id=str(user._id),
+                    user_id=user.pk,
                     login=user.name,
                     quick_flag=options.mode == 'quick',
                     profile=random.choice(self.quick_game_bot_agents_proto).instantiate(
-                        name=str(user._id),
+                        name=user.pk,
                         role_class=random.choice(role_class_list),
                         karma=random.randint(-80, 80),
                         _exp=1005,
