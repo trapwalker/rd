@@ -1,9 +1,18 @@
 .journal-quest-menu-quest {
+    height: 20px;
+    line-height: 20px;
     position: relative;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 .journal-quest-menu-quest:hover { color: #2ffa00; }
 .journal-quest-menu-quest.active { color: #2ffa00; }
+
+.journal-quest-menu-quest-img {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 5px;
+}
 
 .journal-quest-info-block {
     position: absolute;
@@ -15,7 +24,7 @@
 
 .journal-quest-info-block-main-block {
     position: relative;
-    height: 260px;
+    height: 230px;
     width: 100%;
     padding: 8px;
     border-width: 0 0 1px 0;
@@ -63,11 +72,26 @@
 
 .journal-quest-info-block-log-block {
     position: relative;
-    height: calc(100% - 260px);
+    height: calc(100% - 230px);
     width: 100%;
-    padding: 8px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.journal-quest-info-block-log-caption {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12pt;
+    padding-left: 15px;
     box-sizing: border-box;
 }
 
-
+.journal-quest-info-block-log-list-item {
+    position: relative;
+    width: 100%;
+}
+.journal-quest-info-block-log-list-item-span { font-weight: bold; }
 
