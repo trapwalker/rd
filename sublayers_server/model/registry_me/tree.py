@@ -17,6 +17,7 @@ from sublayers_server.model.registry_me.uri import URI
 
 import six
 import yaml
+import copy
 from uuid import uuid1 as get_uuid
 from collections import deque
 from fnmatch import fnmatch
@@ -85,8 +86,7 @@ class RegistryLinkField(BaseField):
 
         if instance._initialised:
             try:
-                if (self.name not in instance._data or
-                        instance._data[self.name] != value):
+                if (self.name not in instance._data or instance._data[self.name] != value):
                     instance._mark_as_changed(self.name)
             except Exception:
                 # Values cant be compared eg: naive and tz datetimes
@@ -143,13 +143,10 @@ class EmbeddedNodeField(EmbeddedDocumentField):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
 
     def from_uri(self, uri):
+        uri = URI.ensure(uri)
         reg = get_global_registry()
-        parent = reg.get_node_by_uri(uri)
-        if parent:
-            node = parent.__class__(parent=parent)  # todo: !!! support uri parametrization
-            node.expand_links()
-            return node
-        raise ValueError("Can't create node by URI {!r}".format(uri))
+        parent = reg.get(uri)
+        return parent.instantiate(_uri=uri)
 
     def to_python(self, value):
         if isinstance(value, basestring):
@@ -283,7 +280,7 @@ class Subdoc(EmbeddedDocument):
                 continue
 
             value = self._data.get(field_name)
-            if not value:
+            if value is None:
                 continue
 
             new_value = self._expand_field_value(field, value)
@@ -486,9 +483,43 @@ class Node(Subdoc):
 
         return i if obj else -1
 
-    def instantiate(self, **kw):
+    def instantiate(self, _uri=None, **kw):
+        """
+        Create instance of node and set parent to self.
+        :param _uri: Instantiation URI to get addition parameters
+        :type _uri: URI|None
+        :param kw: Addition params
+        :return: Node
+        """
         assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
-        return self.__class__(parent=self, **kw).expand_links()
+        parent = self
+        extra = {}
+        if not self.uri:
+            extra.update(self._data)
+            parent = self.parent
+
+        if _uri:
+            extra.update(_uri.params)
+
+        extra.update(kw)
+        node = self.__class__(parent=parent, **extra)
+
+        for field_name, field in node._fields.items():
+            if (
+                not isinstance(field, CONTAINER_FIELD_TYPES)
+                or not getattr(field, 'reinst', False)
+                or field_name in node._data
+            ):
+                continue
+            # Это реинстанцируемое контейнерное поле с неопределенным в node значением
+            value = getattr(node, field_name)
+            if value is None:
+                continue
+
+            setattr(node, field_name, copy.deepcopy(value))
+
+        node.expand_links()
+        return node
 
 
 ########################################################################################################################
@@ -532,6 +563,13 @@ class Registry(Doc):
         return self
 
     def get(self, uri, *defaults):
+        """
+        :param uri: Registry node URI
+        :type uri: URI|str
+        :param defaults:
+        :return: Node or default if specified
+        :rtype: Node|None
+        """
         path = addr2path(uri)
         if not path:
             return self.root
@@ -545,20 +583,26 @@ class Registry(Doc):
 
         raise KeyError('Registry has no root named {!r}'.format(self, root_name))
 
-    def get_node_by_uri(self, uri):
-        if not isinstance(uri, URI):
-            uri = URI(uri)
+    def make_node_by_uri(self, uri, **kw):
+        uri = URI.ensure(uri)
+
         params = uri.params
-        uri.replace(params=())
-        node = self.get(uri)
-        for k, v in params:
-            field = node._fields.get(k, None)
-            if field:
-                v = field.to_python(v)
-            setattr(node, k, v)
-        return node
+        parent = self.get(uri)
+        return parent.instantiate(_uri=uri, **kw)
+        # for k, v in params:
+        #     field = node._fields.get(k, None)
+        #     if field:
+        #         v = field.to_python(v)
+        #     setattr(node, k, v)
 
     def load(self, path):
+        """
+        Load registry tree from file system.
+        :param path: Path to registry structure in file system
+        :type path: str
+        :return: self
+        :rtype: Registry
+        """
         path = os.path.join(path, 'registry')
         log.debug('Registry FS loading start from: %r', path)
         all_nodes = []
@@ -643,6 +687,16 @@ class Root(Node):
 REGISTRY = None
 
 def get_global_registry(path=None, reload=False, save_loaded=True):
+    """
+    :param path: Path to registry structure in filesystem
+    :type: basestring
+    :param reload: Reload registry required
+    :type reload: bool
+    :param save_loaded: Save registry to DB after loading
+    :type save_loaded: bool
+    :return: Registry tree
+    :rtype: Registry
+    """
     global REGISTRY
     if reload:
         REGISTRY = None
