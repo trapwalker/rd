@@ -140,19 +140,27 @@ class QuickGameDie(Message):
         self.points = points
 
     def as_dict(self):
-        d = super(QuickGameDie, self).as_dict()
-        quick_users = list(self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(1000))
-        points = self.points
-        record_index = self.agent.server.app.db.quick_game_records.find({"points": {"$gte": points}, "time": {"$lte": self.time}}).count()
+        with Timer() as tm0:
+            d = super(QuickGameDie, self).as_dict()
+            with Timer() as tm1:
+                quick_users = list(self.agent.server.app.db.quick_game_records.find().sort("points", -1).limit(1000))
+            points = self.points
+            with Timer() as tm2:
+                record_index = self.agent.server.app.db.quick_game_records.find({"points": {"$gte": points}, "time": {"$lte": self.time}}).count()
 
-        d.update(
-            login=self.agent.print_login(),
-            points=points,
-            record_index=record_index + 1,
-            object=self.obj.as_dict(time=self.time),
-            quick_users=[dict(points=rec['points'], name=rec['name']) for rec in quick_users],
-            current_car_index=self.agent.user.car_index,
-        )
+            d.update(
+                login=self.agent.print_login(),
+                points=points,
+                record_index=record_index + 1,
+                object=self.obj.as_dict(time=self.time),
+                quick_users=[dict(points=rec['points'], name=rec['name']) for rec in quick_users],
+                current_car_index=self.agent.user.car_index,
+            )
+        log.debug(
+            '#PROF:: QuickGameDie: '
+            'fetch_top={tm1.duration:.3f}s, '
+            'count_rating={tm2.duration:.3f}s, '
+            'TOTAL={tm0.duration:.3f}s'.format(tm0=tm0, tm1=tm1, tm2=tm2))
         return d
 
 
