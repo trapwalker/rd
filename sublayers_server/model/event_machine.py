@@ -340,6 +340,7 @@ class LocalServer(Server):
         self.outher_loop_time = self.get_time()
         self.is_terminated = False
         log.info('---- Game server started: ' + '-' * 24)
+        log.info('    DB     : %s', options.db)
         log.info('    Mode   : %s', options.mode)
         log.info('    Service: %s', options.service_name)
         log.info('    Port   : %s', options.port)

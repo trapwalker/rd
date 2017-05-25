@@ -27,14 +27,14 @@ class B(Node):
 
 def test3():
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../sublayers_world/registry', reload=False)
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=True)
     x = reg.get_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
     globals().update(locals())
 
 def test4():
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../tmp/registry', reload=True)
+    reg = get_global_registry(path=u'../../../tmp', reload=True)
     a = reg.get('/registry/a')
     b = reg.get('/registry/b')
     c = B(it=dict(

@@ -671,71 +671,9 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
 ########################################################################################################################
 ########################################################################################################################
 
-class A(Node):
-    x = IntField(null=True, tags='client t1 t2')
-    y = IntField(null=True, tags={'t1', 't0'})
-    z = IntField(null=True, tags=['t2', 't3'])
-    e = EmbeddedNodeField(tags='t0')
-    #k = RegistryLinkField
-
-
-class A2(A):
-    w = StringField(null=True, tags='q w e')
-
-
-class B(Node):
-    a = IntField(null=True)
-    b = IntField(null=True)
-
-
-def test1():
-    Registry.objects.filter({}).delete()
-    reg = Registry()
-    reg.root = Node(name='registry')
-    a   = A(name='a'   , x= 3, y= 7, e=None, owner=reg.root)
-    aa  = A(name='aa'  , x=31, y=71, e=None, owner=a.uri, )
-    aaa = A(name='aaa' , x=31,       e=None, owner=aa.uri, parent=aa,)
-    ab  = A(name='ab'  , x=31, y=71, e='reg:///a/aa', owner=a.uri, )
-
-    # aa.e = ab.uri
-
-    print(aa.owner)
-
-    globals().update(locals())
-
-
-def test2():
-    reg = get_global_registry()
-    a = reg.get('/registry/a')
-    aa = reg.get('/registry/a/aa')
-    ab = reg.get('/registry/a/ab')
-    ac = reg.get('/registry/a/ac')
-    print(a.y)
-    print(aa.y)
-    reg.save()
-    globals().update(locals())
-
-
-def test3():
-    import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../tmp/registry', reload=True)
-    ac = reg.get('/registry/a/ac')
-    print(ac.parent)
-    globals().update(locals())
-
-
-if __name__ == '__main__':
-    from pprint import pprint as pp
-    db = connect(db='test_me')
-    log.info('Use `test_me` db')
-
-    #test1()
-    #test2()
-    test3()
-
-    # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
-    # todo: Проверить кэширование RegistryLinkField
-    # todo: Реализовать кэширование унаследованных атрибутов
-    #       - кэшировать в отдельном несериализуемом словаре
-    #       - проверить возможность перекрытия __getattribute__ на уровне узла вместо подмешивания ко всем типам полей
-    # todo: Реализовать кэширование root_instance
+# todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
+# todo: Проверить кэширование RegistryLinkField
+# todo: Реализовать кэширование унаследованных атрибутов
+#       - кэшировать в отдельном несериализуемом словаре
+#       - проверить возможность перекрытия __getattribute__ на уровне узла вместо подмешивания ко всем типам полей
+# todo: Реализовать кэширование root_instance
