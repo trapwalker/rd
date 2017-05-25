@@ -240,8 +240,9 @@ var MapManager = (function(_super) {
     MapManager.prototype.getTopLeftCoords = function(zoom) {
         var c = this.getMapCenter();
         var map_size = mulScalVector(this.getMapSize(), 0.5);
-        var koeff = Math.pow(2., (ConstMaxMapZoom - zoom));
-        return subVector(c, mulScalVector(map_size, koeff));
+        return subVector(c, mulScalVector(map_size, this.getZoomKoeff()));
+        // Старый вариант - рабочий, но немного расходится с картой
+        //return subVector(c, mulScalVector(map_size, Math.pow(2., (ConstMaxMapZoom - zoom))));
     };
 
     MapManager.prototype.getMouseCoords = function() {
@@ -332,6 +333,12 @@ var MapManager = (function(_super) {
         if (wFuelControl) wFuelControl._resize_view();
         if (wRadiationControl) wRadiationControl._resize_view();
         if (wWindControl) wWindControl._resize_view();
+    };
+
+    MapManager.prototype.getZoomKoeff = function() {
+        return smap.map.viewport().outher_zoom_koeff;
+        // Старый вариант - рабочий, но немного расходится с картой
+        // return Math.pow(2., (ConstMaxMapZoom - this.getZoom()));
     };
 
     return MapManager;

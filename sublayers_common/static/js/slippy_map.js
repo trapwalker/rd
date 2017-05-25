@@ -400,7 +400,7 @@
                     if (preload_type)
                         viewport.zf = 0.5; // Худший случай для предзагрузки максимально количества тайлов
                     else
-                        viewport.zf = 1. / (1 + viewport.zi - map.position.z);  // коэффициент зума от целого зума + 1: 17.5 => 1.5
+                        viewport.zf = 1. / (1 + viewport.zi - map.position.z);  // коэффициент текущего уменьшения тайлов
                     viewport.zp = map.pow(2, map.zMax - viewport.zi);  // Коэффициент зумирования для целого зума
                     viewport.w = map.renderer.context_size.canvas_w * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
                     viewport.h = map.renderer.context_size.canvas_h * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
@@ -417,6 +417,9 @@
                     viewport.x_tile_max = $.Math.ceil(viewport.xMax / viewport.sz) + map.preloadMargin;
                     viewport.y_tile_min = $.Math.floor(viewport.yMin / viewport.sz) - map.preloadMargin;
                     viewport.y_tile_max = $.Math.ceil(viewport.yMax / viewport.sz) + map.preloadMargin;
+
+                    // Расчёт zoom_koeff для вычислений вне карты (для отображения иконок и т.п.) на это число нужно делить любые расстояния
+                    viewport.outher_zoom_koeff = viewport.zp / viewport.zf;
 
                     return viewport;
                 },
