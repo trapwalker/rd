@@ -1,9 +1,18 @@
 .journal-quest-menu-quest {
+    height: 20px;
+    line-height: 20px;
     position: relative;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
 .journal-quest-menu-quest:hover { color: #2ffa00; }
 .journal-quest-menu-quest.active { color: #2ffa00; }
+
+.journal-quest-menu-quest-img {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 5px;
+}
 
 .journal-quest-info-block {
     position: absolute;

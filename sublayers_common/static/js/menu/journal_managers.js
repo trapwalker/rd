@@ -237,8 +237,9 @@ var QuestJournalManager = (function () {
             '</div>');
     };
 
-    QuestJournalManager.prototype._create_menu_quest = function(quest_name, quest_id) {
-        return $('<div class="journal-quest-menu-quest"' + ' data-quest_id="' + quest_id + '">' + quest_name + '</div>');
+    QuestJournalManager.prototype._create_menu_quest = function(quest, quest_id) {
+        return $('<div class="journal-quest-menu-quest"' + ' data-quest_id="' + quest_id + '">' +
+            '<img src="' + quest.list_icon + '" class="journal-quest-menu-quest-img">' + quest.caption + '</div>');
     };
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
@@ -288,8 +289,9 @@ var QuestJournalManager = (function () {
     QuestJournalManager.prototype._create_building_quest_block = function(quest) {
         var jq_quest_block = $(
             '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
-                '<div class="building-quest-list-item-caption">' + quest.caption + '</div>' +
-                '<div class="building-quest-list-item-lvl">Уровень: ' + quest.level + '</div>' +
+                '<div class="building-quest-list-item-caption">' +
+                    '<img src="' + quest.list_icon + '" class="building-quest-list-item-img">' + quest.caption + '</br>Уровень: ' + quest.level +
+                '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text_short + '</div>' +
                 '<div class="building-quest-list-item-time">' + toHHMMSS(quest.deadline * 1000) + '</div>' +
             '</div>');
@@ -372,7 +374,7 @@ var QuestJournalManager = (function () {
             }
             if (jq_current_group) {
                 // Добавляем квест в меню
-                quest.jq_journal_menu = this._create_menu_quest(quest.caption, quest_id);
+                quest.jq_journal_menu = this._create_menu_quest(quest, quest_id);
                 jq_current_group.find('.journal-menu-list').first().append(quest.jq_journal_menu);
 
                 // Добавляем инфоблок квеста
