@@ -85,6 +85,23 @@ class URI(tuple):
             anchor = unquote(anchor).decode(URI_ENCODING)
         return scheme, storage, path, params, anchor
 
+    @classmethod
+    def ensure(cls, link, *default):
+        if link is None:
+            if default:
+                return default[0]
+            raise ValueError("Wrong URI: {}".format(link))
+
+        elif isinstance(link, URI):
+            return link
+        else:
+            try:
+                return URI(link)
+            except Exception as e:
+                if default:
+                    return default[0]
+                raise e
+
     def __new__(cls, *av, **kw):
         """
         Create new instance of URI:
@@ -130,10 +147,11 @@ class URI(tuple):
         kw0['params'].update(dict(params1))
         kw0['params'].update(dict(kw.pop('params', {})))
         kw0.update(kw)
+        path = kw0.get('path')
         return tuple.__new__(cls, (
             kw0.get('scheme'),
             kw0.get('storage'),
-            tuple(kw0.get('path')) or (),
+            path and tuple(path) or (),
             tuple(kw0.get('params').items()),
             kw0.get('anchor'),
         ))
