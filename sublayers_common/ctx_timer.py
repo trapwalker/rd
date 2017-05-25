@@ -17,6 +17,7 @@ import os
 import time
 from datetime import datetime
 from functools import wraps
+import collections
 from copy import copy
 
 
@@ -25,19 +26,43 @@ class Timer(object):
     def __init__(
             self,
             name=None,
-            logger=log,
+            logger=None,
             log_start='Timer {timer.name!r} started at {timer.time_start}',
             log_stop='Timer {timer.name!r} stopped at {timer.time_stop}. Duration is {timer.duration}s',
+            log_level=logging.DEBUG,
+            log_name=None,
             **kw
         ):
         self.name = name
-        self.logger = logger
+        self.log_level = log_level and logging._checkLevel(log_level) or logging.NOTSET
+        _stream = None
+        if logger is None or isinstance(logger, logging.Logger):
+            self.logger = logger
+        elif isinstance(logger, basestring) and logger in {'stderr', 'stdout'}:
+            _stream = getattr(sys, logger)
+        elif isinstance(getattr(logger, 'write', None), collections.Callable):
+            _stream = logger
+        else:
+            raise ValueError(
+                "Logger specification is wrong. {!r} given, but 'stderr', 'stdout' or Logger instance required."
+                .format(logger)
+            )
+        if _stream:
+            _handler = logging.StreamHandler(_stream)
+            self.logger = logging.Logger(name=log_name, level=self.log_level)
+            self.logger.addHandler(_handler)
+
         self.log_start = log_start
         self.log_stop = log_stop
         self.timestamp_start = None
         self.timestamp_stop = None
         self._it_is_decorator = False
         self.__dict__.update(kw)
+
+    def _log(self, message, *av, **kw):
+        logger = self.logger
+        if logger:
+            logger.log(self.log_level, message, *av, **kw)
 
     @property
     def time_start(self):
@@ -51,15 +76,15 @@ class Timer(object):
         assert not self._it_is_decorator, "You can't start Timer instance used as decorator."
         t = time.time()
         self.timestamp_start = t
-        if self.logger and self.log_start:
-            self.logger.debug(self.log_start.format(timer=self))
+        if self.log_start:
+            self._log(self.log_start.format(timer=self))
         return t
 
     def stop(self):
         t = time.time()
         self.timestamp_stop = t
-        if self.logger and self.log_stop:
-            self.logger.debug(self.log_stop.format(timer=self))
+        if self.log_stop:
+            self._log(self.log_stop.format(timer=self))
         return t
 
     @property
@@ -119,14 +144,14 @@ if __name__ == '__main__':
         pass
 
     # normal usage:
-    with Timer(name='test') as timer:
+    with Timer(name='test', logger=log) as timer:
         task_size = 100000000 / 16
         for i in xrange(task_size):
             if i % (task_size / 10) == 0:
                 print(timer.duration)
 
     # functions decoration usage:
-    Timer(name='test2')
+    @Timer(name='test2', logger=sys.stdout)
     def test_routine2():
         print('test_routine2')
 
