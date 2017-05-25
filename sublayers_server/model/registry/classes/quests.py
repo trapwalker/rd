@@ -245,6 +245,7 @@ class Quest(Root):
     agent       = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста',
                                     reference_document_type='sublayers_server.model.registry.classes.agents.Agent', )
     history     = ListField(
+        tags='client',
         base_field=EmbeddedDocumentField(embedded_document_type=LogRecord, reinst=True),
         reinst=True,
         caption=u"Журнал квеста",
@@ -330,7 +331,6 @@ class Quest(Root):
         d.update(
             status=self.status,
             result=self.result,
-            #log=self._log,
         )
         return d
 

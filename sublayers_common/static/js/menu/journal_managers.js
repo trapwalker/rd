@@ -243,8 +243,10 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
+        console.log('QuestJournalManager.prototype._create_quest_info_block');
         var hirer_photo = quest.hirer ?  quest.hirer.photo : '';
         var hirer_name = quest.hirer ?  quest.hirer.title : '';
+
         // Время старта квеста, плюс 100 лет
         var start_quest_date = new Date(quest.starttime * 1000);
         start_quest_date.setFullYear(start_quest_date.getFullYear() + 100);
@@ -262,8 +264,23 @@ var QuestJournalManager = (function () {
                         '<div class="journal-quest-info-block-main-description-end-date">Осталось времени: <span>00:00:00</span></div>' +
                     '</div>' +
                 '</div>' +
-                '<div class="journal-quest-info-block-log-block">События:</div>' +
-            '</div>');
+                '<div class="journal-quest-info-block-log-block">' +
+                    '<div class="journal-quest-info-block-log-caption">События:</div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        var jq_log_list = jq_quest_info_block.find('.journal-quest-info-block-log-block').first();
+        for (var i = 0; i < quest.history.length; i++) {
+            var rec = quest.history[i];
+            var log_time_str = new Date(rec.time).toLocaleTimeString('ru');
+            jq_log_list.append(
+                '<div class="journal-quest-info-block-log-list-item">' +
+                    '<span class="journal-quest-info-block-log-list-item-span">' + log_time_str + '</span>: ' + rec.text +
+                '</div>'
+            );
+        }
+
         return jq_quest_info_block;
     };
 
@@ -353,7 +370,7 @@ var QuestJournalManager = (function () {
         }
 
         // Вывод квеста в журнал (квесты NPC в журнал не выводяться)
-        if ((['active', 'end'].indexOf(quest.status) >= 0) && (['win', 'failed', null].indexOf(quest.result) >= 0)) {
+        if ((['active', 'end'].indexOf(quest.status) >= 0) && (['win', 'fail', null].indexOf(quest.result) >= 0)) {
             // Определяем статус квеста
             var jq_current_group = null;
             switch (quest.status) {
