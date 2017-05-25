@@ -696,4 +696,7 @@ class Slave(ExtraMobile):
 
 
 class UnitWeapon(ExtraMobile):
-    pass
+    def on_init(self, event):
+        super(UnitWeapon, self).on_init(event)
+        if self.main_agent:
+            self.main_agent.on_setup_map_weapon(obj=self, time=event.time)

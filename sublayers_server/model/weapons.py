@@ -151,6 +151,7 @@ class WeaponAuto(Weapon):
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, weapon=self, sector=self.sector, action=True, time=time).post()
         # todo: пробросить сюда Ивент
         self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
+        self.owner.main_agent.on_autofire_start(target=car, time=time)
 
     def _stop_fire_to_car(self, car, time):
         # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
@@ -305,6 +306,8 @@ class WeaponDischarge(Weapon):
                 time=time,
                 car_id=self.owner.uid
             ).post()
+
+        self.owner.main_agent.on_discharge_shoot(targets=self.sector.target_list, time=time)
 
     def can_fire(self, time):
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)

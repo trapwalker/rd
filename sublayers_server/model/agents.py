@@ -78,6 +78,7 @@ class Agent(Object):
         # текущий город, если агент не в городе то None
         self._current_location = None
         self.current_location = example.current_location
+        self.watched_locations = [] # Список MapLocation, которые видят агента (редактируется в MapLocation)
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
@@ -624,6 +625,21 @@ class Agent(Object):
             agent.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
         user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
+
+    def on_discharge_shoot(self, targets, time):
+        log.info('on_discharge_shoot for {}'.format(targets))
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time)
+
+    def on_autofire_start(self, target, time):
+        log.info('on_autofire_start for {}'.format(target))
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time)
+
+    def on_setup_map_weapon(self, obj, time):
+        log.info('on_setup_map_weapon for {}'.format(obj))
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time)
 
 
 # todo: Переименовать в UserAgent

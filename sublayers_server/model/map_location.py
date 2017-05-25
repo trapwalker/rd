@@ -5,6 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
+from sublayers_server.model.units import Unit, ExtraMobile
 from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage, PreEnterToLocation
 )
@@ -53,9 +54,6 @@ class MapLocation(Observer):
         self.inventory = Inventory(max_size=100, owner=self)
 
     def can_come(self, agent, time):
-        if agent.api.car:
-            distance = self.position(time).distance(agent.api.car.position(time))
-            return agent.api.car in self.visible_objects and distance < self.example.p_enter_range
         return False
 
     def activate_chats(self, event):
@@ -170,6 +168,11 @@ class Town(MapLocation):
             if isinstance(npc, Trader) and not options.quick_debug:
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
+        self.enemy_agents = dict()  # Должны быть дикты с агентом и временем добавления
+        self.enemy_objects = dict()  # Должны быть дикты с объектами и временами добавления
+        self.delay_attack = 2  # Промежуток между атаками  # todo: взять из реестра
+        self.aggro_time = 60  # Длительность агра города  # todo: взять из реестра
+
     # def on_exit(self, agent, event):
     #     super(Town, self).on_exit(agent=agent, event=event)
     #     # if self.example.trader:
@@ -190,6 +193,79 @@ class Town(MapLocation):
         super(Town, self).on_enter_npc(event)
         # todo: Проверить законность входа в переданного NPC в этой локации
         event.agent.on_enter_npc(event=event)
+
+    def can_come(self, agent, time):
+        if agent.car and agent.print_login() not in self.enemy_agents:
+            distance = self.position(time).distance(agent.car.position(time))
+            return agent.car in self.visible_objects and distance < self.example.p_enter_range
+        return False
+
+    def on_contact_in(self, time, obj):
+        super(Town, self).on_contact_in(time=time, obj=obj)
+        if isinstance(obj, ExtraMobile):  # todo: Уничтожить все подобные объекты (мины, ракеты, дроны)
+            self.start_attack(obj=obj, time=time)
+        elif isinstance(obj, Unit) and obj.owner:
+            if self not in obj.owner.watched_locations:
+                obj.owner.watched_locations.append(self)
+            if obj.owner.print_login() in self.enemy_agents:
+                self.start_attack(obj=obj, time=time)
+
+    def on_contact_out(self, time, obj):
+        super(Town, self).on_contact_out(time=time, obj=obj)
+        if obj.owner and self in obj.owner.watched_locations:
+            obj.owner.watched_locations.remove(self)
+
+    def on_enemy_candidate(self, agent, time):
+        log.info('{} on_enemy_candidate: {}'.format(self, agent))
+        if agent.car:  # todo: проверить чтобы машинка была во внутреннем радиусе
+            self.enemy_agents[agent.print_login()] = time + self.aggro_time
+            self.start_attack(obj=agent.car, time=time)
+
+    def start_attack(self, obj, time):
+        if obj.uid not in self.enemy_objects:
+            self.enemy_objects[obj.uid] = time + self.aggro_time
+            self.on_start_attack(obj=obj, time=time)
+
+    def stop_attack(self, obj, with_agent=True):
+        log.info('stop_attack {}'.format(obj))
+        del self.enemy_objects[obj.uid]
+        if with_agent and obj.owner and obj.owner.print_login() in self.enemy_agents:
+            log.info('stop_attack_agent {}'.format(obj.owner))
+            del self.enemy_agents[obj.owner.print_login()]
+
+    @event_deco
+    def on_start_attack(self, event, obj):
+        # Если объект мёртв или прошло время агра города, то убрать из списка
+        if not obj.is_alive or obj.limbo or self.enemy_objects[obj.uid] < event.time:
+            self.stop_attack(obj=obj)
+            return
+
+        # Проверять, не пора ли убирать агента из списка enemy_agents
+        if obj.owner and obj.owner.print_login() in self.enemy_agents and self.enemy_agents[obj.owner.print_login()] < event.time:
+            self.stop_attack(obj=obj)
+            return
+
+        # Если не видно объекта, то перестать стрелять по нему
+        if obj not in self.visible_objects:
+            self.stop_attack(obj=obj, with_agent=False)
+            return
+
+        # Запустить эвент на получение дамага ( todo: рассчитать как-то задержку)
+        delay = 3
+        self.on_make_damage(obj=obj, time=event.time + delay)
+
+        # Разослать всем сообщение о начале анимации дамага (старт ракеты-трассера)
+
+        # Запустить эвент на новую атаку
+        self.on_start_attack(time=event.time + self.delay_attack, obj=obj)
+
+    @event_deco
+    def on_make_damage(self, event, obj):
+        log.info('on_make_damage to {}'.format(obj))
+        if obj.is_alive and not obj.limbo:  # Нанести дамаг
+            dhp_pr = 0.55 if isinstance(obj, ExtraMobile) else 0.1
+            obj.set_hp(time=event.time, dhp=dhp_pr * obj.max_hp)
+        # Разослать всем сообщение об окончании анимации дамага (взрыв) # todo: скорее всего не нужно, пусть клиент сам рисует взрыв
 
 
 class GasStation(Town):

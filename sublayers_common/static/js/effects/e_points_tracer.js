@@ -189,3 +189,34 @@ var ECanvasPointsTracerAnimation_2 = (function (_super) {
 
     return ECanvasPointsTracerAnimation_2;
 })(ECanvasPointsTracerAnimation);
+
+
+var ETownRocket = (function (_super) {
+    __extends(ETownRocket, _super);
+
+    function ETownRocket(p1, p2, target_mobj_id, call_back) {
+        _super.call(this, p1, p2, 340, call_back, "light_tracer_animation_2", 80);
+        this._target_mobj_id = target_mobj_id;
+    }
+
+     ETownRocket.prototype.redraw = function (ctx, time) {
+        ctx.save();
+        var pos = this.get_position(time);
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+        ctx.rotate(this.direction);
+        var img_obj = this.image_obj;
+        if (img_obj) {
+            var frame = this._get_frame_num(time);
+            //console.log(frame, this.frame_width, this.frame_height, )
+            ctx.drawImage(img_obj.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+                this.offset_x * img_obj.size[1], this.offset_y * img_obj.size[0], this.frame_width, this.frame_height);
+        }
+        else {
+            console.warn('Странная ошибка! Говорит, что не смог найти картинку. Странно это. Очень странно!');
+        }
+        ctx.restore();
+    };
+
+    return ETownRocket;
+})(ECanvasPointsTracerAnimation);
