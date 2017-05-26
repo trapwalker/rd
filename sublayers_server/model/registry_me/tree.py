@@ -279,13 +279,22 @@ class Subdoc(EmbeddedDocument):
         _expand_legend[id(self)] = self
 
         for field_name, field in self._fields.items():
-            if not isinstance(field, CONTAINER_FIELD_TYPES):
+            if not isinstance(field, CONTAINER_FIELD_TYPES) or field_name == 'subnodes':
                 continue
 
             if isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and not isinstance(field.field, CONTAINER_FIELD_TYPES):
                 continue
 
             value = self._data.get(field_name)
+            if (
+                value is None
+                and not getattr(field, 'not_inherited', False)
+                and getattr(field, 'reinst', False)
+                and self.parent
+                and hasattr(self.parent, field_name)
+            ):
+                value = getattr(self, field_name)
+
             if value is None:
                 continue
 
@@ -511,19 +520,20 @@ class Node(Subdoc):
         extra.update(kw)
         node = self.__class__(parent=parent, **extra)
 
-        for field_name, field in node._fields.items():
-            if (
-                not isinstance(field, CONTAINER_FIELD_TYPES)
-                or not getattr(field, 'reinst', False)
-                or field_name in node._data
-            ):
-                continue
-            # Это реинстанцируемое контейнерное поле с неопределенным в node значением
-            value = getattr(node, field_name)
-            if value is None:
-                continue
-
-            setattr(node, field_name, copy.deepcopy(value))
+        # for field_name, field in node._fields.items():
+        #     if (
+        #         not isinstance(field, CONTAINER_FIELD_TYPES)
+        #         or not getattr(field, 'reinst', False)
+        #         or field_name in node._data
+        #     ):
+        #         continue
+        #     # Это реинстанцируемое контейнерное поле с неопределенным в node значением
+        #     value = getattr(node, field_name)
+        #     if value is None:
+        #         continue
+        #
+        #     #ListField, DictField, EmbeddedDocumentField
+        #     setattr(node, field_name, copy.deepcopy(value))
 
         node.expand_links()
         return node
@@ -602,7 +612,7 @@ class Registry(Doc):
         #         v = field.to_python(v)
         #     setattr(node, k, v)
 
-    def load(self, path):
+    def load(self, path, validate=False):
         """
         Load registry tree from file system.
         :param path: Path to registry structure in file system
@@ -627,6 +637,8 @@ class Registry(Doc):
                         next_path = os.path.join(pth, f)
                         if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
                             stack.append((next_path, node))
+
+            log.debug('    structure loaded {} nodes ({:.3f}s)'.format(len(all_nodes), timer.duration))
 
             # todo: multiple expanding of one node ##optimize
             with Timer() as timer1:
