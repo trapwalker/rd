@@ -627,7 +627,7 @@ class Agent(Object):
         user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
 
-    def on_discharge_shoot(self, targets, is_damage_shoot, time):
+    def on_discharge_shoot(self, obj, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
         if is_damage_shoot:  # todo: пробросить сюда Ивент
@@ -636,7 +636,7 @@ class Agent(Object):
         for poi in self.watched_locations:
             poi.on_enemy_candidate(agent=self, time=time, damage=is_damage_shoot)
 
-    def on_autofire_start(self, target, time):
+    def on_autofire_start(self, obj, target, time):
         # log.info('on_autofire_start for {}'.format(target))
         for poi in self.watched_locations:
             poi.on_enemy_candidate(agent=self, time=time, damage=True)
@@ -649,7 +649,7 @@ class Agent(Object):
         for poi in self.watched_locations:
             poi.on_enemy_candidate(agent=self, time=time, damage=False)
 
-    def on_extramobile_damage(self, obj, targets, time):
+    def on_bang_damage(self, obj, targets, time):
         # log.info('on_extramobile_damage for {}'.format(obj))
         len_targets = len(targets)
         damage = len_targets > 1 or len_targets > 0 and self.car not in targets  # Дамаг по себе не считается дамагом для города

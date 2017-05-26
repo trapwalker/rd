@@ -355,6 +355,14 @@ class Unit(Observer):
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
         self.example.set_exp(dvalue=d_car_exp, time=event.time) # начисляем опыт машинке
 
+    def on_discharge_shoot(self, targets, is_damage_shoot, time):
+        # log.info('on_discharge_shoot for {}'.format(targets))
+        self.main_agent.on_discharge_shoot(obj=self, targets=targets, is_damage_shoot=is_damage_shoot, time=time)
+
+    def on_autofire_start(self, target, time):
+        # log.info('on_autofire_start for {}'.format(target))
+        self.main_agent.on_autofire_start(obj=self, target=target, time=time)
+
     def on_change_inventory_cb(self, inventory, time):
         for weapon in self.weapon_list():
             if weapon.item is None and weapon.last_item_balance_cls is not None:
@@ -656,6 +664,11 @@ class ExtraMobile(Mobile):
         self.starter = starter
         super(ExtraMobile, self).__init__(**kw)
 
+    def on_init(self, event):
+        super(ExtraMobile, self).on_init(event)
+        if self.main_agent:
+            self.main_agent.on_setup_map_weapon(obj=self, time=event.time)
+
     @property
     def is_frag(self):
         return False
@@ -696,7 +709,4 @@ class Slave(ExtraMobile):
 
 
 class UnitWeapon(ExtraMobile):
-    def on_init(self, event):
-        super(UnitWeapon, self).on_init(event)
-        if self.main_agent:
-            self.main_agent.on_setup_map_weapon(obj=self, time=event.time)
+    pass

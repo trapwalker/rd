@@ -356,7 +356,7 @@ class BangEvent(Event):
                         obj.set_hp(dhp=dhp, shooter=self.damager, time=self.time)
                         list_targets.append(obj)
 
-        self.damager.main_agent.on_extramobile_damage(obj=self.damager, targets=list_targets, time=self.time)
+        self.damager.main_agent.on_bang_damage(obj=self.damager, targets=list_targets, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(

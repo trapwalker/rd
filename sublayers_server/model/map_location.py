@@ -217,7 +217,7 @@ class Town(MapLocation):
             obj.owner.watched_locations.remove(self)
 
     def on_enemy_candidate(self, agent, damage, time):
-        log.info('{} on_enemy_candidate: {}'.format(self, agent))
+        # log.info('{} on_enemy_candidate: {}'.format(self, agent))
         if agent.car and (self.position(time).distance(agent.car.position(time)) < self.example.p_enter_range or damage):
             self.enemy_agents[agent.print_login()] = time + self.aggro_time
             self.need_start_attack(obj=agent.car, time=time)
@@ -228,10 +228,10 @@ class Town(MapLocation):
             self.start_attack(obj=obj, time=time)
 
     def need_stop_attack(self, obj, with_agent=True):
-        log.info('need_stop_attack {}'.format(obj))
+        # log.info('need_stop_attack {}'.format(obj))
         del self.enemy_objects[obj.uid]
         if with_agent and obj.owner and obj.owner.print_login() in self.enemy_agents:
-            log.info('stop_attack_agent {}'.format(obj.owner))
+            # log.info('stop_attack_agent {}'.format(obj.owner))
             del self.enemy_agents[obj.owner.print_login()]
 
     @event_deco
@@ -256,9 +256,7 @@ class Town(MapLocation):
         delay = 1.5 * self.position(event.time).distance(obj_pos) / self.example.p_observing_range
         self.make_damage(obj=obj, time=event.time + delay)
 
-        # todo: определить кому рассылать сообщения
         # Разослать всем сообщение о начале анимации дамага (старт ракеты-трассера)
-
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             TownAttackMessage(agent=agent, town_position=self.position(event.time), target_id=obj.uid,
                               target_pos=obj.position(event.time), time=event.time, duration=delay).post()
@@ -268,11 +266,10 @@ class Town(MapLocation):
 
     @event_deco
     def make_damage(self, event, obj):
-        log.info('on_make_damage to {}'.format(obj))
+        # log.info('on_make_damage to {}'.format(obj))
         if obj.is_alive and not obj.limbo:  # Нанести дамаг
             dhp_pr = 1.1 if isinstance(obj, ExtraMobile) else 0.05
             obj.set_hp(time=event.time, dhp=dhp_pr * obj.max_hp)
-        # Разослать всем сообщение об окончании анимации дамага (взрыв) # todo: скорее всего не нужно, пусть клиент сам рисует взрыв
 
 
 class GasStation(Town):

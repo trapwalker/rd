@@ -149,7 +149,7 @@ class WeaponAuto(Weapon):
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, weapon=self, sector=self.sector, action=True, time=time).post()
-        self.owner.main_agent.on_autofire_start(target=car, time=time)
+        self.owner.on_autofire_start(target=car, time=time)
 
     def _stop_fire_to_car(self, car, time):
         # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)
@@ -287,7 +287,6 @@ class WeaponDischarge(Weapon):
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел
-            # log.debug('Crrriiiiiiiiiiiiiiiiiiiiiiit = %s', dmg)
             pass
 
         # евент залповая стрельба
@@ -303,7 +302,7 @@ class WeaponDischarge(Weapon):
                 car_id=self.owner.uid
             ).post()
 
-        self.owner.main_agent.on_discharge_shoot(targets=self.sector.target_list, is_damage_shoot=is_damage_shoot, time=time)
+        self.owner.on_discharge_shoot(targets=self.sector.target_list, is_damage_shoot=is_damage_shoot, time=time)
 
     def can_fire(self, time):
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)
