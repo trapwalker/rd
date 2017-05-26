@@ -23,7 +23,7 @@ from collections import deque
 from fnmatch import fnmatch
 
 import mongoengine
-from mongoengine import connect, Document, EmbeddedDocument
+from mongoengine import connect, Document, EmbeddedDocument, ValidationError
 from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.fields import (
@@ -312,6 +312,7 @@ class Node(Subdoc):
     #uri = StringField(unique=True, null=True, not_inherited=True)
     subnodes = ListField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
     # todo: make `owner` property
+    filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
 
     @property
     def uri(self):
@@ -622,8 +623,22 @@ class Registry(Doc):
                             stack.append((next_path, node))
 
             # todo: multiple expanding of one node ##optimize
-            for node in all_nodes:
-                node.expand_links()
+            with Timer() as timer1:
+                for node in all_nodes:
+                    node.expand_links()
+            log.debug('    nodes expanded ({:.3f}s)'.format(timer1.duration))
+
+            if validate:
+                with Timer() as timer2:
+                    for node in all_nodes:
+                        try:
+                            node.validate()
+                        except ValidationError as err:
+                            log.error(err)
+                            for k, error in err.errors.items():
+                                log.error('    {}:: {}'.format(k, error))
+                                # todo: log messages format
+                log.debug('    validated ({:.3f}s).'.format(timer2.duration))
 
         log.info('Registry FS loading DONE: {} nodes from {!r} ({:.3f}s).'.format(len(all_nodes), path, timer.duration))
         return self
@@ -646,6 +661,7 @@ class Registry(Doc):
                     attrs.update(d.items())
 
         attrs.update(owner=owner)
+        attrs.setdefault('filename', path)
         attrs.setdefault('name', os.path.basename(path.strip('\/')))
         attrs.setdefault('parent', owner)
         attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
