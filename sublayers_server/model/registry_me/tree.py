@@ -19,7 +19,7 @@ import six
 import yaml
 import copy
 from uuid import uuid1 as get_uuid
-from collections import deque
+from collections import deque, Counter
 from fnmatch import fnmatch
 
 import mongoengine
@@ -272,6 +272,12 @@ class Subdoc(EmbeddedDocument):
         return expanded_value
 
     def expand_links(self):
+        global _expand_counter, _expand_legend
+        if _expand_counter[id(self)]:
+            return self
+        _expand_counter[id(self)] += 1
+        _expand_legend[id(self)] = self
+
         for field_name, field in self._fields.items():
             if not isinstance(field, CONTAINER_FIELD_TYPES):
                 continue
@@ -740,6 +746,8 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
     return REGISTRY
 ########################################################################################################################
 ########################################################################################################################
+_expand_counter = Counter()
+_expand_legend = {}
 
 # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
 # todo: Проверить кэширование RegistryLinkField
