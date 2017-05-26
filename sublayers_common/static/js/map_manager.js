@@ -15,7 +15,7 @@ function onMouseUpMap(mouseEventObject) {
     else {
         var click_point = new Point(mouseEventObject.clientX, mouseEventObject.clientY);
         clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
-                                          mulScalVector(click_point, Math.pow(2., (ConstMaxMapZoom - mapManager.getZoom())))));
+                                          mulScalVector(click_point, mapManager.getZoomKoeff())));
     }
 }
 

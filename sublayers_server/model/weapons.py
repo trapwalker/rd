@@ -149,8 +149,6 @@ class WeaponAuto(Weapon):
         self.dps_list[car.id] = dps
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, weapon=self, sector=self.sector, action=True, time=time).post()
-        # todo: пробросить сюда Ивент
-        self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
         self.owner.main_agent.on_autofire_start(target=car, time=time)
 
     def _stop_fire_to_car(self, car, time):
@@ -275,19 +273,17 @@ class WeaponDischarge(Weapon):
         # Выстрел произошёл. патроны списаны. Списать ХП и отправить на клиент инфу о перезарядке
         self.last_shoot = time
         is_crit = self.calc_is_crit()
-
-        # Засчитывается только урон по видимым целям
-        if len(self.sector.target_list) > 0:
-            # todo: пробросить сюда Ивент
-            self.owner.main_agent.example.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
+        is_damage_shoot = False
 
         for car in self.sector.target_list:
             dmg = self.calc_dmg(car=car, is_crit=is_crit, time=time)
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+            is_damage_shoot = True
 
         for car in self.sector.area_target_list:
             dmg = self.calc_area_dmg(car=car, time=time)
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+            is_damage_shoot = True
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел
@@ -307,7 +303,7 @@ class WeaponDischarge(Weapon):
                 car_id=self.owner.uid
             ).post()
 
-        self.owner.main_agent.on_discharge_shoot(targets=self.sector.target_list, time=time)
+        self.owner.main_agent.on_discharge_shoot(targets=self.sector.target_list, is_damage_shoot=is_damage_shoot, time=time)
 
     def can_fire(self, time):
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)

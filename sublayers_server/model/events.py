@@ -344,6 +344,8 @@ class BangEvent(Event):
         from sublayers_server.model.messages import Bang
         from sublayers_server.model.units import Unit
 
+        list_targets = []
+
         objects = self.server.visibility_mng.get_around_objects(pos=self.center, time=self.time)
         for obj in objects:
             if not obj.limbo and obj.is_alive:
@@ -352,6 +354,9 @@ class BangEvent(Event):
                     if dist < self.radius:
                         dhp = self.damage * (1.0 - obj.params.get('p_armor').value / 100.)
                         obj.set_hp(dhp=dhp, shooter=self.damager, time=self.time)
+                        list_targets.append(obj)
+
+        self.damager.main_agent.on_extramobile_damage(obj=self.damager, targets=list_targets, time=self.time)
 
         for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
             Bang(

@@ -17,7 +17,7 @@ from sublayers_server.model.registry.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -25,6 +25,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
+from sublayers_server.model.quest_events import OnMakeDmg
 
 from tornado.options import options
 
@@ -626,20 +627,38 @@ class Agent(Object):
         user.teaching_state = state
         tornado.gen.IOLoop.instance().add_future(user.save(), callback=callback)
 
-    def on_discharge_shoot(self, targets, time):
-        log.info('on_discharge_shoot for {}'.format(targets))
+    def on_discharge_shoot(self, targets, is_damage_shoot, time):
+        # log.info('on_discharge_shoot for {}'.format(targets))
+        # Если был дамаг, то сообщить об этом в квесты
+        if is_damage_shoot:  # todo: пробросить сюда Ивент
+            self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+
         for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time)
+            poi.on_enemy_candidate(agent=self, time=time, damage=is_damage_shoot)
 
     def on_autofire_start(self, target, time):
-        log.info('on_autofire_start for {}'.format(target))
+        # log.info('on_autofire_start for {}'.format(target))
         for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time)
+            poi.on_enemy_candidate(agent=self, time=time, damage=True)
+
+        # todo: пробросить сюда Ивент
+        self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
     def on_setup_map_weapon(self, obj, time):
-        log.info('on_setup_map_weapon for {}'.format(obj))
+        # log.info('on_setup_map_weapon for {}'.format(obj))
         for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time)
+            poi.on_enemy_candidate(agent=self, time=time, damage=False)
+
+    def on_extramobile_damage(self, obj, targets, time):
+        # log.info('on_extramobile_damage for {}'.format(obj))
+        len_targets = len(targets)
+        damage = len_targets > 1 or len_targets > 0 and self.car not in targets  # Дамаг по себе не считается дамагом для города
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time, damage=damage)
+
+        # Если был дамаг, то сообщить об этом в квесты
+        if damage:  # todo: пробросить сюда Ивент
+            self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
 
 # todo: Переименовать в UserAgent

@@ -73,7 +73,7 @@ var EffectPNGLoader = (function(){
     EffectPNGLoader.prototype.getImage = function(name){
         if (this.effects.hasOwnProperty(name))
             return this.effects[name];
-        console.log("EffectPNGLoader.prototype.getImage not found image with name: ", name);
+        //console.log("EffectPNGLoader.prototype.getImage not found image with name: ", name);
         return null;
     };
 
