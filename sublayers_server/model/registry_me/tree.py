@@ -515,7 +515,21 @@ class Node(Subdoc):
             parent = self.parent
 
         if _uri:
-            extra.update(_uri.params)
+            for k, v in _uri.params:
+                # todo: Support deep attributes detalization in URI params (subnode.attr -> subnode__attr)
+                field = self._fields.get(k, None)
+                if field:
+                    # todo: skip errors with warnings
+                    try:
+                        # todo: decode escape chars
+                        v = field.to_python(v)
+                    except Exception as e:
+                        log.warning("Wrong value {!r} of param {!r} in URI {}: {!r}".format(v, k, _uri, e))
+                else:
+                    log.warning("Unknown field {!r} in URI {}".format(k, _uri))
+                extra[k] = v
+
+            extra.update()
 
         extra.update(kw)
         node = self.__class__(parent=parent, **extra)
