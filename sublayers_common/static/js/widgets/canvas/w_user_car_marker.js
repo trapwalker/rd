@@ -534,7 +534,13 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     WCanvasStaticTownMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasStaticTownMarker.prototype.click_handler', this.mobj);
-        clientManager.sendEnterToLocation(this.mobj.ID);
+        if (! user.userCar) return;
+        var u_car_pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
+        if (distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
+            clientManager.sendEnterToLocation(this.mobj.ID);
+        else  // Ехать в координаты города
+            clientManager.sendGoto(this._last_mobj_position);
     };
 
     WCanvasStaticTownMarker.prototype.post_redraw = function(ctx, time, client_time) {
