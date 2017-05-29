@@ -134,8 +134,8 @@ var ControlManager = (function () {
 
         toggle_auto_fire: {
             up: function () {
-                if (wFireController && wFireController.allFire)
-                    wFireController.allFire.click();
+                if (wFireController)
+                    wFireController.toggleAutoShootingEnable();
             }
         },
         toggle_fire_widget: {

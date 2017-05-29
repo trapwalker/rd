@@ -474,6 +474,8 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     function WCanvasStaticTownMarker(mobj) {
         _super.call(this, mobj);
+
+        this._last_iteration_view_radius = false;
     }
 
     WCanvasStaticTownMarker.prototype.mouse_test = function(time) {
@@ -545,12 +547,21 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     WCanvasStaticTownMarker.prototype.post_redraw = function(ctx, time, client_time) {
         if (! user.userCar) return;
-        if (mapManager.getZoom() < 15) return;
+
         // Рассчёт дистанции между машинкой юзера и городом
         var u_car_pos = user.userCar.getCurrentCoord(time);
         var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
-        if (mapCanvasManager._mouse_focus_widget != this && distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) return;
+        if (mapCanvasManager._mouse_focus_widget != this && distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) {
+            this._last_iteration_view_radius = false;
+            return;
+        }
 
+        if (!this._last_iteration_view_radius && settingsManager.options.auto_off_autofire_in_city.value && wFireController.autoShoot) 
+            wFireController.setAutoShootingEnable(false);  // Отключение автострельбы при необходимости
+
+        this._last_iteration_view_radius = true;
+
+        if (mapManager.getZoom() < 15) return;
         // Если мы в зумировании, то рисовать круг с прозрачностью
         var opacity = mapCanvasManager.real_zoom -  15.;
         opacity = Math.max(Math.min(1, opacity), 0);

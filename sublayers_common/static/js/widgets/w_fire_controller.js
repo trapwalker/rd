@@ -90,7 +90,7 @@ var WFireController = (function (_super) {
 
         this.fCT.append($('<div class="fire-control-all sublayers-clickable"></div>'));
         this.allFire = this.fCT.find('.fire-control-all').first();
-        this.allFire.on('click', {self: this}, this.changeAutoShootingEnable);
+        this.allFire.on('click', {self: this}, this.toggleAutoShootingEnable);
 
 
 
@@ -347,14 +347,14 @@ var WFireController = (function (_super) {
                 self.SVG.setAttribute('display', 'none');
                 self.fCSB.removeClass('fire-control-slide-button-show');
                 self.fCSB.addClass('fire-control-slide-button-hide');
-                self._setAutoShootingEnable(false);
+                self._sendAutoShootingEnable(false);
             }
             else {
                 self.visible = true;
                 self.fCSB.removeClass('fire-control-slide-button-hide');
                 self.fCSB.addClass('fire-control-slide-button-show');
                 self.SVG.setAttribute('display', 'block');
-                self._setAutoShootingEnable(self.autoShoot);
+                self._sendAutoShootingEnable(self.autoShoot);
             }
         });
         returnFocusToMap();
@@ -378,29 +378,34 @@ var WFireController = (function (_super) {
         return this.visible;
     };
 
-    WFireController.prototype._setAutoShootingEnable = function (enable) {
-        //console.log('WFireController.prototype._setAutoShootingEnable', enable);
+    WFireController.prototype._sendAutoShootingEnable = function (enable) {
+        //console.log('WFireController.prototype._sendAutoShootingEnable', enable);
         clientManager.sendFireAutoEnable(enable);
     };
 
-    WFireController.prototype.changeAutoShootingEnable = function (event) {
-        //console.log('WFireController.prototype.changeAutoShootingEnable');
-        var self = event.data.self;
-        if (self.autoShoot) {
-            //console.log('WFireController.prototype.changeAutoShootingEnable', 'OFF');
-            self.autoShoot = false;
-            self._setAutoShootingEnable(false);
-            self.allFire.removeClass('fire-control-all-active');
-
+    WFireController.prototype.toggleAutoShootingEnable = function (event) {
+        //console.log('WFireController.prototype.toggleAutoShootingEnable');
+        var self = (event && event.data && event.data.self) || this;
+        if (self.autoShoot)
+            self.setAutoShootingEnable(false);
+        else
+            self.setAutoShootingEnable(true);
+        returnFocusToMap();
+    };
+    
+    WFireController.prototype.setAutoShootingEnable = function (enable) {
+        //console.log('WFireController.prototype.setAutoShootingEnable');
+        if (this.autoShoot && !enable) {
+            //console.log('WFireController.prototype.setAutoShootingEnable', 'OFF');
+            this._sendAutoShootingEnable(false);
+            this.updateStateAutoShooting(false);
             // Звук на отключение Автострельбы
             audioManager.play({name: "autofire_disable", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
-        else {
-            //console.log('WFireController.prototype.changeAutoShootingEnable', 'ON');
-            self.autoShoot = true;
-            self._setAutoShootingEnable(true);
-            self.allFire.addClass('fire-control-all-active');
-
+        if (!this.autoShoot && enable) {
+            //console.log('WFireController.prototype.setAutoShootingEnable', 'ON');
+            this._sendAutoShootingEnable(true);
+            this.updateStateAutoShooting(true);
             // Звук на включение Автострельбы
             audioManager.play({name: "autofire_enable", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
