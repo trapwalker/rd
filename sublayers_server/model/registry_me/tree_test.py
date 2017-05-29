@@ -47,8 +47,10 @@ def test4():
     globals().update(locals())
 
 if __name__ == '__main__':
+    import math
     db = connect(db='test_me')
     log.info('Use `test_me` db')
+
     rel = 0
     test3(reload=rel)
     from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
@@ -56,14 +58,17 @@ if __name__ == '__main__':
 
     print('DONE')
 
-    with open('reg_{}.json'.format('fs' if rel else 'db'), 'w') as f:
-        f.write(reg.to_json(ensure_ascii=False, indent=2).encode('utf-8'))
+    src = 'fs' if rel else 'db'
 
-    with Timer(logger='stdout') as t, open('reg_{}.json'.format('fs' if rel else 'db')) as f:
-        r2 = Registry.from_json(f.read(), created=True)
+    r = reg
+    n = 5
+    for i in range(n):
+        fn = 'reg_{}_{}.json'.format(src, str(i).zfill(int(math.ceil(math.log10(n)))))
 
-    with open('reg_{}_f.json'.format('fs' if rel else 'db'), 'w') as f:
-        f.write(r2.to_json(ensure_ascii=False, indent=2).encode('utf-8'))
+        with Timer(name='save %s' % i, logger='stdout', log_start=None):
+            r.save_to_file(fn)
 
+        with Timer(name='load %s' % i, logger='stdout', log_start=None):
+            r = Registry.load_from_file(fn)
 
     print('Ok')

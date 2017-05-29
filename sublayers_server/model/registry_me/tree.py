@@ -727,6 +727,29 @@ class Registry(Doc):
             node._instance = owner
         return node
 
+    def save_to_file(self, f, ensure_ascii=False, indent=2, **kw):
+        def _save(s):
+            s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
+
+        if isinstance(f, basestring):
+            with open(f, 'w') as stream:
+                _save(stream)
+        elif hasattr(f, 'write'):
+            _save(f)
+        else:
+            raise ValueError("Destination to save is not filename or stream: {!r}".format(f))
+
+    @classmethod
+    def load_from_file(cls, f):
+        # TODO: Убедиться, что внутренние ноды вновь загруженного реестра оперируют своей копией реестра, а не синглтоном
+        if isinstance(f, basestring):
+            with open(f) as stream:
+                return cls.from_json(stream.read(), created=True)
+        elif hasattr(f, 'read'):
+            return cls.from_json(f.read(), created=True)
+        else:
+            raise ValueError("Registry download source is not filename or stream: {!r}".format(f))
+
 
 class Root(Node):
     pass
