@@ -174,6 +174,8 @@ class Town(MapLocation):
         self.delay_attack = 2  # Промежуток между атаками  # todo: взять из реестра
         self.aggro_time = 60  # Длительность агра города  # todo: взять из реестра
 
+        self.can_aggro = self.example.get_building_by_type('nukeoil')
+
     # def on_exit(self, agent, event):
     #     super(Town, self).on_exit(agent=agent, event=event)
     #     # if self.example.trader:
@@ -201,20 +203,25 @@ class Town(MapLocation):
             return agent.car in self.visible_objects and distance < self.example.p_enter_range
         return False
 
+    def can_attack(self):
+        return self.can_aggro
+
     def on_contact_in(self, time, obj):
         super(Town, self).on_contact_in(time=time, obj=obj)
-        if isinstance(obj, ExtraMobile):  # todo: Уничтожить все подобные объекты (мины, ракеты, дроны)
-            self.need_start_attack(obj=obj, time=time)
-        elif isinstance(obj, Unit) and obj.owner:
-            if self not in obj.owner.watched_locations:
-                obj.owner.watched_locations.append(self)
-            if obj.owner.print_login() in self.enemy_agents:
+        if self.can_attack():
+            if isinstance(obj, ExtraMobile):  # todo: Уничтожить все подобные объекты (мины, ракеты, дроны)
                 self.need_start_attack(obj=obj, time=time)
+            elif isinstance(obj, Unit) and obj.owner:
+                if self not in obj.owner.watched_locations:
+                    obj.owner.watched_locations.append(self)
+                if obj.owner.print_login() in self.enemy_agents:
+                    self.need_start_attack(obj=obj, time=time)
 
     def on_contact_out(self, time, obj):
         super(Town, self).on_contact_out(time=time, obj=obj)
-        if isinstance(obj, Unit) and obj.owner and self in obj.owner.watched_locations:
-            obj.owner.watched_locations.remove(self)
+        if not self.can_attack():
+            if isinstance(obj, Unit) and obj.owner and self in obj.owner.watched_locations:
+                obj.owner.watched_locations.remove(self)
 
     def on_enemy_candidate(self, agent, damage, time):
         # log.info('{} on_enemy_candidate: {}'.format(self, agent))
