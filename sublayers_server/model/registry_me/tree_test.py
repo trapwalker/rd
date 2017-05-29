@@ -26,9 +26,9 @@ class B(Node):
     items = ListField(field=EmbeddedNodeField(document_type=A))
 
 
-def test3(reload=True):
+def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload)
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
     globals().update(locals())
@@ -51,8 +51,8 @@ if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
 
-    rel = 0
-    test3(reload=rel)
+    rel = 1
+    test3(reload=rel, save_loaded=False)
     from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
     its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     r = reg
     n = 5
     for i in range(n):
-        fn = 'reg_{}_{}.json'.format(src, str(i).zfill(int(math.ceil(math.log10(n)))))
+        fn = 'reg_{}_{}.yaml'.format(src, str(i).zfill(int(math.ceil(math.log10(n)))))
 
         with Timer(name='save %s' % i, logger='stdout', log_start=None):
             r.save_to_file(fn)

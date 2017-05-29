@@ -19,7 +19,7 @@ import six
 import yaml
 import copy
 from uuid import uuid1 as get_uuid
-from collections import deque, Counter
+from collections import deque, Counter, Callable
 from fnmatch import fnmatch
 
 import mongoengine
@@ -142,15 +142,12 @@ class EmbeddedNodeField(EmbeddedDocumentField):
     def __init__(self, document_type='Node', **kwargs):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
 
-    def from_uri(self, uri):
-        uri = URI.ensure(uri)
-        reg = get_global_registry()
-        parent = reg.get(uri)
-        return parent.instantiate(_uri=uri)
-
     def to_python(self, value):
         if isinstance(value, basestring):
-            return self.from_uri(value)
+            reg = get_global_registry()
+            return reg.make_node_by_uri(value)
+        elif value is None:
+            return
         return super(EmbeddedNodeField, self).to_python(value)
 
     def __set__(self, instance, value):
@@ -253,7 +250,7 @@ class Subdoc(EmbeddedDocument):
             if hasattr(expanded_value, 'expand_links'):
                 expanded_value.expand_links()
         elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
-            expanded_value = field.from_uri(value)
+            expanded_value = field.to_python(value)
         elif isinstance(field, ListField):
             # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
             expanded_value = value
@@ -278,29 +275,35 @@ class Subdoc(EmbeddedDocument):
         _expand_counter[id(self)] += 1
         _expand_legend[id(self)] = self
 
+        print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
+
         for field_name, field in self._fields.items():
-            if not isinstance(field, CONTAINER_FIELD_TYPES) or field_name == 'subnodes':
-                continue
+            value = getattr(self, field_name)
 
-            if isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and not isinstance(field.field, CONTAINER_FIELD_TYPES):
-                continue
-
-            value = self._data.get(field_name)
-            if (
-                value is None
-                and not getattr(field, 'not_inherited', False)
-                and getattr(field, 'reinst', False)
-                and self.parent
-                and hasattr(self.parent, field_name)
-            ):
-                value = getattr(self, field_name)
-
-            if value is None:
-                continue
-
-            new_value = self._expand_field_value(field, value)
-            if new_value is not value:
-                setattr(self, field_name, new_value)
+            setattr(self, field_name, value)
+            # parent = self.parent
+            # if field_name not in self._data and (parent is None or not hasattr(parent, field_name)):
+            #     default = field.default
+            #     if isinstance(default, Callable):
+            #         default = default()
+            #     setattr(self, field_name, default)
+            #     continue
+            #
+            # if not isinstance(field, CONTAINER_FIELD_TYPES):  # or field_name == 'subnodes':
+            #     continue
+            #
+            # if isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and not isinstance(field.field, CONTAINER_FIELD_TYPES):
+            #     continue
+            #
+            # value = getattr(self, field_name)
+            #
+            # if value is None:
+            #     continue
+            #
+            # setattr(self, field_name, value)
+            # # new_value = self._expand_field_value(field, value)
+            # # if new_value is not value:
+            # #     setattr(self, field_name, new_value)
 
         return self
 
@@ -393,6 +396,7 @@ class Node(Subdoc):
 
     def __getattribute__(self, item):
         if item not in {
+            '_expand_field_value',
             '_fields', 'parent',
             '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
             # BaseDocument.__slots__
@@ -549,7 +553,7 @@ class Node(Subdoc):
         #     #ListField, DictField, EmbeddedDocumentField
         #     setattr(node, field_name, copy.deepcopy(value))
 
-        node.expand_links()
+        #node.expand_links()
         return node
 
 
@@ -616,15 +620,8 @@ class Registry(Doc):
 
     def make_node_by_uri(self, uri, **kw):
         uri = URI.ensure(uri)
-
-        params = uri.params
         parent = self.get(uri)
         return parent.instantiate(_uri=uri, **kw)
-        # for k, v in params:
-        #     field = node._fields.get(k, None)
-        #     if field:
-        #         v = field.to_python(v)
-        #     setattr(node, k, v)
 
     def load(self, path, validate=False):
         """
@@ -656,8 +653,9 @@ class Registry(Doc):
 
             # todo: multiple expanding of one node ##optimize
             with Timer() as timer1:
-                for node in all_nodes:
-                    node.expand_links()
+                self.root.expand_links()
+                # for node in all_nodes:
+                #     node.expand_links()
             log.debug('    nodes expanded ({:.3f}s)'.format(timer1.duration))
 
             if validate:
@@ -729,7 +727,9 @@ class Registry(Doc):
 
     def save_to_file(self, f, ensure_ascii=False, indent=2, **kw):
         def _save(s):
-            s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
+            #s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
+            data = self.to_mongo().to_dict()
+            yaml.dump(data, s, allow_unicode=True)
 
         if isinstance(f, basestring):
             with open(f, 'w') as stream:
@@ -740,15 +740,19 @@ class Registry(Doc):
             raise ValueError("Destination to save is not filename or stream: {!r}".format(f))
 
     @classmethod
-    def load_from_file(cls, f):
+    def load_from_file(cls, src):
+        def _load(stream):
+            #return cls.from_json(stream.read(), created=True)
+            return cls._from_son(yaml.load(stream))
+
         # TODO: Убедиться, что внутренние ноды вновь загруженного реестра оперируют своей копией реестра, а не синглтоном
-        if isinstance(f, basestring):
-            with open(f) as stream:
-                return cls.from_json(stream.read(), created=True)
-        elif hasattr(f, 'read'):
-            return cls.from_json(f.read(), created=True)
+        if isinstance(src, basestring):
+            with open(src) as src_stream:
+                return _load(src_stream)
+        elif hasattr(src, 'read'):
+            return _load(src)
         else:
-            raise ValueError("Registry download source is not filename or stream: {!r}".format(f))
+            raise ValueError("Registry download source is not filename or stream: {!r}".format(src))
 
 
 class Root(Node):
