@@ -584,13 +584,26 @@ var SettingsManager = (function() {
             default: 1,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
             set_callback: function (new_value) {
                 if (wFireController) {
                     wFireController.setting_rotate_sectors = new_value == 1;
                     wFireController.change();
                 }
             },
+        },
+        auto_off_autofire_in_city: {
+            name: "auto_off_autofire_in_city",
+            page: "other",
+            text_name: "Отключение автострельбы около городов",
+            text_description: "Отключение автострельбы в радиусах безопасности городов",
+            jq_div: null,
+            type: "list",
+            default: "1",
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            set_callback: function(new_value) {},
         },
         /*Дебаг-инфо*/
         fps_rate: {

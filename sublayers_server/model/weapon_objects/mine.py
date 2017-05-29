@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.units import UnitWeapon, Slave
+from sublayers_server.model.map_location import Town
 from sublayers_server.model.events import Event, BangEvent, Objective
 import sublayers_server.model.tags as tags
 
@@ -95,7 +96,7 @@ class BangMine(UnitWeapon):
         self._mine_is_active = False
 
     def can_see_me(self, subj, **kw):
-        return subj is self.starter  # Никто и никак не может увидеть чужую мину, даже свою
+        return subj is self.starter or isinstance(subj, Town)  # Мину видят только установившие и города
         # return subj is self.starter or super(BangMine, self).can_see_me(subj=subj, **kw)
 
     def on_init(self, event):

@@ -139,6 +139,11 @@ class Town(MapLocation):
         d.update(buildings=[building.as_client_dict() for building in self.buildings])  # todo: fix client format
         return d
 
+    def get_building_by_type(self, type):
+        for build in self.buildings:
+            if build.name == type:
+                return build
+        return None
 
 class GasStation(Town):
     u"""Заправочная станция"""

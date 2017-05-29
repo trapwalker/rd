@@ -797,6 +797,14 @@ var ClientManager = (function () {
         }
     };
 
+    ClientManager.prototype.TownAttackMessage = function (event){
+        //console.log('ClientManager.prototype.TownAttackMessage', event);
+        new ETownRocket(event.town_pos, event.target_pos, event.target_id, event.duration,
+            function(bang_position){new ECanvasHeavyBangPNG_1(bang_position).start();}
+        ).start();
+
+    };
+
     ClientManager.prototype.ChangeAltitude = function(event){
         // console.log('ClientManager.prototype.ChangeAltitude ', event);
         if (event.obj_id == user.userCar.ID){
