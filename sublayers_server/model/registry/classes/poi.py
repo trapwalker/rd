@@ -90,6 +90,7 @@ class MapPowerUpAddItems(MapPowerUp):
 
 class MapLocation(POIObserver):
     svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
+    p_enter_range = FloatField(caption=u"Радиус входа в город", tags="parameter param_aggregate client")
 
 
 class Building(Subdoc):
@@ -118,6 +119,9 @@ class Town(MapLocation):
         tags='client',
     )
 
+    delay_attack = IntField(caption=u'Промежуток между атаками')
+    aggro_time = IntField(caption=u'Длительность агра города в секундах')
+
     def get_npc_list(self):
         # todo: rename to get_instances_list
         res = []
@@ -138,6 +142,11 @@ class Town(MapLocation):
         d.update(buildings=[building.as_client_dict() for building in self.buildings])  # todo: fix client format
         return d
 
+    def get_building_by_type(self, type):
+        for build in self.buildings:
+            if build.name == type:
+                return build
+        return None
 
 class GasStation(Town):
     u"""Заправочная станция"""

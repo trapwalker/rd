@@ -230,13 +230,13 @@ class Quest(Root):
     on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
         стартового состояния. Любое исключение в скрипте отменяет принятие квеста. Исключение Cancel тихо отменяет.''')
     caption     = StringField(tags='client', caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text        = StringField(tags='client', caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short  = StringField(tags='client', caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    text        = StringField(tags='client', caption=u'Текст, сопровождающий квест для журнала', doc=u'Может строиться и меняться по шаблону')
+    text_short  = StringField(tags='client', caption=u'Короткий текст квеста для реплики npc', doc=u'Может строиться и меняться по шаблону')
     typename    = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon   = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
     level       = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
-    deadline    = DateTimeField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    deadline    = IntField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
 
     hirer       = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста',
                                     reference_document_type='sublayers_server.model.registry.classes.poi.Institution', )
@@ -245,15 +245,16 @@ class Quest(Root):
     agent       = UniReferenceField(tags='client', caption=u'Агент', doc=u'Исполнитель квеста',
                                     reference_document_type='sublayers_server.model.registry.classes.agents.Agent', )
     history     = ListField(
+        tags='client',
         base_field=EmbeddedDocumentField(embedded_document_type=LogRecord, reinst=True),
         reinst=True,
         caption=u"Журнал квеста",
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
-    total_reward_money = FloatField(caption=u'Общая сумма награды в нукойнах')
+    total_reward_money = IntField(caption=u'Общая сумма награды в нукойнах')
     karma_coef = FloatField(caption=u'Часть кармы от общей награды')
     money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
-    reward_money = FloatField(caption=u'Сумма денежной награды', tags='client')
+    reward_money = IntField(caption=u'Сумма денежной награды', tags='client')
     reward_karma = FloatField(caption=u'Величина кармической награды')
     reward_items = ListField(
         default=[],
@@ -330,7 +331,6 @@ class Quest(Root):
         d.update(
             status=self.status,
             result=self.result,
-            #log=self._log,
         )
         return d
 
@@ -460,7 +460,6 @@ class Quest(Root):
             if self.status == 'end' and old_status == 'active':  # quest finished
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
 
-
     def make_global_context(self):
         ctx = dict(
             quest=self,
@@ -564,7 +563,7 @@ class Quest(Root):
             return False
         total_inventory_list = None if self.agent._agent_model.inventory is None else self.agent._agent_model.inventory.example.total_item_type_info()
         for item in items:
-            self.agent.car.inventory.items.append(item)
+            self.agent.car.inventory.items.append(item.instantiate(amount=item.amount))
         if self.agent._agent_model:
             self.agent._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
@@ -580,6 +579,7 @@ class Quest(Root):
         for item in items:
             if assortment.get(item.node_hash(), None) is None:
                 return False
+            print assortment[item.node_hash()], item.amount
             assortment[item.node_hash()] -= item.amount
             if assortment[item.node_hash()] < 0:
                 return False
@@ -600,8 +600,8 @@ class Quest(Root):
             messages.NPCReplicaMessage(agent=self.agent._agent_model, npc=npc, replica=replica, time=event.time).post()
 
     def generate_reward(self):
-        self.reward_money = self.total_reward_money * self.money_coef
-        self.reward_karma = self.total_reward_money * self.karma_coef / 1000.
+        self.reward_money = round(self.total_reward_money * self.money_coef)
+        self.reward_karma = self.total_reward_money * self.karma_coef / 1000
 
         if len(self.reward_items_list) > 0:
             self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
@@ -668,12 +668,14 @@ class KillerQuest(Quest):
 
 
 class DeliveryQuest(Quest):
+    reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
+    distance_table = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.disttable.DistTable')
+
     recipient_list = ListField(
         default=[],
         caption=u"Список возможных получателей доставки",
         base_field=UniReferenceField(
-            reference_document_type='sublayers_server.model.registry.classes.poi.Institution', ),
-        reinst=True,
+            reference_document_type='sublayers_server.model.registry.classes.poi.Institution', )
     )
     recipient = UniReferenceField(tags='client', caption=u'Получатель доставки',
                                   reference_document_type='sublayers_server.model.registry.classes.poi.Institution', )
@@ -702,8 +704,21 @@ class DeliveryQuest(Quest):
             reinst=True,
             tags='client',
         ),
-        reinst=True,
     )
+
+    def init_text(self):
+        self.text_short = u"Доставьте груз в гороод {}.".format(
+            self.recipient.hometown.title,
+            self.reward_money
+            # ', '.join([item.title for item in self.reward_items]),
+        )
+        self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc.".format(
+            ', '.join([item.title for item in self.delivery_set]),
+            self.recipient.title,
+            self.recipient.hometown.title,
+            self.reward_money
+            # ', '.join([item.title for item in self.reward_items]),
+        )
 
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()

@@ -103,7 +103,7 @@ var QuestNoteNPCBtn = (function (_super) {
     };
 
     QuestNoteNPCBtn.prototype.delete = function() {
-        if (this.build.active_central_page == this.jq_menu_div.data('page_id')){
+        if (this.build && this.build.active_central_page == this.jq_menu_div.data('page_id')){
             this.build.jq_main_div.find('.building-center-menu-item').first().click();
             this.build.centralMenuScrollToTop();
             this.build.set_buttons();

@@ -123,8 +123,8 @@ var EnterToLocationObserver = (function(_super){
     }
 
     EnterToLocationObserver.prototype._get_compare_distance = function(mobj, time) {
-        if (mobj.hasOwnProperty('p_observing_range'))
-            return mobj.p_observing_range * mobj.p_observing_range;
+        if (mobj.hasOwnProperty('p_enter_range'))
+            return mobj.p_enter_range * mobj.p_enter_range;
         return _super.prototype._get_compare_distance.call(this, mobj, time);
     };
 

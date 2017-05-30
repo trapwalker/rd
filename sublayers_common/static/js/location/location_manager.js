@@ -790,8 +790,8 @@ var LocationPlaceBuilding = (function (_super) {
                 if ((btnIndex == '1') && (this.selected_quest)) {
                     if (this.selected_quest.status == null)
                         clientManager.sendActivateQuest(this.selected_quest.uid);
-                    //if (this.selected_quest.status == 'active')
-                    //    Сообщение на отмену квеста
+                    if (this.selected_quest.status == 'active')
+                        clientManager.sendCancelQuest(this.selected_quest.uid);
                     this.set_selected_quest(null);
                 }
             }
@@ -822,7 +822,7 @@ var LocationPlaceBuilding = (function (_super) {
                 if (this.selected_quest.status == null)
                     locationManager.setBtnState(1, '</br>Принять', true);
                 if (this.selected_quest.status == 'active')
-                    locationManager.setBtnState(1, '</br>Отказаться', false);
+                    locationManager.setBtnState(1, '</br>Отказаться', true);
             }
             locationManager.setBtnState(2, '', false);
         }
@@ -949,7 +949,7 @@ var LocationPlaceBuilding = (function (_super) {
         }
 
         this.set_buttons();
-        this.set_header_text(this.selected_quest ? this.selected_quest.npc_reward_text : null);
+        this.set_header_text(this.selected_quest ? this.selected_quest.text : null);
 
         // Вызвать обновление teachingManager
         teachingManager.redraw();

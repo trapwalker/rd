@@ -17,10 +17,13 @@ import world
 import trader
 
 import quests
+import quests1
 import teaching_quest
 
 import notes
 
 import quick_game_items
+
+import disttable
 
 #import _test

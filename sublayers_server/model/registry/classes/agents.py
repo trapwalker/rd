@@ -24,7 +24,7 @@ class RelationshipRec(Subdoc):
         tags='client',
         caption=u"Целевой NPC",
     )
-    rel_index = FloatField(default=0, caption=u"Накапливаемое отношение")
+    rel_index = FloatField(default=-100, caption=u"Накапливаемое отношение")
 
     def get_index_norm(self):
         return min(max(self.rel_index / 100.0, -1), 1)

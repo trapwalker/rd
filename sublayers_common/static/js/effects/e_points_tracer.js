@@ -9,7 +9,7 @@ var ConstStartDistance = 20; // Расстояние от центра маши�
 var ECanvasPointsTracerPNG = (function () {
     function ECanvasPointsTracerPNG(p1, p2, speed, call_back, image_name) {
         // получим вектор-направление движения трассера и дистанцию
-        this.image_obj = effectPNGLoader.getImage(image_name);
+        this.image_obj = effectPNGLoader.getImage(image_name) || iconsLeaflet.getIcon(image_name);
         if (! this.image_obj) {console.log('Image not found! name = ', image_name); return; }
         var track_vect = subVector(p2, p1);
         var dist_track = track_vect.abs();
@@ -32,6 +32,7 @@ var ECanvasPointsTracerPNG = (function () {
         // сохраняем call_back и p2 для него
         this.cb = call_back;
         this.p2 = p2;
+        this._last_pos = p11;
     }
 
     ECanvasPointsTracerPNG.prototype.get_position = function (time) {
@@ -44,6 +45,7 @@ var ECanvasPointsTracerPNG = (function () {
     ECanvasPointsTracerPNG.prototype.redraw = function (ctx, time) {
         ctx.save();
         var pos = this.get_position(time);
+        this._last_pos = pos;
         var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         ctx.translate(ctx_pos.x, ctx_pos.y);
         ctx.rotate(this.direction);
@@ -105,6 +107,7 @@ var ECanvasPointsTracerAnimation = (function (_super) {
     ECanvasPointsTracerAnimation.prototype.redraw = function (ctx, time) {
         ctx.save();
         var pos = this.get_position(time);
+        this._last_pos = pos;
         var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         ctx.translate(ctx_pos.x, ctx_pos.y);
         ctx.rotate(this.direction);
@@ -188,4 +191,81 @@ var ECanvasPointsTracerAnimation_2 = (function (_super) {
     }
 
     return ECanvasPointsTracerAnimation_2;
+})(ECanvasPointsTracerAnimation);
+
+
+var ETownRocket = (function (_super) {
+    __extends(ETownRocket, _super);
+
+    function ETownRocket(p1, p2, target_mobj_id, duration, call_back) {
+        _super.call(this, p1, p2, 340, call_back, "icon-rocket-small", 100);
+        this.duration = duration; // Обновить duration, так как зависит времени, а не от скорости
+        this._target_mobj_id = target_mobj_id;
+
+        this.mobj = visualManager.getModelObject(this._target_mobj_id);
+
+        this.get_position(clock.getCurrentTime()); // Пересчитать kx, ky
+        this.is_finished = false;
+        this.p_start = p1;
+        this.offset_x = -0.5;
+        this.offset_y = -0.5;
+    }
+
+    ETownRocket.prototype.get_position = function (time) {
+        if (this.mobj) {
+            this.p2 = this.mobj.getCurrentCoord(this.start_time + this.duration);
+            var lost_time = this.start_time + this.duration - time;
+            if (lost_time < 0.1)
+                return null;
+            this.kx = (this.p2.x - this.x0) / this.duration;
+            this.ky = (this.p2.y - this.y0) / this.duration;
+            this.direction = angleVectorRadCCW2(new Point(this.kx, this.ky));
+        }
+
+        return _super.prototype.get_position.call(this, time);
+    };
+
+    ETownRocket.prototype.start = function () {
+        this.start_time = clock.getCurrentTime();
+        timeManager.addTimeoutEvent(this, 'finish', this.duration * 1000.);
+        mapCanvasManager.add_vobj(this, 50);
+        //console.log('ETownRocket.prototype.start ', this);
+    };
+
+    ETownRocket.prototype.finish = function () {
+        if (this.is_finished) return;
+        this.is_finished = true;
+        mapCanvasManager.del_vobj(this);
+        if (typeof (this.cb) === 'function')
+            this.cb(this.p2);
+        this.mobj = null;
+    };
+
+    ETownRocket.prototype.redraw = function (ctx, time) {
+        ctx.save();
+        var pos = this.get_position(time);
+        if (!pos) {this.finish(); return;}
+        this._last_pos = pos;
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+        ctx.rotate(this.direction);
+        var img_obj = this.image_obj;
+        if (img_obj) {
+            var frame = this._get_frame_num(time);
+            ctx.drawImage(img_obj.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+                this.offset_x * img_obj.size[1], this.offset_y * img_obj.size[0], this.frame_width, this.frame_height);
+        }
+        else {
+            console.warn('Странная ошибка! Говорит, что не смог найти картинку. Странно это. Очень странно!');
+        }
+
+        ctx.restore();
+
+        if (mapCanvasManager._settings_particles_tail)
+            new ECanvasCarTail(getRadialRandomPointWithAngle(this._last_pos, -5, this.direction, 0.5), Math.PI / 2. + this.direction, 2500 * mapCanvasManager._settings_particles_tail, "icon-rocket-tail-03", 0.5, 0.25).start();
+
+    };
+
+
+    return ETownRocket;
 })(ECanvasPointsTracerAnimation);

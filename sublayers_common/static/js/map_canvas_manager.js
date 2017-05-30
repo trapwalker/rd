@@ -146,7 +146,12 @@ var MapCanvasManager = (function(_super){
         this._mouse_focus_widget = focused_widget;
 
         this.real_zoom = mapManager.getZoom();
-        this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
+
+        this.zoom_koeff = mapManager.getZoomKoeff();
+
+        // —тарый вариант - рабочий, но немного расходитс€ с картой
+        // this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
+
         this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Ёта точка соответствует 0,0 на канвасе
         var map_size = mapManager.getMapSize();
         if (subVector(map_size, this.cur_map_size).abs() > 0.2) {  // todo: ||  map.dragging._enabled

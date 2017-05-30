@@ -257,6 +257,7 @@ var ClientManager = (function () {
                     obj.title = event.object.example.title || 'GasStation';
                     obj.direction = - 2 * Math.PI;
                     obj_marker = new WCanvasStaticTownMarker(obj); // виджет маркера
+                    obj.p_enter_range = event.object.example.p_enter_range;
                     break;
                 case 'QuickGamePowerUpFullHeal':
                 case 'QuickGamePowerUpFullFuel':
@@ -794,6 +795,14 @@ var ClientManager = (function () {
             audioManager.play({name: "shot_03", gain: gain * audioManager._settings_bang_gain, playbackRate: rate, priority: 0.7});
 
         }
+    };
+
+    ClientManager.prototype.TownAttackMessage = function (event){
+        //console.log('ClientManager.prototype.TownAttackMessage', event);
+        new ETownRocket(event.town_pos, event.target_pos, event.target_id, event.duration,
+            function(bang_position){new ECanvasHeavyBangPNG_1(bang_position).start();}
+        ).start();
+
     };
 
     ClientManager.prototype.ChangeAltitude = function(event){
@@ -2383,6 +2392,17 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendActivateQuest', quest_id);
         var mes = {
             call: "quest_activate",
+            rpc_call_id: rpcCallList.getID(),
+            params: {quest_uid: quest_id}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendCancelQuest = function (quest_id) {
+        //console.log('ClientManager.prototype.sendCancelQuest', quest_id);
+        var mes = {
+            call: "quest_cancel",
             rpc_call_id: rpcCallList.getID(),
             params: {quest_uid: quest_id}
         };
