@@ -17,26 +17,34 @@
                     {
                         name: "back",
                         url: function (x, y, z) {
-                            return "http://185.58.205.29/map/" + z + "/" + x + "/" + y + ".jpg";
+                            return "http://roaddogs.ru/map/back/" + z + "/" + x + "/" + y + ".jpg";
+                        },
+                        alpha: 1.0,
+                        visible: true,
+                    },
+                    {
+                        name: "front",
+                        url: function (x, y, z) {
+                            return "http://roaddogs.ru/map/front/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
                     },
                     // Другие слои карты.
-                    {
-                        name: "front",
-                        url: function (x, y, z) {
-                            var rand, sub, url;
-                            rand = function (n) {
-                                return $.Math.floor($.Math.random() * n);
-                            };
-                            sub = ["a", "b", "c"];
-                            url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
-                            return url;
-                        },
-                        alpha: 0.5,
-                        visible: true,
-                    }
+                    //{
+                    //    name: "front",
+                    //    url: function (x, y, z) {
+                    //        var rand, sub, url;
+                    //        rand = function (n) {
+                    //            return $.Math.floor($.Math.random() * n);
+                    //        };
+                    //        sub = ["a", "b", "c"];
+                    //        url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
+                    //        return url;
+                    //    },
+                    //    alpha: 0.5,
+                    //    visible: true,
+                    //}
                 ],
                 zMin: 0,
                 zMax: 18,
@@ -126,6 +134,7 @@
                         map.renderer.loadingCue = map.renderer.loadingCue + 1;
                         map.renderer.tiles[pr_name][id] = new $.Image();
                         map.renderer.tiles[pr_name][id].src = tileprovider.url(x, y, z, id);
+                        map.renderer.tiles[pr_name][id]._404_tile = false;
                         map.renderer.tiles[pr_name][id].onload = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
                             map.renderer.next_load_tile();
@@ -135,6 +144,7 @@
                             this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                             this.onload = function () {};
                             this._404_tile = true;  // todo: возможно потом убрать
+                            //console.log('404 tile + ', this.slippy_coord, this._404_tile);
                             map.renderer.next_load_tile();
                         };
 
