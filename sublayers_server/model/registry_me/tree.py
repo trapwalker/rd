@@ -240,6 +240,9 @@ class Subdoc(EmbeddedDocument):
         super(Subdoc, self).__setattr__(key, value)
 
     def _expand_field_value(self, field, value):
+        if not isinstance(field, CONTAINER_FIELD_TYPES):
+            return value  # todo: optimize
+
         if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
             expanded_value = value.expand_links()
         elif isinstance(field, EmbeddedDocumentField) and isinstance(value, EmbeddedDocument):
@@ -263,8 +266,8 @@ class Subdoc(EmbeddedDocument):
             for k, v in value.items():
                 if v:
                     expanded_value[k] = self._expand_field_value(field.field, v)
-        elif isinstance(field, RegistryLinkField):
-            expanded_value = value
+        # elif isinstance(field, RegistryLinkField):  # todo: Убрать для неконтейнерных типов
+        #     expanded_value = value
         else:
             raise ValueError(
                 'Unexpected type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
@@ -278,11 +281,12 @@ class Subdoc(EmbeddedDocument):
         _expand_counter[id(self)] += 1
         _expand_legend[id(self)] = self
 
-        print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
+        #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
 
         for field_name, field in self._fields.items():
-            value = getattr(self, field_name)
-            setattr(self, field_name, value)
+            if isinstance(field, CONTAINER_FIELD_TYPES):
+                value = getattr(self, field_name)
+                setattr(self, field_name, value)
             # parent = self.parent
             # if field_name not in self._data and (parent is None or not hasattr(parent, field_name)):
             #     default = field.default
@@ -513,6 +517,7 @@ class Node(Subdoc):
         :param kw: Addition params
         :return: Node
         """
+        # todo: expand
         assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
         parent = self
         extra = {}
