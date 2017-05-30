@@ -179,6 +179,7 @@ class URI(tuple):
         return str(self).decode(URI_ENCODING)
 
     def to_string(self, with_params=True, with_anchor=True):
+        # todo: use unicode strings
         scheme, storage, path, params, anchor = self
         try:
             if path:
