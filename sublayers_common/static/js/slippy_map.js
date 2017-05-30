@@ -164,7 +164,7 @@
                         var current_x = map.position.x;
                         var current_y = map.position.y;
                         var viewports = map.renderer.viewports;
-                        for (var i = map.zMin; i <= map.zMax; i++) // Если неободимо создать новый вьювпорт для загрузки тайлов
+                        for (var i = Math.ceil(map.zMin); i <= Math.floor(map.zMax); i++) // Если неободимо создать новый вьювпорт для загрузки тайлов
                             if (!viewports.hasOwnProperty(i) || Math.abs(viewports[i].x - current_x) > viewports[i].sz || Math.abs(viewports[i].y - current_y) > viewports[i].sz)
                                 viewports[i] = map.viewport_by_zoom(i, true);
 

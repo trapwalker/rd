@@ -5,7 +5,7 @@
 
 // Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 10;
+var ConstMinMapZoom = 10.01;
 var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
@@ -74,7 +74,7 @@ var MapManager = (function(_super) {
     }
 
     MapManager.prototype._init = function () {
-        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
+        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15.01 : ConstMinMapZoom;
 
         // Обработчики событий карты
         document.getElementById('map2div').onkeydown = onKeyDownMap;
