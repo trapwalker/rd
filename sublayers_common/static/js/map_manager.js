@@ -5,7 +5,7 @@
 
 // Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 10;
+var ConstMinMapZoom = 10.01;
 var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
@@ -74,7 +74,7 @@ var MapManager = (function(_super) {
     }
 
     MapManager.prototype._init = function () {
-        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15 : ConstMinMapZoom;
+        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15.01 : ConstMinMapZoom;
 
         // Обработчики событий карты
         document.getElementById('map2div').onkeydown = onKeyDownMap;
@@ -139,7 +139,9 @@ var MapManager = (function(_super) {
             loadCompleteCB: this.removeFromLoader
         }).init();
 
-        this.set_layer_visibility("tiles", settingsManager.options.map_tile_draw.value == 1);
+        //this.set_layer_visibility("tiles", settingsManager.options.map_tile_draw.value == 1);
+        this.set_tileprovider_visibility("back", settingsManager.options.map_tile_draw_back.value == 1);
+        this.set_tileprovider_visibility("front", settingsManager.options.map_tile_draw_front.value == 1);
 
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);
@@ -230,6 +232,10 @@ var MapManager = (function(_super) {
             if (smap.renderer.layers[i].id == layer_name)
                 layer = smap.renderer.layers[i];
         if (layer && layer.visibility != visibility) layer.visibility = visibility;
+    };
+
+    MapManager.prototype.set_tileprovider_visibility = function(prov_name, visibility) {
+        smap.set_visible_tileprovider(prov_name, visibility);
     };
 
     MapManager.prototype.set_pyramid_size = function(value) {
