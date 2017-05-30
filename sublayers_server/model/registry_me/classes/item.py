@@ -67,7 +67,7 @@ class Item(Node):
 
 
 class ItemUsable(Item):
-    post_activate_item = EmbeddedNodeField(
+    post_activate_item = RegistryLinkField(
         document_type=Item,
         caption=u'Итем, который будет положен в инвентарь после активации',
     )
