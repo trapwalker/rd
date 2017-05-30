@@ -119,6 +119,9 @@ class Town(MapLocation):
         tags='client',
     )
 
+    delay_attack = IntField(caption=u'Промежуток между атаками')
+    aggro_time = IntField(caption=u'Длительность агра города в секундах')
+
     def get_npc_list(self):
         # todo: rename to get_instances_list
         res = []

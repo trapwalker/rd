@@ -171,8 +171,8 @@ class Town(MapLocation):
 
         self.enemy_agents = dict()  # Должны быть дикты с агентом и временем добавления
         self.enemy_objects = dict()  # Должны быть дикты с объектами и временами добавления
-        self.delay_attack = 2  # Промежуток между атаками  # todo: взять из реестра
-        self.aggro_time = 60  # Длительность агра города  # todo: взять из реестра
+        self.delay_attack = self.example.delay_attack  # Промежуток между атаками
+        self.aggro_time = self.example.aggro_time  # Длительность агра города
 
         self.can_aggro = self.example.get_building_by_type('nukeoil')
 
