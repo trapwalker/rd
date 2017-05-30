@@ -106,7 +106,8 @@ class Server(object):
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        for zone in sorted(list(self.reg.get('/registry/zones', [])), key=lambda a_zone: a_zone.order_key):
+        zones = self.reg.get('/registry/zones').subnodes
+        for zone in sorted(zones, key=lambda a_zone: a_zone.order_key):
             try:
                 if not zone.is_active:
                     log.debug('Zone %s activation start', zone)
