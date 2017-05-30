@@ -14,7 +14,7 @@ class PositionField(EmbeddedDocumentField):
 
     def to_python(self, value):
         # todo: string position format support (qrts, etc.)
-        if isinstance(value, list):
+        if isinstance(value, (list, Point)):
             return Position(value)
 
         return super(PositionField, self).to_python(value)

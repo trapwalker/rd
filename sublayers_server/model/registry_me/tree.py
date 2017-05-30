@@ -269,8 +269,8 @@ class Subdoc(EmbeddedDocument):
         # elif isinstance(field, RegistryLinkField):  # todo: Убрать для неконтейнерных типов
         #     expanded_value = value
         else:
-            raise ValueError(
-                'Unexpected type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
+            expanded_value = field.to_python(value)
+            log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
 
         return expanded_value
 
