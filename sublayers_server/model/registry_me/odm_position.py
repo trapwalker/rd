@@ -12,9 +12,16 @@ class PositionField(EmbeddedDocumentField):
     def __init__(self, reinst=True, **kw):
         super(PositionField, self).__init__(document_type=Position, reinst=reinst, **kw)
 
+    def to_python(self, value):
+        # todo: string position format support (qrts, etc.)
+        if isinstance(value, list):
+            return Position(value)
+
+        return super(PositionField, self).to_python(value)
+
     def __set__(self, instance, value):
         if value is not None and not isinstance(value, Position):
-            value = Position(value)
+            value = self.to_python(value)
 
         super(PositionField, self).__set__(instance, value)
 
