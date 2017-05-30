@@ -15,26 +15,28 @@
                 tileproviders: [
                     // Слои карты. Отрисовка начинается с нулевого слоя. Здесь очень важен порядок!
                     {
-                        name: "base",
+                        name: "back",
                         url: function (x, y, z) {
                             return "http://185.58.205.29/map/" + z + "/" + x + "/" + y + ".jpg";
                         },
                         alpha: 1.0,
+                        visible: true,
                     },
                     // Другие слои карты.
-                    //{
-                    //    name: "osm",
-                    //    url: function (x, y, z) {
-                    //        var rand, sub, url;
-                    //        rand = function (n) {
-                    //            return $.Math.floor($.Math.random() * n);
-                    //        };
-                    //        sub = ["a", "b", "c"];
-                    //        url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
-                    //        return url;
-                    //    },
-                    //    alpha: 0.5,
-                    //}
+                    {
+                        name: "front",
+                        url: function (x, y, z) {
+                            var rand, sub, url;
+                            rand = function (n) {
+                                return $.Math.floor($.Math.random() * n);
+                            };
+                            sub = ["a", "b", "c"];
+                            url = "http://" + sub[rand(3)] + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
+                            return url;
+                        },
+                        alpha: 0.5,
+                        visible: true,
+                    }
                 ],
                 zMin: 0,
                 zMax: 18,
@@ -176,20 +178,21 @@
                         var tileproviders = map.tileproviders;
                         for (var x = viewport.x_tile_min; x <= viewport.x_tile_max; x++)
                             for (var y = viewport.y_tile_min; y <= viewport.y_tile_max; y++)
-                                for (var prov_index = 0; prov_index < tileproviders.length; prov_index++) {
-                                    var id = encodeIndex(x, y, zoom);
-                                    if (typeof map.renderer.tiles[tileproviders[prov_index].name] === 'undefined')
-                                        map.renderer.tiles[tileproviders[prov_index].name] = [];
-                                    if (!map.renderer.tiles[tileproviders[prov_index].name][id] ||
-                                        !map.renderer.tiles[tileproviders[prov_index].name][id].complete)
-                                        map.renderer.load_queue.push({
-                                            x: x,
-                                            y: y,
-                                            z: zoom,
-                                            id: id,
-                                            tileprovider: tileproviders[prov_index]
-                                        });
-                                }
+                                for (var prov_index = 0; prov_index < tileproviders.length; prov_index++)
+                                    if (tileproviders[prov_index].visible) {
+                                        var id = encodeIndex(x, y, zoom);
+                                        if (typeof map.renderer.tiles[tileproviders[prov_index].name] === 'undefined')
+                                            map.renderer.tiles[tileproviders[prov_index].name] = [];
+                                        if (!map.renderer.tiles[tileproviders[prov_index].name][id] ||
+                                            !map.renderer.tiles[tileproviders[prov_index].name][id].complete)
+                                            map.renderer.load_queue.push({
+                                                x: x,
+                                                y: y,
+                                                z: zoom,
+                                                id: id,
+                                                tileprovider: tileproviders[prov_index]
+                                            });
+                                    }
                     },
                     next_load_tile: function () {
                         var tileLoading = map.renderer.load_queue.shift();
@@ -224,64 +227,65 @@
                                 encodeIndex = map.renderer.encodeIndex;
                                 maxTileNumber = map.pow(2, viewport.zi) - 1;
                                 var old_global_alpha = map.renderer.context.globalAlpha;
-                                for (var prov_index = 0; prov_index < map.tileproviders.length; prov_index++) {
-                                    map.renderer.context.globalAlpha = map.tileproviders[prov_index].alpha;
-                                    var pr_name = map.tileproviders[prov_index].name;
-                                    var current_tiles = map.renderer.tiles[pr_name] || {};
-                                    tileDone = []; // todo: возможно убрать данный массив. Но если мы хотим рисовать правильно заглушки, то нельзя убирать.
-                                    for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
-                                        xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
-                                        //xoff = Math.floor(xoff);
-                                        for (y = viewport.y_tile_min; y < viewport.y_tile_max; y = y + 1) {
-                                            yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
-                                            //yoff = Math.floor(yoff);
-                                            tileKey = encodeIndex(x, y, viewport.zi);
-                                            tileDone[tileKey] = false;
+                                for (var prov_index = 0; prov_index < map.tileproviders.length; prov_index++)
+                                    if (map.tileproviders[prov_index].visible) {
+                                        map.renderer.context.globalAlpha = map.tileproviders[prov_index].alpha;
+                                        var pr_name = map.tileproviders[prov_index].name;
+                                        var current_tiles = map.renderer.tiles[pr_name] || {};
+                                        tileDone = []; // todo: возможно убрать данный массив. Но если мы хотим рисовать правильно заглушки, то нельзя убирать.
+                                        for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
+                                            xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
+                                            //xoff = Math.floor(xoff);
+                                            for (y = viewport.y_tile_min; y < viewport.y_tile_max; y = y + 1) {
+                                                yoff = (((y * viewport.sz - viewport.yMin) / viewport.zp)) - viewport.offsetY;
+                                                //yoff = Math.floor(yoff);
+                                                tileKey = encodeIndex(x, y, viewport.zi);
+                                                tileDone[tileKey] = false;
 
-                                            if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
-                                                tileDone[tileKey] = true;
-                                                console.log(tileKey);
-                                            } else {
-                                                if (current_tiles[tileKey] && current_tiles[tileKey].complete && ! current_tiles[tileKey]._404_tile) {
-                                                    // draw tile
-                                                    if (map.renderer.drawImage(
-                                                            current_tiles[tileKey],
-                                                            xoff,
-                                                            yoff
-                                                        )) {
-                                                    }
+                                                if (x > maxTileNumber || y > maxTileNumber || x < 0 || y < 0) {
                                                     tileDone[tileKey] = true;
-                                                }
-                                                else {
-                                                    // Тайла нет. Отрисовать заглушку или ничего
+                                                    console.log(tileKey);
+                                                } else {
+                                                    if (current_tiles[tileKey] && current_tiles[tileKey].complete && !current_tiles[tileKey]._404_tile) {
+                                                        // draw tile
+                                                        if (map.renderer.drawImage(
+                                                                current_tiles[tileKey],
+                                                                xoff,
+                                                                yoff
+                                                            )) {
+                                                        }
+                                                        tileDone[tileKey] = true;
+                                                    }
+                                                    else {
+                                                        // Тайла нет. Отрисовать заглушку или ничего
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    var ctx = map.renderer.context;
-                                    ctx.save();
-                                    var grd=ctx.createRadialGradient(0, 0, 180 , 0, 0, 250);
-                                    grd.addColorStop(0,"black");
-                                    grd.addColorStop(1,"rgba(0, 0, 0, 0)");
-                                    ctx.fillStyle=grd;
-                                    for (var key in tileDone)
-                                        if (tileDone.hasOwnProperty(key) && tileDone[key] == false) {
-                                            // Отрисовать заглушку, что тайл не загрузился
-                                            var coord = map.renderer.dencodeIndex(key);
-                                            xoff = (((coord.x * viewport.sz - viewport.xMin) / viewport.zp)) + 125;
-                                            yoff = (((coord.y * viewport.sz - viewport.yMin) / viewport.zp)) + 125;
-                                            if (xoff && yoff) {
-                                                ctx.save();
-                                                ctx.translate(xoff, yoff);
-                                                ctx.beginPath();
-                                                ctx.arc(0, 0, 250, 0, 2 * Math.PI);
-                                                ctx.fill();
-                                                ctx.restore();
+                                        var ctx = map.renderer.context;
+                                        ctx.save();
+                                        var grd = ctx.createRadialGradient(0, 0, 180, 0, 0, 250);
+                                        grd.addColorStop(0, "black");
+                                        grd.addColorStop(1, "rgba(0, 0, 0, 0)");
+                                        ctx.fillStyle = grd;
+                                        for (var key in tileDone)
+                                            if (tileDone.hasOwnProperty(key) && tileDone[key] == false) {
+                                                // Отрисовать заглушку, что тайл не загрузился
+                                                var coord = map.renderer.dencodeIndex(key);
+                                                xoff = (((coord.x * viewport.sz - viewport.xMin) / viewport.zp)) + 125;
+                                                yoff = (((coord.y * viewport.sz - viewport.yMin) / viewport.zp)) + 125;
+                                                if (xoff && yoff) {
+                                                    ctx.save();
+                                                    ctx.translate(xoff, yoff);
+                                                    ctx.beginPath();
+                                                    ctx.arc(0, 0, 250, 0, 2 * Math.PI);
+                                                    ctx.fill();
+                                                    ctx.restore();
+                                                }
                                             }
-                                        }
-                                    ctx.restore();
-                                }
+                                        ctx.restore();
+                                    }
                                 map.renderer.context.globalAlpha = old_global_alpha;
                             }
                         },
@@ -553,6 +557,14 @@
                     this.height(height);
                     map.renderer.context_size.canvas_w = map.renderer.canvas.width - map.renderer.canvas.width % 2;
                     map.renderer.context_size.canvas_h = map.renderer.canvas.height - map.renderer.canvas.height % 2;
+                },
+                set_visible_tileprovider: function(prov_name, visible) {
+                    visible = Boolean(visible);
+                    var prov = map.tileproviders.find(function(e){return e.name == prov_name});
+                    if (!prov || prov.visible == visible) return;
+                    prov.visible = visible;
+                    map.renderer.refresh_load_async();
+                    map.renderer.refresh();
                 },
                 renderer: map.renderer,
                 map: map,

@@ -115,7 +115,7 @@ var SettingsManager = (function() {
             default: 0.2,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Мало", value: 0.2}, {text: "Средне", value: 0.05}, {text: "Много", value: 0.01}],
+            list_values: [{text: "Мало", value: 0.2}, {text: "Среднее", value: 0.05}, {text: "Много", value: 0.01}],
             set_callback: function(new_value) {if (fireEffectManager) fireEffectManager._settings_particles_tracer = new_value;},
         },
         particles_tail: {
@@ -147,19 +147,34 @@ var SettingsManager = (function() {
                 if (wRadiationNoise) wRadiationNoise.activated = new_value == 1;
             },
         },
-        map_tile_draw: {
-            name: "map_tile_draw",
+        map_tile_draw_back: {
+            name: "map_tile_draw_back",
             page: "graphics",
             text_name: "Отображение тайлов карты",
             text_description: "Отображение тайлов карты",
             jq_div: null,
             type: "list",
+            default: "1",
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
+            set_callback: function(new_value) {
+                if (mapManager) mapManager.set_tileprovider_visibility("back", new_value == 1);
+            },
+        },
+        map_tile_draw_front: {
+            name: "map_tile_draw_front",
+            page: "graphics",
+            text_name: "Отображение информационного слоя карты",
+            text_description: "Отображение информационного слоя карты (дороги, леса, вода)",
+            jq_div: null,
+            type: "list",
             default: 1,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Скрыть", value: 0}, {text: "Отображать", value: 1}],
+            list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
             set_callback: function(new_value) {
-                if (mapManager) mapManager.set_layer_visibility("tiles", new_value == 1);
+                if (mapManager) mapManager.set_tileprovider_visibility("front", new_value == 1);
             },
         },
         map_tile_preload: {
