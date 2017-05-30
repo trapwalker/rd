@@ -27,6 +27,8 @@ var SettingsManager = (function() {
             if (settingsManager.options["auto_simple_bot"].value)
                 settingsManager.options["auto_simple_bot"].set_callback(true);
         }, 2000);
+
+        this._game_color_return_to_def = this.getCookie("_game_color_return_to_def") == "1";  // Для восстановления фильтра карты при переключениях режима отображения карты
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
@@ -160,6 +162,21 @@ var SettingsManager = (function() {
             list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
             set_callback: function(new_value) {
                 if (mapManager) mapManager.set_tileprovider_visibility("back", new_value == 1);
+
+                // Если отключили тайлы и не включена перекраска, то включить зелёную
+                if (!new_value && settingsManager.options.game_color.currentValue == settingsManager.options.game_color.default) {
+                    settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[3].value;
+                    settingsManager.refresh_list_options(settingsManager.options.game_color);
+                    settingsManager.options.game_color.set_callback("url(#green);");
+                    settingsManager._game_color_return_to_def = true;
+                }
+                // Если включили, то при необходимости вернуться к палитре по умолчанию
+                if (new_value && settingsManager._game_color_return_to_def) {
+                    settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[0].value;
+                    settingsManager.refresh_list_options(settingsManager.options.game_color);
+                    settingsManager.options.game_color.set_callback(settingsManager.options.game_color.default);
+                    settingsManager._game_color_return_to_def = false;
+                }
             },
         },
         map_tile_draw_front: {
@@ -759,10 +776,10 @@ var SettingsManager = (function() {
                     text: "Желтая",
                     value: "url(#yellow);"
                 },
-                // {
-                //     text: "Зеленая",
-                //     value: "url(#green);"
-                // },
+                {
+                    text: "Зеленая",
+                    value: "url(#green);"
+                },
                 {
                     text: "Голубая",
                     value: "url(#cyan);"
@@ -776,8 +793,9 @@ var SettingsManager = (function() {
                 //     value: "url(#purple);"
                 // }
             ],
-            set_callback: function(new_value) {
+            set_callback: function(new_value, from_first_load) {
                 $("#bodydiv").attr("style", "filter: " + new_value);
+                if (!from_first_load) settingsManager._game_color_return_to_def = false;
             },
         },
     };
@@ -831,7 +849,9 @@ var SettingsManager = (function() {
         // Зум
         this.setCookie("current_zoom", mapManager.getZoom().toFixed(2));
         // Админский режим
-        this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0")
+        this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0");
+        // Сохранить значение "восстановления палитры"
+        this.setCookie("_game_color_return_to_def", this._game_color_return_to_def ? "1" : "0");
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {

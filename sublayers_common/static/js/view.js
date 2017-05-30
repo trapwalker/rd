@@ -209,7 +209,13 @@ $(document).ready(function () {
     resourceLoadManager.load_complete_init = true;
     resourceLoadManager.del(null);
 
-    setTimeout(function() {settingsManager.options.game_color.set_callback(settingsManager.options.game_color.value)}, 10);
+    setTimeout(function() {
+        // Включение сохранённой перекраски
+        settingsManager.options.game_color.set_callback(settingsManager.options.game_color.value, true);
+        if (!settingsManager.options.map_tile_draw_back.value)  // Если тайлы подложки скрыты, то съэмулировать их выключение
+            settingsManager.options.map_tile_draw_back.set_callback(settingsManager.options.map_tile_draw_back.value);
+
+    }, 10);
 });
 
 var index_notes_test = 0;
