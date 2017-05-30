@@ -234,15 +234,14 @@ class Subdoc(EmbeddedDocument):
     def __setattr__(self, key, value):
         if key != '_initialised' and getattr(self, '_initialised', None):
             field = self.__class__._fields.get(key)  # todo: support dynamic fields too
-            if value and isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and isinstance(field.field, CONTAINER_FIELD_TYPES):
+            if value and isinstance(field, CONTAINER_FIELD_TYPES):
                 value = self._expand_field_value(field, value)
 
         super(Subdoc, self).__setattr__(key, value)
 
     def _expand_field_value(self, field, value):
         if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
-            value.expand_links()
-            expanded_value = value
+            expanded_value = value.expand_links()
         elif isinstance(field, EmbeddedDocumentField) and isinstance(value, EmbeddedDocument):
             expanded_value = value
         elif isinstance(field, EmbeddedDocumentField) and isinstance(value, dict):
@@ -251,6 +250,8 @@ class Subdoc(EmbeddedDocument):
                 expanded_value.expand_links()
         elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
             expanded_value = field.to_python(value)
+            if expanded_value:
+                expanded_value.expand_links()  # todo: перенести в инстанцирование
         elif isinstance(field, ListField):
             # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
             expanded_value = value
@@ -262,6 +263,8 @@ class Subdoc(EmbeddedDocument):
             for k, v in value.items():
                 if v:
                     expanded_value[k] = self._expand_field_value(field.field, v)
+        elif isinstance(field, RegistryLinkField):
+            expanded_value = value
         else:
             raise ValueError(
                 'Unexpected type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
@@ -279,7 +282,6 @@ class Subdoc(EmbeddedDocument):
 
         for field_name, field in self._fields.items():
             value = getattr(self, field_name)
-
             setattr(self, field_name, value)
             # parent = self.parent
             # if field_name not in self._data and (parent is None or not hasattr(parent, field_name)):
