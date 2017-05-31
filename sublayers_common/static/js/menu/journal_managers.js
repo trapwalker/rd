@@ -243,7 +243,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
-        console.log('QuestJournalManager.prototype._create_quest_info_block');
+        //console.log('QuestJournalManager.prototype._create_quest_info_block');
         var hirer_photo = quest.hirer ?  quest.hirer.photo : '';
         var hirer_name = quest.hirer ?  quest.hirer.title : '';
 
@@ -384,7 +384,7 @@ var QuestJournalManager = (function () {
                             jq_current_group = this.jq_completed_group;
                             this.completed_count++;
                             break;
-                        case 'failed':
+                        case 'fail':
                             jq_current_group = this.jq_failed_group;
                             this.failed_count++;
                     }
