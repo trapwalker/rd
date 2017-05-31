@@ -13,8 +13,7 @@ from sublayers_server.model.registry_me.classes.mobiles import Car as RegCar
 class APIGetCarInfoHandler(BaseHandler):
     def get(self):
         # todo: ##REFACTORING
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
 
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
         user = User.get_by_name(username)
@@ -38,8 +37,7 @@ class APIGetCarInfoHandler(BaseHandler):
 
 class APIGetCarInfoHandler2(BaseHandler):
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
         #uri = self.get_argument('uri', None)
         uri = 'reg:///registry/mobiles/cars/middle/sports/delorean_dmc12'  # todo: ##fix
         if not uri:
@@ -58,8 +56,7 @@ class APIGetUserInfoHandler(BaseHandler):
     u"""Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой"""
     def get(self):
         # todo: ##REFACTORING
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
         user = User.get_by_name(username)
 
@@ -127,8 +124,7 @@ class APIGetUserInfoHandler(BaseHandler):
 class APIGetUserInfoHandler2(BaseHandler):
     def get(self):
         # todo: ##REFACTORING
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
         user = User.get_by_name(username)
 
@@ -147,8 +143,7 @@ class APIGetUserInfoHandler2(BaseHandler):
 
 class APIGetQuickGameCarsHandler(BaseHandler):
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
 
         car_examples = self.application.srv.quick_game_cars_examples
         car_templates_list = []
@@ -166,8 +161,7 @@ class APIGetQuickGameCarsHandler(BaseHandler):
 
 class APIGetQuickGameCarsHandler2(BaseHandler):
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
 
         car_examples = self.application.srv.quick_game_cars_examples
         self.render('site/quick_game_cars.html', car_examples=car_examples, with_css=True)
