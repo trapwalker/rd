@@ -29,12 +29,23 @@ var WCanvasTargetPoint = (function (_super) {
         if (tp_ctx.abs() > 10.0) { // если меньше 10 пикселей, то просто не показываем
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
 
-            ctx.strokeStyle = 'rgba(0, 255, 161, 0.2)';
-            ctx.lineCap = 'round';
-            ctx.setLineDash([8, 5]);
-            ctx.lineWidth = 2;
+            //ctx.strokeStyle = 'rgba(0, 255, 161, 0.2)';
+            //ctx.setLineDash([8, 5]);
+
             // чтобы лини€ не наезжала на крестик
-            tp_ctx = summVector(tp_ctx, normVector(tp_ctx, -10));
+            //tp_ctx = summVector(tp_ctx, normVector(tp_ctx, -10));
+
+            var gradient = ctx.createLinearGradient(0, 0, tp_ctx.x, tp_ctx.y);
+            gradient.addColorStop(0, 'transparent');
+            gradient.addColorStop(0.1, '#00ffa1');
+            gradient.addColorStop(1, '#00ffa1');
+            ctx.strokeStyle = gradient;
+
+            ctx.globalAlpha = 0.2;
+
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+
             // ќтрисовка линии
             ctx.beginPath();
             ctx.moveTo(tp_ctx.x, tp_ctx.y);
