@@ -21,7 +21,7 @@ class RelationshipRec(Subdoc):
         tags={'client'},
         caption=u"Целевой NPC",
     )
-    rel_index = FloatField(default=-100, caption=u"Накапливаемое отношение")
+    rel_index = FloatField(root_default=-100, caption=u"Накапливаемое отношение")
 
     def get_index_norm(self):
         return min(max(self.rel_index / 100.0, -1), 1)
@@ -38,21 +38,21 @@ class RelationshipRec(Subdoc):
 
 class AgentProfile(Node):
     '''Inheritable data about agent'''
-    about_self = StringField(default=u'', caption=u'О себе', tags={'client'})
+    about_self = StringField(root_default=u'', caption=u'О себе', tags={'client'})
 
     # Карма и отношения
-    karma = FloatField(default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
+    karma = FloatField(root_default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
     npc_rel_list = ListField(
         field=EmbeddedDocumentField(document_type=RelationshipRec, reinst=True),
         caption=u'Список взаимоотношений игрока с NPCs',
-        default=list,
+        root_default=list,
         tags={'client'},
         reinst=True,
     )
 
     # Поля статистики агента
-    _exp = FloatField(default=0, caption=u"Количество опыта")
-    _frag = IntField(default=0, caption=u"Количество убийств")
+    _exp = FloatField(root_default=0, caption=u"Количество опыта")
+    _frag = IntField(root_default=0, caption=u"Количество убийств")
 
     car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
@@ -60,7 +60,7 @@ class AgentProfile(Node):
     )  # todo: test to prefix path like: /mobile/cars/*
     car_list = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car', reinst=True),
-        default=list, caption=u"Список всех машин, кроме активной",
+        root_default=list, caption=u"Список всех машин, кроме активной",
         reinst=True,
     )
 
@@ -89,7 +89,7 @@ class AgentProfile(Node):
     # Механизм скилов
     exp_table = RegistryLinkField(
         caption=u"Таблица опыта",
-        default='reg:///registry/rpg_settings/exptable',
+        root_default='reg:///registry/rpg_settings/exptable',
         document_type='sublayers_server.model.registry_me.classes.exptable.ExpTable',
     )
     role_class = RegistryLinkField(  # todo: Проверить нужно ли декларировать default
@@ -101,74 +101,74 @@ class AgentProfile(Node):
     # Инфу этих документов нужно разместить в обычных скиллах.
     buy_driving = EmbeddedNodeField(
         caption=u"Купленные очки навыка вождения",
-        default='reg:///registry/rpg_settings/buy_skill/driving',
+        root_default='reg:///registry/rpg_settings/buy_skill/driving',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_shooting = EmbeddedNodeField(
         caption=u"Купленные очки навыка стрельбы",
-        default='reg:///registry/rpg_settings/buy_skill/shooting',
+        root_default='reg:///registry/rpg_settings/buy_skill/shooting',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_masking = EmbeddedNodeField(
         caption=u"Купленные очки навыка маскировки",
-        default='reg:///registry/rpg_settings/buy_skill/masking',
+        root_default='reg:///registry/rpg_settings/buy_skill/masking',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_leading = EmbeddedNodeField(
         caption=u"Купленные очки навыка лидерства",
-        default='reg:///registry/rpg_settings/buy_skill/leading',
+        root_default='reg:///registry/rpg_settings/buy_skill/leading',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_trading = EmbeddedNodeField(
         caption=u"Купленные очки навыка торговли",
-        default='reg:///registry/rpg_settings/buy_skill/trading',
+        root_default='reg:///registry/rpg_settings/buy_skill/trading',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_engineering = EmbeddedNodeField(
         caption=u"Купленные очки навыка инженеринга",
-        default='reg:///registry/rpg_settings/buy_skill/engineering',
+        root_default='reg:///registry/rpg_settings/buy_skill/engineering',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
 
     driving = EmbeddedNodeField(
         caption=u"Навык вождения", tags={'skill'},
-        default='reg:///registry/rpg_settings/skill/driving',
+        root_default='reg:///registry/rpg_settings/skill/driving',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     shooting = EmbeddedNodeField(
         caption=u"Навык стрельбы", tags={'skill'},
-        default='reg:///registry/rpg_settings/skill/shooting',
+        root_default='reg:///registry/rpg_settings/skill/shooting',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     masking = EmbeddedNodeField(
         caption=u"Навык маскировки", tags={'skill'},
-        default='reg:///registry/rpg_settings/skill/masking',
+        root_default='reg:///registry/rpg_settings/skill/masking',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     leading = EmbeddedNodeField(
         caption=u"Навык лидерства", tags={'skill'},
-        default='reg:///registry/rpg_settings/skill/leading',
+        root_default='reg:///registry/rpg_settings/skill/leading',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     trading = EmbeddedNodeField(
         caption=u"Навык торговли", tags={'skill'},
-        default='reg:///registry/rpg_settings/skill/trading',
+        root_default='reg:///registry/rpg_settings/skill/trading',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     engineering = EmbeddedNodeField(
         caption=u"Навык инженеринга", tags={'skill'},
-        default='reg:///registry/rpg_settings/skill/engineering',
+        root_default='reg:///registry/rpg_settings/skill/engineering',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
@@ -200,7 +200,7 @@ class AgentProfile(Node):
 
     notes = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.notes.Note'),
-        default=list, caption=u"Список доступных нотесов",
+        root_default=list, caption=u"Список доступных нотесов",
         reinst=True,
     )
 

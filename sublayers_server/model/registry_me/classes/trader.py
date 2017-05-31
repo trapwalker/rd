@@ -105,13 +105,13 @@ class Price(object):
 
 class Trader(Institution):    
     # Навык торговли торговца 0..300
-    trading = IntField(caption=u"Навык торговли", default=0)
+    trading = IntField(caption=u"Навык торговли", root_default=0)
 
     # Время полного обновление ассортимента торговца (сек.)
     refresh_time = IntField(caption=u"Время завоза")
 
     # Маржа (0..1)
-    margin = FloatField(caption=u'Коэффициент минимальной цены товара', default=0.2)
+    margin = FloatField(caption=u'Коэффициент минимальной цены товара', root_default=0.2)
 
     ignore_list = ListField(
         caption=u"Список запрещенных товаров",

@@ -260,7 +260,7 @@ class Quest(Node):
     reward_money = IntField(caption=u'Сумма денежной награды', tags='client')
     reward_karma = FloatField(caption=u'Величина кармической награды')
     reward_items = ListField(
-        default=[],
+        root_default=[],
         caption=u"Список итемов награды",
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
@@ -272,7 +272,7 @@ class Quest(Node):
         tags={'client'},
     )
     reward_items_list = ListField(
-        default=[],
+        root_default=[],
         caption=u"Список возможных комплектов для награды",
         field=ListField(
             default=[],
@@ -662,7 +662,7 @@ class KillerQuest(Quest):
     count_to_kill = IntField(caption=u'Количество убийств', tags={'client'})
     karma_victims = IntField(caption=u'Максимальное значение кармы жертвы')
     victims = ListField(
-        default=[],
+        root_default=[],
         caption=u"Список жертв (заполняется динамически)",
         field=StringField(),
         reinst=True,
@@ -682,7 +682,7 @@ class DeliveryQuest(Quest):
     distance_table = RegistryLinkField(document_type='sublayers_server.model.registry.classes.disttable.DistTable')
 
     recipient_list = ListField(
-        default=[],
+        root_default=[],
         caption=u"Список возможных получателей доставки",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
     )
@@ -694,7 +694,7 @@ class DeliveryQuest(Quest):
     total_delivery_money_coef = FloatField(
         caption=u'Множитель общей стоимости награды за квест от стоимости доставляемого товара')
     delivery_set_list = ListField(
-        default=[],
+        root_default=[],
         caption=u"Список возможных комплектов для доставки",
         field=ListField(
             caption=u"Список возможных наборов итемов для доставки",
@@ -728,7 +728,7 @@ class DeliveryQuest(Quest):
 
 class AIQuickQuest(Quest):
     route = ListField(
-        default=[],
+        root_default=[],
         caption=u"Маршрут патрулирования",
         field=PositionField(caption=u"Точка патрулирования", reinst=True,),
         reinst=True,

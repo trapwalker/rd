@@ -37,9 +37,9 @@ class Mobile(Node):
     )
 
     # Статистика
-    _exp = FloatField(default=0, caption=u"Количество опыта")
-    _frag = IntField(default=0, caption=u"Количество убийств")
-    _way = FloatField(default=0, caption=u"Пройденный путь")
+    _exp = FloatField(root_default=0, caption=u"Количество опыта")
+    _frag = IntField(root_default=0, caption=u"Количество убийств")
+    _way = FloatField(root_default=0, caption=u"Пройденный путь")
 
     k_way_exp = FloatField(caption=u"Коэффициент экпы от пройдённого пути")
 
@@ -285,17 +285,17 @@ class Car(Mobile):
         qb_4 = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item')
 
     class AudioEngine(Subdoc):
-        audio_name = StringField(default="", caption=u'Звук двигателя автомобиля.', tags={'client'})
-        min_rate = FloatField(default=0, caption=u'Rate звука при скорости 0 (холостой ход)', tags={'client'})
-        max_rate = FloatField(default=0, caption=u'Rate звука при максимальной скорости', tags={'client'})
+        audio_name = StringField(root_default="", caption=u'Звук двигателя автомобиля.', tags={'client'})
+        min_rate = FloatField(root_default=0, caption=u'Rate звука при скорости 0 (холостой ход)', tags={'client'})
+        max_rate = FloatField(root_default=0, caption=u'Rate звука при максимальной скорости', tags={'client'})
 
     quick_panel = EmbeddedDocumentField(document_type=QuickPanel, reinst=True)
 
     audio_engine = EmbeddedDocumentField(document_type=AudioEngine, reinst=True)
 
-    last_parking_npc = StringField(default="", caption=u'Парковщик машины.')
+    last_parking_npc = StringField(root_default="", caption=u'Парковщик машины.')
 
-    date_setup_parking = FloatField(default=0, caption=u'Дата оставления у парковщика')
+    date_setup_parking = FloatField(root_default=0, caption=u'Дата оставления у парковщика')
 
     # todo: Написать, что это пути к шаблонам
     armorer_car = StringField(caption=u"Представление машинки у оружейника")
@@ -304,7 +304,7 @@ class Car(Mobile):
     hangar_car = StringField(caption=u"Представление машинки в ангаре")
     image_scale = StringField(
         caption=u"Масштаб машинки для отрисовки обвеса: small, middle, big",
-         default="middle", tags={'client'},
+        root_default="middle", tags={'client'},
     )
     mechanic_engine = StringField(caption=u"Представление двигателя у механника")
     mechanic_transmission = StringField(caption=u"Представление трансмиссии у механника")

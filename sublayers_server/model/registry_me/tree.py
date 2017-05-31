@@ -334,7 +334,7 @@ class Node(Subdoc):
     #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
     title = StringField(caption=u"Название", tags={"client"})
-    can_instantiate = BooleanField(default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
+    can_instantiate = BooleanField(root_default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
     doc = StringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 

@@ -13,10 +13,10 @@ class Effect(Node):
     param_name  = StringField(caption=u'Параметр')
     m_name      = StringField(caption=u'Модификатор')
     r_name      = StringField(caption=u'Резист')
-    upd_method  = StringField(caption=u'Callback', default=None)
-    sign        = IntField(caption=u'Знак', default=-1)
-    is_stack    = BooleanField(caption=u'Стекается?', default=False)
-    absolute    = BooleanField(caption=u'Абсолютное значение', default=False)
+    upd_method  = StringField(caption=u'Callback', root_default=None)
+    sign        = IntField(caption=u'Знак', root_default=-1)
+    is_stack    = BooleanField(caption=u'Стекается?', root_default=False)
+    absolute    = BooleanField(caption=u'Абсолютное значение', root_default=False)
 
     # def __init__(self, **kw):
     #     super(Effect, self).__init__(**kw)

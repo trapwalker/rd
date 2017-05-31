@@ -83,7 +83,7 @@ class ZoneDirt(Zone):
 
 class FileZone(Zone):
     path = StringField(caption=u'Путь', doc=u'Файловый путь к файлу/каталогу с описанием зоны')  # todo: FilepathField
-    max_map_zoom = IntField(default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
+    max_map_zoom = IntField(root_default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
 
 
 class TilesetZone(FileZone):
@@ -114,9 +114,9 @@ class TilesetZone(FileZone):
 
 class RasterZone(FileZone):
     pixel_depth = IntField(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
-    extension = StringField(default='.jpg', caption=u'Расширение тайлов')
+    extension = StringField(root_default='.jpg', caption=u'Расширение тайлов')
     channel = IntField(
-        default=None, caption=u'Канал',
+        root_default=None, caption=u'Канал',
         doc=u'Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)',
     )
     def __init__(self, **kw):

@@ -205,7 +205,7 @@ class TunerItem(SlotItem):
     class TunerImage(Subdoc):
         class TunerImageView(Subdoc):
             link = StringField(caption=u"Ссылка на картинку", tags={'client'})
-            z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags={'client'})
+            z_index = IntField(root_default=0, caption=u"Уровень отображения слоя", tags={'client'})
 
         car = RegistryLinkField(
             caption=u"Автомобиль, для которого указаны данные параметры",
