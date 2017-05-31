@@ -806,7 +806,7 @@ var WCanvasHPCarMarker = (function (_super) {
         ctx.save(); // для возврата от рисования хп
         // Рисование каркаса
         var pi4 = Math.PI / 4.;
-        ctx.strokeStyle = 'rgba(85, 255, 85, 0.4)';
+        ctx.strokeStyle = 'rgba(0, 255, 161, 0.4)';
         ctx.beginPath();
         ctx.arc(0, 0, this._radius_big, -pi4, -3 * pi4, true);
         ctx.lineTo(this._p22.x, this._p22.y);
@@ -818,7 +818,7 @@ var WCanvasHPCarMarker = (function (_super) {
         hp = Math.min(Math.max(hp / this.car._hp_state.max_hp, 0.0), 1.0);
         var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp);
         var pp1 = polarPoint(this._radius_big, pp_angle);
-        ctx.fillStyle = 'rgba(85, 255, 85, 0.2)';
+        ctx.fillStyle = 'rgba(0, 255, 161, 0.2)';
         ctx.beginPath();
         ctx.arc(0, 0, this._radius_big, pp_angle, -3 * pi4, true);
         ctx.lineTo(this._p22.x, this._p22.y);
