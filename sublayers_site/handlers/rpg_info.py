@@ -126,10 +126,10 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
             self.finish({'status': 'User not auth'})
             return
         # todo: убрать un_cache, когда заработает reload
-        agent_ex = Agent.objects.get(user_id=user.pk, reload=True)
+        agent_ex = Agent.objects.get(user_id=str(user.pk), reload=True)
         if agent_ex:
-            agent_ex.profile.un_cache()
-            agent_ex = Agent.objects.get(user_id=user.pk, reload=True)
+            agent_ex.profile.un_cache()  # todo: !!! FIX IT
+            agent_ex = Agent.objects.get(user_id=str(user.pk), reload=True)
         if agent_ex is None:
             self.finish({'status': 'Agent not found'})
             return         

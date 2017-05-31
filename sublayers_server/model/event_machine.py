@@ -543,15 +543,15 @@ class QuickLocalServer(LocalServer):
                 ).save()
 
             # Создать AIQuickAgent
-            agent_exemplar = Agent.objects.filter(user_id=user.pk, quick_flag=options.mode == 'quick').first()
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=options.mode == 'quick').first()
             if agent_exemplar is None:
                 assert self.quick_game_bot_agents_proto
                 agent_exemplar = Agent(
-                    user_id=user.pk,
+                    user_id=str(user.pk),
                     login=user.name,
                     quick_flag=options.mode == 'quick',
                     profile=random.choice(self.quick_game_bot_agents_proto).instantiate(
-                        name=user.pk,
+                        name=str(user.pk),
                         role_class=random.choice(role_class_list),
                         karma=random.randint(-80, 80),
                         _exp=1005,

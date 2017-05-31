@@ -86,11 +86,11 @@ class StandardLoginHandler(BaseSiteHandler):
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         user.save()
 
-        agent_example = Agent.objects.get(user_id=user.pk)
+        agent_example = Agent.objects.get(user_id=str(user.pk))
         if agent_example is None:
             agent_example = Agent(
                 #storage=self.application.reg_agents,
-                user_id=user.pk,
+                user_id=str(user.pk),
                 teaching_flag=False,
                 quick_flag=False,
                 profile=dict(
@@ -225,7 +225,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_exist_nickname'})
                 return
 
-            agent_ex = Agent.objects.get(user_id=user.pk)
+            agent_ex = Agent.objects.get(user_id=str(user.pk))
             if agent_ex is None:  # todo: Определить вероятность такой проблемы, рассмотреть пути решения
                 # todo: warning
                 self.send_error(status_code=404)

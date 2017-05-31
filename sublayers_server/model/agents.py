@@ -51,7 +51,7 @@ class Agent(Object):
         self.api = None
         self.connection = None
         self.user = user
-        self.server.agents[user.pk] = self  #todo: Перенести помещение в коллекцию в конец инициализации
+        self.server.agents[str(user.pk)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
         self.server.agents_by_name[user.name] = self
         self._logger_file_handler = None
         self._logger = self.setup_logger()
@@ -300,8 +300,8 @@ class Agent(Object):
         log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
 
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
-        if self.server.agents.get(self.user.pk, None):
-            del self.server.agents[self.user.pk]
+        if self.server.agents.get(str(self.user.pk), None):
+            del self.server.agents[str(self.user.pk)]
         else:
             log.warn("Agent %s with key %s not found in server.agents", self, self.user.pk)
 

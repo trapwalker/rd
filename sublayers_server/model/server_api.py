@@ -21,17 +21,17 @@ class ServerAPI(API):
         """
         @rtype sublayers_server.model.agents.Agent
         """
-        agent = self.server.agents.get(user.pk, None)  # todo: raise exceptions if absent but not make
+        agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             # agent_exemplar = yield Agent.objects.get(user_id=user.pk, quick_flag=False, teaching_flag=False)
-            agent_exemplar = Agent.objects.filter(user_id=user.pk, quick_flag=False, teaching_flag=False).find_all()
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=False, teaching_flag=False).find_all()
             agent_exemplar = agent_exemplar and agent_exemplar[0] or None
             if agent_exemplar is None:
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
                 # todo: doit
                 agent_exemplar = Agent(
                     login=user.name,
-                    user_id=user.pk,
+                    user_id=str(user.pk),
                     profile=dict(
                         parent='/registry/agents/user',
                         name=str(user.pk),
@@ -66,16 +66,16 @@ class ServerAPI(API):
     def get_agent_quick_game(self, user, do_disconnect=False):
         # User здесь обязательно QuickUser
         assert user.quick
-        agent = self.server.agents.get(user.pk, None)  # todo: raise exceptions if absent but not make
+        agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
         if not agent:
             # agent_exemplar = yield Agent.objects.get(user_id=user.pk, quick_flag=True)
-            agent_exemplar = Agent.objects.filter(user_id=user.pk, quick_flag=True, teaching_flag=False).first()
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=True, teaching_flag=False).first()
             if agent_exemplar is None:
                 role_class_list = self.server.reg.get('/registry/world_settings').role_class_order
                 assert role_class_list, 'role_class_list is empty in server settings'
                 agent_exemplar = Agent(
                     login=user.name,
-                    user_id=user.pk,
+                    user_id=str(user.pk),
                     profile=dict(
                         parent='/registry/agents/user/quick',
                         name=str(user.pk),
@@ -109,17 +109,17 @@ class ServerAPI(API):
         return agent
 
     def get_agent_teaching(self, user, do_disconnect=False):
-        agent = self.server.agents.get(user.pk, None)  # todo: raise exceptions if absent but not make
+        agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
 
         if not agent:
             # Если нет подключённого агента, то мы не ищем в базе, а просто создаём нового!
-            agent_exemplar = Agent.objects.filter(user_id=user.pk, quick_flag=True).first()
-            main_agent_exemplar = Agent.objects.filter(user_id=user.pk, quick_flag=False).first()
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=True).first()
+            main_agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=False).first()
 
             if agent_exemplar is None:
                 agent_exemplar = Agent(
                     login=user.name,
-                    user_id=user.pk,
+                    user_id=str(user.pk),
                     quick_flag=user.quick,
                     #fixtured=False,  # todo: add `'fixtured' flag to Agent
 

@@ -46,7 +46,7 @@ class PlayHandler(BaseHandler):
 
             if options.mode == 'quick':
                 coord = None
-                agent = self.application.srv.agents.get(user.pk, None)
+                agent = self.application.srv.agents.get(str(user.pk), None)
                 if agent and agent.car:
                     coord = agent.car.position(time=self.application.srv.get_time())
                 else:

@@ -12,7 +12,7 @@ from sublayers_server.model.poi_loot_objects import POICorpse
 class MenuCarHandler(BaseHandler):
     def get(self):
         if self.current_user:
-            agent = self.application.srv.agents.get(self.current_user.pk, None)
+            agent = self.application.srv.agents.get(str(self.current_user.pk), None)
             if agent:
                 agent.log.info('open car_window')
         self.set_header("Access-Control-Allow-Origin", "*")

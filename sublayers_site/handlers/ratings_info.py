@@ -66,7 +66,7 @@ class GetRatingInfo(BaseSiteHandler):
         # todo: принять в аргументе имя рейтинга и как-то обработтать это в поиске
         rate_users = User.objects.filter(quick=False, registration_status='register').limit(50).find_all()
         # todo: load agents for all users
-        # agent_exemplar = self.server.reg_agents.get([user.pk])
+        # agent_exemplar = self.server.reg_agents.get([str(user.pk)])
 
         log.debug('GetRatingInfo len of rate_users: %s', len(rate_users))
 
