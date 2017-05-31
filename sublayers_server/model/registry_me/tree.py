@@ -518,7 +518,7 @@ class Node(Subdoc):
         :return: Node
         """
         # todo: expand
-        assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
+        #assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
         parent = self
         extra = {}
         if not self.uri:
