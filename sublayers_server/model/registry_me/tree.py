@@ -545,10 +545,8 @@ class Node(Subdoc):
                     log.warning("Unknown field {!r} in URI {}".format(k, _uri))
                 extra[k] = v
 
-            extra.update()
-
-        extra.update(kw)
-        node = self.__class__(parent=parent, **extra)
+        extra.update(kw, parent=self if self.uri else self.parent)
+        node = self.__class__(**extra)
 
         # for field_name, field in node._fields.items():
         #     if (
