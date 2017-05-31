@@ -98,6 +98,12 @@ class QuestRange(Subdoc):
         return random.randint(int_min, int_max)
 
 
+class KillerQuestVictim(Subdoc):
+    login = FloatField(doc=u"Имя жертвы", tags="client")
+    photo = FloatField(doc=u"Ссылка на аватарку жертвы", tags="client")
+    profile_id = FloatField(doc=u"profile_id жертвы", tags="client")
+
+
 class QuestState(Root):
     id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
@@ -256,6 +262,7 @@ class Quest(Root):
     money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
     reward_money = IntField(caption=u'Сумма денежной награды', tags='client')
     reward_karma = FloatField(caption=u'Величина кармической награды')
+    reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
     reward_items = ListField(
         default=[],
         caption=u"Список итемов награды",
@@ -646,34 +653,44 @@ class KillerQuest(Quest):
         caption=u"Диапазон количетсва жертв",
         reinst=True,
     )
-    count_to_kill = IntField(caption=u'Количество убийств', tags='client')
-    max_karma_victims = IntField(caption=u'Максимальное значение кармы жертвы')
+    count_to_kill = IntField(caption=u'Количество убийств (вычислимый параметр)', tags='client')
+    max_karma_victims = IntField(caption=u'Максимальное значение кармы жертвы (вычислимый параметр)')
     min_level_victims = IntField(caption=u'Минимальный уровень жертвы')
+    max_karma_victims_start = FloatField(caption=u'Максимальное значение кармы жертвы при 0 уровне квеста')
+    max_karma_victims_by_lvl = FloatField(caption=u'Сколько кармы от стартовой будет отнимать каждый лвл квеста')
+    deadline_koeff_by_lvl = FloatField(caption=u'На сколько больше времени будет выдаваться на каждую жертву в зависимости от уровня квеста')
+    price_victim_koeff_by_lvl = FloatField(caption=u'На сколько больше будет суммарная награда в зависимости от уровня квеста')
+
     victims = ListField(
         default=[],
-        caption=u"Список жертв (заполняется динамически)",
         base_field=UniReferenceField(
-            reference_document_type='sublayers_server.model.registry.classes.agents.Agent',
+            reference_document_type='sublayers_server.model.registry.classes.quests.KillerQuestVictim',
         ),
+        caption=u"Список жертв (заполняется динамически)",
+        reinst=True,
     )
 
     def as_client_dict(self):
         d = super(KillerQuest, self).as_client_dict()
         d.update(
-            # todo: photo url send
-            victims=[dict(name=agent.login, photo='', profile_id=agent.profile_id) for agent in self.victims],
+            victims=[victim.as_client_dict() for victim in self.victims],
         )
         return d
 
     def get_available_lvl(self):
-        # todo: реализовать определение доступного уровня квеста для данного типа квестов
-        # relation = self.agent.get_relationship(npc=self.hirer)
-        # lvl_table = [-0.8, -0.6, 0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1]
-        # for item in lvl_table:
-        #     if relation < item:
-        #         return lvl_table.index(item)
-        # return len(lvl_table)
-        return 10
+        # Уровень квеста зависит от отношений, но не выше уровня игрока
+        relation = self.agent.get_relationship(npc=self.hirer)
+        lvl_table = [-0.8, -0.6, 0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1]
+        max_relation_lvl = len(lvl_table)
+        for item in lvl_table:
+            if relation < item:
+                max_relation_lvl = lvl_table.index(item)
+        return min(self.agent.get_lvl(), max_relation_lvl)
+
+    def append_victim(self, agent, event):
+        photo = "" if not agent._agent_model else agent._agent_model.user.avatar_link
+        login = agent.login if not agent._agent_model else agent._agent_model.print_login()
+        self.victims.append(KillerQuestVictim(login=login, photo=photo, profile_id=agent.profile_id))
 
     def init_level(self):
         self.level = self.get_available_lvl()
@@ -683,7 +700,8 @@ class KillerQuest(Quest):
         self.level = random.randint(1, self.level)
 
     def init_targets_info(self):
-        self.max_karma_victims = 100 - self.level * 10 # чем выше уровень квеста, тем ниже максимальная карма
+        # чем выше уровень квеста, тем ниже максимальная карма жертвы
+        self.max_karma_victims = self.max_karma_victims_start - self.level * self.max_karma_victims_by_lvl
         self.min_level_victims = self.level
         self.count_to_kill = self.count_to_kill_range.get_random_int()  # Выбираем сколько человек нужно убить
 
@@ -691,23 +709,29 @@ class KillerQuest(Quest):
         self.text_short = u"Убейте {:.0f} игрока(ов).".format(
             self.count_to_kill
         )
-        self.text = u"Убейте {:.0f} игрока(ов) с минимальным уровнем {:.0f} и кармой хуже {}. Награда: {:.0f}nc и {:.0f} кармы.".format(
+        self.text = u"Убейте {:.0f} игрока(ов) с минимальным уровнем {:.0f} и кармой хуже {}{}. Награда: {:.0f}nc и {:.0f} кармы.".format(
             self.count_to_kill,
             self.min_level_victims,
-            getKarmaName(self.max_karma_victims, 'ru'),
+            getKarmaName(self.max_karma_victims / 100., 'ru'),
+            u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
             self.reward_money,
             self.reward_karma
         )
 
+    def deadline_to_str(self):
+        m, s = divmod(self.deadline, 60)
+        h, m = divmod(m, 60)
+        return "%d:%02d:%02d" % (h, m, s)
+
     def init_deadline(self):
         if self.deadline:
-            self.deadline = self.count_to_kill * self.deadline * (1 + self.level / 10)
+            all_time = self.count_to_kill * self.deadline * (1 + self.level / self.deadline_koeff_by_lvl)
+            # Время выделенное на квест кратно 5 минутам
+            self.deadline = (all_time / 300) * 300 + (300 if (all_time % 300) > 0 else 0)
 
 
 class DeliveryQuest(Quest):
-    reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
     distance_table = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.disttable.DistTable')
-
     recipient_list = ListField(
         default=[],
         caption=u"Список возможных получателей доставки",

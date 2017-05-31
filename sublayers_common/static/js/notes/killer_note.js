@@ -28,12 +28,12 @@ var QuestNoteNPCBtnKiller = (function (_super) {
         var victims_count = quest.victims.length;
         this.availability_test = victims_count >= quest.count_to_kill;
         for (var i = 0; i < quest.count_to_kill; i++) {
-            var vict_name = victims_count > i ?  quest.victims[i].name : "";
-            var photo =  victims_count > i ? quest.victims[i].photo : ""; // todo: повесить фото-заглушку
+            var vict_name = victims_count > i ?  quest.victims[i].login : "";
+            var photo =  victims_count > i ? location.origin + "/" + quest.victims[i].photo : ""; // todo: повесить фото-заглушку
             var jq_item = $(
                 '<div class="building-npc-list-item">' +
                     '<img class="building-npc-photo" ' +
-                    'style="background: transparent url(' + photo + ') no-repeat 100% 100%;">' +
+                    'style="background: transparent url(' + photo + ') no-repeat 100% 100%; width: 100%; height: 100%;">' +
                     '<div class="building-npc-name-block"><span class="building-npc-name">' + vict_name + '</span></div>' +
                 '</div>'
             );
