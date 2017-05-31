@@ -110,10 +110,15 @@ class RegistryLinkField(BaseField):
         else:
             raise TypeError('Linked node type is not supported: {!r}'.format(document))
 
-    # def to_python(self, value):
-    #     """Convert a MongoDB-compatible type to a Python type."""
-    #     # todo: realization
-    #     return value
+    def to_python(self, value):
+        """Convert a MongoDB-compatible type to a Python type."""
+        if isinstance(value, Node):
+            uri = value.uri
+            assert uri, 'Linked object {!r} has not URI.'.format(value)
+            return uri
+        else:
+            assert isinstance(value, basestring) or value is None, 'Unknown RegistryLinkField value: {!r}'.format(value)
+            return value
 
     def prepare_query_value(self, op, value):
         if value is None:
