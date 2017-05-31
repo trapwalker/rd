@@ -33,9 +33,9 @@ def test3(reload=True, save_loaded=True):
     a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
     globals().update(locals())
 
-def test4():
+def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../tmp', reload=True)
+    reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
     a = reg.get('/registry/a')
     b = reg.get('/registry/b')
     c = B(it=dict(
@@ -51,8 +51,8 @@ if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
 
-    rel = 0
-    test3(reload=rel, save_loaded=True)
+    rel = 1
+    test4(reload=rel, save_loaded=True)
     from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
     its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
