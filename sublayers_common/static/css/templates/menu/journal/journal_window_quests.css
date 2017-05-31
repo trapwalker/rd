@@ -1,6 +1,5 @@
 .journal-quest-menu-quest {
-    height: 20px;
-    line-height: 20px;
+    min-height: 20px;
     position: relative;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
 }
