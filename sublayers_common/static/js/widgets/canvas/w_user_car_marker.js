@@ -569,7 +569,7 @@ var WCanvasStaticTownMarker = (function (_super) {
         ctx.save();
         ctx.globalAlpha = opacity;
         ctx.beginPath();
-        ctx.strokeStyle = "#31c811";
+        ctx.strokeStyle = "#00cc81";
         //ctx.setLineDash([10, 10]);
         ctx.lineWidth = 4;
         ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
@@ -685,7 +685,7 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = this._font;
-        ctx.fillStyle = focused ? 'rgba(42, 253, 10, 0.9)' : 'rgba(42, 253, 10, 0.6)';
+        ctx.fillStyle = focused ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
         ctx.fillText(this._nickname, 0, 0);
         ctx.restore();
     };
@@ -806,7 +806,7 @@ var WCanvasHPCarMarker = (function (_super) {
         ctx.save(); // для возврата от рисования хп
         // Рисование каркаса
         var pi4 = Math.PI / 4.;
-        ctx.strokeStyle = 'rgba(85, 255, 85, 0.4)';
+        ctx.strokeStyle = 'rgba(0, 255, 161, 0.4)';
         ctx.beginPath();
         ctx.arc(0, 0, this._radius_big, -pi4, -3 * pi4, true);
         ctx.lineTo(this._p22.x, this._p22.y);
@@ -818,7 +818,7 @@ var WCanvasHPCarMarker = (function (_super) {
         hp = Math.min(Math.max(hp / this.car._hp_state.max_hp, 0.0), 1.0);
         var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp);
         var pp1 = polarPoint(this._radius_big, pp_angle);
-        ctx.fillStyle = 'rgba(85, 255, 85, 0.2)';
+        ctx.fillStyle = 'rgba(0, 255, 161, 0.2)';
         ctx.beginPath();
         ctx.arc(0, 0, this._radius_big, pp_angle, -3 * pi4, true);
         ctx.lineTo(this._p22.x, this._p22.y);

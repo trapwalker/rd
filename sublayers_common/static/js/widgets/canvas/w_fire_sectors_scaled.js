@@ -225,7 +225,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
     WCanvasFireSectorsScaled.prototype._drawOneAutoSector = function(ctx, radius, width, direction){
         var grad_stroke = ctx.createRadialGradient(0, 0, 5, 0, 0, radius);
         grad_stroke.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        grad_stroke.addColorStop(0.8, "rgba(85, 255, 85, 0)");
+        grad_stroke.addColorStop(0.2, "rgba(85, 255, 85, 0)");
         grad_stroke.addColorStop(1.0, "rgba(85, 255, 85, 1)");
 
         ctx.save();
@@ -239,6 +239,13 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.closePath();
 
         ctx.stroke();
+
+        // Заливка
+        var grad_fill = ctx.createRadialGradient(0, 0, 5, 0, 0, radius);
+        grad_fill.addColorStop(0.0, "rgba(85, 255, 85, 0)");
+        grad_fill.addColorStop(0.33, "rgba(85, 255, 85, 0.05)");
+        ctx.fillStyle = grad_fill;
+        ctx.fill();
 
         ctx.restore();
 

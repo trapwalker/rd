@@ -311,7 +311,7 @@
                                 var view_height = viewport.h;
                                 var ctx = map.renderer.context;
                                 ctx.save();
-                                ctx.strokeStyle = "#0e4b00";
+                                ctx.strokeStyle = "#006641";
 
                                 for (x = viewport.x_tile_min; x < viewport.x_tile_max; x++) {
                                     xoff = (((x * viewport.sz - viewport.xMin) / viewport.zp)) - viewport.offsetX;
