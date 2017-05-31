@@ -685,7 +685,7 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = this._font;
-        ctx.fillStyle = focused ? 'rgba(42, 253, 10, 0.9)' : 'rgba(42, 253, 10, 0.6)';
+        ctx.fillStyle = focused ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
         ctx.fillText(this._nickname, 0, 0);
         ctx.restore();
     };
