@@ -21,6 +21,7 @@ from sublayers_common.user_profile import User as UserProfile
 from sublayers_common.ctx_timer import Timer
 from sublayers_common.handlers.base import BaseHandler
 
+from mongoengine import ValidationError
 
 import os
 import sys
@@ -564,7 +565,12 @@ class QuickLocalServer(LocalServer):
                 agent_exemplar.profile.leading.value = random.randint(20, 40)
                 agent_exemplar.profile.trading.value = random.randint(20, 40)
                 agent_exemplar.profile.engineering.value = random.randint(20, 40)
-                agent_exemplar.save()
+                try:
+                    agent_exemplar.save()
+                except ValidationError as e:
+                    log.error(e.message)
+                    for err_field, err in e.errors.items():
+                        log.error('  {:20}: {}'.format(err_field, err))
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
             car_proto = car_proto_list[current_machine_index % car_proto_list_len]
