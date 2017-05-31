@@ -572,14 +572,13 @@ class Quest(Root):
         if not self.agent.car:
             return False
 
-        if self.agent._agent_model:
+        if self.agent._agent_model and self.agent._agent_model.inventory:
             self.agent._agent_model.inventory.save_to_example(time=event.time)
 
         assortment = self.agent.car.inventory.total_item_type_info()
         for item in items:
             if assortment.get(item.node_hash(), None) is None:
                 return False
-            print assortment[item.node_hash()], item.amount
             assortment[item.node_hash()] -= item.amount
             if assortment[item.node_hash()] < 0:
                 return False
@@ -745,17 +744,12 @@ class DeliveryQuest(Quest):
     )
 
     def init_text(self):
-        self.text_short = u"Доставьте груз в гороод {}.".format(
-            self.recipient.hometown.title,
-            self.reward_money
-            # ', '.join([item.title for item in self.reward_items]),
-        )
+        self.text_short = u"Доставьте груз в гороод {}.".format(self.recipient.hometown.title)
         self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc.".format(
             ', '.join([item.title for item in self.delivery_set]),
             self.recipient.title,
             self.recipient.hometown.title,
             self.reward_money
-            # ', '.join([item.title for item in self.reward_items]),
         )
 
     def as_client_dict(self):

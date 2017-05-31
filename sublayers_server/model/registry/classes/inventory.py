@@ -29,12 +29,12 @@ class LoadInventoryEvent(Event):
         self.agent.on_change_inventory(inventory=self.agent.inventory, time=self.time)
         if self.total_inventory is not None:
             self.agent.on_inv_change(
-                time=self.time,
+                event=self,
                 diff_inventories=self.agent.inventory.example.diff_total_inventories(total_info=self.total_inventory),
                 make_game_log=self.make_game_log)
         else:  #
             self.agent.on_inv_change(
-                time=self.time,
+                event=self,
                 diff_inventories=self.agent.inventory.example.diff_total_inventories(total_info=dict()),
                 make_game_log=self.make_game_log)
 

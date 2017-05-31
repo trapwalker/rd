@@ -67,6 +67,18 @@ class OnAIOut(QuestEvent):
 class OnAppendCar(QuestEvent): pass
 
 
+class OnEnterToLocation(QuestEvent):
+    def __init__(self, location, **kw):
+        super(OnEnterToLocation, self).__init__(**kw)
+        self.location = location
+
+
+class OnChangeInventory(QuestEvent):
+    def __init__(self, diff_inventories, **kw):
+        super(OnChangeInventory, self).__init__(**kw)
+        self.diff_inventories = diff_inventories
+
+
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass
 class OnExitNPC(NPCEvent): pass
@@ -76,7 +88,6 @@ class OnGasStationFuel(NPCEvent): pass
 class OnTraderTransaction(NPCEvent): pass
 class OnArmorerTransaction(NPCEvent): pass
 class OnRPGSetTransaction(NPCEvent): pass
-
 
 
 class OnKill(QuestEvent):

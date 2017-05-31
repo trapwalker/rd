@@ -29,7 +29,7 @@ var WCanvasTargetPoint = (function (_super) {
         if (tp_ctx.abs() > 10.0) { // если меньше 10 пикселей, то просто не показываем
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
 
-            ctx.strokeStyle = 'rgba(0, 255, 84, 0.2)';
+            ctx.strokeStyle = 'rgba(0, 255, 161, 0.2)';
             ctx.lineCap = 'round';
             ctx.setLineDash([8, 5]);
             ctx.lineWidth = 2;
