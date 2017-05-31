@@ -512,15 +512,15 @@ class Agent(Object):
                 trader = self.current_location.example.get_npc_by_type(Trader)
                 if trader:
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
-            self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
+            self.on_inv_change(event=event, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
-    def on_inv_change(self, time, diff_inventories, make_game_log=True):
+    def on_inv_change(self, event, diff_inventories, make_game_log=True):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
         if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
-            InventoryChangeLogMessage(agent=self, time=time, **diff_inventories).post()
+            InventoryChangeLogMessage(agent=self, time=event.time, **diff_inventories).post()
 
-        # todo: csll it ##quest
+        self.example.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 
@@ -557,6 +557,9 @@ class Agent(Object):
             LoadInventoryEvent(agent=self, inventory=self.example.car.inventory, time=event.time + 0.01, make_game_log=False).post()
 
         # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
+
+        # Сообщаем всем квестам что мы вошли в город
+        self.example.on_event(event=event, cls=quest_events.OnEnterToLocation, location=location)
 
     def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
