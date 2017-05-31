@@ -569,7 +569,7 @@ var WCanvasStaticTownMarker = (function (_super) {
         ctx.save();
         ctx.globalAlpha = opacity;
         ctx.beginPath();
-        ctx.strokeStyle = "#31c811";
+        ctx.strokeStyle = "#00cc81";
         //ctx.setLineDash([10, 10]);
         ctx.lineWidth = 4;
         ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
