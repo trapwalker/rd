@@ -5,7 +5,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node, EmbeddedNodeField
+from sublayers_server.model.registry_me.tree import Node, EmbeddedNodeField, RegistryLinkField
 from sublayers_server.model.registry_me.odm_position import PositionField
 
 from mongoengine import StringField, ListField, IntField
@@ -14,7 +14,7 @@ from mongoengine import StringField, ListField, IntField
 class WorldSettings(Node):
     avatar_list = ListField(field=StringField())
     role_class_order = ListField(
-        field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.role_class.RoleClass'),
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.role_class.RoleClass'),
     )
     quick_game_cars = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
