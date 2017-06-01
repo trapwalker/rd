@@ -197,10 +197,11 @@ class NodeMetaclass(DocumentMetaclass):
 
 class Subdoc(EmbeddedDocument):
     __metaclass__ = NodeMetaclass
-    _dynamic = True
+    _dynamic = False
     meta = dict(
         allow_inheritance=True,
     )
+    __cls__ = StringField(caption=u"Deprecated class name", not_inherited=True)
 
     def __init__(self, **kw):
         cls = self.__class__
@@ -323,7 +324,7 @@ class Subdoc(EmbeddedDocument):
 class Node(Subdoc):
     #__slots__ = ('_uri',)
     #__metaclass__ = NodeMetaclass
-    _dynamic = True
+    _dynamic = False
     meta = dict(
         allow_inheritance=True,
     )

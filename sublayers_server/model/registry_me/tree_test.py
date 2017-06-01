@@ -52,7 +52,7 @@ if __name__ == '__main__':
     log.info('Use `test_me` db')
 
     rel = 1
-    test4(reload=rel, save_loaded=True)
+    test3(reload=rel, save_loaded=True)
     from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
     its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
