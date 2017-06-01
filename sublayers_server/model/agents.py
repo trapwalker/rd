@@ -240,7 +240,7 @@ class Agent(Object):
                 self.party.add_observer_to_party(observer=car, time=time)
             # сообщить квестам, что добавилась машинка
             # todo: refactor this call
-            self.example.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAppendCar)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAppendCar)
             # работа с инвентарём агента: просто включить подписку
             if car.inventory:
                 self.inventory = car.inventory
@@ -472,7 +472,7 @@ class Agent(Object):
         self.log.info('{}:: on_kill {} killer={} time={}'.format(self, target, killer, event.time))
         # todo: party
         # todo: registry fix?
-        self.example.set_frag(dvalue=1)  # начисляем фраг агенту
+        self.example.profile.set_frag(dvalue=1)  # начисляем фраг агенту
 
         if self.car is killer:  # Если убийство сделано текущей машинкой агента
             d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp * \
@@ -481,20 +481,20 @@ class Agent(Object):
             d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp)
             self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}'.format(self.car, target, killer))
 
-        self.example.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
+        self.example.profile.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
 
         if target.owner_example:
-            self_lvl = self.example.get_lvl()
+            self_lvl = self.example.profile.get_lvl()
             killed_lvl = target.owner_example.get_lvl()
 
             # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
             # изменение кармы)
             if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.karma_norm >= -0.1):
-                self.example.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
+                self.example.profile.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе
         UserExampleSelfRPGMessage(agent=self, time=event.time).post()
-        self.example.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
+        self.example.profile.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
@@ -520,7 +520,7 @@ class Agent(Object):
         if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
             InventoryChangeLogMessage(agent=self, time=event.time, **diff_inventories).post()
 
-        self.example.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
+        self.example.profile.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 
@@ -559,7 +559,7 @@ class Agent(Object):
         # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
 
         # Сообщаем всем квестам что мы вошли в город
-        self.example.on_event(event=event, cls=quest_events.OnEnterToLocation, location=location)
+        self.example.profile.on_event(event=event, cls=quest_events.OnEnterToLocation, location=location)
 
     def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
@@ -570,16 +570,16 @@ class Agent(Object):
 
         self.reload_parking_bag(new_example_inventory=None, time=event.time)  # todo: Проброс события
         # self.subscriptions.on_exit_location(agent=self, event=event, location=location)
-        # self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+        # self.example.profile.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
     def on_enter_npc(self, event):
         log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
-        self.example.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
+        self.example.profile.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
 
     def on_exit_npc(self, event, npc):
         # todo: ##quest call it
         log.debug('%s:: on_exit_npc(%s)', self, npc)
-        self.example.on_event(event=event, cls=quest_events.OnExitNPC, npc=npc)  # todo: ##quest send NPC as param
+        self.example.profile.on_event(event=event, cls=quest_events.OnExitNPC, npc=npc)  # todo: ##quest send NPC as param
 
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
@@ -591,7 +591,7 @@ class Agent(Object):
             barter.cancel(time=event.time-0.01)
 
         self.send_die_message(event, unit)
-        self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+        self.example.profile.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
     def send_die_message(self, event, unit):
         Die(agent=self, time=event.time).post()
@@ -631,7 +631,7 @@ class Agent(Object):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
         if is_damage_shoot:  # todo: пробросить сюда Ивент
-            self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
         for poi in self.watched_locations:
             poi.on_enemy_candidate(agent=self, time=time, damage=is_damage_shoot)
@@ -642,7 +642,7 @@ class Agent(Object):
             poi.on_enemy_candidate(agent=self, time=time, damage=True)
 
         # todo: пробросить сюда Ивент
-        self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
     def on_setup_map_weapon(self, obj, time):
         # log.info('on_setup_map_weapon for {}'.format(obj))
@@ -658,7 +658,7 @@ class Agent(Object):
 
         # Если был дамаг, то сообщить об этом в квесты
         if damage:  # todo: пробросить сюда Ивент
-            self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
 
 # todo: Переименовать в UserAgent
@@ -672,10 +672,10 @@ class User(Agent):
     def create_teaching_quest(self, event):
         quest_parent = self.server.reg.get('/registry/quests/teaching')
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        new_quest.agent = self.example
+        new_quest.agent = self.example  # todo: Убедиться, что квест правильно работает с агентом-контейнером вместо профиля
         if new_quest.generate(event=event):
-            self.example.add_quest(quest=new_quest, time=event.time)
-            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+            self.example.profile.add_quest(quest=new_quest, time=event.time)
+            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
         else:
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
@@ -878,7 +878,7 @@ class TeachingUser(QuickUser):
 
     def has_active_teaching_quest(self):
         quest_parent = self.server.reg.get('/registry/quests/teaching_map')
-        for q in self.example.quests_active:
+        for q in self.example.profile.quests_active:
             if q.parent == quest_parent and q.status == 'active':
                 return True
         return False
@@ -889,8 +889,8 @@ class TeachingUser(QuickUser):
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
         new_quest.agent = self.example
         if new_quest.generate(event=event):
-            self.example.add_quest(quest=new_quest, time=event.time)
-            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+            self.example.profile.add_quest(quest=new_quest, time=event.time)
+            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
             if self.user.quick:
                 self.set_teaching_state('map')
         else:

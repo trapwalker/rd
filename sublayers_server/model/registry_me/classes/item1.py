@@ -4,7 +4,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.classes.item import Item
+from sublayers_server.model.registry_me.classes.item import Item
 from sublayers_server.model.utils import NameGenerator
 
 
