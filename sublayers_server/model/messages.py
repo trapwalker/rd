@@ -1354,3 +1354,22 @@ class SetMapCenterMessage(Message):
         d = super(SetMapCenterMessage, self).as_dict()
         d.update(center=self.center)
         return d
+
+
+class TownAttackMessage(Message):
+    def __init__(self, town_position, target_id, target_pos, duration, **kw):
+        super(TownAttackMessage, self).__init__(**kw)
+        self.town_position = town_position
+        self.target_id = target_id
+        self.target_pos = target_pos
+        self.duration = duration
+
+    def as_dict(self):
+        d = super(TownAttackMessage, self).as_dict()
+        d.update(
+            town_pos=self.town_position,
+            target_id=self.target_id,
+            target_pos=self.target_pos,
+            duration=self.duration
+        )
+        return d

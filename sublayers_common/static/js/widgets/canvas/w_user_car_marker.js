@@ -474,13 +474,22 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     function WCanvasStaticTownMarker(mobj) {
         _super.call(this, mobj);
+
+        this._last_iteration_view_radius = false;
     }
 
-    WCanvasStaticTownMarker.prototype.getVisibleState = function () {
-        var zoom = 15. - mapCanvasManager.real_zoom;
-        if (zoom <= 0) return 0;
-        if (zoom > 1.) return 1.;
-        return zoom;
+    WCanvasStaticTownMarker.prototype.mouse_test = function(time) {
+        // Определение будет сделано не по кругу, а по квадрату иконки (с учётом сдвигов)
+        var x_curr = this._last_mobj_ctx_pos.x;
+        var y_curr = this._last_mobj_ctx_pos.y;
+        var min_x = x_curr + (this.frame_width * this.offset_x);
+        var max_x = x_curr + (this.frame_width * (this.offset_x + 1.));
+        var min_y = y_curr + (this.frame_height * this.offset_y);
+        var max_y = y_curr + (this.frame_height * (this.offset_y + 1.));
+
+        var mouse_p = mapCanvasManager._mouse_client;
+
+        return mouse_p.x > min_x && mouse_p.x < max_x && mouse_p.y > min_y && mouse_p.y < max_y;
     };
 
     WCanvasStaticTownMarker.prototype.updateIcon = function() {
@@ -523,6 +532,50 @@ var WCanvasStaticTownMarker = (function (_super) {
             //this.icon_offset = {x: -this.icon_obj.iconSize[0] >> 1, y: -this.icon_obj.iconSize[0] + 10} // Старый сдвиг
             this.offset_y = -1.0; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
         }
+    };
+
+    WCanvasStaticTownMarker.prototype.click_handler = function(event) {
+        //console.log('WCanvasStaticTownMarker.prototype.click_handler', this.mobj);
+        if (! user.userCar) return;
+        var u_car_pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
+        var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
+        if (distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
+            clientManager.sendEnterToLocation(this.mobj.ID);
+        else  // Ехать в координаты города
+            clientManager.sendGoto(this._last_mobj_position);
+    };
+
+    WCanvasStaticTownMarker.prototype.post_redraw = function(ctx, time, client_time) {
+        if (! user.userCar) return;
+
+        // Рассчёт дистанции между машинкой юзера и городом
+        var u_car_pos = user.userCar.getCurrentCoord(time);
+        var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
+        if (mapCanvasManager._mouse_focus_widget != this && distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) {
+            this._last_iteration_view_radius = false;
+            return;
+        }
+
+        if (!this._last_iteration_view_radius && settingsManager.options.auto_off_autofire_in_city.value && wFireController.autoShoot) 
+            wFireController.setAutoShootingEnable(false);  // Отключение автострельбы при необходимости
+
+        this._last_iteration_view_radius = true;
+
+        if (mapManager.getZoom() < 15) return;
+        // Если мы в зумировании, то рисовать круг с прозрачностью
+        var opacity = mapCanvasManager.real_zoom -  15.;
+        opacity = Math.max(Math.min(1, opacity), 0);
+        opacity *= 0.5; // Max opacity
+        ctx.save();
+        ctx.globalAlpha = opacity;
+        ctx.beginPath();
+        ctx.strokeStyle = "#00cc81";
+        //ctx.setLineDash([10, 10]);
+        ctx.lineWidth = 4;
+        ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+        ctx.restore();
     };
 
     return WCanvasStaticTownMarker;
@@ -632,7 +685,7 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = this._font;
-        ctx.fillStyle = focused ? 'rgba(42, 253, 10, 0.9)' : 'rgba(42, 253, 10, 0.6)';
+        ctx.fillStyle = focused ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
         ctx.fillText(this._nickname, 0, 0);
         ctx.restore();
     };
@@ -753,7 +806,7 @@ var WCanvasHPCarMarker = (function (_super) {
         ctx.save(); // для возврата от рисования хп
         // Рисование каркаса
         var pi4 = Math.PI / 4.;
-        ctx.strokeStyle = 'rgba(85, 255, 85, 0.4)';
+        ctx.strokeStyle = 'rgba(0, 255, 161, 0.4)';
         ctx.beginPath();
         ctx.arc(0, 0, this._radius_big, -pi4, -3 * pi4, true);
         ctx.lineTo(this._p22.x, this._p22.y);
@@ -765,7 +818,7 @@ var WCanvasHPCarMarker = (function (_super) {
         hp = Math.min(Math.max(hp / this.car._hp_state.max_hp, 0.0), 1.0);
         var pp_angle =-3* pi4 + (-pi4 - (-3* pi4)) * (hp);
         var pp1 = polarPoint(this._radius_big, pp_angle);
-        ctx.fillStyle = 'rgba(85, 255, 85, 0.2)';
+        ctx.fillStyle = 'rgba(0, 255, 161, 0.2)';
         ctx.beginPath();
         ctx.arc(0, 0, this._radius_big, pp_angle, -3 * pi4, true);
         ctx.lineTo(this._p22.x, this._p22.y);

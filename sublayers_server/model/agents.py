@@ -17,7 +17,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -25,6 +25,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
+from sublayers_server.model.quest_events import OnMakeDmg
 
 from tornado.options import options
 
@@ -78,6 +79,7 @@ class Agent(Object):
         # текущий город, если агент не в городе то None
         self._current_location = None
         self.current_location = example.profile.current_location
+        self.watched_locations = [] # Список MapLocation, которые видят агента (редактируется в MapLocation)
 
         self.inventory = None  # Тут будет лежать инвентарь машинки когда агент в городе
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
@@ -510,15 +512,15 @@ class Agent(Object):
                 trader = self.current_location.example.get_npc_by_type(Trader)
                 if trader:
                     TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
-            self.on_inv_change(time=time, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
+            self.on_inv_change(event=event, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
-    def on_inv_change(self, time, diff_inventories, make_game_log=True):
+    def on_inv_change(self, event, diff_inventories, make_game_log=True):
         # diff_inventories - dict с полями-списками incomings и outgoings, в которых хранятся
         # пары node_hash и кол-во
         if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
-            InventoryChangeLogMessage(agent=self, time=time, **diff_inventories).post()
+            InventoryChangeLogMessage(agent=self, time=event.time, **diff_inventories).post()
 
-        # todo: csll it ##quest
+        self.example.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
         pass
 
@@ -555,6 +557,9 @@ class Agent(Object):
             LoadInventoryEvent(agent=self, inventory=self.example.profile.car.inventory, time=event.time + 0.01, make_game_log=False).post()
 
         # self.subscriptions.on_enter_location(agent=self, event=event, location=location)
+
+        # Сообщаем всем квестам что мы вошли в город
+        self.example.on_event(event=event, cls=quest_events.OnEnterToLocation, location=location)
 
     def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
@@ -621,6 +626,39 @@ class Agent(Object):
         user.teaching_state = state
         user.save()
         self.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
+        
+    def on_discharge_shoot(self, obj, targets, is_damage_shoot, time):
+        # log.info('on_discharge_shoot for {}'.format(targets))
+        # Если был дамаг, то сообщить об этом в квесты
+        if is_damage_shoot:  # todo: пробросить сюда Ивент
+            self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time, damage=is_damage_shoot)
+
+    def on_autofire_start(self, obj, target, time):
+        # log.info('on_autofire_start for {}'.format(target))
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time, damage=True)
+
+        # todo: пробросить сюда Ивент
+        self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+
+    def on_setup_map_weapon(self, obj, time):
+        # log.info('on_setup_map_weapon for {}'.format(obj))
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time, damage=False)
+
+    def on_bang_damage(self, obj, targets, time):
+        # log.info('on_extramobile_damage for {}'.format(obj))
+        len_targets = len(targets)
+        damage = len_targets > 1 or len_targets > 0 and self.car not in targets  # Дамаг по себе не считается дамагом для города
+        for poi in self.watched_locations:
+            poi.on_enemy_candidate(agent=self, time=time, damage=damage)
+
+        # Если был дамаг, то сообщить об этом в квесты
+        if damage:  # todo: пробросить сюда Ивент
+            self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
 
 # todo: Переименовать в UserAgent
