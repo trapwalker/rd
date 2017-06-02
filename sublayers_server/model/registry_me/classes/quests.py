@@ -103,7 +103,7 @@ class KillerQuestVictim(Subdoc):
     profile_id = FloatField(doc=u"profile_id жертвы", tags={'client'})
 
 
-class QuestState(Root):
+class QuestState(Node):
     id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
     exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
@@ -678,7 +678,7 @@ class KillerQuest(Quest):
 
     victims = ListField(
         root_default=[],
-        field=UniReferenceField(
+        field=EmbeddedDocumentField(
             document_type='sublayers_server.model.registry.classes.quests.KillerQuestVictim',
         ),
         caption=u"Список жертв (заполняется динамически)",
@@ -746,7 +746,7 @@ class KillerQuest(Quest):
 
 
 class DeliveryQuest(Quest):
-    distance_table = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.disttable.DistTable')
+    distance_table = RegistryLinkField(document_type='sublayers_server.model.registry.classes.disttable.DistTable')
     recipient_list = ListField(
         root_default=[],
         caption=u"Список возможных получателей доставки",
