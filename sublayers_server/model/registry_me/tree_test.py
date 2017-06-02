@@ -38,12 +38,12 @@ def test4(reload=True, save_loaded=True):
     reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
     a = reg.get('/registry/a')
     b = reg.get('/registry/b')
-    c = B(it=dict(
-        #_cls='A',
-        parent='/registry/a',
-        name='a___',
-    ))
-    c.expand_links()
+    c = reg.get('/registry/b/c')
+
+    print(c._fuck())
+    print(c.parent)
+    print(c._fuck())
+
     globals().update(locals())
 
 if __name__ == '__main__':
@@ -53,15 +53,15 @@ if __name__ == '__main__':
 
     rel = 1
     test3(reload=rel, save_loaded=True)
-    from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
-    its = sorted([(v, k) for k, v in c.items()], reverse=True)
+    #from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
+    #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')
 
     src = 'fs' if rel else 'db'
 
     r = reg
-    n = 5
+    n = 0
     for i in range(n):
         fn = 'reg_{}_{}.yaml'.format(src, str(i).zfill(int(math.ceil(math.log10(n)))))
 
