@@ -28,7 +28,7 @@ from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
-    ListField, DictField, EmbeddedDocumentField,
+    ListField, DictField, EmbeddedDocumentField, MapField,
     GenericReferenceField, BaseField, MapField,
     RECURSIVE_REFERENCE_CONSTANT,
 )
@@ -342,7 +342,7 @@ class Node(Subdoc):
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     #uri = StringField(unique=True, null=True, not_inherited=True)
-    subnodes = ListField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
+    subnodes = MapField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
     # todo: make `owner` property
     filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
 
@@ -391,9 +391,10 @@ class Node(Subdoc):
             return self
 
         key, rest = path[0], path[1:]
-        for subnode in self.subnodes or []:  # todo: full search ##optimize
-            if subnode.name == key:
-                return subnode.get(rest, *defaults)
+        subnodes = self.subnodes or {}
+        subnode = subnodes.get(key)
+        if subnode:
+            return subnode.get(rest, *defaults)
 
         if defaults:
             return defaults[0]
@@ -404,7 +405,7 @@ class Node(Subdoc):
         queue = [self]
         while queue:
             item = queue.pop()
-            queue.extend(item.subnodes)
+            queue.extend(item.subnodes.values())
             if not item.abstract or not reject_abstract:
                 yield item
 
@@ -733,7 +734,7 @@ class Registry(Doc):
         node = cls(__auto_convert=False, _created=False, **attrs)
         if owner:
             if isinstance(owner, Node):
-                owner.subnodes.append(node)
+                owner.subnodes[node.name] = node
             # todo: assert: owner is document
             node._instance = owner
         return node
