@@ -89,12 +89,13 @@ var QuestNoteNPCBtn = (function (_super) {
     };
 
     QuestNoteNPCBtn.prototype.set_buttons = function(){
-        locationManager.setBtnState(1, this.btn1_caption, false);
+        locationManager.setBtnState(1, this.btn1_caption, true);
         locationManager.setBtnState(2, "", false);
     };
 
     QuestNoteNPCBtn.prototype.clickBtn = function (btnIndex) {
         console.log('Click for note: ' + this.uid + '    =>>> ' + btnIndex);
+        clientManager.SendQuestNoteAction(this.uid, true);
     };
 
     QuestNoteNPCBtn.prototype.clear = function() {

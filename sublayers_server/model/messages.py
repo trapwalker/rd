@@ -1053,6 +1053,7 @@ class QuestsInitMessage(Message):
         d = super(QuestsInitMessage, self).as_dict()
         d.update(
             quests=[quest.as_client_dict() for quest in self.agent.example.quests],
+            notes=[note.as_client_dict() for note in self.agent.example.notes],
         )
         q = d['quests'] and d['quests'][0] or None
         #if q and q['hirer'] is None:

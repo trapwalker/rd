@@ -394,6 +394,18 @@ var ClientManager = (function () {
             case 'TryGameTeachingMapNote':
                 teachingMapManager.update(new TryGameTeachingMapNote(note));
                 break;
+            case 'MapMarkerNote':
+                //console.log(note);
+                var rad_note = new QuestMapMarkerNote({
+                    quest_uid: note.quest_uid,
+                    uid: note.uid,
+                    position: note.marker.position,
+                    radius: note.marker.radius,
+                    list_icon: journalManager.quests.getQuest(note.quest_uid).list_icon
+                });
+                rad_note.is_active = true; // todo: зять из квеста
+                break;
+
 
             case 'QuestRadiationNPCFinish':
                 teachingMapManager.update(new QuestNoteNPCBtn(note)); // todo: заменить на правильную ноту, когда появится
@@ -419,8 +431,6 @@ var ClientManager = (function () {
                 this.sendGetPartyInfo(event.agent.party.name);
             }
             timeManager.timerStart(settingsManager.options["fps_rate"].value);
-            for (var i = 0; i < event.notes.length; i++)
-                this._createNote(event.notes[i]);
         }
     };
 
@@ -1331,8 +1341,11 @@ var ClientManager = (function () {
     ClientManager.prototype.QuestsInitMessage = function (event) {
         //console.log('ClientManager.prototype.QuestInitMessage', event);
         journalManager.quests.clear();
-        for (var i = 0; i < event.quests.length; i++)
+        var i;
+        for (i = 0; i < event.quests.length; i++)
             journalManager.quests.addQuest(event.quests[i]);
+        for (i = 0; i < event.notes.length; i++)
+            this._createNote(event.notes[i]);
     };
 
     ClientManager.prototype.QuestAddMessage = function (event) {

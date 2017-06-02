@@ -3,8 +3,8 @@ var QuestMapMarkerNote = (function (_super) {
 
     function QuestMapMarkerNote(options) {
         _super.call(this, options);
-        this.quest_id = null; // todo: забрать из options
-        this.range = options.range;
+        this.quest_id = options.quest_uid;
+        this.radius = options.radius;
         this.position = new Point(options.position.x, options.position.y);
 
         this.img_obj = new Image();
@@ -52,7 +52,7 @@ var QuestMapMarkerNote = (function (_super) {
         }
 
         // Отрисовка круга
-        if (mapManager.getZoom() > 15 && this.range > 0) {
+        if (mapManager.getZoom() > 15 && this.radius > 0) {
             // Если мы в зумировании, то рисовать круг с прозрачностью
             var opacity = mapCanvasManager.real_zoom - 15.;
             opacity = Math.max(Math.min(1, opacity), 0);
@@ -63,7 +63,7 @@ var QuestMapMarkerNote = (function (_super) {
             ctx.strokeStyle = "#00cc81";
             //ctx.setLineDash([10, 10]);
             ctx.lineWidth = 4;
-            ctx.arc(0, 0, (this.range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+            ctx.arc(0, 0, (this.radius / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
             ctx.stroke();
             ctx.closePath();
             ctx.restore();

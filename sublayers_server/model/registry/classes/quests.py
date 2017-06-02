@@ -612,6 +612,9 @@ class Quest(Root):
         if len(self.reward_items_list) > 0:
             self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
 
+    def init_level(self):
+        self.level = 1
+
 
 class QuestUpdateMessage(messages.Message):
     def __init__(self, quest, **kw):

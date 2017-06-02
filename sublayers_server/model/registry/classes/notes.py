@@ -5,8 +5,9 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.tree import Subdoc, get_uuid
 from sublayers_server.model.registry.odm.fields import (
-    StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, UUIDField,
+    StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, UUIDField, FloatField
 )
+from sublayers_server.model.registry.odm_position import PositionField
 
 from sublayers_server.model.messages import Message
 
@@ -45,6 +46,10 @@ class Note(Subdoc):
         d = super(Note, self).as_client_dict()
         d.update(cls=self.cls)
         return d
+
+
+class MapMarkerNote(Note):
+    marker = UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.quests2.MarkerMapObject', tags='client')
 
 
 class NPCPageNote(Note):
