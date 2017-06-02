@@ -66,13 +66,15 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        if isinstance(value, six.string_types):
-            reg = instance.__get_registry__()
-            node = reg.get(value)
-            instance._data[value] = node  # Caching
-            return node
+        if value is None or isinstance(value, Node):
+            return value
 
-        return value
+        assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
+
+        reg = instance.__get_registry__()
+        node = reg.get(value)
+        instance._data[self.name] = node  # Caching  # todo: test ##OPTIMIZE
+        return node
         #return super(RegistryLinkField, self).__get__(instance, owner)
 
     def __set__(self, instance, value):
