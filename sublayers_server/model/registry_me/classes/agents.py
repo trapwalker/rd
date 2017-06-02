@@ -38,6 +38,11 @@ class RelationshipRec(Subdoc):
 
 class AgentProfile(Node):
     '''Inheritable data about agent'''
+    # todo: remove ##deprecated
+    teaching_flag = BooleanField(caption=u'deprecated flag')
+    # todo: remove ##deprecated
+    quick_flag = BooleanField(caption=u'deprecated flag')
+
     about_self = StringField(root_default=u'', caption=u'О себе', tags={'client'})
 
     # Карма и отношения
