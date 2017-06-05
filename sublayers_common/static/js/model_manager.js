@@ -276,6 +276,7 @@ var ClientManager = (function () {
                 //    console.warn(1111, obj);
                 //    break;
                 case 'POILoot':
+                case 'QuestPrivatePOILoot':
                     new WCanvasLootMarker(obj);
                     break;
                 default:
@@ -607,6 +608,7 @@ var ClientManager = (function () {
             case 'StationaryRadiation': break;
             case 'Town':
             case 'POILoot':
+            case 'QuestPrivatePOILoot':
             case 'POIContainer':
             case 'GasStation':
                 this._contactStaticObject(event);

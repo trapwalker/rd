@@ -12,6 +12,8 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry.tree import Subdoc
 import random
 from sublayers_server.model.registry.classes import notes
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, QuestPrivatePOILoot
+from sublayers_server.model.inventory import ItemState
 
 
 class MarkerMapObject(Subdoc):
@@ -169,3 +171,28 @@ class DeliveryFromCache(DeliveryQuestSimple):
             self.reward_money,
             self.reward_karma
         )
+
+    def create_poi_container(self, event):
+        if self.deadline:
+            life_time = self.starttime + self.deadline - event.time
+        else:
+            life_time = event.server.poi_loot_objects_life_time
+        private_name = self.agent._agent_model and self.agent._agent_model.print_login() or self.agent.login
+
+        items = []
+        for item_example in self.delivery_set:
+            item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
+
+        CreatePOILootEvent(
+            server=event.server,
+            time=event.time,
+            poi_cls=QuestPrivatePOILoot,
+            example=None,
+            inventory_size=len(self.delivery_set),
+            position=Point.random_gauss(self.cache_point.position.as_point(), self.cache_point.radius),
+            life_time=life_time,
+            items=items,
+            connect_radius=0,
+            extra=dict(private_name=private_name),
+        ).post()
