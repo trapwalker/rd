@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry.classes.quests import Quest, QuestRange
+from sublayers_server.model.registry.classes.quests1 import DeliveryQuestSimple
 from sublayers_server.model.registry.odm.fields import (UniReferenceField, ListField, IntField, FloatField,
                                                         EmbeddedDocumentField)
 from sublayers_server.model.registry.odm_position import PositionField
@@ -123,3 +124,48 @@ class MeasureRadiation(Quest):
         for note in self.measure_notes:
             self.agent.del_note(uid=note.uid, time=event.time)
         self.measure_notes = []
+
+
+class DeliveryFromCache(DeliveryQuestSimple):
+    design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', default=3)
+    cache_radius = FloatField(caption=u'Радиус, в котором можно обнаружить тайник', default=50)
+
+    cache_points_generator = ListField(
+        default=[],
+        caption=u"Список областей генерации мест для тайника",
+        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
+        reinst=True
+    )
+    cache_point = EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True)
+
+    def init_target_point(self):
+        base_point = random.choice(self.cache_points_generator)
+        self.cache_point = MarkerMapObject(position=base_point.generate_random_point(), radius=self.cache_radius)
+
+    def deadline_to_str(self):
+        m, s = divmod(self.deadline, 60)
+        h, m = divmod(m, 60)
+        return "%d:%02d:%02d" % (h, m, s)
+
+    def init_distance(self):
+        p1 = self.hirer.hometown.position.as_point()
+        p2 = self.cache_point.position.as_point()
+        return p1.distance(p2) * 2  # дистация двойная, так как нужно съездить туда и обратно
+
+    def init_deadline(self, distance):
+        # Время выделенное на квест в секундах
+        if self.design_speed:
+            all_time = int(distance / self.design_speed)
+            # Время выделенное на квест кратно 5 минутам
+            self.deadline = (all_time / 300) * 300 + (300 if (all_time % 300) > 0 else 0)
+        else:
+            self.deadline = 0
+
+    def init_text(self):
+        self.text_short = u"Привезите вещи из тайника."
+        self.text = u"Привезите {} вещей из тайника {}. Награда: {:.0f}nc и {:.0f} кармы.".format(
+            len(self.delivery_set),
+            u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
+            self.reward_money,
+            self.reward_karma
+        )
