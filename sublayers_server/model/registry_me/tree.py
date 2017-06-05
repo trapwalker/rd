@@ -36,12 +36,18 @@ from mongoengine.fields import (
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
 
+IGNORE_WRONG_LINKS = True  # False
+
 
 class RegistryError(Exception):
     pass
 
 
 class RegistryNodeFormatError(RegistryError):
+    pass
+
+
+class RegistryNodeIsNotFound(RegistryError):
     pass
 
 
@@ -66,15 +72,7 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        if value is None or isinstance(value, Node):
-            return value
-
-        assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
-
-        reg = instance.__get_registry__()
-        node = reg.get(value)
-        instance._data[self.name] = node  # Caching  # todo: test ##OPTIMIZE
-        return node
+        return self.to_python(value)
         #return super(RegistryLinkField, self).__get__(instance, owner)
 
     def __set__(self, instance, value):
@@ -95,7 +93,7 @@ class RegistryLinkField(BaseField):
                 # So mark it as changed
                 instance._mark_as_changed(self.name)
 
-        instance._data[self.name] = value
+        instance._data[self.name] = self.to_mongo(value)
 
     def to_mongo(self, document):
         if document is None:
@@ -114,13 +112,21 @@ class RegistryLinkField(BaseField):
 
     def to_python(self, value):
         """Convert a MongoDB-compatible type to a Python type."""
-        if isinstance(value, Node):
-            uri = value.uri
-            assert uri, 'Linked object {!r} has not URI.'.format(value)
-            return uri
-        else:
-            assert isinstance(value, basestring) or value is None, 'Unknown RegistryLinkField value: {!r}'.format(value)
+        if value is None or isinstance(value, Node):
             return value
+
+        assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
+
+        reg = get_global_registry()
+        node = None
+        try:
+            node = reg.get(value)
+        except RegistryNodeIsNotFound as e:
+            log.warning("Can't resolve LINK {value!r} FROM FIELD {self.name}".format(**locals()))
+            if not IGNORE_WRONG_LINKS:
+                raise e
+
+        return node
 
     def prepare_query_value(self, op, value):
         if value is None:
@@ -152,7 +158,15 @@ class EmbeddedNodeField(EmbeddedDocumentField):
     def to_python(self, value):
         if isinstance(value, basestring):
             reg = get_global_registry()
-            return reg.make_node_by_uri(value)
+            try:
+                return reg.make_node_by_uri(value)
+            except RegistryNodeIsNotFound as e:
+                log.warning("Can't make node BY LINK {value!r} FROM FIELD {self.name}".format(**locals()))
+                if IGNORE_WRONG_LINKS:
+                    return
+                else:
+                    raise e
+
         elif value is None:
             return
         return super(EmbeddedNodeField, self).to_python(value)
@@ -266,14 +280,31 @@ class Subdoc(EmbeddedDocument):
         elif isinstance(field, ListField):
             # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
             expanded_value = value
+            skip_count = 0
             for i, v in enumerate(value):
                 if v:
-                    expanded_value[i] = self._expand_field_value(field.field, v)
+                    new_v = self._expand_field_value(field.field, v)
+                    if new_v is None:
+                        assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
+                            v, IGNORE_WRONG_LINKS
+                        )
+                        skip_count += 1
+                    else:
+                        expanded_value[i - skip_count] = new_v
+            if skip_count:
+                expanded_value = expanded_value[:len(expanded_value) - skip_count]
         elif isinstance(field, DictField):
             expanded_value = value
-            for k, v in value.items():
+            for k, v in value.iteritems():
                 if v:
-                    expanded_value[k] = self._expand_field_value(field.field, v)
+                    new_v = self._expand_field_value(field.field, v)
+                    if new_v is None:
+                        assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
+                            v, IGNORE_WRONG_LINKS
+                        )
+                        del expanded_value[k]
+                    else:
+                        expanded_value[k] = self._expand_field_value(field.field, v)
         # elif isinstance(field, RegistryLinkField):  # todo: Убрать для неконтейнерных типов
         #     expanded_value = value
         else:
@@ -295,29 +326,6 @@ class Subdoc(EmbeddedDocument):
             if isinstance(field, CONTAINER_FIELD_TYPES):
                 value = getattr(self, field_name)
                 setattr(self, field_name, value)
-            # parent = self.parent
-            # if field_name not in self._data and (parent is None or not hasattr(parent, field_name)):
-            #     default = field.default
-            #     if isinstance(default, Callable):
-            #         default = default()
-            #     setattr(self, field_name, default)
-            #     continue
-            #
-            # if not isinstance(field, CONTAINER_FIELD_TYPES):  # or field_name == 'subnodes':
-            #     continue
-            #
-            # if isinstance(field, CONTAINER_FIELD_TYPES_SIMPLE) and not isinstance(field.field, CONTAINER_FIELD_TYPES):
-            #     continue
-            #
-            # value = getattr(self, field_name)
-            #
-            # if value is None:
-            #     continue
-            #
-            # setattr(self, field_name, value)
-            # # new_value = self._expand_field_value(field, value)
-            # # if new_value is not value:
-            # #     setattr(self, field_name, new_value)
 
         return self
 
@@ -399,7 +407,7 @@ class Node(Subdoc):
         if defaults:
             return defaults[0]
 
-        raise KeyError('Node {!r} has no subnode {}'.format(self, path))
+        raise RegistryNodeIsNotFound('Node {!r} has no subnode {}'.format(self, path))
 
     def deep_iter(self, reject_abstract=True):
         queue = [self]
@@ -469,7 +477,7 @@ class Node(Subdoc):
         )
 
     def __repr__(self):
-        return self.to_string(indent_size=0)
+        return '<{self.__class__.__name__}({self.uri})>'.format(self=self)
 
     def __str__(self):
         return self.to_string()
@@ -630,7 +638,7 @@ class Registry(Doc):
         if defaults:
             return defaults[0]
 
-        raise KeyError('Registry has no root named {!r}'.format(self, root_name))
+        raise RegistryNodeIsNotFound('Registry has no root named {!r}'.format(self, root_name))
 
     def make_node_by_uri(self, uri, **kw):
         uri = URI.ensure(uri)
