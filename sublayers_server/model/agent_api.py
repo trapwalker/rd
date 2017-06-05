@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import logging
+from model.events import event_deco
 
 log = logging.getLogger(__name__)
 
@@ -894,6 +895,18 @@ class AgentAPI(API):
             OnCancel(server=server, quest=quest, time=server.get_time()).post()
         else:
             self.agent.log.error('Try cancel unavailable quest quest_uid={}'.format(quest_uid))
+
+    @public_method
+    def quest_active_notes_view(self, quest_uid, active):
+        self.agent.log.info('quest_active_notes_view quest_uid={}'.format(quest_uid))
+        quest = self.agent.example.get_quest(uid=UUID(quest_uid))
+        if quest:
+            # todo: вызвать метод через эвент: создать эвент или использовать event_deco
+            quest.active_notes_view_change(active=active, time=self.agent.server.get_time())
+            # Event(server=server, time=server.get_time(), callback_after=quest.active_notes_view_change).post()
+            # event_deco(quest.active_notes_view_change)(active, time=server.get_time())
+        else:
+            self.agent.log.error('Try quest_active_notes_view unavailable quest quest_uid={}'.format(quest_uid))
 
     # Запрос инфы о другом игроке
 

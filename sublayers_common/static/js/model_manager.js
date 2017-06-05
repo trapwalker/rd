@@ -395,15 +395,15 @@ var ClientManager = (function () {
                 teachingMapManager.update(new TryGameTeachingMapNote(note));
                 break;
             case 'MapMarkerNote':
-                //console.log(note);
+                var quest = journalManager.quests.getQuest(note.quest_uid);
                 var rad_note = new QuestMapMarkerNote({
                     quest_uid: note.quest_uid,
                     uid: note.uid,
                     position: note.marker.position,
                     radius: note.marker.radius,
-                    list_icon: journalManager.quests.getQuest(note.quest_uid).list_icon
+                    list_icon: quest && quest.list_icon
                 });
-                rad_note.is_active = true; // todo: зять из квеста
+                rad_note.is_active = quest && quest.active_notes_view;
                 break;
 
 
@@ -1346,6 +1346,11 @@ var ClientManager = (function () {
             journalManager.quests.addQuest(event.quests[i]);
         for (i = 0; i < event.notes.length; i++)
             this._createNote(event.notes[i]);
+    };
+
+    ClientManager.prototype.QuestsChangeMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestsChangeMessage', event);
+        journalManager.quests.update(event.quest);
     };
 
     ClientManager.prototype.QuestAddMessage = function (event) {
@@ -2436,6 +2441,17 @@ var ClientManager = (function () {
                 uid: note_uid,
                 result: note_result
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendQuestActiveNotesView = function (quest_id, active) {
+        //console.log('ClientManager.prototype.sendQuestActiveNotesView', quest_id, active);
+        var mes = {
+            call: "quest_active_notes_view",
+            rpc_call_id: rpcCallList.getID(),
+            params: {quest_uid: quest_id, active: active}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

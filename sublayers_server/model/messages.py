@@ -1067,6 +1067,18 @@ class QuestsInitMessage(Message):
         return d
 
 
+# todo: Перенести описание класса в модуль квестов
+class QuestsChangeMessage(Message):
+    def __init__(self, quest, **kw):
+        super(QuestsChangeMessage, self).__init__(**kw)
+        self.quest = quest
+
+    def as_dict(self):
+        d = super(QuestsChangeMessage, self).as_dict()
+        d.update(quest=self.quest.as_client_dict())
+        return d
+
+
 # Общее сообщение-родитель для всех видов информационных сообщений для города (для заполнения города)
 class NPCInfoMessage(Message):
     def __init__(self, npc_node_hash, **kw):

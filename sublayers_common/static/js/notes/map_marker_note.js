@@ -3,7 +3,6 @@ var QuestMapMarkerNote = (function (_super) {
 
     function QuestMapMarkerNote(options) {
         _super.call(this, options);
-        this.quest_id = options.quest_uid;
         this.radius = options.radius;
         this.position = new Point(options.position.x, options.position.y);
 
@@ -27,7 +26,7 @@ var QuestMapMarkerNote = (function (_super) {
 
     QuestMapMarkerNote.prototype.mouse_test = function(time) {
         //console.log('QuestMapMarkerNote.prototype.mouse_test');
-        return distancePoints2(this._last_ctx_pos, mapCanvasManager._mouse_client) < this.icon_size_min_div_2;
+        return this.is_active && distancePoints2(this._last_ctx_pos, mapCanvasManager._mouse_client) < this.icon_size_min_div_2;
     };
 
     QuestMapMarkerNote.prototype.click_handler = function(event) {

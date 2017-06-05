@@ -180,6 +180,7 @@ var QuestJournalManager = (function () {
         if (!this.quests.hasOwnProperty(quest.uid)) {
             this.quests[quest.uid] = quest;
             this.redraw_quest(quest.uid);
+            this.update_view_notes(quest);
         }
         else
             console.error('Попытка повторного добавления существущего квеста.');
@@ -209,9 +210,25 @@ var QuestJournalManager = (function () {
             console.error('Апдейт несуществущего квеста.');
             return;
         }
+        var is_view_quest_in_journal = this.quests[quest.uid].jq_journal_menu && this.quests[quest.uid].jq_journal_menu.hasClass("active");
         this.clear_quest(quest.uid);
         this.quests[quest.uid] = quest;
         this.redraw_quest(quest.uid);
+
+        // включить или отключить ноты, связанные с этим квестом
+        this.update_view_notes(quest);
+
+        if (is_view_quest_in_journal)
+            quest.jq_journal_menu.click();
+    };
+
+    QuestJournalManager.prototype.update_view_notes = function (quest) {
+        //console.log("QuestJournalManager.prototype.update_view_notes", quest);
+        var active = quest.active_notes_view;
+        for (var key in notesManager.notes)
+            if (notesManager.notes.hasOwnProperty(key) && notesManager.notes[key].quest_uid == quest.uid)
+                if (notesManager.notes[key] instanceof QuestMapMarkerNote)
+                    notesManager.notes[key].is_active = active;
     };
 
     QuestJournalManager.prototype._create_status_group = function(status_name) {
@@ -243,7 +260,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
-        //console.log('QuestJournalManager.prototype._create_quest_info_block');
+        //console.log('QuestJournalManager.prototype._create_quest_info_block', quest.uid);
         var hirer_photo = quest.hirer ?  quest.hirer.photo : '';
         var hirer_name = quest.hirer ?  quest.hirer.title : '';
 
@@ -263,6 +280,12 @@ var QuestJournalManager = (function () {
                         '<div class="journal-quest-info-block-main-description">Описание:<br>' + quest.text + '</div>' +
                         '<div class="journal-quest-info-block-main-description-end-date">Осталось времени: <span>00:00:00</span></div>' +
                     '</div>' +
+                    (quest.status == "active" ?
+                        '<div class="journal-quest-info-block-main-active-view-block" ' +
+                            'onclick="journalManager.quests.click_handler_change_active_view(`' + quest.uid + '`)">' +
+                            (quest.active_notes_view ? "OFF" : "ON")  +
+                        '</div>'
+                    : "" ) +
                 '</div>' +
                 '<div class="journal-quest-info-block-log-block">' +
                     '<div class="journal-quest-info-block-log-caption">События:</div>' +
@@ -339,7 +362,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.redraw_quest = function(quest_id) {
-        //console.log('QuestJournalManager.prototype.redraw', this.quests);
+        //console.log('QuestJournalManager.prototype.redraw_quest', quest_id);
         var quest = this.quests[quest_id];
 
         // Отрисовываем квесты у NPC
@@ -502,6 +525,12 @@ var QuestJournalManager = (function () {
         }
     };
 
+    QuestJournalManager.prototype.click_handler_change_active_view = function(quest_uid) {
+        var quest = this.getQuest(quest_uid);
+        if (!quest) return;
+        clientManager.sendQuestActiveNotesView(quest.uid, !quest.active_notes_view);
+        returnFocusToMap();
+    };
 
     return QuestJournalManager;
 })();

@@ -290,6 +290,7 @@ class Quest(Root):
         ),
         reinst=True,
     )
+    active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', default=True, tags='client')
 
     # @property
     # def agent(self):
@@ -614,6 +615,13 @@ class Quest(Root):
 
     def init_level(self):
         self.level = 1
+
+    def active_notes_view_change(self, active, time):
+        if active == self.active_notes_view:
+            return
+        self.active_notes_view = active
+        if self.agent._agent_model:
+            messages.QuestsChangeMessage(agent=self.agent._agent_model, time=time, quest=self).post()
 
 
 class QuestUpdateMessage(messages.Message):
