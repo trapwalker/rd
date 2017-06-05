@@ -5,25 +5,35 @@ import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-    log = logging.getLogger()
     sys.path.append('../../..')
-    log.level = logging.DEBUG
-    log.addHandler(logging.StreamHandler(sys.stderr))
+    log = logging.getLogger()
+    try:
+        import coloredlogs
+        coloredlogs.DEFAULT_FIELD_STYLES['levelname']['color'] = 'green'
+        coloredlogs.install(level=logging.DEBUG, fmt='%(levelname)-8s| %(message)s')
+    except ImportError:
+        log.level = logging.DEBUG
+        _hndl = logging.StreamHandler(sys.stderr)
+        _hndl.setFormatter(logging.Formatter('%(levelname)-8s| %(message)s'))
+        log.addHandler(_hndl)
 
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_server.model.registry_me.tree import Node, get_global_registry, ListField, EmbeddedNodeField, Registry
 from sublayers_common.ctx_timer import Timer
+from sublayers_server.model.registry_me.tree import (
+    Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
+)
 
 from pprint import pprint as pp
 from mongoengine import connect
 
 
 class A(Node):
-    pass
+    s = StringField()
 
 class B(Node):
     it = EmbeddedNodeField(document_type=A)
     items = ListField(field=EmbeddedNodeField(document_type=A))
+    links = ListField(field=RegistryLinkField(document_type=A))
 
 
 def test3(reload=True, save_loaded=True):
@@ -40,10 +50,6 @@ def test4(reload=True, save_loaded=True):
     b = reg.get('/registry/b')
     c = reg.get('/registry/b/c')
 
-    print(c._fuck())
-    print(c.parent)
-    print(c._fuck())
-
     globals().update(locals())
 
 if __name__ == '__main__':
@@ -52,7 +58,7 @@ if __name__ == '__main__':
     log.info('Use `test_me` db')
 
     rel = 1
-    test3(reload=rel, save_loaded=True)
+    test4(reload=rel, save_loaded=True)
     #from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
