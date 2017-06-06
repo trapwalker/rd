@@ -43,8 +43,8 @@ var QuestMapMarkerNote = (function (_super) {
     };
 
     QuestMapMarkerNote.prototype.click_handler = function(event) {
-        console.log('QuestMapMarkerNote.prototype.click_handler', this);
-        // todo: открыть квестовое окно и отобразить текущий активный квест
+        //console.log('QuestMapMarkerNote.prototype.click_handler', this);
+        clientManager.sendGoto(this.position);
     };
 
     // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
