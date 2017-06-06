@@ -402,7 +402,8 @@ var ClientManager = (function () {
                     uid: note.uid,
                     position: note.marker.position,
                     radius: note.marker.radius,
-                    list_icon: quest && quest.list_icon
+                    icon: quest && quest.map_icon,
+                    focus_caption: quest && quest.caption,
                 });
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;

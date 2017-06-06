@@ -240,6 +240,7 @@ class Quest(Root):
     text_short  = StringField(tags='client', caption=u'Короткий текст квеста для реплики npc', doc=u'Может строиться и меняться по шаблону')
     typename    = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon   = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    map_icon    = StringField(tags='client', caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
     level       = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
     deadline    = IntField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
