@@ -25,7 +25,7 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
             else
                 this.delivery_stuff[temp_stuff[i].node_hash].count += temp_stuff[i].amount;
 
-        var jq_up_path = $('<div class="notes-npc-delivery-up">QuestNoteNPCBtnDelivery</div>');
+        var jq_up_path = $('<div class="notes-npc-delivery-up"></div>');
         this.jq_main_div.append(jq_up_path);
         this.jq_main_div.append('<div class="notes-npc-delivery-inventory-label">Список необходимых предметов</div>');
         var jq_down_path = $('<div class="notes-npc-delivery-inventory-wrap"></div>');
