@@ -54,6 +54,7 @@ class TransactionEvent(Event):
         pass
 
     def on_done_perform_async(self, *av, **kw):
+        # todo: убрать асинхронность и прокинуть время правильно
         pass
 
 
@@ -70,6 +71,12 @@ class TransactionActivateItem(TransactionEvent):
         super(TransactionActivateItem, self).on_perform()
         # Отправка мессаджа об активации итема, пока используется для
         messages.SuccessActivateItem(agent=self.agent, time=self.time, item=self.item).post()
+
+    def on_done_perform_async(self, *av, **kw):
+        super(TransactionActivateItem, self).on_done_perform_async(*av, **kw)
+        # todo: убрать асинхронность и прокинуть время правильно
+        transaction_time = self.server.get_time()
+        self.agent.on_activated_item(item=self.item, inventory=self.inventory, time=transaction_time)
 
 
 class TransactionActivateTank(TransactionActivateItem):
