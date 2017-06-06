@@ -281,9 +281,9 @@ var QuestJournalManager = (function () {
                         '<div class="journal-quest-info-block-main-description-end-date">Осталось времени: <span>00:00:00</span></div>' +
                     '</div>' +
                     (quest.status == "active" ?
-                        '<div class="journal-quest-info-block-main-active-view-block" ' +
+                        '<div class="journal-quest-info-block-main-active-view-block' + (quest.active_notes_view ? " select" : " unselect") + '" ' +
                             'onclick="journalManager.quests.click_handler_change_active_view(`' + quest.uid + '`)">' +
-                            (quest.active_notes_view ? "OFF" : "ON")  +
+                            'Отображать маркера' +
                         '</div>'
                     : "" ) +
                 '</div>' +
