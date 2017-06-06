@@ -159,7 +159,7 @@ var SettingsManager = (function() {
             default: "merged",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "back", value: "back"}, {text: "front", value: "front"}, {text: "merged", value: "merged"}],
+            list_values: [{text: "Местность", value: "back"}, {text: "Метаданные", value: "front"}, {text: "По умолчанию", value: "merged"}],
             set_callback: function(new_value) {
                 if (!mapManager) return;
                 mapManager.set_tileprovider_visibility("back", new_value == "back");
