@@ -664,7 +664,7 @@ class Agent(Object):
             self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
     def on_activated_item(self, item, inventory, time):
-        log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
+        # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
         # todo: пробросить сюда Ивент (чтоб не создавать пустой)
         self.example.on_event(event=Event(server=self.server, time=time), cls=OnActivateItem, item_example=item.example)
 
