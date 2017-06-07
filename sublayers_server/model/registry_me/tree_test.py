@@ -57,8 +57,8 @@ if __name__ == '__main__':
     db = connect(db='test_me')
     log.info('Use `test_me` db')
 
-    rel = 1
-    test4(reload=rel, save_loaded=True)
+    rel = 0
+    test3(reload=rel, save_loaded=True)
     #from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

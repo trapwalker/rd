@@ -122,7 +122,9 @@ class RegistryLinkField(BaseField):
         try:
             node = reg.get(value)
         except RegistryNodeIsNotFound as e:
-            log.warning("Can't resolve LINK {value!r} FROM FIELD {self.name}".format(**locals()))
+            log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
+                fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
+            )
             if not IGNORE_WRONG_LINKS:
                 raise e
 
@@ -161,7 +163,9 @@ class EmbeddedNodeField(EmbeddedDocumentField):
             try:
                 return reg.make_node_by_uri(value)
             except RegistryNodeIsNotFound as e:
-                log.warning("Can't make node BY LINK {value!r} FROM FIELD {self.name}".format(**locals()))
+                log.warning("URI resolve fail to MAKE {value!r}{fieldname}".format(
+                    fieldname=self.name and '(field: {})'.format(self.name) or '', **locals())
+                )
                 if IGNORE_WRONG_LINKS:
                     return
                 else:
@@ -262,6 +266,9 @@ class Subdoc(EmbeddedDocument):
         super(Subdoc, self).__setattr__(key, value)
 
     def _expand_field_value(self, field, value):
+        if isinstance(field, RegistryLinkField):
+            return field.to_python(value)
+
         if not isinstance(field, CONTAINER_FIELD_TYPES):
             return value  # todo: optimize
 
