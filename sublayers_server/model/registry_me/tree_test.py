@@ -39,16 +39,18 @@ class B(Node):
 def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
-    x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
-    a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
+    #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
+    #a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
+    q = reg.get('/registry/agents/user/quick')
+
     globals().update(locals())
 
 def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
-    a = reg.get('/registry/a')
-    b = reg.get('/registry/b')
-    c = reg.get('/registry/b/c')
+    # a = reg.get('/registry/a')
+    # b = reg.get('/registry/b')
+    # c = reg.get('/registry/b/c')
 
     globals().update(locals())
 
