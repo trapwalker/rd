@@ -80,11 +80,6 @@ class MeasureRadiation(Quest):
             self.measure_points.append(MarkerMapObject(position=base_point.generate_random_point(),
                                                        radius=self.measuring_radius))
 
-    def deadline_to_str(self):
-        m, s = divmod(self.deadline, 60)
-        h, m = divmod(m, 60)
-        return "%d:%02d:%02d" % (h, m, s)
-
     def init_deadline(self):
         if self.deadline:
             all_time = self.measure_count * self.deadline
@@ -129,7 +124,6 @@ class MeasureRadiation(Quest):
 
 
 class DeliveryFromCache(DeliveryQuestSimple):
-    design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', default=3)
     cache_radius = FloatField(caption=u'Радиус, в котором можно обнаружить тайник', default=50)
 
     cache_points_generator = ListField(
@@ -143,11 +137,6 @@ class DeliveryFromCache(DeliveryQuestSimple):
     def init_target_point(self):
         base_point = random.choice(self.cache_points_generator)
         self.cache_point = MarkerMapObject(position=base_point.generate_random_point(), radius=self.cache_radius)
-
-    def deadline_to_str(self):
-        m, s = divmod(self.deadline, 60)
-        h, m = divmod(m, 60)
-        return "%d:%02d:%02d" % (h, m, s)
 
     def init_distance(self):
         p1 = self.hirer.hometown.position.as_point()
@@ -196,3 +185,111 @@ class DeliveryFromCache(DeliveryQuestSimple):
             connect_radius=0,
             extra=dict(private_name=private_name),
         ).post()
+
+
+class MapActivateItem(Quest):
+    activate_price = IntField(caption=u'Стоимость одной активации итема', tags='client')
+    activate_radius = FloatField(caption=u'Максимальный радиус активации', tags='client')
+
+    activate_points_generator = ListField(
+        default=[],
+        caption=u"Список областей генерации пунктов замеров",
+        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
+        reinst=True
+    )
+    activate_points = ListField(
+        default=[],
+        caption=u"Список областей генерации пунктов замеров",
+        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
+        reinst=True
+    )
+
+    activate_items_generator = ListField(
+        caption=u"Список возможных итемов для активации",
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+            caption=u"Необходимый итем",
+            reinst=True,
+            tags='client',
+        )
+    )
+    activate_items = ListField(
+        caption=u"Список итемов для доставки",
+        base_field=EmbeddedDocumentField(
+            embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+            caption=u"Необходимый итем",
+            reinst=True,
+            tags='client',
+        ),
+    )
+
+    activate_notes = ListField(
+        default=[],
+        caption=u"Список активных нотов маркеров на карте",
+        base_field=UniReferenceField(
+            reference_document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
+        ),
+        reinst=True,
+    )
+
+    def init_activate_items(self):
+        self.activate_items = []
+        choice = random.choice(self.activate_items_generator)
+        item = choice.instantiate(amount=choice.amount)
+        self.activate_items.append(item)
+
+    def init_activate_points(self):
+        self.activate_points = []
+        base_point = random.choice(self.activate_points_generator)
+        self.activate_points.append(MarkerMapObject(position=base_point.generate_random_point(),
+                                                    radius=self.activate_radius))
+
+    def init_distance(self):
+        p1 = self.hirer.hometown.position.as_point()
+        p2 = self.activate_points[0].position.as_point()
+        return p1.distance(p2) * 2  #  дистация двойная, так как нужно съездить туда и обратно
+
+    def init_deadline(self, distance):
+        # Время выделенное на квест в секундах
+        if self.design_speed:
+            all_time = int(distance / self.design_speed)
+            # Время выделенное на квест кратно 5 минутам
+            self.deadline = (all_time / 300) * 300 + (300 if (all_time % 300) > 0 else 0)
+        else:
+            self.deadline = 0
+
+    def init_text(self):
+        self.text_short = u"Активируйте предметы в заданных точках."
+        self.text = u"Активируйте предметы: {} - в заданных точках. Награда: {:.0f}nc.".format(
+            ', '.join([item.title for item in self.activate_items]),
+            self.reward_money
+        )
+
+    def init_notes(self, event):
+        note_uid = self.agent.add_note(
+            quest_uid=self.uid,
+            note_class=notes.MapMarkerNote,
+            time=event.time,
+            marker=self.activate_points[0]
+        )
+        self.activate_notes.append(self.agent.get_note(uid=note_uid))
+
+    def check_notes(self, event):
+        if not self.agent._agent_model or not self.agent._agent_model.car:
+            return
+
+        temp_notes = self.activate_notes[:]
+        for note in temp_notes:
+            position = self.agent._agent_model.car.position(time=event.time)
+            if note.marker.is_near(position=position):
+                self.log(text=u'Произведена активация.', event=event, position=position)
+                self.activate_notes.remove(note)
+                self.agent.del_note(uid=note.uid, time=event.time)
+
+    def check_item(self, item):
+        return self.activate_items[0].node_hash() == item.node_hash()
+
+    def delete_notes(self, event):
+        for note in self.activate_notes:
+            self.agent.del_note(uid=note.uid, time=event.time)
+        self.activate_notes = []
