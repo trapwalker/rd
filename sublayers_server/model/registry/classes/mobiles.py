@@ -235,9 +235,12 @@ class Mobile(Root):
                     d[param_name] = d[param_name] + getattr(slot_value, param_name, 0.0)
 
         if example_agent:
+            quest_skill_modifier = example_agent.get_quest_skill_modifier()
             for skill_name, skill_value in example_agent.iter_skills():
+                skill_value = max(0.0, skill_value + quest_skill_modifier.get(skill_name, 0.0))
                 for param_name in d.keys():
                     d[param_name] = d[param_name] + skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+
             for perk in example_agent.perks:
                 for param_name in d.keys():
                     d[param_name] = d[param_name] + getattr(perk, param_name, 0.0)

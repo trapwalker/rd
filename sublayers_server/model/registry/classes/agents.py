@@ -8,7 +8,7 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
-from sublayers_server.model.registry.classes.quest_item import QuestInventoryField
+from sublayers_server.model.registry.classes.quest_item import QuestInventoryField, ModifierQuestItem
 
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
@@ -274,6 +274,20 @@ class Agent(Root):
     def iter_skills(self):  # todo: need review
         for name, attr, getter in self.iter_attrs(tags='skill'):
             yield name, getter().calc_value()
+
+    def get_quest_skill_modifier(self):
+        d = dict(
+            driving=0,
+            shooting=0,
+            masking=0,
+            leading=0,
+            trading=0,
+            engineering=0,
+        )
+        for item in self.quest_inventory.items:
+                for name in d.keys():  # todo: optimize
+                    d[name] += getattr(item, name, 0)
+        return d
 
     def iter_perks(self):  # todo: need review
         for perk in self.perks:

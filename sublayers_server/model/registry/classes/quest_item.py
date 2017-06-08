@@ -56,6 +56,7 @@ class QuestItem(Item):
     starttime = DateTimeField(tags='client', caption=u'Время добавления итема в инвентарь', doc=u'Время старта квеста')
     deadline = IntField(tags='client', caption=u'Время жизни итема в инвентаре', doc=u'')
 
+
     def add_to_inventory(self, inventory, event):
         inventory.items.append(self)
         self.starttime = event.time
@@ -71,19 +72,10 @@ class QuestItem(Item):
         return (self.deadline == 0) or (self.starttime + self.deadline > event.time)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class ModifierQuestItem(QuestItem):
+    driving     = IntField(caption=u"Модификатор навыка вождения", tags='client')
+    shooting    = IntField(caption=u"Модификатор навыка стрельбы", tags='client')
+    masking     = IntField(caption=u"Модификатор навыка маскировки", tags='client')
+    leading     = IntField(caption=u"Модификатор навыка лидерства", tags='client')
+    trading     = IntField(caption=u"Модификатор навыка торговли", tags='client')
+    engineering = IntField(caption=u"Модификатор навыка инженеринга", tags='client')
