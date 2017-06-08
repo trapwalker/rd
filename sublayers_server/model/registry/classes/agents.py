@@ -8,10 +8,12 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
+from sublayers_server.model.registry.classes.quest_item import QuestInventoryField
+
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
-from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
+from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
 from sublayers_server.model.game_log_messages import LvlLogMessage, ExpLogMessage
 from sublayers_server.model.utils import getKarmaName
 
@@ -211,6 +213,8 @@ class Agent(Root):
         reinst=True,
     )
 
+    quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
+
     def get_lvl(self):
         lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
         return lvl
@@ -394,6 +398,11 @@ class Agent(Root):
             # отправить сообщение на клиент
             if self._agent_model:
                 DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()
+
+    def change_quest_inventory(self, event):
+        if self._agent_model:
+           UserExampleSelfRPGMessage(agent=self._agent_model, time=event.time).post()
+
 
 
 class AIQuickAgent(Agent):

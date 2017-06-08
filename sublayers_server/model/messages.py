@@ -939,6 +939,7 @@ class UserExampleSelfRPGMessage(Message):
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ) for perk in agent.server.reg['rpg_settings/perks'].deep_iter()
             ],
+            quest_inventory=[item.as_client_dict() for item in agent.example.quest_inventory.items]
         )
         d['rpg_info'] = rpg_info
         return d
