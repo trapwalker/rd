@@ -124,25 +124,25 @@ class RegistryLinkField(BaseField):
         else:
             raise TypeError('Linked node type is not supported: {!r}'.format(document))
 
-    # def to_python(self, value):
-    #     """Convert a MongoDB-compatible type to a Python type."""
-    #     if value is None or isinstance(value, Node):
-    #         return value
-    #
-    #     assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
-    #
-    #     reg = get_global_registry()
-    #     node = None
-    #     try:
-    #         node = reg.get(value)
-    #     except RegistryNodeIsNotFound as e:
-    #         log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
-    #             fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
-    #         )
-    #         if not IGNORE_WRONG_LINKS:
-    #             raise e
-    #
-    #     return node
+    def to_python(self, value):
+        """Convert a MongoDB-compatible type to a Python type."""
+        if value is None or isinstance(value, Node):
+            return value
+
+        assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
+
+        global REGISTRY
+        if REGISTRY is None:
+            return value
+
+        try:
+            return REGISTRY.get(value)
+        except RegistryNodeIsNotFound as e:
+            log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
+                fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
+            )
+            if not IGNORE_WRONG_LINKS:
+                raise e
 
     def prepare_query_value(self, op, value):
         if value is None:
