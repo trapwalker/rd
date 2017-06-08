@@ -100,13 +100,32 @@ var CharacterManager = (function () {
 
 
         // Работа с квестовым инвентарём (Пока там просто всегда пусто)
-        self.jq_main_div.find('.character-window-page.pers_inventory')
-            .mouseenter(function(){
-                self.jq_main_div.find('.character-window-hint-text').text('Квестовый инвентарь не доступен в данном режиме игры');
-            })
-            .mouseleave({mng: self}, CharacterManager.event_mouseleave);
+        var inventory_list = [];
+        var pers_inventory = self.jq_main_div.find('.character-window-page.pers_inventory');
+        for (var i = 0; i < inventory_list; i++) {
+            var item = inventory_list[i];
+            pers_inventory.append(
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap town-interlacing" data-index="' + i + '">' +
+                    '<div class="mainCarInfoWindow-body-trunk-body-right-item">' +
+                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + item.title + '</div>' +
+                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty" style="background: transparent url(http://' + location.hostname + '/' + item.inv_icon_mid + ') no-repeat 100% 100%; "></div>' +
+                    '</div>' +
+                '</div>'
 
+            );
+        }
+            //
+            //
+            //.mouseenter(function(){
+            //    self.jq_main_div.find('.character-window-hint-text').text('Квестовый инвентарь не доступен в данном режиме игры');
+            //})
+            //.mouseleave({mng: self}, CharacterManager.event_mouseleave);
     };
+
+
+
+
+
 
     CharacterManager.perks_event_mouseenter = function (event) {
         //console.log('CharacterManager.perks_event_mouseenter');

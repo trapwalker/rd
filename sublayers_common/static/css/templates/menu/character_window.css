@@ -258,6 +258,8 @@
     display: none;
     box-sizing: border-box;
 }
+.character-window-page .pers_inventory { overflow-y: scroll; }
+
 #townMenuLocation .character-window-page { padding: 3px 5px; }
 
 .character-window-perks-block {
