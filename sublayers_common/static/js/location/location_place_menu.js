@@ -158,6 +158,9 @@ var LocationPlaceMenu = (function (_super) {
         characterManager.jq_main_div.find('.character-window-ttx-center.skills').find('.character-window-ttx-item')
             .mouseenter({npc: this}, LocationPlaceMenu.skills_event_mouseenter)
             .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
+        characterManager.jq_main_div.find('.character-window-page.pers_inventory').find('.mainCarInfoWindow-body-trunk-body-right-item-wrap')
+            .mouseenter({npc: this}, LocationPlaceMenu.quest_item_event_mouseenter)
+            .mouseleave({npc: this}, LocationPlaceMenu.event_mouseleave);
 
         // Вкладка Автомобиль
         carManager.redraw(this.jq_main_div);
@@ -224,6 +227,12 @@ var LocationPlaceMenu = (function (_super) {
         var skill_name = $(event.currentTarget).data('skill');
         if(! skill_name) return;
         event.data.npc.viewRightPanel(user.example_agent.rpg_info[skill_name].description);
+    };
+
+    LocationPlaceMenu.quest_item_event_mouseenter = function (event) {
+        var index = $(event.currentTarget).data('index');
+        if (user.example_agent.rpg_info.quest_inventory.length > index)
+            event.data.npc.viewRightPanel(user.example_agent.rpg_info.quest_inventory[index].description);
     };
 
     LocationPlaceMenu.menu_buttons_reaction = function (event) {

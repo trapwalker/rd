@@ -115,12 +115,10 @@ var CharacterManager = (function () {
 
             );
         }
-            //
-            //
-            //.mouseenter(function(){
-            //    self.jq_main_div.find('.character-window-hint-text').text('Квестовый инвентарь не доступен в данном режиме игры');
-            //})
-            //.mouseleave({mng: self}, CharacterManager.event_mouseleave);
+
+        jq_pers_inventory.find(".mainCarInfoWindow-body-trunk-body-right-item-wrap")
+            .mouseenter({mng: self}, CharacterManager.quest_item_event_mouseenter)
+            .mouseleave({mng: self}, CharacterManager.event_mouseleave);
     };
 
 
@@ -140,6 +138,13 @@ var CharacterManager = (function () {
         var skill_name = $(event.currentTarget).data('skill');
         if(! skill_name) return;
         event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info[skill_name].description);
+    };
+
+    CharacterManager.quest_item_event_mouseenter = function (event) {
+        //console.log('CharacterManager.skills_event_mouseenter');
+        var index = $(event.currentTarget).data('index');
+        if (user.example_agent.rpg_info.quest_inventory.length > index)
+            event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info.quest_inventory[index].description);
     };
 
     CharacterManager.event_mouseleave = function (event) {
