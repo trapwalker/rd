@@ -308,7 +308,7 @@ class MapRespawn(Observer):
         respawn_objects = self.example.respawn_objects
         if not respawn_objects:
             return
-        resp_object_proto = respawn_objects[random.randint(0, len(respawn_objects) - 1)]
+        resp_object_proto = random.choice(respawn_objects)
         pos = Point.random_point(self.position(event.time), self.example.respawn_radius)
         # resp_object_ex = resp_object_proto.instantiate()
         # yield resp_object_ex.load_references()
