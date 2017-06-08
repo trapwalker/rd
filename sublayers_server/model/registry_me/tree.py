@@ -223,10 +223,10 @@ class Subdoc(EmbeddedDocument):
     )
     __cls__ = StringField(caption=u"Deprecated class name", not_inherited=True)
 
-    def __init__(self, **kw):
-        cls = self.__class__
-        only_fields = kw.pop('__only_fields', cls._inheritable_fields | cls._deferred_init_fields)
-        super(Subdoc, self).__init__(__only_fields=only_fields, **kw)
+    # def __init__(self, **kw):
+    #     cls = self.__class__
+    #     only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
+    #     super(Subdoc, self).__init__(__only_fields=only_fields, **kw)
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = {}
@@ -360,6 +360,11 @@ class Node(Subdoc):
     subnodes = MapField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
     # todo: make `owner` property
     filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
+
+    def __init__(self, **kw):
+        cls = self.__class__
+        only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
+        super(Node, self).__init__(__only_fields=only_fields, **kw)
 
     @property
     def uri(self):

@@ -56,7 +56,7 @@ def test4(reload=True, save_loaded=True):
 
 if __name__ == '__main__':
     import math
-    db = connect(db='test_me')
+    db = connect(db='t3')
     log.info('Use `test_me` db')
 
     rel = 0
