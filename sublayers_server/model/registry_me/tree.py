@@ -72,7 +72,21 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        return self.to_python(value)
+        if value:
+            global REGISTRY
+            if REGISTRY is None:
+                return value
+
+            try:
+                return REGISTRY.get(value)
+            except RegistryNodeIsNotFound as e:
+                log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
+                    fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
+                )
+                if not IGNORE_WRONG_LINKS:
+                    raise e
+
+        return value
         #return super(RegistryLinkField, self).__get__(instance, owner)
 
     def __set__(self, instance, value):
@@ -110,25 +124,25 @@ class RegistryLinkField(BaseField):
         else:
             raise TypeError('Linked node type is not supported: {!r}'.format(document))
 
-    def to_python(self, value):
-        """Convert a MongoDB-compatible type to a Python type."""
-        if value is None or isinstance(value, Node):
-            return value
-
-        assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
-
-        reg = get_global_registry()
-        node = None
-        try:
-            node = reg.get(value)
-        except RegistryNodeIsNotFound as e:
-            log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
-                fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
-            )
-            if not IGNORE_WRONG_LINKS:
-                raise e
-
-        return node
+    # def to_python(self, value):
+    #     """Convert a MongoDB-compatible type to a Python type."""
+    #     if value is None or isinstance(value, Node):
+    #         return value
+    #
+    #     assert isinstance(value, six.string_types), 'wrong node link value type: {!r}'.format(value)
+    #
+    #     reg = get_global_registry()
+    #     node = None
+    #     try:
+    #         node = reg.get(value)
+    #     except RegistryNodeIsNotFound as e:
+    #         log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
+    #             fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
+    #         )
+    #         if not IGNORE_WRONG_LINKS:
+    #             raise e
+    #
+    #     return node
 
     def prepare_query_value(self, op, value):
         if value is None:
@@ -159,9 +173,12 @@ class EmbeddedNodeField(EmbeddedDocumentField):
 
     def to_python(self, value):
         if isinstance(value, basestring):
-            reg = get_global_registry()
+            global REGISTRY
+            if REGISTRY is None:
+                return value
+
             try:
-                return reg.make_node_by_uri(value)
+                return REGISTRY.make_node_by_uri(value)
             except RegistryNodeIsNotFound as e:
                 log.warning("URI resolve fail to MAKE {value!r}{fieldname}".format(
                     fieldname=self.name and '(field: {})'.format(self.name) or '', **locals())
@@ -623,8 +640,9 @@ class Registry(Doc):
     name = StringField()
     root = EmbeddedNodeField()
 
-    # def __init__(self, **kw):
-    #     super(Registry, self).__init__(**kw)
+    def __init__(self, **kw):
+        super(Registry, self).__init__(**kw)
+        self._cache = {}
 
     # todo: del mentions "_put"
 
@@ -643,9 +661,15 @@ class Registry(Doc):
         if not path:
             return self.root
 
+        result = self._cache.get(path)
+        if result:
+            return result
+
         root_name, rest_path = path[0], path[1:]
         if self.root.name == root_name:
-            return self.root.get(rest_path, *defaults)
+            result = self.root.get(rest_path, *defaults)
+            self._cache[path] = result
+            return result
 
         if defaults:
             return defaults[0]
