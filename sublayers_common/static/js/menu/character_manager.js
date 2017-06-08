@@ -100,11 +100,12 @@ var CharacterManager = (function () {
 
 
         // Работа с квестовым инвентарём (Пока там просто всегда пусто)
-        var inventory_list = [];
-        var pers_inventory = self.jq_main_div.find('.character-window-page.pers_inventory');
-        for (var i = 0; i < inventory_list; i++) {
+        var inventory_list = user.example_agent.rpg_info.quest_inventory || [];
+        var jq_pers_inventory = self.jq_main_div.find('.character-window-page.pers_inventory');
+        jq_pers_inventory.empty();
+        for (var i = 0; i < inventory_list.length; i++) {
             var item = inventory_list[i];
-            pers_inventory.append(
+            jq_pers_inventory.append(
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap town-interlacing" data-index="' + i + '">' +
                     '<div class="mainCarInfoWindow-body-trunk-body-right-item">' +
                         '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + item.title + '</div>' +
