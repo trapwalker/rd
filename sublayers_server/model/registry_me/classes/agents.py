@@ -56,8 +56,8 @@ class AgentProfile(Node):
     )
 
     # Поля статистики агента
-    _exp = FloatField(root_default=0, caption=u"Количество опыта")
-    _frag = IntField(root_default=0, caption=u"Количество убийств")
+    _exp = FloatField(default=0, caption=u"Количество опыта")
+    _frag = IntField(default=0, caption=u"Количество убийств")
 
     car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.mobiles.Car',

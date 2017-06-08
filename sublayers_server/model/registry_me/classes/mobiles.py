@@ -37,9 +37,9 @@ class Mobile(Node):
     )
 
     # Статистика
-    _exp = FloatField(root_default=0, caption=u"Количество опыта")
-    _frag = IntField(root_default=0, caption=u"Количество убийств")
-    _way = FloatField(root_default=0, caption=u"Пройденный путь")
+    _exp = FloatField(default=0, caption=u"Количество опыта")
+    _frag = IntField(default=0, caption=u"Количество убийств")
+    _way = FloatField(default=0, caption=u"Пройденный путь")
 
     k_way_exp = FloatField(caption=u"Коэффициент экпы от пройдённого пути")
 
