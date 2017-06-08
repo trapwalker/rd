@@ -672,8 +672,7 @@ class User(Agent):
     def create_teaching_quest(self, event):
         quest_parent = self.server.reg.get('/registry/quests/teaching')
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        new_quest.agent = self.example  # todo: Убедиться, что квест правильно работает с агентом-контейнером вместо профиля
-        if new_quest.generate(event=event):
+        if new_quest.generate(event=event, agent=self.example):
             self.example.profile.add_quest(quest=new_quest, time=event.time)
             self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
         else:
@@ -887,8 +886,7 @@ class TeachingUser(QuickUser):
     def create_teaching_quest_map(self, event):
         quest_parent = self.server.reg.get('/registry/quests/teaching_map')
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        new_quest.agent = self.example
-        if new_quest.generate(event=event):
+        if new_quest.generate(event=event, agent=self.example):
             self.example.profile.add_quest(quest=new_quest, time=event.time)
             self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
             if self.user.quick:

@@ -353,10 +353,11 @@ class Quest(Node):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def generate(self, event, **kw):
+    def generate(self, event, agent, **kw):
         """
         :param event: sublayers_server.model.events.Event
         """
+        self._agent = agent
         code_text = self.on_generate
         if not code_text:
             return
@@ -433,8 +434,8 @@ class Quest(Node):
 
                 log.debug('QUEST is started {self} by {self.agent}'.format(**locals()))
                 if self.agent:
-                    self.agent.quests_unstarted.remove(self)
-                    self.agent.quests_active.append(self)
+                    self.agent.profile.quests_unstarted.remove(self)
+                    self.agent.profile.quests_active.append(self)
 
                 self.set_state(new_state=self.first_state, event=event)
                 return True

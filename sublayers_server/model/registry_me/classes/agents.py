@@ -332,7 +332,7 @@ class AgentProfile(Node):
 
     def add_quest(self, quest, time):  # todo: Пробросить event
         self.quests_unstarted.append(quest)
-        quest._agent = self._instance
+        quest._agent = self._instance  # todo: Здесь присваивается слабая прокси-ссылка на агента. Нужно унифицировать
         model = self._agent_model
         if model:
             QuestAddMessage(agent=model, time=time, quest=quest).post()
