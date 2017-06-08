@@ -250,11 +250,6 @@ class Quest(Node):
         tags={'client'}, caption=u'Город выдачи', doc=u'Город выдачи квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
-    # todo: Make AgentLinkField type
-    agent       = RegistryLinkField(
-        tags={'client'}, caption=u'Агент', doc=u'Исполнитель квеста',
-        document_type='sublayers_server.model.registry_me.classes.agents.Agent',
-    )
     history     = ListField(
         field=EmbeddedDocumentField(document_type=LogRecord, reinst=True),
         tags={'client'},
@@ -296,10 +291,10 @@ class Quest(Node):
         reinst=True,
     )
 
-    # @property
-    # def agent(self):
-    #     return self.__dict__.get('_agent')
-    #
+    @property
+    def agent(self):
+        return self._agent
+
     # @agent.setter
     # def agent(self, value):
     #     self.__dict__['_agent'] = value
@@ -311,6 +306,7 @@ class Quest(Node):
         self._global_context = None
         self._local_context = None
         self._error = None
+        self._agent = None
 
     def _set_error_status(self, handler, event, e):
         self._error = True

@@ -332,6 +332,7 @@ class AgentProfile(Node):
 
     def add_quest(self, quest, time):  # todo: Пробросить event
         self.quests_unstarted.append(quest)
+        quest._agent = self._instance
         model = self._agent_model
         if model:
             QuestAddMessage(agent=model, time=time, quest=quest).post()
@@ -402,6 +403,12 @@ class Agent(Doc):
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)
         assert isinstance(self.profile, AgentProfile)
+        for q in chain(
+            self.profile.quests_unstarted,
+            self.profile.quests_active,
+            self.profile.quests_ended,
+        ):
+            q._agent = self
 
     def as_client_dict(self):
         d = self.profile.as_client_dict()
