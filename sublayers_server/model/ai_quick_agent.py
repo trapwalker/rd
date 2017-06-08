@@ -37,7 +37,7 @@ class AIQuickAgent(AI):
     def create_ai_quest(self, event):
         quest_parent = self.example.profile.ai_quest
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        new_quest.agent = self.example
+        new_quest.agent = self.example.profile
         if new_quest.generate(event=event):
             self.example.profile.add_quest(quest=new_quest, time=event.time)
             self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)

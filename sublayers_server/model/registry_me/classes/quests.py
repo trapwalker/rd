@@ -767,10 +767,8 @@ class DeliveryQuest(Quest):
             field=EmbeddedNodeField(
                 document_type='sublayers_server.model.registry_me.classes.item.Item',
                 caption=u"Необходимый итем",
-                reinst=True,
                 tags={'client'},
             ),
-            reinst=True,
         ),
         reinst=True,
     )

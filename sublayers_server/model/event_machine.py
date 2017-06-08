@@ -107,7 +107,8 @@ class Server(object):
 
     @async_deco2(error_callback=lambda error: log.warning('Read Zone: on_error(%s)', error))
     def init_zones(self, time):
-        zones = self.reg.get('/registry/zones').subnodes
+        zones = self.reg.get('/registry/zones', None)
+        zones = zones and zones.subnodes.values() or []
         for zone in sorted(zones, key=lambda a_zone: a_zone.order_key):
             try:
                 if not zone.is_active:
@@ -445,17 +446,17 @@ class BasicLocalServer(LocalServer):
         # загрузка радиоточек
         t = self.get_time()
         towers_root = self.reg.get('/registry/poi/radio_towers')
-        for rt_exm in towers_root.subnodes:
+        for rt_exm in towers_root.subnodes.values():
             RadioPoint(time=t, example=rt_exm, server=self)
 
         # загрузка городов
         towns_root = self.reg.get('/registry/poi/locations/towns')
-        for t_exm in towns_root.subnodes:
+        for t_exm in towns_root.subnodes.values():
             Town(time=t, server=self, example=t_exm)
 
         # загрузка заправочных станций
         gs_root = self.reg.get('/registry/poi/locations/gas_stations')
-        for gs_exm in gs_root.subnodes:
+        for gs_exm in gs_root.subnodes.values():
             GasStation(time=t, server=self, example=gs_exm)
 
        # todo: Сделать загрузку стационарных точек радиации
@@ -496,7 +497,7 @@ class QuickLocalServer(LocalServer):
 
         ## Установка точек-респаунов
         respawns_root = self.reg.get('/registry/poi/quick_game_poi/quick_game_respawn')
-        for rs_exm in respawns_root.subnodes:
+        for rs_exm in respawns_root.subnodes.values():
             respawns_root.position = self.quick_game_start_pos
             MapRespawn(time=t, example=rs_exm, server=self)
 

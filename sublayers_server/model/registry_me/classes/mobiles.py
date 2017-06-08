@@ -233,10 +233,10 @@ class Mobile(Node):
                     d[param_name] = d[param_name] + getattr(slot_value, param_name, 0.0)
 
         if example_agent:
-            for skill_name, skill_value in example_agent.iter_skills():
+            for skill_name, skill_value in example_agent.profile.iter_skills():
                 for param_name in d.keys():
                     d[param_name] = d[param_name] + skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
-            for perk in example_agent.perks:
+            for perk in example_agent.profile.perks:
                 for param_name in d.keys():
                     d[param_name] = d[param_name] + getattr(perk, param_name, 0.0)
 
