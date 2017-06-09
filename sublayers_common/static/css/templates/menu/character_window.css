@@ -360,3 +360,33 @@
     height: 100%;
     text-align: center;
 }
+
+
+
+/* Отображение эффектов агента */
+.character-window-page.pers_effects { overflow-y: scroll; padding: 5px 0;}
+#townMenuLocation .character-window-page.pers_effects { padding: 5px 0;}
+
+.character-effect-block {
+    position: relative;
+    width: 90%;
+    height: 25px;
+    line-height: 25px;
+    margin: auto;
+}
+
+.character-effect-source {
+    float: left;
+    width: 40%;
+}
+
+.character-effect-title {
+    float: left;
+    width: 40%;
+}
+
+.character-effect-deadline {
+    float: left;
+    width: 20%;
+    text-align: center;
+}
