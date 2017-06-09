@@ -8,7 +8,7 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
-from sublayers_server.model.registry.classes.quest_item import QuestInventoryField, ModifierQuestItem
+from sublayers_server.model.registry.classes.quest_item import QuestInventoryField
 
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
@@ -276,16 +276,15 @@ class Agent(Root):
             yield name, getter().calc_value()
 
     def get_quest_skill_modifier(self):
-        d = dict(
-            driving=0,
-            shooting=0,
-            masking=0,
-            leading=0,
-            trading=0,
-            engineering=0,
-        )
+        d = dict()
+        if len(self.quest_inventory.items) == 0:
+            return d
+        # Инициализация дикта с полями
+        for name, attr, getter in self.quest_inventory.items[0].iter_attrs(tags='aggregate'):
+            d[name] = 0
+
         for item in self.quest_inventory.items:
-                for name in d.keys():  # todo: optimize
+                for name in d.keys():
                     d[name] += getattr(item, name, 0)
         return d
 
