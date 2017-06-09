@@ -125,7 +125,6 @@ var CharacterManager = (function () {
         var pers_effects = user.example_agent.rpg_info.agent_effects || []; // поля: source, title, description, deadline
         var jq_pers_effects = self.jq_main_div.find('.character-window-page.pers_effects');
         jq_pers_effects.empty();
-        for (var k = 5; k < 50; k++)
         for (var i = 0; i < pers_effects.length; i++) {
             var item = pers_effects[i];
 
