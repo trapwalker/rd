@@ -523,7 +523,6 @@ var LocationBarmanNPC = (function (_super) {
 })(LocationTraderNPC);
 
 
-
 var TraderAssortmentFilter = (function () {
     function TraderAssortmentFilter(name) {
         this.name = name;

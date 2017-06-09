@@ -460,6 +460,44 @@ class TransactionHangarBuy(TransactionTownNPC):
                                      replica=u'У вас недостаточно стредств!').post()
 
 
+class TransactionGirlApply(TransactionTownNPC):
+    def __init__(self, service_index, **kw):
+        super(TransactionGirlApply, self).__init__(**kw)
+        self.service_index = service_index
+
+    def on_perform(self):
+        super(TransactionGirlApply, self).on_perform()
+
+        # todo: пометить как читера
+        npc = self.get_npc_available_transaction(npc_type='girl')
+        if (npc is None) or not self.is_agent_available_transaction(npc=npc, with_car=False, with_barter=False):
+            return
+        if self.service_index >= len(npc.service_list):
+            return
+
+        service = npc.service_list[self.service_index]
+        if self.agent.balance < service.price:
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc, replica=u'У вас недостаточно стредств!').post()
+            return
+        self.agent.example.set_balance(time=self.time, delta=-service.price)
+
+        bonus_list = npc.get_bonus(service_index=self.service_index)
+        if not bonus_list:
+            self.agent.log.warn('Empty bonus list from girl {} on service {}').format(npc.node_hash(), self.service_index)
+            return
+        for item in bonus_list:
+            self.agent.example.quest_inventory.add_item(agent=self.agent.example, event=self, item=item, need_change=False)
+        self.agent.example.change_quest_inventory(event=self)
+
+        now_date = datetime.now()
+        date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        info_string = u'{}: Услуга {}, {}NC.'.format(date_str, service.title, str(-service.price))
+        messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                       info_string=info_string).post()
+
+        messages.GirlInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash(), items=bonus_list).post()
+
+
 class TransactionParkingSelect(TransactionTownNPC):
     def __init__(self, car_number, **kw):
         super(TransactionParkingSelect, self).__init__(**kw)

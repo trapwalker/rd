@@ -1318,6 +1318,12 @@ var ClientManager = (function () {
             locationManager.npc[event.npc_html_hash].setDropPrice(event.drop_price);
     };
 
+    ClientManager.prototype.GirlInfoMessage = function (event) {
+        console.log('ClientManager.prototype.GirlInfoMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+            locationManager.npc[event.npc_html_hash].setDropBonus(event.items);
+    };
+
     ClientManager.prototype.InteractionInfoMessage = function (event) {
         //console.log('ClientManager.prototype.InteractionInfoMessage', event);
         locationManager.location_chat.interaction_manager.update(event);
@@ -2027,6 +2033,19 @@ var ClientManager = (function () {
                 npc_node_hash: npc.npc_rec.node_hash,
                 tuner_slots: npc.exportSlotState()
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Проститутка
+
+    ClientManager.prototype.sendGirlApply = function (param) {
+        //console.log('ClientManager.prototype.sendGirlApply');
+        var mes = {
+            call: "girl_apply",
+            rpc_call_id: rpcCallList.getID(),
+            params: param
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

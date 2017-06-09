@@ -20,7 +20,7 @@ from sublayers_server.model.events import (
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent, MassiveLootAroundEvent,
     LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent, TakeItemInventoryEvent, TakeAllInventoryEvent)
 from sublayers_server.model.transaction_events import (
-    TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave,
+    TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave, TransactionGirlApply,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
     TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply, BagExchangeStartEvent)
 from sublayers_server.model.units import Unit, Bot
@@ -768,6 +768,7 @@ class AgentAPI(API):
         pass
 
     # Торговец
+
     @basic_mode
     @public_method
     def get_trader_info(self, npc_node_hash):
@@ -779,7 +780,14 @@ class AgentAPI(API):
         TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
                                trader_table=trader_table, npc_node_hash=npc_node_hash).post()
 
+    @basic_mode
+    @public_method
+    def girl_apply(self, npc_node_hash, service_index):
+        TransactionGirlApply(time=self.agent.server.get_time(), agent=self.agent, service_index=service_index,
+                             npc_node_hash=npc_node_hash).post()
+
     # Бартер
+
     @public_method
     def init_barter(self, recipient_login):
         self.agent.log.info('init_barter recipient_login={!r}'.format(recipient_login))

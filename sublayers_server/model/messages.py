@@ -1189,6 +1189,18 @@ class TrainerInfoMessage(NPCInfoMessage):
         return d
 
 
+# Сообщение-ответ для клиента - информация об нпц-проститутке
+class GirlInfoMessage(NPCInfoMessage):
+    def __init__(self, items, **kw):
+        super(GirlInfoMessage, self).__init__(**kw)
+        self.items = items
+
+    def as_dict(self):
+        d = super(GirlInfoMessage, self).as_dict()
+        d.update(items=[item.as_client_dict() for item in self.items])
+        return d
+
+
 # Сообщение о параметров другого игрока (окно города)
 class InteractionInfoMessage(Message):
     def __init__(self, player_nick, **kw):
