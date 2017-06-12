@@ -89,19 +89,12 @@ class InventoryChangeLogMessage(Message):
         self.incomings = incomings
         self.outgoings = outgoings
         items_info = dict()
-        agent_inventory_info = None if self.agent.inventory is None else self.agent.inventory.example.items_by_node_hash()
-        registry = self.agent.server.reg
+        reg = self.agent.server.reg
         for node_hash in set(outgoings.keys() + incomings.keys()):
-            if items_info.get(node_hash, None) is None:
-                if agent_inventory_info and agent_inventory_info.get(node_hash, None):
-                    items_info[node_hash] = agent_inventory_info[node_hash]
-                else:
-                    items_info[node_hash] = registry[node_hash.replace('reg:///registry/', '')]  # todo: ##migration
+            if node_hash not in items_info:
+                items_info[node_hash] = reg.get(node_hash)
+
         self.items_info = items_info
-        # print 'incomings ', incomings
-        # print 'outgoings ', outgoings
-        # for key, value in items_info.items():
-        #     print key, 'None' if value is None else value.title
 
     def as_dict(self):
         d = super(InventoryChangeLogMessage, self).as_dict()
