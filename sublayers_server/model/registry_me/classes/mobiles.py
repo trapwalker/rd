@@ -37,9 +37,9 @@ class Mobile(Node):
     )
 
     # Статистика
-    _exp = FloatField(default=0, caption=u"Количество опыта")
-    _frag = IntField(default=0, caption=u"Количество убийств")
-    _way = FloatField(default=0, caption=u"Пройденный путь")
+    _exp = FloatField(root_default=0, caption=u"Количество опыта")
+    _frag = IntField(root_default=0, caption=u"Количество убийств")
+    _way = FloatField(root_default=0, caption=u"Пройденный путь")
 
     k_way_exp = FloatField(caption=u"Коэффициент экпы от пройдённого пути")
 
@@ -247,7 +247,7 @@ class Mobile(Node):
     def exp(self):
         return self._exp
 
-    def set_exp(self, time, value=None, dvalue=None):
+    def set_exp(self, time=None, value=None, dvalue=None):
         assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
         assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
         if value is not None:
