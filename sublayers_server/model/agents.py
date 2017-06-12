@@ -485,11 +485,11 @@ class Agent(Object):
 
         if target.owner_example:
             self_lvl = self.example.profile.get_lvl()
-            killed_lvl = target.owner_example.get_lvl()
+            killed_lvl = target.owner_example.profile.get_lvl()
 
             # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
             # изменение кармы)
-            if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.karma_norm >= -0.1):
+            if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.profile.karma_norm >= -0.1):
                 self.example.profile.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе

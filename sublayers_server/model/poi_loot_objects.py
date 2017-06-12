@@ -106,8 +106,8 @@ class POIContainer(Observer):
             example = server.reg.get('/registry/poi/stash').instantiate(position=position)
             self.inventory_size = inventory_size
         super(POIContainer, self).__init__(server=server, time=time, example=example, **kw)
-        self.example.profile.inventory.size = self.inventory_size
-        self.inventory = Inventory(max_size=self.example.profile.inventory.size, owner=self)
+        self.example.inventory.size = self.inventory_size
+        self.inventory = Inventory(max_size=self.example.inventory.size, owner=self)
         self.load_inventory(time=time)
         self.life_time = life_time
         if life_time:
@@ -128,7 +128,7 @@ class POIContainer(Observer):
             self.inventory.del_manager(agent=obj.owner)
 
     def load_inventory(self, time):
-        for item_example in self.example.profile.inventory.items:
+        for item_example in self.example.inventory.items:
             ItemState(server=self.server, time=time, example=item_example, count=item_example.amount)\
                 .set_inventory(time=time, inventory=self.inventory, position=item_example.position)
 

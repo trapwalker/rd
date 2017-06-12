@@ -328,7 +328,7 @@ class Subdoc(EmbeddedDocument):
                         )
                         del expanded_value[k]
                     else:
-                        expanded_value[k] = self._expand_field_value(field.field, v)
+                        expanded_value[k] = new_v
         # elif isinstance(field, RegistryLinkField):  # todo: Убрать для неконтейнерных типов
         #     expanded_value = value
         else:
@@ -338,8 +338,8 @@ class Subdoc(EmbeddedDocument):
         return expanded_value
 
     def expand_links(self):
-        global _expand_counter, _expand_legend
-        if _expand_counter[id(self)]:
+        _exp_cnt = STAT.expand(self)
+        if _exp_cnt:
             return self
         _expand_counter[id(self)] += 1
         _expand_legend[id(self)] = self

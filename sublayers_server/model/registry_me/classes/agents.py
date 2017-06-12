@@ -306,7 +306,7 @@ class AgentProfile(Node):
     def exp(self):
         return self._exp
 
-    def set_exp(self, value=None, dvalue=None):
+    def set_exp(self, time=None, value=None, dvalue=None):
         if value is not None:
             self._exp = value
         if dvalue is not None:
