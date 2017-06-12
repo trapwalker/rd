@@ -342,8 +342,7 @@ class Subdoc(EmbeddedDocument):
         _exp_cnt = STAT.expand(self)
         if _exp_cnt:
             return self
-        _expand_counter[id(self)] += 1
-        _expand_legend[id(self)] = self
+
 
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
 
@@ -463,11 +462,14 @@ class Node(Subdoc):
                 field = self._fields.get(item, None)
                 if field and not getattr(field, 'not_inherited', False) and item not in self._data:
                     parent = self.parent
-                    default = field.default
-                    if parent:
-                        return getattr(parent, item, default() if callable(default) else default)
+                    root_default = getattr(field, 'root_default', None)
+                    if parent and hasattr(parent, item):
+                        return getattr(parent, item)
                     else:
-                        return default() if callable(default) else default
+                        root_default = root_default() if callable(root_default) else root_default
+                        if root_default is None:
+                            return root_default
+                        return field.to_python(root_default)
 
         return super(Node, self).__getattribute__(item)
 
@@ -858,9 +860,38 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
     return REGISTRY
 ########################################################################################################################
 ########################################################################################################################
-_expand_counter = Counter()
-_expand_legend = {}
+class STAT(object):
+    expand_by_uri = Counter()
+    expand_counter = Counter()
+    expand_legend = {}
 
+    def expand(self, node):
+        uri = getattr(node, 'uri', '--')
+        _id = id(node)
+        self.expand_legend[_id] = node
+        self.expand_by_uri[uri] += 1
+        res = self.expand_counter[_id]
+        self.expand_counter[_id] += 1
+        return res
+
+    @property
+    def top_uri(self):
+        from operator import itemgetter
+        return sorted(self.expand_by_uri.items(), key=itemgetter(1), reverse=True)[:20]
+
+    @property
+    def top_id(self):
+        from operator import itemgetter
+        return sorted(self.expand_counter.items(), key=itemgetter(1), reverse=True)[:20]
+
+    @property
+    def s(self):
+        return '\n'.join([
+            'Top by URI: ' + repr(self.top_uri),
+            'Top by ID : ' + repr(self.top_id),
+        ])
+
+STAT = STAT()
 # todo: Сделать юнит-тестирование системы реестров (загрузка, сохранение, восстановление)
 # todo: Проверить кэширование RegistryLinkField
 # todo: Реализовать кэширование унаследованных атрибутов
