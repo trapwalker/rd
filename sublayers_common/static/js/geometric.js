@@ -217,7 +217,15 @@ toHHMMSS = function (value) {
     if (minutes < 10) {minutes = "0"+minutes;}
     if (seconds < 10) {seconds = "0"+seconds;}
     return hours+':'+minutes+':'+seconds;
-}
+};
+
+// Функция перевода любого числа во временной формат: часы. Если число будет меньше 1 часа: < 1ч.
+toHH = function (value) {
+    var sec_num = parseInt(Math.floor(value / 1000.), 10);
+    var hours   = Math.floor(sec_num / 3600);
+    if (hours == 0) return "< 1ч.";
+    return hours + 'ч.';
+};
 
 var const_karma_list = ['Новая надежда', 'Мессия', 'Спаситель', 'Святой', 'Герой', 'Страж', 'Борец', 'Спасатель',
     'Защитник', 'Друг людей', 'Правильный', 'Честный парень', 'Партнер', 'Славный малый', 'Поселенец',
