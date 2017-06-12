@@ -1319,7 +1319,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.GirlInfoMessage = function (event) {
-        console.log('ClientManager.prototype.GirlInfoMessage', event);
+        //console.log('ClientManager.prototype.GirlInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
             locationManager.npc[event.npc_html_hash].setDropBonus(event.items);
     };

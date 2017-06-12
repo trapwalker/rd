@@ -244,7 +244,6 @@ var LocationPlaceMenu = (function (_super) {
             event.data.npc.viewRightPanel(user.example_agent.rpg_info.agent_effects[index].description);
     };
 
-
     LocationPlaceMenu.menu_buttons_reaction = function (event) {
         //console.log('.menu-header-item.click - reaction', $(this).data('page_id'));
         var location = event.data.location;

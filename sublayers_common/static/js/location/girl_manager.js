@@ -12,6 +12,7 @@ var LocationGirlNPC = (function (_super) {
     };
 
     LocationGirlNPC.prototype.update = function () {
+        //console.log('LocationGirlNPC.prototype.update');
         var jq_service_menu = this.jq_main_div.find('.girl-center-menu-block');
         var jq_service_images = this.jq_main_div.find('.building-center-pages-block');
         jq_service_menu.empty();
@@ -88,14 +89,24 @@ var LocationGirlNPC = (function (_super) {
 
     LocationGirlNPC.prototype.setDropBonus = function (items) {
         var jq_items_list = this.jq_main_div.find('.girl-bottom-block').first();
+        jq_items_list.empty();
+        var calc_width = 0;
         for (var i = 0; i < items.length; i++) {
-            jq_items_list.append(
+            calc_width += 180;
+            var jq_item_div = $(
                 '<div class="girl-drop-item-image-wrap">' +
-                    //'<div class="girl-drop-item-image town-interlacing" style="background: url(' + items[i].inv_icon_big + ') center center no-repeat;"></div>' +
-                    '<div class="girl-drop-item-image town-interlacing"></div>' +
+                    '<div class="girl-drop-item-image town-interlacing" style="background: url(' + items[i].inv_icon_big + ') center center no-repeat;"></div>' +
                 '</div>'
             );
+            jq_item_div.mouseenter({example: items[i]}, function(event) {
+                locationManager.panel_right.show({text: event.data.example.description }, 'description');
+            });
+            jq_item_div.mouseleave({}, function(event) { locationManager.panel_right.show({text: '' }, 'description'); });
+            jq_items_list.append(jq_item_div);
         }
+        calc_width += items.length * 30;
+        jq_items_list.css('width', calc_width + 'px');
     };
+
     return LocationGirlNPC;
 })(LocationPlaceNPC);
