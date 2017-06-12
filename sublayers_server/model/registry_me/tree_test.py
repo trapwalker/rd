@@ -21,6 +21,7 @@ from sublayers_server.model.registry_me import classes  # Не удалять э
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.tree import (
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
+    STAT,
 )
 
 from pprint import pprint as pp
@@ -41,7 +42,10 @@ def test3(reload=True, save_loaded=True):
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     #a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
-    q = reg.get('/registry/agents/user/quick')
+    #q = reg.get('/registry/agents/user/quick')
+    x = reg.get('reg:///registry/poi/quick_game_poi/quick_game_respawn/qg_respawn_01')
+    #x.expand_links()
+    #x.respawn_objects
 
     globals().update(locals())
 
@@ -56,15 +60,17 @@ def test4(reload=True, save_loaded=True):
 
 if __name__ == '__main__':
     import math
-    db = connect(db='t3')
-    log.info('Use `test_me` db')
+    db_name = 'rd'
+    db = connect(db=db_name)
+    log.info('Use {db_name!r} db'.format(**locals()))
 
-    rel = 0
+
+    rel = 1
     test3(reload=rel, save_loaded=True)
-    #from sublayers_server.model.registry_me.tree import _expand_counter as c, _expand_legend as l
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')
+    print(STAT.s)
 
     src = 'fs' if rel else 'db'
 
