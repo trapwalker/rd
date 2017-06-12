@@ -333,7 +333,8 @@ class Subdoc(EmbeddedDocument):
         #     expanded_value = value
         else:
             expanded_value = field.to_python(value)
-            log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
+            if field.__class__.__name__ != 'PositionField':
+                log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
 
         return expanded_value
 
