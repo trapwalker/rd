@@ -523,6 +523,9 @@ class QuickLocalServer(LocalServer):
         from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
 
+        # if options.bot_reset:
+        #     Agent.objects.all().delete()
+
         # todo: ##OPTIMIZE
         bot_count = self.reg.get('/registry/world_settings').quick_game_bot_count or 0
         # Создать ботов
@@ -546,6 +549,11 @@ class QuickLocalServer(LocalServer):
 
             # Создать AIQuickAgent
             agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=options.mode == 'quick').first()
+            if agent_exemplar and options.bot_reset:
+                log.info("Reset bot {} state  // bot_reset option".format(user))
+                agent_exemplar.delete()
+                agent_exemplar = None
+
             if agent_exemplar is None:
                 assert self.quick_game_bot_agents_proto
                 agent_exemplar = Agent(
@@ -566,6 +574,7 @@ class QuickLocalServer(LocalServer):
                 agent_exemplar.profile.leading.value = random.randint(20, 40)
                 agent_exemplar.profile.trading.value = random.randint(20, 40)
                 agent_exemplar.profile.engineering.value = random.randint(20, 40)
+                log.info('Bot created: {!r}'.format(agent_exemplar))
                 try:
                     agent_exemplar.save()
                 except ValidationError as e:
