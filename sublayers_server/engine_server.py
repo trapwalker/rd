@@ -162,8 +162,12 @@ class Application(BaseApplication):
         try:
             self.listen(options.port)
         except socket.error as e:
-            log.critical(e)
-            print e
+            if os.name == 'nt':
+                _message = str(e).decode('cp1251', errors='ignore')
+            else:
+                _message = e
+            log.critical('{} port: {}'.format(_message, options.port))
+            print _message
         except Exception as e:
             log.critical(e)
             print e
