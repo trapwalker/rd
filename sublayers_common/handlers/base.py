@@ -34,7 +34,7 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
         user_id = self.get_secure_cookie("user")
         if user_id:
             try:
-                user = User.objects.get(ObjectId(user_id))
+                user = User.objects.get(id=ObjectId(user_id))
             except InvalidId as e:
                 log.warning('Invalid user ID format: %r', e)
             except DoesNotExist as e:
