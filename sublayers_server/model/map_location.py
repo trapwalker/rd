@@ -296,7 +296,7 @@ class MapRespawn(Observer):
 
     def get_respawn_cls(self, name):
         # todo: сделать правильное получение класса по имени, возможно через реестровые объекты
-        import sublayers_server.model.quick_game_power_up as PowerUps
+        from sublayers_server.model import quick_game_power_up as PowerUps
         res = getattr(PowerUps, name, None)
         assert res is not None
         return res
