@@ -566,6 +566,8 @@ class Agent(Object):
 
     def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
+        self.example.last_town = location.example
+
         if self.inventory:
             self.inventory.save_to_example(time=event.time)
             self.inventory.del_all_visitors(time=event.time)
@@ -590,6 +592,8 @@ class Agent(Object):
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
         self.log.info('on_die unit={}'.format(unit))
+        self.example.position = unit.position(event.time)  # Запоминаем последние координаты агента
+        self.example.insurance.on_die(agent=self.example, time=event.time)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1

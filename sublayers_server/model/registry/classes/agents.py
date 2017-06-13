@@ -9,7 +9,7 @@ from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
 from sublayers_server.model.registry.classes.quest_item import QuestInventoryField
-
+from sublayers_server.model.registry.classes.insurance import Insurance
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
@@ -429,6 +429,13 @@ class Agent(Root):
                 ))
 
         return effects
+
+    @property
+    def insurance(self):
+        for item in self.quest_inventory.items:
+            if isinstance(item, Insurance):
+                return item
+        assert False, 'for {} not found Insurance'.format(self)
 
 
 class AIQuickAgent(Agent):

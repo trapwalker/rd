@@ -650,17 +650,20 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Die = function (event) {
-        //console.log('ClientManager.prototype.Die');
+        console.log('ClientManager.prototype.Die', event);
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
-        modalWindow.modalDialogInfoShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы можете взять другой в городе.',
-            callback_ok: function () {
-                window.location.reload();
-            }
-        });
+
+        textConsoleManager.start('die_any_key', 3000, event);
+
+        //modalWindow.modalDialogInfoShow({
+        //    caption: 'Car Crash',
+        //    header: 'Крушение!',
+        //    body_text: 'Ваш автомобиль потерпел крушение. Вы можете взять другой в городе.',
+        //    callback_ok: function () {
+        //        window.location.reload();
+        //    }
+        //});
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
