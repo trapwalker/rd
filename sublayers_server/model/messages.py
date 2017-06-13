@@ -939,6 +939,8 @@ class UserExampleSelfRPGMessage(Message):
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ) for perk in agent.server.reg['rpg_settings/perks'].deep_iter()
             ],
+            quest_inventory=[item.as_client_dict() for item in agent.example.quest_inventory.items],
+            agent_effects=agent.example.get_agent_effects(time=self.time)
         )
         d['rpg_info'] = rpg_info
         return d
@@ -1184,6 +1186,18 @@ class TrainerInfoMessage(NPCInfoMessage):
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
         d.update(drop_price=self.npc.drop_price)
+        return d
+
+
+# Сообщение-ответ для клиента - информация об нпц-проститутке
+class GirlInfoMessage(NPCInfoMessage):
+    def __init__(self, items, **kw):
+        super(GirlInfoMessage, self).__init__(**kw)
+        self.items = items
+
+    def as_dict(self):
+        d = super(GirlInfoMessage, self).as_dict()
+        d.update(items=[item.as_client_dict() for item in self.items])
         return d
 
 

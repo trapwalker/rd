@@ -99,13 +99,57 @@ var CharacterManager = (function () {
             .mouseleave({mng: self}, CharacterManager.event_mouseleave);
 
 
-        // Работа с квестовым инвентарём (Пока там просто всегда пусто)
-        self.jq_main_div.find('.character-window-page.pers_inventory')
-            .mouseenter(function(){
-                self.jq_main_div.find('.character-window-hint-text').text('Квестовый инвентарь не доступен в данном режиме игры');
-            })
+        // Работа с квестовым инвентарём
+        var inventory_list = user.example_agent.rpg_info.quest_inventory || [];
+        var jq_pers_inventory = self.jq_main_div.find('.character-window-page.pers_inventory');
+        jq_pers_inventory.empty();
+        for (var i = 0; i < inventory_list.length; i++) {
+            var item = inventory_list[i];
+            jq_pers_inventory.append(
+                '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap town-interlacing" data-index="' + i + '">' +
+                    '<div class="mainCarInfoWindow-body-trunk-body-right-item">' +
+                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + item.title + '</div>' +
+                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty" style="background: transparent url(http://' + location.hostname + '/' + item.inv_icon_mid + ') no-repeat 100% 100%; "></div>' +
+                    '</div>' +
+                '</div>'
+
+            );
+        }
+
+        jq_pers_inventory.find(".mainCarInfoWindow-body-trunk-body-right-item-wrap")
+            .mouseenter({mng: self}, CharacterManager.quest_item_event_mouseenter)
             .mouseleave({mng: self}, CharacterManager.event_mouseleave);
 
+
+        // Работа эффектами агента
+        var pers_effects = user.example_agent.rpg_info.agent_effects || []; // поля: source, title, description, deadline
+        var jq_pers_effects = self.jq_main_div.find('.character-window-page.pers_effects');
+        jq_pers_effects.empty();
+        for (var i = 0; i < pers_effects.length; i++) {
+            var item = pers_effects[i];
+
+            var time_str = "";
+            if (item.deadline == 0)
+                time_str = "-:-";  // Бесконечность
+            else {
+                var t = new Date(item.deadline * 1000);  // Дата окончания эффекта
+                var n = new Date();
+                var time_str = toHH(Math.max(t - n, 0));
+                //time_str = t < new Date() ? "" : t.toLocaleTimeString('ru');
+            }
+
+            var backlight = i % 2 ? "trainer-light-back" : "trainer-dark-back";
+            jq_pers_effects.append(
+                '<div class="character-effect-block" data-index="' + i + '">' +
+                    '<div class="character-effect-title ' + backlight + '">' + item.title + '</div>' +
+                    '<div class="character-effect-deadline ' + backlight + '">' + time_str + '</div>' +
+                '</div>'
+            );
+        }
+
+        jq_pers_effects.find(".character-effect-block")
+            .mouseenter(CharacterManager.agent_effect_event_mouseenter)
+            .mouseleave({mng: self}, CharacterManager.event_mouseleave);
     };
 
     CharacterManager.perks_event_mouseenter = function (event) {
@@ -120,6 +164,20 @@ var CharacterManager = (function () {
         var skill_name = $(event.currentTarget).data('skill');
         if(! skill_name) return;
         event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info[skill_name].description);
+    };
+
+    CharacterManager.quest_item_event_mouseenter = function (event) {
+        //console.log('CharacterManager.skills_event_mouseenter');
+        var index = $(event.currentTarget).data('index');
+        if (user.example_agent.rpg_info.quest_inventory.length > index)
+            event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info.quest_inventory[index].description);
+    };
+
+    CharacterManager.agent_effect_event_mouseenter = function (event) {
+        //console.log('CharacterManager.skills_event_mouseenter');
+        var index = $(event.currentTarget).data('index');
+        if (user.example_agent.rpg_info.agent_effects.length > index)
+            characterManager.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info.agent_effects[index].description);
     };
 
     CharacterManager.event_mouseleave = function (event) {

@@ -8,10 +8,12 @@ from sublayers_server.model.registry.odm_position import PositionField
 from sublayers_server.model.registry.odm.fields import (
     FloatField, StringField, ListField, UniReferenceField, EmbeddedDocumentField, IntField, BooleanField
 )
+from sublayers_server.model.registry.classes.quest_item import QuestInventoryField
+
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry.classes.quests import QuestAddMessage
 from sublayers_server.model.registry.classes.notes import AddNoteMessage, DelNoteMessage
-from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
+from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
 from sublayers_server.model.game_log_messages import LvlLogMessage, ExpLogMessage
 from sublayers_server.model.utils import getKarmaName
 
@@ -211,6 +213,8 @@ class Agent(Root):
         reinst=True,
     )
 
+    quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
+
     def get_lvl(self):
         lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
         return lvl
@@ -270,6 +274,19 @@ class Agent(Root):
     def iter_skills(self):  # todo: need review
         for name, attr, getter in self.iter_attrs(tags='skill'):
             yield name, getter().calc_value()
+
+    def get_quest_skill_modifier(self):
+        d = dict()
+        if len(self.quest_inventory.items) == 0:
+            return d
+        # Инициализация дикта с полями
+        for name, attr, getter in self.quest_inventory.items[0].iter_attrs(tags='aggregate'):
+            d[name] = 0
+
+        for item in self.quest_inventory.items:
+                for name in d.keys():
+                    d[name] += getattr(item, name, 0)
+        return d
 
     def iter_perks(self):  # todo: need review
         for perk in self.perks:
@@ -394,6 +411,24 @@ class Agent(Root):
             # отправить сообщение на клиент
             if self._agent_model:
                 DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()
+
+    def change_quest_inventory(self, event):
+        if self._agent_model:
+           UserExampleSelfRPGMessage(agent=self._agent_model, time=event.time).post()
+
+    def get_agent_effects(self, time):
+        effects = []  # каждый эффект должен иметь поля: source, title, description, deadline
+        # эффекты от квестовых итемов
+        for item in self.quest_inventory.items:
+            if item.effect_title and item.effect_description:
+                effects.append(dict(
+                    source=item.title,
+                    title=item.effect_title,
+                    description=item.effect_description,
+                    deadline=0 if item.deadline == 0 else item.deadline + item.starttime
+                ))
+
+        return effects
 
 
 class AIQuickAgent(Agent):

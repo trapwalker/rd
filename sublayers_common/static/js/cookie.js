@@ -953,8 +953,13 @@ var SettingsManager = (function() {
 
     SettingsManager.prototype.btn_set_enable_disable = function() {
         //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
+
+        var in_town = locationManager.in_location_flag && locationManager.location_menu &&
+                      locationManager.isActivePlace(locationManager.location_menu) &&
+                      (locationManager.location_menu.selected_page_name == 'Settings');
+
         if (this.test_diffrents()) { // Кнопки доступны
-            if (locationManager.in_location_flag) {
+            if (in_town) {
                 locationManager.setBtnState(1, '</br>Применить', true);
                 locationManager.setBtnState(2, '</br>Отменить', true);
             }
@@ -964,7 +969,7 @@ var SettingsManager = (function() {
             }
         }
         else {  // Кнопки не доступны
-            if (locationManager.in_location_flag) {
+            if (in_town) {
                 locationManager.setBtnState(1, '</br>Применить', false);
                 locationManager.setBtnState(2, '</br>Отменить', false);
             }
@@ -974,8 +979,7 @@ var SettingsManager = (function() {
             }
         }
 
-
-         if (locationManager.in_location_flag && locationManager.active_screen_name == "menu_screen")
+         if (in_town)
             locationManager.setBtnState(3, '</br>По умолчанию', true);
     };
 

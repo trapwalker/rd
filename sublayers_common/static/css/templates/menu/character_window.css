@@ -258,7 +258,11 @@
     display: none;
     box-sizing: border-box;
 }
+.character-window-page.pers_inventory { overflow-y: scroll; padding: 10px 0 0 24px;}
+
 #townMenuLocation .character-window-page { padding: 3px 5px; }
+
+#townMenuLocation .character-window-page.pers_inventory {padding: 10px 0 0 40px;}
 
 .character-window-perks-block {
     position: relative;
@@ -354,5 +358,33 @@
     float: left;
     width: 55px;
     height: 100%;
+    text-align: center;
+}
+
+
+
+/* Отображение эффектов агента */
+.character-window-page.pers_effects { overflow-y: scroll; padding: 5px 0;}
+#townMenuLocation .character-window-page.pers_effects { padding: 5px 0;}
+
+.character-effect-block {
+    position: relative;
+    width: 96%;
+    height: 20px;
+    line-height: 21px;
+    margin: 0 auto 3px auto;
+}
+
+.character-effect-title {
+    float: left;
+    width: 75%;
+    box-sizing: border-box;
+    padding-left: 8px;
+}
+
+.character-effect-deadline {
+    float: left;
+    width: calc(25% - 10px);
+    margin-left: 10px;
     text-align: center;
 }
