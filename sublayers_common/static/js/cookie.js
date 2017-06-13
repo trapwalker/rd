@@ -901,13 +901,15 @@ var SettingsManager = (function() {
         this.btn_set_enable_disable();
     };
 
+    SettingsManager.prototype._in_city = function () {
+        return locationManager.in_location_flag && locationManager.location_menu &&
+            locationManager.isActivePlace(locationManager.location_menu) &&
+            (locationManager.location_menu.selected_page_name == 'Settings');
+    };
 
     SettingsManager.prototype.activate_in_city = function() {
-        //console.log('ettingsManager.prototype.activate_in_city');
-        var in_town = locationManager.in_location_flag && locationManager.location_menu &&
-                      locationManager.isActivePlace(locationManager.location_menu) &&
-                      (locationManager.location_menu.selected_page_name == 'Settings');
-        if (in_town)
+        //console.trace('SettingsManager.prototype.activate_in_city');
+        if (this._in_city())
             locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
     };
 
@@ -959,9 +961,7 @@ var SettingsManager = (function() {
     SettingsManager.prototype.btn_set_enable_disable = function() {
         //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
 
-        var in_town = locationManager.in_location_flag && locationManager.location_menu &&
-                      locationManager.isActivePlace(locationManager.location_menu) &&
-                      (locationManager.location_menu.selected_page_name == 'Settings');
+        var in_town = this._in_city();
 
         if (this.test_diffrents()) { // Кнопки доступны
             if (in_town) {
@@ -1039,15 +1039,16 @@ var SettingsManager = (function() {
         this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
         this.current_page_name = jq_elem.data("page_class");
 
-        if (locationManager.in_location_flag)
+        if (this._in_city())
             locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
         else
-            this.jq_description.text(this.page_descriptions[this.current_page_name]);
+            if (this.jq_description)
+                this.jq_description.text(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype._handler_mouse_over = function(opt_name) {
         //console.log("SettingsManager.prototype._handler_mouse_enter", opt_name, this.options[opt_name].text_description);
-        if (locationManager.in_location_flag) {
+        if (this._in_city()) {
             if (opt_name)
                 locationManager.location_menu.viewRightPanel(this.options[opt_name].text_description);
             else
