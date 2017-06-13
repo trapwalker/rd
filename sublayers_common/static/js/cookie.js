@@ -903,7 +903,12 @@ var SettingsManager = (function() {
 
 
     SettingsManager.prototype.activate_in_city = function() {
-        locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
+        //console.log('ettingsManager.prototype.activate_in_city');
+        var in_town = locationManager.in_location_flag && locationManager.location_menu &&
+                      locationManager.isActivePlace(locationManager.location_menu) &&
+                      (locationManager.location_menu.selected_page_name == 'Settings');
+        if (in_town)
+            locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype.apply_options = function() {
