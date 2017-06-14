@@ -156,42 +156,30 @@ var SettingsManager = (function() {
             text_description: "Отображение тайлов карты",
             jq_div: null,
             type: "list",
-            default: "1",
+            default: "merged",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
+            list_values: [{text: "Местность", value: "back"}, {text: "Метаданные", value: "front"}, {text: "По умолчанию", value: "merged"}],
             set_callback: function(new_value) {
-                if (mapManager) mapManager.set_tileprovider_visibility("back", new_value == 1);
+                if (!mapManager) return;
+                mapManager.set_tileprovider_visibility("back", new_value == "back");
+                mapManager.set_tileprovider_visibility("front", new_value == "front");
+                mapManager.set_tileprovider_visibility("merged", new_value == "merged");
 
-                // Если отключили тайлы и не включена перекраска, то включить зелёную
-                if (!new_value && settingsManager.options.game_color.currentValue == settingsManager.options.game_color.default) {
+                // Включать перекраску на зелёную по умолчанию при значении "front"
+                if (new_value == "front" && settingsManager.options.game_color.currentValue == settingsManager.options.game_color.default) {
                     settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[3].value;
                     settingsManager.refresh_list_options(settingsManager.options.game_color);
                     settingsManager.options.game_color.set_callback("url(#green);");
                     settingsManager._game_color_return_to_def = true;
                 }
                 // Если включили, то при необходимости вернуться к палитре по умолчанию
-                if (new_value && settingsManager._game_color_return_to_def) {
+                if (new_value != "front" && settingsManager._game_color_return_to_def) {
                     settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[0].value;
                     settingsManager.refresh_list_options(settingsManager.options.game_color);
                     settingsManager.options.game_color.set_callback(settingsManager.options.game_color.default);
                     settingsManager._game_color_return_to_def = false;
                 }
-            },
-        },
-        map_tile_draw_front: {
-            name: "map_tile_draw_front",
-            page: "graphics",
-            text_name: "Отображение информационного слоя карты",
-            text_description: "Отображение информационного слоя карты (дороги, леса, вода)",
-            jq_div: null,
-            type: "list",
-            default: 1,
-            value: 0,
-            currentValue: 0,
-            list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
-            set_callback: function(new_value) {
-                if (mapManager) mapManager.set_tileprovider_visibility("front", new_value == 1);
             },
         },
         map_tile_preload: {
@@ -913,9 +901,16 @@ var SettingsManager = (function() {
         this.btn_set_enable_disable();
     };
 
+    SettingsManager.prototype._in_city = function () {
+        return locationManager.in_location_flag && locationManager.location_menu &&
+            locationManager.isActivePlace(locationManager.location_menu) &&
+            (locationManager.location_menu.selected_page_name == 'Settings');
+    };
 
     SettingsManager.prototype.activate_in_city = function() {
-        locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
+        //console.trace('SettingsManager.prototype.activate_in_city');
+        if (this._in_city())
+            locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype.apply_options = function() {
@@ -965,8 +960,11 @@ var SettingsManager = (function() {
 
     SettingsManager.prototype.btn_set_enable_disable = function() {
         //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
+
+        var in_town = this._in_city();
+
         if (this.test_diffrents()) { // Кнопки доступны
-            if (locationManager.in_location_flag) {
+            if (in_town) {
                 locationManager.setBtnState(1, '</br>Применить', true);
                 locationManager.setBtnState(2, '</br>Отменить', true);
             }
@@ -976,7 +974,7 @@ var SettingsManager = (function() {
             }
         }
         else {  // Кнопки не доступны
-            if (locationManager.in_location_flag) {
+            if (in_town) {
                 locationManager.setBtnState(1, '</br>Применить', false);
                 locationManager.setBtnState(2, '</br>Отменить', false);
             }
@@ -986,8 +984,7 @@ var SettingsManager = (function() {
             }
         }
 
-
-         if (locationManager.in_location_flag && locationManager.active_screen_name == "menu_screen")
+         if (in_town)
             locationManager.setBtnState(3, '</br>По умолчанию', true);
     };
 
@@ -1042,15 +1039,16 @@ var SettingsManager = (function() {
         this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
         this.current_page_name = jq_elem.data("page_class");
 
-        if (locationManager.in_location_flag)
+        if (this._in_city())
             locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
         else
-            this.jq_description.text(this.page_descriptions[this.current_page_name]);
+            if (this.jq_description)
+                this.jq_description.text(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype._handler_mouse_over = function(opt_name) {
         //console.log("SettingsManager.prototype._handler_mouse_enter", opt_name, this.options[opt_name].text_description);
-        if (locationManager.in_location_flag) {
+        if (this._in_city()) {
             if (opt_name)
                 locationManager.location_menu.viewRightPanel(this.options[opt_name].text_description);
             else

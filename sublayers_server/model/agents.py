@@ -25,7 +25,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.model.quest_events import OnMakeDmg
+from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem
 
 from tornado.options import options
 
@@ -561,6 +561,9 @@ class Agent(Object):
         # Сообщаем всем квестам что мы вошли в город
         self.example.on_event(event=event, cls=quest_events.OnEnterToLocation, location=location)
 
+        # todo: review quest_inventory
+        self.example.quest_inventory.refresh(agent=self.example, event=event)
+
     def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
         if self.inventory:
@@ -571,6 +574,9 @@ class Agent(Object):
         self.reload_parking_bag(new_example_inventory=None, time=event.time)  # todo: Проброс события
         # self.subscriptions.on_exit_location(agent=self, event=event, location=location)
         # self.example.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
+
+        # todo: review quest_inventory
+        self.example.quest_inventory.refresh(agent=self.example, event=event)
 
     def on_enter_npc(self, event):
         log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
@@ -662,6 +668,11 @@ class Agent(Object):
         # Если был дамаг, то сообщить об этом в квесты
         if damage:  # todo: пробросить сюда Ивент
             self.example.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+
+    def on_activated_item(self, item, inventory, time):
+        # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
+        # todo: пробросить сюда Ивент (чтоб не создавать пустой)
+        self.example.on_event(event=Event(server=self.server, time=time), cls=OnActivateItem, item_example=item.example)
 
 
 # todo: Переименовать в UserAgent

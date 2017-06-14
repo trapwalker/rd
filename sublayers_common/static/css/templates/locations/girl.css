@@ -63,17 +63,9 @@
     height: 280px;
 }
 
-.girlPagePrivateDance .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_poledance.png'); }
-.girlPageMassage .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_massage.png'); }
-.girlPageHandMade .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_handmade.png'); }
-.girlPageInterlude .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_interlude.png'); }
-.girlPageIntersection .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_intersection.png'); }
-.girlPageBi .girl-center-page-img  { background: url('/static/content/locations/institutions/girl/bar_bi.png'); }
-
 .girl-bottom-block {
     position: relative;
     padding-top: 20px;
-    width: 620px;
     height: 209px;
     margin: 0 auto;
     box-sizing: border-box;
@@ -85,7 +77,7 @@
     float: left;
     width: 180px;
     height: 160px;
-    margin: 0 13px;
+    margin: 0 15px;
     box-sizing: border-box;
     background-color: #082801;
 }
@@ -94,8 +86,5 @@
 .girl-drop-item-image {
     width: 100%;
     height: 100%;
-    display: none;
+    background: url('/static/img/slut_1.png') center center no-repeat;
 }
-.girl-drop-item-image.item1 { background: url('/static/content/locations/institutions/girl/item_placeholder_1.png'); }
-.girl-drop-item-image.item2 { background: url('/static/content/locations/institutions/girl/item_placeholder_2.png'); }
-.girl-drop-item-image.item3 { background: url('/static/content/locations/institutions/girl/item_placeholder_3.png'); }

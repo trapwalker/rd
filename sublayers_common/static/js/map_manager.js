@@ -140,8 +140,9 @@ var MapManager = (function(_super) {
         }).init();
 
         //this.set_layer_visibility("tiles", settingsManager.options.map_tile_draw.value == 1);
-        this.set_tileprovider_visibility("back", settingsManager.options.map_tile_draw_back.value == 1);
-        this.set_tileprovider_visibility("front", settingsManager.options.map_tile_draw_front.value == 1);
+        this.set_tileprovider_visibility("back", settingsManager.options.map_tile_draw_back.value == "back");
+        this.set_tileprovider_visibility("front", settingsManager.options.map_tile_draw_back.value == "front");
+        this.set_tileprovider_visibility("merged", settingsManager.options.map_tile_draw_back.value == "merged");
 
         // Инициализация виджетов карты
         this.zoomSlider = new WZoomSlider(this);

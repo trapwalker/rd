@@ -939,6 +939,8 @@ class UserExampleSelfRPGMessage(Message):
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ) for perk in agent.server.reg['rpg_settings/perks'].deep_iter()
             ],
+            quest_inventory=[item.as_client_dict() for item in agent.example.quest_inventory.items],
+            agent_effects=agent.example.get_agent_effects(time=self.time)
         )
         d['rpg_info'] = rpg_info
         return d
@@ -1053,6 +1055,7 @@ class QuestsInitMessage(Message):
         d = super(QuestsInitMessage, self).as_dict()
         d.update(
             quests=[quest.as_client_dict() for quest in self.agent.example.quests],
+            notes=[note.as_client_dict() for note in self.agent.example.notes],
         )
         q = d['quests'] and d['quests'][0] or None
         #if q and q['hirer'] is None:
@@ -1063,6 +1066,18 @@ class QuestsInitMessage(Message):
         #        self.agent.example.quests_active,
         #        self.agent.example.quests_ended,
         #    )
+        return d
+
+
+# todo: Перенести описание класса в модуль квестов
+class QuestsChangeMessage(Message):
+    def __init__(self, quest, **kw):
+        super(QuestsChangeMessage, self).__init__(**kw)
+        self.quest = quest
+
+    def as_dict(self):
+        d = super(QuestsChangeMessage, self).as_dict()
+        d.update(quest=self.quest.as_client_dict())
         return d
 
 
@@ -1171,6 +1186,18 @@ class TrainerInfoMessage(NPCInfoMessage):
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
         d.update(drop_price=self.npc.drop_price)
+        return d
+
+
+# Сообщение-ответ для клиента - информация об нпц-проститутке
+class GirlInfoMessage(NPCInfoMessage):
+    def __init__(self, items, **kw):
+        super(GirlInfoMessage, self).__init__(**kw)
+        self.items = items
+
+    def as_dict(self):
+        d = super(GirlInfoMessage, self).as_dict()
+        d.update(items=[item.as_client_dict() for item in self.items])
         return d
 
 

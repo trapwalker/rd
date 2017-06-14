@@ -16,14 +16,17 @@ import inventory
 import skills
 import world
 import trader
+import girl
 
 import quests
 import quests1
+import quests2
 import teaching_quest
 
 import notes
 
 import quick_game_items
+import quest_item
 
 import disttable
 

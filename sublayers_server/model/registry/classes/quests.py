@@ -240,9 +240,11 @@ class Quest(Root):
     text_short  = StringField(tags='client', caption=u'Короткий текст квеста для реплики npc', doc=u'Может строиться и меняться по шаблону')
     typename    = StringField(tags='client', caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon   = StringField(tags='client', caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    map_icon    = StringField(tags='client', caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
     level       = IntField(tags='client', caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = DateTimeField(tags='client', caption=u'Начало выполнения', doc=u'Время старта квеста')
     deadline    = IntField(tags='client', caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', default=3)
 
     hirer       = UniReferenceField(tags='client', caption=u'Заказчик', doc=u'NPC-заказчик квеста',
                                     reference_document_type='sublayers_server.model.registry.classes.poi.Institution', )
@@ -290,6 +292,7 @@ class Quest(Root):
         ),
         reinst=True,
     )
+    active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', default=True, tags='client')
 
     # @property
     # def agent(self):
@@ -612,6 +615,21 @@ class Quest(Root):
         if len(self.reward_items_list) > 0:
             self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
 
+    def init_level(self):
+        self.level = 1
+
+    def active_notes_view_change(self, active, time):
+        if active == self.active_notes_view:
+            return
+        self.active_notes_view = active
+        if self.agent._agent_model:
+            messages.QuestsChangeMessage(agent=self.agent._agent_model, time=time, quest=self).post()
+
+    def deadline_to_str(self):
+        m, s = divmod(self.deadline, 60)
+        h, m = divmod(m, 60)
+        return "%d:%02d:%02d" % (h, m, s)
+
 
 class QuestUpdateMessage(messages.Message):
     def __init__(self, quest, **kw):
@@ -717,11 +735,6 @@ class KillerQuest(Quest):
             self.reward_money,
             self.reward_karma
         )
-
-    def deadline_to_str(self):
-        m, s = divmod(self.deadline, 60)
-        h, m = divmod(m, 60)
-        return "%d:%02d:%02d" % (h, m, s)
 
     def init_deadline(self):
         if self.deadline:

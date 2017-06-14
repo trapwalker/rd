@@ -2,6 +2,7 @@ var SimpleNote = (function () {
     function SimpleNote(options) {
         this.is_active = false;
         this.uid = options.uid;
+        this.quest_uid = options.quest_uid;
 
         notesManager.add(this);
     }
@@ -34,7 +35,7 @@ var QuestNoteNPCBtn = (function (_super) {
         _super.call(this, options);
         this.npc_html_hash = options.npc.html_hash;
         this.page_caption = options.page_caption;
-        this.quest_uid = options.quest_uid;
+
         this.btn1_caption = options.btn1_caption;
         //this.btn2_caption = options.btn2_caption;
 
@@ -89,12 +90,13 @@ var QuestNoteNPCBtn = (function (_super) {
     };
 
     QuestNoteNPCBtn.prototype.set_buttons = function(){
-        locationManager.setBtnState(1, this.btn1_caption, false);
+        locationManager.setBtnState(1, this.btn1_caption, true);
         locationManager.setBtnState(2, "", false);
     };
 
     QuestNoteNPCBtn.prototype.clickBtn = function (btnIndex) {
         console.log('Click for note: ' + this.uid + '    =>>> ' + btnIndex);
+        clientManager.SendQuestNoteAction(this.uid, true);
     };
 
     QuestNoteNPCBtn.prototype.clear = function() {

@@ -79,6 +79,12 @@ class OnChangeInventory(QuestEvent):
         self.diff_inventories = diff_inventories
 
 
+class OnActivateItem(QuestEvent):
+    def __init__(self, item_example, **kw):
+        super(OnActivateItem, self).__init__(**kw)
+        self.item_example = item_example
+
+
 class NPCEvent(QuestEvent): pass
 class OnEnterNPC(NPCEvent): pass
 class OnExitNPC(NPCEvent): pass

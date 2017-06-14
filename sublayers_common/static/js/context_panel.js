@@ -349,7 +349,7 @@ var CPActivateBarterManager = (function () {
 var GetLootObserver = (function(_super){
     __extends(GetLootObserver, _super);
     function GetLootObserver() {
-        _super.call(this, user.userCar, ['POICorpse', 'POILoot'], 50);
+        _super.call(this, user.userCar, ['POICorpse', 'POILoot', 'QuestPrivatePOILoot'], 50);
         // Вешаем клик на див с икнонкой
         this.obs_btn = $('#cpGetLootIcon');
         this.obs_btn.click(function() {
