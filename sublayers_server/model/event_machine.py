@@ -549,10 +549,11 @@ class QuickLocalServer(LocalServer):
 
             # Создать AIQuickAgent
             agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=options.mode == 'quick').first()
+            bot_was_reloaded = False
             if agent_exemplar and options.bot_reset:
-                log.info("Reset bot {} state  // bot_reset option".format(user))
                 agent_exemplar.delete()
                 agent_exemplar = None
+                bot_was_reloaded = True
 
             if agent_exemplar is None:
                 assert self.quick_game_bot_agents_proto
@@ -574,13 +575,15 @@ class QuickLocalServer(LocalServer):
                 agent_exemplar.profile.leading.value = random.randint(20, 40)
                 agent_exemplar.profile.trading.value = random.randint(20, 40)
                 agent_exemplar.profile.engineering.value = random.randint(20, 40)
-                log.info('Bot created: {!r}'.format(agent_exemplar))
+                log.info('Bot was {}created: {!r}'.format('RE' if bot_was_reloaded else '', agent_exemplar))
                 try:
                     agent_exemplar.save()
                 except ValidationError as e:
                     log.error(e.message)
                     for err_field, err in e.errors.items():
                         log.error('  {:20}: {}'.format(err_field, err))
+            else:
+                log.info('Bot was loaded: {!r}'.format(agent_exemplar))
 
             # log.debug('AIQuickAgent agent exemplar: %s', agent_exemplar)
             car_proto = car_proto_list[current_machine_index % car_proto_list_len]
