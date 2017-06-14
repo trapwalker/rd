@@ -8,6 +8,8 @@ from sublayers_server.model.registry.odm.fields import (
     BooleanField, FloatField, StringField, DateTimeField, EmbeddedDocumentField, ListField, UniReferenceField,
 )
 
+from sublayers_server.model.registry.classes.item import SlotItem, SlotLock
+
 import random
 
 
@@ -16,10 +18,11 @@ class Insurance(QuestItem):
     towns = ListField(caption=u"Последние координаты агента",
         base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.Town'))
 
-    reset_car_exp = BooleanField(caption=u"Сбрасывать ли exp машинки при смерти агента")
-    drop_rate_tuner_items = FloatField(caption=u"Шанс выпадения тюнер-итемов")
-    drop_rate_mechanic_items = FloatField(caption=u"Шанс выпадения итемов механика")
-    drop_rate_cargo_items = FloatField(caption=u"Шанс выпадения итемов груза")
+    # Это поле должно быть иногда равно None
+    car = EmbeddedDocumentField(
+        embedded_document_type='sublayers_server.model.registry.classes.mobiles.Car',
+        caption=u"Автомобиль по страховке",
+    )
 
     def add_to_inventory(self, inventory, event):
         # todo: удалить другой итем-страховки
@@ -54,6 +57,25 @@ class Insurance(QuestItem):
         # Установка города, если это позволяет страховка
         pass
 
+    def on_car_die(self, agent, car, is_bang, time):
+        pass
+
+    def random_filter_drop(self, items, is_bang):
+        # При убийстве без взрыва (доезжание) – доля дропа айтемов – 50%, груза - 100%
+        # При убийстве со взрывом – доля дропа айтемов – 25%, груза – 50%
+        drop_items = []
+        base_cargo_drop = 0.5 if is_bang else 1.0   # Если взрыв, то шанс дропа груза 50%, иначе 100%
+        base_other_drop = 0.25 if is_bang else 0.5  # Если взрыв, то шанс итемов 25%, иначе 50%
+
+        for item in items:
+            if 'cargo' in item.tag_set or True:  # todo: убрать True!
+                if random.random() <= base_cargo_drop:
+                    drop_items.append(item)
+            else:
+                if random.random() <= base_other_drop:
+                    drop_items.append(item)
+        return drop_items
+
 
 class InsuranceBase(Insurance):
     def on_die(self, agent, time):
@@ -63,6 +85,23 @@ class InsuranceBase(Insurance):
             agent.last_town = random.choice(towns_examples)
         else:
             log.warning('For {} with insurance <{}> not found respawn town. Last Town Used.'.format(agent, self))
+
+    def get_drop_items(self, car):
+        items = []
+        # Итемы инвентаря
+        for item in car.inventory.items:
+            items.append(item)
+        # Итемы тюнера, механика, оружейника
+        for slot_name, slot_value in car.iter_slots(tags='mechanic tuner armorer'):
+            if slot_value is not None and isinstance(slot_value, SlotItem) and not isinstance(slot_value, SlotLock):
+                items.append(slot_value)
+        return items
+
+    def on_car_die(self, agent, car, is_bang, time):
+        self.car = None
+        agent.set_balance(time=time, delta=car.price)
+        items = self.get_drop_items(car=car)
+        return self.random_filter_drop(items=items, is_bang=is_bang)
 
 
 class InsurancePremium(Insurance):
@@ -74,6 +113,37 @@ class InsurancePremium(Insurance):
                 agent.last_town = random.choice(towns_examples)  # Рандомный город из доступных
         else:
             log.warning('For {} with insurance <{}> not found respawn town. Last Town Used.'.format(agent, self))
+
+    def get_drop_items(self, car):
+        items = []
+        # Итемы инвентаря
+        items = self.drop_cargo_inventory_items(car)
+        # Итемы тюнера, механика, оружейника
+        slots_values = [(slot_name, slot_value) for slot_name, slot_value in car.iter_slots(tags='mechanic tuner')
+                        if slot_value is not None and isinstance(slot_value, SlotItem) and not isinstance(slot_value, SlotLock)]
+        for slot_name, slot_value in slots_values:
+            setattr(car, slot_name, None)
+            items.append(slot_value)
+        return items
+
+    def drop_cargo_inventory_items(self, car):
+        items = []
+        inventory_items = []  # Те итемы, которые останутся в инвентаре потом
+        for item in car.inventory.items:
+            if 'cargo' in item.tag_set or True:  # todo: убрать True!
+                items.append(item)
+            else:
+                inventory_items.append(item)
+        car.inventory.items = inventory_items
+        return items
+
+    def on_car_die(self, agent, car, is_bang, time):
+        items = self.get_drop_items(car=car)
+        car.set_exp(time=time, value=0)
+        car.hp = car.max_hp
+        car.fuel = car.max_fuel
+        self.car = car
+        return self.random_filter_drop(items=items, is_bang=is_bang)
 
 
 class InsuranceShareholder(InsurancePremium):
@@ -89,3 +159,6 @@ class InsuranceShareholder(InsurancePremium):
     def get_respawn_towns(self, agent, time):
         # Метод для вывода списка доступных городов для респавна на клиенте
         return self._get_available_towns(agent, time)
+
+    def get_drop_items(self, car):
+        return self.drop_cargo_inventory_items(car)

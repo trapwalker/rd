@@ -424,7 +424,9 @@ class AgentAPI(API):
         self.agent.current_location = last_town
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
-            log.debug('Need reenter to location')
+            # log.debug('Need reenter to location')
+            self.agent.example.car = self.agent.example.insurance.car  # Восстановление машинки из страховки
+            self.agent.example.insurance.car = None
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return

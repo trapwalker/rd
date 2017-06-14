@@ -688,7 +688,7 @@ var ConsoleDieAnyKey = (function (_super) {
             options.insurance.title + ' страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
             '--------------------------------------------------------------\n' +
             'Вы будете перемещены в город: ' + options.towns[0].title + ' \n' +
-            'Press ane key for respawn \n'
+            'Press any key for respawn \n'
         );
         this.add_message('user_input', ' ');
     };
