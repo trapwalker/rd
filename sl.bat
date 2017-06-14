@@ -1,2 +1,2 @@
 
-python.bat sl.py reg reload
+python.bat sl.py %*
