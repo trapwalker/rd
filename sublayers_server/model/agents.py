@@ -8,7 +8,7 @@ from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit
 from sublayers_server.model.weapon_objects.mine import BangMine
 from counterset import CounterSet
-from map_location import MapLocation
+from map_location import MapLocation, Town
 from sublayers_server.model.registry.uri import URI
 from sublayers_server.model.registry.tree import Node
 from sublayers_server.model.registry.classes.inventory import LoadInventoryEvent
@@ -593,6 +593,11 @@ class Agent(Object):
         # log.debug('%s:: on_die()', self)
         self.log.info('on_die unit={}'.format(unit))
         self.example.position = unit.position(event.time)  # Запоминаем последние координаты агента
+
+        # Перестать всем городам злиться на уже убитого агента:
+        for town in Town.get_towns():
+            town.need_stop_attack(obj=unit, agent=self)
+        # Проброс эвента в страховку: там будет предопределён last_town
         self.example.insurance.on_die(agent=self.example, time=event.time)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)

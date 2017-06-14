@@ -34,7 +34,7 @@ class Insurance(QuestItem):
     # Список городов, в которые можно принять пользователя, упорядоченный по расстоянию
     def _get_available_towns(self, agent, time):
         from sublayers_server.model.map_location import Town as ModelTown  # todo: import fix
-        towns = [town for town in ModelTown.get_towns() if agent.login not in town.enemy_agents and town.example in self.towns]
+        towns = [town for town in ModelTown.get_towns() if town.example in self.towns]
         position = agent.position.as_point()
         towns.sort(key=lambda town: town.position(time).distance(position))
         if towns:
