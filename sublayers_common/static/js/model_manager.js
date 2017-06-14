@@ -654,7 +654,7 @@ var ClientManager = (function () {
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
 
-        textConsoleManager.start('die_any_key', 3000, event);
+        textConsoleManager.start(event.towns.length == 1 ? 'die_any_key' : 'die_shareholder', 3000, event);
 
         //modalWindow.modalDialogInfoShow({
         //    caption: 'Car Crash',
@@ -1914,6 +1914,19 @@ var ClientManager = (function () {
             call: "cancel_activation_item",
             rpc_call_id: rpcCallList.getID(),
             params: {}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendGoToRespawn = function (town_node_hash) {
+        //console.log('ClientManager.prototype.sendQuickPlayAgain');
+        var mes = {
+            call: "go_to_respawn",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_node_hash: town_node_hash
+            }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

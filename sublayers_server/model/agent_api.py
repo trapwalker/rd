@@ -1015,3 +1015,12 @@ class AgentAPI(API):
     @public_method
     def agent_log(self, message):
         self.agent.log.info('agent_log: {!r}'.format(message))
+
+    @basic_mode
+    @public_method
+    def go_to_respawn(self, town_node_hash=None):
+        self.agent.log.info('go_to_respawn with index: %s', town_node_hash)
+        t = self.agent.server.get_time()
+        self.agent.example.insurance.set_last_town(agent=self.agent.example, time=t, town_node_hash=town_node_hash)
+        self.update_agent_api(time=t)
+

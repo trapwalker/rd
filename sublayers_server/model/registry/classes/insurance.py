@@ -50,7 +50,7 @@ class Insurance(QuestItem):
         # Установить агенту last_town (для перемещения его туда в случае ф5 или в случае обычных страховок)
         pass
 
-    def set_last_town(self, agent, time, town_example_link):
+    def set_last_town(self, agent, time, town_node_hash):
         # Установка города, если это позволяет страховка
         pass
 
@@ -78,11 +78,11 @@ class InsurancePremium(Insurance):
 
 class InsuranceShareholder(InsurancePremium):
     # Выбор города сработает как и в InsurancePremium, просто будет возможность дополнительно установить перед респом
-    def set_last_town(self, agent, time, town_example_link):
+    def set_last_town(self, agent, time, town_node_hash):
         # Установка города, если это позволяет страховка
         towns_examples = self._get_available_towns(agent, time)
         for town in towns_examples:
-            if town.node_hash() == town_example_link:
+            if town.node_hash() == town_node_hash:
                 agent.last_town = town
                 return
 
