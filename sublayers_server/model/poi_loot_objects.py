@@ -36,7 +36,7 @@ class CreatePOILootEvent(Event):
         self.life_time = life_time
         self.items = items
         self.connect_radius = connect_radius
-        self.extra = extra
+        self.extra = extra or dict()
 
     def on_perform(self):
         super(CreatePOILootEvent, self).on_perform()
