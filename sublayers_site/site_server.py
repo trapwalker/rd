@@ -51,7 +51,7 @@ class Application(BaseApplication):
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
-        self.reg = None
+        self.reg = get_global_registry(options.world_path, reload=options.reg_reload)
         self.news_manager = NewsManager()
         load_locale_objects()  # Загрузка всех локализаций
 
@@ -75,7 +75,6 @@ class Application(BaseApplication):
         tornado.ioloop.IOLoop.instance().add_callback(self.on_init_site_structure)
 
     def on_init_site_structure(self):
-        self.reg = get_global_registry(options.world_path, reload=False)
         log.info('Site server READY')
 
 
