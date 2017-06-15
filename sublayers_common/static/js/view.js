@@ -212,7 +212,7 @@ $(document).ready(function () {
     setTimeout(function() {
         // Включение сохранённой перекраски
         settingsManager.options.game_color.set_callback(settingsManager.options.game_color.value, true);
-        if (!settingsManager.options.map_tile_draw_back.value)  // Если тайлы подложки скрыты, то съэмулировать их выключение
+        if (settingsManager.options.map_tile_draw_back.value == "front")  // Если тайлы подложки скрыты, то съэмулировать их выключение
             settingsManager.options.map_tile_draw_back.set_callback(settingsManager.options.map_tile_draw_back.value);
 
     }, 10);

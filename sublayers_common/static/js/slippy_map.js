@@ -32,6 +32,15 @@
                         visible: true,
                         with_arc_404: false,
                     },
+                    {
+                        name: "merged",
+                        url: function (x, y, z) {
+                            return "http://roaddogs.ru/map/merged/" + z + "/" + x + "/" + y + ".jpg";
+                        },
+                        alpha: 1.0,
+                        visible: true,
+                        with_arc_404: false,
+                    },
                     // Другие слои карты.
                     //{
                     //    name: "front",

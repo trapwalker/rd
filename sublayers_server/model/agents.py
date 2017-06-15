@@ -25,7 +25,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.model.quest_events import OnMakeDmg
+from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem
 
 from tornado.options import options
 
@@ -659,6 +659,11 @@ class Agent(Object):
         # Если был дамаг, то сообщить об этом в квесты
         if damage:  # todo: пробросить сюда Ивент
             self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+
+    def on_activated_item(self, item, inventory, time):
+        # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
+        # todo: пробросить сюда Ивент (чтоб не создавать пустой)
+        self.example.on_event(event=Event(server=self.server, time=time), cls=OnActivateItem, item_example=item.example)
 
 
 # todo: Переименовать в UserAgent

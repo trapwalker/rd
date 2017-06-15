@@ -26,7 +26,8 @@ class DelPOIContainerEvent(Objective):
 
 
 class CreatePOILootEvent(Event):
-    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items, connect_radius=50):
+    def __init__(self, server, time, poi_cls, example, inventory_size, position, life_time, items,
+                 connect_radius=50, extra=None):
         super(CreatePOILootEvent, self).__init__(server=server, time=time)
         self.poi_cls = poi_cls
         self.example = example
@@ -35,6 +36,7 @@ class CreatePOILootEvent(Event):
         self.life_time = life_time
         self.items = items
         self.connect_radius = connect_radius
+        self.extra = extra
 
     def on_perform(self):
         super(CreatePOILootEvent, self).on_perform()
@@ -52,7 +54,7 @@ class CreatePOILootEvent(Event):
         if not stash:
             stash = self.poi_cls(server=self.server, time=self.time, example=self.example,
                                  inventory_size=self.inventory_size, position=self.position,
-                                 life_time=self.life_time)
+                                 life_time=self.life_time, **self.extra)
 
         # заполнить инвентарь сундука
         for item in self.items:
@@ -155,6 +157,16 @@ class POILoot(POIContainer):
     def on_before_delete(self, event):
         self.inventory.del_change_call_back(method=self.change_inventory)
         super(POILoot, self).on_before_delete(event=event)
+
+
+class QuestPrivatePOILoot(POILoot):
+    def __init__(self, private_name=None, **kw):
+        super(POILoot, self).__init__(**kw)
+        self.private_name = private_name
+
+    def can_see_me(self, subj, **kw):
+        return (self.private_name is None or hasattr(subj, 'main_agent') and subj.main_agent.print_login() == self.private_name) \
+               and super(QuestPrivatePOILoot, self).can_see_me(subj=subj, **kw)
 
 
 class POICorpse(POIContainer):

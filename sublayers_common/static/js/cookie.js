@@ -156,42 +156,30 @@ var SettingsManager = (function() {
             text_description: "Отображение тайлов карты",
             jq_div: null,
             type: "list",
-            default: "1",
+            default: "merged",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
+            list_values: [{text: "Местность", value: "back"}, {text: "Метаданные", value: "front"}, {text: "По умолчанию", value: "merged"}],
             set_callback: function(new_value) {
-                if (mapManager) mapManager.set_tileprovider_visibility("back", new_value == 1);
+                if (!mapManager) return;
+                mapManager.set_tileprovider_visibility("back", new_value == "back");
+                mapManager.set_tileprovider_visibility("front", new_value == "front");
+                mapManager.set_tileprovider_visibility("merged", new_value == "merged");
 
-                // Если отключили тайлы и не включена перекраска, то включить зелёную
-                if (!new_value && settingsManager.options.game_color.currentValue == settingsManager.options.game_color.default) {
+                // Включать перекраску на зелёную по умолчанию при значении "front"
+                if (new_value == "front" && settingsManager.options.game_color.currentValue == settingsManager.options.game_color.default) {
                     settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[3].value;
                     settingsManager.refresh_list_options(settingsManager.options.game_color);
                     settingsManager.options.game_color.set_callback("url(#green);");
                     settingsManager._game_color_return_to_def = true;
                 }
                 // Если включили, то при необходимости вернуться к палитре по умолчанию
-                if (new_value && settingsManager._game_color_return_to_def) {
+                if (new_value != "front" && settingsManager._game_color_return_to_def) {
                     settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[0].value;
                     settingsManager.refresh_list_options(settingsManager.options.game_color);
                     settingsManager.options.game_color.set_callback(settingsManager.options.game_color.default);
                     settingsManager._game_color_return_to_def = false;
                 }
-            },
-        },
-        map_tile_draw_front: {
-            name: "map_tile_draw_front",
-            page: "graphics",
-            text_name: "Отображение информационного слоя карты",
-            text_description: "Отображение информационного слоя карты (дороги, леса, вода)",
-            jq_div: null,
-            type: "list",
-            default: 1,
-            value: 0,
-            currentValue: 0,
-            list_values: [{text: "Скрыть", value: ""}, {text: "Отображать", value: "1"}],
-            set_callback: function(new_value) {
-                if (mapManager) mapManager.set_tileprovider_visibility("front", new_value == 1);
             },
         },
         map_tile_preload: {

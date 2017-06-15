@@ -276,6 +276,7 @@ var ClientManager = (function () {
                 //    console.warn(1111, obj);
                 //    break;
                 case 'POILoot':
+                case 'QuestPrivatePOILoot':
                     new WCanvasLootMarker(obj);
                     break;
                 default:
@@ -394,6 +395,19 @@ var ClientManager = (function () {
             case 'TryGameTeachingMapNote':
                 teachingMapManager.update(new TryGameTeachingMapNote(note));
                 break;
+            case 'MapMarkerNote':
+                var quest = journalManager.quests.getQuest(note.quest_uid);
+                var rad_note = new QuestMapMarkerNote({
+                    quest_uid: note.quest_uid,
+                    uid: note.uid,
+                    position: note.marker.position,
+                    radius: note.marker.radius,
+                    icon: quest && quest.map_icon,
+                    focus_caption: quest && quest.caption,
+                });
+                rad_note.is_active = quest && quest.active_notes_view;
+                break;
+
 
             case 'QuestRadiationNPCFinish':
                 teachingMapManager.update(new QuestNoteNPCBtn(note)); // todo: заменить на правильную ноту, когда появится
@@ -419,8 +433,6 @@ var ClientManager = (function () {
                 this.sendGetPartyInfo(event.agent.party.name);
             }
             timeManager.timerStart(settingsManager.options["fps_rate"].value);
-            for (var i = 0; i < event.notes.length; i++)
-                this._createNote(event.notes[i]);
         }
     };
 
@@ -597,6 +609,7 @@ var ClientManager = (function () {
             case 'StationaryRadiation': break;
             case 'Town':
             case 'POILoot':
+            case 'QuestPrivatePOILoot':
             case 'POIContainer':
             case 'GasStation':
                 this._contactStaticObject(event);
@@ -1331,8 +1344,16 @@ var ClientManager = (function () {
     ClientManager.prototype.QuestsInitMessage = function (event) {
         //console.log('ClientManager.prototype.QuestInitMessage', event);
         journalManager.quests.clear();
-        for (var i = 0; i < event.quests.length; i++)
+        var i;
+        for (i = 0; i < event.quests.length; i++)
             journalManager.quests.addQuest(event.quests[i]);
+        for (i = 0; i < event.notes.length; i++)
+            this._createNote(event.notes[i]);
+    };
+
+    ClientManager.prototype.QuestsChangeMessage = function (event) {
+        //console.log('ClientManager.prototype.QuestsChangeMessage', event);
+        journalManager.quests.update(event.quest);
     };
 
     ClientManager.prototype.QuestAddMessage = function (event) {
@@ -2423,6 +2444,17 @@ var ClientManager = (function () {
                 uid: note_uid,
                 result: note_result
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.sendQuestActiveNotesView = function (quest_id, active) {
+        //console.log('ClientManager.prototype.sendQuestActiveNotesView', quest_id, active);
+        var mes = {
+            call: "quest_active_notes_view",
+            rpc_call_id: rpcCallList.getID(),
+            params: {quest_uid: quest_id, active: active}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

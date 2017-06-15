@@ -69,6 +69,26 @@
     box-sizing: border-box;
 }
 
+.journal-quest-info-block-main-active-view-block {
+    position: absolute;
+    bottom: 9px;
+    left: 40px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    cursor: url(/static/img/cursors/hyper.png), pointer;
+}
+.journal-quest-info-block-main-active-view-block.select::before {
+    content: "[●]";
+    position: absolute;
+    left: -30px;
+}
+.journal-quest-info-block-main-active-view-block.unselect::before {
+    content: "[ ]";
+    position: absolute;
+    left: -30px;
+}
+
 .journal-quest-info-block-log-block {
     position: relative;
     height: calc(100% - 230px);
