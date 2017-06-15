@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-import logging.config
+import logging
 
 log = logging.getLogger(__name__)
 
