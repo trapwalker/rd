@@ -403,14 +403,13 @@ var ClientManager = (function () {
                     position: note.marker.position,
                     radius: note.marker.radius,
                     icon: quest && quest.map_icon,
-                    focus_caption: quest && quest.caption,
+                    focus_caption: quest && quest.caption
                 });
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
-
-
             case 'QuestRadiationNPCFinish':
-                teachingMapManager.update(new QuestNoteNPCBtn(note)); // todo: заменить на правильную ноту, когда появится
+            case 'MapActivationNoteFinish':
+                new QuestNoteNPCBtn(note); // todo: заменить на правильную ноту, когда появится
                 break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
