@@ -68,8 +68,7 @@ class BaseApplication(tornado.web.Application):
         settings.setdefault('template_path', options.template_path)
         settings.setdefault('debug', options.debug)
 
-        tornado.web.Application.__init__(
-            self,
+        super(BaseApplication, self).__init__(
             handlers=handlers,
             default_host=default_host,
             transforms=transforms,
