@@ -315,7 +315,7 @@ class StandardLoginHandler(BaseSiteHandler):
 
 # class RegisterOldUsersOnForum(StandardLoginHandler):
 #     def get(self):
-#         users = User.objects.filter({}).find_all()
+#         users = User.objects.all()
 #         count_regs = 0
 #         for user in users:
 #             # регистрация на форуме

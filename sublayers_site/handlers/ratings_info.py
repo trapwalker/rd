@@ -39,44 +39,36 @@ def compare_function_for_adventurers(a, b):
 
 
 class GetRatingInfo(BaseSiteHandler):
+    RATING_SORT_FUNCTIONS = {
+        'Traiders': compare_function_for_traiders,
+        'Looters': compare_function_for_looters,
+        'Heroes': compare_function_for_heroes,
+        'Villain': compare_function_for_villain,
+        'Leaders': compare_function_for_leaders,
+        'Warriors': compare_function_for_warriors,
+        'Adventurers': compare_function_for_adventurers,
+    }
+
     def post(self):
         rating_name = self.get_argument('rating_name', None)
         if rating_name is None:
             self.send_error(404)
             return
-        cmp_func = None
 
-        log.debug('GetRatingInfo: %s', rating_name)
-
-        if rating_name == 'Traiders':
-            cmp_func = compare_function_for_traiders
-        elif rating_name == 'Looters':
-            cmp_func = compare_function_for_looters
-        elif rating_name == 'Heroes':
-            cmp_func = compare_function_for_heroes
-        elif rating_name == 'Villain':
-            cmp_func = compare_function_for_villain
-        elif rating_name == 'Leaders':
-            cmp_func = compare_function_for_leaders
-        elif rating_name == 'Warriors':
-            cmp_func = compare_function_for_warriors
-        elif rating_name == 'Adventurers':
-            cmp_func = compare_function_for_adventurers
+        #cmp_func = self.RATING_SORT_FUNCTIONS.get(rating_name. None)
 
         # todo: принять в аргументе имя рейтинга и как-то обработтать это в поиске
-        rate_users = User.objects.filter(quick=False, registration_status='register').limit(50).find_all()
+        # todo: Сортировать рейтинг монго-запросом, а лучше хранить отсортированные рейтинги в статике или кешировать
+        rate_users = User.objects.filter(quick=False, registration_status='register').limit(50).all()
         # todo: load agents for all users
         # agent_exemplar = self.server.reg_agents.get([str(user.pk)])
 
-        log.debug('GetRatingInfo len of rate_users: %s', len(rate_users))
+        # if cmp_func:
+        #     rate_users.sort(cmp=cmp_func)
 
-        if cmp_func:
-            rate_users.sort(cmp=cmp_func)
-
-        log.debug('GetRatingInfo sorting done')
         # todo: Вывод их через шаблон, + отправка их количества, чтобы можно было как-то обработать на клиенте
         self.render('table_ratings.html', rate_users=rate_users)
-        log.debug('GetRatingInfo render done')
+        log.debug('GetRatingInfo(%s) render DONE: rating size is %d', rating_name, len(rate_users))
 
 
 class GetQuickGameRecords(BaseSiteHandler):
