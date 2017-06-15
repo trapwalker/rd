@@ -257,6 +257,36 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
         TransactionActivateAmmoBulletsLogMessage(agent=self.agent, time=self.time, item=item.example).post()
 
 
+class TransactionBuyInsurance(TransactionEvent):
+    def __init__(self, insurance_node_hash, **kw):
+        super(TransactionBuyInsurance, self).__init__(**kw)
+        self.insurance_node_hash = insurance_node_hash
+
+    # Активация патронов - пройти по всем орудиям и зарядиться в подходящие
+    def on_perform(self):
+        super(TransactionBuyInsurance, self).on_perform()
+
+        example_agent = self.agent.example
+        agent_insurance = example_agent.insurance
+
+        target_insurance = self.agent.server.reg.objects.get_cached(uri=self.insurance_node_hash)
+
+        if target_insurance is None:
+            return
+
+        if target_insurance.base_price > example_agent.balance:
+            return
+
+        if target_insurance.node_hash() == agent_insurance.node_hash():
+            # Продлить страховку
+            agent_insurance.prolong(delta=target_insurance.deadline)
+        else:
+            # Заменить страховку
+            # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
+            new_insurance = target_insurance.instance()
+            example_agent.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
+
+
 class TransactionTownNPC(TransactionEvent):
     def __init__(self, npc_node_hash, **kw):
         super(TransactionTownNPC, self).__init__(**kw)

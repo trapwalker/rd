@@ -28,14 +28,18 @@ class Insurance(QuestItem):
     icon_right_panel = StringField(caption=u'URL icon_right_panel', tags='client')
 
     def add_to_inventory(self, inventory, event):
-        # todo: удалить другой итем-страховки
+        # удалить другой итем-страховки
+        items = inventory.items[:]
+        for item in items:
+            if isinstance(item, Insurance):
+                inventory.items.remove(item)
         super(self, Insurance).add_to_inventory(inventory, event)
-        pass
 
     def del_from_inventory(self, inventory, event):
-        # todo: добавить итем базовой страховки
         super(self, Insurance).del_from_inventory(inventory, event)
-        pass
+        # добавить итем базовой страховки
+        base_insurance = event.server.reg['items/quest_item/insurance/premium'].instance()
+        inventory.items.append(base_insurance)
 
     # Список городов, в которые можно принять пользователя, упорядоченный по расстоянию
     def _get_available_towns(self, agent, time):
@@ -78,6 +82,10 @@ class Insurance(QuestItem):
                 if random.random() <= base_other_drop:
                     drop_items.append(item)
         return drop_items
+
+    def prolong(self, delta):
+        if self.deadline:
+            self.deadline += delta
 
 
 class InsuranceBase(Insurance):

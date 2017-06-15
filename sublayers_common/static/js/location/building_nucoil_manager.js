@@ -65,7 +65,7 @@ var LocationNucoilBuilding = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         if (this.active_central_page == 'buildingPageInsurance_nukeoil' && this.current_insurance) {
             locationManager.setBtnState(2, '', false);
-            var enable_btn = this.current_insurance.base_price != 0;
+            var enable_btn = this.current_insurance.base_price != 0 && this.current_insurance.base_price < user.example_agent.balance;
             if (user.example_agent.insurance.node_hash == this.current_insurance.node_hash)
                 locationManager.setBtnState(1, '</br>Продлить', enable_btn);
             else
@@ -94,6 +94,7 @@ var LocationNucoilBuilding = (function (_super) {
             if (btnIndex == '1') {
                 // Продлевание или оформление страховки
                 console.log('USE: ', this.current_insurance.node_hash);
+                // todo: здесь отправка на сервер в транзакцию покупки
                 return;
             }
         } else {
