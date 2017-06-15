@@ -473,8 +473,8 @@ var WCanvasStaticTownMarker = (function (_super) {
     __extends(WCanvasStaticTownMarker, _super);
 
     function WCanvasStaticTownMarker(mobj) {
+        this.icon_obj_up = null;
         _super.call(this, mobj);
-
         this._last_iteration_view_radius = false;
     }
 
@@ -521,6 +521,7 @@ var WCanvasStaticTownMarker = (function (_super) {
         }
         this.cm_z_index = 75;
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_name);
+        this.icon_obj_up = iconsLeaflet.getIcon('icon_' + icon_name + '_up');
         if (!this.icon_obj) return;
         this.frame_count = this.icon_obj.frames;
         this.time_of_frame = this.duration / this.icon_obj.frames;
@@ -551,23 +552,32 @@ var WCanvasStaticTownMarker = (function (_super) {
         // Рассчёт дистанции между машинкой юзера и городом
         var u_car_pos = user.userCar.getCurrentCoord(time);
         var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
+
+        var opacity = mapCanvasManager.real_zoom -  14.;
+        opacity = Math.max(Math.min(1, opacity), 0);
+
+        if (this.icon_obj_up) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(this.icon_obj_up.img, this._last_mobj_ctx_pos.x - this.frame_width * 0.5, this._last_mobj_ctx_pos.y - this.frame_height);
+            ctx.restore();
+        }
+
         if (mapCanvasManager._mouse_focus_widget != this && distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) {
             this._last_iteration_view_radius = false;
             return;
         }
 
-        if (!this._last_iteration_view_radius && settingsManager.options.auto_off_autofire_in_city.value && wFireController.autoShoot) 
+        if (!this._last_iteration_view_radius && settingsManager.options.auto_off_autofire_in_city.value && wFireController.autoShoot)
             wFireController.setAutoShootingEnable(false);  // Отключение автострельбы при необходимости
 
         this._last_iteration_view_radius = true;
 
-        if (mapManager.getZoom() < 15) return;
+        if (mapManager.getZoom() < 14) return;
         // Если мы в зумировании, то рисовать круг с прозрачностью
-        var opacity = mapCanvasManager.real_zoom -  15.;
-        opacity = Math.max(Math.min(1, opacity), 0);
-        opacity *= 0.5; // Max opacity
+
         ctx.save();
-        ctx.globalAlpha = opacity;
+        ctx.globalAlpha = opacity * 0.5;
         ctx.beginPath();
         ctx.strokeStyle = "#00cc81";
         //ctx.setLineDash([10, 10]);
