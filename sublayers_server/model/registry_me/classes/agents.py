@@ -4,10 +4,11 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
-from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
+from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
+from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField, ModifierQuestItem
 from sublayers_server.model.registry_me.tree import Node, Document, Subdoc, EmbeddedNodeField, RegistryLinkField
 
 from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField
@@ -209,6 +210,8 @@ class AgentProfile(Node):
         reinst=True,
     )
 
+    quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
+
     def get_lvl(self):
         lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
         return lvl
@@ -216,6 +219,9 @@ class AgentProfile(Node):
     @property
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
+
+    def karma_name(self, lang='ru'):
+        return getKarmaName(self.karma_norm, lang)
 
     @property
     def quests(self):
@@ -268,6 +274,19 @@ class AgentProfile(Node):
         for name, attr, getter in self.iter_attrs(tags={'skill'}):
             yield name, getter().calc_value()
 
+    def get_quest_skill_modifier(self):
+        d = dict()
+        if len(self.quest_inventory.items) == 0:
+            return d
+        # Инициализация дикта с полями
+        for name, attr, getter in self.quest_inventory.items[0].iter_attrs(tags='aggregate'):
+            d[name] = 0
+
+        for item in self.quest_inventory.items:
+                for name in d.keys():
+                    d[name] += getattr(item, name, 0)
+        return d
+
     def iter_perks(self):  # todo: need review
         for perk in self.perks:
             yield perk
@@ -306,11 +325,20 @@ class AgentProfile(Node):
     def exp(self):
         return self._exp
 
-    def set_exp(self, time=None, value=None, dvalue=None):
+    def set_exp(self, time, value=None, dvalue=None):
+        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        old_lvl = self.get_lvl()
         if value is not None:
             self._exp = value
         if dvalue is not None:
             self._exp += dvalue
+        if self._agent_model:
+            ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
+            lvl = self.get_lvl()
+            if lvl > old_lvl:
+                LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
+        assert self._exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:
@@ -383,6 +411,24 @@ class AgentProfile(Node):
             # отправить сообщение на клиент
             if self._agent_model:
                 DelNoteMessage(agent=self._agent_model, note_uid=note.uid, time=time).post()
+
+    def change_quest_inventory(self, event):
+        if self._agent_model:
+           UserExampleSelfRPGMessage(agent=self._agent_model, time=event.time).post()
+
+    def get_agent_effects(self, time):
+        effects = []  # каждый эффект должен иметь поля: source, title, description, deadline
+        # эффекты от квестовых итемов
+        for item in self.quest_inventory.items:
+            if item.effect_title and item.effect_description:
+                effects.append(dict(
+                    source=item.title,
+                    title=item.effect_title,
+                    description=item.effect_description,
+                    deadline=0 if item.deadline == 0 else item.deadline + item.starttime
+                ))
+
+        return effects
 
 
 class AIQuickAgentProfile(AgentProfile):
