@@ -14,6 +14,7 @@ if __name__ == '__main__':
 
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.uri import URI
+from sublayers_common.debug_tools import warn_calling
 
 import six
 import yaml
@@ -24,6 +25,7 @@ from fnmatch import fnmatch
 
 import mongoengine
 from mongoengine import connect, Document, EmbeddedDocument, ValidationError
+from mongoengine.queryset.queryset import QuerySetNoDeRef
 from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.fields import (
@@ -245,6 +247,14 @@ class Subdoc(EmbeddedDocument):
     #     only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
     #     super(Subdoc, self).__init__(__only_fields=only_fields, **kw)
 
+    #@warn_calling()  # todo: disable dereference
+    def __nonzero__(self):
+        return True
+
+    @warn_calling()
+    def __len__(self):
+        return super(Subdoc, self).__len__()
+
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = {}
         for name, attr, getter in self.iter_attrs(tags='client'):
@@ -277,7 +287,7 @@ class Subdoc(EmbeddedDocument):
     def __setattr__(self, key, value):
         if key != '_initialised' and getattr(self, '_initialised', None):
             field = self.__class__._fields.get(key)  # todo: support dynamic fields too
-            if value and isinstance(field, CONTAINER_FIELD_TYPES):
+            if value is not None and isinstance(field, CONTAINER_FIELD_TYPES):
                 value = self._expand_field_value(field, value)
 
         super(Subdoc, self).__setattr__(key, value)
@@ -299,14 +309,14 @@ class Subdoc(EmbeddedDocument):
                 expanded_value.expand_links()
         elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
             expanded_value = field.to_python(value)
-            if expanded_value:
+            if expanded_value is not None:
                 expanded_value.expand_links()  # todo: перенести в инстанцирование
         elif isinstance(field, ListField):
             # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
             expanded_value = value
             skip_count = 0
             for i, v in enumerate(value):
-                if v:
+                if v is not None:
                     new_v = self._expand_field_value(field.field, v)
                     if new_v is None:
                         assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
@@ -320,7 +330,7 @@ class Subdoc(EmbeddedDocument):
         elif isinstance(field, DictField):
             expanded_value = value
             for k, v in value.iteritems():
-                if v:
+                if v is not None:
                     new_v = self._expand_field_value(field.field, v)
                     if new_v is None:
                         assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
@@ -430,7 +440,7 @@ class Node(Subdoc):
         key, rest = path[0], path[1:]
         subnodes = self.subnodes or {}
         subnode = subnodes.get(key)
-        if subnode:
+        if subnode is not None:
             return subnode.get(rest, *defaults)
 
         if defaults:
@@ -463,7 +473,7 @@ class Node(Subdoc):
                 if field and not getattr(field, 'not_inherited', False) and item not in self._data:
                     parent = self.parent
                     root_default = getattr(field, 'root_default', None)
-                    if parent and hasattr(parent, item):
+                    if parent is not None and hasattr(parent, item):
                         return getattr(parent, item)
                     else:
                         root_default = root_default() if callable(root_default) else root_default
@@ -631,21 +641,25 @@ def addr2path(addr):
     return tuple(addr)
 
 
-class Doc(Document):
+class Registry(Document):
     meta = dict(
-        allow_inheritance=True,
+        collection='reg',
+        queryset_class=QuerySetNoDeRef,  # todo: disable dereference
     )
-    def __get_registry__(self):
-        return get_global_registry()
 
-
-class Registry(Doc):
     name = StringField()
     root = EmbeddedNodeField()
 
     def __init__(self, **kw):
         super(Registry, self).__init__(**kw)
         self._cache = {}
+
+    @warn_calling()
+    def __nonzero__(self):
+        return True
+
+    def __get_registry__(self):
+        return get_global_registry()
 
     # todo: del mentions "_put"
 
@@ -665,7 +679,7 @@ class Registry(Doc):
             return self.root
 
         result = self._cache.get(path)
-        if result:
+        if result is not None:
             return result
 
         root_name, rest_path = path[0], path[1:]
@@ -700,7 +714,7 @@ class Registry(Doc):
             while stack:
                 pth, owner = stack.pop()
                 node = self._load_node_from_fs(pth, owner)
-                if node:
+                if node is not None:
                     if owner is None:
                         self.root = node
                         # log.debug('Setup root: {!r}'.format(node))
@@ -737,6 +751,8 @@ class Registry(Doc):
     def _load_node_from_fs(self, path, owner=None):
         assert isinstance(path, unicode), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
         attrs = {}
+        if not os.path.isdir(path):
+            raise RegistryError('Registry structure is not found by path {!r}'.format(path))
         for f in sorted(os.listdir(path)):
             assert isinstance(f, unicode), 'listdir returns non unicode value: {!r}'.format(f)
             # f = f.decode(sys.getfilesystemencoding())
@@ -765,7 +781,7 @@ class Registry(Doc):
 
         if not class_name:
             parent = attrs.get('parent', None)
-            if parent:
+            if parent is not None:
                 parent_node = self.get(parent, None) if isinstance(parent, basestring) else parent
 
                 if parent_node is None:
@@ -779,18 +795,22 @@ class Registry(Doc):
         cls = get_document(class_name or Node._class_name)
 
         node = cls(__auto_convert=False, _created=False, **attrs)
-        if owner:
+        if owner is not None:
             if isinstance(owner, Node):
                 owner.subnodes[node.name] = node
             # todo: assert: owner is document
             node._instance = owner
         return node
 
-    def save_to_file(self, f, ensure_ascii=False, indent=2, **kw):
+    def save_to_file(self, f, ensure_ascii=False, indent=2, format='yaml'):
         def _save(s):
             #s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
             data = self.to_mongo().to_dict()
-            yaml.dump(data, s, allow_unicode=True)
+            if format in {'yaml', 'y'}:
+                yaml.dump(data, s, allow_unicode=True)
+            elif format in {'json', 'j'}:
+                from bson import json_util
+                s.write(json_util.dumps(data, ensure_ascii=ensure_ascii, indent=indent).encode('utf-8'))
 
         if isinstance(f, basestring):
             with open(f, 'w') as stream:
@@ -843,9 +863,10 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
             log.debug('Registry {}fetched from DB ({:.3f}s).'.format('is NOT ' if REGISTRY is None else '', t.duration))
 
     if REGISTRY is None:
-        with Timer(logger=None) as t:
-            Registry.objects.all().delete()
-            log.debug('Registry DB cleaned ({:.3f}s).'.format(t.duration))
+        if save_loaded:
+            with Timer(logger=None) as t:
+                Registry.objects.all().delete()
+                log.debug('Registry DB cleaned ({:.3f}s).'.format(t.duration))
 
         REGISTRY = Registry()
         if path:

@@ -35,6 +35,10 @@ class Position(EmbeddedDocument):
     x = FloatField()
     y = FloatField()
     # todo: generate qrts index by on_save
+
+    def __nonzero__(self):
+        return True
+
     def __init__(self, *av, **kw):
         if av:
             x, av = av[0], av[1:]

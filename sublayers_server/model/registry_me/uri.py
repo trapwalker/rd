@@ -246,7 +246,7 @@ class URI(tuple):
     def match(self, node):
         assert False, "URI.match(%r, %r) # that's wrong. Need review!".format(self, node)
         original = node
-        while node and (node.storage is None or node.storage.name != 'registry'):
+        while node is not None and (node.storage is None or node.storage.name != 'registry'):
             node = node.parent
         # log.debug('{} test to {}'.format(node, self))
 

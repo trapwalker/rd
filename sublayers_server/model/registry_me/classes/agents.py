@@ -8,7 +8,7 @@ from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
-from sublayers_server.model.registry_me.tree import Node, Doc, Subdoc, EmbeddedNodeField, RegistryLinkField
+from sublayers_server.model.registry_me.tree import Node, Document, Subdoc, EmbeddedNodeField, RegistryLinkField
 
 from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField
 
@@ -392,7 +392,7 @@ class AIQuickAgentProfile(AgentProfile):
     )
 
 
-class Agent(Doc):
+class Agent(Document):
     '''Agent account in database'''
     user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
     login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
@@ -409,6 +409,9 @@ class Agent(Doc):
             self.profile.quests_ended,
         ):
             q._agent = self
+
+    def __nonzero__(self):
+        return True
 
     def as_client_dict(self):
         d = self.profile.as_client_dict()
