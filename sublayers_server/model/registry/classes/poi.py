@@ -208,3 +208,10 @@ class Parking(Institution):
             return 0
         delta_days = math.floor(delta / (60 * 60 * 24)) + 1
         return delta_days * self.cost_for_day_parking
+
+
+class Nukeoil(Institution):
+    insurance_list = ListField(
+        caption=u"Список продаваемых страховок", tags='client',
+        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.insurance.Insurance'),
+    )

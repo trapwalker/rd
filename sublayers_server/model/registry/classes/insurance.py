@@ -24,6 +24,9 @@ class Insurance(QuestItem):
         caption=u"Автомобиль по страховке",
     )
 
+    icon_nukeoil = StringField(caption=u'URL icon_nukeoil', tags='client')
+    icon_right_panel = StringField(caption=u'URL icon_right_panel', tags='client')
+
     def add_to_inventory(self, inventory, event):
         # todo: удалить другой итем-страховки
         super(self, Insurance).add_to_inventory(inventory, event)
@@ -68,7 +71,7 @@ class Insurance(QuestItem):
         base_other_drop = 0.25 if is_bang else 0.5  # Если взрыв, то шанс итемов 25%, иначе 50%
 
         for item in items:
-            if 'cargo' in item.tag_set or True:  # todo: убрать True!
+            if 'cargo' in item.tag_set:
                 if random.random() <= base_cargo_drop:
                     drop_items.append(item)
             else:
@@ -117,24 +120,15 @@ class InsurancePremium(Insurance):
     def get_drop_items(self, car):
         items = []
         # Итемы инвентаря
-        items = self.drop_cargo_inventory_items(car)
+        for item in car.inventory.items:
+            items.append(item)
+        car.inventory.items = []
         # Итемы тюнера, механика, оружейника
         slots_values = [(slot_name, slot_value) for slot_name, slot_value in car.iter_slots(tags='mechanic tuner')
                         if slot_value is not None and isinstance(slot_value, SlotItem) and not isinstance(slot_value, SlotLock)]
         for slot_name, slot_value in slots_values:
             setattr(car, slot_name, None)
             items.append(slot_value)
-        return items
-
-    def drop_cargo_inventory_items(self, car):
-        items = []
-        inventory_items = []  # Те итемы, которые останутся в инвентаре потом
-        for item in car.inventory.items:
-            if 'cargo' in item.tag_set or True:  # todo: убрать True!
-                items.append(item)
-            else:
-                inventory_items.append(item)
-        car.inventory.items = inventory_items
         return items
 
     def on_car_die(self, agent, car, is_bang, time):
@@ -161,4 +155,26 @@ class InsuranceShareholder(InsurancePremium):
         return self._get_available_towns(agent, time)
 
     def get_drop_items(self, car):
-        return self.drop_cargo_inventory_items(car)
+        items = []
+        inventory_items = []  # Те итемы, которые останутся в инвентаре потом
+        for item in car.inventory.items:
+            if 'cargo' in item.tag_set:
+                items.append(item)
+            else:
+                inventory_items.append(item)
+        car.inventory.items = inventory_items
+        return items
+
+
+class InsuranceQuick(Insurance):
+    def get_drop_items(self, car):
+        items = []
+        # Итемы инвентаря
+        for item in car.inventory.items:
+            items.append(item)
+        car.inventory.items = []
+        return items
+
+    def on_car_die(self, agent, car, is_bang, time):
+        self.car = None
+        return self.get_drop_items(car=car)

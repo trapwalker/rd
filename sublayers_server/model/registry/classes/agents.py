@@ -307,6 +307,7 @@ class Agent(Root):
         for name, calc_value in self.iter_skills():
             d[name] = calc_value
         d['role_class'] = '' if self.role_class is None else self.role_class.description
+        d['insurance'] = self.insurance.as_client_dict()
         # todo: список перков
         # todo: машинка
         return d
