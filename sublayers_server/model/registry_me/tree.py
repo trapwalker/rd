@@ -229,6 +229,22 @@ class Subdoc(EmbeddedDocument):
     def __len__(self):
         return super(Subdoc, self).__len__()
 
+    def iter_attrs(self, tags=None, classes=None):
+        # todo: add params: tags_need, tags_deny
+        if isinstance(tags, basestring):
+            tags = set(tags.split())
+        elif tags is not None:
+            tags = set(tags)
+
+        for name, attr in self._fields.items():
+            field_tags = getattr(attr, 'tags', None)
+            if (
+                (tags is None or field_tags is not None and field_tags & tags) and
+                (classes is None or isinstance(attr, classes))
+            ):
+                getter = lambda: getattr(self, name)
+                yield name, attr, getter
+
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = {}
         for name, attr, getter in self.iter_attrs(tags='client'):
@@ -504,21 +520,6 @@ class Node(Subdoc):
         if self.parent:
             tags.update(self.parent.tag_set)
         return tags
-
-    def iter_attrs(self, tags=None, classes=None):
-        if isinstance(tags, basestring):
-            tags = set(tags.split())
-        elif tags is not None:
-            tags = set(tags)
-
-        for name, attr in self._fields.items():
-            field_tags = getattr(attr, 'tags', None)
-            if (
-                (tags is None or field_tags is not None and field_tags & tags) and
-                (classes is None or isinstance(attr, classes))
-            ):
-                getter = lambda: getattr(self, name)
-                yield name, attr, getter
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         d = super(Node, self).as_client_dict()
