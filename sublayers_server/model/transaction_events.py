@@ -465,15 +465,15 @@ class TransactionGirlApply(TransactionTownNPC):
         if self.agent.balance < service.price:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc, replica=u'У вас недостаточно стредств!').post()
             return
-        self.agent.example.set_balance(time=self.time, delta=-service.price)
+        self.agent.example.profile.set_balance(time=self.time, delta=-service.price)
 
         bonus_list = npc.get_bonus(service_index=self.service_index)
         if not bonus_list:
             self.agent.log.warn('Empty bonus list from girl {} on service {}').format(npc.node_hash(), self.service_index)
             return
         for item in bonus_list:
-            self.agent.example.quest_inventory.add_item(agent=self.agent.example, event=self, item=item, need_change=False)
-        self.agent.example.change_quest_inventory(event=self)
+            self.agent.example.profile.quest_inventory.add_item(agent=self.agent.example, event=self, item=item, need_change=False)
+        self.agent.example.profile.change_quest_inventory(event=self)
 
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)

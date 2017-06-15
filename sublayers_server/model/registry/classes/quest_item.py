@@ -17,11 +17,11 @@ class QuestInventory(Subdoc):
 
     def add_item(self, agent, item, event, need_change=True):
         if item.add_to_inventory(inventory=self, event=event) and need_change:
-            agent.change_quest_inventory(event)
+            agent.profile.change_quest_inventory(event)
 
     def del_item(self, agent, item, event, need_change=True):
         if item.del_from_inventory(inventory=self, event=event) and need_change:
-            agent.change_quest_inventory(event)
+            agent.profile.change_quest_inventory(event)
 
     def refresh(self, agent, event):
         temp_items = self.items[:]
@@ -31,7 +31,7 @@ class QuestInventory(Subdoc):
                 need_change = True
                 self.del_item(agent=agent, item=item, event=event, need_change=False)
         if need_change:
-            agent.change_quest_inventory(event)
+            agent.profile.change_quest_inventory(event)
 
     def get_item_by_uid(self, uid):
         # todo: optimize
