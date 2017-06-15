@@ -901,9 +901,16 @@ var SettingsManager = (function() {
         this.btn_set_enable_disable();
     };
 
+    SettingsManager.prototype._in_city = function () {
+        return locationManager.in_location_flag && locationManager.location_menu &&
+            locationManager.isActivePlace(locationManager.location_menu) &&
+            (locationManager.location_menu.selected_page_name == 'Settings');
+    };
 
     SettingsManager.prototype.activate_in_city = function() {
-        locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
+        //console.trace('SettingsManager.prototype.activate_in_city');
+        if (this._in_city())
+            locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype.apply_options = function() {
@@ -953,8 +960,11 @@ var SettingsManager = (function() {
 
     SettingsManager.prototype.btn_set_enable_disable = function() {
         //console.log("SettingsManager.prototype.btn_set_enable_disable", this.test_diffrents());
+
+        var in_town = this._in_city();
+
         if (this.test_diffrents()) { // Кнопки доступны
-            if (locationManager.in_location_flag) {
+            if (in_town) {
                 locationManager.setBtnState(1, '</br>Применить', true);
                 locationManager.setBtnState(2, '</br>Отменить', true);
             }
@@ -964,7 +974,7 @@ var SettingsManager = (function() {
             }
         }
         else {  // Кнопки не доступны
-            if (locationManager.in_location_flag) {
+            if (in_town) {
                 locationManager.setBtnState(1, '</br>Применить', false);
                 locationManager.setBtnState(2, '</br>Отменить', false);
             }
@@ -974,8 +984,7 @@ var SettingsManager = (function() {
             }
         }
 
-
-         if (locationManager.in_location_flag && locationManager.active_screen_name == "menu_screen")
+         if (in_town)
             locationManager.setBtnState(3, '</br>По умолчанию', true);
     };
 
@@ -1030,15 +1039,16 @@ var SettingsManager = (function() {
         this.jq_pages.find("." + jq_elem.data("page_class")).first().css("display", "block");
         this.current_page_name = jq_elem.data("page_class");
 
-        if (locationManager.in_location_flag)
+        if (this._in_city())
             locationManager.location_menu.viewRightPanel(this.page_descriptions[this.current_page_name]);
         else
-            this.jq_description.text(this.page_descriptions[this.current_page_name]);
+            if (this.jq_description)
+                this.jq_description.text(this.page_descriptions[this.current_page_name]);
     };
 
     SettingsManager.prototype._handler_mouse_over = function(opt_name) {
         //console.log("SettingsManager.prototype._handler_mouse_enter", opt_name, this.options[opt_name].text_description);
-        if (locationManager.in_location_flag) {
+        if (this._in_city()) {
             if (opt_name)
                 locationManager.location_menu.viewRightPanel(this.options[opt_name].text_description);
             else

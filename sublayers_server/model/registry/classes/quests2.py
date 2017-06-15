@@ -43,10 +43,7 @@ class MeasureRadiation(Quest):
     measure_points_generator = ListField(
         default=[],
         caption=u"Список областей генерации пунктов замеров",
-        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject,
-            # embededdo='sublayers_server.model.registry.classes.quests2.MarkerMapObject',
-            reinst=True
-        ),
+        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
         reinst=True
     )
     measure_points = ListField(
