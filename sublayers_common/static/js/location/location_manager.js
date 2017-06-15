@@ -354,9 +354,9 @@ var LocationManager = (function () {
     LocationManager.prototype._getBuildingByType = function (building_rec, jq_town_div) {
         //console.log('LocationManager.prototype._getBuildingByType', building_rec);
         switch (building_rec.name) {
-            case 'autoservice':
+            case 'service':
                 return (new LocationServiceBuilding(building_rec, jq_town_div));
-            case 'nucoil':
+            case 'nukeoil':
                 return (new LocationNucoilBuilding(building_rec, jq_town_div));
             default:
                 return (new LocationPlaceBuilding(building_rec, jq_town_div));
@@ -529,6 +529,12 @@ var LocationPanelInfo = (function () {
     LocationPanelInfo.prototype.show_nukeoil = function (options) {
         //console.log('LocationPanelInfo.prototype.show_nukeoil', options);
         var jq_panel = this.jq_main_div.find('.pi-nukeoil').first();
+        if (user.example_agent && user.example_agent.insurance) {
+            jq_panel.find('.pi-nukeoil-insurance-block').first()
+                .css('background', 'transparent url(/' + user.example_agent.insurance.icon_right_panel + ') 100% 100% no-repeat');
+            jq_panel.find('.panel-info-line.insurance-name').first().text(user.example_agent.insurance.title);
+
+        }
         jq_panel.css('display', 'block');
     };
 

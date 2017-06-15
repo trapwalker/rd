@@ -234,20 +234,15 @@ class Unit(Observer):
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
+        self.inventory.save_to_example(time=event.time)
         # Отправка сообщения owner'у о гибели машинки
         if self.owner:
             self.owner.on_die(event=event, unit=self)
-        # todo: удалить себя и на этом месте создать обломки
-        self.delete(time=event.time)
-
-        # вернуть агенту стоимость машинки
-        if self.owner:
-            self.owner.example.set_balance(time=event.time, delta=self.example.price)
-            # todo: возможно это нужно перенести (!)
             self.owner.example.car = None
 
-        if not self.inventory.is_empty():
-            self.post_die_loot(event)
+        self.delete(time=event.time)
+
+        self.post_die_loot(event)
 
     def post_die_loot(self, event):
         # Данный метод упределяет как и куда денется лут из Unit объекта: взрыв, проезд и тд.
@@ -561,6 +556,16 @@ class Bot(Mobile):
         # Если есть киллер, значит труп был убит залповой стрельбой или взрывом
         killer = event.killer
         time = event.time
+
+        items = []
+        if self.owner:
+            items_examples = self.owner.example.insurance.on_car_die(agent=self.owner.example, car=self.example,
+                                                                     is_bang=killer is not None, time=event.time)
+            items = [ItemState(server=self.server, time=event.time, example=item, count=item.amount)
+                     for item in items_examples if item.amount > 0]
+        else:
+            items = self.inventory.get_items()
+
         if killer:
             # Отправить сообщение об анимации направленного убийства
             direction = killer.position(time).direction(self.position(time))
@@ -575,7 +580,7 @@ class Bot(Mobile):
                 inventory_size=self.example.inventory.size,
                 position=Point.random_gauss(self.position(time), 10),
                 life_time=self.server.poi_loot_objects_life_time,
-                items=self.inventory.get_items(),
+                items=items,
             ).post()
         else:
             # Отправить сообщенеи об анимации не направленного убийства
@@ -589,7 +594,7 @@ class Bot(Mobile):
                 inventory_size=self.example.inventory.size,
                 position=self.position(event.time),
                 life_time=self.server.poi_loot_objects_life_time,
-                items=self.inventory.get_items(),
+                items=items,
                 sub_class_car=self.example.sub_class_car,
                 car_direction=self.direction(time),
                 donor_v=self.v(event.time),
