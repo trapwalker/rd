@@ -28,6 +28,8 @@ from mongoengine import connect, Document, EmbeddedDocument, ValidationError
 from mongoengine.queryset.queryset import QuerySetNoDeRef
 from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
+from mongoengine.errors import DoesNotExist
+from mongoengine.queryset import DO_NOTHING
 from mongoengine.fields import (
     IntField, StringField, UUIDField, ReferenceField, BooleanField,
     ListField, DictField, EmbeddedDocumentField, MapField,
@@ -53,19 +55,19 @@ class RegistryNodeIsNotFound(RegistryError):
     pass
 
 
-class RegistryLinkField(BaseField):
+class RegistryLinkField(ReferenceField):
     def __init__(self, document_type='Node', **kwargs):
-        super(RegistryLinkField, self).__init__(**kwargs)
-        self.document_type_obj = document_type
+        if (
+            not isinstance(document_type, six.string_types) and
+            not issubclass(document_type, Node)
+        ):
+            self.error('Argument to ReferenceField constructor must be a '
+                       'document class or a string')
 
-    @property
-    def document_type(self):
-        if isinstance(self.document_type_obj, six.string_types):
-            if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
-                self.document_type_obj = self.owner_document
-            else:
-                self.document_type_obj = get_document(self.document_type_obj)
-        return self.document_type_obj
+        self.dbref = False
+        self.document_type_obj = document_type
+        self.reverse_delete_rule = DO_NOTHING
+        BaseField.__init__(self, **kwargs)
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -74,42 +76,23 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        if value:
-            global REGISTRY
-            if REGISTRY is None:
-                return value
+        self._auto_dereference = instance._fields[self.name]._auto_dereference
+        global REGISTRY
 
+        if value is not None and self._auto_dereference and isinstance(value, basestring) and REGISTRY is not None:
+            dereferenced = None
             try:
-                return REGISTRY.get(value)
+                dereferenced = self.to_python(value)
             except RegistryNodeIsNotFound as e:
-                log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
-                    fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
-                )
                 if not IGNORE_WRONG_LINKS:
-                    raise e
+                    raise DoesNotExist('Trying to dereference unknown document %s' % value)
 
-        return value
-        #return super(RegistryLinkField, self).__get__(instance, owner)
+            if dereferenced is None:
+                assert IGNORE_WRONG_LINKS
+            else:
+                instance._data[self.name] = dereferenced
 
-    def __set__(self, instance, value):
-        if value is None:
-            if self.null:
-                value = None
-            elif self.default is not None:
-                value = self.default
-                if callable(value):
-                    value = value()
-
-        if instance._initialised:
-            try:
-                if (self.name not in instance._data or instance._data[self.name] != value):
-                    instance._mark_as_changed(self.name)
-            except Exception:
-                # Values cant be compared eg: naive and tz datetimes
-                # So mark it as changed
-                instance._mark_as_changed(self.name)
-
-        instance._data[self.name] = self.to_mongo(value)
+        return super(ReferenceField, self).__get__(instance, owner)
 
     def to_mongo(self, document):
         if document is None:
@@ -146,12 +129,6 @@ class RegistryLinkField(BaseField):
             if not IGNORE_WRONG_LINKS:
                 raise e
 
-    def prepare_query_value(self, op, value):
-        if value is None:
-            return None
-        super(RegistryLinkField, self).prepare_query_value(op, value)
-        return self.to_mongo(value)
-
     def validate(self, value, **kw):
 
         if isinstance(value, basestring):
@@ -163,9 +140,6 @@ class RegistryLinkField(BaseField):
 
         if isinstance(value, Node) and value.uri is None:
             self.error('You can only reference nodes once they has an URI')
-
-    def lookup_member(self, member_name):
-        return self.document_type._fields.get(member_name)
 
 
 class EmbeddedNodeField(EmbeddedDocumentField):
@@ -293,8 +267,8 @@ class Subdoc(EmbeddedDocument):
         super(Subdoc, self).__setattr__(key, value)
 
     def _expand_field_value(self, field, value):
-        if isinstance(field, RegistryLinkField):
-            return field.to_python(value)
+        # if isinstance(field, RegistryLinkField):
+        #     return field.to_python(value)
 
         if not isinstance(field, CONTAINER_FIELD_TYPES):
             return value  # todo: optimize
