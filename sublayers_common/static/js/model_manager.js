@@ -394,6 +394,10 @@ var ClientManager = (function () {
             case 'TryGameTeachingMapNote':
                 teachingMapManager.update(new TryGameTeachingMapNote(note));
                 break;
+
+            case 'QuestRadiationNPCFinish':
+                teachingMapManager.update(new QuestNoteNPCBtn(note)); // todo: заменить на правильную ноту, когда появится
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }
