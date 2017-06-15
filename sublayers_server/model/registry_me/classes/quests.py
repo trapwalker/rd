@@ -389,7 +389,6 @@ class Quest(Node):
             return False
             #raise e
         else:
-            log.info('Quest %r generation accepted', self)
             return True
         finally:
             del self.local_context
@@ -430,8 +429,6 @@ class Quest(Node):
                 return False
                 #raise e
             else:
-                log.info('Quest starting accepted: %r', self)
-
                 log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
                 if self.agent:
                     self.agent.profile.quests_unstarted.remove(self)
