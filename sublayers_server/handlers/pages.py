@@ -17,7 +17,7 @@ class PlayHandler(BaseHandler):
     def get(self):
         user = self.current_user
         # todo: ##REFACTORING
-        if user:
+        if user is not None:
             if options.mode == 'basic':
                 coord = None
                 agent = self.application.srv.api.get_agent(user=user, make=True, do_disconnect=False)

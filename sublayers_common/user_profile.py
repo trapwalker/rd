@@ -64,6 +64,9 @@ class User(Document):
         if email:
             self.auth.standard.email = email
 
+    def __nonzero__(self):
+        return True
+
     def check_password(self, password):
         if not self.auth:
             return

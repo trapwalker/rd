@@ -79,6 +79,7 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
 
     handlers_metrics = dict()
 
+
 class BaseHandler(AuthHandlerMixin):
     def _quick_registration(self):
         qg_car_index = self.get_argument('qg_car_index', 0)
