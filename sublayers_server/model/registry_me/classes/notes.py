@@ -3,10 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Subdoc, get_uuid, RegistryLinkField
+from sublayers_server.model.registry_me.tree import Subdoc, get_uuid, RegistryLinkField, IntField
 from sublayers_server.model.messages import Message
 
-from mongoengine import StringField, UUIDField
+from mongoengine import StringField, UUIDField, FloatField
 
 
 class AddNoteMessage(Message):
@@ -43,6 +43,11 @@ class Note(Subdoc):
         d = super(Note, self).as_client_dict()
         d.update(cls=self.cls)
         return d
+
+
+class MapMarkerNote(Note):
+    marker = EmbeddedDocumentField(document_type='sublayers_server.model.registry_me.classes.quests2.MarkerMapObject', tags={'client'})
+    # todo: Сослаться на маркер по идентификатору
 
 
 class NPCPageNote(Note):
