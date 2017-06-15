@@ -13,9 +13,13 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_city_whitehill', '/static/img/map_icons/wh_marker.png', [111, 114]);
         this.load_new_icon('icon_city_prior', '/static/img/map_icons/prior_marker.png', [111, 114]);
         this.load_new_icon('icon_city_paloma', '/static/img/map_icons/paloma_marker.png', [111, 114]);
+        this.load_new_icon('icon_city_whitehill_up', '/static/img/map_icons/wh_marker_up.png', [111, 114]);
+        this.load_new_icon('icon_city_prior_up', '/static/img/map_icons/prior_marker_up.png', [111, 114]);
+        this.load_new_icon('icon_city_paloma_up', '/static/img/map_icons/paloma_marker_up.png', [111, 114]);
 
         // Создание иконки заправочной станции
         this.load_new_icon('icon_station', '/static/img/map_icons/gs_marker.png', [91, 94]);
+        this.load_new_icon('icon_station_up', '/static/img/map_icons/gs_marker_up.png', [91, 94]);
 
         // Создание иконки движущейся машинки V 1
         this.load_new_icon('icon_moving_V1', '/static/img/map_icons/map_icon_player_v1_moving.png', [51, 28]);
