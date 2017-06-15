@@ -12,12 +12,15 @@ var WMapNoise = (function (_super) {
         this.activated = false;
         this.current_noise = '';
         this.current_opacity = 1.0;
+        this.user_opacity = 1.0;
         this._last_noise = '';
         this._last_opacity = 1.0;
 
         this.noise_img_src_list = {
-            'cat_noise_1': new Image(),
             'cat_noise': new Image(),
+            'cat_noise_1': new Image(),
+            'cat_noise_2': new Image(),
+            'cat_noise_3': new Image(),
             '1_noise': new Image(),
             '1_noise_inv': new Image(),
             '1_noise60': new Image(),
@@ -40,8 +43,10 @@ var WMapNoise = (function (_super) {
             '2n4_white': new Image()
         };
 
-        this.noise_img_src_list['cat_noise_1'].src = '/static/img/noise/map_noise_src_1.png';
         this.noise_img_src_list['cat_noise'].src = '/static/img/noise/map_noise_src.png';
+        this.noise_img_src_list['cat_noise_1'].src = '/static/img/noise/map_noise_src_1.png';
+        this.noise_img_src_list['cat_noise_2'].src = '/static/img/noise/map_noise_src_2.png';
+        this.noise_img_src_list['cat_noise_3'].src = '/static/img/noise/map_noise_src_3.png';
         this.noise_img_src_list['1_noise'].src = '/static/img/noise/1_noise.png';
         this.noise_img_src_list['1_noise_inv'].src = '/static/img/noise/1_noise_inv.png';
         this.noise_img_src_list['1_noise60'].src = '/static/img/noise/1_noise60.png';
@@ -75,6 +80,7 @@ var WMapNoise = (function (_super) {
         var height = Math.round(mapCanvasManager.canvas.height * 1.2);
         if ((this.img_size.x != width) || (this.img_size.y != height) ||
             (this._last_noise != this.current_noise) || (this.current_opacity != this._last_opacity)) {
+
             this._last_noise = this.current_noise;
             this._last_opacity = this.current_opacity;
 
@@ -104,15 +110,27 @@ var WMapNoise = (function (_super) {
 
     WMapNoise.prototype.redraw = function(ctx, time){
         if (!this.activated) return;
+        this.opacity_by_zoom();
         this._generate_img();
         var shift_x = Math.round(Math.random() * mapCanvasManager.canvas.width * 0.2);
         var shift_y = Math.round(Math.random() * mapCanvasManager.canvas.height * 0.2);
         ctx.drawImage(this.temp_canvas, -shift_x, -shift_y);
     };
 
+    WMapNoise.prototype.opacity_by_zoom = function() {
+        if (mapCanvasManager.real_zoom >= 14)
+            this.current_opacity = this.user_opacity;
+        else
+            if (mapCanvasManager.real_zoom >= 13)
+                this.current_opacity = this.user_opacity + (1 - this.user_opacity) * (14.0 - mapCanvasManager.real_zoom);
+            else
+                this.current_opacity = 1;
+    };
+
     WMapNoise.prototype.start = function(noise_name, opacity) {
         if (this.noise_img_src_list.hasOwnProperty(noise_name)) {
             this.current_noise = noise_name;
+            this.user_opacity = opacity;
             this.current_opacity = opacity;
             this.activated = settingsManager.options.canvas_noise.value == 1 ? true : false;
         }
@@ -164,6 +182,10 @@ var WRadiationNoise = (function (_super) {
             this.current_opacity = 0;
         if ((this.current_opacity == this._last_opacity) && (this.current_opacity == 0)) return;
         _super.prototype.redraw.call(this, ctx, time);
+    };
+
+    WRadiationNoise.prototype.opacity_by_zoom = function() {
+        return;
     };
 
     return WRadiationNoise;

@@ -21,8 +21,9 @@ var WObservingRange = (function (_super) {
         var map_tl = mapCanvasManager.map_tl;
         ctx.save();
 
+        var alpha = 1;
         if (real_zoom <= 14) return;
-        if (real_zoom < 15) ctx.globalAlpha = 1 - (15.0 - mapCanvasManager.real_zoom);
+        if (real_zoom < 15) alpha = 1 - (15.0 - mapCanvasManager.real_zoom);
 
         for (var i = 0; i < this._model_objects.length; i++) {
             var car = this._model_objects[i];
@@ -35,8 +36,8 @@ var WObservingRange = (function (_super) {
             ctx.translate(car_ctx_pos.x, car_ctx_pos.y);
 
             var grad1 = ctx.createRadialGradient(0, 0, 0, 0, 0, outher_radius);
-            grad1.addColorStop(0, "rgba(0,0,0,1)");
-            grad1.addColorStop(0.65, "rgba(0,0,0,1)");
+            grad1.addColorStop(0, "rgba(0,0,0," + alpha + ")");
+            grad1.addColorStop(0.65, "rgba(0,0,0," + alpha + ")");
             grad1.addColorStop(1, "rgba(0,0,0,0)");
 
             ctx.fillStyle = grad1;
@@ -49,7 +50,8 @@ var WObservingRange = (function (_super) {
         }
 
         ctx.globalCompositeOperation = "xor";
-        ctx.fillStyle = "rgba(0,0,0,0.85)";
+        //ctx.fillStyle = 'rgba(3, 15, 0, 0.97)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.93)';
         var a = mapManager.getMapSize();
         ctx.fillRect(0, 0, a.x, a.y);
         ctx.restore();

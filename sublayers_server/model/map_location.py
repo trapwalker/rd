@@ -233,28 +233,33 @@ class Town(MapLocation):
             self.enemy_objects[obj.uid] = time + self.aggro_time
             self.start_attack(obj=obj, time=time)
 
-    def need_stop_attack(self, obj, with_agent=True):
-        # log.info('need_stop_attack {}'.format(obj))
-        del self.enemy_objects[obj.uid]
-        if with_agent and obj.owner and obj.owner.print_login() in self.enemy_agents:
-            # log.info('stop_attack_agent {}'.format(obj.owner))
-            del self.enemy_agents[obj.owner.print_login()]
+    def need_stop_attack(self, obj, agent):
+        # log.info('need_stop_attack {} - {}'.format(obj, agent))
+        if obj is not None and obj.uid in self.enemy_objects:
+            # log.info('stop_attack_obj {}'.format(obj))
+            del self.enemy_objects[obj.uid]
+        if agent is not None and agent.print_login() in self.enemy_agents:
+            # log.info('stop_attack_agent {}'.format(agent))
+            del self.enemy_agents[agent.print_login()]
 
     @event_deco
     def start_attack(self, event, obj):
+        # Если было совершено удаление из других мест, то не атаковать
+        if obj.uid not in self.enemy_objects:
+            return
         # Если объект мёртв или прошло время агра города, то убрать из списка
         if not obj.is_alive or obj.limbo or self.enemy_objects[obj.uid] < event.time:
-            self.need_stop_attack(obj=obj)
+            self.need_stop_attack(obj=obj, agent=obj.owner)
             return
 
         # Проверять, не пора ли убирать агента из списка enemy_agents
         if obj.owner and obj.owner.print_login() in self.enemy_agents and self.enemy_agents[obj.owner.print_login()] < event.time:
-            self.need_stop_attack(obj=obj)
+            self.need_stop_attack(obj=obj, agent=obj.owner)
             return
 
         # Если не видно объекта, то перестать стрелять по нему
         if obj not in self.visible_objects:
-            self.need_stop_attack(obj=obj, with_agent=False)
+            self.need_stop_attack(obj=obj, agent=None)
             return
 
         # Запустить эвент на получение дамага ( todo: рассчитать как-то задержку)

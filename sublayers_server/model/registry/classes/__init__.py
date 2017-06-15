@@ -27,6 +27,7 @@ import notes
 
 import quick_game_items
 import quest_item
+import insurance
 
 import disttable
 

@@ -126,6 +126,16 @@ class InitCar(Message):
 class Die(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 
+    def as_dict(self):
+        d = super(Die, self).as_dict()
+        towns = self.agent.example.insurance.get_respawn_towns(agent=self.agent.example, time=self.time)
+
+        d.update(
+            towns=[town.as_client_dict() for town in towns],
+            insurance=self.agent.example.insurance.as_client_dict(),
+        )
+        return d
+
 
 class QuickGameDie(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'

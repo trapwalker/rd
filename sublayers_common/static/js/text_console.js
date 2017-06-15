@@ -35,7 +35,7 @@ var TextConsoleManager = (function(){
             console.warn('Попытка удаления отсутствующей консоли - ' + name + '.');
     };
 
-    TextConsoleManager.prototype.start = function(name, min_view_time) {
+    TextConsoleManager.prototype.start = function(name, min_view_time, options) {
         // Останавливаем все консоли
         for (var key in this.consoles)
             if (this.consoles.hasOwnProperty(key) && this.consoles[key])
@@ -45,7 +45,7 @@ var TextConsoleManager = (function(){
         if (this.consoles.hasOwnProperty(name) && this.consoles[name]) {
             this.jq_main_div_wrap.addClass('show');
             this.active_console = this.consoles[name];
-            this.active_console.start();
+            this.active_console.start(options);
 
             if (min_view_time != undefined && min_view_time > 0) {
                 this.min_view_time = min_view_time;
@@ -659,6 +659,102 @@ var ConsoleEnterToMap = (function (_super) {
     return ConsoleEnterToMap;
 })(TextConsole);
 
+
+var ConsoleDieAnyKey = (function (_super) {
+    __extends(ConsoleDieAnyKey, _super);
+
+    function ConsoleDieAnyKey() {
+        _super.call(this);
+        this.target_div = textConsoleManager.jq_main_div;
+        textConsoleManager.add(this, 'die_any_key');
+    }
+
+    ConsoleDieAnyKey.prototype.user_input = function(event) {
+        //console.log('Нажата кнопка. Пытаемся войти в город');
+        clientManager.sendGoToRespawn(null);
+        this.target_div.off("keydown");
+    };
+
+    ConsoleDieAnyKey.prototype._init_messages = function(options) {
+        this._messages = [];
+        this.add_message(
+            'system',
+            '\n' +
+            'Крушение.'
+        );
+        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message(
+            'system',
+            options.insurance.title + ' страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
+            '--------------------------------------------------------------\n' +
+            'Вы будете перемещены в город: ' + options.towns[0].title + ' \n' +
+            'Press any key for respawn \n'
+        );
+        this.add_message('user_input', ' ');
+    };
+
+    ConsoleDieAnyKey.prototype.start = function(options) {
+        //console.log('ConsoleDieAnyKey.prototype.start', this);
+        this._init_messages(options);
+        _super.prototype.start.call(this);
+    };
+
+    return ConsoleDieAnyKey;
+})(TextConsole);
+
+
+var ConsoleDieShareholder = (function (_super) {
+    __extends(ConsoleDieShareholder, _super);
+
+    function ConsoleDieShareholder() {
+        _super.call(this);
+        this.target_div = textConsoleManager.jq_main_div;
+        textConsoleManager.add(this, 'die_shareholder');
+
+        this._current_towns = [];
+    }
+
+    ConsoleDieShareholder.prototype.user_input = function(event) {
+        //console.log('Нажата кнопка. Пытаемся войти в город');
+        if (event.keyCode >= 49 && event.keyCode < 49 + this._current_towns.length) {
+            //console.log('Нажата кнопка: ', event.keyCode);
+            //console.log('Выбран город: ', this._current_towns[event.keyCode - 49]);
+            clientManager.sendGoToRespawn(this._current_towns[event.keyCode - 49].node_hash);
+            this.target_div.off("keydown");
+        }
+    };
+
+    ConsoleDieShareholder.prototype._init_messages = function(options) {
+        this._messages = [];
+        this.add_message(
+            'system',
+            '\n' +
+            'Крушение.'
+        );
+        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message(
+            'system', options.insurance.title + ' страховка активна для ' + textConsoleManager.user_name + '.\n');
+        this.add_message('user', 'Запрос доступных городов для респауна.');
+        var s = 'Список городов: \n';
+        for (var i = 0; i < options.towns.length; i++)
+            s = s + (i + 1).toString() + ': ' + options.towns[i].title + '\n';
+        this.add_message('system', s); // Сделано в одном сообщении для ускорения печатания
+        this.add_message('system', 'Выберите город.\n');
+        this.add_message('user_input', ' ');
+    };
+
+    ConsoleDieShareholder.prototype.start = function(options) {
+        //console.log('ConsoleDieAnyKey.prototype.start', this);
+        this._init_messages(options);
+        this._current_towns = options.towns;
+
+        _super.prototype.start.call(this);
+    };
+
+    return ConsoleDieShareholder;
+})(TextConsole);
+
+
 //var ConsoleWPI = (function (_super) {
 //    __extends(ConsoleWPI, _super);
 //
@@ -768,6 +864,8 @@ function initConsoles() {
     new ConsoleEnter();
     new ConsoleEnterToLocation();
     new ConsoleEnterToMap();
+    new ConsoleDieAnyKey();
+    new ConsoleDieShareholder();
 }
 
 
