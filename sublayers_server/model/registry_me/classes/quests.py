@@ -690,7 +690,7 @@ class KillerQuest(Quest):
     victims = ListField(
         root_default=[],
         field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry.classes.quests.KillerQuestVictim',
+            document_type='sublayers_server.model.registry_me.classes.quests.KillerQuestVictim',
         ),
         caption=u"Список жертв (заполняется динамически)",
         reinst=True,
@@ -752,7 +752,7 @@ class KillerQuest(Quest):
 
 
 class DeliveryQuest(Quest):
-    distance_table = RegistryLinkField(document_type='sublayers_server.model.registry.classes.disttable.DistTable')
+    distance_table = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.disttable.DistTable')
     recipient_list = ListField(
         root_default=[],
         caption=u"Список возможных получателей доставки",

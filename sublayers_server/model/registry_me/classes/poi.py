@@ -139,7 +139,7 @@ class Town(MapLocation):
         d.update(buildings=[building.as_client_dict() for building in self.buildings])  # todo: fix client format
         return d
 
-    def get_building_by_type(self, type):        
+    def get_building_by_type(self, type):
         for build in self.buildings:
             if build.name == type:
                 return build
@@ -204,3 +204,10 @@ class Parking(Institution):
             return 0
         delta_days = math.floor(delta / (60 * 60 * 24)) + 1
         return delta_days * self.cost_for_day_parking
+
+
+class Nukeoil(Institution):
+    insurance_list = ListField(
+        caption=u"Список продаваемых страховок", tags='client',
+        field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.insurance.Insurance'),
+    )

@@ -306,6 +306,7 @@ class AgentProfile(Node):
         for name, calc_value in self.iter_skills():
             d[name] = calc_value
         d['role_class'] = '' if self.role_class is None else self.role_class.description
+        d['insurance'] = self.insurance.as_client_dict()
         # todo: список перков
         # todo: машинка
         return d
@@ -430,6 +431,12 @@ class AgentProfile(Node):
 
         return effects
 
+    @property
+    def insurance(self):
+        for item in self.quest_inventory.items:
+            if isinstance(item, Insurance):
+                return item
+        assert False, 'for {} not found Insurance'.format(self)
 
 class AIQuickAgentProfile(AgentProfile):
     ai_quest = EmbeddedNodeField(
