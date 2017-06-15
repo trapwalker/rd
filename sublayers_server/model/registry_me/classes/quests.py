@@ -242,6 +242,7 @@ class Quest(Node):
     level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = DateTimeField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
     deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
+    design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
 
     hirer       = RegistryLinkField(
         tags={'client'}, caption=u'Заказчик', doc=u'NPC-заказчик квеста',
@@ -632,6 +633,10 @@ class Quest(Node):
         self.active_notes_view = active
         if self.agent.profile._agent_model:
             messages.QuestsChangeMessage(agent=self.agent.profile._agent_model, time=time, quest=self).post()
+    def deadline_to_str(self):
+        m, s = divmod(self.deadline, 60)
+        h, m = divmod(m, 60)
+        return "%d:%02d:%02d" % (h, m, s)
 
 
 class QuestUpdateMessage(messages.Message):
@@ -738,11 +743,6 @@ class KillerQuest(Quest):
             self.reward_money,
             self.reward_karma
         )
-
-    def deadline_to_str(self):
-        m, s = divmod(self.deadline, 60)
-        h, m = divmod(m, 60)
-        return "%d:%02d:%02d" % (h, m, s)
 
     def init_deadline(self):
         if self.deadline:

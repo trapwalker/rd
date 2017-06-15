@@ -76,6 +76,10 @@ class QuestRadiationNPCFinish(NPCPageNote):
     pass
 
 
+class MapActivationNoteFinish(NPCPageNote):
+    pass
+
+
 # Ноты обучения
 
 class GetQuestTeachingNote(Note):
