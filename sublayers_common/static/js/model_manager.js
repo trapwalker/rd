@@ -408,6 +408,8 @@ var ClientManager = (function () {
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
             case 'QuestRadiationNPCFinish':
+                new QuestNoteNPCBtnRadiation(note);
+                break;
             case 'MapActivationNoteFinish':
                 new QuestNoteNPCBtn(note); // todo: заменить на правильную ноту, когда появится
                 break;
