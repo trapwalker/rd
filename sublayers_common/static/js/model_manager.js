@@ -1990,6 +1990,19 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    // Nukeoil
+
+    ClientManager.prototype.sendInsuranceBuy = function (insurance_node_hash) {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
+        var mes = {
+            call: "insurance_buy",
+            rpc_call_id: rpcCallList.getID(),
+            params: { insurance_node_hash: insurance_node_hash }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Оружейник
 
     ClientManager.prototype.sendArmorerApply = function (npc) {

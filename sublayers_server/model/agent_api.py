@@ -22,7 +22,8 @@ from sublayers_server.model.events import (
 from sublayers_server.model.transaction_events import (
     TransactionGasStation, TransactionHangarSell, TransactionHangarBuy, TransactionParkingLeave, TransactionGirlApply,
     TransactionParkingSelect, TransactionArmorerApply, TransactionMechanicApply, TransactionTunerApply,
-    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply, BagExchangeStartEvent)
+    TransactionTraderApply, TransactionSetRPGState, TransactionMechanicRepairApply, BagExchangeStartEvent,
+    TransactionBuyInsurance)
 from sublayers_server.model.units import Unit, Bot
 from sublayers_server.model.chat_room import (
     ChatRoom, PrivateChatRoom, ChatRoomMessageEvent, ChatRoomPrivateCreateEvent, ChatRoomPrivateCloseEvent, )
@@ -676,6 +677,12 @@ class AgentAPI(API):
     def cancel_activation_item(self):
         if self.agent.car.current_item_action:
             self.agent.car.current_item_action.cancel(time=self.agent.server.get_time())
+
+    @public_method
+    def insurance_buy(self, insurance_node_hash):
+        TransactionBuyInsurance(time=self.agent.server.get_time(),
+                                agent=self.agent,
+                                insurance_node_hash=insurance_node_hash).post()
 
     @basic_mode
     @public_method

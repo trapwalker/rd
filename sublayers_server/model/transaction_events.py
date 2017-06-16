@@ -283,7 +283,7 @@ class TransactionBuyInsurance(TransactionEvent):
         else:
             # Заменить страховку
             # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
-            new_insurance = target_insurance.instance()
+            new_insurance = target_insurance.instantiate()
             example_agent.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
 
 
