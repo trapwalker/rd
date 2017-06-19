@@ -39,14 +39,14 @@ class Insurance(QuestItem):
     def del_from_inventory(self, inventory, event):
         super(Insurance, self).del_from_inventory(inventory, event)
         # добавить итем базовой страховки
-        base_insurance = event.server.reg.get*'/registry/items/quest_item/insurance/premium').instantiate()
+        base_insurance = event.server.reg.get('/registry/items/quest_item/insurance/base').instantiate()
         inventory.items.append(base_insurance)
 
     # Список городов, в которые можно принять пользователя, упорядоченный по расстоянию
     def _get_available_towns(self, agent, time):
         from sublayers_server.model.map_location import Town as ModelTown  # todo: import fix
         towns = [town for town in ModelTown.get_towns() if town.example in self.towns]
-        position = agent.position.as_point()
+        position = agent.profile.position.as_point()
         towns.sort(key=lambda town: town.position(time).distance(position))
         if towns:
             return [town.example for town in towns]
@@ -94,7 +94,7 @@ class InsuranceBase(Insurance):
         # Установить агенту last_town (для перемещения его туда в случае ф5 или в случае обычных страховок)
         towns_examples = self._get_available_towns(agent, time)
         if towns_examples:
-            agent.last_town = random.choice(towns_examples)
+            agent.profile.last_town = random.choice(towns_examples)
         else:
             log.warning('For {} with insurance <{}> not found respawn town. Last Town Used.'.format(agent, self))
 
@@ -111,7 +111,7 @@ class InsuranceBase(Insurance):
 
     def on_car_die(self, agent, car, is_bang, time):
         self.car = None
-        agent.set_balance(time=time, delta=car.price)
+        agent.profile.set_balance(time=time, delta=car.price)
         items = self.get_drop_items(car=car)
         return self.random_filter_drop(items=items, is_bang=is_bang)
 
@@ -121,8 +121,8 @@ class InsurancePremium(Insurance):
         # Установить агенту last_town (для перемещения его туда в случае ф5 или в случае обычных страховок)
         towns_examples = self._get_available_towns(agent, time)
         if towns_examples:
-            if agent.last_town is None or agent.last_town not in towns_examples:
-                agent.last_town = random.choice(towns_examples)  # Рандомный город из доступных
+            if agent.profile.last_town is None or agent.profile.last_town not in towns_examples:
+                agent.profile.last_town = random.choice(towns_examples)  # Рандомный город из доступных
         else:
             log.warning('For {} with insurance <{}> not found respawn town. Last Town Used.'.format(agent, self))
 
@@ -156,7 +156,7 @@ class InsuranceShareholder(InsurancePremium):
         towns_examples = self._get_available_towns(agent, time)
         for town in towns_examples:
             if town.node_hash() == town_node_hash:
-                agent.last_town = town
+                agent.profile.last_town = town
                 return
 
     def get_respawn_towns(self, agent, time):
@@ -177,10 +177,7 @@ class InsuranceShareholder(InsurancePremium):
 
 class InsuranceQuick(Insurance):
     def get_drop_items(self, car):
-        items = []
-        # Итемы инвентаря
-        for item in car.inventory.items:
-            items.append(item)
+        items = car.inventory.items
         car.inventory.items = []
         return items
 
