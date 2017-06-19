@@ -365,12 +365,13 @@ class LocalServer(Server):
         return self.thread is not None and self.thread.is_alive()
 
     def dump(self):
-        import yaml
+        from sublayers_common import yaml_tools
+        import codecs
         with open('srv_dump.yaml', 'w') as f:
-            yaml.dump(self, stream=f)
+            yaml_tools.dump(self, stream=f)
 
-        with open('srv_dump.yaml', 'r') as f:
-            srv2 = yaml.load(stream=f)
+        with codecs.open('srv_dump.yaml', 'r', encoding='utf-8') as f:
+            srv2 = yaml_tools.load(stream=f)
 
     def save(self, *av, **kw):
         super(LocalServer, self).save(*av, **kw)

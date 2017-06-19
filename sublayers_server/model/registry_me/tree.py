@@ -12,12 +12,13 @@ if __name__ == '__main__':
     log.addHandler(logging.StreamHandler(sys.stderr))
 
 
+from sublayers_common import yaml_tools
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.uri import URI
 from sublayers_common.debug_tools import warn_calling
 
 import six
-import yaml
+import codecs
 import copy
 from uuid import uuid1 as get_uuid
 from collections import deque, Counter, Callable
@@ -744,8 +745,8 @@ class Registry(Document):
             if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
                 with open(p) as attr_file:
                     try:
-                        d = yaml.load(attr_file) or {}
-                    except yaml.YAMLError as e:
+                        d = yaml_tools.load(attr_file) or {}
+                    except yaml_tools.YAMLError as e:
                         raise RegistryNodeFormatError(e)
                     assert isinstance(d, dict), 'Yaml content is not object, but: {!r}'.format(d)
                     attrs.update(d.items())
@@ -787,15 +788,15 @@ class Registry(Document):
             node._instance = owner
         return node
 
-    def save_to_file(self, f, ensure_ascii=False, indent=2, format='yaml'):
+    def save_to_file(self, f, indent=2, format='yaml'):
         def _save(s):
             #s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
             data = self.to_mongo().to_dict()
-            if format in {'yaml', 'y'}:
-                yaml.dump(data, s, allow_unicode=True)
-            elif format in {'json', 'j'}:
+            if format in {'yaml', 'y', 'YAML', 'Y', 'Yaml'}:
+                yaml_tools.dump(data, s, indent=indent)
+            elif format in {'json', 'j', 'JSON', 'J', 'Json'}:
                 from bson import json_util
-                s.write(json_util.dumps(data, ensure_ascii=ensure_ascii, indent=indent).encode('utf-8'))
+                s.write(json_util.dumps(data, ensure_ascii=False, indent=indent).encode('utf-8'))
 
         if isinstance(f, basestring):
             with open(f, 'w') as stream:
@@ -809,11 +810,11 @@ class Registry(Document):
     def load_from_file(cls, src):
         def _load(stream):
             #return cls.from_json(stream.read(), created=True)
-            return cls._from_son(yaml.load(stream))
+            return cls._from_son(yaml_tools.load(stream))
 
         # TODO: Убедиться, что внутренние ноды вновь загруженного реестра оперируют своей копией реестра, а не синглтоном
         if isinstance(src, basestring):
-            with open(src) as src_stream:
+            with codecs.open(src, encoding='utf-8') as src_stream:
                 return _load(src_stream)
         elif hasattr(src, 'read'):
             return _load(src)
