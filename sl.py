@@ -97,7 +97,7 @@ def _save_to_file(registry, dest):
             registry.save_to_file(dest)
             log.info('Registry saved to file {.name} ({:.3f}s)'.format(dest, tmr.duration))
     except Exception as e:
-        log.error("Can't save reggistry to file {!r}".format(dest))
+        log.error("Can't save registry to file {!r}: {}".format(dest, e))
 
 
 if __name__ == '__main__':
