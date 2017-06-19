@@ -3,29 +3,30 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.classes.quest_item import QuestItem
-from sublayers_server.model.registry.odm.fields import (
-    BooleanField, FloatField, StringField, DateTimeField, EmbeddedDocumentField, ListField, UniReferenceField,
-)
+from sublayers_server.model.registry_me.classes.quest_item import QuestItem
+from sublayers_server.model.registry_me.classes.item import SlotItem, SlotLock
+from sublayers_server.model.registry_me.tree import Subdoc, EmbeddedNodeField, RegistryLinkField
 
-from sublayers_server.model.registry.classes.item import SlotItem, SlotLock
+from mongoengine import BooleanField, FloatField, StringField, DateTimeField, ListField, EmbeddedDocumentField
 
 import random
 
 
 class Insurance(QuestItem):
     # Ссылки на example всех городов
-    towns = ListField(caption=u"Последние координаты агента",
-        base_field=UniReferenceField(reference_document_type='sublayers_server.model.registry.classes.poi.Town'))
+    towns = ListField(
+        caption=u"Последние координаты агента",
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Town'),
+    )
 
     # Это поле должно быть иногда равно None
-    car = EmbeddedDocumentField(
-        embedded_document_type='sublayers_server.model.registry.classes.mobiles.Car',
+    car = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
         caption=u"Автомобиль по страховке",
     )
 
-    icon_nukeoil = StringField(caption=u'URL icon_nukeoil', tags='client')
-    icon_right_panel = StringField(caption=u'URL icon_right_panel', tags='client')
+    icon_nukeoil = StringField(caption=u'URL icon_nukeoil', tags={'client'})
+    icon_right_panel = StringField(caption=u'URL icon_right_panel', tags={'client'})
 
     def add_to_inventory(self, inventory, event):
         # удалить другой итем-страховки
@@ -38,7 +39,7 @@ class Insurance(QuestItem):
     def del_from_inventory(self, inventory, event):
         super(self, Insurance).del_from_inventory(inventory, event)
         # добавить итем базовой страховки
-        base_insurance = event.server.reg['items/quest_item/insurance/premium'].instance()
+        base_insurance = event.server.reg.get*'/registry/items/quest_item/insurance/premium').instantiate()
         inventory.items.append(base_insurance)
 
     # Список городов, в которые можно принять пользователя, упорядоченный по расстоянию
@@ -103,7 +104,7 @@ class InsuranceBase(Insurance):
         for item in car.inventory.items:
             items.append(item)
         # Итемы тюнера, механика, оружейника
-        for slot_name, slot_value in car.iter_slots(tags='mechanic tuner armorer'):
+        for slot_name, slot_value in car.iter_slots(tags={'mechanic', 'tuner', 'armorer'}):
             if slot_value is not None and isinstance(slot_value, SlotItem) and not isinstance(slot_value, SlotLock):
                 items.append(slot_value)
         return items
@@ -132,7 +133,7 @@ class InsurancePremium(Insurance):
             items.append(item)
         car.inventory.items = []
         # Итемы тюнера, механика, оружейника
-        slots_values = [(slot_name, slot_value) for slot_name, slot_value in car.iter_slots(tags='mechanic tuner')
+        slots_values = [(slot_name, slot_value) for slot_name, slot_value in car.iter_slots(tags={'mechanic', 'tuner'})
                         if slot_value is not None and isinstance(slot_value, SlotItem) and not isinstance(slot_value, SlotLock)]
         for slot_name, slot_value in slots_values:
             setattr(car, slot_name, None)
