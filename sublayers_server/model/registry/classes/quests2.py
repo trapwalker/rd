@@ -3,22 +3,22 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry.classes.quests import Quest, QuestRange
-from sublayers_server.model.registry.classes.quests1 import DeliveryQuestSimple
-from sublayers_server.model.registry.odm.fields import (UniReferenceField, ListField, IntField, FloatField,
-                                                        EmbeddedDocumentField)
-from sublayers_server.model.registry.odm_position import PositionField
-from sublayers_server.model.vectors import Point
-from sublayers_server.model.registry.tree import Subdoc
-import random
-from sublayers_server.model.registry.classes import notes
 from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, QuestPrivatePOILoot
 from sublayers_server.model.inventory import ItemState
+from sublayers_server.model.vectors import Point
+from sublayers_server.model.registry_me.classes.quests import Quest, QuestRange
+from sublayers_server.model.registry_me.classes.quests1 import DeliveryQuestSimple
+from sublayers_server.model.registry_me.odm_position import PositionField
+from sublayers_server.model.registry_me.tree import Subdoc
+from sublayers_server.model.registry_me.classes import notes
+
+from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField
+import random
 
 
 class MarkerMapObject(Subdoc):
     position = PositionField(caption=u"Координаты объекта")
-    radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags='client')
+    radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags={'client'})
 
     def is_near(self, position):
         if isinstance(position, PositionField):
@@ -38,34 +38,34 @@ class MarkerMapObject(Subdoc):
 
 
 class MeasureRadiation(Quest):
-    measuring_price = IntField(caption=u'Стоимость одного замера радиации', tags='client')
-    measuring_radius = FloatField(caption=u'Максимальный радиус измерения', tags='client')
+    measuring_price = IntField(caption=u'Стоимость одного замера радиации', tags={'client'})
+    measuring_radius = FloatField(caption=u'Максимальный радиус измерения', tags={'client'})
     measure_points_generator = ListField(
         default=[],
         caption=u"Список областей генерации пунктов замеров",
-        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
+        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
         reinst=True
     )
     measure_points = ListField(
-        tags='client',
+        tags={'client'},
         default=[],
         caption=u"Список выбранных пунктов для замеров",
-        base_field=UniReferenceField(
-            reference_document_type='sublayers_server.model.registry.classes.quests2.MarkerMapObject'
+        field=EmbeddedDocumentField(
+            document_type='sublayers_server.model.registry.classes.quests2.MarkerMapObject'
         ),
         reinst=True,
     )
     measure_count_range = EmbeddedDocumentField(
-        embedded_document_type=QuestRange,
+        document_type=QuestRange,
         caption=u"Диапазон количетсва измерений",
         reinst=True,
     )
-    measure_count = IntField(caption=u'Количество замеров', tags='client')
+    measure_count = IntField(caption=u'Количество замеров', tags={'client'})
     measure_notes = ListField(
         default=[],
         caption=u"Список активных нотов маркеров на карте",
-        base_field=UniReferenceField(
-            reference_document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
+        field=EmbeddedDocumentField(
+            document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
         ),
         reinst=True,
     )
@@ -94,42 +94,42 @@ class MeasureRadiation(Quest):
 
     def init_notes(self, event):
         for marker in self.measure_points:
-            note_uid = self.agent.add_note(
+            note_uid = self.agent.profile.add_note(
                 quest_uid=self.uid,
                 note_class=notes.MapMarkerNote,
                 time=event.time,
                 marker=marker
             )
-            self.measure_notes.append(self.agent.get_note(uid=note_uid))
+            self.measure_notes.append(self.agent.profile.get_note(uid=note_uid))
 
     def check_notes(self, event):
-        if not self.agent._agent_model or not self.agent._agent_model.car:
+        if not self.agent.profile._agent_model or not self.agent.profile._agent_model.car:
             return
 
         temp_notes = self.measure_notes[:]
         for note in temp_notes:
-            position = self.agent._agent_model.car.position(time=event.time)
+            position = self.agent.profile._agent_model.car.position(time=event.time)
             if note.marker.is_near(position=position):
                 self.log(text=u'Произведено измерение.', event=event, position=position)
                 self.measure_notes.remove(note)
-                self.agent.del_note(uid=note.uid, time=event.time)
+                self.agent.profile.del_note(uid=note.uid, time=event.time)
 
     def delete_notes(self, event):
         for note in self.measure_notes:
-            self.agent.del_note(uid=note.uid, time=event.time)
+            self.agent.profile.del_note(uid=note.uid, time=event.time)
         self.measure_notes = []
 
 
 class DeliveryFromCache(DeliveryQuestSimple):
-    cache_radius = FloatField(caption=u'Радиус, в котором можно обнаружить тайник', default=50)
+    cache_radius = FloatField(caption=u'Радиус, в котором можно обнаружить тайник', root_default=50)
 
     cache_points_generator = ListField(
-        default=[],
+        root_default=[],
         caption=u"Список областей генерации мест для тайника",
-        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
-        reinst=True
+        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
+        reinst=True,
     )
-    cache_point = EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True)
+    cache_point = EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True)
 
     def init_target_point(self):
         base_point = random.choice(self.cache_points_generator)
@@ -163,7 +163,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
             life_time = self.starttime + self.deadline - event.time
         else:
             life_time = event.server.poi_loot_objects_life_time
-        private_name = self.agent._agent_model and self.agent._agent_model.print_login() or self.agent.login
+        private_name = self.agent.profile._agent_model and self.agent.profile._agent_model.print_login() or self.agent.login
 
         items = []
         for item_example in self.delivery_set:
@@ -185,46 +185,46 @@ class DeliveryFromCache(DeliveryQuestSimple):
 
 
 class MapActivateItem(Quest):
-    activate_price = IntField(caption=u'Стоимость одной активации итема', tags='client')
-    activate_radius = FloatField(caption=u'Максимальный радиус активации', tags='client')
+    activate_price = IntField(caption=u'Стоимость одной активации итема', tags={'client'})
+    activate_radius = FloatField(caption=u'Максимальный радиус активации', tags={'client'})
 
     activate_points_generator = ListField(
         default=[],
         caption=u"Список областей генерации пунктов замеров",
-        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
+        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
         reinst=True
     )
     activate_points = ListField(
         default=[],
         caption=u"Список областей генерации пунктов замеров",
-        base_field=EmbeddedDocumentField(embedded_document_type=MarkerMapObject, reinst=True),
+        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
         reinst=True
     )
 
     activate_items_generator = ListField(
         caption=u"Список возможных итемов для активации",
-        base_field=EmbeddedDocumentField(
-            embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+        field=EmbeddedDocumentField(
+            document_type='sublayers_server.model.registry.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,
-            tags='client',
+            tags={'client'},
         )
     )
     activate_items = ListField(
         caption=u"Список итемов для доставки",
-        base_field=EmbeddedDocumentField(
-            embedded_document_type='sublayers_server.model.registry.classes.item.Item',
+        field=EmbeddedDocumentField(
+            document_type='sublayers_server.model.registry.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,
-            tags='client',
+            tags={'client'},
         ),
     )
 
     activate_notes = ListField(
         default=[],
         caption=u"Список активных нотов маркеров на карте",
-        base_field=UniReferenceField(
-            reference_document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
+        field=EmbeddedDocumentField(
+            document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
         ),
         reinst=True,
     )
@@ -263,30 +263,30 @@ class MapActivateItem(Quest):
         )
 
     def init_notes(self, event):
-        note_uid = self.agent.add_note(
+        note_uid = self.agent.profile.add_note(
             quest_uid=self.uid,
             note_class=notes.MapMarkerNote,
             time=event.time,
             marker=self.activate_points[0]
         )
-        self.activate_notes.append(self.agent.get_note(uid=note_uid))
+        self.activate_notes.append(self.agent.profile.get_note(uid=note_uid))
 
     def check_notes(self, event):
-        if not self.agent._agent_model or not self.agent._agent_model.car:
+        if not self.agent.profile._agent_model or not self.agent.profile._agent_model.car:
             return
 
         temp_notes = self.activate_notes[:]
         for note in temp_notes:
-            position = self.agent._agent_model.car.position(time=event.time)
+            position = self.agent.profile._agent_model.car.position(time=event.time)
             if note.marker.is_near(position=position):
                 self.log(text=u'Произведена активация.', event=event, position=position)
                 self.activate_notes.remove(note)
-                self.agent.del_note(uid=note.uid, time=event.time)
+                self.agent.profile.del_note(uid=note.uid, time=event.time)
 
     def check_item(self, item):
         return self.activate_items[0].node_hash() == item.node_hash()
 
     def delete_notes(self, event):
         for note in self.activate_notes:
-            self.agent.del_note(uid=note.uid, time=event.time)
+            self.agent.profile.del_note(uid=note.uid, time=event.time)
         self.activate_notes = []
