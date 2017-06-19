@@ -166,7 +166,13 @@ class Application(BaseApplication):
                 _message = str(e).decode('cp1251', errors='ignore')
             else:
                 _message = e
-            log.critical('{} port: {}'.format(_message, options.port))
+
+            _message = u'{} port: {}'.format(_message, options.port)
+            try:
+                log.critical(_message)
+            except:
+                log.critical(repr(_message))
+
             print _message
         except Exception as e:
             log.critical(e)
