@@ -14,27 +14,29 @@ CALL_BRACKETS_LEVEL_COUNTER = Counter()
 
 def warn_calling(skip=(), unical=True):
     """Make warnings about calls decorated functions"""
-    import functools
-    from traceback import extract_stack
-    from collections import Counter
-    c = Counter()
+    deco = lambda f: f
+    if __debug__:
+        import functools
+        from traceback import extract_stack
+        from collections import Counter
+        c = Counter()
 
-    def deco(f):
-        @functools.wraps(f)
-        def closure(*av, **kw):
-            msg = 'Call {func}: {fn}:{line} in {f}'.format(
-                func=f.__name__,
-                **dict(zip(['fn', 'line', 'f', '_'], extract_stack(limit=2)[-2]))
-            )
-            idx = 0
-            if unical:
-                idx = c[msg]
-                c[msg] = idx + 1
-            if (not unical or idx == 0) and (not any((case in msg for case in skip))):
-                log.warning(msg)
-            return f(*av, **kw)
+        def deco(f):
+            @functools.wraps(f)
+            def closure(*av, **kw):
+                msg = 'Call {func}: {fn}:{line} in {f}'.format(
+                    func=f.__name__,
+                    **dict(zip(['fn', 'line', 'f', '_'], extract_stack(limit=2)[-2]))
+                )
+                idx = 0
+                if unical:
+                    idx = c[msg]
+                    c[msg] = idx + 1
+                if (not unical or idx == 0) and (not any((case in msg for case in skip))):
+                    log.warning(msg)
+                return f(*av, **kw)
 
-        return closure
+            return closure
 
     return deco
 
