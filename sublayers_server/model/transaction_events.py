@@ -286,6 +286,8 @@ class TransactionBuyInsurance(TransactionEvent):
             new_insurance = target_insurance.instantiate()
             example_agent.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
 
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
+
 
 class TransactionTownNPC(TransactionEvent):
     def __init__(self, npc_node_hash, **kw):
