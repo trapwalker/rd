@@ -165,7 +165,7 @@ class Town(MapLocation):
         # найти торговца в городе
         for npc in set(self.example.get_npc_list()):
             # todo: Спрятать инициализацию NPC в виртуальный метод, чтобы могли инициализироваться все
-            if isinstance(npc, Trader) and not options.quick_debug:
+            if isinstance(npc, Trader) and not options.quick_debug and npc.refresh_time:
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
         self.enemy_agents = dict()  # Должны быть дикты с агентом и временем добавления

@@ -111,7 +111,7 @@ class Trader(Institution):
     trading = IntField(caption=u"Навык торговли", root_default=0)
 
     # Время полного обновление ассортимента торговца (сек.)
-    refresh_time = IntField(caption=u"Время завоза")
+    refresh_time = IntField(caption=u"Интервал завоза (c, по умолчанию или 0 - никогда)")
 
     # Маржа (0..1)
     margin = FloatField(caption=u'Коэффициент минимальной цены товара', root_default=0.2)
