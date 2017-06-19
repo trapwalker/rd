@@ -362,6 +362,7 @@ class Node(Subdoc):
     meta = dict(
         allow_inheritance=True,
     )
+    uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
     owner = RegistryLinkField(document_type='self', not_inherited=True)
@@ -387,28 +388,31 @@ class Node(Subdoc):
     def __iter__(self):
         return super(Node, self).__iter__()
 
-    @property
-    def uri(self):
-        # todo: cache it
-        # if hasattr(self, '_uri'):
-        #     return self._uri
-        uri = None
-        name = self.name
-        if name is not None:
-            owner = self.owner
-            if isinstance(owner, Node):
-                owner_uri = owner.uri
-                owner_uri = owner_uri and URI(owner_uri)
-            elif isinstance(owner, URI):
-                owner_uri = owner
-            elif owner is None:
-                owner_uri = URI('reg://')
-            else:
-                raise AssertionError('Owner is wrong type: {!r}'.format(owner))
-
-            uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
-        # self._uri = uri
-        return uri
+    # @property
+    # #@warn_calling(unical=False)
+    # def uri(self):
+    #     # todo: cache it
+    #     return getattr(self, '_uri')
+    #
+    #     if hasattr(self, '_uri'):
+    #         return self._uri
+    #     uri = None
+    #     name = self.name
+    #     if name is not None:
+    #         owner = self.owner
+    #         if isinstance(owner, Node):
+    #             owner_uri = owner.uri
+    #             owner_uri = owner_uri and URI(owner_uri)
+    #         elif isinstance(owner, URI):
+    #             owner_uri = owner
+    #         elif owner is None:
+    #             owner_uri = URI('reg://')
+    #         else:
+    #             raise AssertionError('Owner is wrong type: {!r}'.format(owner))
+    #
+    #         uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
+    #     self._uri = uri
+    #     return uri
 
     def node_hash(self):  # todo: (!) rename to proto_uri
         #u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
@@ -751,6 +755,8 @@ class Registry(Document):
         attrs.setdefault('name', os.path.basename(path.strip('\/')))
         attrs.setdefault('parent', owner)
         attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
+        attrs.setdefault('uri', '{}/{}'.format('reg://' if owner is None else owner.uri, attrs['name']))
+
         class_name = attrs.get('_cls')
 
         if not class_name:  # TODO: remove deprecated '__cls__' attribute support
