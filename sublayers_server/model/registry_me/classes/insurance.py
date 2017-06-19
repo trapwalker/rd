@@ -39,7 +39,7 @@ class Insurance(QuestItem):
     def del_from_inventory(self, inventory, event):
         super(Insurance, self).del_from_inventory(inventory, event)
         # добавить итем базовой страховки
-        base_insurance = event.server.reg.get('/registry/items/quest_item/insurance/base').instantiate()
+        base_insurance = event.server.reg.get('/registry/items/quest_item/insurance/premium').instantiate()
         inventory.items.append(base_insurance)
 
     # Список городов, в которые можно принять пользователя, упорядоченный по расстоянию
