@@ -383,6 +383,10 @@ class Node(Subdoc):
         only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
         super(Node, self).__init__(__only_fields=only_fields, **kw)
 
+    @warn_calling(skip=(r'site-packages',))
+    def __iter__(self):
+        return super(Node, self).__iter__()
+
     @property
     def uri(self):
         # todo: cache it
