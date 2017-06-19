@@ -95,7 +95,7 @@ var QuestNoteNPCBtn = (function (_super) {
     };
 
     QuestNoteNPCBtn.prototype.clickBtn = function (btnIndex) {
-        console.log('Click for note: ' + this.uid + '    =>>> ' + btnIndex);
+        //console.log('Click for note: ' + this.uid + '    =>>> ' + btnIndex);
         clientManager.SendQuestNoteAction(this.uid, true);
     };
 

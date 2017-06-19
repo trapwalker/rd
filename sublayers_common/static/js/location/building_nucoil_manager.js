@@ -93,8 +93,7 @@ var LocationNucoilBuilding = (function (_super) {
         if (this.active_central_page == 'buildingPageInsurance_nukeoil') {
             if (btnIndex == '1') {
                 // Продлевание или оформление страховки
-                console.log('USE: ', this.current_insurance.node_hash);
-                // todo: здесь отправка на сервер в транзакцию покупки
+                clientManager.sendInsuranceBuy(this.current_insurance.node_hash);
                 return;
             }
         } else {

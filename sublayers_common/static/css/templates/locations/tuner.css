@@ -12,6 +12,8 @@
     overflow: hidden;
 }
 
+.tunerWindow-main .npc-text-block { width: 260px; }
+
 .tuner-center {
     position: relative;
     margin: auto;
