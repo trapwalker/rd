@@ -8,6 +8,7 @@ from sublayers_server.model.events import Event
 from sublayers_server.model.messages import TraderInfoMessage
 from sublayers_server.model.registry_me.classes.poi import Institution
 from sublayers_server.model.registry_me.tree import Subdoc, RegistryLinkField
+from sublayers_common.ctx_timer import Timer
 
 from mongoengine import IntField, FloatField, ListField, EmbeddedDocumentField
 
@@ -20,7 +21,9 @@ class TraderRefreshEvent(Event):
 
     def on_perform(self):
         super(TraderRefreshEvent, self).on_perform()
-        self.trader.on_refresh(event=self)
+        with Timer() as tm:
+            self.trader.on_refresh(event=self)
+            log.debug('Trader {!r} refresh time is: {:.3f}s'.format(self.trader, tm.duration))
         TraderRefreshEvent(trader=self.trader, location=self.location, time=self.time + self.trader.refresh_time).post()
 
 
