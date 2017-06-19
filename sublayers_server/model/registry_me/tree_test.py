@@ -75,7 +75,7 @@ if __name__ == '__main__':
     src = 'fs' if rel else 'db'
 
     r = reg
-    n = 0
+    n = 1
     for i in range(n):
         fn = 'reg_{}_{}.yaml'.format(src, str(i).zfill(int(math.ceil(math.log10(n)))))
 
