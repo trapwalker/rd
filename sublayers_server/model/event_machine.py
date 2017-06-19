@@ -348,6 +348,7 @@ class LocalServer(Server):
         log.info('    Service: %s', options.service_name)
         log.info('    Port   : %s', options.port)
         log.info('    PID    : %s', os.getpid())
+        log.info('    Zones  : %s', 'DISABLED' if options.zones_disable else 'ENABLED')
         log.info('-' * 50)
 
     def stop(self, timeout=None):
