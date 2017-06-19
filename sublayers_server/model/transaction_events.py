@@ -261,6 +261,8 @@ class TransactionBuyInsurance(TransactionEvent):
         if target_insurance.base_price > example_agent.profile.balance:
             return
 
+        example_agent.set_balance(time=self.time, delta=-target_insurance.base_price)
+
         if target_insurance.node_hash() == agent_insurance.node_hash():
             # Продлить страховку
             agent_insurance.prolong(delta=target_insurance.deadline)
@@ -269,6 +271,8 @@ class TransactionBuyInsurance(TransactionEvent):
             # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
             new_insurance = target_insurance.instantiate()
             example_agent.profile.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
+
+        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
 
 
 class TransactionTownNPC(TransactionEvent):

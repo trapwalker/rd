@@ -530,9 +530,20 @@ var LocationPanelInfo = (function () {
         //console.log('LocationPanelInfo.prototype.show_nukeoil', options);
         var jq_panel = this.jq_main_div.find('.pi-nukeoil').first();
         if (user.example_agent && user.example_agent.insurance) {
+            var ins = user.example_agent.insurance;
             jq_panel.find('.pi-nukeoil-insurance-block').first()
-                .css('background', 'transparent url(/' + user.example_agent.insurance.icon_right_panel + ') 100% 100% no-repeat');
-            jq_panel.find('.panel-info-line.insurance-name').first().text(user.example_agent.insurance.title);
+                .css('background', 'transparent url(/' + ins.icon_right_panel + ') 100% 100% no-repeat');
+            jq_panel.find('.panel-info-line.insurance-name').first().text(ins.title);
+            if (ins.starttime && ins.deadline) {
+                jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'block');
+                
+                var start_quest_date = new Date((ins.starttime + ins.deadline) * 1000);
+                start_quest_date.setFullYear(start_quest_date.getFullYear() + 100);
+                var start_quest_date_s = start_quest_date.toLocaleString('ru');
+                jq_panel.find('.panel-info-line.insurance-deadline.time').first().text(start_quest_date_s);
+            }
+            else
+                jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'none');
 
         }
         jq_panel.css('display', 'block');
