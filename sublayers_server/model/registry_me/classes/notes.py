@@ -46,7 +46,8 @@ class Note(Subdoc):
 
 
 class MapMarkerNote(Note):
-    marker = EmbeddedDocumentField(document_type='sublayers_server.model.registry_me.classes.quests2.MarkerMapObject', tags={'client'})
+    #marker = EmbeddedDocumentField(document_type='sublayers_server.model.registry_me.classes.quests2.MarkerMapObject', tags={'client'})
+    pass
     # todo: Сослаться на маркер по идентификатору
 
 
