@@ -9,7 +9,7 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.classes.quests import Quest, QuestRange
 from sublayers_server.model.registry_me.classes.quests1 import DeliveryQuestSimple
 from sublayers_server.model.registry_me.odm_position import PositionField
-from sublayers_server.model.registry_me.tree import Subdoc
+from sublayers_server.model.registry_me.tree import Subdoc, EmbeddedNodeField
 from sublayers_server.model.registry_me.classes import notes
 
 from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField
@@ -184,6 +184,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
         ).post()
 
 
+# todo: rename to MapActivateItemQuest
 class MapActivateItem(Quest):
     activate_price = IntField(caption=u'Стоимость одной активации итема', tags={'client'})
     activate_radius = FloatField(caption=u'Максимальный радиус активации', tags={'client'})
@@ -203,7 +204,7 @@ class MapActivateItem(Quest):
 
     activate_items_generator = ListField(
         caption=u"Список возможных итемов для активации",
-        field=EmbeddedDocumentField(
+        field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,
@@ -212,7 +213,7 @@ class MapActivateItem(Quest):
     )
     activate_items = ListField(
         caption=u"Список итемов для доставки",
-        field=EmbeddedDocumentField(
+        field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,

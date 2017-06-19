@@ -559,7 +559,7 @@ class Bot(Mobile):
 
         items = []
         if self.owner:
-            items_examples = self.owner.example.insurance.on_car_die(agent=self.owner.example, car=self.example,
+            items_examples = self.owner.example.profile.insurance.on_car_die(agent=self.owner.example, car=self.example,
                                                                      is_bang=killer is not None, time=event.time)
             items = [ItemState(server=self.server, time=event.time, example=item, count=item.amount)
                      for item in items_examples if item.amount > 0]

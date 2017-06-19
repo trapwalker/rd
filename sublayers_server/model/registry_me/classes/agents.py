@@ -5,10 +5,11 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
 from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
+from sublayers_server.model.game_log_messages import ExpLogMessage
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
-from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField, ModifierQuestItem
+from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField
 from sublayers_server.model.registry_me.tree import Node, Document, Subdoc, EmbeddedNodeField, RegistryLinkField
 
 from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField
@@ -433,6 +434,8 @@ class AgentProfile(Node):
 
     @property
     def insurance(self):
+        # todo: ##OPTIMIZE ##CACHE Сделать страховку атрибутом агента
+        from sublayers_server.model.registry_me.classes.insurance import Insurance
         for item in self.quest_inventory.items:
             if isinstance(item, Insurance):
                 return item

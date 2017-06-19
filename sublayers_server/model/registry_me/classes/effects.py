@@ -31,14 +31,14 @@ class Effect(Node):
         ))
 
     def start(self, owner, time):
-        for subeffect in self:
+        for subeffect in self.subnodes.values():
             subeffect.start(owner, time)
 
         if not self.abstract:
             EffectStartEvent(effect=self, owner=owner, time=time).post()
 
     def done(self, owner, time):
-        for effect in self:
+        for effect in self.subnodes.values():
             effect.done(owner, time)
 
         if not self.abstract:

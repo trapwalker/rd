@@ -128,11 +128,11 @@ class Die(Message):
 
     def as_dict(self):
         d = super(Die, self).as_dict()
-        towns = self.agent.example.insurance.get_respawn_towns(agent=self.agent.example, time=self.time)
+        towns = self.agent.example.profile.insurance.get_respawn_towns(agent=self.agent.example, time=self.time)
 
         d.update(
             towns=[town.as_client_dict() for town in towns],
-            insurance=self.agent.example.insurance.as_client_dict(),
+            insurance=self.agent.example.profile.insurance.as_client_dict(),
         )
         return d
 
@@ -1073,7 +1073,7 @@ class QuestsInitMessage(Message):
         d = super(QuestsInitMessage, self).as_dict()
         d.update(
             quests=[quest.as_client_dict() for quest in self.agent.example.profile.quests],
-            notes=[note.as_client_dict() for note in self.agent.example.notes],
+            notes=[note.as_client_dict() for note in self.agent.example.profile.notes],
         )
         q = d['quests'] and d['quests'][0] or None
         #if q and q['hirer'] is None:

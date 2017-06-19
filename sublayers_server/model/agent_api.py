@@ -423,8 +423,8 @@ class AgentAPI(API):
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
             # log.debug('Need reenter to location')
-            self.agent.example.car = self.agent.example.insurance.car  # Восстановление машинки из страховки
-            self.agent.example.insurance.car = None
+            self.agent.example.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
+            self.agent.example.profile.insurance.car = None
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
@@ -1025,6 +1025,6 @@ class AgentAPI(API):
     def go_to_respawn(self, town_node_hash=None):
         self.agent.log.info('go_to_respawn with index: %s', town_node_hash)
         t = self.agent.server.get_time()
-        self.agent.example.insurance.set_last_town(agent=self.agent.example, time=t, town_node_hash=town_node_hash)
+        self.agent.example.profile.insurance.set_last_town(agent=self.agent.example, time=t, town_node_hash=town_node_hash)
         self.update_agent_api(time=t)
 

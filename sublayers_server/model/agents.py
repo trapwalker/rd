@@ -598,7 +598,7 @@ class Agent(Object):
         for town in Town.get_towns():
             town.need_stop_attack(obj=unit, agent=self)
         # Проброс эвента в страховку: там будет предопределён last_town
-        self.example.insurance.on_die(agent=self.example, time=event.time)
+        self.example.profile.insurance.on_die(agent=self.example, time=event.time)
 
         # Отключить все бартеры (делать нужно до раздеплоя машины)
         # todo: разобраться с time-0.1
