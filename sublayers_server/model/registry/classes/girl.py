@@ -24,7 +24,7 @@ class ServiceRec(Subdoc):
     bonus_list = ListField(
         caption=u"Список бонусов",
         field=EmbeddedDocumentField(document_type=BonusRec),
-        reinst=True
+        reinst=True,
     )
 
 
@@ -50,6 +50,10 @@ class Girl(Institution):
 
         result = []
         # todo: validate service_index; exception handling!
+        if service_index >= len(self.service_list):
+            log.warning('Requested wrong service {!r} in {!r}'.format(service_index, self))
+            return result
+
         service = self.service_list[service_index]
         all_chance = sum([item.chance for item in service.bonus_list])
         chance_map = [(item.chance / all_chance) for item in service.bonus_list]
