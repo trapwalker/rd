@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
 from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
-from sublayers_server.model.game_log_messages import ExpLogMessage
+from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
