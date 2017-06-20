@@ -274,6 +274,8 @@ class Party(object):
         self.invites = []
         self.exp_share = False
 
+        self.capacity_table = self.owner.server.reg['rpg_settings/partytable']
+
         # создание чат-комнаты пати
         self.room = PartyChatRoom(time=time, name=name)
         self.include(owner, time=time)
@@ -329,6 +331,11 @@ class Party(object):
     def on_include(self, agent, time):
         if self.delete_event is not None:
             PartyErrorMessage(agent=agent, time=time, comment='Party is not exist').post()
+            return
+
+        if self.capacity_table.get_party_capacity(agent=self.owner.example) <= len(self.members):
+            PartyErrorMessage(agent=agent, comment='Party is full', time=time).post()
+            PartyErrorMessage(agent=self.owner, comment='Party is full', time=time).post()
             return
 
         old_party = agent.party
