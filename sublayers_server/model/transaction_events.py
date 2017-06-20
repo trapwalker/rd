@@ -534,7 +534,7 @@ class TransactionParkingSelect(TransactionTownNPC):
         agent_ex = self.agent.example
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
-        car_list = [car for car in agent_ex.get_car_list_by_npc(npc)]
+        car_list = [car for car in agent_ex.profile.get_car_list_by_npc(npc)]
 
         if self.car_number is None or len(car_list) <= self.car_number or len(car_list) == 0:
             log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
@@ -551,22 +551,22 @@ class TransactionParkingSelect(TransactionTownNPC):
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
-            if agent_ex.car:
+            if agent_ex.profile.car:
                 info_string = u'{}: Обмен на {}, -{}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
-                TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.car, price=0, action="leave").post()
+                TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=0, action="leave").post()
             else:
                 info_string = u'{}: Забрал {}, {}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
-            if agent_ex.car:
-                agent_ex.car.last_parking_npc = npc.node_hash()
-                agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
-                agent_ex.car_list.append(agent_ex.car)
-            agent_ex.car = car_list[self.car_number]
+            if agent_ex.profile.car:
+                agent_ex.profile.car.last_parking_npc = npc.node_hash()
+                agent_ex.profile.car.date_setup_parking = time.mktime(datetime.now().timetuple())
+                agent_ex.profile.car_list.append(agent_ex.profile.car)
+            agent_ex.profile.car = car_list[self.car_number]
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
-            agent_ex.car_list.remove(car_list[self.car_number])
-            agent_ex.car.last_parking_npc = None
+            agent_ex.profile.car_list.remove(car_list[self.car_number])
+            agent_ex.profile.car.last_parking_npc = None
 
             agent.example.profile.set_balance(time=self.time, delta=-summ_for_paying)
 
@@ -574,7 +574,7 @@ class TransactionParkingSelect(TransactionTownNPC):
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
-            TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.car, price=summ_for_paying, action="select").post()
+            TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=summ_for_paying, action="select").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -594,17 +594,17 @@ class TransactionParkingLeave(TransactionTownNPC):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: translate
-        info_string = u'{}: Оставил {}, 0NC'.format(date_str, agent_ex.car.title)
+        info_string = u'{}: Оставил {}, 0NC'.format(date_str, agent_ex.profile.car.title)
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
-        agent_ex.car.last_parking_npc = npc.node_hash()
+        agent_ex.profile.car.last_parking_npc = npc.node_hash()
         # todo: сделать через обычный тип Date
 
-        car_example = agent_ex.car
-        agent_ex.car.date_setup_parking = time.mktime(datetime.now().timetuple())
-        agent_ex.car_list.append(agent_ex.car)
-        agent_ex.car = None
+        car_example = agent_ex.profile.car
+        agent_ex.profile.car.date_setup_parking = time.mktime(datetime.now().timetuple())
+        agent_ex.profile.car_list.append(agent_ex.profile.car)
+        agent_ex.profile.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
         messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()

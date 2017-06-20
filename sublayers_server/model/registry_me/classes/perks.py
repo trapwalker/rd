@@ -36,15 +36,19 @@ class Perk(Node):
 
     def can_apply(self, agent_ex):
         agent_lvl = 0  # todo: взять уровень как-то правильно из агента  (ДОБАВИТЬ проверку по LVL)
-        if (self.driving_req <= agent_ex.driving.calc_value()) and (self.masking_req <= agent_ex.masking.calc_value()) and \
-           (self.shooting_req <= agent_ex.shooting.calc_value()) and (self.leading_req <= agent_ex.leading.calc_value()) and \
-           (self.trading_req <= agent_ex.trading.calc_value()) and \
-           (self.engineering_req <= agent_ex.engineering.calc_value()):
+        if (
+            self.driving_req <= agent_ex.profile.driving.calc_value() and
+            self.masking_req <= agent_ex.profile.masking.calc_value() and
+            self.shooting_req <= agent_ex.profile.shooting.calc_value() and
+            self.leading_req <= agent_ex.profile.leading.calc_value() and
+            self.trading_req <= agent_ex.profile.trading.calc_value() and
+            self.engineering_req <= agent_ex.profile.engineering.calc_value()
+        ):
             for perk in self.perks_req:
-                if perk not in agent_ex.perks:
+                if perk not in agent_ex.profile.perks:
                     return False
                 # todo: Здесь проверка по role_class
-                if self.role_class_req and agent_ex.role_class.node_hash() != self.role_class_req.node_hash():
+                if self.role_class_req and agent_ex.profile.role_class.node_hash() != self.role_class_req.node_hash():
                     return False
             return True
         return False

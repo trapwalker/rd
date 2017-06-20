@@ -243,12 +243,12 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
-            agent_ex.role_class = role_class_ex
+            agent_ex.profile.role_class = role_class_ex
             # Установка классового навыка
             for class_skill in role_class_ex.class_skills:
                 # todo: Перебирать объекты реестра
                 if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                    skill = getattr(agent_ex, class_skill.target)
+                    skill = getattr(agent_ex.profile, class_skill.target)
                     skill.mod = class_skill
 
             user.avatar_link = avatar_link
