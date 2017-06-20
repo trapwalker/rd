@@ -494,6 +494,13 @@ class AgentAPI(API):
         SendChangeCategoryEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
     @public_method
+    def change_party_share_option(self, share_exp):
+        if not self.agent.party:
+            return
+        self.agent.log.info("change_party_share_option party={}".format(self.agent.party))
+        self.agent.party.change_share_option(time=self.agent.server.get_time(), share_exp=share_exp, agent=self.agent)
+
+    @public_method
     def fire_discharge(self, side):
         self.agent.log.info("fire_discharge side={}".format(side))
         if self.car.limbo or not self.car.is_alive:
