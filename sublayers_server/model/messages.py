@@ -47,7 +47,13 @@ class Message(object):
         # log.debug('Send message: %s to %r', self, self.agent.user.name)
         if connection:
             if connection.ws_connection:
-                data = serialize(make_push_package([self]))
+                package = make_push_package([self])
+                try:
+                    data = serialize(package)
+                except Exception as e:
+                    log.error('The problem in serialization package %r of message %r: %r', package, self, e)
+                    raise e
+
                 with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
                     connection.send(data)
 
