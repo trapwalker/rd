@@ -24,6 +24,7 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
+import pymongo.errors
 
 from sublayers_server import settings
 from sublayers_server import uimodules
@@ -204,4 +205,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except pymongo.errors.ConnectionFailure as e:
+        try:
+            msg = str(e).decode('cp1251') if os.name == 'nt' else repr(e)
+        except:
+            msg = repr(e)
+
+        log.critical(u'Databse error: %s', msg)
+        sys.exit(1)
