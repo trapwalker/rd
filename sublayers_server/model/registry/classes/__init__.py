@@ -30,5 +30,6 @@ import quest_item
 import insurance
 
 import disttable
+import partytable
 
 #import _test

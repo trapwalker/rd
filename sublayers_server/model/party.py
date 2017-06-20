@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.events import Event
+from sublayers_server.model.events import Event, event_deco
 from sublayers_server.model.messages import (
     PartyInfoMessage, PartyInviteMessage, AgentPartyChangeMessage, PartyExcludeMessageForExcluded,
     PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,
@@ -272,6 +272,9 @@ class Party(object):
         self.share_obs = []
         self.members = []
         self.invites = []
+        self.exp_share = False
+
+        self.capacity_table = self.owner.server.reg['rpg_settings/partytable']
 
         # создание чат-комнаты пати
         self.room = PartyChatRoom(time=time, name=name)
@@ -308,6 +311,7 @@ class Party(object):
         d = dict(
             name=self.name,
             id=self.id,
+            share_exp=self.exp_share,
         )
         if with_members:
             d.update(
@@ -327,6 +331,11 @@ class Party(object):
     def on_include(self, agent, time):
         if self.delete_event is not None:
             PartyErrorMessage(agent=agent, time=time, comment='Party is not exist').post()
+            return
+
+        if self.capacity_table.get_party_capacity(agent=self.owner.example) <= len(self.members):
+            PartyErrorMessage(agent=agent, comment='Party is full', time=time).post()
+            PartyErrorMessage(agent=self.owner, comment='Party is full', time=time).post()
             return
 
         old_party = agent.party
@@ -541,3 +550,23 @@ class Party(object):
         log.info('Agent %s now new owner for party %s', self.owner, self)
         for member in self.members:
             PartyInfoMessage(agent=member.agent, time=time, party=self).post()
+
+    def on_exp(self, agent, dvalue, event):
+        if self.exp_share:
+            val = dvalue / len(self.members)
+            for member in self.members:
+                member.agent.example.set_exp(dvalue=val, time=event.time)
+        else:
+            agent.example.set_exp(dvalue=dvalue, time=event.time)
+
+    @event_deco
+    def change_share_option(self, event, agent, share_exp):
+        if self.owner is not agent:
+            return
+        if self.exp_share == share_exp:
+            return
+        self.exp_share = share_exp
+
+        for member in self.members:
+            PartyInfoMessage(agent=member.agent, time=event.time, party=self).post()
+

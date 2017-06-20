@@ -1695,6 +1695,20 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendPartyShareOptions = function (share_exp) {
+        var mes = {
+            call: "change_party_share_option",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                share_exp: share_exp
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
+
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
         //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
         var mes = {
