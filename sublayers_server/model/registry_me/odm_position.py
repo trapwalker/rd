@@ -36,6 +36,9 @@ class Position(EmbeddedDocument):
     y = FloatField()
     # todo: generate qrts index by on_save
 
+    def as_client_dict(self):
+        return dict(x=self.x, y=self.y)
+
     def __nonzero__(self):
         return True
 
