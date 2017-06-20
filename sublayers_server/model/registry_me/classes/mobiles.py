@@ -288,9 +288,9 @@ class Car(Mobile):
         qb_4 = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item')
 
     class AudioEngine(Subdoc):
-        audio_name = StringField(root_default="", caption=u'Звук двигателя автомобиля.', tags={'client'})
-        min_rate = FloatField(root_default=0, caption=u'Rate звука при скорости 0 (холостой ход)', tags={'client'})
-        max_rate = FloatField(root_default=0, caption=u'Rate звука при максимальной скорости', tags={'client'})
+        audio_name = StringField(default="", caption=u'Звук двигателя автомобиля.', tags={'client'})
+        min_rate = FloatField(default=0, caption=u'Rate звука при скорости 0 (холостой ход)', tags={'client'})
+        max_rate = FloatField(default=0, caption=u'Rate звука при максимальной скорости', tags={'client'})
 
     quick_panel = EmbeddedDocumentField(document_type=QuickPanel, reinst=True)
 
