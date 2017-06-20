@@ -24,8 +24,7 @@ class ServerAPI(API):
         agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             # agent_exemplar = yield Agent.objects.get(user_id=user.pk, quick_flag=False, teaching_flag=False)
-            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=False, teaching_flag=False).all()
-            agent_exemplar = agent_exemplar and agent_exemplar[0] or None
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=False, teaching_flag=False).first()
             if agent_exemplar is None:
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
                 # todo: doit

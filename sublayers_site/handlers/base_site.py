@@ -20,7 +20,7 @@ class BaseSiteHandler(BaseHandler):
         name_car = None
         html_agent = None
         # todo: Убедиться, что агент не берется из кеша, а грузится из базы заново
-        agent_example = Agent.objects.get(user_id=str(user.pk))
+        agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
         if not agent_example:
             # info: создание пустого агента для отображения на сайте
             agent_example = Agent(
