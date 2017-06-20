@@ -262,9 +262,6 @@ class Subdoc(EmbeddedDocument):
                 subfield = field.field
                 return {k: clean_value(subfield, v) for k, v in value.iteritems()}
 
-            # if isinstance(value, UUID):
-            #     return str(value)
-
             assert not hasattr(value, '_instance'), 'Unsupported value {!r} of field {!r} to serializtion by as_client_dict'.format(value, field)
             return value
 

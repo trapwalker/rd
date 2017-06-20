@@ -105,12 +105,13 @@ class User(Document):
 
     def assign_ordinal_number(self):
         if self.ordinal_number is None:
+            # todo: ##DOIT
             # Получить всех пользователей, отсортировать по self.ordinal_number и получить максимальное число
-            users = User.objects.filter(
-                {'ordinal_number': {'$exists': True, '$ne': None},}
-            ).order_by('ordinal_number', -1).limit(3).all()
+            # users = User.objects.filter(
+            #     {'ordinal_number': {'$exists': True, '$ne': None},}
+            # ).order_by('ordinal_number', -1).limit(3).all()
 
-            self.ordinal_number = (users[0].ordinal_number + 1) if len(users) else 1
+            self.ordinal_number = 12345 #(users[0].ordinal_number + 1) if len(users) else 1
             self.save()
 
         return self.ordinal_number
