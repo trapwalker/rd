@@ -54,7 +54,7 @@ class GetUserInfoByIDHandler(BaseSiteHandler):
         if user_id:
             user = None
             try:
-                user = User.objects.get(ObjectId(user_id))
+                user = User.objects.filter(ObjectId(user_id)).first()
             except InvalidId as e:
                 log.warning('User resolve error: %r', e)
             if user:
