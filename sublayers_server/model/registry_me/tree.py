@@ -247,12 +247,30 @@ class Subdoc(EmbeddedDocument):
                 yield name, attr, getter
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
+        def clean_value(field, value):
+            if value is None:
+                return value
+
+            if hasattr(value, 'as_client_dict'):
+                return value.as_client_dict()
+
+            if isinstance(attr, ListField):
+                subfield = field.field
+                return [clean_value(subfield, v) for v in value]
+
+            if isinstance(attr, DictField):
+                subfield = field.field
+                return {k: clean_value(subfield, v) for k, v in value.iteritems()}
+
+            # if isinstance(value, UUID):
+            #     return str(value)
+
+            assert not hasattr(value, '_instance'), 'Unsupported value {!r} of field {!r} to serializtion by as_client_dict'.format(value, field)
+            return value
+
         d = {}
         for name, attr, getter in self.iter_attrs(tags='client'):
-            value = getter()
-            if hasattr(value, 'as_client_dict'):
-                value = value.as_client_dict()
-            d[name] = value
+            d[name] = clean_value(attr, getter())
 
         return d
 
