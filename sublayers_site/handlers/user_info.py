@@ -63,7 +63,7 @@ class GetUserInfoByIDHandler(BaseSiteHandler):
                         'user_name': user.name,
                     })
                 else:
-                    user_info = yield self._get_car(user=user)
+                    user_info = self._get_car(user=user)
                     self.finish({
                         'user_name': user.name,
                         'user_car_html': user_info.get('html_car_img', ''),
