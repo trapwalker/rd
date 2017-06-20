@@ -11,7 +11,7 @@ from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField
 from sublayers_server.model.registry_me.tree import Node, Document, Subdoc, EmbeddedNodeField, RegistryLinkField
-
+from sublayers_server.model.utils import getKarmaName
 from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField
 
 from itertools import chain
