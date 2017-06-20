@@ -38,7 +38,7 @@ class ServerAPI(API):
                     ),
                 ).save()
 
-                for class_skill in agent_exemplar.profile.role_class.class_skills():
+                for class_skill in agent_exemplar.profile.role_class.class_skills or []:
                     # todo: Перебирать объекты реестра
                     if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
                         skill = getattr(agent_exemplar.profile, class_skill.target)
