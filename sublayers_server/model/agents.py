@@ -562,7 +562,7 @@ class Agent(Object):
         self.example.profile.on_event(event=event, cls=quest_events.OnEnterToLocation, location=location)
 
         # todo: review quest_inventory
-        self.example.quest_inventory.refresh(agent=self.example, event=event)
+        self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
     def on_exit_location(self, location, event):
         log.debug('%s:: on_exit_location(%s)', self, location)
@@ -578,7 +578,7 @@ class Agent(Object):
         # self.example.profile.on_event(event=event, cls=quest_events.OnDie)  # todo: ##quest send unit as param
 
         # todo: review quest_inventory
-        self.example.quest_inventory.refresh(agent=self.example, event=event)
+        self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
     def on_enter_npc(self, event):
         log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))

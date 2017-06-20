@@ -423,7 +423,7 @@ class AgentAPI(API):
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
             # log.debug('Need reenter to location')
-            self.agent.example.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
+            self.agent.example.profile.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
             self.agent.example.profile.insurance.car = None
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
@@ -903,7 +903,7 @@ class AgentAPI(API):
     @public_method
     def quest_cancel(self, quest_uid):
         self.agent.log.info('quest_cancel quest_uid={}'.format(quest_uid))
-        quest = self.agent.example.get_quest(uid=UUID(quest_uid))
+        quest = self.agent.example.profile.get_quest(uid=UUID(quest_uid))
         if quest:
             server = self.agent.server
             OnCancel(server=server, quest=quest, time=server.get_time()).post()
@@ -913,7 +913,7 @@ class AgentAPI(API):
     @public_method
     def quest_active_notes_view(self, quest_uid, active):
         self.agent.log.info('quest_active_notes_view quest_uid={}'.format(quest_uid))
-        quest = self.agent.example.get_quest(uid=UUID(quest_uid))
+        quest = self.agent.example.profile.get_quest(uid=UUID(quest_uid))
         if quest:
             # todo: вызвать метод через эвент: создать эвент или использовать event_deco
             quest.active_notes_view_change(active=active, time=self.agent.server.get_time())

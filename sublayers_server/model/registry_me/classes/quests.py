@@ -571,30 +571,30 @@ class Quest(Node):
         return True
 
     def can_give_items(self, items, event):
-        if not self.agent.car:
+        if not self.agent.profile.car:
             return False
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.inventory.save_to_example(time=event.time)
-        return len(items) <= (self.agent.car.inventory.size - len(self.agent.car.inventory.items))
+        return len(items) <= (self.agent.profile.car.inventory.size - len(self.agent.profile.car.inventory.items))
 
     def give_items(self, items, event):
         if not self.can_give_items(items=items, event=event):
             return False
         total_inventory_list = None if self.agent.profile._agent_model.inventory is None else self.agent.profile._agent_model.inventory.example.total_item_type_info()
         for item in items:
-            self.agent.car.inventory.items.append(item.instantiate(amount=item.amount))
+            self.agent.profile.car.inventory.items.append(item.instantiate(amount=item.amount))
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
     def can_take_items(self, items, event):
-        if not self.agent.car:
+        if not self.agent.profile.car:
             return False
 
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.inventory.save_to_example(time=event.time)
 
-        assortment = self.agent.car.inventory.total_item_type_info()
+        assortment = self.agent.profile.car.inventory.total_item_type_info()
         for item in items:
             if assortment.get(item.node_hash(), None) is None:
                 return False
@@ -608,7 +608,7 @@ class Quest(Node):
             return False
         total_inventory_list = None if self.agent.profile._agent_model.inventory is None else self.agent.profile._agent_model.inventory.example.total_item_type_info()
         for item in items:
-            self.agent.car.inventory.del_item(item=item, count=item.amount)
+            self.agent.profile.car.inventory.del_item(item=item, count=item.amount)
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True

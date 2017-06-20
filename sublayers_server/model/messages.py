@@ -662,7 +662,7 @@ class EnterToLocation(Message):
             log.warn('Unknown type location: %s', location)
         d.update(
             location=self.location.as_dict(time=self.time),
-            relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.get_relationship(npc=npc))
+            relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.profile.get_relationship(npc=npc))
                       for npc in location.example.get_npc_list()],
             location_html=location_html,
         )
@@ -974,7 +974,7 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
 
         d['user_name'] = user.name
         d['avatar_link'] = user.avatar_link
-        d['example_agent'] = agent.example.as_client_dict()
+        d['example_agent'] = agent.example.profile.as_client_dict()
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
         if ex_car:
             # Шаблоны машинки
