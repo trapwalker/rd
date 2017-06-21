@@ -254,11 +254,11 @@ class Subdoc(EmbeddedDocument):
             if hasattr(value, 'as_client_dict'):
                 return value.as_client_dict()
 
-            if isinstance(attr, ListField):
+            if isinstance(field, ListField):
                 subfield = field.field
                 return [clean_value(subfield, v) for v in value]
 
-            if isinstance(attr, DictField):
+            if isinstance(field, DictField):
                 subfield = field.field
                 return {k: clean_value(subfield, v) for k, v in value.iteritems()}
 
@@ -485,15 +485,17 @@ class Node(Subdoc):
             if self._initialised:
                 field = self._fields.get(item, None)
                 if field and not getattr(field, 'not_inherited', False) and item not in self._data:
+                    # Ищем значение у предков
                     parent = self.parent
-                    root_default = getattr(field, 'root_default', None)
-                    if parent is not None and hasattr(parent, item):
+
+                    if parent is not None and item in parent._fields:
                         return getattr(parent, item)
-                    else:
-                        root_default = root_default() if callable(root_default) else root_default
-                        if root_default is None:
-                            return root_default
-                        return field.to_python(root_default)
+
+                    root_default = getattr(field, 'root_default', None)
+                    root_default = root_default() if root_default is not None and callable(root_default) else root_default
+                    if root_default is None:
+                        return root_default
+                    return field.to_python(root_default)
 
         return super(Node, self).__getattribute__(item)
 
