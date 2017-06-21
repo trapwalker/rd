@@ -1321,8 +1321,10 @@ class ChangeAgentKarma(Message):
     def as_dict(self):
         relations = []
         if self.agent.current_location:
-            relations = [dict(npc_node_hash=npc.node_hash(), relation=self.agent.example.profile.get_relationship(npc=npc))
-                         for npc in self.agent.current_location.example.profile.get_npc_list()]
+            relations = [
+                dict(npc_node_hash=npc.node_hash(), relation=self.agent.example.profile.get_relationship(npc=npc))
+                for npc in self.agent.current_location.example.get_npc_list()
+            ]
         d = super(ChangeAgentKarma, self).as_dict()
         d.update(relations=relations)
         return d

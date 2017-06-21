@@ -94,7 +94,7 @@ class DeliveryPassengerQuest(DeliveryQuestSimple):
         return True
 
     def can_take_passengers(self, event):
-        if not self.agent.car:
+        if not self.agent.profile.car:
             return False
 
         if self.agent.profile._agent_model and self.agent.profile._agent_model.inventory:
