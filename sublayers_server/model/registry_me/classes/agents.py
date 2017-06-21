@@ -453,8 +453,8 @@ class Agent(Document):
     user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
     login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
     profile = EmbeddedNodeField(caption=u'Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
-    teaching_flag = BooleanField(caption=u'Является ли этот агент агентом обучения')
-    quick_flag = BooleanField(caption=u'Является ли этот агент агентом быстрой игры')
+    teaching_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом обучения')
+    quick_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом быстрой игры')
 
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)
