@@ -185,7 +185,6 @@ class AgentProfile(Node):
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
-            reinst = True,
         ),
     )
     quests_active = ListField(
@@ -193,7 +192,6 @@ class AgentProfile(Node):
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
-            reinst = True,
         ),
     )
     quests_ended = ListField(
@@ -201,7 +199,6 @@ class AgentProfile(Node):
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
-            reinst = True,
         ),
     )
 
