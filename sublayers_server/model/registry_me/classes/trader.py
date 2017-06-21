@@ -22,9 +22,9 @@ class TraderRefreshEvent(Event):
     def on_perform(self):
         super(TraderRefreshEvent, self).on_perform()
         with Timer() as tm:
-            log.debug('Trader {!r} refresh start'.format(self.trader))
+            # log.debug('Trader {!r} refresh start'.format(self.trader))
             self.trader.on_refresh(event=self)
-            log.debug('Trader {!r} refresh time is: {:.3f}s'.format(self.trader, tm.duration))
+            # log.debug('Trader {!r} refresh time is: {:.3f}s'.format(self.trader, tm.duration))
         TraderRefreshEvent(trader=self.trader, location=self.location, time=self.time + self.trader.refresh_time).post()
 
 
