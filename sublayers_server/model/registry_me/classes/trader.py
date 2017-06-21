@@ -130,41 +130,74 @@ class Trader(Institution):
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item')
     )
 
-    @property
-    def current_list(self):
-        return self.__dict__.setdefault('_current_list', [])
+    def __init__(self, *av, **kw):
+        super(Trader, self).__init__(*av, **kw)
+        self._current_list = []
+        self._items_options = []  # list of dict(item, price_record)
+        self._price_options = []  # list of dict(PriceOption, [Price])
+        self._is_init = False
 
-    @current_list.setter
-    def current_list(self, value):
-        self.__dict__['_current_list'] = value
+    def init_prices(self):
+        self._items_options = []  # list of dict(item, price_record)
+        self._price_options = []  # list of dict(PriceOption, [Price])
 
-    def get_item_by_uid(self, uid):
-        for price in self.current_list:
-            if price.item.uid == uid:
-                return price
-        return None
-
-    def on_refresh(self, event):
-        log.debug('Trader {self!r}.on_refresh'.format(**locals()))
-        current_list = []
-        self.current_list = current_list
         for price_option in self.price_list:
-            current_list.append(
-                Price(
-                    trader=self,
-                    price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
-                    count=0,
-                    is_infinity=price_option.count_max == 0,
-                    is_lot=False,
-                    price_option=price_option,
-                )
-            )
+            self._price_options.append(dict(price_option=price_option, prices=[]))
 
         for item in self.items:
             if item.abstract or self.item_in_ignore_list(item):
                 continue  # todo: warning на этапе анализа ямла
 
-            price = self.get_item_price(item)  # todo: Избавиться от двойной проверки итема по игнор-листу
+            current_price = None
+            current_ancestor_lvl = None
+            for record in self._price_options:
+                price = record['price_option']
+                ancestor_lvl = item.get_ancestor_level(price.item)
+                if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
+                    current_price = record
+                    current_ancestor_lvl = ancestor_lvl
+
+            if current_price and current_ancestor_lvl:
+                self._items_options.append(dict(
+                    item=item,
+                    price_record=current_price,
+                ))
+
+        self._is_init = True
+
+
+    def get_item_by_uid(self, uid):
+        for price in self._current_list:
+            if price.item.uid == uid:
+                return price
+        return None
+
+    def on_refresh(self, event):
+        # log.debug('Trader {self!r}.on_refresh'.format(**locals()))
+
+        if not self._is_init:
+            self.init_prices()
+
+        current_list = []
+        self._current_list = current_list
+        for record in self._price_options:
+            price_option = record['price_option']
+            p = Price(
+                trader=self,
+                price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
+                count=0,
+                is_infinity=price_option.count_max == 0,
+                is_lot=False,
+                price_option=price_option,
+            )
+            current_list.append(p)
+            record['prices'] = [p]
+
+        for record in self._items_options:
+            item = record['item']
+            price_record = record['price_record']
+
+            price = self.get_item_price2(item, price_record=price_record)
             if not price:
                 continue  # todo: warning
 
@@ -185,20 +218,21 @@ class Trader(Institution):
                     price.count += count
             else:
                 # Формирование нового правила
-                current_list.append(
-                    Price(
-                        trader=self,
-                        price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
-                        count=count,
-                        is_infinity=is_infinity,
-                        is_lot=True,
-                        price_option=price_option,
-                        item=item,
-                    )
+                p = Price(
+                    trader=self,
+                    price=price_option.price_min + random.random() * (price_option.price_max - price_option.price_min),
+                    count=count,
+                    is_infinity=is_infinity,
+                    is_lot=True,
+                    price_option=price_option,
+                    item=item,
                 )
+                current_list.append(p)
+                price_record['prices'].append(p)
+
         if event is not None:
             self.send_prices(location=event.location, time=event.time)
-        log.debug('Trader {self!r}.on_refresh END'.format(**locals()))
+        # log.debug('Trader {self!r}.on_refresh END'.format(**locals()))
 
     def send_prices(self, location, time):
         for visitor in location.visitors:
@@ -207,7 +241,7 @@ class Trader(Institution):
     def get_trader_assortment(self, agent):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
-        for price in self.current_list:
+        for price in self._current_list:
             if price.is_lot and (price.count > 0 or price.is_infinity) and not self.item_in_ignore_list(price.item):
                 res.append(
                     dict(
@@ -244,7 +278,29 @@ class Trader(Institution):
             return None
         current_price = None
         current_ancestor_lvl = None
-        for price in self.current_list:
+        for price in self._current_list:
+            ancestor_lvl = item.get_ancestor_level(price.item)
+            if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
+                current_price = price
+                current_ancestor_lvl = ancestor_lvl
+
+        return current_price
+
+    def get_item_price2(self, item, price_record=None):
+        # info: функция расширена для работы с несколькими правилами. Берёт самое близкое по родителям
+        if not item or self.item_in_ignore_list(item):
+            return None
+
+        if not price_record:
+            for record in self._items_options:
+                if record['item'] == item:
+                    price_record = record['price_record']
+
+        assert price_record
+
+        current_price = None
+        current_ancestor_lvl = None
+        for price in price_record['prices']:
             ancestor_lvl = item.get_ancestor_level(price.item)
             if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
                 current_price = price
@@ -260,7 +316,7 @@ class Trader(Institution):
     def add_price_option(self, base_price_object, count, item, new_price=False):
         price_option = base_price_object.price_option
         price = base_price_object.price if not new_price else (price_option.price_min + random.random() * (price_option.price_max - price_option.price_min))
-        self.current_list.append(
+        self._current_list.append(
             Price(
                 trader=self,
                 price=price,
