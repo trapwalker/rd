@@ -194,27 +194,27 @@
                 <div class="person-info-chat-person-up-right-skills">
                     <div class="person-info-chat-person-string-item">
                         <div class="person-info-chat-person-string-item-part left">Вождение:</div>
-                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.driving.calc_value() }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.profile.driving.calc_value() }}</div>
                     </div>
                     <div class="person-info-chat-person-string-item">
                         <div class="person-info-chat-person-string-item-part left">Стрельба:</div>
-                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.shooting.calc_value() }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.profile.shooting.calc_value() }}</div>
                     </div>
                     <div class="person-info-chat-person-string-item">
                         <div class="person-info-chat-person-string-item-part left">Скрытность:</div>
-                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.masking.calc_value() }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.profile.masking.calc_value() }}</div>
                     </div>
                     <div class="person-info-chat-person-string-item">
                         <div class="person-info-chat-person-string-item-part left">Механик:</div>
-                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.engineering.calc_value() }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.profile.engineering.calc_value() }}</div>
                     </div>
                     <div class="person-info-chat-person-string-item">
                         <div class="person-info-chat-person-string-item-part left">Торговля:</div>
-                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.trading.calc_value() }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.profile.trading.calc_value() }}</div>
                     </div>
                     <div class="person-info-chat-person-string-item">
                         <div class="person-info-chat-person-string-item-part left">Лидерство:</div>
-                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.leading.calc_value() }}</div>
+                        <div class="person-info-chat-person-string-item-part right value-color">{{ agent.example.profile.leading.calc_value() }}</div>
                     </div>
                 </div>
             </div>
@@ -222,12 +222,12 @@
 
         <div class="person-info-chat-person-down">
             <div class="person-info-chat-person-down-title">О себе:</div>
-            <div class="person-info-chat-person-down-about">{{ agent.example.about_self }}</div>
+            <div class="person-info-chat-person-down-about">{{ agent.example.profile.about_self }}</div>
         </div>
     </div>
     <div id="personInfoChatPageTransport" class="person-info-chat-body-page">
-        {% if agent.example.car is not None %}
-        {% set car = agent.example.car %}
+        {% if agent.example.profile.car is not None %}
+        {% set car = agent.example.profile.car %}
         <div class="person-info-chat-page-transport-picture">
             {% include location/car_info_img_ext.html %}
         </div>
