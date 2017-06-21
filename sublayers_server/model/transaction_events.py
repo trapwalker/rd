@@ -261,7 +261,7 @@ class TransactionBuyInsurance(TransactionEvent):
         if target_insurance.base_price > example_agent.profile.balance:
             return
 
-        example_agent.set_balance(time=self.time, delta=-target_insurance.base_price)
+        example_agent.profile.set_balance(time=self.time, delta=-target_insurance.base_price)
 
         if target_insurance.node_hash() == agent_insurance.node_hash():
             # Продлить страховку
