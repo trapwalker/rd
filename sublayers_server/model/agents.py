@@ -172,10 +172,8 @@ class Agent(Object):
         #     self.example.profile.car = None
         # todo: save chats, party...
         # self.example.save()
-        agent = self
-        def save_end(*av, **kw):
-            log.debug('Agent %s saved', agent)
-        self.example.save(upsert=True, callback=save_end)
+        self.example.save()
+        log.debug('Agent %s saved', self)
 
     @property
     def is_online(self):

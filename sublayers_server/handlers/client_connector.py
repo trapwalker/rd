@@ -23,8 +23,7 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         return True
 
     def check_origin(self, origin):
-        log.warning('origin=%s', origin)
-        # todo: reject connections from wrong servers
+        log.warning('origin=%s  # todo: reject connections from wrong servers', origin)
         return True
 
     def open(self):
