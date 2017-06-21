@@ -479,7 +479,11 @@ class Agent(Object):
             d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp)
             self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}'.format(self.car, target, killer))
 
-        self.example.profile.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
+        if self.party:
+            self.party.on_exp(agent=self, dvalue=d_user_exp, event=event)
+        else:
+            self.example.profile.set_exp(dvalue=d_user_exp, time=event.time)   # начисляем опыт агенту
+
 
         if target.owner_example:
             self_lvl = self.example.profile.get_lvl()
