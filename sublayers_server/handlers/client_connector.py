@@ -29,14 +29,13 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def open(self):
         # todo: make agent_init event
-        print 'new connect open !!!'
         self._ping_timeout_handle = None
         self.ping_number = 0
         self._current_ping = 0
         self.agent = None
         user = self.current_user
         assert user
-        log.info('!!! Open User connection: %s%s', self.current_user, user.quick)
+        log.info('!!! Open client connection: %s (mode: %s)', self.current_user, 'quick' if user.quick else 'basic')
         self.application.clients.append(self)
         # log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
