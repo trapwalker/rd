@@ -274,7 +274,7 @@ class Party(object):
         self.invites = []
         self.exp_share = False
 
-        self.capacity_table = self.owner.server.reg['rpg_settings/partytable']
+        self.capacity_table = self.owner.server.reg.get('/registry/rpg_settings/partytable')
 
         # создание чат-комнаты пати
         self.room = PartyChatRoom(time=time, name=name)
@@ -555,9 +555,9 @@ class Party(object):
         if self.exp_share:
             val = dvalue / len(self.members)
             for member in self.members:
-                member.agent.example.set_exp(dvalue=val, time=event.time)
+                member.agent.example.profile.set_exp(dvalue=val, time=event.time)
         else:
-            agent.example.set_exp(dvalue=dvalue, time=event.time)
+            agent.example.profile.set_exp(dvalue=dvalue, time=event.time)
 
     @event_deco
     def change_share_option(self, event, agent, share_exp):
