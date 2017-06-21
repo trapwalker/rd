@@ -22,6 +22,7 @@ class TraderRefreshEvent(Event):
     def on_perform(self):
         super(TraderRefreshEvent, self).on_perform()
         with Timer() as tm:
+            log.debug('Trader {!r} refresh start'.format(self.trader))
             self.trader.on_refresh(event=self)
             log.debug('Trader {!r} refresh time is: {:.3f}s'.format(self.trader, tm.duration))
         TraderRefreshEvent(trader=self.trader, location=self.location, time=self.time + self.trader.refresh_time).post()
@@ -192,11 +193,11 @@ class Trader(Institution):
                         is_infinity=is_infinity,
                         is_lot=True,
                         price_option=price_option,
-                        item=item
+                        item=item,
                     )
                 )
-
-        self.send_prices(location=event.location, time=event.time)
+        if event is not None:
+            self.send_prices(location=event.location, time=event.time)
         log.debug('Trader {self!r}.on_refresh END'.format(**locals()))
 
     def send_prices(self, location, time):
@@ -213,7 +214,7 @@ class Trader(Institution):
                         item=price.item.as_client_dict(),
                         count=price.count,
                         infinity=price.is_infinity,
-                        price=price.get_price(price.item, agent)
+                        price=price.get_price(price.item, agent),
                     ))
         return res
 
@@ -267,6 +268,6 @@ class Trader(Institution):
                 is_infinity=False,
                 is_lot=True,
                 price_option=price_option,
-                item=item
+                item=item,
             )
         )

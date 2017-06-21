@@ -43,7 +43,18 @@ def test3(reload=True, save_loaded=True):
     #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     #a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
     #q = reg.get('/registry/agents/user/quick')
-    x = reg.get('reg:///registry/poi/quick_game_poi/quick_game_respawn/qg_respawn_01')
+    a = reg.get('reg:///registry/institutions/trader/paloma_shaun_fisher')
+    b = reg.get('reg:///registry/institutions/trader/prior_hershey_la_palmas')
+    c = reg.get('reg:///registry/institutions/trader/whitehill_bob_ferolito')
+
+    def do(tr):
+        with Timer(name=tr.name, logger=log) as tm:
+            tr.on_refresh(None)
+        log.debug('-' * 80)
+
+    do(a)
+    do(b)
+    do(c)
     #x.expand_links()
     #x.respawn_objects
 
@@ -75,7 +86,7 @@ if __name__ == '__main__':
     src = 'fs' if rel else 'db'
 
     r = reg
-    n = 1
+    n = 0
     for i in range(n):
         fn = 'reg_{}_{}.yaml'.format(src, str(i).zfill(int(math.ceil(math.log10(n)))))
 
