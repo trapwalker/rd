@@ -5,10 +5,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node, EmbeddedNodeField, RegistryLinkField
-from sublayers_server.model.registry_me.odm_position import PositionField
-
-from mongoengine import StringField, ListField, IntField
+from sublayers_server.model.registry_me.tree import (
+    Node,
+    StringField, ListField, IntField,
+    EmbeddedNodeField, RegistryLinkField, PositionField,
+)
 
 
 class WorldSettings(Node):

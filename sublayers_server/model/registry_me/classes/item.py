@@ -4,9 +4,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node, Subdoc, RegistryLinkField, EmbeddedNodeField
-
-from mongoengine import IntField, FloatField, StringField, ListField, EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import (
+    Node, Subdoc,
+    IntField, FloatField, StringField, ListField, EmbeddedDocumentField,
+    RegistryLinkField, EmbeddedNodeField,
+)
 
 
 class Item(Node):

@@ -5,9 +5,12 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.inventory import Inventory as ModelInventory, ItemState
 from sublayers_server.model.events import Event
-from sublayers_server.model.registry_me.tree import Subdoc, EmbeddedNodeField
+from sublayers_server.model.registry_me.tree import (
+    Subdoc, 
+    IntField, ListField, EmbeddedDocumentField,
+    EmbeddedNodeField,
+)
 
-from mongoengine import IntField, ListField, EmbeddedDocumentField
 from collections import Counter
 
 

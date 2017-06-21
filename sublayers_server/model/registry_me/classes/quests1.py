@@ -5,10 +5,10 @@ log = logging.getLogger(__name__)
 
 import random
 from sublayers_server.model.registry_me.classes.quests import DeliveryQuest
-from sublayers_server.model.registry_me.tree import Node, Subdoc, EmbeddedNodeField, RegistryLinkField
-
-from mongoengine import (
+from sublayers_server.model.registry_me.tree import (
+    Node, Subdoc,
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
+    EmbeddedNodeField, RegistryLinkField,
 )
 
 

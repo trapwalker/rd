@@ -4,9 +4,10 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import ArmorerItem, Item
-from sublayers_server.model.registry_me.tree import RegistryLinkField, EmbeddedNodeField
-
-from mongoengine import StringField, FloatField, ListField
+from sublayers_server.model.registry_me.tree import (
+    StringField, FloatField, ListField,
+    RegistryLinkField, EmbeddedNodeField,
+)
 
 
 class RocketLauncher(ArmorerItem):

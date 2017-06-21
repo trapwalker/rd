@@ -5,9 +5,11 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.poi import Institution
 from sublayers_server.model.registry_me.classes.quest_item import QuestItem
-from sublayers_server.model.registry_me.tree import Subdoc, EmbeddedNodeField
-
-from mongoengine import StringField, IntField, FloatField, ListField, EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import (
+    Subdoc, 
+    StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
+    EmbeddedNodeField,
+)
 
 import random
 

@@ -20,12 +20,12 @@ if __name__ == '__main__':
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.tree import (
+    connect,
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
     STAT,
 )
 
 from pprint import pprint as pp
-from mongoengine import connect
 
 
 class A(Node):
@@ -55,6 +55,8 @@ def test3(reload=True, save_loaded=True):
     do(a)
     do(b)
     do(c)
+
+    print(a.refresh_time)
     #x.expand_links()
     #x.respawn_objects
 

@@ -3,9 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node, RegistryLinkField
-
-from mongoengine import StringField, IntField, ListField
+from sublayers_server.model.registry_me.tree import (
+    Node, 
+    StringField, IntField, ListField,
+    RegistryLinkField,
+)
 
 
 class RoleClass(Node):

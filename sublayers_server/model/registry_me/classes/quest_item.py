@@ -4,9 +4,11 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import Item
-from sublayers_server.model.registry_me.tree import Subdoc, EmbeddedNodeField
-
-from mongoengine import StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField
+from sublayers_server.model.registry_me.tree import (
+    Subdoc, 
+    StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField,
+    EmbeddedNodeField,
+)
 
 
 class QuestInventory(Subdoc):
