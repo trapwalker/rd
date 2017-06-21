@@ -254,11 +254,11 @@ class Subdoc(EmbeddedDocument):
             if hasattr(value, 'as_client_dict'):
                 return value.as_client_dict()
 
-            if isinstance(attr, ListField):
+            if isinstance(field, ListField):
                 subfield = field.field
                 return [clean_value(subfield, v) for v in value]
 
-            if isinstance(attr, DictField):
+            if isinstance(field, DictField):
                 subfield = field.field
                 return {k: clean_value(subfield, v) for k, v in value.iteritems()}
 
