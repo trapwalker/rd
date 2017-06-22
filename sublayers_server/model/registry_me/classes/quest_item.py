@@ -55,7 +55,7 @@ class QuestInventoryField(EmbeddedDocumentField):
 
 class QuestItem(Item):
     group_id = StringField(caption=u'Тип квестового айтема')
-    starttime = DateTimeField(tags={'client'}, caption=u'Время добавления итема в инвентарь', doc=u'Время старта квеста')
+    starttime = FloatField(tags={'client'}, caption=u'Время добавления итема в инвентарь', doc=u'Время старта квеста')
     deadline = IntField(tags={'client'}, caption=u'Время жизни итема в инвентаре', doc=u'')
 
     effect_title = StringField(caption=u'Наименование эффекта квестового итема для окна персонажа')

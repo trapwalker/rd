@@ -240,7 +240,7 @@ class Quest(Node):
     list_icon   = StringField(tags={'client'}, caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
     map_icon    = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
     level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
-    starttime   = DateTimeField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
+    starttime   = FloatField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
     deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
     design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
 
@@ -780,7 +780,6 @@ class DeliveryQuest(Quest):
             field=EmbeddedNodeField(
                 document_type='sublayers_server.model.registry_me.classes.item.Item',
                 caption=u"Необходимый итем",
-                tags={'client'},
             ),
         ),
         reinst=True,
@@ -790,8 +789,6 @@ class DeliveryQuest(Quest):
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Необходимый итем",
-            reinst=True,
-            tags={'client'},
         ),
     )
 
