@@ -172,7 +172,8 @@ class Agent(Object):
         #     self.example.profile.car = None
         # todo: save chats, party...
         # self.example.save()
-        self.example.save()
+        self.example.delete()  # TODO: Добиться правильного пересохранения агента
+        self.example.save(force_insert=True)
         log.debug('Agent %s saved', self)
 
     @property
