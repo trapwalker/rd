@@ -10,7 +10,7 @@ import tornado.gen
 
 from tornado.options import options
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.registry_me.odm_position import Position
+from sublayers_server.model.registry_me.tree import Position
 
 
 class PlayHandler(BaseHandler):

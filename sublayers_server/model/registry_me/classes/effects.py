@@ -4,9 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
-from sublayers_server.model.registry_me.tree import Node
-
-from mongoengine import StringField, IntField, BooleanField
+from sublayers_server.model.registry_me.tree import Node, StringField, IntField, BooleanField
 
 
 class Effect(Node):

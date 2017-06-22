@@ -7,11 +7,12 @@ from datetime import datetime
 import time
 import math
 
-from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_server.model.registry_me.classes.inventory import InventoryField
-from sublayers_server.model.registry_me.tree import Node, Subdoc, RegistryLinkField, EmbeddedNodeField
-
-from mongoengine import IntField, FloatField, StringField, ListField, EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import (
+    Node, Subdoc,
+    IntField, FloatField, StringField, ListField, EmbeddedDocumentField,
+    RegistryLinkField, EmbeddedNodeField, PositionField,
+)
 
 
 class POI(Node):

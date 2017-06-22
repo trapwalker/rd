@@ -10,9 +10,12 @@ from sublayers_server.model.messages import ZoneMessage
 from sublayers_server.model.events import InsertNewServerZone
 from sublayers_server.model import tags
 from sublayers_server.model.tile_pixel_picker import TilePicker
-from sublayers_server.model.registry_me.tree import Node, RegistryLinkField
+from sublayers_server.model.registry_me.tree import (
+    Node,
+    IntField, ListField, StringField,
+    RegistryLinkField,
+)
 
-from mongoengine import IntField, ListField, StringField
 from tornado.options import options
 from collections import Iterable
 import os

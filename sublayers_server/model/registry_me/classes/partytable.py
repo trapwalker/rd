@@ -3,9 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node
-
-from mongoengine import ListField, EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import Node, ListField, EmbeddedDocumentField
 
 
 class PartyTables(Node):

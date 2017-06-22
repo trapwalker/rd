@@ -3,9 +3,10 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node
-
-from mongoengine import IntField, FloatField, ListField, EmbeddedDocumentField, EmbeddedDocument
+from sublayers_server.model.registry_me.tree import (
+    Node, 
+    IntField, FloatField, ListField, EmbeddedDocumentField, EmbeddedDocument,
+)
 
 
 class Pair(EmbeddedDocument):

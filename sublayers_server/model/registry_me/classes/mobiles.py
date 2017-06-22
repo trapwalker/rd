@@ -7,10 +7,12 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
 from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry_me.classes.inventory import InventoryField
-from sublayers_server.model.registry_me.odm_position import PositionField
-from sublayers_server.model.registry_me.tree import Node, Subdoc, RegistryLinkField, EmbeddedNodeField
+from sublayers_server.model.registry_me.tree import (
+    Node, Subdoc,
+    IntField, StringField, FloatField, EmbeddedDocumentField, ListField,
+    RegistryLinkField, EmbeddedNodeField, PositionField,
+)
 
-from mongoengine import IntField, StringField, FloatField, EmbeddedDocumentField, ListField
 from math import pi
 
 

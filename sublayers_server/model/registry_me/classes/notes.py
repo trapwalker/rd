@@ -3,10 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Subdoc, get_uuid, RegistryLinkField, IntField
 from sublayers_server.model.messages import Message
-
-from mongoengine import StringField, UUIDField, FloatField
+from sublayers_server.model.registry_me.tree import (
+    Subdoc, get_uuid,
+    IntField, StringField, UUIDField, FloatField,    
+    RegistryLinkField, 
+)
 
 
 class AddNoteMessage(Message):

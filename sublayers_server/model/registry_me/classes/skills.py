@@ -3,9 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node, Subdoc, RegistryLinkField
+from sublayers_server.model.registry_me.tree import (
+    Node, Subdoc, 
+    StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
+    RegistryLinkField,
+)
 
-from mongoengine import StringField, IntField, FloatField, ListField, EmbeddedDocumentField
 import math
 
 

@@ -16,12 +16,10 @@ from sublayers_server.model.events import event_deco
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry_me.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.registry_me.tree import get_global_registry
+from sublayers_server.model.registry_me.tree import get_global_registry, ValidationError
 from sublayers_common.user_profile import User as UserProfile
 from sublayers_common.ctx_timer import Timer
 from sublayers_common.handlers.base import BaseHandler
-
-from mongoengine import ValidationError
 
 import os
 import sys

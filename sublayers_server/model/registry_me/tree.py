@@ -31,12 +31,23 @@ from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset import DO_NOTHING
-from mongoengine.fields import (
-    IntField, StringField, UUIDField, ReferenceField, BooleanField,
-    ListField, DictField, EmbeddedDocumentField, MapField,
-    GenericReferenceField, BaseField, MapField,
-    RECURSIVE_REFERENCE_CONSTANT,
+from mongoengine.fields import BaseField
+from mongoengine import (
+    BooleanField,
+    IntField,
+    FloatField,
+    StringField,
+    UUIDField,
+    DateTimeField,
+    ListField,
+    DictField,
+    MapField,
+    EmbeddedDocumentField,
+
+    ReferenceField,
+    GenericReferenceField,
 )
+from sublayers_server.model.registry_me.odm_position import PositionField, Position
 
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
@@ -77,7 +88,7 @@ class RegistryLinkField(ReferenceField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        self._auto_dereference = instance._fields[self.name]._auto_dereference
+        self._auto_dereference = type(instance)._fields[self.name]._auto_dereference
         global REGISTRY
 
         if value is not None and self._auto_dereference and isinstance(value, basestring) and REGISTRY is not None:
@@ -237,7 +248,7 @@ class Subdoc(EmbeddedDocument):
         elif tags is not None:
             tags = set(tags)
 
-        for name, attr in self._fields.items():
+        for name, attr in type(self)._fields.items():
             field_tags = getattr(attr, 'tags', None)
             if (
                 (tags is None or field_tags is not None and field_tags & tags) and
@@ -292,7 +303,7 @@ class Subdoc(EmbeddedDocument):
 
     def __setattr__(self, key, value):
         if key != '_initialised' and getattr(self, '_initialised', None):
-            field = self.__class__._fields.get(key)  # todo: support dynamic fields too
+            field = type(self)._fields.get(key)  # todo: support dynamic fields too
             if value is not None and isinstance(field, CONTAINER_FIELD_TYPES):
                 value = self._expand_field_value(field, value)
 
@@ -362,7 +373,7 @@ class Subdoc(EmbeddedDocument):
 
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
 
-        for field_name, field in self._fields.items():
+        for field_name, field in type(self)._fields.items():
             if isinstance(field, CONTAINER_FIELD_TYPES):
                 value = getattr(self, field_name)
                 setattr(self, field_name, value)
@@ -470,34 +481,34 @@ class Node(Subdoc):
             if not item.abstract or not reject_abstract:
                 yield item
 
-    def __getattribute__(self, item):
-        if item not in {
-            '_expand_field_value',
-            '_fields', 'parent',
-            '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
-            # BaseDocument.__slots__
-            '_changed_fields', '_initialised', '_created', '_data',
-            '_dynamic_fields', '_auto_id_field', '_db_field_map',
-            '__weakref__',
-            # EmbeddedDocument.__slots__
-            '_instance',
-        }:
-            if self._initialised:
-                field = self._fields.get(item, None)
-                if field and not getattr(field, 'not_inherited', False) and item not in self._data:
-                    # Ищем значение у предков
-                    parent = self.parent
-
-                    if parent is not None and item in parent._fields:
-                        return getattr(parent, item)
-
-                    root_default = getattr(field, 'root_default', None)
-                    root_default = root_default() if root_default is not None and callable(root_default) else root_default
-                    if root_default is None:
-                        return root_default
-                    return field.to_python(root_default)
-
-        return super(Node, self).__getattribute__(item)
+    # def __getattribute__(self, item):
+    #     if item not in {
+    #         '_expand_field_value',
+    #         '_fields', 'parent',
+    #         '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
+    #         # BaseDocument.__slots__
+    #         '_changed_fields', '_initialised', '_created', '_data',
+    #         '_dynamic_fields', '_auto_id_field', '_db_field_map',
+    #         '__weakref__',
+    #         # EmbeddedDocument.__slots__
+    #         '_instance',
+    #     }:
+    #         if self._initialised:
+    #             field = type(self)._fields.get(item, None)
+    #             if field and not getattr(field, 'not_inherited', False) and item not in self._data:
+    #                 # Ищем значение у предков
+    #                 parent = self.parent
+    #
+    #                 if parent is not None and item in type(parent)._fields:
+    #                     return getattr(parent, item)
+    #
+    #                 root_default = getattr(field, 'root_default', None)
+    #                 root_default = root_default() if root_default is not None and callable(root_default) else root_default
+    #                 if root_default is None:
+    #                     return root_default
+    #                 return field.to_python(root_default)
+    #
+    #     return super(Node, self).__getattribute__(item)
 
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
@@ -588,7 +599,7 @@ class Node(Subdoc):
         if _uri:
             for k, v in _uri.params:
                 # todo: Support deep attributes detalization in URI params (subnode.attr -> subnode__attr)
-                field = self._fields.get(k, None)
+                field = type(self)._fields.get(k, None)
                 if field:
                     # todo: skip errors with warnings
                     try:
@@ -603,7 +614,7 @@ class Node(Subdoc):
         extra.update(kw, parent=self if self.uri else self.parent)
         node = self.__class__(**extra)
 
-        # for field_name, field in node._fields.items():
+        # for field_name, field in type(node)._fields.items():
         #     if (
         #         not isinstance(field, CONTAINER_FIELD_TYPES)
         #         or not getattr(field, 'reinst', False)
@@ -882,6 +893,53 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
             log.warning("Registry path unspecified. It's empty now!")
 
     return REGISTRY
+
+
+def field_getter_patch(field):
+    old_getter = field.__get__
+
+    def new_getter(self, instance, owner):
+        """Descriptor for retrieving a value from a field in a document.
+        """
+        # print('new getter:', self, self.name)
+        if instance is None:
+            # Document class being used rather than a document object
+            return self
+
+        # Get value from document instance if available
+        if instance._initialised:
+            name = self.name
+            _data = instance._data
+            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False) and name not in _data:
+                parent = instance.parent
+                if parent is not None and name in type(parent)._fields:
+                    return getattr(parent, name)
+
+                root_default = getattr(self, 'root_default', None)
+                root_default = root_default() if root_default is not None and callable(root_default) else root_default
+                if root_default is None:
+                    return root_default
+                return self.to_python(root_default)
+
+        return old_getter(self, instance, owner)
+
+    field.__get__ = new_getter
+
+
+def _patch_all_fields_to_inheritance_support():
+    u"""
+    Патчит все типы полей, импортированные в этом модуле
+    для эффективной поддержки наследования в нодах реестра
+    """
+    for k, v in globals().items():
+        if isinstance(v, type) and issubclass(v, BaseField):
+            field_getter_patch(v)
+
+
+# map(field_getter_patch, [
+#     BaseField,
+# ])
+_patch_all_fields_to_inheritance_support()
 ########################################################################################################################
 ########################################################################################################################
 class STAT(object):

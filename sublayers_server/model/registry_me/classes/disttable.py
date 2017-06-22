@@ -3,8 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.registry_me.tree import Node, Subdoc, EmbeddedNodeField, RegistryLinkField
-from mongoengine import StringField, ListField, FloatField, EmbeddedDocumentField, BooleanField
+from sublayers_server.model.registry_me.tree import (
+    Node, Subdoc, 
+    BooleanField, FloatField, StringField, ListField, EmbeddedDocumentField,
+    EmbeddedNodeField, RegistryLinkField,
+)
 
 
 class DistTownPair(Subdoc):
