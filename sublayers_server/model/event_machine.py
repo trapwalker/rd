@@ -109,18 +109,19 @@ class Server(object):
         zones = zones and zones.subnodes.values() or []
         for zone in sorted(zones, key=lambda a_zone: a_zone.order_key):
             try:
+                duration = 0
                 if not zone.is_active:
-                    log.debug('Zone "%s" activation start', zone.name)
-                    zone.activate(server=self, time=time)
-                    # todo: Генерировать исключения при неудачной активации зон
-                    # todo: Измерять время активации зон
-                    # todo: Фрагментарная параллельная загрузка зон
+                    with Timer() as tm:
+                        zone.activate(server=self, time=time)
+                        # todo: Генерировать исключения при неудачной активации зон
+                        # todo: Фрагментарная параллельная загрузка зон
+                        duration = tm.duration
                 if zone.is_active:
-                    log.info('Zone "%s" activated successfully', zone.name)
+                    log.info('Zone "%s" activated successfull (%.3fs)', zone.name, duration)
                 else:
-                    log.warning('Zone "%s" is not activated', zone.name)
+                    log.warning('Zone "%s" is not activated (%.3fs)', zone.name, duration)
             except Exception as e:
-                log.exception('Loading zone "%s" error: %s', zone.name, e)
+                log.exception('Zone "%s" activation error: %s', zone.name, e)
 
     def load_world(self):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
