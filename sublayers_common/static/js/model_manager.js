@@ -396,12 +396,13 @@ var ClientManager = (function () {
                 teachingMapManager.update(new TryGameTeachingMapNote(note));
                 break;
             case 'MapMarkerNote':
+                //console.log('MapMarkerNote', note);
                 var quest = journalManager.quests.getQuest(note.quest_uid);
                 var rad_note = new QuestMapMarkerNote({
                     quest_uid: note.quest_uid,
                     uid: note.uid,
-                    position: note.marker.position,
-                    radius: note.marker.radius,
+                    position: note.position,
+                    radius: note.radius,
                     icon: quest && quest.map_icon,
                     focus_caption: quest && quest.caption
                 });

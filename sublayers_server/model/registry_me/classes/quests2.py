@@ -100,7 +100,8 @@ class MeasureRadiation(Quest):
                 quest_uid=self.uid,
                 note_class=notes.MapMarkerNote,
                 time=event.time,
-                marker=marker,
+                position=marker.position,
+                radius=marker.radius,
             )
             self.measure_notes.append(self.agent.profile.get_note(uid=note_uid))
 
@@ -111,7 +112,7 @@ class MeasureRadiation(Quest):
         temp_notes = self.measure_notes[:]
         for note in temp_notes:
             position = self.agent.profile._agent_model.car.position(time=event.time)
-            if note.marker.is_near(position=position):
+            if note.is_near(position=position):
                 self.log(text=u'Произведено измерение.', event=event, position=position)
                 self.measure_notes.remove(note)
                 self.agent.profile.del_note(uid=note.uid, time=event.time)
@@ -186,8 +187,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
         ).post()
 
 
-# todo: rename to MapActivateItemQuest
-class MapActivateItem(Quest):
+class MapActivateItemQuest(Quest):
     activate_price = IntField(caption=u'Стоимость одной активации итема', tags={'client'})
     activate_radius = FloatField(caption=u'Максимальный радиус активации', tags={'client'})
 
@@ -270,7 +270,8 @@ class MapActivateItem(Quest):
             quest_uid=self.uid,
             note_class=notes.MapMarkerNote,
             time=event.time,
-            marker=self.activate_points[0]
+            position=self.activate_points[0].position,
+            radius=self.activate_points[0].radius,
         )
         self.activate_notes.append(self.agent.profile.get_note(uid=note_uid))
 
@@ -281,7 +282,7 @@ class MapActivateItem(Quest):
         temp_notes = self.activate_notes[:]
         for note in temp_notes:
             position = self.agent.profile._agent_model.car.position(time=event.time)
-            if note.marker.is_near(position=position):
+            if note.is_near(position=position):
                 self.log(text=u'Произведена активация.', event=event, position=position)
                 self.activate_notes.remove(note)
                 self.agent.profile.del_note(uid=note.uid, time=event.time)

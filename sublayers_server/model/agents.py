@@ -678,10 +678,9 @@ class Agent(Object):
         if damage:  # todo: пробросить сюда Ивент
             self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
-    def on_activated_item(self, item, inventory, time):
+    def on_activated_item(self, item, inventory, event):
         # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
-        # todo: пробросить сюда Ивент (чтоб не создавать пустой)
-        self.example.on_event(event=Event(server=self.server, time=time), cls=OnActivateItem, item_example=item.example)
+        self.example.profile.on_event(event=event, cls=OnActivateItem, item_example=item.example)
 
 
 # todo: Переименовать в UserAgent

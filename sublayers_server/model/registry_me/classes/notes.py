@@ -7,8 +7,10 @@ from sublayers_server.model.messages import Message
 from sublayers_server.model.registry_me.tree import (
     Subdoc, get_uuid,
     IntField, StringField, UUIDField, FloatField,    
-    RegistryLinkField, 
+    RegistryLinkField, PositionField
 )
+
+from sublayers_server.model.vectors import Point
 
 
 class AddNoteMessage(Message):
@@ -48,9 +50,17 @@ class Note(Subdoc):
 
 
 class MapMarkerNote(Note):
-    #marker = EmbeddedDocumentField(document_type='sublayers_server.model.registry_me.classes.quests2.MarkerMapObject', tags={'client'})
-    pass
-    # todo: Сослаться на маркер по идентификатору
+    position = PositionField(caption=u"Координаты объекта", tags={'client'})
+    radius = FloatField(caption=u"Радиус взаимодействия с объектом", tags={'client'})
+
+    def is_near(self, position):
+        radius = self.radius or 0  # todo: review !!! if self.radius is None
+        if isinstance(position, PositionField):
+            position = position.as_point()
+        if isinstance(position, Point):
+            distance = self.position.as_point().distance(target=position)
+            return distance <= radius
+        return False
 
 
 class NPCPageNote(Note):

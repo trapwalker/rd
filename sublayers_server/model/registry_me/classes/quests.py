@@ -7,7 +7,7 @@ import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry_me.classes import notes
 from sublayers_server.model.registry_me.tree import (
-    Node, Subdoc,
+    Node, Subdoc, UUIDField,
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
@@ -73,9 +73,9 @@ def script_compile(code, fn):
 
 
 class LogRecord(Subdoc):
-    quest_uid   = StringField  (tags={'client'}, doc=u"UID of quest")
-    time        = DateTimeField(tags={'client'}, doc=u"Время создания записи")
-    text        = StringField  (tags={'client'}, doc=u"Текст записи")
+    quest_uid   = UUIDField(doc=u"UID of quest", tags={'client'})
+    time        = FloatField(tags={'client'}, doc=u"Время создания записи")
+    text        = StringField(tags={'client'}, doc=u"Текст записи")
     position    = PositionField(tags={'client'}, doc=u"Привязанная к записи позиция на карте")
     # target  # todo: target of log record
 
