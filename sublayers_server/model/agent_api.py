@@ -193,11 +193,12 @@ class InitTimeEvent(Event):
 
 
 class SetPartyEvent(Event):
-    def __init__(self, agent, name=None, description=u'', **kw):
+    def __init__(self, agent, name=None, description=u'', exp_share_type=False, **kw):
         super(SetPartyEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.name = name
         self.description = description
+        self.exp_share_type = exp_share_type
 
     def on_perform(self):
         super(SetPartyEvent, self).on_perform()
@@ -208,7 +209,11 @@ class SetPartyEvent(Event):
         else:
             party = Party.search(self.name)
             if party is None:
-                party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
+                party = Party(time=self.time,
+                              owner=self.agent,
+                              name=self.name,
+                              description=self.description,
+                              exp_share=self.exp_share_type)
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
         # todo: save parties
@@ -438,11 +443,12 @@ class AgentAPI(API):
         self.agent.append_car(car=self.car, time=time)
 
     @public_method
-    def send_create_party_from_template(self, name, description):
+    def send_create_party_from_template(self, name, description, exp_share_type):
         assert name is None or isinstance(name, unicode)
         assert description is None or isinstance(description, unicode)
+        assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("send_create_party_from_template name={!r}".format(name))
-        self.set_party(name=name, description=description)
+        self.set_party(name=name, description=description, exp_share_type=exp_share_type)
 
     @public_method
     def send_join_party_from_template(self, name):
@@ -451,12 +457,13 @@ class AgentAPI(API):
         self.set_party(name=name)
 
     @public_method
-    def set_party(self, name=None, description=u''):
+    def set_party(self, name=None, description=u'', exp_share_type=False):
         # todo: review
         assert name is None or isinstance(name, unicode)
         assert description is None or isinstance(description, unicode)
+        assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("set_party name={!r}".format(name))
-        SetPartyEvent(agent=self.agent, name=name, description=description,
+        SetPartyEvent(agent=self.agent, name=name, description=description, exp_share_type=exp_share_type,
                       time=self.agent.server.get_time()).post()
 
     @public_method

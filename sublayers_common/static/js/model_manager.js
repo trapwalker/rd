@@ -1617,13 +1617,14 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description) {
+    ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description, exp_share_type) {
         var mes = {
             call: "send_create_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name && name.toString(),
-                description: description
+                name: name,
+                description: description,
+                exp_share_type: exp_share_type == 1
             }
         };
         rpcCallList.add(mes);
