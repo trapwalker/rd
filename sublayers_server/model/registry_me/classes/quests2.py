@@ -53,7 +53,7 @@ class MeasureRadiation(Quest):
         default=[],
         caption=u"Список выбранных пунктов для замеров",
         field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry.classes.quests2.MarkerMapObject'
+            document_type='sublayers_server.model.registry_me.classes.quests2.MarkerMapObject'
         ),
         reinst=True,
     )
@@ -67,7 +67,7 @@ class MeasureRadiation(Quest):
         default=[],
         caption=u"Список активных нотов маркеров на карте",
         field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
+            document_type='sublayers_server.model.registry_me.classes.notes.MapMarkerNote'
         ),
         reinst=True,
     )
@@ -91,7 +91,7 @@ class MeasureRadiation(Quest):
             self.measure_count,
             u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
             self.reward_money,
-            self.reward_karma
+            self.reward_karma,
         )
 
     def init_notes(self, event):
@@ -100,7 +100,7 @@ class MeasureRadiation(Quest):
                 quest_uid=self.uid,
                 note_class=notes.MapMarkerNote,
                 time=event.time,
-                marker=marker
+                marker=marker,
             )
             self.measure_notes.append(self.agent.profile.get_note(uid=note_uid))
 
@@ -157,7 +157,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
             len(self.delivery_set),
             u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
             self.reward_money,
-            self.reward_karma
+            self.reward_karma,
         )
 
     def create_poi_container(self, event):
@@ -194,20 +194,20 @@ class MapActivateItem(Quest):
     activate_points_generator = ListField(
         default=[],
         caption=u"Список областей генерации пунктов замеров",
-        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
-        reinst=True
+        field=EmbeddedDocumentField(document_type=MarkerMapObject),
+        reinst=True,
     )
     activate_points = ListField(
         default=[],
         caption=u"Список областей генерации пунктов замеров",
-        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
-        reinst=True
+        field=EmbeddedDocumentField(document_type=MarkerMapObject),
+        reinst=True,
     )
 
     activate_items_generator = ListField(
         caption=u"Список возможных итемов для активации",
         field=EmbeddedNodeField(
-            document_type='sublayers_server.model.registry.classes.item.Item',
+            document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,
             tags={'client'},
@@ -216,7 +216,7 @@ class MapActivateItem(Quest):
     activate_items = ListField(
         caption=u"Список итемов для доставки",
         field=EmbeddedNodeField(
-            document_type='sublayers_server.model.registry.classes.item.Item',
+            document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Необходимый итем",
             reinst=True,
             tags={'client'},
@@ -227,7 +227,7 @@ class MapActivateItem(Quest):
         default=[],
         caption=u"Список активных нотов маркеров на карте",
         field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry.classes.notes.MapMarkerNote'
+            document_type='sublayers_server.model.registry_me.classes.notes.MapMarkerNote'
         ),
         reinst=True,
     )

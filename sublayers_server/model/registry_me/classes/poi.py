@@ -209,6 +209,6 @@ class Parking(Institution):
 
 class Nukeoil(Institution):
     insurance_list = ListField(
-        caption=u"Список продаваемых страховок", tags='client',
+        caption=u"Список продаваемых страховок", tags={'client'},
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.insurance.Insurance'),
     )

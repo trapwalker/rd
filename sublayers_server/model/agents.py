@@ -40,7 +40,7 @@ class Agent(Object):
     # todo: Делать сохранение неюзер-агентов в особую коллекцию без идентификации по профилю
     def __init__(self, user, time, example, party=None, **kw):
         """
-        @type example: sublayers_server.model.registry.classes.agents.Agent
+        @type example: sublayers_server.model.registry_me.classes.agents.Agent
         """
         super(Agent, self).__init__(time=time, **kw)
         self.example = example

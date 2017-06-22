@@ -259,11 +259,11 @@ class Quest(Node):
         caption=u"Журнал квеста",
         doc=u"Записи добавляются в журнал методом quest.log(...)",
     )
-    total_reward_money = IntField(caption=u'Общая сумма награды в нукойнах')
-    karma_coef = FloatField(caption=u'Часть кармы от общей награды')
-    money_coef = FloatField(caption=u'Часть нуокйнов от общей награды')
-    reward_money = IntField(caption=u'Сумма денежной награды', tags='client')
-    reward_karma = FloatField(caption=u'Величина кармической награды')
+    total_reward_money = IntField(root_default=0, caption=u'Общая сумма награды в нукойнах')
+    karma_coef = FloatField(root_default=0, caption=u'Часть кармы от общей награды')
+    money_coef = FloatField(root_default=0, caption=u'Часть нукойнов от общей награды')
+    reward_money = IntField(root_default=0, caption=u'Сумма денежной награды', tags={'client'})
+    reward_karma = FloatField(root_default=0, caption=u'Величина кармической награды')
     reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
     reward_items = ListField(
         root_default=[],
@@ -748,7 +748,7 @@ class KillerQuest(Quest):
             getKarmaName(self.max_karma_victims / 100., 'ru'),
             u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
             self.reward_money,
-            self.reward_karma
+            self.reward_karma,
         )
 
     def init_deadline(self):
