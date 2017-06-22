@@ -21,6 +21,7 @@ if __name__ == '__main__':
 
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
+from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_server.model.registry_me.tree import Registry, get_global_registry
 
 from mongoengine import connect
@@ -64,14 +65,20 @@ def reg_clean(ctx):
 @reg.command(name='reload')
 @click.option('--export' ,'-x', 'dest', type=click.File(mode='w'), help='Export registry tree to the file')
 @click.option('--no_db', default=None, help='Do not store registry to DB (false by default)')
+@click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
 @click.pass_context
-def reg_reload(ctx, dest, no_db):
+def reg_reload(ctx, dest, no_db, clean_agents):
     """Clean registry DB, load them from FS and save to DB"""
     try:
         registry = get_global_registry(path=os.path.join(project_root, u'sublayers_world'), reload=True, save_loaded=not no_db)
     except Exception as e:
         log.error(e)
         return
+
+    if clean_agents:
+        with Timer() as tm:
+            deleted_agents_count = Agent.objects.all().delete()
+            log.info('All stored agents deleted: %s (%.3fs)', deleted_agents_count, tm.duration)
 
     if dest:
         _save_to_file(registry, dest)
