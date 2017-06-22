@@ -718,6 +718,13 @@ class KillerQuest(Quest):
         login = agent.login if not agent.profile._agent_model else agent.profile._agent_model.print_login()
         self.victims.append(KillerQuestVictim(login=login, photo=photo, profile_id=agent.user_id))
 
+    def in_victims(self, agent):
+        login = agent.login if not agent.profile._agent_model else agent.profile._agent_model.print_login()
+        for victim in self.victims:
+            if victim.login == login:
+                return True
+        return False
+
     def init_level(self):
         self.level = self.get_available_lvl()
         # Этот код нужен чтобы всегда генерить хотябы самый слабый квест

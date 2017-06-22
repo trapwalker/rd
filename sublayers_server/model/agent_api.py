@@ -120,6 +120,9 @@ class AgentConsoleNamespace(Namespace):
     def exp(self, value):
         self.agent.example.profile.set_exp(dvalue=int(value), time=self.agent.server.get_time())
 
+    def karma(self, value):
+        self.agent.example.profile.set_karma(value=int(value), time=self.agent.server.get_time())
+
     def param(self, name=None):
         if name and self.agent.car:
             # todo: use self.write()
@@ -425,6 +428,7 @@ class AgentAPI(API):
             # log.debug('Need reenter to location')
             self.agent.example.profile.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
             self.agent.example.profile.insurance.car = None
+            self.agent.example.profile.car.position = self.agent.current_location.position(time)
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return

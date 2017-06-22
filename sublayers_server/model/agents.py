@@ -594,7 +594,7 @@ class Agent(Object):
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
         self.log.info('on_die unit={}'.format(unit))
-        self.example.position = unit.position(event.time)  # Запоминаем последние координаты агента
+        self.example.profile.position = unit.position(event.time)  # Запоминаем последние координаты агента
 
         # Перестать всем городам злиться на уже убитого агента:
         for town in Town.get_towns():
