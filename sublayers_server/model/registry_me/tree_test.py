@@ -23,6 +23,7 @@ from sublayers_server.model.registry_me.tree import (
     connect,
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
     STAT,
+    field_getter_decorator,
 )
 
 from pprint import pprint as pp
@@ -48,9 +49,9 @@ def test3(reload=True, save_loaded=True):
     c = reg.get('reg:///registry/institutions/trader/whitehill_bob_ferolito')
 
     def do(tr):
-        with Timer(name=tr.name, logger=log) as tm:
+        with Timer() as tm:
             tr.on_refresh(None)
-        log.debug('-' * 80)
+        log.debug('Trader {tr.name} refrash DONE ({tm.duration:.3f}s)'.format(**locals()))
 
     do(a)
     do(b)

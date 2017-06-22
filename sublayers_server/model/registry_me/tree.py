@@ -67,6 +67,41 @@ class RegistryNodeIsNotFound(RegistryError):
     pass
 
 
+def field_getter_decorator(getter):
+    def new_getter(self, instance, owner):
+        """Descriptor for retrieving a value from a field in a document.
+        """
+        # if __debug__:
+        #     if field_getter_decorator._debug:
+        #         log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
+
+        if instance is None:
+            # Document class being used rather than a document object
+            return self
+
+        # Get value from document instance if available
+        if instance._initialised:
+            name = self.name
+            _data = instance._data
+            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False) and name not in _data:
+                parent = instance.parent
+                if parent is not None and name in type(parent)._fields:
+                    return getattr(parent, name)
+
+                root_default = getattr(self, 'root_default', None)
+                root_default = root_default() if root_default is not None and callable(root_default) else root_default
+                if root_default is None:
+                    return root_default
+                return self.to_python(root_default)
+
+        return getter(self, instance, owner)
+
+    new_getter._old_getter = getter
+    return new_getter
+
+field_getter_decorator._debug = False
+
+
 class RegistryLinkField(ReferenceField):
     def __init__(self, document_type='Node', **kwargs):
         if (
@@ -81,6 +116,7 @@ class RegistryLinkField(ReferenceField):
         self.reverse_delete_rule = DO_NOTHING
         BaseField.__init__(self, **kwargs)
 
+    @field_getter_decorator
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
         if instance is None:  # Document class being used rather than a document object
@@ -895,35 +931,8 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
     return REGISTRY
 
 
-def field_getter_patch(field):
-    old_getter = field.__get__
-
-    def new_getter(self, instance, owner):
-        """Descriptor for retrieving a value from a field in a document.
-        """
-        # print('new getter:', self, self.name)
-        if instance is None:
-            # Document class being used rather than a document object
-            return self
-
-        # Get value from document instance if available
-        if instance._initialised:
-            name = self.name
-            _data = instance._data
-            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False) and name not in _data:
-                parent = instance.parent
-                if parent is not None and name in type(parent)._fields:
-                    return getattr(parent, name)
-
-                root_default = getattr(self, 'root_default', None)
-                root_default = root_default() if root_default is not None and callable(root_default) else root_default
-                if root_default is None:
-                    return root_default
-                return self.to_python(root_default)
-
-        return old_getter(self, instance, owner)
-
-    field.__get__ = new_getter
+def patch_field_getter(field_class):
+    field_class.__get__ = field_getter_decorator(field_class.__get__)
 
 
 def _patch_all_fields_to_inheritance_support():
@@ -933,13 +942,13 @@ def _patch_all_fields_to_inheritance_support():
     """
     for k, v in globals().items():
         if isinstance(v, type) and issubclass(v, BaseField):
-            field_getter_patch(v)
+            patch_field_getter(v)
 
 
-# map(field_getter_patch, [
-#     BaseField,
-# ])
-_patch_all_fields_to_inheritance_support()
+map(patch_field_getter, [
+    BaseField,
+])
+#_patch_all_fields_to_inheritance_support()
 ########################################################################################################################
 ########################################################################################################################
 class STAT(object):
