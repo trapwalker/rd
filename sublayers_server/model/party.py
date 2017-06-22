@@ -260,7 +260,7 @@ class PartyMember(object):
 class Party(object):
     parties = {}
 
-    def __init__(self, time, owner, name=None, description=''):
+    def __init__(self, time, owner, name=None, description='', exp_share=False):
         if (name is None) or (name == ''):
             name = unicode(self.classname)
         while name in self.parties:
@@ -272,7 +272,7 @@ class Party(object):
         self.share_obs = []
         self.members = []
         self.invites = []
-        self.exp_share = False
+        self.exp_share = exp_share
 
         self.capacity_table = self.owner.server.reg.get('/registry/rpg_settings/partytable')
 
