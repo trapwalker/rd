@@ -63,8 +63,8 @@ class AgentProfile(Node):
     )
 
     # Поля статистики агента
-    _exp = FloatField(root_default=0, caption=u"Количество опыта")
-    _frag = IntField(root_default=0, caption=u"Количество убийств")
+    value_exp = FloatField(root_default=0, caption=u"Количество опыта")
+    value_frag = IntField(root_default=0, caption=u"Количество убийств")
 
     car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
@@ -327,22 +327,22 @@ class AgentProfile(Node):
     # Для того, чтобы "закрыть" поле
     @property
     def exp(self):
-        return self._exp
+        return self.value_exp
 
     def set_exp(self, time, value=None, dvalue=None):
-        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
-        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
+        assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         old_lvl = self.get_lvl()
         if value is not None:
-            self._exp = value
+            self.value_exp = value
         if dvalue is not None:
-            self._exp += dvalue
+            self.value_exp += dvalue
         if self._agent_model:
             ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
             lvl = self.get_lvl()
             if lvl > old_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
-        assert self._exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
+        assert self.value_exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
         if value is not None:
@@ -354,13 +354,13 @@ class AgentProfile(Node):
 
     @property
     def frag(self):
-        return self._frag
+        return self.value_frag
 
     def set_frag(self, value=None, dvalue=None):
         if value is not None:
-            self._frag = value
+            self.value_frag = value
         if dvalue is not None:
-            self._frag += dvalue
+            self.value_frag += dvalue
 
     def add_quest(self, quest, time):  # todo: Пробросить event
         self.quests_unstarted.append(quest)

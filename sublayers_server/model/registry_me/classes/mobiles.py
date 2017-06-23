@@ -39,8 +39,8 @@ class Mobile(Node):
     )
 
     # Статистика
-    _exp = FloatField(root_default=0, caption=u"Количество опыта")
-    _frag = IntField(root_default=0, caption=u"Количество убийств")
+    value_exp = FloatField(root_default=0, caption=u"Количество опыта")
+    value_frag = IntField(root_default=0, caption=u"Количество убийств")
     _way = FloatField(root_default=0, caption=u"Пройденный путь")
 
     k_way_exp = FloatField(caption=u"Коэффициент экпы от пройдённого пути")
@@ -250,26 +250,26 @@ class Mobile(Node):
     # Для того, чтобы "закрыть" поле
     @property
     def exp(self):
-        return self._exp
+        return self.value_exp
 
     def set_exp(self, time=None, value=None, dvalue=None):
-        assert dvalue is None or dvalue >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
-        assert value is None or value >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+        assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
+        assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         if value is not None:
-            self._exp = value
+            self.value_exp = value
         if dvalue is not None:
-            self._exp += dvalue
-        assert self._exp >= 0, '_exp={} value={}, dvalue={}'.format(self._exp, value, dvalue)
+            self.value_exp += dvalue
+        assert self.value_exp >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
 
     @property
     def frag(self):
-        return self._frag
+        return self.value_frag
 
     def set_frag(self, value=None, dvalue=None):
         if value is not None:
-            self._frag = value
+            self.value_frag = value
         if dvalue is not None:
-            self._frag += dvalue
+            self.value_frag += dvalue
 
     @property
     def way(self):
