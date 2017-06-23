@@ -31,7 +31,7 @@ from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset import DO_NOTHING
-from mongoengine.fields import BaseField
+from mongoengine.fields import BaseField, ReferenceField
 from mongoengine import (
     BooleanField,
     IntField,
@@ -44,8 +44,7 @@ from mongoengine import (
     MapField,
     EmbeddedDocumentField,
 
-    ReferenceField,
-    GenericReferenceField,
+    #GenericReferenceField,
 )
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
 
@@ -946,7 +945,17 @@ def _patch_all_fields_to_inheritance_support():
 
 
 map(patch_field_getter, [
-    BaseField,
+    #BaseField,
+    BooleanField,
+    IntField,
+    FloatField,
+    StringField,
+    UUIDField,
+    DateTimeField,
+    ListField,
+    DictField,
+    MapField,
+    EmbeddedDocumentField,
 ])
 #_patch_all_fields_to_inheritance_support()
 ########################################################################################################################
