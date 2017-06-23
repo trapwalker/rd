@@ -290,6 +290,7 @@ function addTestNotes() {
 
 
 var interface_scale_big = true;
+var interface_scale_small = true;
 var b_canvas;
 var b_context;
 var pat;
@@ -304,6 +305,7 @@ $(window).resize(resizeWindowHandler);
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
     interface_scale_big = ($(window).width()) > 1550 && ($(window).height() > 880);
+    interface_scale_small = ($(window).width()) <= 1250 || ($(window).height() <= 670);
     var scale_prc_w_width = $(window).width() / 1920;
     var scale_prc_w_height = $(window).height() / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
