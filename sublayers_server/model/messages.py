@@ -105,6 +105,10 @@ class InitTime(Message):
     pass
 
 
+class RefreshMessage(Message):
+    pass
+
+
 class InitAgent(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 

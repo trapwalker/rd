@@ -421,6 +421,11 @@ var ClientManager = (function () {
 
     // Входящие сообщения
 
+    ClientManager.prototype.RefreshMessage = function (event) {
+        console.log('ClientManager.prototype.RefreshMessage: ', event.comment);
+        setTimeout(function(){window.location.reload()}, 2000) ;
+    };
+
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
         // Инициализация Юзера

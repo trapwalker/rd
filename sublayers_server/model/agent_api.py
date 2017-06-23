@@ -123,6 +123,16 @@ class AgentConsoleNamespace(Namespace):
     def karma(self, value):
         self.agent.example.profile.set_karma(value=int(value), time=self.agent.server.get_time())
 
+    def clear_quests(self, value=None):
+        if value == 'all' or value == u'all':
+            self.agent.example.profile.quests_unstarted = []
+            self.agent.example.profile.quests_ended = []
+        self.agent.example.profile.quests_active = []
+        self.agent.example.profile.notes = []
+        t = self.agent.server.get_time()
+        self.agent.on_save(time=t)
+        Message(agent=self.agent, time=t + 1, comment='Quests cleared').post()
+
     def param(self, name=None):
         if name and self.agent.car:
             # todo: use self.write()
