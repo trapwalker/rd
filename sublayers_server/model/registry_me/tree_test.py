@@ -40,26 +40,39 @@ class B(Node):
 
 def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
+    from sublayers_server.model.registry_me.classes.agents import Agent
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     #a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
     #q = reg.get('/registry/agents/user/quick')
-    a = reg.get('reg:///registry/institutions/trader/paloma_shaun_fisher')
-    b = reg.get('reg:///registry/institutions/trader/prior_hershey_la_palmas')
-    c = reg.get('reg:///registry/institutions/trader/whitehill_bob_ferolito')
 
-    def do(tr):
-        with Timer() as tm:
-            tr.on_refresh(None)
-        log.debug('Trader {tr.name} refrash DONE ({tm.duration:.3f}s)'.format(**locals()))
+    # deleted_agents_count = Agent.objects.all().delete()
+    # log.info('All stored agents deleted: %s', deleted_agents_count)
 
-    do(a)
-    do(b)
-    do(c)
+    t1 = reg.get('/registry/poi/locations/towns/paloma')
+    t2 = reg.get('/registry/poi/locations/towns/prior')
 
-    print(a.refresh_time)
-    #x.expand_links()
-    #x.respawn_objects
+    a = Agent.objects.filter(user_id='123456').first()
+    if a is None:
+        a = Agent(
+            login='test_login',
+            user_id='123456',
+            profile=dict(
+                parent='/registry/agents/user',
+                name='123456',
+                role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+            ),
+        ).save()
+        log.debug('Agent created')
+    else:
+        log.debug('Agent loaded')
+
+    log.debug('karma=%r', a.profile.karma)
+    a.profile.karma = None
+    log.debug('karma=%r', a.profile.karma)
+    a.save()
+
+
 
     globals().update(locals())
 
