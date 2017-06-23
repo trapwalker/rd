@@ -32,7 +32,8 @@ class MapTeachingHandler(BaseHandler):
             self.render("map_teaching/try_kill.html")
         elif window_name == 'try_game':
             self.render("map_teaching/try_game.html")
-        self.send_error(status_code=404)
+        else:
+            self.send_error(status_code=404)
 
 
 class ConsoleAnswerTeachingHandler(BaseHandler):
