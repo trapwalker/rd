@@ -131,7 +131,7 @@ class AgentConsoleNamespace(Namespace):
         self.agent.example.profile.notes = []
         t = self.agent.server.get_time()
         self.agent.on_save(time=t)
-        Message(agent=self.agent, time=t + 1, comment='Quests cleared').post()
+        messages.RefreshMessage(agent=self.agent, time=t + 1, comment='Quests cleared').post()
 
     def param(self, name=None):
         if name and self.agent.car:
