@@ -420,7 +420,7 @@ class AgentAPI(API):
         # Отправка сообщений для журнала
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
 
-        if self.agent.current_location is not None:
+        if self.agent.current_location is not None and self.agent.example.profile.in_location_flag:
             log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
@@ -443,10 +443,13 @@ class AgentAPI(API):
             # log.debug('Need reenter to location')
             self.agent.example.profile.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
             self.agent.example.profile.insurance.car = None
-            self.agent.example.profile.car.position = self.agent.current_location.position(time)
+            if self.agent.example.profile.car:  # Если страховка базовая, то не будет машинки
+                self.agent.example.profile.car.position = self.agent.current_location.position(time)
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
+
+        log.watning('on_update_agent_api Agent placing error %s', self.agent)
 
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.profile.car, server=self.agent.server, owner=self.agent)

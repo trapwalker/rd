@@ -427,7 +427,7 @@ class LocalServer(Server):
     #                     name=str(user.pk),
     #                     role_class=random.choice(role_class_list),
     #                     karma=random.randint(-80, 80),
-    #                     _exp=1005,
+    #                     value_exp=1005,
     #                 ),
     #             )
     #             agent_exemplar.profile.driving.value = 20
@@ -566,7 +566,7 @@ class QuickLocalServer(LocalServer):
                         name=str(user.pk),
                         role_class=random.choice(role_class_list),
                         karma=random.randint(-80, 80),
-                        _exp=1005,
+                        value_exp=1005,
                     ),
                 )
                 # todo: ##REFACTORING

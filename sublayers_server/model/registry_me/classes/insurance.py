@@ -57,7 +57,7 @@ class Insurance(QuestItem):
 
     def get_respawn_towns(self, agent, time):
         # Метод для вывода списка доступных городов для респавна на клиенте
-        return [agent.last_town]
+        return [agent.profile.last_town]
 
     def on_die(self, agent, time):
         # Установить агенту last_town (для перемещения его туда в случае ф5 или в случае обычных страховок)

@@ -47,6 +47,9 @@ class AgentProfile(Node):
     # todo: remove ##deprecated
     quick_flag = BooleanField(caption=u'deprecated flag')
 
+    # todo: если будет нормально сохраняться current_location = None, то убрать флаг
+    in_location_flag = BooleanField(caption=u'Флаг для определения в городе агент или нет.')
+
     about_self = StringField(root_default=u'', caption=u'О себе', tags={'client'})
 
     # Карма и отношения
