@@ -70,9 +70,9 @@ def field_getter_decorator(getter):
     def new_getter(self, instance, owner):
         """Descriptor for retrieving a value from a field in a document.
         """
-        # if __debug__:
-        #     if field_getter_decorator._debug:
-        #         log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
+        if __debug__:
+            if field_getter_decorator._debug:
+                log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
 
         if instance is None:
             # Document class being used rather than a document object

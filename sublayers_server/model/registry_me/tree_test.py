@@ -98,6 +98,7 @@ if __name__ == '__main__':
 
     print('DONE')
     print(STAT.s)
+    field_getter_decorator._debug = True
 
     src = 'fs' if rel else 'db'
 
