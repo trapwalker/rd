@@ -628,7 +628,7 @@ class Node(Subdoc):
 
         extra.update(kw, parent=self if self.uri else self.parent)
         node = self.__class__(**extra)
-
+        # todo: (!!!) Reinst fields
         # for field_name, field in type(node)._fields.items():
         #     if (
         #         not isinstance(field, CONTAINER_FIELD_TYPES)
