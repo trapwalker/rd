@@ -101,7 +101,7 @@ if __name__ == '__main__':
     print('DONE')
     if rel:
         print(STAT.s)
-    field_getter_decorator._debug = True
+    #field_getter_decorator._debug = True
 
     # iterable save/load
     src = 'fs' if rel else 'db'

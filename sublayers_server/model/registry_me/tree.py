@@ -346,6 +346,33 @@ class Subdoc(EmbeddedDocument):
 
         super(Subdoc, self).__setattr__(key, value)
 
+    def instantiate(self, _only_fields=None, **kw):
+        data = {}
+        fields = self._fields if _only_fields is None else _only_fields
+        for field_name in fields:
+            if field_name in self._data:
+                field = self._fields[field_name]
+                value = self._data[field_name]
+                data[field_name] = self._copy_field_value(field, value)
+
+        data.update(kw)
+        return type(self)(**data)
+
+    def _copy_field_value(self, field, value):
+        if not isinstance(field, CONTAINER_FIELD_TYPES):
+            return value  # todo: optimize
+        if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
+            return value.instantiate()
+        elif isinstance(field, EmbeddedDocumentField) and isinstance(value, EmbeddedDocument):
+            return copy.deepcopy(value)
+        elif isinstance(field, ListField):
+            return [self._copy_field_value(field.field, v) for v in value]
+        elif isinstance(field, DictField):
+            return {k: self._copy_field_value(field.field, v) for k, v in value.iteritems()}
+        else:
+            log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
+            return value
+
     def _expand_field_value(self, field, value):
         if not isinstance(field, CONTAINER_FIELD_TYPES):
             return value  # todo: optimize
@@ -449,7 +476,7 @@ class Node(Subdoc):
         elif not isinstance(_inherited_fields, set):
             _inherited_fields = set(_inherited_fields)
 
-        _inherited_fields = _inherited_fields - set(kw.keys())
+        _inherited_fields = list(_inherited_fields - set(kw.keys()))  # todo: Make SetField
         super(Node, self).__init__(__only_fields=only_fields, _inherited_fields=_inherited_fields, **kw)
 
     @warn_calling(skip=(r'site-packages',))
@@ -576,14 +603,18 @@ class Node(Subdoc):
         """
         # todo: expand
         #assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
+        cls = type(self)
         extra = {}
         if not self.uri:
-            extra.update(self._data)
+            for k, v in self._data.items():
+                field = cls._fields.get(k, None)
+                if field and not getattr(field, 'not_inherited', False):
+                    extra[k] = self._copy_field_value(field, v)
 
         if _uri:
             for k, v in _uri.params:
                 # todo: Support deep attributes detalization in URI params (subnode.attr -> subnode__attr)
-                field = type(self)._fields.get(k, None)
+                field = cls._fields.get(k, None)
                 if field:
                     # todo: skip errors with warnings
                     try:
@@ -596,24 +627,15 @@ class Node(Subdoc):
                 extra[k] = v
 
         extra.update(kw, parent=self if self.uri else self.parent)
-        node = self.__class__(**extra)
-        # todo: (!!!) Reinst fields
-        # for field_name, field in type(node)._fields.items():
-        #     if (
-        #         not isinstance(field, CONTAINER_FIELD_TYPES)
-        #         or not getattr(field, 'reinst', False)
-        #         or field_name in node._data
-        #     ):
-        #         continue
-        #     # Это реинстанцируемое контейнерное поле с неопределенным в node значением
-        #     value = getattr(node, field_name)
-        #     if value is None:
-        #         continue
-        #
-        #     #ListField, DictField, EmbeddedDocumentField
-        #     setattr(node, field_name, copy.deepcopy(value))
 
-        #node.expand_links()
+        # Реинстанцирование полей
+        if self.uri:  # при инстанцировании вложенных нодов все их поля были реинстанцированы выше
+            for field_name, field in cls._fields.items():
+                if getattr(field, 'reinst', False) and field_name not in extra:
+                    value = getattr(self, field_name)
+                    extra[field_name] = self._copy_field_value(field, value)
+
+        node = cls(**extra)
         return node
 
 
