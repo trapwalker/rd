@@ -347,9 +347,6 @@ class Subdoc(EmbeddedDocument):
         super(Subdoc, self).__setattr__(key, value)
 
     def _expand_field_value(self, field, value):
-        # if isinstance(field, RegistryLinkField):
-        #     return field.to_python(value)
-
         if not isinstance(field, CONTAINER_FIELD_TYPES):
             return value  # todo: optimize
 
@@ -393,8 +390,6 @@ class Subdoc(EmbeddedDocument):
                         del expanded_value[k]
                     else:
                         expanded_value[k] = new_v
-        # elif isinstance(field, RegistryLinkField):  # todo: Убрать для неконтейнерных типов
-        #     expanded_value = value
         else:
             expanded_value = field.to_python(value)
             if field.__class__.__name__ != 'PositionField':
@@ -460,32 +455,6 @@ class Node(Subdoc):
     @warn_calling(skip=(r'site-packages',))
     def __iter__(self):
         return super(Node, self).__iter__()
-
-    # @property
-    # #@warn_calling(unical=False)
-    # def uri(self):
-    #     # todo: cache it
-    #     return getattr(self, '_uri')
-    #
-    #     if hasattr(self, '_uri'):
-    #         return self._uri
-    #     uri = None
-    #     name = self.name
-    #     if name is not None:
-    #         owner = self.owner
-    #         if isinstance(owner, Node):
-    #             owner_uri = owner.uri
-    #             owner_uri = owner_uri and URI(owner_uri)
-    #         elif isinstance(owner, URI):
-    #             owner_uri = owner
-    #         elif owner is None:
-    #             owner_uri = URI('reg://')
-    #         else:
-    #             raise AssertionError('Owner is wrong type: {!r}'.format(owner))
-    #
-    #         uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
-    #     self._uri = uri
-    #     return uri
 
     def node_hash(self):  # todo: (!) rename to proto_uri
         #u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
