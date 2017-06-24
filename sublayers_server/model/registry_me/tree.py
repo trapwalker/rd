@@ -70,28 +70,30 @@ def field_getter_decorator(getter):
     def new_getter(self, instance, owner):
         """Descriptor for retrieving a value from a field in a document.
         """
-        if __debug__:
-            if field_getter_decorator._debug:
-                log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
-
         if instance is None:
             # Document class being used rather than a document object
             return self
+
+        if __debug__:
+            if field_getter_decorator._debug:
+                log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
 
         # Get value from document instance if available
         if instance._initialised:
             name = self.name
             _data = instance._data
-            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False) and name not in _data:
-                parent = instance.parent
-                if parent is not None and name in type(parent)._fields:
-                    return getattr(parent, name)
+            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False):
+                inherited_fields = _data['_inherited_fields']
+                if name in inherited_fields:
+                    parent = instance.parent
+                    if parent is not None and name in type(parent)._fields:
+                        return getattr(parent, name)
 
-                root_default = getattr(self, 'root_default', None)
-                root_default = root_default() if root_default is not None and callable(root_default) else root_default
-                if root_default is None:
-                    return root_default
-                return self.to_python(root_default)
+                    root_default = getattr(self, 'root_default', None)
+                    root_default = root_default() if root_default is not None and callable(root_default) else root_default
+                    if root_default is None:
+                        return root_default
+                    return self.to_python(root_default)
 
         return getter(self, instance, owner)
 
@@ -424,6 +426,7 @@ class Node(Subdoc):
     meta = dict(
         allow_inheritance=True,
     )
+    _inherited_fields = ListField(field=StringField(), not_inherited=True)
     uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
@@ -444,7 +447,15 @@ class Node(Subdoc):
     def __init__(self, **kw):
         cls = self.__class__
         only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
-        super(Node, self).__init__(__only_fields=only_fields, **kw)
+
+        _inherited_fields = kw.pop('_inherited_fields', None)
+        if _inherited_fields is None:
+            _inherited_fields = {f.name for f in cls._fields.values() if not getattr(f, 'not_inherited', False)}
+        elif not isinstance(_inherited_fields, set):
+            _inherited_fields = set(_inherited_fields)
+
+        _inherited_fields = _inherited_fields - set(kw.keys())
+        super(Node, self).__init__(__only_fields=only_fields, _inherited_fields=_inherited_fields, **kw)
 
     @warn_calling(skip=(r'site-packages',))
     def __iter__(self):
@@ -842,8 +853,8 @@ class Registry(Document):
                     class_name = attrs.setdefault('_cls', parent_node._cls)
 
         cls = get_document(class_name or Node._class_name)
-
         node = cls(__auto_convert=False, _created=False, **attrs)
+
         if owner is not None:
             if isinstance(owner, Node):
                 owner.subnodes[node.name] = node

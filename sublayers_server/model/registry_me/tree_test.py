@@ -78,10 +78,12 @@ def test3(reload=True, save_loaded=True):
 
 def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
-    # a = reg.get('/registry/a')
-    # b = reg.get('/registry/b')
-    # c = reg.get('/registry/b/c')
+    #reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    t = reg.get('/registry/items/usable/tanks')
+    tf = reg.get('/registry/items/usable/tanks/tank_full')
+    t1 = reg.get('/registry/items/usable/tanks/tank_full/tank_10l')
+    t2 = reg.get('/registry/items/usable/tanks/tank_full/tank_20l')
 
     globals().update(locals())
 
@@ -93,15 +95,16 @@ if __name__ == '__main__':
 
     
     rel = 0
-    test3(reload=rel, save_loaded=True)
+    test4(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')
-    print(STAT.s)
+    if rel:
+        print(STAT.s)
     field_getter_decorator._debug = True
 
+    # iterable save/load
     src = 'fs' if rel else 'db'
-
     r = reg
     n = 0
     for i in range(n):
