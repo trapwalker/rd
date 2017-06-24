@@ -527,35 +527,6 @@ class Node(Subdoc):
             if not item.abstract or not reject_abstract:
                 yield item
 
-    # def __getattribute__(self, item):
-    #     if item not in {
-    #         '_expand_field_value',
-    #         '_fields', 'parent',
-    #         '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
-    #         # BaseDocument.__slots__
-    #         '_changed_fields', '_initialised', '_created', '_data',
-    #         '_dynamic_fields', '_auto_id_field', '_db_field_map',
-    #         '__weakref__',
-    #         # EmbeddedDocument.__slots__
-    #         '_instance',
-    #     }:
-    #         if self._initialised:
-    #             field = type(self)._fields.get(item, None)
-    #             if field and not getattr(field, 'not_inherited', False) and item not in self._data:
-    #                 # Ищем значение у предков
-    #                 parent = self.parent
-    #
-    #                 if parent is not None and item in type(parent)._fields:
-    #                     return getattr(parent, item)
-    #
-    #                 root_default = getattr(field, 'root_default', None)
-    #                 root_default = root_default() if root_default is not None and callable(root_default) else root_default
-    #                 if root_default is None:
-    #                     return root_default
-    #                 return field.to_python(root_default)
-    #
-    #     return super(Node, self).__getattribute__(item)
-
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
         keys_width = max(map(len, d.keys())) if d and keys_alignment and indent_size else 1
@@ -636,11 +607,9 @@ class Node(Subdoc):
         """
         # todo: expand
         #assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
-        parent = self
         extra = {}
         if not self.uri:
             extra.update(self._data)
-            parent = self.parent
 
         if _uri:
             for k, v in _uri.params:
