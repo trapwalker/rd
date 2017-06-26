@@ -209,6 +209,8 @@ function init_sound() {
     // interface
     audioManager.load('interface_hover', {url: '/static/audio/interface/click_001.m4a'}, 0.1);
     audioManager.load('interface_click', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
+    audioManager.load('npc_transaction_fail', {url: '/static/audio/signals/error_001.m4a'}, 0.3);
+    audioManager.load('npc_transaction_finish', {url: '/static/audio/signals/zoom_001.m4a'}, 0.3);
 
     // widgets motion
     audioManager.load('widget_motion_show', {url: '/static/audio/interface/widget_motion_show_001.m4a'}, 0.15);
