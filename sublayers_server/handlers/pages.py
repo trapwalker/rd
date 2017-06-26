@@ -37,7 +37,8 @@ class PlayHandler(BaseHandler):
                     if user.teaching_state != "map":
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
                                     server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
-                                    first_enter=first_enter, start_coord=coord)
+                                    first_enter=first_enter, start_coord=coord,
+                                    insurance_name=agent.example.profile.insurance.title, user_balance=agent.balance)
                     else:
                         log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
                         self.redirect('/quick/play')
