@@ -60,6 +60,12 @@ class ServerAPI(API):
                 if agent.connection:
                     agent.connection.close()
             # log.info('Server API: Old Agent given: %s', agent_id)
+
+        if agent.user.teaching_state != 'cancel' and agent.user.teaching_state != 'done':
+            agent.user.reload()
+            if agent.user.teaching_state == 'city':
+                agent.create_teaching_quest(time=self.server.get_time())
+
         return agent
 
     def get_agent_quick_game(self, user, do_disconnect=False):
