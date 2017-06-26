@@ -340,6 +340,10 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.clear_quest  = function(quest_id) {
         var quest = this.quests[quest_id];
+
+        if (quest.node_hash == 'reg:///registry/quests/teaching')
+            return;
+
         if (quest.hasOwnProperty('jq_npc_block'))
             quest.jq_npc_block.remove();
         if (quest.hasOwnProperty('jq_journal_menu'))
@@ -391,6 +395,9 @@ var QuestJournalManager = (function () {
                 quest.npc_reward_text = quest.npc_reward_text + ', ' + quest.reward_items[i].title + ' &times; ' + quest.reward_items[i].amount;
             quest.npc_reward_text += '.';
         }
+
+        if (quest.node_hash == 'reg:///registry/quests/teaching')
+            return;
 
         // Вывод квеста в журнал (квесты NPC в журнал не выводяться)
         if ((['active', 'end'].indexOf(quest.status) >= 0) && (['win', 'fail', null].indexOf(quest.result) >= 0)) {
