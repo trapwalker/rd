@@ -613,9 +613,10 @@ class Quest(Node):
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
-    def npc_replica(self, npc, replica, event):
+    def npc_replica(self, npc, replica, event, replica_type='Error'):
         if self.agent.profile._agent_model:
-            messages.NPCReplicaMessage(agent=self.agent.profile._agent_model, npc=npc, replica=replica, time=event.time).post()
+            messages.NPCReplicaMessage(agent=self.agent.profile._agent_model, npc=npc, replica=replica,
+                                       replica_type=replica_type, time=event.time).post()
 
     def generate_reward(self):
         self.reward_money = round(self.total_reward_money * self.money_coef)

@@ -856,15 +856,17 @@ class BalanceClsInfo(Message):
 
 
 class NPCReplicaMessage(Message):
-    def __init__(self, replica, npc, **kw):
+    def __init__(self, replica, npc, replica_type='Error', **kw):
         super(NPCReplicaMessage, self).__init__(**kw)
         self.replica = replica
         self.npc = npc
+        self.replica_type = replica_type
 
     def as_dict(self):
         d = super(NPCReplicaMessage, self).as_dict()
         d.update(
             replica=self.replica,
+            replica_type=self.replica_type,
             npc_node_hash=None if self.npc is None else self.npc.node_hash(),
         )
         return d

@@ -1182,6 +1182,10 @@ var ClientManager = (function () {
         if ((npc == null) || (curr_place == npc) || (curr_place instanceof LocationPlaceBuilding &&
             curr_place.building_rec.head.node_hash == npc.npc_rec.node_hash)) {
             curr_place.set_header_text($('<div>' + event.replica + '</div>'));
+
+            if (event.replica_type == 'Error') {
+                audioManager.play({name: "npc_transaction_fail", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            }
         }
 
     };
@@ -1242,8 +1246,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.NPCTransactionMessage = function (event) {
         //console.log('ClientManager.prototype.NPCTransactionMessage', event);
-        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
+            // Звук успешного завершения транзакции
+            audioManager.play({name: "npc_transaction_finish", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        }
     };
 
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
