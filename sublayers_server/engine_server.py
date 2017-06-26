@@ -14,7 +14,9 @@ sys.path.append(parent_folder(__file__))
 
 import logging.config
 
-logging.config.fileConfig("logging.conf")
+if __name__ == '__main__':
+    logging.config.fileConfig("logging.conf")
+
 log = logging.getLogger()
 
 import tornado.escape
@@ -196,17 +198,13 @@ class Application(BaseApplication):
 
 
 def main():
-    log.info('\n\n\n' + '=' * 67)
-    settings.load('server.conf')
-    service_tools.pidfile_save(options.pidfile)
-    app = Application()
-    # service_tools.set_terminate_handler(app.stop)
-    app.start()
-
-
-if __name__ == "__main__":
     try:
-        main()
+        log.info('\n\n\n' + '=' * 67)
+        settings.load('server.conf')
+        service_tools.pidfile_save(options.pidfile)
+        app = Application()
+        # service_tools.set_terminate_handler(app.stop)
+        app.start()
     except pymongo.errors.ConnectionFailure as e:
         try:
             msg = str(e).decode('cp1251') if os.name == 'nt' else repr(e)
@@ -215,3 +213,7 @@ if __name__ == "__main__":
 
         log.critical(u'Databse error: %s', msg)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

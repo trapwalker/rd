@@ -31,7 +31,7 @@ from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset import DO_NOTHING
-from mongoengine.fields import BaseField
+from mongoengine.fields import BaseField, ReferenceField
 from mongoengine import (
     BooleanField,
     IntField,
@@ -44,8 +44,7 @@ from mongoengine import (
     MapField,
     EmbeddedDocumentField,
 
-    ReferenceField,
-    GenericReferenceField,
+    #GenericReferenceField,
 )
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
 
@@ -71,28 +70,30 @@ def field_getter_decorator(getter):
     def new_getter(self, instance, owner):
         """Descriptor for retrieving a value from a field in a document.
         """
-        # if __debug__:
-        #     if field_getter_decorator._debug:
-        #         log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
-
         if instance is None:
             # Document class being used rather than a document object
             return self
+
+        if __debug__:
+            if field_getter_decorator._debug:
+                log.debug('Inheritance getter: {self.__class__.__name__}({self.name}).__get__({it}, {owner})'.format(it=type(instance), **locals()))
 
         # Get value from document instance if available
         if instance._initialised:
             name = self.name
             _data = instance._data
-            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False) and name not in _data:
-                parent = instance.parent
-                if parent is not None and name in type(parent)._fields:
-                    return getattr(parent, name)
+            if isinstance(instance, Node) and not getattr(self, 'not_inherited', False):
+                inherited_fields = _data['_inherited_fields']
+                if name in inherited_fields:
+                    parent = instance.parent
+                    if parent is not None and name in type(parent)._fields:
+                        return getattr(parent, name)
 
-                root_default = getattr(self, 'root_default', None)
-                root_default = root_default() if root_default is not None and callable(root_default) else root_default
-                if root_default is None:
-                    return root_default
-                return self.to_python(root_default)
+                    root_default = getattr(self, 'root_default', None)
+                    root_default = root_default() if root_default is not None and callable(root_default) else root_default
+                    if root_default is None:
+                        return root_default
+                    return self.to_python(root_default)
 
         return getter(self, instance, owner)
 
@@ -345,10 +346,38 @@ class Subdoc(EmbeddedDocument):
 
         super(Subdoc, self).__setattr__(key, value)
 
-    def _expand_field_value(self, field, value):
-        # if isinstance(field, RegistryLinkField):
-        #     return field.to_python(value)
+    def instantiate(self, _only_fields=None, **kw):
+        data = {}
+        fields = self._fields if _only_fields is None else _only_fields
+        for field_name in fields:
+            if field_name in self._data:
+                field = self._fields[field_name]
+                value = self._data[field_name]
+                data[field_name] = self._copy_field_value(field, value)
 
+        data.update(kw)
+        return type(self)(**data)
+
+    def _copy_field_value(self, field, value):
+        if not isinstance(field, CONTAINER_FIELD_TYPES) or value is None:
+            return value  # todo: optimize
+        if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
+            return value.instantiate()
+        elif isinstance(field, EmbeddedDocumentField) and isinstance(value, EmbeddedDocument):
+            return copy.deepcopy(value)
+        elif isinstance(field, ListField):
+            return [self._copy_field_value(field.field, v) for v in value]
+        elif isinstance(field, DictField):
+            return {k: self._copy_field_value(field.field, v) for k, v in value.iteritems()}
+        elif isinstance(field, EmbeddedDocumentField) and isinstance(value, dict):
+            return field.to_python(value)
+        elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
+            return field.to_python(value)
+        else:
+            log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
+            return value
+
+    def _expand_field_value(self, field, value):
         if not isinstance(field, CONTAINER_FIELD_TYPES):
             return value  # todo: optimize
 
@@ -392,8 +421,6 @@ class Subdoc(EmbeddedDocument):
                         del expanded_value[k]
                     else:
                         expanded_value[k] = new_v
-        # elif isinstance(field, RegistryLinkField):  # todo: Убрать для неконтейнерных типов
-        #     expanded_value = value
         else:
             expanded_value = field.to_python(value)
             if field.__class__.__name__ != 'PositionField':
@@ -425,6 +452,7 @@ class Node(Subdoc):
     meta = dict(
         allow_inheritance=True,
     )
+    _inherited_fields = ListField(field=StringField(), not_inherited=True)
     uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
@@ -445,37 +473,19 @@ class Node(Subdoc):
     def __init__(self, **kw):
         cls = self.__class__
         only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
-        super(Node, self).__init__(__only_fields=only_fields, **kw)
+
+        _inherited_fields = kw.pop('_inherited_fields', None)
+        if _inherited_fields is None:
+            _inherited_fields = {f.name for f in cls._fields.values() if not getattr(f, 'not_inherited', False)}
+        elif not isinstance(_inherited_fields, set):
+            _inherited_fields = set(_inherited_fields)
+
+        _inherited_fields = list(_inherited_fields - set(kw.keys()))  # todo: Make SetField
+        super(Node, self).__init__(__only_fields=only_fields, _inherited_fields=_inherited_fields, **kw)
 
     @warn_calling(skip=(r'site-packages',))
     def __iter__(self):
         return super(Node, self).__iter__()
-
-    # @property
-    # #@warn_calling(unical=False)
-    # def uri(self):
-    #     # todo: cache it
-    #     return getattr(self, '_uri')
-    #
-    #     if hasattr(self, '_uri'):
-    #         return self._uri
-    #     uri = None
-    #     name = self.name
-    #     if name is not None:
-    #         owner = self.owner
-    #         if isinstance(owner, Node):
-    #             owner_uri = owner.uri
-    #             owner_uri = owner_uri and URI(owner_uri)
-    #         elif isinstance(owner, URI):
-    #             owner_uri = owner
-    #         elif owner is None:
-    #             owner_uri = URI('reg://')
-    #         else:
-    #             raise AssertionError('Owner is wrong type: {!r}'.format(owner))
-    #
-    #         uri = owner_uri.replace(path=owner_uri.path + (name,)).to_string()
-    #     self._uri = uri
-    #     return uri
 
     def node_hash(self):  # todo: (!) rename to proto_uri
         #u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
@@ -516,35 +526,6 @@ class Node(Subdoc):
             queue.extend(item.subnodes.values())
             if not item.abstract or not reject_abstract:
                 yield item
-
-    # def __getattribute__(self, item):
-    #     if item not in {
-    #         '_expand_field_value',
-    #         '_fields', 'parent',
-    #         '_dynamic', '_dynamic_lock', '_is_document', '__class__', 'STRICT',
-    #         # BaseDocument.__slots__
-    #         '_changed_fields', '_initialised', '_created', '_data',
-    #         '_dynamic_fields', '_auto_id_field', '_db_field_map',
-    #         '__weakref__',
-    #         # EmbeddedDocument.__slots__
-    #         '_instance',
-    #     }:
-    #         if self._initialised:
-    #             field = type(self)._fields.get(item, None)
-    #             if field and not getattr(field, 'not_inherited', False) and item not in self._data:
-    #                 # Ищем значение у предков
-    #                 parent = self.parent
-    #
-    #                 if parent is not None and item in type(parent)._fields:
-    #                     return getattr(parent, item)
-    #
-    #                 root_default = getattr(field, 'root_default', None)
-    #                 root_default = root_default() if root_default is not None and callable(root_default) else root_default
-    #                 if root_default is None:
-    #                     return root_default
-    #                 return field.to_python(root_default)
-    #
-    #     return super(Node, self).__getattribute__(item)
 
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
@@ -626,16 +607,18 @@ class Node(Subdoc):
         """
         # todo: expand
         #assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
-        parent = self
+        cls = type(self)
         extra = {}
         if not self.uri:
-            extra.update(self._data)
-            parent = self.parent
+            for k, v in self._data.items():
+                field = cls._fields.get(k, None)
+                if field and not getattr(field, 'not_inherited', False):
+                    extra[k] = self._copy_field_value(field, v)
 
         if _uri:
             for k, v in _uri.params:
                 # todo: Support deep attributes detalization in URI params (subnode.attr -> subnode__attr)
-                field = type(self)._fields.get(k, None)
+                field = cls._fields.get(k, None)
                 if field:
                     # todo: skip errors with warnings
                     try:
@@ -648,24 +631,15 @@ class Node(Subdoc):
                 extra[k] = v
 
         extra.update(kw, parent=self if self.uri else self.parent)
-        node = self.__class__(**extra)
 
-        # for field_name, field in type(node)._fields.items():
-        #     if (
-        #         not isinstance(field, CONTAINER_FIELD_TYPES)
-        #         or not getattr(field, 'reinst', False)
-        #         or field_name in node._data
-        #     ):
-        #         continue
-        #     # Это реинстанцируемое контейнерное поле с неопределенным в node значением
-        #     value = getattr(node, field_name)
-        #     if value is None:
-        #         continue
-        #
-        #     #ListField, DictField, EmbeddedDocumentField
-        #     setattr(node, field_name, copy.deepcopy(value))
+        # Реинстанцирование полей
+        if self.uri:  # при инстанцировании вложенных нодов все их поля были реинстанцированы выше
+            for field_name, field in cls._fields.items():
+                if getattr(field, 'reinst', False) and field_name not in extra:
+                    value = getattr(self, field_name)
+                    extra[field_name] = self._copy_field_value(field, value)
 
-        #node.expand_links()
+        node = cls(**extra)
         return node
 
 
@@ -843,8 +817,8 @@ class Registry(Document):
                     class_name = attrs.setdefault('_cls', parent_node._cls)
 
         cls = get_document(class_name or Node._class_name)
-
         node = cls(__auto_convert=False, _created=False, **attrs)
+
         if owner is not None:
             if isinstance(owner, Node):
                 owner.subnodes[node.name] = node
@@ -946,7 +920,17 @@ def _patch_all_fields_to_inheritance_support():
 
 
 map(patch_field_getter, [
-    BaseField,
+    #BaseField,
+    BooleanField,
+    IntField,
+    FloatField,
+    StringField,
+    UUIDField,
+    DateTimeField,
+    ListField,
+    DictField,
+    MapField,
+    EmbeddedDocumentField,
 ])
 #_patch_all_fields_to_inheritance_support()
 ########################################################################################################################
