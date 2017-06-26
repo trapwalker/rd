@@ -8,7 +8,7 @@ var JournalTeachingNote = (function (_super) {
     function JournalTeachingNote(options) {
         _super.call(this, options);
         this.needed_screen_name = 'menu_screen';
-        this.journal_btn = new Point(1069, 250);
+        this.journal_btn = new Point(1020, 250);
         this.quest_page_btn = new Point(650, 293);
         this.active_groupe_btn = new Point(700, 330);
         this.quest_btn = new Point(695, 343);
