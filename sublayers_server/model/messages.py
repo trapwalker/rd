@@ -939,6 +939,16 @@ class UserExampleSelfRPGMessage(Message):
         agent = self.agent
         cur_exp = agent.example.profile.exp
         lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.profile.exp_table.by_exp(exp=cur_exp)
+
+        # Формирование квестового инвентаря с изменённым именем страховки
+        insurance = agent.example.profile.insurance
+        quest_inventory = []
+        for item in agent.example.profile.quest_inventory.items:
+            dd = item.as_client_dict()
+            if item is insurance:
+                dd.update(title=u'{}: {}'.format(agent.print_login(), item.title))
+            quest_inventory.append(dd)
+
         rpg_info = dict(
             cur_lvl=math.floor(lvl / 10),
             cur_exp=cur_exp,
@@ -967,7 +977,7 @@ class UserExampleSelfRPGMessage(Message):
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ) for perk in agent.server.reg.get('/registry/rpg_settings/perks').deep_iter()
             ],
-            quest_inventory=[item.as_client_dict() for item in agent.example.profile.quest_inventory.items],
+            quest_inventory=quest_inventory,
             agent_effects=agent.example.profile.get_agent_effects(time=self.time)
         )
         d['rpg_info'] = rpg_info
