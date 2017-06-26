@@ -232,6 +232,7 @@
                             $('#' + id + '_active').css('display', 'none');
                             $('#' + id + '_text').addClass('hover');
                             $('#' + id).css('display', 'none');
+                            audioManager.play({name: "interface_hover", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                         }
                     }
                 })
@@ -273,6 +274,7 @@
                             $('#' + id + '_hover').css('display', 'none');
                             $('#' + id + '_pressed').css('display', 'block');
                             $('#' + id + '_text').addClass('pressed');
+                            audioManager.play({name: "interface_click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                         }
                     }
                 })
@@ -315,7 +317,7 @@
             var id = $(this).attr('id');
             var building = $(this).data('building');
             locationManager.openBuilding(building);
-{#            console.log('Open ', building);#}
+            audioManager.play({name: "interface_click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         });
 
         jq_buildings.mouseenter(function(event){
@@ -327,6 +329,7 @@
             $("#img_house" + index + "_off").css("display", "none");
             $("#path_h" + index).css("opacity", "0.6");
             $("#path_text_h" + index).css("opacity", "0.6");
+            audioManager.play({name: "interface_hover", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
 
             var building = $(this).data('building');
             if (locationManager.buildings.hasOwnProperty(building))
@@ -353,11 +356,14 @@
 
         // События для логотипа
         var jq_logo = $('.highlight-logo');
-        jq_logo.click(function(event){});
+        jq_logo.click(function(event) {
+            audioManager.play({name: "interface_click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        });
         
         jq_logo.mouseenter(function(event){
             $("#img_logo_on").css("display", "block");
             $("#img_logo_off").css("display", "none");
+            audioManager.play({name: "interface_hover", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         });
 
         jq_logo.mouseleave(function(event){
