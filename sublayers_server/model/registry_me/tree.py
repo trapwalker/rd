@@ -85,6 +85,7 @@ def field_getter_decorator(getter):
             if isinstance(instance, Node) and not getattr(self, 'not_inherited', False):
                 inherited_fields = _data['_inherited_fields']
                 if name in inherited_fields:
+                    assert name not in _data, 'Attribute {} marked as inherited, but it present in _dict'.format(name)
                     parent = instance.parent
                     if parent is not None and name in type(parent)._fields:
                         return getattr(parent, name)
@@ -641,6 +642,25 @@ class Node(Subdoc):
 
         node = cls(**extra)
         return node
+
+    def __setattr__(self, key, value):
+        # todo: ##OPTIMIZE
+        if key not in {'_inherited_fields', '_initialised'} and key in type(self)._fields:
+            inh = self._inherited_fields
+            if inh:
+                try:
+                    inh.remove(key)
+                except ValueError:
+                    pass
+
+        super(Node, self).__setattr__(key, value)
+
+    def __delattr__(self, item):
+        # todo: ##OPTIMIZE
+        inh = self._inherited_fields
+        if item not in inh:
+            inh.append(item)
+        super(Node, self).__delattr__(item)
 
 
 ########################################################################################################################
