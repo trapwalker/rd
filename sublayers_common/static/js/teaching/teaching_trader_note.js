@@ -7,8 +7,8 @@ var TraderTeachingNote = (function (_super) {
 
     function TraderTeachingNote(options) {
         _super.call(this, options);
-        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/bob_ferolito');
-        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/bob_ferolito');
+        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
+        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
 
         this.build_coord = new Point(958, 372);
         this.npc_coord = new Point(953, 658);
