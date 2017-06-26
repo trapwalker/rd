@@ -688,11 +688,6 @@ class Agent(Object):
 
 # todo: Переименовать в UserAgent
 class User(Agent):
-    def __init__(self, time, **kw):
-        super(User, self).__init__(time=time, **kw)
-        if self.user.teaching_state == 'city':
-            self.create_teaching_quest(time=time)
-
     @event_deco
     def create_teaching_quest(self, event):
         quest_parent = self.server.reg.get('/registry/quests/teaching')
