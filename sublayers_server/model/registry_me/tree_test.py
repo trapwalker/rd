@@ -98,7 +98,7 @@ if __name__ == '__main__':
     log.info('Use {db_name!r} db'.format(**locals()))
 
     
-    rel = 1
+    rel = 0
     test4(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

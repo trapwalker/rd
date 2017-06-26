@@ -682,6 +682,10 @@ def addr2path(addr):
         return addr
 
     if isinstance(addr, basestring):
+        if "\\" in addr and '/' not in addr:
+            log.warning('URI in non-standard format: %r', addr)
+            addr = addr.replace('\\', '/')
+
         if addr.startswith('reg://') or addr.startswith('/'):
             uri = URI(addr)
             assert not uri.params and not uri.anchor, 'Wrong node address to get: {!r}'.format(addr)
