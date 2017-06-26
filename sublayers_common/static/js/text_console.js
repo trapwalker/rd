@@ -445,7 +445,7 @@ var ConsoleFirstEnter = (function (_super) {
         this.add_message('user', 'Запрос статуса активной страховки.');
         this.add_message(
             'system',
-            'Базовая страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
+            $('#settings_user_insurance_name').text() + ' страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
             '--------------------------------------------------------------\n' +
             'Уважаемый, ' + textConsoleManager.user_name + '! Поздравляем вас с успешной регистрацией в системе Nuke Commander и получением корпоративных водительских прав. Финансовый отдел корпорации Нукойл одобрил оформление авто-кредита и аренду клиентского оборудования системы Nuke Navigator.\n\n' +
             'Наша компания приветствует квалифицированных пользователей и предлагает плату за прохождение обучения. Желаете пройти обучение за бонус в 150nc + 100exp?\n\n' +
@@ -593,7 +593,7 @@ var ConsoleEnter = (function (_super) {
             '       ================================================'
         );
         this.add_message('user', 'Запрос статуса активной страховки.');
-        this.add_message('system', 'Страховка активна для ' + textConsoleManager.user_name + '.');
+        this.add_message('system', $('#settings_user_insurance_name').text() + ' Страховка активна для ' + textConsoleManager.user_name + '.');
         this.add_message('user', 'Запрос актуальных координат.');
         this.add_message('system', 'Ваши координаты: ' + textConsoleManager.user_position + '.');
         this.add_message('user', 'Запрос баланса.');
