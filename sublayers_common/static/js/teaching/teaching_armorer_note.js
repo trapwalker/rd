@@ -4,8 +4,8 @@ var ArmorerTeachingNote = (function (_super) {
     function ArmorerTeachingNote(options) {
         _super.call(this, options);
 
-        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/mechanic/raul_alone');
-        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/armorer/martin_arioso');
+        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/mechanic/whitehill_raul_alon');
+        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/armorer/whitehill_martin_arioso');
 
         this.build_coord = new Point(958, 330);
         this.npc_coord = new Point(1000, 660);

@@ -8,7 +8,7 @@ var HangarTeachingNote = (function (_super) {
     function HangarTeachingNote(options) {
         _super.call(this, options);
 
-        this.npc_node_hash = 'reg:///registry/institutions/hangar/jounior_clarx';  // Должено быть входным параметром
+        this.npc_node_hash = 'reg:///registry/institutions/hangar/whitehill_junior_clarks';  // Должено быть входным параметром
 
         this.needed_building = locationManager.get_building_by_node_hash(this.npc_node_hash);
         this.needed_npc = locationManager.get_npc_by_node_hash(this.npc_node_hash);

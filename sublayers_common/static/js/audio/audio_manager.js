@@ -207,9 +207,10 @@ function init_sound() {
     audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.m4a'}, 0.075);
 
     // interface
+    audioManager.load('interface_hover', {url: '/static/audio/interface/click_001.m4a'}, 0.1);
+    audioManager.load('interface_click', {url: '/static/audio/interface/alarm_001.m4a'}, 0.1);
 
     // widgets motion
-
     audioManager.load('widget_motion_show', {url: '/static/audio/interface/widget_motion_show_001.m4a'}, 0.15);
     audioManager.load('widget_motion_hide', {url: '/static/audio/interface/widget_motion_hide_001.m4a'}, 0.15);
     audioManager.load('widget_motion_battle_show', {url: '/static/audio/interface/widget_motion_battle_show_001.m4a'}, 0.15);

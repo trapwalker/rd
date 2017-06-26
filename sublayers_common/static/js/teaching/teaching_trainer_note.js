@@ -9,7 +9,7 @@ var TrainerTeachingNote = (function (_super) {
         _super.call(this, options);
 
         this.needed_building = locationManager.buildings.library;
-        this.needed_npc = locationManager.npc['reg--registry-institutions-trainer-blackhawk_2094'];
+        this.needed_npc = locationManager.npc['reg--registry-institutions-trainer-whitehill_blackhawk_2094'];
 
         this.build_coord = new Point(958, 414);
         this.npc_coord = new Point(953, 658);
