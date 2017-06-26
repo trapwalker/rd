@@ -359,7 +359,7 @@ class Subdoc(EmbeddedDocument):
         return type(self)(**data)
 
     def _copy_field_value(self, field, value):
-        if not isinstance(field, CONTAINER_FIELD_TYPES):
+        if not isinstance(field, CONTAINER_FIELD_TYPES) or value is None:
             return value  # todo: optimize
         if isinstance(field, EmbeddedDocumentField) and isinstance(value, Subdoc):
             return value.instantiate()
@@ -369,6 +369,10 @@ class Subdoc(EmbeddedDocument):
             return [self._copy_field_value(field.field, v) for v in value]
         elif isinstance(field, DictField):
             return {k: self._copy_field_value(field.field, v) for k, v in value.iteritems()}
+        elif isinstance(field, EmbeddedDocumentField) and isinstance(value, dict):
+            return field.to_python(value)
+        elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
+            return field.to_python(value)
         else:
             log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
             return value
