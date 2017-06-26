@@ -658,20 +658,21 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Die = function (event) {
-        console.log('ClientManager.prototype.Die', event);
+        //console.log('ClientManager.prototype.Die', event);
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
 
-        textConsoleManager.start(event.towns.length == 1 ? 'die_any_key' : 'die_shareholder', 3000, event);
+        if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/premium')
+            textConsoleManager.start('die_premium', 3000, event);
+        else if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/shareholder')
+            textConsoleManager.start('die_shareholder', 3000, event);
+        else if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/base')
+            textConsoleManager.start('die_base', 3000, event);
+        else {
+            alert('Странная страховка: ' + event.insurance);
+            location.reload();
+        }
 
-        //modalWindow.modalDialogInfoShow({
-        //    caption: 'Car Crash',
-        //    header: 'Крушение!',
-        //    body_text: 'Ваш автомобиль потерпел крушение. Вы можете взять другой в городе.',
-        //    callback_ok: function () {
-        //        window.location.reload();
-        //    }
-        //});
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {

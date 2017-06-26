@@ -17,10 +17,10 @@ var TextConsoleManager = (function(){
 
     }
 
-    TextConsoleManager.prototype.add = function(console, name) {
+    TextConsoleManager.prototype.add = function(con, name) {
         if (this.consoles.hasOwnProperty(name) && this.consoles[name])
             console.warn('Попытка переопределения консоли - ' + name + '.');
-        this.consoles[name] = console;
+        this.consoles[name] = con;
     };
 
     TextConsoleManager.prototype.del = function(name) {
@@ -660,47 +660,105 @@ var ConsoleEnterToMap = (function (_super) {
 })(TextConsole);
 
 
-var ConsoleDieAnyKey = (function (_super) {
-    __extends(ConsoleDieAnyKey, _super);
+var ConsoleDieBase = (function (_super) {
+    __extends(ConsoleDieBase, _super);
 
-    function ConsoleDieAnyKey() {
+    function ConsoleDieBase() {
         _super.call(this);
         this.target_div = textConsoleManager.jq_main_div;
-        textConsoleManager.add(this, 'die_any_key');
+        this.add_to_console_manager();
     }
 
-    ConsoleDieAnyKey.prototype.user_input = function(event) {
+    ConsoleDieBase.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_base');};
+
+    ConsoleDieBase.prototype.get_insurance_deadline_info = function (options) {
+        var res = '';
+        if (options.insurance.starttime && options.insurance.deadline) {
+            var start_quest_date = new Date((options.insurance.starttime + options.insurance.deadline) * 1000);
+            start_quest_date.setFullYear(start_quest_date.getFullYear() + 100);
+            var start_quest_date_s = start_quest_date.toLocaleString('ru');
+            res = res + ' до ' + start_quest_date_s;
+        }
+        //res = res + '.\n\n';
+        return res;
+    };
+
+    ConsoleDieBase.prototype.user_input = function(event) {
         //console.log('Нажата кнопка. Пытаемся войти в город');
         clientManager.sendGoToRespawn(null);
         this.target_div.off("keydown");
     };
 
-    ConsoleDieAnyKey.prototype._init_messages = function(options) {
+    ConsoleDieBase.prototype._init_messages = function(options) {
         this._messages = [];
         this.add_message(
             'system',
             '\n' +
-            'Крушение.'
+            'Соединение со спутником утеряно.'
         );
         this.add_message('user', 'Запрос статуса активной страховки.');
         this.add_message(
             'system',
-            options.insurance.title + ' страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
-            '--------------------------------------------------------------\n' +
-            'Вы будете перемещены в город: ' + options.towns[0].title + ' \n' +
-            'Press any key for respawn \n'
+            user.login + ' имеет активную Базовую Страховку корпорации Нукойл' +
+            this.get_insurance_deadline_info(options) + '.\n\n' +
+            '-------------------------------------------\n' +
+            'Ваше транспортное средство уничтожено. Согласно условиям Базовой Страховки, ' +
+            'Корпорация Нукойл выплатит Вам номинальную стоимость за ' +
+            (user && user.example_car ? user.example_car.name_car : 'автомобиль') +
+            ' и эвакуирует Вас в тот город, который будет удобней нашей спасательной команде: ' +
+            options.towns[0].title + '.\n' +
+            'Нажмите любую кнопку для продолжения. \n'+
+            '-------------------------------------------\n'
         );
         this.add_message('user_input', ' ');
     };
 
-    ConsoleDieAnyKey.prototype.start = function(options) {
+    ConsoleDieBase.prototype.start = function(options) {
         //console.log('ConsoleDieAnyKey.prototype.start', this);
         this._init_messages(options);
         _super.prototype.start.call(this);
     };
 
-    return ConsoleDieAnyKey;
+    return ConsoleDieBase;
 })(TextConsole);
+
+
+var ConsoleDiePremium = (function (_super) {
+    __extends(ConsoleDiePremium, _super);
+
+    function ConsoleDiePremium() {
+        _super.call(this);
+        this.target_div = textConsoleManager.jq_main_div;
+    }
+
+    ConsoleDiePremium.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_premium');};
+
+    ConsoleDiePremium.prototype._init_messages = function(options) {
+        this._messages = [];
+        this.add_message(
+            'system',
+            '\n' +
+            'Соединение со спутником утеряно.'
+        );
+        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message(
+            'system',
+            user.login + ' имеет активную Премиум Страховку корпорации Нукойл' +
+            this.get_insurance_deadline_info(options) + '.\n\n' +
+            '-------------------------------------------\n' +
+            'Ваше транспортное средство уничтожено. Согласно условиям Премиум Страховки, ' +
+            'Корпорация Нукойл восстановит ' +
+            (user && user.example_car ? user.example_car.name_car : 'автомобиль') +
+            ' без груза, тюнинга, стайлинга и пробега, а также эвакуирует Вас в последний посещенный город: ' +
+            options.towns[0].title + '.\n' +
+            'Нажмите любую кнопку для продолжения. \n' +
+            '-------------------------------------------\n'
+        );
+        this.add_message('user_input', ' ');
+    };
+
+    return ConsoleDiePremium;
+})(ConsoleDieBase);
 
 
 var ConsoleDieShareholder = (function (_super) {
@@ -709,50 +767,63 @@ var ConsoleDieShareholder = (function (_super) {
     function ConsoleDieShareholder() {
         _super.call(this);
         this.target_div = textConsoleManager.jq_main_div;
-        textConsoleManager.add(this, 'die_shareholder');
-
         this._current_towns = [];
     }
 
+    ConsoleDieShareholder.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_shareholder');};
+
     ConsoleDieShareholder.prototype.user_input = function(event) {
         //console.log('Нажата кнопка. Пытаемся войти в город');
-        if (event.keyCode >= 49 && event.keyCode < 49 + this._current_towns.length) {
-            //console.log('Нажата кнопка: ', event.keyCode);
-            //console.log('Выбран город: ', this._current_towns[event.keyCode - 49]);
-            clientManager.sendGoToRespawn(this._current_towns[event.keyCode - 49].node_hash);
+        var index = null;
+        if (event.keyCode >= 49 && event.keyCode < 49 + this._current_towns.length)
+            index = event.keyCode - 49;
+
+        if (event.keyCode == 13)
+            index = 0;
+
+        if (index != null) {
+            clientManager.sendGoToRespawn(this._current_towns[index].node_hash);
             this.target_div.off("keydown");
         }
     };
 
-    ConsoleDieShareholder.prototype._init_messages = function(options) {
+    ConsoleDieShareholder.prototype._init_messages = function (options) {
         this._messages = [];
         this.add_message(
             'system',
             '\n' +
-            'Крушение.'
+            'Соединение со спутником утеряно.'
         );
         this.add_message('user', 'Запрос статуса активной страховки.');
-        this.add_message(
-            'system', options.insurance.title + ' страховка активна для ' + textConsoleManager.user_name + '.\n');
-        this.add_message('user', 'Запрос доступных городов для респауна.');
-        var s = 'Список городов: \n';
+        var s = '';
         for (var i = 0; i < options.towns.length; i++)
             s = s + (i + 1).toString() + ': ' + options.towns[i].title + '\n';
-        this.add_message('system', s); // Сделано в одном сообщении для ускорения печатания
-        this.add_message('system', 'Выберите город.\n');
+
+        this.add_message(
+            'system',
+            user.login + ' имеет активную Акционерную Страховку корпорации Нукойл' +
+            this.get_insurance_deadline_info(options) + '.\n\n' +
+            '-------------------------------------------\n' +
+            'Ваше транспортное средство уничтожено. Согласно условиям Страховки Акционера, ' +
+            'Корпорация Нукойл полностью восстановит ' +
+            (user && user.example_car ? user.example_car.name_car : 'автомобиль') +
+            ' за исключением груза. Кроме этого Вам предлагается выбрать город эвакуации. ' +
+            'Нажмите соответствующую цифру или Enter для продолжения: ' +
+            options.towns[0].title + '.\n' + s +
+            '-------------------------------------------\n'
+        );
+
         this.add_message('user_input', ' ');
     };
 
-    ConsoleDieShareholder.prototype.start = function(options) {
+    ConsoleDieShareholder.prototype.start = function (options) {
         //console.log('ConsoleDieAnyKey.prototype.start', this);
-        this._init_messages(options);
         this._current_towns = options.towns;
-
-        _super.prototype.start.call(this);
+        _super.prototype.start.call(this, options);
     };
 
     return ConsoleDieShareholder;
-})(TextConsole);
+})(ConsoleDieBase);
 
 
 //var ConsoleWPI = (function (_super) {
@@ -864,7 +935,9 @@ function initConsoles() {
     new ConsoleEnter();
     new ConsoleEnterToLocation();
     new ConsoleEnterToMap();
-    new ConsoleDieAnyKey();
+
+    new ConsoleDieBase();
+    new ConsoleDiePremium();
     new ConsoleDieShareholder();
 }
 
