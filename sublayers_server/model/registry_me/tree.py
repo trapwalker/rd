@@ -83,8 +83,9 @@ def field_getter_decorator(getter):
             name = self.name
             _data = instance._data
             if isinstance(instance, Node) and not getattr(self, 'not_inherited', False):
-                inherited_fields = _data['_inherited_fields']
-                if name in inherited_fields:
+                _empty_overrided_fields = _data['_empty_overrided_fields']
+                if name not in _empty_overrided_fields and name not in _data:
+                    # try to inherite parent value
                     assert name not in _data, 'Attribute {} marked as inherited, but it present in _dict'.format(name)
                     parent = instance.parent
                     if parent is not None and name in type(parent)._fields:
@@ -453,7 +454,7 @@ class Node(Subdoc):
     meta = dict(
         allow_inheritance=True,
     )
-    _inherited_fields = ListField(field=StringField(), not_inherited=True)
+    _empty_overrided_fields = ListField(field=StringField(), not_inherited=True)
     uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
@@ -475,14 +476,15 @@ class Node(Subdoc):
         cls = self.__class__
         only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
 
-        _inherited_fields = kw.pop('_inherited_fields', None)
-        if _inherited_fields is None:
-            _inherited_fields = {f.name for f in cls._fields.values() if not getattr(f, 'not_inherited', False)}
-        elif not isinstance(_inherited_fields, set):
-            _inherited_fields = set(_inherited_fields)
+        _empty_overrided_fields = kw.pop('_empty_overrided_fields', None)
+        if _empty_overrided_fields is None:
+            _empty_overrided_fields = set()
+        elif not isinstance(_empty_overrided_fields, set):
+            _empty_overrided_fields = set(_empty_overrided_fields)
 
-        _inherited_fields = list(_inherited_fields - set(kw.keys()))  # todo: Make SetField
-        super(Node, self).__init__(__only_fields=only_fields, _inherited_fields=_inherited_fields, **kw)
+        _fields = cls._fields
+        _empty_overrided_fields = list(_empty_overrided_fields | {k for k, v in kw.iteritems() if not v and k in _fields})  # todo: Make SetField
+        super(Node, self).__init__(__only_fields=only_fields, _empty_overrided_fields=_empty_overrided_fields, **kw)
 
     @warn_calling(skip=(r'site-packages',))
     def __iter__(self):
@@ -645,22 +647,29 @@ class Node(Subdoc):
 
     def __setattr__(self, key, value):
         # todo: ##OPTIMIZE
-        if key not in {'_inherited_fields', '_initialised'} and key in type(self)._fields:
-            inh = self._inherited_fields
-            if inh:
-                try:
-                    inh.remove(key)
-                except ValueError:
-                    pass
+        if key not in {'_empty_overrided_fields', '_initialised'} and key in type(self)._fields:
+            _empty_overrided_fields = self._empty_overrided_fields
+            if _empty_overrided_fields is None:
+                self._empty_overrided_fields = []
+                _empty_overrided_fields = self._empty_overrided_fields
+            _is_in = key in _empty_overrided_fields
+            _is_value = bool(value)
+            if not _is_value and not _is_in:
+                _empty_overrided_fields.append(key)
+            elif _is_value and _is_in:
+                _empty_overrided_fields.remove(key)
 
         super(Node, self).__setattr__(key, value)
 
     def __delattr__(self, item):
         # todo: ##OPTIMIZE
-        inh = self._inherited_fields
-        if item not in inh:
-            inh.append(item)
         super(Node, self).__delattr__(item)
+        _empty_overrided_fields = self._empty_overrided_fields
+        _data = self._data
+        if item in _empty_overrided_fields:
+            _empty_overrided_fields.remove(item)
+        if item in _data:
+            _data.pop(item)
 
 
 ########################################################################################################################

@@ -84,6 +84,10 @@ def test4(reload=True, save_loaded=True):
     tf = reg.get('/registry/items/usable/tanks/tank_full')
     t1 = reg.get('/registry/items/usable/tanks/tank_full/tank_10l')
     t2 = reg.get('/registry/items/usable/tanks/tank_full/tank_20l')
+    q = reg.get('/registry/quests/delivery_quest/delivery_quest_simple')
+
+    t.value_fuel = 3
+    print(t.value_fuel)
 
     globals().update(locals())
 
@@ -94,7 +98,7 @@ if __name__ == '__main__':
     log.info('Use {db_name!r} db'.format(**locals()))
 
     
-    rel = 0
+    rel = 1
     test4(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
