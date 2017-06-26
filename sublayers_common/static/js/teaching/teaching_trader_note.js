@@ -22,8 +22,8 @@ var TraderTeachingNote = (function (_super) {
 
     TraderTeachingNote.prototype.on_enter_location = function() {
         _super.prototype.on_enter_location.call(this);
-        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/bob_ferolito');
-        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/bob_ferolito');
+        this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
+        this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
     };
 
     TraderTeachingNote.prototype.check_table = function () {
@@ -33,6 +33,11 @@ var TraderTeachingNote = (function (_super) {
     TraderTeachingNote.prototype.redraw = function() {
         if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
+        if (!this.needed_building)
+            this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
+        if (!this.needed_npc)
+            this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
+
         if ((this.needed_screen_name != locationManager.active_screen_name) ||
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
@@ -48,6 +53,7 @@ var TraderTeachingNote = (function (_super) {
             teachingManager.jq_panel_left_content.text('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании рынка.');
             teachingManager.jq_panel_right_content.text('Зайдите в рынок.');
             this.draw_line(this.start_point, this.build_coord);
+            return;
         }
 
         if (active_place === this.needed_building) {
