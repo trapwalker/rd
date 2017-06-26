@@ -31,10 +31,10 @@ class ServerAPI(API):
                 agent_exemplar = Agent(
                     login=user.name,
                     user_id=str(user.pk),
-                    profile=dict(
-                        parent='/registry/agents/user',
+                    profile=self.server.reg.get('/registry/agents/user').instantiate( #  dict(
+                        #parent='/registry/agents/user',
                         name=str(user.pk),
-                        role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+                        #role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
                     ),
                 ).save()
 
