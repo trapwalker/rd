@@ -707,7 +707,8 @@ class KillerQuest(Quest):
     def get_available_lvl(self):
         # Уровень квеста зависит от отношений, но не выше уровня игрока
         relation = self.agent.profile.get_relationship(npc=self.hirer)
-        lvl_table = [-0.8, -0.6, 0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1]
+        # lvl_table = [-0.8, -0.6, 0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1]
+        lvl_table = [-0.8, 0, 1]
         max_relation_lvl = len(lvl_table)
         for item in lvl_table:
             if relation < item:
