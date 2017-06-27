@@ -56,16 +56,14 @@ class Item(Node):
     #     assert not self.uri, 'Item has URI {!r} and cannot splited'.format(self.uri)
     #     return self.instantiate(amount=count)
 
-    def instantiate(self, **kw):
-        inst = super(Item, self).instantiate(**kw)
-        if inst.amount > inst.stack_size:
-            log.warning(
-                'Item stack owerflow truncated: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=inst))
-            inst.amount = inst.stack_size
-        return inst
+    def validate(self, *av, **kw):
+        super(Item, self).validate(*av, **kw)
 
-        # def __str__(self):
-        #     return '{}<{}/{}>'.format(self.__class__.__name__, self.activate_type, self.amount)
+        if self.amount is not None and self.stack_size is None:
+            log.warning('Item stacksize is None: {item}'.format(item=self))
+
+        if self.amount > self.stack_size:
+            log.warning('Stack of items is owerflow: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=self))
 
 
 class ItemUsable(Item):
