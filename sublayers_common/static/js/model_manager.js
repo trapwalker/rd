@@ -1054,6 +1054,8 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.ChangeAgentKarma', event);
         if (locationManager.in_location_flag)
             locationManager.npc_relations = event.relations;
+        user.example_agent.rpg_info.karma = event.karma;
+        characterManager.redraw();
     };
 
     ClientManager.prototype.ExitFromLocation = function () {

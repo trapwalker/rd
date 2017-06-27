@@ -692,6 +692,9 @@ var ViewMessengerGlass = (function () {
                 case "LvlLogMessage":
                     this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.', true);
                     break;
+                case "SkillLogMessage":
+                    this.addMessageToLog('Очков навыка получено: ' + msg.skill, true);
+                    break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action)
                         this.addMessageToLog('Получен квест: ' + msg.quest_caption + '.');

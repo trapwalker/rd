@@ -60,7 +60,8 @@ class PlayHandler(BaseHandler):
                     return
                 self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
                             server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
-                            first_enter=False, start_coord=coord)
+                            first_enter=False, start_coord=coord, insurance_name='quick',
+                            user_balance=0)
         else:
             self.redirect(self.get_login_url())
 

@@ -23,7 +23,7 @@ var TrainerTeachingNote = (function (_super) {
     TrainerTeachingNote.prototype.on_enter_location = function() {
         _super.prototype.on_enter_location.call(this);
         this.needed_building = locationManager.buildings.library;
-        this.needed_npc = locationManager.npc['reg--registry-institutions-trainer-blackhawk_2094'];
+        this.needed_npc = locationManager.npc['reg--registry-institutions-trainer-whitehill_blackhawk_2094'];
     };
 
     TrainerTeachingNote.prototype.redraw = function() {
@@ -44,6 +44,7 @@ var TrainerTeachingNote = (function (_super) {
             teachingManager.jq_panel_left_content.text('Выполнив свое первое задание вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Библиотека”.');
             this.draw_line(this.start_point, this.build_coord);
+            return;
         }
 
         if (active_place === this.needed_building) {

@@ -121,6 +121,8 @@
                     refresh_load_called: false,
                     load_tiles_complete: false,
                     loadingCue : 0,
+                    all_loading: 0,
+                    all_error: 0,
                     drawImage : function (image, dx, dy) {
                         try {
                             map.renderer.context.drawImage(
@@ -148,6 +150,7 @@
                         map.renderer.tiles[pr_name][id]._404_tile = false;
                         map.renderer.tiles[pr_name][id].onload = function () {
 	                        map.renderer.loadingCue = map.renderer.loadingCue - 1;
+                            map.renderer.all_loading++;
                             map.renderer.next_load_tile();
                         };
                         map.renderer.tiles[pr_name][id].onerror = function () {
@@ -155,6 +158,7 @@
                             this.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
                             this.onload = function () {};
                             this._404_tile = true;  // todo: возможно потом убрать
+                            map.renderer.all_error++;
                             //console.log('404 tile + ', this.slippy_coord, this._404_tile);
                             map.renderer.next_load_tile();
                         };
@@ -379,12 +383,17 @@
 
                         ctx.restore();
 
-                        //ctx.textAlign = "left";
-                        //ctx.textBaseline = "center";
-                        //ctx.font = "22pt MICRADI";
-                        //ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
-                        //ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
-                        //ctx.fillText("Load Queue : " + map.renderer.load_queue.length, 100, 130);
+                        if (smap.__debug) {
+                            //console.log('refresh' + new Date());
+                            ctx.textAlign = "left";
+                            ctx.textBaseline = "center";
+                            ctx.font = "22pt MICRADI";
+                            ctx.fillStyle = 'rgba(42, 253, 10, 0.6)';
+                            ctx.fillText(viewport.zoom.toFixed(2) + " / " + viewport.zf.toFixed(2), 100, 100);
+                            ctx.fillText("Load Queue : " + map.renderer.load_queue.length, 100, 130);
+                            ctx.fillText("Load All : " + map.renderer.all_loading, 100, 160);
+                            ctx.fillText("Error All : " + map.renderer.all_error, 100, 190);
+                        }
                     },
                     garbage: function () {
                         var viewports = map.renderer.viewports;
@@ -418,8 +427,8 @@
 
                     viewport.x = map.position.x;
                     viewport.y = map.position.y;
-                    viewport.width =  map.renderer.canvas.width;
-                    viewport.height =  map.renderer.canvas.height;
+                    viewport.width =  map.renderer.canvas.width << 0;  // Округление
+                    viewport.height =  map.renderer.canvas.height << 0;  // Округление
                     viewport.zoom = zoom;
 
                     viewport.zi = Math.ceil(zoom);  // Целое число зума. Без округлений
@@ -428,14 +437,16 @@
                     else
                         viewport.zf = 1. / (1 + viewport.zi - map.position.z);  // коэффициент текущего уменьшения тайлов
                     viewport.zp = map.pow(2, map.zMax - viewport.zi);  // Коэффициент зумирования для целого зума
-                    viewport.w = map.renderer.context_size.canvas_w * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
-                    viewport.h = map.renderer.context_size.canvas_h * viewport.zp / viewport.zf;  // Размер полотна в пикселях максимального зума
+                    viewport.w = (map.renderer.context_size.canvas_w * viewport.zp / viewport.zf) << 0;  // Размер полотна в пикселях максимального зума
+                    viewport.h = (map.renderer.context_size.canvas_h * viewport.zp / viewport.zf) << 0;  // Размер полотна в пикселях максимального зума
                     viewport.sz = map.renderer.tilesize * viewport.zp; // Размер тайла текущего округлённого зума в пикселях максимального зума
                     viewport.tilesize = map.renderer.tilesize;  // Размер тайла текущего зума в пикселях максимального зума
-                    viewport.xMin = (map.position.x - viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
-                    viewport.yMin = (map.position.y - viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
-                    viewport.xMax = (map.position.x + viewport.w / 2); // Прямоугольник отображения в пикселах на максимальном зуме
-                    viewport.yMax = (map.position.y + viewport.h / 2); // Прямоугольник отображения в пикселах на максимальном зуме
+
+                    viewport.xMin = viewport.x - viewport.w / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+                    viewport.yMin = viewport.y - viewport.h / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+                    viewport.xMax = viewport.x + viewport.w / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+                    viewport.yMax = viewport.y + viewport.h / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+
                     viewport.offsetX = 0; //(canvas_w / 2) * ((1 - viewport.zf) ); // Сдвиг начала канваса, чтобы центр остался в центре!
                     viewport.offsetY = 0; //(canvas_h / 2) * ((1 - viewport.zf) );
 
@@ -446,6 +457,22 @@
 
                     // Расчёт zoom_koeff для вычислений вне карты (для отображения иконок и т.п.) на это число нужно делить любые расстояния
                     viewport.outher_zoom_koeff = viewport.zp / viewport.zf;
+
+                    if (!viewport.xMin || !viewport.yMin || !viewport.xMax || !viewport.yMax) {
+                        console.error(viewport);
+
+                        viewport.xMin = Math.floor(viewport.x) - Math.floor(viewport.w) / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+                        viewport.yMin = Math.floor(viewport.y) - Math.floor(viewport.h) / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+                        viewport.xMax = Math.floor(viewport.x) + Math.floor(viewport.w) / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+                        viewport.yMax = Math.floor(viewport.y) + Math.floor(viewport.h) / 2.; // Прямоугольник отображения в пикселах на максимальном зуме
+
+                        viewport.x_tile_min = $.Math.floor(viewport.xMin / viewport.sz) - map.preloadMargin; // Прямоугольник номеров тайлов для текущего viewport
+                        viewport.x_tile_max = $.Math.ceil(viewport.xMax / viewport.sz) + map.preloadMargin;
+                        viewport.y_tile_min = $.Math.floor(viewport.yMin / viewport.sz) - map.preloadMargin;
+                        viewport.y_tile_max = $.Math.ceil(viewport.yMax / viewport.sz) + map.preloadMargin;
+
+                        smap.__t = viewport;
+                    }
 
                     return viewport;
                 },
