@@ -503,7 +503,7 @@ class Node(Subdoc):
 
         extra.update(kw)
 
-        if parent is not None and not isinstance(parent, basestring) and parent.uri:
+        if parent is not None and not isinstance(parent, basestring) and not parent.uri:
             # Если наследуемся от inline-нода, запоминаем его как прототип, а родителем считаем его родителя
             proto = parent
             proto_class = type(proto)
