@@ -952,6 +952,7 @@ class UserExampleSelfRPGMessage(Message):
             quest_inventory.append(dd)
 
         rpg_info = dict(
+            karma=agent.example.profile.karma,
             cur_lvl=math.floor(lvl / 10),
             cur_exp=cur_exp,
             cur_lvl_exp=agent.example.profile.exp_table.user_exp_by_lvl(lvl=lvl),
@@ -1342,7 +1343,10 @@ class ChangeAgentKarma(Message):
                 for npc in self.agent.current_location.example.get_npc_list()
             ]
         d = super(ChangeAgentKarma, self).as_dict()
-        d.update(relations=relations)
+        d.update(
+            relations=relations,
+            karma=self.agent.example.profile.karma,
+        )
         return d
 
 
