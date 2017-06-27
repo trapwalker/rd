@@ -217,6 +217,13 @@ class EmbeddedNodeField(EmbeddedDocumentField):
 
         elif value is None:
             return
+
+        # elif isinstance(value, dict):
+        #     parent = value.pop('parent', None)
+        #     if isinstance(parent, basestring):
+        #         parent = REGISTRY.get(parent)
+        #     cls = self.document_type if parent is None else type(parent)
+        #     return cls(parent=parent, **value)
         return super(EmbeddedNodeField, self).to_python(value)
 
     def __set__(self, instance, value):
@@ -472,19 +479,80 @@ class Node(Subdoc):
     # todo: make `owner` property
     filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
 
-    def __init__(self, **kw):
-        cls = self.__class__
-        only_fields = kw.pop('__only_fields', None) or (cls._inheritable_fields | cls._deferred_init_fields)
+    def __init__(self, parent=None, _uri=None, _empty_overrided_fields=None, **kw):
+        cls = type(self)
+        _fields = cls._fields
+        _inheritable_fields = cls._inheritable_fields
+        extra = {}
+        only_fields = kw.pop('__only_fields', None)
 
-        _empty_overrided_fields = kw.pop('_empty_overrided_fields', None)
+        if _uri:
+            for k, v in _uri.params:
+                # todo: Support deep attributes detalization in URI params (subnode.attr -> subnode__attr)
+                field = _fields.get(k, None)
+                if field and k not in kw:
+                    # todo: skip errors with warnings
+                    try:
+                        # todo: decode escape chars
+                        v = field.to_python(v)
+                    except Exception as e:
+                        log.warning("Wrong value {!r} of param {!r} in URI {}: {!r}".format(v, k, _uri, e))
+                else:
+                    log.warning("Unknown field {!r} in URI {}".format(k, _uri))
+                extra[k] = v
+
+        extra.update(kw)
+
+        if parent is not None and not isinstance(parent, basestring) and parent.uri:
+            # Если наследуемся от inline-нода, запоминаем его как прототип, а родителем считаем его родителя
+            proto = parent
+            proto_class = type(proto)
+            parent = parent.parent
+
+            for k, v in proto._data.items():
+                field = proto_class._fields.get(k, None)
+                if field and not getattr(field, 'not_inherited', False):
+                    extra[k] = self._copy_field_value(field, v)
+
+        # Получаем перечень имён полей, перекрытых ложью
         if _empty_overrided_fields is None:
             _empty_overrided_fields = set()
         elif not isinstance(_empty_overrided_fields, set):
             _empty_overrided_fields = set(_empty_overrided_fields)
 
-        _fields = cls._fields
-        _empty_overrided_fields = list(_empty_overrided_fields | {k for k, v in kw.iteritems() if not v and k in _fields})  # todo: Make SetField
-        super(Node, self).__init__(__only_fields=only_fields, _empty_overrided_fields=_empty_overrided_fields, **kw)
+        _empty_overrided_fields = list(
+            _empty_overrided_fields |
+            {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
+        )  # todo: Make SetField
+
+        # Формируем список имён полей блокирующий установку наследуемых полей в значения по умолчанию
+        if only_fields is None:
+            only_fields = cls._inheritable_fields | cls._deferred_init_fields  # todo: Убедиться, что _deferred_init_fields еще нужен
+
+        super(Node, self).__init__(
+            parent=parent,
+            __only_fields=only_fields,
+            _empty_overrided_fields=_empty_overrided_fields,
+            **extra
+        )
+        self._need_reinst = False
+        if isinstance(parent, Node):
+            parent_class = type(parent)
+            for field_name, field in parent_class._fields.iteritems():  # todo: ##OPTIMIZE: use _inheritable_fields list
+                if (
+                    not getattr(field, 'not_inherited', False)
+                    and getattr(field, 'reinst', False)
+                    and field_name not in extra
+                ):
+                    value = getattr(parent, field_name)
+                    new_value = self._copy_field_value(field, value)
+                    setattr(self, field_name, new_value)
+        else:
+            self._need_reinst = True
+
+    def instantiate(self, **kw):
+        assert 'parent' not in kw, 'Parameter "parent" is not valid to instantiate: {!r}'.format(self)
+        return type(self)(**kw)
 
     @warn_calling(skip=(r'site-packages',))
     def __iter__(self):
@@ -599,51 +667,6 @@ class Node(Subdoc):
             obj = obj.parent
 
         return i if obj else -1
-
-    def instantiate(self, _uri=None, **kw):
-        """
-        Create instance of node and set parent to self.
-        :param _uri: Instantiation URI to get addition parameters
-        :type _uri: URI|None
-        :param kw: Addition params
-        :return: Node
-        """
-        # todo: expand
-        #assert self.can_instantiate, "This object can not to be instantiated: {!r}".format(self)
-        cls = type(self)
-        extra = {}
-        if not self.uri:
-            for k, v in self._data.items():
-                field = cls._fields.get(k, None)
-                if field and not getattr(field, 'not_inherited', False):
-                    extra[k] = self._copy_field_value(field, v)
-
-        if _uri:
-            for k, v in _uri.params:
-                # todo: Support deep attributes detalization in URI params (subnode.attr -> subnode__attr)
-                field = cls._fields.get(k, None)
-                if field:
-                    # todo: skip errors with warnings
-                    try:
-                        # todo: decode escape chars
-                        v = field.to_python(v)
-                    except Exception as e:
-                        log.warning("Wrong value {!r} of param {!r} in URI {}: {!r}".format(v, k, _uri, e))
-                else:
-                    log.warning("Unknown field {!r} in URI {}".format(k, _uri))
-                extra[k] = v
-
-        extra.update(kw, parent=self if self.uri else self.parent)
-
-        # Реинстанцирование полей
-        if self.uri:  # при инстанцировании вложенных нодов все их поля были реинстанцированы выше
-            for field_name, field in cls._fields.items():
-                if getattr(field, 'reinst', False) and field_name not in extra:
-                    value = getattr(self, field_name)
-                    extra[field_name] = self._copy_field_value(field, value)
-
-        node = cls(**extra)
-        return node
 
     def __setattr__(self, key, value):
         # todo: ##OPTIMIZE
@@ -784,8 +807,7 @@ class Registry(Document):
             # todo: multiple expanding of one node ##optimize
             with Timer() as timer1:
                 self.root.expand_links()
-                # for node in all_nodes:
-                #     node.expand_links()
+
             log.debug('    nodes expanded ({:.3f}s)'.format(timer1.duration))
 
             if validate:
