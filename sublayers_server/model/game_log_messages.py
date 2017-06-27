@@ -70,6 +70,19 @@ class ExpLogMessage(Message):
         return d
 
 
+class SkillLogMessage(Message):
+    def __init__(self, skill, **kw):
+        super(SkillLogMessage, self).__init__(**kw)
+        self.skill = skill
+
+    def as_dict(self):
+        d = super(SkillLogMessage, self).as_dict()
+        d.update(
+            skill=self.skill
+        )
+        return d
+
+
 class LvlLogMessage(Message):
     def __init__(self, lvl, **kw):
         super(LvlLogMessage, self).__init__(**kw)
