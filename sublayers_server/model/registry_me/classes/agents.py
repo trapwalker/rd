@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
 from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
-from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage
+from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage, SkillLogMessage
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField
@@ -219,6 +219,9 @@ class AgentProfile(Node):
         lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
         return lvl
 
+    def get_real_lvl(self):
+        return self.get_lvl() // 10
+
     @property
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
@@ -339,9 +342,20 @@ class AgentProfile(Node):
             self.value_exp += dvalue
         if self._agent_model:
             ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
+
+            # Подуровень игрока (количество очков навыков)
             lvl = self.get_lvl()
             if lvl > old_lvl:
-                LvlLogMessage(agent=self._agent_model, time=time, lvl=lvl).post()
+                SkillLogMessage(agent=self._agent_model, time=time, skill=(lvl - old_lvl)).post()
+
+            # Уровень игрока (количество очков перков)
+            perk_lvl = int(lvl / 10)
+            old_perk_lvl = int(old_lvl / 10)
+            if perk_lvl > old_perk_lvl:
+                LvlLogMessage(agent=self._agent_model, time=time, lvl=perk_lvl).post()
+
+        UserExampleSelfRPGMessage(agent=self._agent_model, time=time).post()
+
         assert self.value_exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
