@@ -58,7 +58,7 @@ var NukoilTeachingNote = (function (_super) {
             teachingManager.jq_panel_right_content.text('Укажите количество литров ползунком или курсором и нажмите кнопку Заправить.');
 
             if (user.example_car)
-                if (user.example_car.fuel != this.needed_npc._get_gas_by_prc(this.needed_npc.current_prc_gas))
+                if (Math.round(user.example_car.fuel) != this.needed_npc._get_gas_by_prc(this.needed_npc.current_prc_gas))
                     this.draw_line(this.start_point, this.buy_btn);
                 else
                     this.draw_line(this.start_point, this.gas_coord);

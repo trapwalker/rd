@@ -34,7 +34,7 @@ class ServerAPI(API):
                     profile=self.server.reg.get('/registry/agents/user').instantiate( #  dict(
                         #parent='/registry/agents/user',
                         name=str(user.pk),
-                        #role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+                        role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
                     ),
                 ).save()
 
