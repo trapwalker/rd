@@ -238,7 +238,7 @@ class NodeMetaclass(DocumentMetaclass):
         super_new = super(NodeMetaclass, cls).__new__
         new_cls = super_new(cls, name, bases, attrs)
 
-        # Fields processing
+        # Fields processing  # todo: ##OPTIMIZE: use dict instead
         new_cls._inheritable_fields = set()
         new_cls._non_inheritable_fields = set()
         new_cls._deferred_init_fields = set()
