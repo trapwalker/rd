@@ -444,11 +444,13 @@ class Subdoc(EmbeddedDocument):
 
 
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
-
         for field_name, field in type(self)._fields.items():
             if isinstance(field, CONTAINER_FIELD_TYPES):
                 value = getattr(self, field_name)
                 setattr(self, field_name, value)
+
+        if isinstance(self, Node) and self._need_reinst:
+            self._reinst()
 
         return self
 
@@ -475,11 +477,11 @@ class Node(Subdoc):
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     #uri = StringField(unique=True, null=True, not_inherited=True)
-    subnodes = MapField(field=EmbeddedNodeField(not_inherited=True), not_inherited=True)
+    subnodes = MapField(field=EmbeddedNodeField(), not_inherited=True)
     # todo: make `owner` property
     filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
 
-    def __init__(self, parent=None, _uri=None, _empty_overrided_fields=None, **kw):
+    def __init__(self, parent=None, _uri=None, _empty_overrided_fields=None, _reg_init=False, **kw):
         cls = type(self)
         _fields = cls._fields
         _inheritable_fields = cls._inheritable_fields
@@ -526,7 +528,7 @@ class Node(Subdoc):
         )  # todo: Make SetField
 
         # Формируем список имён полей блокирующий установку наследуемых полей в значения по умолчанию
-        if only_fields is None:
+        if not only_fields:
             only_fields = cls._inheritable_fields | cls._deferred_init_fields  # todo: Убедиться, что _deferred_init_fields еще нужен
 
         super(Node, self).__init__(
@@ -536,23 +538,31 @@ class Node(Subdoc):
             **extra
         )
         self._need_reinst = False
-        if isinstance(parent, Node):
-            parent_class = type(parent)
-            for field_name, field in parent_class._fields.iteritems():  # todo: ##OPTIMIZE: use _inheritable_fields list
-                if (
-                    not getattr(field, 'not_inherited', False)
-                    and getattr(field, 'reinst', False)
-                    and field_name not in extra
-                ):
-                    value = getattr(parent, field_name)
-                    new_value = self._copy_field_value(field, value)
-                    setattr(self, field_name, new_value)
+        global REGISTRY
+        if isinstance(parent, Node) and REGISTRY.loading != 'preloading':
+            self._reinst()
         else:
-            self._need_reinst = True
+            self._need_reinst = parent is not None
+
+    def _reinst(self):
+        parent = self.parent
+        _overrided = set(self._data.keys()) | set(self._empty_overrided_fields)
+
+        for field_name, field in type(parent)._fields.iteritems():  # todo: ##OPTIMIZE: use _inheritable_fields list
+            if (
+                not getattr(field, 'not_inherited', False)
+                and getattr(field, 'reinst', False)
+                and field_name not in _overrided
+            ):
+                value = getattr(parent, field_name)
+                new_value = self._copy_field_value(field, value)
+                setattr(self, field_name, new_value)
+
+        self._need_reinst = False
 
     def instantiate(self, **kw):
         assert 'parent' not in kw, 'Parameter "parent" is not valid to instantiate: {!r}'.format(self)
-        return type(self)(**kw)
+        return type(self)(parent=self, **kw)
 
     @warn_calling(skip=(r'site-packages',))
     def __iter__(self):
@@ -670,7 +680,7 @@ class Node(Subdoc):
 
     def __setattr__(self, key, value):
         # todo: ##OPTIMIZE
-        if key not in {'_empty_overrided_fields', '_initialised'} and key in type(self)._fields:
+        if key not in {'_empty_overrided_fields', '_initialised'} and key in type(self)._inheritable_fields:
             _empty_overrided_fields = self._empty_overrided_fields
             if _empty_overrided_fields is None:
                 self._empty_overrided_fields = []
@@ -731,6 +741,7 @@ class Registry(Document):
     def __init__(self, **kw):
         super(Registry, self).__init__(**kw)
         self._cache = {}
+        self.loading = None
 
     @warn_calling()
     def __nonzero__(self):
@@ -784,6 +795,7 @@ class Registry(Document):
         :return: self
         :rtype: Registry
         """
+        self.loading = 'preloading'
         path = os.path.join(path, 'registry')
         log.debug('Registry FS loading start from: %r', path)
         all_nodes = []
@@ -804,12 +816,14 @@ class Registry(Document):
 
             log.debug('    structure loaded {} nodes ({:.3f}s)'.format(len(all_nodes), timer.duration))
 
+            self.loading = 'expanding'
             # todo: multiple expanding of one node ##optimize
             with Timer() as timer1:
                 self.root.expand_links()
 
             log.debug('    nodes expanded ({:.3f}s)'.format(timer1.duration))
 
+            self.loading = False
             if validate:
                 with Timer() as timer2:
                     for node in all_nodes:
@@ -826,6 +840,11 @@ class Registry(Document):
         return self
 
     def _load_node_from_fs(self, path, owner=None):
+        """
+        :param path: basestring
+        :param owner: Node|None
+        :return: Node
+        """
         assert isinstance(path, unicode), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
         attrs = {}
         if not os.path.isdir(path):
