@@ -52,26 +52,26 @@ def test3(reload=True, save_loaded=True):
     t1 = reg.get('/registry/poi/locations/towns/paloma')
     t2 = reg.get('/registry/poi/locations/towns/prior')
 
-    a = Agent.objects.filter(user_id='123456').first()
-    if a is None:
-        a = Agent(
-            login='test_login',
-            user_id='123456',
-            profile=dict(
-                parent='/registry/agents/user',
-                name='123456',
-                role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
-            ),
-        ).save()
-        log.debug('Agent created')
-    else:
-        log.debug('Agent loaded')
+    def ag(num):
+        a = Agent.objects.filter(user_id='user_{}'.format(num)).first()
+        if a is None:
+            a = Agent(
+                login='test_login_{}'.format(num),
+                user_id='user__{}'.format(num),
+                profile=
+                    #reg.get('/registry/agents/user').instantiate(
+                    dict(parent='/registry/agents/user',
+                    name='test_profile_{}'.format(num),
+                    #role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+                ),
+            ).save()
+            log.debug('Agent {} created'.format(num))
+        else:
+            log.debug('Agent {} loaded'.format(num))
+        return a
 
-    log.debug('karma=%r', a.profile.karma)
-    a.profile.karma = None
-    log.debug('karma=%r', a.profile.karma)
-    a.save()
-
+    a = ag(1)
+    b = ag(2)
 
 
     globals().update(locals())
@@ -85,6 +85,8 @@ def test4(reload=True, save_loaded=True):
     t1 = reg.get('/registry/items/usable/tanks/tank_full/tank_10l')
     t2 = reg.get('/registry/items/usable/tanks/tank_full/tank_20l')
     q = reg.get('/registry/quests/delivery_quest/delivery_quest_simple')
+    towns = reg.get(r'registry\poi\locations\towns')
+    locals().update(towns.subnodes)
 
     t.value_fuel = 3
     print(t.value_fuel)
@@ -99,7 +101,7 @@ if __name__ == '__main__':
 
     
     rel = 0
-    test4(reload=rel, save_loaded=True)
+    test3(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')
