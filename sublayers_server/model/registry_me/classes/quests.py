@@ -224,7 +224,8 @@ class Quest(Node):
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states          = ListField(
         field=EmbeddedNodeField(document_type=QuestState),
-        reinst=True,
+        # reinst=True,
+        readonly=True,
         caption=u"Состояния квеста",
         doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
     )
