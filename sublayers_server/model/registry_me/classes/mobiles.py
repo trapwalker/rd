@@ -29,6 +29,10 @@ class Mobile(Node):
         - parameter - для атрибута с таким тегом будет создан модельный объект Parameter
         - param_aggregate - атрибуты с данным тегов будут обрабатываться в функции param_aggregate
     """
+
+    # Требование к уровню вождения
+    needed_driving = IntField(caption=u"Требование к прокачке уровня вождения")
+
     # атрибуты от PointObject
     position = PositionField(caption=u"Последние координаты объекта", reinst=True)
 
@@ -207,22 +211,24 @@ class Mobile(Node):
 
     def get_modify_value(self, param_name, example_agent=None):
         original_value = getattr(self, param_name)
-
-        mechanic_slots_effect = 0
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):
-                mechanic_slots_effect += getattr(slot_value, param_name, 0.0)
-
-        agent_effect = 0
+                original_value += getattr(slot_value, param_name, 0.0)
         if example_agent:
-            for skill_name, skill_value in example_agent.iter_skills():
-                agent_effect += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
-            for perk in example_agent.perks:
-                agent_effect += getattr(perk, param_name, 0.0)
+            quest_items_modifiers = example_agent.profile.get_quest_skill_modifier()
+            for skill_name, skill_value in example_agent.profile.iter_skills():
+                skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
+                original_value += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+            for perk in example_agent.profile.perks:
+                original_value += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
 
+            if param_name == 'v_forward':
+                original_value *= example_agent.profile.exp_table.get_car_penalty(
+                    dvalue=(self.needed_driving - example_agent.profile.driving.calc_value())
+                )
         # todo: проверить допустимость значения
         assert original_value is not None, '{} is not allowed {}'.format(param_name, original_value)
-        return original_value + mechanic_slots_effect + agent_effect
+        return original_value
 
     def param_aggregate(self, example_agent):
         d = dict()
@@ -244,6 +250,10 @@ class Mobile(Node):
             for perk in example_agent.profile.perks:
                 for param_name in d.keys():
                     d[param_name] = d[param_name] + getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
+
+            d['v_forward'] *= example_agent.profile.exp_table.get_car_penalty(
+                dvalue=(self.needed_driving - example_agent.driving.calc_value())
+            )
 
         return d
 

@@ -95,7 +95,7 @@ class AgentProfile(Node):
     perks = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),
         caption=u'Список прокачанных перков',
-        einst=True,
+        reinst=True,
     )
 
     # Механизм скилов
@@ -456,6 +456,7 @@ class AgentProfile(Node):
             if isinstance(item, Insurance):
                 return item
         assert False, 'for {} not found Insurance'.format(self)
+
 
 class AIQuickAgentProfile(AgentProfile):
     ai_quest = EmbeddedNodeField(
