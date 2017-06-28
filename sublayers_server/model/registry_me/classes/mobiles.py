@@ -252,7 +252,7 @@ class Mobile(Node):
                     d[param_name] = d[param_name] + getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
 
             d['v_forward'] *= example_agent.profile.exp_table.get_car_penalty(
-                dvalue=(self.needed_driving - example_agent.driving.calc_value())
+                dvalue=(self.needed_driving - example_agent.profile.driving.calc_value())
             )
 
         return d
