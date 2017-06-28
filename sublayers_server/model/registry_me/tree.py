@@ -517,13 +517,13 @@ class Node(Subdoc):
                     extra[k] = self._copy_field_value(field, v)
 
         # Получаем перечень имён полей, перекрытых ложью
-        if _empty_overrided_fields is None:
-            _empty_overrided_fields = set()
-        elif not isinstance(_empty_overrided_fields, set):
-            _empty_overrided_fields = set(_empty_overrided_fields)
+        # if _empty_overrided_fields is None:
+        #     _empty_overrided_fields = set()
+        # elif not isinstance(_empty_overrided_fields, set):
+        #     _empty_overrided_fields = set(_empty_overrided_fields)
 
         _empty_overrided_fields = list(
-            _empty_overrided_fields |
+            # _empty_overrided_fields |
             {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
         )  # todo: Make SetField
 
@@ -555,8 +555,9 @@ class Node(Subdoc):
                 and field_name not in _overrided
             ):
                 value = getattr(parent, field_name)
-                new_value = self._copy_field_value(field, value)
-                setattr(self, field_name, new_value)
+                if value is not None:
+                    new_value = self._copy_field_value(field, value)
+                    setattr(self, field_name, new_value)
 
         self._need_reinst = False
 
