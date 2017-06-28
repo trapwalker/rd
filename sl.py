@@ -46,6 +46,7 @@ def cli(ctx, db, verbose):
     )
     db = connect(db=db)
 
+
 @cli.group(name='reg')
 @click.pass_context
 def reg(ctx):
@@ -76,9 +77,7 @@ def reg_reload(ctx, dest, no_db, clean_agents):
         return
 
     if clean_agents:
-        with Timer() as tm:
-            deleted_agents_count = Agent.objects.all().delete()
-            log.info('All stored agents deleted: %s (%.3fs)', deleted_agents_count, tm.duration)
+        _agents_clean()
 
     if dest:
         _save_to_file(registry, dest)
@@ -96,6 +95,33 @@ def reg_export(ctx, dest):
         return
 
     _save_to_file(registry, dest)
+
+
+########################################################################################################################
+
+
+@cli.group(name='agents')
+@click.pass_context
+def agents(ctx):
+    """Operations with game registry"""
+    pass
+
+
+@agents.command(name='clean')
+@click.pass_context
+def agents_clean(ctx):
+    """Full cleaning of game registry from DB"""
+    click.echo('Cleaning all agents...')
+    _agents_clean()
+
+
+########################################################################################################################
+
+
+def _agents_clean():
+    with Timer() as tm:
+        deleted_agents_count = Agent.objects.all().delete()
+        log.info('All stored agents deleted: %s (%.3fs)', deleted_agents_count, tm.duration)
 
 
 def _save_to_file(registry, dest):
