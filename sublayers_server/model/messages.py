@@ -889,7 +889,7 @@ class JournalParkingInfoMessage(Message):
         d.update(cars=[dict(
             car_info=dict(
                 car=car.as_client_dict(),
-                html_car_table=template_table.generate(car=car),
+                html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
                 # armorer_css=tornado.template.Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True)
                 armorer_css=''
@@ -1155,7 +1155,7 @@ class HangarInfoMessage(NPCInfoMessage):
 
             d.update(cars=[dict(
                 car=car.as_client_dict(),
-                html_car_table=template_table.generate(car=car),
+                html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
             ) for car in npc.car_list])
         return d
@@ -1180,7 +1180,7 @@ class ParkingInfoMessage(NPCInfoMessage):
             d.update(cars=[dict(
                 car=car.as_client_dict(),
                 car_parking_price=npc.get_car_price(car),
-                html_car_table=template_table.generate(car=car),
+                html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
             ) for car in agent.example.profile.get_car_list_by_npc(npc)])
         return d
