@@ -95,7 +95,7 @@ class AgentProfile(Node):
     perks = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),
         caption=u'Список прокачанных перков',
-        einst=True,
+        reinst=True,
     )
 
     # Механизм скилов
