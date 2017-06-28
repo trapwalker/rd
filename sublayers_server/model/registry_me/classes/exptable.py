@@ -34,6 +34,10 @@ class ExpTable(Node):
         caption=u'Таблица модификатора опыта получаемого на машинке',
         field=EmbeddedDocumentField(document_type=Pair),
     )
+    car_driving_penalty = ListField(
+        caption=u'Таблица штрафа в скорость машинки за недостаток навыка вождения',
+        field=EmbeddedDocumentField(document_type=Pair),
+    )
 
     @classmethod
     def table_slice(cls, table, value):
@@ -85,3 +89,10 @@ class ExpTable(Node):
         res = table.get(lvl, None)
         assert res is not None and res >= 0, 'Res = {}  Lvl = {} exp={}  table: {}'.format(res, lvl, exp, table)
         return res
+
+    def get_car_penalty(self, dvalue):
+        if dvalue > 0:
+            for pair in self.car_driving_penalty:
+                if pair.k >= dvalue:
+                    return pair.v
+        return 1.0
