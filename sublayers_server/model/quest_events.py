@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
+from sublayers_server.model.registry_me.tree import Subdoc, FloatField, StringField, UUIDField
 
 
 class QuestEvent(Event):
@@ -22,12 +23,33 @@ class QuestEvent(Event):
         self.quest.do_event(event=self)
 
 
+class QuestTimer(Subdoc):
+    time = FloatField(caption=u"Время", doc=u"Время срабатывания таймера")
+    name = StringField(caption=u"Название", doc=u"Имя таймера для идентификации")
+    uid  = UUIDField(caption=u"UID", doc=u"Уникальный идентификатор таймера")
+
+
 class OnTimer(QuestEvent):
     def __init__(self, name=None, uid=None, **kw):
         super(OnTimer, self).__init__(**kw)
         self.name = name
         self.uid = uid
-        # todo: register timer in quest for search by name or UID
+        # todo: ##OPTIMIZE periodical persistent timers support
+
+    def post(self):
+        name = self.name
+        qtimer = QuestTimer(time=self.time, name=name, uid=self.uid)
+        # self.qtimer = qtimer
+        self.quest.timers[name] = qtimer
+        return super(OnTimer, self).post()
+
+    def on_cancel(self, time=None):
+        self.quest.timers.pop(self.name, None)
+        super(OnTimer, self).on_cancel(time=time)
+
+    def on_perform(self):
+        self.quest.timers.pop(self.name, None)
+        super(OnTimer, self).on_perform()
 
 
 class OnNote(QuestEvent):

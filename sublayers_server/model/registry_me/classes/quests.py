@@ -8,7 +8,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.registry_me.classes import notes
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, UUIDField,
-    StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField,
+    StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField, MapField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
 from sublayers_server.model.events import event_deco
@@ -228,7 +228,15 @@ class Quest(Node):
         caption=u"Состояния квеста",
         doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
     )
-
+    # todo: change states list to MapField (states inheritance support)
+    # todo: ##FIXIT в стейтах внутри квеста почему-то реинстанцируются строки с кодом обработчиков событий
+    # todo: restart timers by load
+    timers      = MapField(
+        field=EmbeddedDocumentField(document_type=quest_events.QuestTimer),
+        reinst=True,
+        caption=u"Установленные таймеры",
+        doc=u"Список установленных квестом таймеров",
+    )
     on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
     on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
@@ -560,6 +568,9 @@ class Quest(Node):
 
         return quest_events.OnTimer(server=event.server, time=time, quest=self, name=name).post()
 
+    def reset_timers(self):
+        pass  # todo: ##IMPLEMENTATION
+
     def log(self, text, event=None, position=None, **kw):
         rendered_text = self._template_render(text, position=position, **kw)
         log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
@@ -634,6 +645,7 @@ class Quest(Node):
         self.active_notes_view = active
         if self.agent.profile._agent_model:
             messages.QuestsChangeMessage(agent=self.agent.profile._agent_model, time=time, quest=self).post()
+
     def deadline_to_str(self):
         m, s = divmod(self.deadline, 60)
         h, m = divmod(m, 60)
@@ -761,6 +773,7 @@ class KillerQuest(Quest):
 
 
 class DeliveryQuest(Quest):
+    delivery_note_uid = UUIDField()  # todo: Использовать ноты по именам, а не по идентификаторам
     distance_table = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.disttable.DistTable')
     recipient_list = ListField(
         root_default=[],
