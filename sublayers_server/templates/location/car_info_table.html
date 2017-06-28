@@ -1,3 +1,10 @@
+{% try %}
+  {% set car_info_table_agent = agent.example.profile %}
+{% except %}
+    {% set car_info_table_agent = None %}
+{% end %}
+
+
 <div class="car-info-block-info">
     <div class="car-info-block-body-right-menu">
         <div class="mainCarInfoWindow-body-right-menu-button active" onclick="CarTableInfoMenuClick(this)" data-page="model">TTX</div>
@@ -6,7 +13,7 @@
     </div>
     <div class="car-info-block-body-right-list active model">
         <div class="car-info-block-body-right-list-text name uneven">&nbspКласс:</div>
-        <div class="car-info-block-body-right-list-text value uneven">{{ car.class_car }}</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ car.class_car if car_info_table_agent is None else car_info_table_agent.value_exp }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspПрочность:</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.max_hp }}</div>
         <div class="car-info-block-body-right-list-text name uneven">&nbspСлотов кузова:</div>
@@ -17,6 +24,8 @@
         <div class="car-info-block-body-right-list-text value uneven">{{ car.max_fuel }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspРасход топлива:</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.p_fuel_rate }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspНавык вождения:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ 'car.needed_driving' }}</div>
         <div class="car-info-block-body-right-list-bonuses">Бонусы местности:</div>
         <!--<div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>-->
         <!--<div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>-->

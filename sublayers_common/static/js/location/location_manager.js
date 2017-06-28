@@ -188,7 +188,7 @@ var LocationManager = (function () {
             this.buildings[building_rec.name] = this._getBuildingByType(building_rec, this.jq_town_div);
         }
         if (this.location_cls == 'GasStation')
-            this.screens.location_screen = this.buildings['nucoil'];
+            this.screens.location_screen = this.buildings['nukeoil'];
         this.active_screen_name = 'location_screen';
 
         // Установка отношений для всех нпс в городе

@@ -1012,7 +1012,7 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
             ).load("car_info_table.html")
 
             templates['html_car_img'] = template_car_img.generate(car=ex_car)
-            templates['html_car_table'] = template_table.generate(car=ex_car)
+            templates['html_car_table'] = template_table.generate(car=ex_car, agent=agent)
             d['templates'] = templates
 
             car_npc_info = dict()
@@ -1280,7 +1280,7 @@ class InteractionInfoMessage(Message):
                 ).load("car_info_img_ext.html")
                 d.update(
                     car_name = player.example.profile.car.title,
-                    html_car_table=template_table.generate(car=player.example.profile.car),
+                    html_car_table=template_table.generate(car=player.example.profile.car, agent=player),
                     html_car_img=template_img.generate(car=player.example.profile.car)
                 )
         return d
