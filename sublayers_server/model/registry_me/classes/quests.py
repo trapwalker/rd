@@ -18,6 +18,7 @@ from sublayers_server.model.utils import getKarmaName
 
 from functools import partial, wraps
 import random
+from itertools import chain
 
 
 def unicode_args_substitution(func, template_renderer, **kw_dict):
@@ -249,6 +250,10 @@ class Quest(Node):
     map_icon    = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
     level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = FloatField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
+    endtime     = FloatField(root_default=0, caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
+    generation_group = StringField(caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
+    generation_max_count = IntField(root_default=1, caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
+    generation_cooldown = IntField(root_default=0, caption=u'Cooldown после завершения', doc=u'Время, которое должно пройти после завершения квеста для следующей генерации')
     deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
     design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
 
@@ -483,9 +488,10 @@ class Quest(Node):
             QuestUpdateMessage(agent=agent_model, time=event.time, quest=self).post()
             if self.status == 'active' and old_status is None:  # quest started
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=True).post()
+                self.starttime = event.time
             if self.status == 'end' and old_status == 'active':  # quest finished
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
-
+                self.endtime = event.time
 
     def make_global_context(self):
         ctx = dict(
@@ -650,6 +656,47 @@ class Quest(Node):
         m, s = divmod(self.deadline, 60)
         h, m = divmod(m, 60)
         return "%d:%02d:%02d" % (h, m, s)
+
+    def can_generate(self, event):
+        print('can_generate {}'.format(self.generation_group))
+        agent = self.agent
+        agent_all_quests = agent.profile.quests
+        agent_quests_ended = agent.profile.quests_ended
+
+        def get_count_quest(target_quest, quests, current_time):
+            res = 0
+            target_parent = target_quest.parent
+            target_hirer = target_quest.hirer
+            target_group = target_quest.generation_group
+            for q in quests:
+                if q.parent == target_parent and q.hirer == target_hirer and q.generation_group == target_group:
+                    if not q.endtime or q.endtime + q.generation_cooldown > current_time:  # todo: правильно проверять завершённые квестов
+                        res += 1
+            return res
+
+        def last_taken_quest_from_npc(npc, quests):  # возвращает последний взятый у данного нпц квест (проходит по завершённым квестам, так как активные уже были проверены)
+            res = None
+            if npc is None:
+                return None
+            for q in quests:
+                if npc.node_hash() == q.hirer.node_hash() and (res is None or res.starttime and res.starttime < q.starttime):
+                    res = q
+            return res
+
+        # Этапы генерации:
+        # Квест не сгенерируется, если:
+        # - парент одинаковый и
+        # - достигнуто максимальное количество квестов у данного нпц в данной generation_group и
+        # - После сдачи квеста не вышел кулдаун и
+        # - Такой квест был последним взятым у данного нпц
+
+        generation_count = get_count_quest(self, agent_all_quests, event.time)
+        if generation_count <= self.generation_max_count:
+            last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_ended)
+            if last_npc_q and last_npc_q.parent == self.parent and last_npc_q.generation_group == self.generation_group:
+                return False
+
+        return True
 
 
 class QuestUpdateMessage(messages.Message):
