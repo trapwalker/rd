@@ -241,7 +241,7 @@
        xlink:href="nukeoil_bg.png"
        y="138.36244"
        x="485"
-       id="nucoil-back"
+       id="nukeoil-back"
        preserveAspectRatio="none"
        height="752"
        width="943"
@@ -287,7 +287,7 @@
        width="943"
        height="752"
        preserveAspectRatio="none"
-       id="autoservice-back"
+       id="service-back"
        x="485"
        y="138.36244"
        class="building-back" />
