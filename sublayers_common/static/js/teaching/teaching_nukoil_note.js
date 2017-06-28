@@ -8,7 +8,7 @@ var NukoilTeachingNote = (function (_super) {
     function NukoilTeachingNote(options) {
         _super.call(this, options);
 
-        this.needed_building = locationManager.buildings.nucoil;
+        this.needed_building = locationManager.buildings.nukeoil;
         this.needed_npc = locationManager.npc['reg--registry-institutions-gas_station'];
 
         this.build_coord = new Point(958, 154);
