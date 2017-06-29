@@ -78,11 +78,16 @@ def test3(reload=True, save_loaded=True):
 
 def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
+    from sublayers_server.model.registry_me.classes.agents import Agent
     #reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
+    ag = Agent.objects.filter({}).first()
+
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
-    q = reg.get('/registry/quests/delivery_quest/delivery_quest_simple')
     c = reg.get('reg:///registry/mobiles/cars/light/motorcycles/honda_hornet')
     cc = c.instantiate()
+    w = reg.get('reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/dshkm_twin')
+    ww = w.instantiate()
+    cc.slot_FC = ww
 
     globals().update(locals())
 
