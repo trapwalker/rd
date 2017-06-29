@@ -432,7 +432,7 @@ class AgentAPI(API):
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
 
         if self.agent.current_location is not None and self.agent.example.profile.in_location_flag:
-            log.debug('Need reenter to location')
+            # log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
@@ -451,7 +451,6 @@ class AgentAPI(API):
         self.agent.current_location = last_town
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
-            # log.debug('Need reenter to location')
             self.agent.example.profile.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
             self.agent.example.profile.insurance.car = None
             if self.agent.example.profile.car:  # Если страховка базовая, то не будет машинки
@@ -632,36 +631,36 @@ class AgentAPI(API):
     @basic_mode
     @public_method
     def enter_to_location(self, location_id):
-        # log.info('agent %s want enter to location is %s', self.agent, town_id)
+        self.agent.log.info('enter to location[%s]', location_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @basic_mode
     @public_method
     def exit_from_location(self):
-        # log.info('agent %s want exit from location is %s', self.agent, town_id)
+        self.agent.log.info('exit from location')
         ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @basic_mode
     @public_method
     def enter_to_npc(self, npc_node_hash):
-        log.info('agent %s want enter to npc %s', self.agent, npc_node_hash)
+        self.agent.log.info('enter to npc %s', npc_node_hash)
         # todo: resolve NPC by node_hash ##quest
         EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
 
     @basic_mode
     @public_method
     def enter_to_building(self, head_node_hash, build_name):
-        log.info('agent %s want enter to build [%s] with head: %s', self.agent, build_name, head_node_hash)
+        self.agent.log.info('enter to build [%s] with head: %s', build_name, head_node_hash)
 
     @basic_mode
     @public_method
     def exit_from_npc(self, npc_node_hash):
-        log.info('agent %s want exit from npc %s', self.agent, npc_node_hash)
+        self.agent.log.info('exit from npc %s', npc_node_hash)
 
     @basic_mode
     @public_method
     def exit_from_building(self, head_node_hash, build_name):
-        log.info('agent %s want exit from build [%s] with head: %s', self.agent, build_name, head_node_hash)
+        self.agent.log.info('exit from build [%s] with head: %s', build_name, head_node_hash)
 
     @public_method
     def show_inventory(self, owner_id):
