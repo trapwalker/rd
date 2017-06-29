@@ -446,13 +446,17 @@ class Subdoc(EmbeddedDocument):
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
         for field_name, field in type(self)._fields.items():
             if isinstance(field, CONTAINER_FIELD_TYPES):
-                value = getattr(self, field_name)
-                setattr(self, field_name, value)
+                if not self.is_field_inherited(field_name) or getattr(field, 'reinst', False):
+                    value = getattr(self, field_name)
+                    setattr(self, field_name, value)
 
         if isinstance(self, Node) and self._need_reinst:
             self._reinst()
 
         return self
+
+    def is_field_inherited(self, name):
+        return False
 
 
 ########################################################################################################################
@@ -516,14 +520,7 @@ class Node(Subdoc):
                 if field and not getattr(field, 'not_inherited', False):
                     extra[k] = self._copy_field_value(field, v)
 
-        # Получаем перечень имён полей, перекрытых ложью
-        # if _empty_overrided_fields is None:
-        #     _empty_overrided_fields = set()
-        # elif not isinstance(_empty_overrided_fields, set):
-        #     _empty_overrided_fields = set(_empty_overrided_fields)
-
         _empty_overrided_fields = list(
-            # _empty_overrided_fields |
             {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
         )  # todo: Make SetField
 
@@ -544,6 +541,9 @@ class Node(Subdoc):
         else:
             self._need_reinst = parent is not None
 
+    def is_field_inherited(self, name):
+        return name not in self._data and name not in self._empty_overrided_fields
+
     def _reinst(self):
         parent = self.parent
         _overrided = set(self._data.keys()) | set(self._empty_overrided_fields)
@@ -552,7 +552,7 @@ class Node(Subdoc):
             if (
                 not getattr(field, 'not_inherited', False)
                 and getattr(field, 'reinst', False)
-                and field_name not in _overrided
+                and field_name not in _overrided  # todo: may be need to use is_field_inherited
             ):
                 value = getattr(parent, field_name)
                 if value is not None:
