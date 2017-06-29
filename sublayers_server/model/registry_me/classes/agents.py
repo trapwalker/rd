@@ -15,6 +15,7 @@ from sublayers_server.model.registry_me.tree import (
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
 from sublayers_server.model.utils import getKarmaName
+from sublayers_common import yaml_tools
 
 from itertools import chain
 
@@ -491,3 +492,5 @@ class Agent(Document):
         d.update(login=self.login)
         return d
 
+    def save_to_file(self, f, **kw):
+        yaml_tools.save_to_file(self.to_mongo().to_dict(), f, **kw)

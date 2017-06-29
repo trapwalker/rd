@@ -43,6 +43,26 @@ def dump(data, stream=None, Dumper=CompactDumper, allow_unicode=True, encoding='
     return yaml.dump(data, stream=stream, Dumper=Dumper, allow_unicode=allow_unicode, encoding=encoding, **kw)
 
 
+def save_to_file(data, f, indent=2, format='yaml'):
+    def _save(s):
+        #s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
+        if format in {'yaml', 'y', 'YAML', 'Y', 'Yaml'}:
+            dump(data, s, indent=indent)
+        elif format in {'json', 'j', 'JSON', 'J', 'Json'}:
+            from bson import json_util
+            s.write(json_util.dumps(data, ensure_ascii=False, indent=indent).encode('utf-8'))
+
+    if isinstance(f, basestring):
+        with open(f, 'w') as stream:
+            _save(stream)
+    elif hasattr(f, 'write'):
+        _save(f)
+    else:
+        raise ValueError("Destination to save is not filename or stream: {!r}".format(f))
+
+
+
+########################################################################################################################
 if __name__ == '__main__':
     d = dict(
         sb=''.join(map(chr, range(40))),

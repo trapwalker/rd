@@ -58,5 +58,6 @@ class BuySkill(Node):
     price = ListField(
         caption=u'Таблица цен на очки навыков', tags={'client'},
         field=EmbeddedDocumentField(document_type=SkillPriceItem),
-        reinst=True,
+        readonly=True,
+        # reinst=True,
     )

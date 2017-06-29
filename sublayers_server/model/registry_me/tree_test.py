@@ -80,16 +80,9 @@ def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     #reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
-    t = reg.get('/registry/items/usable/tanks')
-    tf = reg.get('/registry/items/usable/tanks/tank_full')
-    t1 = reg.get('/registry/items/usable/tanks/tank_full/tank_10l')
-    t2 = reg.get('/registry/items/usable/tanks/tank_full/tank_20l')
     q = reg.get('/registry/quests/delivery_quest/delivery_quest_simple')
-    towns = reg.get(r'registry\poi\locations\towns')
-    locals().update(towns.subnodes)
-
-    t.value_fuel = 3
-    print(t.value_fuel)
+    c = reg.get('reg:///registry/mobiles/cars/light/motorcycles/honda_hornet')
+    cc = c.instantiate()
 
     globals().update(locals())
 
@@ -101,7 +94,7 @@ if __name__ == '__main__':
 
     
     rel = 0
-    test3(reload=rel, save_loaded=True)
+    test4(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')

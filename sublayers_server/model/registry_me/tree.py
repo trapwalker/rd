@@ -517,13 +517,13 @@ class Node(Subdoc):
                     extra[k] = self._copy_field_value(field, v)
 
         # Получаем перечень имён полей, перекрытых ложью
-        if _empty_overrided_fields is None:
-            _empty_overrided_fields = set()
-        elif not isinstance(_empty_overrided_fields, set):
-            _empty_overrided_fields = set(_empty_overrided_fields)
+        # if _empty_overrided_fields is None:
+        #     _empty_overrided_fields = set()
+        # elif not isinstance(_empty_overrided_fields, set):
+        #     _empty_overrided_fields = set(_empty_overrided_fields)
 
         _empty_overrided_fields = list(
-            _empty_overrided_fields |
+            # _empty_overrided_fields |
             {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
         )  # todo: Make SetField
 
@@ -555,8 +555,9 @@ class Node(Subdoc):
                 and field_name not in _overrided
             ):
                 value = getattr(parent, field_name)
-                new_value = self._copy_field_value(field, value)
-                setattr(self, field_name, new_value)
+                if value is not None:
+                    new_value = self._copy_field_value(field, value)
+                    setattr(self, field_name, new_value)
 
         self._need_reinst = False
 
@@ -900,23 +901,8 @@ class Registry(Document):
             node._instance = owner
         return node
 
-    def save_to_file(self, f, indent=2, format='yaml'):
-        def _save(s):
-            #s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
-            data = self.to_mongo().to_dict()
-            if format in {'yaml', 'y', 'YAML', 'Y', 'Yaml'}:
-                yaml_tools.dump(data, s, indent=indent)
-            elif format in {'json', 'j', 'JSON', 'J', 'Json'}:
-                from bson import json_util
-                s.write(json_util.dumps(data, ensure_ascii=False, indent=indent).encode('utf-8'))
-
-        if isinstance(f, basestring):
-            with open(f, 'w') as stream:
-                _save(stream)
-        elif hasattr(f, 'write'):
-            _save(f)
-        else:
-            raise ValueError("Destination to save is not filename or stream: {!r}".format(f))
+    def save_to_file(self, f, **kw):
+        yaml_tools.save_to_file(self.to_mongo().to_dict(), f, **kw)
 
     @classmethod
     def load_from_file(cls, src):
