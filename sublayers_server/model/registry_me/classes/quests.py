@@ -658,10 +658,17 @@ class Quest(Node):
         return "%d:%02d:%02d" % (h, m, s)
 
     def can_generate(self, event):
-        print('can_generate {}'.format(self.generation_group))
+        # log.debug('can_generate {} {!r}'.format(self.generation_group, self.parent))
         agent = self.agent
         agent_all_quests = agent.profile.quests
-        agent_quests_ended = agent.profile.quests_ended
+        agent_quests_active_ended = chain(agent.profile.quests_ended, agent.profile.quests_active)
+
+        # Этапы генерации:
+        # Квест не сгенерируется, если:
+        # - парент одинаковый и
+        # - достигнуто максимальное количество квестов у данного нпц в данной generation_group и
+        # - После сдачи квеста не вышел кулдаун и
+        # - Такой квест был последним взятым у данного нпц
 
         def get_count_quest(target_quest, quests, current_time):
             res = 0
@@ -674,7 +681,7 @@ class Quest(Node):
                         res += 1
             return res
 
-        def last_taken_quest_from_npc(npc, quests):  # возвращает последний взятый у данного нпц квест (проходит по завершённым квестам, так как активные уже были проверены)
+        def last_taken_quest_from_npc(npc, quests):  # возвращает последний взятый у данного нпц квест
             res = None
             if npc is None:
                 return None
@@ -683,16 +690,15 @@ class Quest(Node):
                     res = q
             return res
 
-        # Этапы генерации:
-        # Квест не сгенерируется, если:
-        # - парент одинаковый и
-        # - достигнуто максимальное количество квестов у данного нпц в данной generation_group и
-        # - После сдачи квеста не вышел кулдаун и
-        # - Такой квест был последним взятым у данного нпц
-
         generation_count = get_count_quest(self, agent_all_quests, event.time)
-        if generation_count <= self.generation_max_count:
-            last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_ended)
+        # log.debug('generation_count {}  >  {}'.format(generation_count, self.generation_max_count))
+
+        if generation_count >= self.generation_max_count:
+            return False
+
+        # Если взят последний квест такой же - то не генерировать новый, даже если позволяет количество
+        if self.hirer:  # если hirer не указан, то не сравнивать
+            last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_active_ended)
             if last_npc_q and last_npc_q.parent == self.parent and last_npc_q.generation_group == self.generation_group:
                 return False
 
