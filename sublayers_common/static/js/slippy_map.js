@@ -17,7 +17,7 @@
                     {
                         name: "back",
                         url: function (x, y, z) {
-                            return "http://roaddogs.ru/map/back/" + z + "/" + x + "/" + y + ".jpg";
+                            return "http://roaddogs.ru/map/back/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,

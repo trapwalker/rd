@@ -520,6 +520,8 @@ var ClientManager = (function () {
             if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
                 mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
                 mapManager.widget_fire_radial_grid = new WFCanvasireRadialGrid(mcar);
+
+                mapManager.setZoom(mapManager.getZoom(), true);
             }
 
             // Инициализация виджетов работы с канвасом
@@ -1330,7 +1332,7 @@ var ClientManager = (function () {
     ClientManager.prototype.TraderClearMessage = function (event) {
         //console.log('ClientManager.prototype.TraderClearMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
-        if (trader) trader.clear();
+        if (trader) trader.clear_assortment();
     };
 
     ClientManager.prototype.TrainerInfoMessage = function (event) {

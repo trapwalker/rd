@@ -281,7 +281,7 @@ var LocationMechanicNPC = (function (_super) {
                 '<div class="npcInventory-name">Пусто</div>';
             itemDiv.append(emptyItemDiv);
             if (item && item.example) {
-                itemDiv.find('.npcInventory-name').text(item.example.title);
+                itemDiv.find('.npcInventory-name').html(item.example.title);
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({

@@ -284,9 +284,10 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
 
-        if (this.in_visible_change) {
-            ctx.globalAlpha = visible_state;
-        }
+        var opacity = mapCanvasManager.real_zoom -  14.;
+        opacity = Math.max(Math.min(1, opacity), 0);
+        if (this.in_visible_change)
+            ctx.globalAlpha = Math.min(opacity, visible_state);
 
         ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
         ctx.rotate(this.car.getCurrentDirection(time));
