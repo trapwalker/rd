@@ -645,7 +645,12 @@ class Node(Subdoc):
         )
 
     def __repr__(self):
-        return '<{self.__class__.__name__}({self.uri})>'.format(self=self)
+        uri = self_uri = self.uri
+        if not uri:
+            parent = self.parent
+            uri = parent and parent.uri
+
+        return '<{self.__class__.__name__}({mark}{uri})>'.format(self=self, uri=uri, mark='' if self_uri else '*')
 
     def __str__(self):
         return self.to_string()
