@@ -26,6 +26,7 @@ from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem
+from sublayers_common.ctx_timer import Timer
 
 from tornado.options import options
 
@@ -163,18 +164,20 @@ class Agent(Object):
         return self.example.profile.balance
 
     def on_save(self, time):
-        self.example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
+        agent_example = self.example
+        agent_example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
         if self.car:
             # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
             self.car.on_save(time)
-            self.example.profile.car = self.car.example
+            agent_example.profile.car = self.car.example
         # elif self.current_location is None:  # todo: wtf ?!
         #     self.example.profile.car = None
         # todo: save chats, party...
-        # self.example.save()
-        self.example.delete()  # TODO: Добиться правильного пересохранения агента
-        self.example.save(force_insert=True)
-        log.debug('Agent %s saved', self)
+        with Timer() as tm:
+            # agent_example.delete()  # TODO: Добиться правильного пересохранения агента
+            agent_example.save()
+            #agent_example.save(force_insert=True)
+            log.debug('Agent %r saved (%.4fs)', agent_example.login, tm.duration)
 
     @property
     def is_online(self):
