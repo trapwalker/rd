@@ -1330,7 +1330,7 @@ var ClientManager = (function () {
     ClientManager.prototype.TraderClearMessage = function (event) {
         //console.log('ClientManager.prototype.TraderClearMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
-        if (trader) trader.clear();
+        if (trader) trader.clear_assortment();
     };
 
     ClientManager.prototype.TrainerInfoMessage = function (event) {

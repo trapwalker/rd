@@ -382,7 +382,7 @@ var LocationTraderNPC = (function (_super) {
         this.update();
     };
 
-    LocationTraderNPC.prototype.clear = function() {
+    LocationTraderNPC.prototype.clear_assortment = function() {
         var i;
         this.playerTable = [];
         this.traderTable = [];
@@ -417,7 +417,7 @@ var LocationTraderNPC = (function (_super) {
 
     LocationTraderNPC.prototype.cancel = function() {
         //console.log('TraderManager.prototype.cancel');
-        this.clear();
+        this.clear_assortment();
     };
 
     LocationTraderNPC.prototype.update = function(data) {
