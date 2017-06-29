@@ -901,23 +901,8 @@ class Registry(Document):
             node._instance = owner
         return node
 
-    def save_to_file(self, f, indent=2, format='yaml'):
-        def _save(s):
-            #s.write(self.to_json(ensure_ascii=ensure_ascii, indent=indent, **kw).encode('utf-8'))
-            data = self.to_mongo().to_dict()
-            if format in {'yaml', 'y', 'YAML', 'Y', 'Yaml'}:
-                yaml_tools.dump(data, s, indent=indent)
-            elif format in {'json', 'j', 'JSON', 'J', 'Json'}:
-                from bson import json_util
-                s.write(json_util.dumps(data, ensure_ascii=False, indent=indent).encode('utf-8'))
-
-        if isinstance(f, basestring):
-            with open(f, 'w') as stream:
-                _save(stream)
-        elif hasattr(f, 'write'):
-            _save(f)
-        else:
-            raise ValueError("Destination to save is not filename or stream: {!r}".format(f))
+    def save_to_file(self, f, **kw):
+        yaml_tools.save_to_file(self.to_mongo().to_dict(), f, **kw)
 
     @classmethod
     def load_from_file(cls, src):
