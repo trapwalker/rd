@@ -41,7 +41,7 @@ var LocationGirlNPC = (function (_super) {
 
     LocationGirlNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
-        if (!html_text) {
+        if (!html_text && this.npc_rec.service_list && this.npc_rec.service_list.length > this.cur_service_index) {
             var html_text = $('<div></div>');
             html_text.append('<div>Приобрести услугу: -' + this.npc_rec.service_list[this.cur_service_index].price + 'NC</div>');
         }
