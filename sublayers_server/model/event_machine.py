@@ -174,8 +174,6 @@ class Server(object):
             for agent in self.agents.values():
                 agent.save(time=time)
 
-            log.debug('Server save DONE ({:.3f}s).'.format(t.duration))
-
     @event_deco
     def server_stat_log(self, event, **kw):
         # Формат CSV-файла
