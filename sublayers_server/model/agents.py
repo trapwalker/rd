@@ -570,7 +570,7 @@ class Agent(Object):
         self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
     def on_exit_location(self, location, event):
-        log.debug('%s:: on_exit_location(%s)', self, location)
+        # log.debug('%s:: on_exit_location(%s)', self, location)
         self.example.profile.in_location_flag = False
         self.example.profile.last_town = location.example
 
@@ -587,7 +587,7 @@ class Agent(Object):
         self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
     def on_enter_npc(self, event):
-        log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
+        # log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
         self.example.profile.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
 
     def on_exit_npc(self, event, npc):
