@@ -1,7 +1,6 @@
 var ConstPeriodOfPhase = 10; // ¬рем€ полного оборота линии радара
 var ConstLineRadarLength = 75000; // ƒлинна линии радара на 14 зуме // todo: прислать с сервера
 
-
 var WStrategyModeManager = (function () {
     function WStrategyModeManager() {
         mapCanvasManager.add_vobj(this, 80);
@@ -17,7 +16,7 @@ var WStrategyModeManager = (function () {
     }
 
     WStrategyModeManager.prototype.update = function (targets) {
-        //console.log('WStrategyModeManager.prototype.update');
+        //console.log('WStrategyModeManager.prototype.update', targets);
         this.targets = targets;
     };
 
@@ -41,33 +40,6 @@ var WStrategyModeManager = (function () {
         var radar_direction = this.getRadarLineDirection(time);
         var radar_fake_dir = radar_direction + this.radar_width;
         var car_pos = user.userCar.getCurrentCoord(time);
-
-        // ќтрисовка точек - новый вариант
-        if (this.icon_strategy_car) {
-            ctx.save();
-            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
-            for (var i = 0; i < this.targets.length; i++) {
-                var p = mulScalVector(subVector(this.targets[i], car_pos), 1.0 / mapCanvasManager.zoom_koeff);
-                // todo: не рисовать точки, которые заведомо никак не попадут на канвас
-                var angle_p = angleVectorRadCCW2(p);
-                var angle_diff = normalizeAngleRad2(radar_fake_dir - angle_p);
-                var opacity = 0;
-                if (angle_diff < this.radar_width_point_opacity) {
-                    opacity = Math.abs(1.0 - angle_diff / this.radar_width_point_opacity);
-                }
-
-                if (opacity > 1.0 || opacity < 0.0) {console.log('что-то не то'); opacity = 0.1}
-                ctx.save();
-                ctx.translate(p.x, p.y);
-                ctx.globalAlpha = opacity;
-                ctx.drawImage(this.icon_strategy_car.img, -this.icon_strategy_car.iconSize[0] >> 1, -this.icon_strategy_car.iconSize[1] >> 1);
-                ctx.restore();
-            }
-            ctx.restore();
-        }
-        else {
-            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car');
-        }
 
         // ќтрисовка линии радара
         ctx.save();
@@ -112,8 +84,34 @@ var WStrategyModeManager = (function () {
         ctx.restore();
 
         ctx.restore();  // ¬озврат транслейта
-    };
 
+        // ќтрисовка точек - новый вариант
+        if (this.icon_strategy_car) {
+            ctx.save();
+            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+            for (var i = 0; i < this.targets.length; i++) {
+                var p = mulScalVector(subVector(this.targets[i], car_pos), 1.0 / mapCanvasManager.zoom_koeff);
+                // todo: не рисовать точки, которые заведомо никак не попадут на канвас
+                var angle_p = angleVectorRadCCW2(p);
+                var angle_diff = normalizeAngleRad2(radar_fake_dir - angle_p);
+                var opacity = 0;
+                if (angle_diff < this.radar_width_point_opacity)
+                    opacity = Math.abs(1.0 - angle_diff / this.radar_width_point_opacity);
+
+                if (opacity > 1.0 || opacity < 0.0) {console.log('что-то не то'); opacity = 0.1}
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.globalAlpha = opacity;
+                ctx.drawImage(this.icon_strategy_car.img, -this.icon_strategy_car.iconSize[0] >> 1, -this.icon_strategy_car.iconSize[1] >> 1);
+                ctx.restore();
+            }
+            ctx.restore();
+        }
+        else {
+            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car');
+        }
+    };
 
     return WStrategyModeManager;
 })();

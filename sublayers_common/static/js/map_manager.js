@@ -158,6 +158,8 @@ var MapManager = (function(_super) {
 
         // Добавиться в загрузчик
         setTimeout(this.removeFromLoader, 20000);
+
+        this.setZoom(this.getZoom(), true);
     };
 
     MapManager.prototype.removeFromLoader = function () {
@@ -270,45 +272,38 @@ var MapManager = (function(_super) {
         return this.current_zoom;
     };
 
-    MapManager.prototype.setZoom = function(zoom) {
+    MapManager.prototype.setZoom = function(zoom, need) {
         //console.log('MapManager.prototype.setZoom', zoom, ConstMinMapZoom, ConstMaxMapZoom);
         if (zoom < ConstMinMapZoom) zoom = ConstMinMapZoom;
         if (zoom > ConstMaxMapZoom) zoom = ConstMaxMapZoom;
-        if (zoom == this.getZoom()) return;
+        if ((zoom == this.getZoom()) && !need) return;
 
         this.oldZoomForCalcZoom = this.getZoom();
         this.newZoomForCalcZoom = zoom;
         this.onZoomStart();
-
-        //    //if (this.zoomSlider)
-    //    //    this.zoomSlider.setZoom(zoom);
-    //    return;
-    //
-    //    if (zoom < 15) {
-    //        // убрать сетку и сектора
-    //        if (mapManager.widget_fire_radial_grid)
-    //            mapManager.widget_fire_radial_grid.setVisible(false);
-    //        if (mapManager.widget_fire_sectors)
-    //            mapManager.widget_fire_sectors.setVisible(false);
-    //
-    //        // todo: сделать это не через таймер !!!
-    //        if (! mapManager.strategy_mode_timer) {
-    //            mapManager.strategy_mode_timer = setInterval(function () {
-    //                clientManager.sendGetStrategyModeObjects();
-    //            }, 5000);
-    //        }
-    //    }
-    //    else {
-    //        // показать сетку и сектора, если боевой режим
-    //        if ((mapManager.widget_fire_radial_grid) && (wFireController))
-    //            mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
-    //        if ((mapManager.widget_fire_sectors) && (wFireController))
-    //            mapManager.widget_fire_sectors.setVisible(wFireController.visible);
-    //        if (mapManager.strategy_mode_timer) {
-    //             clearInterval(mapManager.strategy_mode_timer);
-    //             mapManager.strategy_mode_timer = null;
-    //        }
-    //    }
+        if (zoom < 15) {
+            // убрать сетку и сектора
+            if (mapManager.widget_fire_radial_grid)
+                mapManager.widget_fire_radial_grid.setVisible(false);
+            if (mapManager.widget_fire_sectors)
+                mapManager.widget_fire_sectors.setVisible(false);
+            if (!mapManager.strategy_mode_timer) {
+                mapManager.strategy_mode_timer = setInterval(function () {
+                    clientManager.sendGetStrategyModeObjects();
+                }, 5000);
+            }
+        }
+        else {
+            // показать сетку и сектора, если боевой режим
+            if ((mapManager.widget_fire_radial_grid) && (wFireController))
+                mapManager.widget_fire_radial_grid.setVisible(wFireController.visible);
+            if ((mapManager.widget_fire_sectors) && (wFireController))
+                mapManager.widget_fire_sectors.setVisible(wFireController.visible);
+            if (mapManager.strategy_mode_timer) {
+                 clearInterval(mapManager.strategy_mode_timer);
+                 mapManager.strategy_mode_timer = null;
+            }
+        }
     };
 
     MapManager.prototype.onZoomStart = function () {
