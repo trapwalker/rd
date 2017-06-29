@@ -133,6 +133,17 @@ class AgentConsoleNamespace(Namespace):
         self.agent.on_save(time=t)
         messages.RefreshMessage(agent=self.agent, time=t + 1, comment='Quests cleared').post()
 
+    def regenerate_quests(self):
+        agent = self.agent
+        location = agent.current_location
+
+        def ttt(event):
+            location.generate_quests(event=event, agent=agent)
+
+        if location:
+            Event(server=agent.server, time=agent.server.get_time(), callback_after=ttt).post()
+
+
     def param(self, name=None):
         if name and self.agent.car:
             # todo: use self.write()
