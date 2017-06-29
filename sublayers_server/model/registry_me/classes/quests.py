@@ -686,9 +686,12 @@ class Quest(Node):
             if npc is None:
                 return None
             for q in quests:
-                if npc.node_hash() == q.hirer.node_hash() and (res is None or res.starttime and res.starttime < q.starttime):
+                if q.hirer and npc.node_hash() == q.hirer.node_hash() and (res is None or res.starttime and res.starttime < q.starttime):
                     res = q
             return res
+
+        if self.hirer is None:  # если hirer не указан, то можно генерировать
+            return True
 
         generation_count = get_count_quest(self, agent_all_quests, event.time)
         # log.debug('generation_count {}  >  {}'.format(generation_count, self.generation_max_count))
@@ -697,10 +700,9 @@ class Quest(Node):
             return False
 
         # Если взят последний квест такой же - то не генерировать новый, даже если позволяет количество
-        if self.hirer:  # если hirer не указан, то не сравнивать
-            last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_active_ended)
-            if last_npc_q and last_npc_q.parent == self.parent and last_npc_q.generation_group == self.generation_group:
-                return False
+        last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_active_ended)
+        if last_npc_q and last_npc_q.parent == self.parent and last_npc_q.generation_group == self.generation_group:
+            return False
 
         return True
 
