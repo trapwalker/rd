@@ -62,19 +62,22 @@ class MapLocation(Observer):
         for chat in self.radio_points:
             chat.room.include(agent=agent, time=event.time)
 
-    def on_enter(self, agent, event):
-        agent.on_enter_location(location=self, event=event)  # todo: (!)
-        PreEnterToLocation(agent=agent, location=self, time=event.time).post()
-
+    def generate_quests(self, event, agent):
         for building in self.example.buildings or []:
             head = building.head
             for quest in head and head.quests or []:
-                new_quest = quest.instantiate(abstract=False, hirer=head)
-                if new_quest.generate(event=event, agent=agent.example):
-                    agent.example.profile.add_quest(quest=new_quest, time=event.time)
-                else:
-                    del new_quest
+                for x in xrange(0, quest.generation_max_count):
+                    new_quest = quest.instantiate(abstract=False, hirer=head)
+                    if new_quest.generate(event=event, agent=agent.example):
+                        agent.example.profile.add_quest(quest=new_quest, time=event.time)
+                    else:
+                        del new_quest
 
+
+    def on_enter(self, agent, event):
+        agent.on_enter_location(location=self, event=event)  # todo: (!)
+        PreEnterToLocation(agent=agent, location=self, time=event.time).post()
+        self.generate_quests(event=event, agent=agent)
         ActivateLocationChats(agent=agent, location=self, time=event.time + 0.1).post()
 
         # Добавить агента в список менеджеров мусорки
