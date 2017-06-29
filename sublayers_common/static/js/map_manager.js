@@ -158,8 +158,6 @@ var MapManager = (function(_super) {
 
         // Добавиться в загрузчик
         setTimeout(this.removeFromLoader, 20000);
-
-        this.setZoom(this.getZoom(), true);
     };
 
     MapManager.prototype.removeFromLoader = function () {
