@@ -4,29 +4,21 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='sublayers',
+    name='roaddogs',
     version='0.1',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'Click',
-        'ipython==4.2.0',
+        'virtualenv',
         'tornado',
-        'debug',
-        'jsonpickle',
         'cachetools',
         'PyYAML',
-        'cmd2',
-        'defaultencodinghack',
-
-        'git+https://github.com/py-bson/bson',
-        #'git+https://github.com/sergyp/motorengine',
-        #'git+https://github.com/mongodb/motor/',
-        #'pymongo==2.8',
+        'click',
         'mongoengine',
+        'psutil',
     ],
     entry_points='''
         [console_scripts]
-        regtool=regtool:cli
+        rd=sl:cli
     ''',
 )
