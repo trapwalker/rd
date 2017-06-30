@@ -76,25 +76,32 @@ var ExitBtnTeachingNote = (function (_super) {
         _super.call(this, options);
         this.exit_btn_coord = new Point(1600, 800);
         this.needed_screen_name = 'location_screen';
-        chat.addMessageToLog('Идите на улицу!', true);
+        chat.addMessageToLog('Поздравляем, вы прошли обучение!', true);
+        this._sended_note = false;
     }
 
     ExitBtnTeachingNote.prototype.redraw = function() {
         if (!locationManager.in_location_flag) return;
         var active_place = locationManager.get_current_active_place();
+        teachingManager.jq_panel_left_content.text('Поздравляем, вы прошли обучение! Ваша следующая задача - оплатить автокредит Нукойл. Для этого нужно заработать денег, выполняя задания. Перед выходом на глобальную карту получите их  у городских жителей и убедитесь, что у вас хватает топлива для долгой поездки.');
         if (active_place) {
+            teachingManager.jq_panel_right_content.text('Вернитесь в меню города.');
             _super.prototype.redraw.call(this);
             return;
         }
-        teachingManager.jq_panel_left_content.text('Идите на улицу!');
-        teachingManager.jq_panel_right_content.text('Идите на улицу!');
+        if (!this._sended_note) {
+            clientManager.SendQuestNoteAction(this.uid, false);
+            this._sended_note = true;
+        }
+        teachingManager.jq_panel_right_content.text('Выход на глобальную карту.');
         this.draw_line(this.start_point, this.exit_btn_coord);
     };
 
     ExitBtnTeachingNote.prototype.delete = function() {
         _super.prototype.delete.call(this);
+        if (! locationManager.in_location_flag) return;
         var place = locationManager.get_current_active_place();
-        if (locationManager.in_location_flag && locationManager.active_screen_name == 'location_screen' && !place)
+        if (locationManager.active_screen_name == 'location_screen' && !place)
             locationManager.set_panels_location_screen();
         if (place && place.set_panels)
             place.set_panels();

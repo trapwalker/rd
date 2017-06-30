@@ -59,7 +59,7 @@ var NukoilTeachingNote = (function (_super) {
 
         if (active_place === this.needed_npc) {
             teachingManager.jq_panel_left_content.text('В меню заправки можно заполнить топливный бак и пустые канистры.');
-            teachingManager.jq_panel_right_content.text('Укажите количество литров ползунком и нажмите кнопку Заправить.');
+            teachingManager.jq_panel_right_content.text('Укажите количество литров ползунком и нажмите кнопку <Заправить>.');
 
             if (user.example_car)
                 if (Math.round(user.example_car.fuel) != this.needed_npc._get_gas_by_prc(this.needed_npc.current_prc_gas))
