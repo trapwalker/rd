@@ -238,7 +238,7 @@ class Unit(Observer):
         # Отправка сообщения owner'у о гибели машинки
         if self.owner:
             self.owner.on_die(event=event, unit=self)
-            self.owner.example.car = None
+            self.owner.example.profile.car = None
 
         self.delete(time=event.time)
 
@@ -455,7 +455,7 @@ class Mobile(Unit):
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
-            ef = self.server.reg['effects/fuel/empty']
+            ef = self.server.reg.get('/registry/effects/fuel/empty', None)
             if ef:
                 ef.done(owner=self, time=time)  # снять эффект
 
@@ -469,7 +469,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        ef = self.server.reg['effects/fuel/empty']
+        ef = self.server.reg.get('/registry/effects/fuel/empty', None)
         if ef:
             ef.start(owner=self, time=event.time)
 
@@ -559,7 +559,7 @@ class Bot(Mobile):
 
         items = []
         if self.owner:
-            items_examples = self.owner.example.insurance.on_car_die(agent=self.owner.example, car=self.example,
+            items_examples = self.owner.example.profile.insurance.on_car_die(agent=self.owner.example, car=self.example,
                                                                      is_bang=killer is not None, time=event.time)
             items = [ItemState(server=self.server, time=event.time, example=item, count=item.amount)
                      for item in items_examples if item.amount > 0]

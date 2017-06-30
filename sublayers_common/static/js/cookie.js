@@ -106,6 +106,71 @@ var SettingsManager = (function() {
             currentValue: 1.0,
             set_callback: function(new_value) {if (audioManager) audioManager._settings_interface_gain = new_value;},
         },
+        game_color: {
+            name: "game_color",
+            page: "graphics",
+            text_name: "Палитра интерфейса",
+            text_description: "Изменяет палитру интерфейса. (Experimental**)",
+            jq_div: null,
+            type: "list",
+            default: "none",
+            value: 0,
+            currentValue: 0,
+            list_values: [
+                {
+                    text: "Стандартная",
+                    value: "none"
+                },
+                // {
+                //     text: "Ч/Б",
+                //     value: "grayscale(100%);"
+                // },
+                // {
+                //     text: "Ч/Б (контр)",
+                //     value: "grayscale(100%) brightness(1.25) contrast(125%);"
+                // },
+                {
+                    text: "Сепия",
+                    value: "sepia(100%);"
+                },
+                // {
+                //     text: "Сепия (контр)",
+                //     value: "sepia(100%) brightness(1.25) contrast(125%);"
+                // },
+                // {
+                //     text: "Красная",
+                //     value: "url(#red);"
+                // },
+                // {
+                //     text: "Оранжевая",
+                //     value: "url(#orange);"
+                // },
+                {
+                    text: "Желтая",
+                    value: "url(#yellow);"
+                },
+                {
+                    text: "Зеленая",
+                    value: "url(#green);"
+                },
+                {
+                    text: "Голубая",
+                    value: "url(#cyan);"
+                },
+                {
+                    text: "Синяя",
+                    value: "url(#blue);"
+                }
+                // ,{
+                //     text: "Фиолетовая",
+                //     value: "url(#purple);"
+                // }
+            ],
+            set_callback: function(new_value, from_first_load) {
+                $("#bodydiv").attr("style", "filter: " + new_value);
+                if (!from_first_load) settingsManager._game_color_return_to_def = false;
+            },
+        },
         /* Настройка графики */
         particles_tracer: {
             name: "particles_tracer",
@@ -721,71 +786,7 @@ var SettingsManager = (function() {
             },
         },
 
-        game_color: {
-            name: "game_color",
-            page: "graphics",
-            text_name: "Палитра интерфейса",
-            text_description: "Изменяет палитру интерфейса. (Experimental**)",
-            jq_div: null,
-            type: "list",
-            default: "none",
-            value: 0,
-            currentValue: 0,
-            list_values: [
-                {
-                    text: "Стандартная",
-                    value: "none"
-                },
-                // {
-                //     text: "Ч/Б",
-                //     value: "grayscale(100%);"
-                // },
-                // {
-                //     text: "Ч/Б (контр)",
-                //     value: "grayscale(100%) brightness(1.25) contrast(125%);"
-                // },
-                {
-                    text: "Сепия",
-                    value: "sepia(100%);"
-                },
-                // {
-                //     text: "Сепия (контр)",
-                //     value: "sepia(100%) brightness(1.25) contrast(125%);"
-                // },
-                // {
-                //     text: "Красная",
-                //     value: "url(#red);"
-                // },
-                // {
-                //     text: "Оранжевая",
-                //     value: "url(#orange);"
-                // },
-                {
-                    text: "Желтая",
-                    value: "url(#yellow);"
-                },
-                {
-                    text: "Зеленая",
-                    value: "url(#green);"
-                },
-                {
-                    text: "Голубая",
-                    value: "url(#cyan);"
-                },
-                {
-                    text: "Синяя",
-                    value: "url(#blue);"
-                }
-                // ,{
-                //     text: "Фиолетовая",
-                //     value: "url(#purple);"
-                // }
-            ],
-            set_callback: function(new_value, from_first_load) {
-                $("#bodydiv").attr("style", "filter: " + new_value);
-                if (!from_first_load) settingsManager._game_color_return_to_def = false;
-            },
-        },
+
     };
 
     // Функции для работы с cookie (возвращает cookie с именем name, если есть, если нет, то undefined)

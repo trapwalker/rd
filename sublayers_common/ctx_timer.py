@@ -5,6 +5,7 @@ import sys
 import logging
 log = logging.getLogger(__name__)
 
+__ALL__ = ['Timer',]
 
 if __name__ == '__main__':
     log = logging.getLogger()
@@ -16,24 +17,52 @@ import os
 import time
 from datetime import datetime
 from functools import wraps
+import collections
+from copy import copy
 
 
+# todo: Progress tracking feature (estimate, stage, progress bar, stage comment)
 class Timer(object):
     def __init__(
             self,
             name=None,
-            logger=log,
-            log_start='Timer {self.name!r} started at {self.time_start}',
-            log_stop='Timer {self.name!r} stopped at {self.time_stop}. Duration is {self.duration}s',
+            logger=None,
+            log_start='Timer {timer.name!r} started at {timer.time_start}',
+            log_stop='Timer {timer.name!r} stopped at {timer.time_stop}. Duration is {timer.duration}s',
+            log_level=logging.DEBUG,
+            log_name=None,
             **kw
         ):
         self.name = name
-        self.logger = logger
+        self.log_level = log_level and logging._checkLevel(log_level) or logging.NOTSET
+        _stream = None
+        if logger is None or isinstance(logger, logging.Logger):
+            self.logger = logger
+        elif isinstance(logger, basestring) and logger in {'stderr', 'stdout'}:
+            _stream = getattr(sys, logger)
+        elif isinstance(getattr(logger, 'write', None), collections.Callable):
+            _stream = logger
+        else:
+            raise ValueError(
+                "Logger specification is wrong. {!r} given, but 'stderr', 'stdout' or Logger instance required."
+                .format(logger)
+            )
+        if _stream:
+            _handler = logging.StreamHandler(_stream)
+            self.logger = logging.Logger(name=log_name, level=self.log_level)
+            self.logger.addHandler(_handler)
+
         self.log_start = log_start
         self.log_stop = log_stop
         self.timestamp_start = None
         self.timestamp_stop = None
+        self._it_is_decorator = False
         self.__dict__.update(kw)
+
+    def _log(self, message, *av, **kw):
+        logger = self.logger
+        if logger:
+            logger.log(self.log_level, message, *av, **kw)
 
     @property
     def time_start(self):
@@ -44,17 +73,18 @@ class Timer(object):
         return None if self.timestamp_stop is None else datetime.fromtimestamp(self.timestamp_stop)
 
     def start(self):
+        assert not self._it_is_decorator, "You can't start Timer instance used as decorator."
         t = time.time()
         self.timestamp_start = t
         if self.log_start:
-            self.logger.debug(self.log_start.format(self=self))
+            self._log(self.log_start.format(timer=self))
         return t
 
     def stop(self):
         t = time.time()
         self.timestamp_stop = t
         if self.log_stop:
-            self.logger.debug(self.log_stop.format(self=self))
+            self._log(self.log_stop.format(timer=self))
         return t
 
     @property
@@ -76,7 +106,9 @@ class Timer(object):
 
         at_time = self.timestamp_stop or time.time()
         return at_time - self.timestamp_start
-    
+
+    # todo: cumulative_duration of multiple start/stop laps
+
     def __enter__(self):
         self.start()
         return self
@@ -84,32 +116,25 @@ class Timer(object):
     def __exit__(self, ex_type, ex_value, traceback):
         self.stop()
 
-
-def timer_deco(*timer_av, **timer_kw):
-    def deco(func):
+    def __call__(self, func):
+        self._it_is_decorator = True
         @wraps(func)
         def closure(*av, **kw):
-            timer = Timer(*timer_av, **timer_kw)
+            timer = copy(self)
+            timer._it_is_decorator = False
             if timer.name is None:  # TODO: ##OPTIMIZE extract from closure
                 # todo: call number store
                 timer.name = 'FUNC {func.func_name} [{fn}:{func.func_code.co_firstlineno}]'.format(
                     func=func,
                     fn=os.path.basename(func.func_code.co_filename),
                 )
-                
+
             with timer:
                 return func(*av, **kw)
 
         return closure
 
-    # if not need to timer configuration, we can use @timer_deco without brackets
-    if not timer_kw and len(timer_av) == 1 and callable(timer_av[0]):
-        func = timer_av[0]
-        timer_av = []
-        return deco(func)
-        
-    return deco
-        
+
 
 if __name__ == '__main__':
     import sys
@@ -119,16 +144,16 @@ if __name__ == '__main__':
         pass
 
     # normal usage:
-    with Timer(name='test') as timer:
+    with Timer(name='test', logger=log) as timer:
         task_size = 100000000 / 16
         for i in xrange(task_size):
             if i % (task_size / 10) == 0:
                 print(timer.duration)
-                pass
 
     # functions decoration usage:
-    @timer_deco()
-    def test_routine():
-        pass
+    @Timer(name='test2', logger=sys.stdout)
+    def test_routine2():
+        print('test_routine2')
 
-    test_routine()
+    test_routine2()
+    test_routine2()

@@ -254,6 +254,9 @@ class Inventory(object):
             if self.get_item(position=i) is None:
                 return i
 
+    def get_free_position_count(self):
+        return self.max_size - self.get_item_count()
+
     def get_item_count(self):
         return len(self._items)
 
@@ -350,8 +353,6 @@ class ItemState(object):
 
         self.limbo = False
         self.is_alive = True  # костыль для тасков
-
-        self._id = id(self)
 
     id = property(id)
 
@@ -585,7 +586,6 @@ class Consumer(object):
         self.is_call_start = False
         self.is_call_stop = False
         self.is_started = False
-        self._id = id(self)
 
     id = property(id)
 

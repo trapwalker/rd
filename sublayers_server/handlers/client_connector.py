@@ -8,15 +8,9 @@ import json
 import tornado.ioloop
 import tornado.websocket
 import tornado.web
-import tornado.gen
-
-from sublayers_common.handlers.base import BaseHandler
-
 from tornado.options import options
 
-from random import randint
-
-from sublayers_common.user_profile import User
+from sublayers_common.handlers.base import BaseHandler
 
 
 WS_PING_INTERVAL = 25  # (сек.) интервал пинга клиента через веб-сокет.
@@ -29,21 +23,18 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         return True
 
     def check_origin(self, origin):
-        log.warning('origin=%s', origin)
-        # todo: reject connections from wrong servers
+        log.warning('origin=%s  # todo: reject connections from wrong servers', origin)
         return True
 
-    @tornado.gen.coroutine
     def open(self):
         # todo: make agent_init event
-        print 'new connect open !!!'
         self._ping_timeout_handle = None
         self.ping_number = 0
         self._current_ping = 0
         self.agent = None
         user = self.current_user
         assert user
-        log.info('!!! Open User connection: %s%s', self.current_user, user.quick)
+        log.info('!!! Open client connection: %s (mode: %s)', self.current_user, 'quick' if user.quick else 'basic')
         self.application.clients.append(self)
         # log.debug('Cookies: %s', self.cookies)
         srv = self.application.srv
@@ -51,9 +42,9 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
         if options.mode == 'basic':
             if not user.quick:
-                agent = yield srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
+                agent = srv.api.get_agent(user, make=True, do_disconnect=True)  # todo: Change to make=False
         elif options.mode == 'quick':
-            agent = yield srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
+            agent = srv.api.get_agent_teaching(user, do_disconnect=True)  # todo: Change to make=False
 
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit

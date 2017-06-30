@@ -4,76 +4,73 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
-from sublayers_server.model.registry.classes.agents import Agent
+from sublayers_server.model.registry_me.classes.agents import Agent
 
-import tornado.web
-import tornado.gen
-from tornado.options import options
 import tornado.template
-from tornado.httpclient import AsyncHTTPClient
-from bson.objectid import ObjectId, InvalidId
+#from tornado.httpclient import AsyncHTTPClient
 from functools import partial
 
 from sublayers_site.site_locale import locale
 
 
 class BaseSiteHandler(BaseHandler):
-    @tornado.gen.coroutine
     def _get_car(self, user):
         user_info = dict(name=user.name)
         html_car_img = None
         name_car = None
         html_agent = None
-         # todo: убрать un_cache, когда заработает reload
-        agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
-        if agent_example:
-            agent_example.un_cache()
-            agent_example = yield Agent.objects.get(profile_id=str(user._id), reload=True)
-        else:
+        # todo: Убедиться, что агент не берется из кеша, а грузится из базы заново
+        agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
+        if not agent_example:
             # info: создание пустого агента для отображения на сайте
-            agent_example = self.application.reg['agents/user'].instantiate(
-                name=str(user._id), login=user.name, fixtured=False, profile_id=str(user._id),
-                abstract=False,
+            agent_example = Agent(
+                login=user.name,
+                user_id=str(user.pk),
+                profile=dict(
+                    parent='/registry/agents/user',
+                    name=str(user.pk),
+                    role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
+                ),
             )
-            yield agent_example.load_references()
-            yield agent_example.save(upsert=True)
-            role_class_ex = self.application.reg['rpg_settings/role_class/chosen_one']
-            agent_example.role_class = role_class_ex
 
-            for class_skill in role_class_ex.class_skills:
+            for class_skill in agent_example.profile.role_class.class_skills:
                 # todo: Перебирать объекты реестра
                 if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                    skill = getattr(agent_example, class_skill.target)
+                    skill = getattr(agent_example.profile, class_skill.target)
                     skill.mod = class_skill
 
-            yield agent_example.save(upsert=True)
+            agent_example.save()
 
         ex_car = None
         if agent_example:
-            user_info['driving'] = agent_example.driving.value
-            user_info['shooting'] = agent_example.shooting.value
-            user_info['masking'] = agent_example.masking.value
-            user_info['engineering'] = agent_example.engineering.value
-            user_info['trading'] = agent_example.trading.value
-            user_info['leading'] = agent_example.leading.value
-            user_info['about_self'] = agent_example.about_self  # Досье
-            user_info['balance'] = agent_example.balance
-            user_info['class'] = '' if agent_example.role_class is None else agent_example.role_class.description
+            user_info['driving']     = agent_example.profile.driving.value
+            user_info['shooting']    = agent_example.profile.shooting.value
+            user_info['masking']     = agent_example.profile.masking.value
+            user_info['engineering'] = agent_example.profile.engineering.value
+            user_info['trading']     = agent_example.profile.trading.value
+            user_info['leading']     = agent_example.profile.leading.value
+            user_info['about_self']  = agent_example.profile.about_self  # Досье
+            user_info['balance']     = agent_example.profile.balance
+            user_info['class'] = '' if agent_example.profile.role_class is None else agent_example.profile.role_class.description
 
             # todo: научиться получать эти параметры
-            user_info['lvl'] = agent_example.get_lvl()
-            user_info['karma'] = agent_example.karma_name(lang=self.user_lang)
+            user_info['lvl'] = agent_example.profile.get_lvl()
+            user_info['karma'] = agent_example.profile.karma_name(lang=self.user_lang)
             # Не формировать темплейт пользователя, пока не установлен ролевой класс
-            if agent_example.role_class:
+            if agent_example.profile.role_class:
                 template_agent_info = tornado.template.Loader(
                     "../sublayers_server/templates/person",
                     namespace=self.get_template_namespace()
                 ).load("person_site_info.html")
-                html_agent = template_agent_info.generate(agent_example=agent_example, with_css=False, curr_user=user,
-                                                          user_lang=self.user_lang)
+                html_agent = template_agent_info.generate(
+                    agent_example=agent_example,
+                    with_css=False,
+                    curr_user=user,
+                    user_lang=self.user_lang,
+                )
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
-            ex_car = agent_example.car
+            ex_car = agent_example.profile.car
             if ex_car:
                 user_info['position'] = ex_car.position.as_point().as_tuple()
 
@@ -83,22 +80,22 @@ class BaseSiteHandler(BaseHandler):
             ).load("car_info_ext_wrap.html")
             html_car_img = template_img.generate(car=ex_car)
 
-        raise tornado.gen.Return(dict(
+        return dict(
             user_info=user_info,
             html_car_img=html_car_img,
             name_car=None if ex_car is None else ex_car.name_car,
-            html_agent=html_agent
-        ))
+            html_agent=html_agent,
+        )
 
     def _get_quick_game(self):
         car_templates_list = []
-
+        # todo: Extract path to settings
         template_car = tornado.template.Loader(
             "../sublayers_server/templates/site",
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")
 
-        for car_proto in self.application.reg['world_settings'].quick_game_cars:
+        for car_proto in self.application.reg.get('/registry/world_settings').quick_game_cars:
             html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
@@ -110,9 +107,8 @@ class BaseSiteHandler(BaseHandler):
         )
         return namespace
 
-    @tornado.gen.coroutine
     def prepare(self):
-        yield super(BaseSiteHandler, self).prepare()
+        super(BaseSiteHandler, self).prepare()
         user_lang = self.get_cookie('lang', None)
         # если cookie с языком не задана, то смотреть на host
         if user_lang is None:

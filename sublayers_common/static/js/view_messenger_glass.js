@@ -692,6 +692,9 @@ var ViewMessengerGlass = (function () {
                 case "LvlLogMessage":
                     this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.', true);
                     break;
+                case "SkillLogMessage":
+                    this.addMessageToLog('Очков навыка получено: ' + msg.skill, true);
+                    break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action)
                         this.addMessageToLog('Получен квест: ' + msg.quest_caption + '.');
@@ -720,6 +723,12 @@ var ViewMessengerGlass = (function () {
                 case "WeaponAmmoFinishedLogMessage":
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.', true);
                     new WTextArcade('Кончились патроны для ' + msg.weapon_name).start();
+                    break;
+                case "TransactionActivateItemLogMessage":
+                    this.addMessageToLog('Активирован предмет ' + msg.item_title + '.');
+                    break;
+                case "TransactionActivatePackageLogMessage":
+                    this.addMessageToLog('Вскрыта посылка.');
                     break;
                 case "TransactionCancelActivateItemLogMessage":
                     this.addMessageToLog('Отмена активации итема: ' + msg.item_title + '.');

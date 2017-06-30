@@ -11,11 +11,11 @@ from sublayers_server.model.messages import (
     TownAttackMessage
 )
 from sublayers_server.model.game_log_messages import LocationLogMessage
-from sublayers_server.model.registry.uri import URI
+from sublayers_server.model.registry_me.uri import URI
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.events import ActivateLocationChats, Event, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
-from sublayers_server.model.registry.classes.trader import TraderRefreshEvent, Trader
+from sublayers_server.model.registry_me.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
 
 from tornado.options import options
@@ -62,20 +62,22 @@ class MapLocation(Observer):
         for chat in self.radio_points:
             chat.room.include(agent=agent, time=event.time)
 
-    def on_enter(self, agent, event):
-        agent.on_enter_location(location=self, event=event)  # todo: (!)
-        PreEnterToLocation(agent=agent, location=self, time=event.time).post()
-
+    def generate_quests(self, event, agent):
         for building in self.example.buildings or []:
             head = building.head
             for quest in head and head.quests or []:
-                new_quest = quest.instantiate(abstract=False, hirer=head)
-                new_quest.agent = agent.example
-                if new_quest.generate(event=event):
-                    agent.example.add_quest(quest=new_quest, time=event.time)
-                else:
-                    del new_quest
+                for x in xrange(0, quest.generation_max_count):
+                    new_quest = quest.instantiate(abstract=False, hirer=head)
+                    if new_quest.generate(event=event, agent=agent.example):
+                        agent.example.profile.add_quest(quest=new_quest, time=event.time)
+                    else:
+                        del new_quest
 
+
+    def on_enter(self, agent, event):
+        agent.on_enter_location(location=self, event=event)  # todo: (!)
+        PreEnterToLocation(agent=agent, location=self, time=event.time).post()
+        self.generate_quests(event=event, agent=agent)
         ActivateLocationChats(agent=agent, location=self, time=event.time + 0.1).post()
 
         # Добавить агента в список менеджеров мусорки
@@ -166,7 +168,7 @@ class Town(MapLocation):
         # найти торговца в городе
         for npc in set(self.example.get_npc_list()):
             # todo: Спрятать инициализацию NPC в виртуальный метод, чтобы могли инициализироваться все
-            if isinstance(npc, Trader) and not options.quick_debug:
+            if isinstance(npc, Trader) and not options.quick_debug and npc.refresh_time:
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
 
         self.enemy_agents = dict()  # Должны быть дикты с агентом и временем добавления
@@ -302,7 +304,7 @@ class MapRespawn(Observer):
 
     def get_respawn_cls(self, name):
         # todo: сделать правильное получение класса по имени, возможно через реестровые объекты
-        import sublayers_server.model.quick_game_power_up as PowerUps
+        from sublayers_server.model import quick_game_power_up as PowerUps
         res = getattr(PowerUps, name, None)
         assert res is not None
         return res
@@ -313,9 +315,9 @@ class MapRespawn(Observer):
         respawn_objects = self.example.respawn_objects
         if not respawn_objects:
             return
-        resp_object_proto = respawn_objects[random.randint(0, len(respawn_objects) - 1)]
+        resp_object_proto = random.choice(respawn_objects)
         pos = Point.random_point(self.position(event.time), self.example.respawn_radius)
-        # resp_object_ex = resp_object_proto.instantiate(fixtured=False)
+        # resp_object_ex = resp_object_proto.instantiate()
         # yield resp_object_ex.load_references()
         # log.info('respawn [%s] %s %s %s', self, event.time, resp_object_proto.model_class_name, pos)
         klass = self.get_respawn_cls(resp_object_proto.model_class_name)

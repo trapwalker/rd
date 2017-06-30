@@ -8,9 +8,11 @@ import hashlib
 import datetime
 import random
 import re
-import tornado.gen
-from motorengine import Document, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField
-from sublayers_server.model.registry.odm_position import PositionField
+from mongoengine import (
+    Document, EmbeddedDocument, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField,
+)
+
+from sublayers_server.model.registry_me.odm_position import PositionField
 
 
 class User(Document):
@@ -19,14 +21,14 @@ class User(Document):
     :type auth: AuthData
     """
 
-    class AuthData(Document):
+    class AuthData(EmbeddedDocument):
 
-        class AuthStandard(Document):
+        class AuthStandard(EmbeddedDocument):
             email = StringField()
             password = StringField()
 
             def __init__(self, raw_password=None, **kw):
-                Document.__init__(self, **kw)
+                EmbeddedDocument.__init__(self, **kw)
                 if raw_password:
                     self.set_password(raw_password)
 
@@ -62,9 +64,8 @@ class User(Document):
         if email:
             self.auth.standard.email = email
 
-    @property
-    def id(self):
-        return self._id
+    def __nonzero__(self):
+        return True
 
     def check_password(self, password):
         if not self.auth:
@@ -79,16 +80,12 @@ class User(Document):
             return self.auth.standard.email
 
     @classmethod
-    @tornado.gen.coroutine
     def get_by_name(cls, name):
-        users = yield cls.objects.filter({'name': name}).find_all()
-        raise tornado.gen.Return(users and users[0] or None)
+        return cls.objects.filter(name=name).first()
 
     @classmethod
-    @tornado.gen.coroutine
     def get_by_email(cls, email):
-        users = yield cls.objects.filter({'auth.standard.email': email}).find_all()
-        raise tornado.gen.Return(users and users[0] or None)
+        return cls.objects.filter(auth__standard__email=email).first()
 
     def as_document(self):
         d = self.__dict__.copy()
@@ -97,7 +94,7 @@ class User(Document):
 
     def __repr__(self):
         args = self.to_son()
-        args['_id'] = self._id
+        args['_id'] = self.pk
         return '{self.__class__.__name__}({args})'.format(
             self=self,
             args=', '.join(('{}={!r}'.format(k, v) for k, v in args.items())),
@@ -106,24 +103,18 @@ class User(Document):
     def __str__(self):
         return '<{self.__class__.__name__}({self.name})>'.format(self=self)
 
-    @tornado.gen.coroutine
     def assign_ordinal_number(self):
         if self.ordinal_number is None:
+            # todo: ##DOIT
             # Получить всех пользователей, отсортировать по self.ordinal_number и получить максимальное число
-            new_user = User()
-            new_user.save()
+            # users = User.objects.filter(
+            #     {'ordinal_number': {'$exists': True, '$ne': None},}
+            # ).order_by('ordinal_number', -1).limit(3).all()
 
-            users = yield User.objects.filter(
-                {'ordinal_number': {'$exists': True, '$ne': None},}
-            ).order_by('ordinal_number', -1).limit(3).find_all()
+            self.ordinal_number = 12345 #(users[0].ordinal_number + 1) if len(users) else 1
+            self.save()
 
-            if len(users):
-                self.ordinal_number = users[0].ordinal_number + 1
-            else:
-                self.ordinal_number = 1
-            yield self.save()
-            raise tornado.gen.Return(self.ordinal_number)
-        raise tornado.gen.Return(self.ordinal_number)
+        return self.ordinal_number
 
 
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):
@@ -153,65 +144,3 @@ def test_pass(password, verification_data, encoding='utf-8'):
     hash_func.update(password)
     hash_func.update(salt)
     return hash_digest == hash_func.hexdigest()
-
-
-if __name__ == '__main__':
-    import sys
-    #log.addHandler(logging.StreamHandler(sys.stderr))
-    log.setLevel(logging.DEBUG)
-    import tornado.ioloop
-    import tornado.gen
-    from motorengine import connect
-    import random
-
-    class Cnt(object):
-        def __init__(self, v=0):
-            self.c = v
-
-        def inc(self, v=1):
-            self.c += v
-            return self.c
-
-        def __str__(self):
-            return '<{}>'.format(self.c)
-
-    io_loop = tornado.ioloop.IOLoop.instance()
-    connect("rd2", host="localhost", port=27017, io_loop=io_loop)
-
-    @tornado.gen.coroutine
-    def get_user(id):
-        user = yield User.objects.get(id)
-        raise tornado.gen.Return(user)
-
-    @tornado.gen.coroutine
-    def test():
-        log.debug('user profile test start')
-        u = User(email='{}@example.com'.format(random.randint(0, 1000)))
-        log.info('Make: %r', u)
-        yield u.save()
-
-        users = yield User.objects.find_all()
-        for i, user in enumerate(users):
-            print i, repr(user)
-
-        log.debug('No more users yet.')
-
-        oid = ObjectId('56fd3f497ee5fe16d83121df')
-        u = yield get_user(oid)
-        log.debug('user by id: %r', u)
-
-        globals().update(locals())
-
-    tornado.ioloop.IOLoop.instance().add_callback(test)
-    #test()
-
-    c = Cnt(0)
-
-    tornado.ioloop.PeriodicCallback(lambda: (
-        c.inc() and (
-            log.debug('alive %s', c)
-            or io_loop._timeouts
-            or io_loop.stop()
-        )), 500).start()
-    io_loop.start()
-    log.debug('Terminate')

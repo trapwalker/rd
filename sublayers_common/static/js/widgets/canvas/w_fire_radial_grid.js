@@ -60,9 +60,10 @@ var WFCanvasireRadialGrid = (function (_super) {
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
 
-        if (this.in_visible_change) {
-            ctx.globalAlpha = visible_state;
-        }
+        var opacity = mapCanvasManager.real_zoom -  14.;
+        opacity = Math.max(Math.min(1, opacity), 0);
+        if (this.in_visible_change)
+            ctx.globalAlpha = Math.min(opacity, visible_state);
 
         var car_dir = this.car.getCurrentDirection(time);
         var zoom_koeff = mapCanvasManager.zoom_koeff;

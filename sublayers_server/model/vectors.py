@@ -25,6 +25,9 @@ class Point(complex):
         # todo: refactor it
         return self.x, self.y
 
+    def as_dict(self):
+        return dict(x=self.x, y=self.y)
+
     @staticmethod
     def polar(r, fi):
         return Point(r * cos(fi), r * sin(fi))

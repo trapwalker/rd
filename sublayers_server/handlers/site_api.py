@@ -3,57 +3,48 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado
-import tornado.web
-import tornado.gen
 import tornado.template
 
 from sublayers_common.user_profile import User
 from sublayers_common.handlers.base import BaseHandler
-from sublayers_server.model.registry.classes.mobiles import Car as RegCar
+from sublayers_server.model.registry_me.classes.mobiles import Car as RegCar
 
 
 class APIGetCarInfoHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        # todo: ##REFACTORING
+        log.error('Error! Site API called!')
 
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
-        user = yield User.get_by_name(username)
+        user = User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         agent = self.application.srv.api.get_agent(user)  # todo: ##fix get offline (unloaded) agent
         if not agent:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
-        ex_car = agent.example.car
+        ex_car = agent.example.profile.car
         if not ex_car:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         self.render('location/car_info_img_ext.html', car=ex_car)
 
 
 class APIGetCarInfoHandler2(BaseHandler):
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
         #uri = self.get_argument('uri', None)
         uri = 'reg:///registry/mobiles/cars/middle/sports/delorean_dmc12'  # todo: ##fix
         if not uri:
             self.send_error(404)
             return
 
-        ex_car = None
-        try:
-            ex_car = self.application.srv.reg[uri]
-        except:  # todo: catch specify exception ##refactor
-            pass
+        ex_car = self.application.srv.reg.get(uri, None)
 
         if not ex_car or not isinstance(ex_car, RegCar):  # todo: log warning if uri link is not car
             self.send_error(404)
@@ -63,16 +54,15 @@ class APIGetCarInfoHandler2(BaseHandler):
 
 class APIGetUserInfoHandler(BaseHandler):
     u"""Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой"""
-    @tornado.gen.coroutine
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        # todo: ##REFACTORING
+        log.error('Error! Site API called!')
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
-        user = yield User.get_by_name(username)
+        user = User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         user_info = dict(name=username)
         html_car_img = None
@@ -87,20 +77,20 @@ class APIGetUserInfoHandler(BaseHandler):
             agent = self.application.srv.api.get_agent(user, make=True)
         # agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example
         if agent:
-            user_info['driving'] = agent.example.driving.value
-            user_info['shooting'] = agent.example.shooting.value
-            user_info['masking'] = agent.example.masking.value
-            user_info['engineering'] = agent.example.engineering.value
-            user_info['trading'] = agent.example.trading.value
-            user_info['leading'] = agent.example.leading.value
-            user_info['about_self'] = agent.example.about_self  # Досье
+            user_info['driving'    ] = agent.example.profile.driving.value
+            user_info['shooting'   ] = agent.example.profile.shooting.value
+            user_info['masking'    ] = agent.example.profile.masking.value
+            user_info['engineering'] = agent.example.profile.engineering.value
+            user_info['trading'    ] = agent.example.profile.trading.value
+            user_info['leading'    ] = agent.example.profile.leading.value
+            user_info['about_self' ] = agent.example.profile.about_self  # Досье
             user_info['balance'] = agent.balance
             # todo: сделать пересылку правильных параметров
             user_info['lvl'] = '5'
 
             user_info['class'] = ''
-            if agent.example.role_class:
-                user_info['class'] = agent.example.role_class.description
+            if agent.example.profile.role_class:
+                user_info['class'] = agent.example.profile.role_class.description
             user_info['karma'] = '138'
 
             template_agent_info = tornado.template.Loader(
@@ -111,7 +101,7 @@ class APIGetUserInfoHandler(BaseHandler):
                                                       user_lang=self.user_lang)
 
             user_info['position'] = None  # todo: У агента есть поле position - разобраться с ним
-            ex_car = agent.example.car
+            ex_car = agent.example.profile.car
             if ex_car:
                 name_car = ex_car.name_car
                 user_info['position'] = ex_car.position.as_tuple()
@@ -132,21 +122,20 @@ class APIGetUserInfoHandler(BaseHandler):
 
 
 class APIGetUserInfoHandler2(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        # todo: ##REFACTORING
+        log.error('Error! Site API called!')
         username = self.get_argument('username', None)  # todo: send 404 error if username is empty ##refactor
-        user = yield User.get_by_name(username)
+        user = User.get_by_name(username)
 
         if not user:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         agent = self.application.srv.api.get_agent(user, make=True)
         if not agent:
             self.send_error(404)
-            raise tornado.gen.Return()
+            return
 
         self.render('person/person_site_info.html', agent_example=agent.example, with_css=True,
                     user_lang=self.user_lang)
@@ -154,8 +143,7 @@ class APIGetUserInfoHandler2(BaseHandler):
 
 class APIGetQuickGameCarsHandler(BaseHandler):
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
 
         car_examples = self.application.srv.quick_game_cars_examples
         car_templates_list = []
@@ -173,8 +161,7 @@ class APIGetQuickGameCarsHandler(BaseHandler):
 
 class APIGetQuickGameCarsHandler2(BaseHandler):
     def get(self):
-        print('Error! Site API called!')
-        log.info('Error! Site API called!')
+        log.error('Error! Site API called!')
 
         car_examples = self.application.srv.quick_game_cars_examples
         self.render('site/quick_game_cars.html', car_examples=car_examples, with_css=True)

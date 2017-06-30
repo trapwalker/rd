@@ -30,11 +30,8 @@ from sublayers_server.model.chat_room import (
 from sublayers_server.model.map_location import Town, GasStation
 from sublayers_server.model.barter import Barter, InitBarterEvent, AddInviteBarterMessage
 from sublayers_server.model.console import Namespace, Console, LogStream, StreamHub
-from sublayers_server.model.registry.classes.item import MapWeaponRocketItem
 from sublayers_server.model.quest_events import OnNote, OnQuestChange, OnCancel
 from tornado.options import options
-
-import tornado.gen
 
 # todo: Проверить допустимость значений входных параметров
 
@@ -115,13 +112,37 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.example.set_balance(time=self.agent.server.get_time(), new_balance=value)
+            self.agent.example.profile.set_balance(time=self.agent.server.get_time(), new_balance=value)
 
         self.write('You have {} money.'.format(self.agent.balance))
         return self.agent.balance
 
     def exp(self, value):
-        self.agent.example.set_exp(dvalue=int(value), time=self.agent.server.get_time())
+        self.agent.example.profile.set_exp(dvalue=int(value), time=self.agent.server.get_time())
+
+    def karma(self, value):
+        self.agent.example.profile.set_karma(value=int(value), time=self.agent.server.get_time())
+
+    def clear_quests(self, value=None):
+        if value == 'all' or value == u'all':
+            self.agent.example.profile.quests_unstarted = []
+            self.agent.example.profile.quests_ended = []
+        self.agent.example.profile.quests_active = []
+        self.agent.example.profile.notes = []
+        t = self.agent.server.get_time()
+        self.agent.on_save(time=t)
+        messages.RefreshMessage(agent=self.agent, time=t + 1, comment='Quests cleared').post()
+
+    def regenerate_quests(self):
+        agent = self.agent
+        location = agent.current_location
+
+        def ttt(event):
+            location.generate_quests(event=event, agent=agent)
+
+        if location:
+            Event(server=agent.server, time=agent.server.get_time(), callback_after=ttt).post()
+
 
     def param(self, name=None):
         if name and self.agent.car:
@@ -130,7 +151,7 @@ class AgentConsoleNamespace(Namespace):
                 'Agent %s  have param %s = %s',
                 self.agent,
                 name,
-                self.agent.car.example.get_modify_value(param_name=name, example_agent=self.agent.example),
+                self.agent.car.example.profile.get_modify_value(param_name=name, example_agent=self.agent.example),
             )
 
     def save(self):
@@ -147,7 +168,7 @@ class AgentConsoleNamespace(Namespace):
             agent = agents_by_name.get(name_to_reset, None)
             if agent:
                 self.api.send_kick(username=name_to_reset)
-                agent.example.reset()
+                agent.example.profile.reset()
 
     # def quest(self, *args):
     #     if not args:
@@ -155,7 +176,7 @@ class AgentConsoleNamespace(Namespace):
     #     elif args[0] == 'get':
     #         for q in args[1:]:
     #             try:
-    #                 q = self.agent.server.reg[q]
+    #                 q = self.agent.server.reg.get(q)
     #             except:
     #                 log.error('Quest %s is not found', q)
     #                 raise
@@ -167,7 +188,7 @@ class AgentConsoleNamespace(Namespace):
     #             log.debug('Quest %s started', quest)
 
     def qi(self):
-        for quest in self.agent.example.quests:
+        for quest in self.agent.example.profile.quests:
             log.info('QUEST: {}'.format(quest))
 
 
@@ -193,11 +214,12 @@ class InitTimeEvent(Event):
 
 
 class SetPartyEvent(Event):
-    def __init__(self, agent, name=None, description=u'', **kw):
+    def __init__(self, agent, name=None, description=u'', exp_share_type=False, **kw):
         super(SetPartyEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.name = name
         self.description = description
+        self.exp_share_type = exp_share_type
 
     def on_perform(self):
         super(SetPartyEvent, self).on_perform()
@@ -208,7 +230,11 @@ class SetPartyEvent(Event):
         else:
             party = Party.search(self.name)
             if party is None:
-                party = Party(time=self.time, owner=self.agent, name=self.name, description=self.description)
+                party = Party(time=self.time,
+                              owner=self.agent,
+                              name=self.name,
+                              description=self.description,
+                              exp_share=self.exp_share_type)
             elif self.agent not in party:
                 party.include(self.agent, time=self.time)
         # todo: save parties
@@ -405,13 +431,13 @@ class AgentAPI(API):
         # Отправка сообщений для журнала
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
 
-        if self.agent.current_location is not None:
-            log.debug('Need reenter to location')
+        if self.agent.current_location is not None and self.agent.example.profile.in_location_flag:
+            # log.debug('Need reenter to location')
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
-        if self.agent.example.car and not self.agent.car:
+        if self.agent.example.profile.car and not self.agent.car:
             self.make_car(time=time)
 
         if self.agent.car:
@@ -421,27 +447,31 @@ class AgentAPI(API):
             return
 
         # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город
-        last_town = self.agent.example.last_town
+        last_town = self.agent.example.profile.last_town
         self.agent.current_location = last_town
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
-            # log.debug('Need reenter to location')
-            self.agent.example.car = self.agent.example.insurance.car  # Восстановление машинки из страховки
-            self.agent.example.insurance.car = None
+            self.agent.example.profile.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
+            self.agent.example.profile.insurance.car = None
+            if self.agent.example.profile.car:  # Если страховка базовая, то не будет машинки
+                self.agent.example.profile.car.position = self.agent.current_location.position(time)
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
+        log.watning('on_update_agent_api Agent placing error %s', self.agent)
+
     def make_car(self, time):
-        self.car = Bot(time=time, example=self.agent.example.car, server=self.agent.server, owner=self.agent)
+        self.car = Bot(time=time, example=self.agent.example.profile.car, server=self.agent.server, owner=self.agent)
         self.agent.append_car(car=self.car, time=time)
 
     @public_method
-    def send_create_party_from_template(self, name, description):
+    def send_create_party_from_template(self, name, description, exp_share_type):
         assert name is None or isinstance(name, unicode)
         assert description is None or isinstance(description, unicode)
+        assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("send_create_party_from_template name={!r}".format(name))
-        self.set_party(name=name, description=description)
+        self.set_party(name=name, description=description, exp_share_type=exp_share_type)
 
     @public_method
     def send_join_party_from_template(self, name):
@@ -450,12 +480,13 @@ class AgentAPI(API):
         self.set_party(name=name)
 
     @public_method
-    def set_party(self, name=None, description=u''):
+    def set_party(self, name=None, description=u'', exp_share_type=False):
         # todo: review
         assert name is None or isinstance(name, unicode)
         assert description is None or isinstance(description, unicode)
+        assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("set_party name={!r}".format(name))
-        SetPartyEvent(agent=self.agent, name=name, description=description,
+        SetPartyEvent(agent=self.agent, name=name, description=description, exp_share_type=exp_share_type,
                       time=self.agent.server.get_time()).post()
 
     @public_method
@@ -600,36 +631,36 @@ class AgentAPI(API):
     @basic_mode
     @public_method
     def enter_to_location(self, location_id):
-        # log.info('agent %s want enter to location is %s', self.agent, town_id)
+        self.agent.log.info('enter to location[%s]', location_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
     @basic_mode
     @public_method
     def exit_from_location(self):
-        # log.info('agent %s want exit from location is %s', self.agent, town_id)
+        self.agent.log.info('exit from location')
         ExitFromMapLocation(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @basic_mode
     @public_method
     def enter_to_npc(self, npc_node_hash):
-        log.info('agent %s want enter to npc %s', self.agent, npc_node_hash)
+        self.agent.log.info('enter to npc %s', npc_node_hash)
         # todo: resolve NPC by node_hash ##quest
         EnterToNPCEvent(agent=self.agent, npc=npc_node_hash, time=self.agent.server.get_time()).post()
 
     @basic_mode
     @public_method
     def enter_to_building(self, head_node_hash, build_name):
-        log.info('agent %s want enter to build [%s] with head: %s', self.agent, build_name, head_node_hash)
+        self.agent.log.info('enter to build [%s] with head: %s', build_name, head_node_hash)
 
     @basic_mode
     @public_method
     def exit_from_npc(self, npc_node_hash):
-        log.info('agent %s want exit from npc %s', self.agent, npc_node_hash)
+        self.agent.log.info('exit from npc %s', npc_node_hash)
 
     @basic_mode
     @public_method
     def exit_from_building(self, head_node_hash, build_name):
-        log.info('agent %s want exit from build [%s] with head: %s', self.agent, build_name, head_node_hash)
+        self.agent.log.info('exit from build [%s] with head: %s', build_name, head_node_hash)
 
     @public_method
     def show_inventory(self, owner_id):
@@ -879,7 +910,7 @@ class AgentAPI(API):
     @public_method
     def set_about_self(self, text):
         self.agent.log.info('set_about_self text={!r}'.format(text))
-        self.agent.example.about_self = text
+        self.agent.example.profile.about_self = text
         messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Квесты
@@ -891,29 +922,29 @@ class AgentAPI(API):
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
         uid = UUID(uid)
 
-        note = self.agent.example.get_note(uid)
+        note = self.agent.example.profile.get_note(uid)
         if not note:
             log.warning('Note #{} is not found'.format(uid))
             return
 
         server = self.agent.server
 
-        for q in self.agent.example.quests_active:
+        for q in self.agent.example.profile.quests_active:
             OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result).post()
 
     @public_method
     def quest_activate(self, quest_uid):
         self.agent.log.info('quest_activate quest_uid={}'.format(quest_uid))
-        self.agent.example.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
+        self.agent.example.profile.start_quest(UUID(quest_uid), time=self.agent.server.get_time(), server=self.agent.server)
         # todo: данный эвент должен вызываться при смене состояния квеста
-        for q in self.agent.example.quests_active:
+        for q in self.agent.example.profile.quests_active:
             server = self.agent.server
             OnQuestChange(server=server, quest=q, time=server.get_time() + 0.5, target_quest_uid=quest_uid).post()
 
     @public_method
     def quest_cancel(self, quest_uid):
         self.agent.log.info('quest_cancel quest_uid={}'.format(quest_uid))
-        quest = self.agent.example.get_quest(uid=UUID(quest_uid))
+        quest = self.agent.example.profile.get_quest(uid=UUID(quest_uid))
         if quest:
             server = self.agent.server
             OnCancel(server=server, quest=quest, time=server.get_time()).post()
@@ -923,7 +954,7 @@ class AgentAPI(API):
     @public_method
     def quest_active_notes_view(self, quest_uid, active):
         self.agent.log.info('quest_active_notes_view quest_uid={}'.format(quest_uid))
-        quest = self.agent.example.get_quest(uid=UUID(quest_uid))
+        quest = self.agent.example.profile.get_quest(uid=UUID(quest_uid))
         if quest:
             # todo: вызвать метод через эвент: создать эвент или использовать event_deco
             quest.active_notes_view_change(active=active, time=self.agent.server.get_time())
@@ -1001,16 +1032,14 @@ class AgentAPI(API):
     @public_method
     def quick_play_again(self, car_index=0):
         self.agent.log.info('quick_play_again with index: %s', car_index)
-        def callback(*kw):
-            api.update_agent_api(time=api.agent.server.get_time())
-
         api = self
         if (options.mode != 'quick') or (self.agent.car is not None):
             # todo: зафиксировать факт жульничества
             log.warning('Lie!!!!')
             return
         self.agent.user.car_index = car_index
-        tornado.gen.IOLoop.instance().add_future(self.agent.init_example_car(), callback=callback)
+        self.agent.init_example_car()
+        api.update_agent_api(time=api.agent.server.get_time())
 
     @public_method
     def quick_teaching_answer(self, teaching):
@@ -1037,6 +1066,6 @@ class AgentAPI(API):
     def go_to_respawn(self, town_node_hash=None):
         self.agent.log.info('go_to_respawn with index: %s', town_node_hash)
         t = self.agent.server.get_time()
-        self.agent.example.insurance.set_last_town(agent=self.agent.example, time=t, town_node_hash=town_node_hash)
+        self.agent.example.profile.insurance.set_last_town(agent=self.agent.example, time=t, town_node_hash=town_node_hash)
         self.update_agent_api(time=t)
 

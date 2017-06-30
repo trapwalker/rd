@@ -11,9 +11,8 @@ from sublayers_server.model.barter import Barter
 
 
 class MainInventoryHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
-        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
@@ -23,9 +22,8 @@ class MainInventoryHandler(BaseHandler):
 
 
 class ContainerInventoryHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
-        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
@@ -40,9 +38,8 @@ class ContainerInventoryHandler(BaseHandler):
 
 
 class BarterInventoryHandler(BaseHandler):
-    @tornado.gen.coroutine
     def get(self):
-        agent = yield self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
+        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         if agent is None:
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
