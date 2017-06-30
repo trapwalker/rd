@@ -17,7 +17,7 @@ var TrainerTeachingNote = (function (_super) {
         this.skill_coord = new Point(1113, 350);
         this.buy_btn = new Point(325, 608);
 
-        chat.addMessageToLog('Выполнив свое первое задание вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.', true);
+        chat.addMessageToLog('Выполнив свое первое задание, вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.', true);
     }
 
     TrainerTeachingNote.prototype.on_enter_location = function() {
@@ -33,7 +33,7 @@ var TrainerTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
              (active_place != null))) {
-            teachingManager.jq_panel_left_content.text('Выполнив свое первое задание вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.');
+            teachingManager.jq_panel_left_content.text('Выполнив свое первое задание, вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Библиотека”.');
             _super.prototype.redraw.call(this);
             return;
@@ -41,7 +41,7 @@ var TrainerTeachingNote = (function (_super) {
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('Выполнив свое первое задание вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.');
+            teachingManager.jq_panel_left_content.text('Выполнив свое первое задание, вы получили немного опыта. Его необходимо потратить на получение  перков и улучшение навыков. Для этого нужен тренер. Он находится в здании “Библиотека”.');
             teachingManager.jq_panel_right_content.text('Зайдите в здание “Библиотека”.');
             this.draw_line(this.start_point, this.build_coord);
             return;
