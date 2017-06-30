@@ -427,7 +427,7 @@ var LocationManager = (function () {
         //console.log('LocationManager.prototype.handler_mouseleave');
         if (this.active_screen_name = "location_screen") {
             locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-                locationManager.panel_right.show({}, 'location');
+            locationManager.panel_right.show({}, 'location');
         }
     };
 
