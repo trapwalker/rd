@@ -589,6 +589,9 @@ class Agent(Object):
         # todo: review quest_inventory
         self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
+        # Сообщаем всем квестам что мы вышли из города
+        self.example.profile.on_event(event=event, cls=quest_events.OnExitFromLocation, location=location)
+
     def on_enter_npc(self, event):
         # log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
         self.example.profile.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param

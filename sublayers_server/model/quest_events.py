@@ -95,6 +95,9 @@ class OnEnterToLocation(QuestEvent):
         self.location = location
 
 
+class OnExitFromLocation(OnEnterToLocation): pass
+
+
 class OnChangeInventory(QuestEvent):
     def __init__(self, diff_inventories, **kw):
         super(OnChangeInventory, self).__init__(**kw)
