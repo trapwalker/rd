@@ -6,7 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-    project_root = os.path.dirname(sys.argv[0])
+    project_root = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..'))
     sys.path.append(project_root)
     log = logging.getLogger()
     try:

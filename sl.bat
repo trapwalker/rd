@@ -1,2 +1,2 @@
 
-python.bat sl.py %*
+python.bat cli\sl.py %*
