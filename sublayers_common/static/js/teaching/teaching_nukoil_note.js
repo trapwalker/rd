@@ -52,14 +52,14 @@ var NukoilTeachingNote = (function (_super) {
 
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            teachingManager.jq_panel_left_content.text('Вы находитесь в приемной Нукойл. Для информации о страховках - кликните по ним. В любом отделении Нукойл вы можете получить услуги заправки и службы помощи клиентам.');
+            teachingManager.jq_panel_left_content.text('Вы находитесь в приемной Нукойл. В любом отделении Нукойл вы можете получить услуги заправки, службы помощи клиентам и оформить страховку.');
             teachingManager.jq_panel_right_content.text('Зайдите в меню заправки.');
             this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
             teachingManager.jq_panel_left_content.text('В меню заправки можно заполнить топливный бак и пустые канистры.');
-            teachingManager.jq_panel_right_content.text('Укажите количество литров ползунком или курсором и нажмите кнопку Заправить.');
+            teachingManager.jq_panel_right_content.text('Укажите количество литров ползунком и нажмите кнопку Заправить.');
 
             if (user.example_car)
                 if (Math.round(user.example_car.fuel) != this.needed_npc._get_gas_by_prc(this.needed_npc.current_prc_gas))

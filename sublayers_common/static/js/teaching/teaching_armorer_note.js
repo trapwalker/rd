@@ -20,7 +20,7 @@ var ArmorerTeachingNote = (function (_super) {
 
         this.last_item_direction = null;
 
-        chat.addMessageToLog('Все специалисты по модификации ТС находятся в здании “Сервис”.', true);
+        chat.addMessageToLog('Все специалисты по модификации ТС находятся в здании “Автосервис”.', true);
     }
 
     ArmorerTeachingNote.prototype.on_enter_location = function() {
@@ -39,23 +39,23 @@ var ArmorerTeachingNote = (function (_super) {
             this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/armorer/whitehill_martin_arioso');
 
         if (this.needed_screen_name != locationManager.active_screen_name || (active_place != this.needed_building && active_place != this.needed_npc && active_place != null)) {
-            teachingManager.jq_panel_left_content.text('Все специалисты по модификации ТС находятся в здании “Сервис”.');
-            teachingManager.jq_panel_right_content.text('Зайдите в здание “Сервис”.');
+            teachingManager.jq_panel_left_content.text('Все специалисты по модификации ТС находятся в здании “Автосервис”.');
+            teachingManager.jq_panel_right_content.text('Зайдите в здание “Автосервис”.');
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('Все специалисты по модификации ТС находятся в здании “Сервис”.');
-            teachingManager.jq_panel_right_content.text('Зайдите в здание “Сервис”.');
+            teachingManager.jq_panel_left_content.text('Все специалисты по модификации ТС находятся в здании “Автосервис”.');
+            teachingManager.jq_panel_right_content.text('Зайдите в здание “Автосервис”.');
             this.draw_line(this.start_point, this.build_coord);
             return;
         }
         
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            teachingManager.jq_panel_left_content.text('Вы находитесь в здании “Сервис”. Тут находятся механик, оружейник и стилист. Каждый специалист в своей области.');
+            teachingManager.jq_panel_left_content.text('Вы находитесь в здании “Автосервис”. Тут могут находиться механик, оружейник и стилист. Каждый специалист в своей области.');
             teachingManager.jq_panel_right_content.text('Зайдите к оружейнику.');
             this.draw_line(this.start_point, this.npc_coord);
         }
@@ -95,7 +95,7 @@ var ArmorerTeachingNote = (function (_super) {
                 if (this.need_weapon_drag) {
                     // рисовать указатели на инвентарь и на машинку
                     teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
-                    teachingManager.jq_panel_right_content.text('Найдите пулемет в инвентаре и перетащите его в слот автомобиля.');
+                    teachingManager.jq_panel_right_content.text('Выберите пулемет в инвентаре и перетащите его в слот автомобиля.');
                     this.draw_line(this.start_point, this.inventory_coord);
                     this.draw_line(this.start_point, this.car_coord);
                 }
