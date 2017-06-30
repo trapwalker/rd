@@ -543,6 +543,8 @@ var ClientManager = (function () {
             // Инициализация мап-зума
             var curr_cord = mcar.getCurrentCoord(clock.getCurrentTime());
             mapManager.set_coord({x: curr_cord.x, y: curr_cord.y});
+
+            returnFocusToMap();
         }
 
 
