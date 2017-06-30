@@ -254,6 +254,9 @@ class Inventory(object):
             if self.get_item(position=i) is None:
                 return i
 
+    def get_free_position_count(self):
+        return self.max_size - self.get_item_count()
+
     def get_item_count(self):
         return len(self._items)
 

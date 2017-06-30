@@ -21,4 +21,5 @@ class Package(ItemUsable):
         return TransactionActivatePackage
 
     def can_activate(self, time, agent_model=None):
-        return (agent_model is not None) and (agent_model.car is not None)
+        return ((agent_model is not None) and (agent_model.car is not None) and
+                (agent_model.car.inventory.get_free_position_count() >= len(self.post_activate_items)))
