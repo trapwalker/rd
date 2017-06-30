@@ -60,12 +60,13 @@ class ConsoleAnswerTeachingHandler(BaseHandler):
 class ResetTeachingHandler(BaseHandler):
     def get(self):
         user = self.current_user
+        state = self.get_argument('state', '')
         # todo: check authorization by decorator
         if not user:
             self.finish('Not Authorized')
             return
 
         last_state = user.teaching_state
-        user.teaching_state = ""
+        user.teaching_state = state
         user.save()
-        self.finish('OK! last state = {}'.format(last_state))
+        self.finish('OK! new_state = {}    last state = {}'.format(state, last_state))
