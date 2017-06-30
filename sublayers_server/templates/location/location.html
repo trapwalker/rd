@@ -349,8 +349,7 @@
             var building = $(this).data('building');
             if (locationManager.buildings.hasOwnProperty(building) &&
                 !locationManager.isActivePlace(locationManager.buildings[building])) {
-                locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-                locationManager.panel_right.show({}, 'location');
+                locationManager.set_panels_location_screen();
             }
         });
 

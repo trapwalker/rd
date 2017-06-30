@@ -133,6 +133,8 @@ var LocationManager = (function () {
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
 
+                locationManager.set_panels_location_screen();
+
                 // при попадании на ландшафт города нужно вызвать обновление teachingManager
                 teachingManager.redraw();
             }
@@ -421,6 +423,14 @@ var LocationManager = (function () {
         this.screens[this.active_screen_name].set_panels();
     };
 
+    LocationManager.prototype.set_panels_location_screen = function() {
+        //console.log('LocationManager.prototype.handler_mouseleave');
+        if (this.active_screen_name = "location_screen") {
+            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+                locationManager.panel_right.show({}, 'location');
+        }
+    };
+
 
     return LocationManager;
 })();
@@ -494,7 +504,7 @@ var LocationPanelInfo = (function () {
     };
 
     LocationPanelInfo.prototype.show_location = function (options) {
-        //console.log('LocationPanelInfo.prototype.show_building', options);
+        //console.trace('LocationPanelInfo.prototype.show_location', options);
         var jq_panel = this.jq_main_div.find('.pi-location').first();
         jq_panel.find('.location').text(locationManager.example.title);
         jq_panel.find('.head').text('Нет');
