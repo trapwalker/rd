@@ -248,7 +248,7 @@ var ZoomSliderTeachingMapNote = (function (_super) {
                 self._end_note_timer = null;
                 self.change_count = 2;
                 self.change();
-            }, 15000);
+            }, 9000);
         }
     };
 
