@@ -10,6 +10,7 @@ from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, UUIDField,
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField, MapField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
+    GenericEmbeddedDocumentField, DynamicSubdoc,
 )
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
@@ -220,6 +221,8 @@ class QuestState(Node):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 
+
+
 class Quest(Node):
     first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
@@ -238,6 +241,13 @@ class Quest(Node):
         reinst=True,
         caption=u"Установленные таймеры",
         doc=u"Список установленных квестом таймеров",
+    )
+    dc          = GenericEmbeddedDocumentField(
+        default=lambda: DynamicSubdoc(),
+        not_inherited=True,
+        reinst=True,
+        caption=u'Динамический контекст',
+        doc=u'Персистентное динамическое хранилище данных состояния квеста (не поддерживает EmbeddedNodeField)',
     )
     on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
