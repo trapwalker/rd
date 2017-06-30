@@ -115,6 +115,7 @@ class TraderTeachingNote(Note): pass
 class ArmorerTeachingNote(Note): pass
 class JournalTeachingNote(Note): pass
 class TrainerTeachingNote(Note): pass
+class ExitBtnTeachingNote(Note): pass
 
 class CruiseSpeedTeachingMapNote(Note): pass
 class CruiseZoneTeachingMapNote(Note): pass

@@ -365,6 +365,9 @@ var ClientManager = (function () {
             case 'TrainerTeachingNote':
                 teachingManager.update(new TrainerTeachingNote(note));
                 break;
+            case 'ExitBtnTeachingNote':
+                teachingManager.update(new ExitBtnTeachingNote(note));
+                break;
             case 'CruiseSpeedTeachingMapNote':
                 teachingMapManager.update(new CruiseSpeedTeachingMapNote(note));
                 break;

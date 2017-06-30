@@ -66,3 +66,39 @@ var TrainerTeachingNote = (function (_super) {
 
     return TrainerTeachingNote;
 })(NavigateTeachingNote);
+
+
+
+var ExitBtnTeachingNote = (function (_super) {
+    __extends(ExitBtnTeachingNote, _super);
+
+    function ExitBtnTeachingNote(options) {
+        _super.call(this, options);
+        this.exit_btn_coord = new Point(1600, 800);
+        this.needed_screen_name = 'location_screen';
+        chat.addMessageToLog('Идите на улицу!', true);
+    }
+
+    ExitBtnTeachingNote.prototype.redraw = function() {
+        if (!locationManager.in_location_flag) return;
+        var active_place = locationManager.get_current_active_place();
+        if (active_place) {
+            _super.prototype.redraw.call(this);
+            return;
+        }
+        teachingManager.jq_panel_left_content.text('Идите на улицу!');
+        teachingManager.jq_panel_right_content.text('Идите на улицу!');
+        this.draw_line(this.start_point, this.exit_btn_coord);
+    };
+
+    ExitBtnTeachingNote.prototype.delete = function() {
+        _super.prototype.delete.call(this);
+        var place = locationManager.get_current_active_place();
+        if (locationManager.in_location_flag && locationManager.active_screen_name == 'location_screen' && !place)
+            locationManager.set_panels_location_screen();
+        if (place && place.set_panels)
+            place.set_panels();
+    };
+
+    return ExitBtnTeachingNote;
+})(NavigateTeachingNote);

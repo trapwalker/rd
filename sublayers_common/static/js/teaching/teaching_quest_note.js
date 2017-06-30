@@ -41,38 +41,38 @@ var GetQuestTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != null))) {
             _super.prototype.redraw.call(this);
-            teachingManager.jq_panel_left_content.text('Теперь Вы готовы к выполнению первой работы. Посмотреть предлагаемые задания можно в любом здании. Например у мэра.');
-            teachingManager.jq_panel_right_content.text('Зайдите в здание “Мэр”.');
+            teachingManager.jq_panel_left_content.text('Теперь Вы готовы к выполнению первой работы. Посмотреть предлагаемые задания можно в любом здании. Например в Мэрии.');
+            teachingManager.jq_panel_right_content.text('Зайдите в Мэрию.');
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
             this.draw_line(this.start_point, this.build_coord);
-            teachingManager.jq_panel_left_content.text('Теперь Вы готовы к выполнению первой работы. Посмотреть предлагаемые задания можно в любом здании. Например у мэра.');
-            teachingManager.jq_panel_right_content.text('Зайдите в здание “Мэр”.');
+            teachingManager.jq_panel_left_content.text('Теперь Вы готовы к выполнению первой работы. Посмотреть предлагаемые задания можно в любом здании. Например в Мэрии.');
+            teachingManager.jq_panel_right_content.text('Зайдите в Мэрию.');
         }
 
         if (active_place === this.needed_building) {
-            teachingManager.jq_panel_left_content.text('Вы находитесь в здании “Мэр”. Тут находятся мэр. Также тут можно просмотреть доступные задания и выбрать подходящее для выполнения.');
+            teachingManager.jq_panel_left_content.text('Вы находитесь в здании Мэрии. Тут находятся мэр. Также тут можно просмотреть доступные задания и выбрать подходящее для выполнения.');
             if (active_place.active_central_page.split('_')[0] == 'buildingPageAvailableTasks') {
                 // Если мы в доступных квестах и выбран нужный квест
                 this.move_quest_to_start();
                 if (active_place.selected_quest && active_place.selected_quest.uid == this.quest_uid) {
                     // указать на кнопку "Принять"
                     this.draw_line(this.start_point, this.buy_btn);
-                    teachingManager.jq_panel_right_content.text('Нажмите на кнопку <Взять>.');
+                    teachingManager.jq_panel_right_content.text('Нажмите на кнопку <Принять>.');
                 }
                 else {
                     // то указать на нужный квест  (или временно скрыть все остальные квесты)
                     this.draw_line(this.start_point, this.first_quest);
-                    teachingManager.jq_panel_right_content.text('Выберите задание в списке доступных.');
+                    teachingManager.jq_panel_right_content.text('Выберите задание “Учебная доставка”.');
                 }
             }
             else {
                 // Иначе указать на плашку "доступные квесты"
                 this.draw_line(this.start_point, this.active_quests_page);
-                teachingManager.jq_panel_right_content.text('Выберите задание в списке доступных.');
+                teachingManager.jq_panel_right_content.text('Выберите задание “Учебная доставка”.');
             }
         }
     };
@@ -104,17 +104,17 @@ var FinishQuestTeachingNote = (function (_super) {
         switch (this.target_build_name){
             case 'bar':
                 this.text_for_right_navigate = 'Зайдите в здание “Бар”.';
-                this.text_for_left_navigate = 'По заданию вам необходимо передать кое-что в бар.';
+                this.text_for_left_navigate = 'По заданию вам необходимо передать бармену кое-что.';
                 this.text_for_left_info = 'Вы находитесь в здании “Бар”. Тут находятся бармен и компаньонка. Бармен может предложить интересные задания, а компаньонка поможет хорошо провести свободное время.';
                 break;
             case 'market':
-                this.text_for_right_navigate = 'Зайдите в здание “Рынок”.';
-                this.text_for_left_navigate = 'По заданию вам необходимо отдать кое-что на рынке.';
-                this.text_for_left_info = 'Вы находитесь в здании рынка. Тут находится торговец.';
+                this.text_for_right_navigate = 'Зайдите в здание “Магазин”.';
+                this.text_for_left_navigate = 'По заданию вам необходимо отдать торговцу кое-что.';
+                this.text_for_left_info = 'Вы находитесь в здании магазина. Тут находится торговец.';
                 break;
             case 'library':
                 this.text_for_right_navigate = 'Зайдите в здание “Библиотека”.';
-                this.text_for_left_navigate = 'По заданию вам необходимо передать кое-что в библиотеке.';
+                this.text_for_left_navigate = 'По заданию вам необходимо передать кое-что тренеру.';
                 this.text_for_left_info = 'Вы находитесь в здании “Библиотека”. Тут находится тренер.';
                 break;
         }

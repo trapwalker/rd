@@ -863,7 +863,15 @@ class DeliveryQuest(Quest):
         ),
     )
 
-    def init_text(self):
+    def init_text(self, distance=None):
+        if distance == 0:
+            self.text_short = u"Доставьте груз в соседнее здание."
+            self.text = u"Доставьте груз: {} - к {}. Награда: {:.0f}nc.".format(
+                ', '.join([item.title for item in self.delivery_set]),
+                self.recipient.title,
+                self.reward_money
+            )
+            return
         self.text_short = u"Доставьте груз в гороод {}.".format(self.recipient.hometown.title)
         self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc.".format(
             ', '.join([item.title for item in self.delivery_set]),
