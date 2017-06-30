@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, QuestPrivatePOILoot
+from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, CreatePOICorpseEvent, QuestPrivatePOILoot
 from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.classes.quests import Quest, QuestRange
@@ -151,6 +151,14 @@ class DeliveryFromCache(DeliveryQuestSimple):
             caption=u"Необходимый итем",
         ),
     )
+
+    def init_level(self):
+        self.level = 1
+
+    def generate_reward(self):
+        self.reward_money = 0
+        self.reward_karma = 2
+        self.reward_relation_hirer = 5
 
     def init_delivery_set(self):
         # Тут гененрация посылок
@@ -379,3 +387,105 @@ class MapActivateRadarsQuest(MapActivateItemQuest):
         self.reward_money = self.activate_price * len(self.activate_points)
         self.reward_karma = 1
 
+
+class SearchCourier(DeliveryFromCache):
+    cache_radius = FloatField(caption=u'Радиус, в котором можно обнаружить тайник', root_default=50)
+
+    loot_set_list = ListField(
+        root_default=[],
+        caption=u"Список возможных комплектов ненужных вещей",
+        field=ListField(
+            caption=u"Комплект ненужных вещей",
+            field=EmbeddedNodeField(
+                document_type='sublayers_server.model.registry_me.classes.item.Item',
+                caption=u"Необходимый итем",
+            ),
+        ),
+        reinst=True,
+    )
+    loot_set = ListField(
+        caption=u"Список ненужных вещей",
+        field=EmbeddedNodeField(
+            document_type='sublayers_server.model.registry_me.classes.item.Item',
+            caption=u"Необходимый итем",
+        ),
+    )
+
+    courier_car_list = ListField(
+        caption=u"Список возможных машин курьера",
+        field=EmbeddedNodeField(
+            document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
+            caption=u"Машина курьера",
+        ),
+    )
+    courier_car = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
+        caption=u"Машина курьера",
+    )
+
+    courier_medallion = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.quest_item.QuestItem',
+        caption=u"Медальон курьера",
+        tags={'client'},
+    )
+
+    def init_delivery_set(self):
+        self.delivery_set = []
+
+        # Тут гененрация ненужных вещей
+        self.loot_set = []
+        for i in range(random.choice([3, 4])): # 3-4 предмета
+            # Выбор только по первому элементу списка (т.к. в простой реализации квеста естьтолько список итемов а не пресеты)
+            choice = random.choice(self.loot_set_list[0])
+            item = choice.instantiate(amount=choice.amount)
+            self.loot_set.append(item)
+
+        # Выбор машинки курьера
+        choice = random.choice(self.courier_car_list)
+        self.courier_car = choice.instantiate()
+
+    def init_text(self):
+        self.text_short = u"Найти пропавшего курьера."
+        self.text = u"Найти пропавшего курьера и вернуть важный предмет{} Награда: {:.0f}nc и {:.0f} кармы.".format(
+            u"." if not self.deadline else u" за {}.".format(self.deadline_to_str()),
+            self.reward_money,
+            self.reward_karma,
+        )
+
+    def create_poi_container(self, event):
+        if self.deadline:
+            life_time = self.starttime + self.deadline - event.time
+        else:
+            life_time = event.server.poi_loot_objects_life_time
+        private_name = self.agent.profile._agent_model and self.agent.profile._agent_model.print_login() or self.agent.login
+
+        items = []
+        for item_example in self.delivery_set:
+            # item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+        for item_example in self.loot_set:
+            # item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+
+
+        self.agent.profile.quest_inventory.add_item(agent=self.agent, item=self.courier_medallion, event=event)
+        self.log(text=u'Получена платиновая фишка.', event=event, position=self.cache_point.position)
+
+        CreatePOICorpseEvent(
+            server=event.server,
+            time=event.time,
+            example=None,
+            inventory_size=len(self.loot_set),
+            position=self.cache_point.position.as_point(),
+            life_time=life_time,
+            items=items,
+            sub_class_car=self.courier_car.sub_class_car,
+            car_direction=0,
+            donor_v=0,
+            donor_example=self.courier_car,
+            agent_viewer=None,
+        ).post()
+
+    def take_medallion(self, event):
+        self.agent.profile.quest_inventory.del_item(agent=self.agent, item=self.courier_medallion, event=event)
+        return True

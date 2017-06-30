@@ -11,6 +11,7 @@
     border-image-slice: 1;
     background-image: url('../img/quests/notes/delivery_note.png');
 }
+.notes-npc-delivery-up.courier { background-image: url('../img/quests/notes/courier.png'); }
 
 .notes-npc-delivery-inventory-label {
     position: relative;

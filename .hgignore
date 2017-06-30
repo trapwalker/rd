@@ -65,3 +65,4 @@ tmp
 bson/
 .backup
 _stat_quick
+roaddogs.egg-info
