@@ -1,2 +1,2 @@
 
-python.bat cli\sl.py %*
+env\Scripts\sl %*
