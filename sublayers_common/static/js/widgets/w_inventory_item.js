@@ -30,7 +30,7 @@ var WInventoryItem = (function (_super) {
     WInventoryItem.prototype.addViewDiv = function(inventoryDiv) {
         //console.log('WInventoryItem.prototype.addViewDiv', inventoryDiv, this.item);
         var itemDiv = $(inventoryDiv).find(this.itemDivStr);
-        itemDiv.find(this.itemDivCaptionStr).text(this.item.example.title);
+        itemDiv.find(this.itemDivCaptionStr).html(this.item.example.title);
         itemDiv.draggable("option", "disabled", false);
         itemDiv.find(this.itemDivPictureStr).css('background', 'transparent url(http://' + location.hostname + '/' + this.item.example.inv_icon_mid + ') no-repeat 100% 100%');
 
@@ -80,8 +80,8 @@ var WInventoryItem = (function (_super) {
             // отобразить текущий итем
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
                     'transparent url(http://' + location.hostname + '/' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');
-            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").text(self.item.example.title);
-            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-description").text(self.item.example.description);
+            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").html(self.item.example.title);
+            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-description").html(self.item.example.description);
 
             // добавляем поисковый класс для выделенных левых частей инвентаря
             var infoWindow = inv_parent.find(".mainCarInfoWindow-body-trunk-body-left");
