@@ -164,16 +164,16 @@ class Agent(Object):
         return self.example.profile.balance
 
     def on_save(self, time):
-        agent_example = self.example
-        agent_example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
-        if self.car:
-            # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
-            self.car.on_save(time)
-            agent_example.profile.car = self.car.example
-        # elif self.current_location is None:  # todo: wtf ?!
-        #     self.example.profile.car = None
-        # todo: save chats, party...
         with Timer() as tm:
+            agent_example = self.example
+            agent_example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
+            if self.car:
+                # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
+                self.car.on_save(time)
+                agent_example.profile.car = self.car.example
+            # elif self.current_location is None:  # todo: wtf ?!
+            #     self.example.profile.car = None
+            # todo: save chats, party...
             # agent_example.delete()  # TODO: Добиться правильного пересохранения агента
             agent_example.save()
             #agent_example.save(force_insert=True)
