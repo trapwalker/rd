@@ -31,7 +31,7 @@ from sublayers_common.ctx_timer import Timer
 from tornado.options import options
 
 import tornado.web
-
+from itertools import chain
 
 # todo: make agent offline status possible
 class Agent(Object):
@@ -162,6 +162,19 @@ class Agent(Object):
     @property
     def balance(self):
         return self.example.profile.balance
+
+    def on_load(self):
+        agent_profile = self.example.profile
+        for quest in chain(agent_profile.quests_active, agent_profile.quests_unstarted):
+            timers = quest.timers.values()
+            quest.timers = {}
+            for timer in timers:
+                quest_events.OnTimer(
+                    server=self.server,
+                    time=timer.time,
+                    quest=quest,
+                    name=timer.name,
+                ).post()
 
     def on_save(self, time):
         with Timer() as tm:
