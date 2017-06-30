@@ -43,7 +43,7 @@ from mongoengine import (
     DictField,
     MapField,
     EmbeddedDocumentField,
-
+    GenericEmbeddedDocumentField,
     #GenericReferenceField,
 )
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
@@ -266,7 +266,61 @@ class NodeMetaclass(DocumentMetaclass):
         return new_cls
 
 
-class Subdoc(EmbeddedDocument):
+class SubdocToolsMixin(object):
+    def to_string(self, indent=0, indent_size=4, keys_alignment=True):
+        d = self.to_mongo()
+        keys_width = max(map(len, d.keys())) if d and keys_alignment and indent_size else 1
+
+        def prepare_value(value):
+            if isinstance(value, Node):
+                value = value.to_string(
+                    indent=indent + 1 if indent_size else indent,
+                    indent_size=indent_size,
+                    keys_alignment=keys_alignment,
+                )
+            else:
+                value = repr(value)
+
+            if isinstance(value, basestring) and '\n' in value and (indent_size or indent):
+                value = (u'\n' + u' ' * (indent + 2) * indent_size).join(value.split('\n'))
+
+            return value
+
+        return '{self.__class__.__name__}({nl}{params})'.format(
+            self=self,
+            nl='\n' if indent_size else '',
+            params=('' if indent_size else ' ').join([
+                '{tab}{k:{w}}{eq_space}={eq_space}{v},{nl}'.format(
+                    k=k,
+                    v=prepare_value(v),
+                    w=keys_width,
+                    eq_space=' ' if keys_width > 1 else '',
+                    tab='\t' if indent_size else '',  # todo: replace '\t' to ' '*indent_size
+                    nl='\n' if indent_size else '',
+                )
+                for k, v in sorted(d.items())
+            ]),
+        )
+
+
+class DynamicSubdoc(EmbeddedDocument, SubdocToolsMixin):
+    _dynamic = True
+    meta = dict(
+        allow_inheritance=True,
+    )
+
+    def __nonzero__(self):
+        return True
+
+    @warn_calling()
+    def __len__(self):
+        return super(DynamicSubdoc, self).__len__()
+
+    def __str__(self):
+        return self.to_string()
+
+
+class Subdoc(EmbeddedDocument, SubdocToolsMixin):
     __metaclass__ = NodeMetaclass
     _dynamic = False
     meta = dict(
@@ -302,6 +356,9 @@ class Subdoc(EmbeddedDocument):
             ):
                 getter = lambda: getattr(self, name)
                 yield name, attr, getter
+
+    def __str__(self):
+        return self.to_string()
 
     def as_client_dict(self):  # todo: rename to 'to_son_client'
         def clean_value(field, value):
@@ -460,7 +517,7 @@ class Subdoc(EmbeddedDocument):
 
 
 ########################################################################################################################
-class Node(Subdoc):
+class Node(Subdoc, SubdocToolsMixin):
     #__slots__ = ('_uri',)
     #__metaclass__ = NodeMetaclass
     _dynamic = False
@@ -609,40 +666,8 @@ class Node(Subdoc):
             if not item.abstract or not reject_abstract:
                 yield item
 
-    def to_string(self, indent=0, indent_size=4, keys_alignment=True):
-        d = self.to_mongo()
-        keys_width = max(map(len, d.keys())) if d and keys_alignment and indent_size else 1
-
-        def prepare_value(value):
-            if isinstance(value, Node):
-                value = value.to_string(
-                    indent=indent + 1 if indent_size else indent,
-                    indent_size=indent_size,
-                    keys_alignment=keys_alignment,
-                )
-            else:
-                value = repr(value)
-
-            if isinstance(value, basestring) and '\n' in value and (indent_size or indent):
-                value = (u'\n' + u' ' * (indent + 2) * indent_size).join(value.split('\n'))
-
-            return value
-
-        return '{self.__class__.__name__}({nl}{params})'.format(
-            self=self,
-            nl='\n' if indent_size else '',
-            params=('' if indent_size else ' ').join([
-                '{tab}{k:{w}}{eq_space}={eq_space}{v},{nl}'.format(
-                    k=k,
-                    v=prepare_value(v),
-                    w=keys_width,
-                    eq_space=' ' if keys_width > 1 else '',
-                    tab='\t' if indent_size else '',  # todo: replace '\t' to ' '*indent_size
-                    nl='\n' if indent_size else '',
-                )
-                for k, v in sorted(d.items())
-            ]),
-        )
+    def __str__(self):
+        return self.to_string()
 
     def __repr__(self):
         uri = self_uri = self.uri
@@ -651,9 +676,6 @@ class Node(Subdoc):
             uri = parent and parent.uri
 
         return '<{self.__class__.__name__}({mark}{uri})>'.format(self=self, uri=uri, mark='' if self_uri else '*')
-
-    def __str__(self):
-        return self.to_string()
 
     @property
     def tag_set(self):

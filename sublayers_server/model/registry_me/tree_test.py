@@ -22,6 +22,8 @@ from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.tree import (
     connect,
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
+    GenericEmbeddedDocumentField,
+    DynamicSubdoc,
     STAT,
     field_getter_decorator,
 )
@@ -31,6 +33,7 @@ from pprint import pprint as pp
 
 class A(Node):
     s = StringField()
+    g = GenericEmbeddedDocumentField(default=lambda: DynamicSubdoc(), not_inherited=True, reinst=True)
 
 class B(Node):
     it = EmbeddedNodeField(document_type=A)
