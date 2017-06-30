@@ -330,6 +330,9 @@ var ClientManager = (function () {
             case 'NPCDeliveryNote':
                 new QuestNoteNPCBtnDelivery(note);
                 break;
+            case 'NPCDeliveryNoteUID':
+                new QuestNoteNPCBtnDeliveryUID(note);
+                break;
             case 'QuestNoteNPCCar':
                 break;
             case 'NPCWantedNote':

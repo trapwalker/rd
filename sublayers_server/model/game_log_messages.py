@@ -205,6 +205,10 @@ class TransactionActivateTurretLogMessage(TransactionActivateItemLogMessage):
     pass
 
 
+class TransactionActivatePackageLogMessage(TransactionActivateItemLogMessage):
+    pass
+
+
 class TransactionGasStationLogMessage(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 

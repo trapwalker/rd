@@ -1,6 +1,7 @@
 var ConstPeriodOfPhase = 10; // Время полного оборота линии радара
 var ConstLineRadarLength = 75000; // Длинна линии радара на 14 зуме // todo: прислать с сервера
 
+
 var WStrategyModeManager = (function () {
     function WStrategyModeManager() {
         mapCanvasManager.add_vobj(this, 80);
@@ -115,5 +116,6 @@ var WStrategyModeManager = (function () {
 
     return WStrategyModeManager;
 })();
+
 
 var wStrategyModeManager;

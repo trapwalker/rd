@@ -724,6 +724,12 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.', true);
                     new WTextArcade('Кончились патроны для ' + msg.weapon_name).start();
                     break;
+                case "TransactionActivateItemLogMessage":
+                    this.addMessageToLog('Активирован предмет ' + msg.item_title + '.');
+                    break;
+                case "TransactionActivatePackageLogMessage":
+                    this.addMessageToLog('Вскрыта посылка.');
+                    break;
                 case "TransactionCancelActivateItemLogMessage":
                     this.addMessageToLog('Отмена активации итема: ' + msg.item_title + '.');
                     break;

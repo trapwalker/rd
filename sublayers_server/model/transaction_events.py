@@ -18,6 +18,7 @@ import sublayers_server.model.messages as messages
 from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage,
                                                       TransactionHangarLogMessage,
                                                       TransactionArmorerLogMessage,
+                                                      TransactionActivateItemLogMessage,
                                                       TransactionActivateTankLogMessage,
                                                       TransactionParkingLogMessage,
                                                       TransactionActivateRebuildSetLogMessage,
@@ -25,6 +26,7 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateRocketLogMessage,
                                                       TransactionActivateMineLogMessage,
                                                       TransactionActivateTurretLogMessage,
+                                                      TransactionActivatePackageLogMessage,
                                                       TransactionMechanicLogMessage,
                                                       TransactionMechanicRepairLogMessage,
                                                       TransactionTunerLogMessage,
@@ -89,7 +91,7 @@ class TransactionActivateTank(TransactionActivateItem):
         # Отправить сообщение в игровой лог об активации Канистры
         TransactionActivateTankLogMessage(agent=self.agent, time=self.time, item=item.example).post()
         # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
-        tank_proto = item.example.post_activate_item
+        tank_proto = item.example.post_activate_items[0]
         if tank_proto:
             tank_ex = tank_proto.instantiate()
             ItemState(server=self.server, time=self.time, example=tank_ex).set_inventory(
@@ -97,6 +99,33 @@ class TransactionActivateTank(TransactionActivateItem):
         else:
             pass
             # log.warning('Warning! post_activate_item dont set')
+
+
+class TransactionActivatePackage(TransactionActivateItem):
+    def on_perform(self):
+        super(TransactionActivateItem, self).on_perform()
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.target)
+        inventory = self.inventory
+        item = self.item
+
+        # проверка входных параметров
+        if not isinstance(obj, Mobile):
+            log.warning('Item is None or Tank is not Fuel')
+            return
+
+        # Удаляем посылку из инвентаря
+        item.set_inventory(time=self.time, inventory=None)
+
+        # Отправить сообщение в игровой лог о вскрытии посылки
+        TransactionActivatePackageLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+
+        # Кладем в инвентарь содержимое посылки
+        for item in item.example.post_activate_items:
+            item_ex = item.instantiate()
+            ItemState(server=self.server, time=self.time, example=item_ex).set_inventory(
+                time=self.time, inventory=inventory)
 
 
 class TransactionActivateRebuildSet(TransactionActivateItem):
