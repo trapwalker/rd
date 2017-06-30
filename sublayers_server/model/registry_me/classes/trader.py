@@ -159,7 +159,7 @@ class Trader(Institution):
                     current_price = record
                     current_ancestor_lvl = ancestor_lvl
 
-            if current_price and current_ancestor_lvl:
+            if current_price and current_ancestor_lvl is not None:
                 self._items_options.append(dict(
                     item=item,
                     price_record=current_price,

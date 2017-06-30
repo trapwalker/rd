@@ -74,10 +74,11 @@
                 _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
-                if (data.status == 'success') {
-                    GetUserInfo();
-                    audioManager.play('button_screen_press');
-                }
+                window.location = '/play';
+                //if (data.status == 'success') {
+                //    GetUserInfo();
+                //    audioManager.play('button_screen_press');
+                //}
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.warn('Reg3NextBtnClick ajax error');
