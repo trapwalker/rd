@@ -67,9 +67,12 @@ class Item(Node):
 
 
 class ItemUsable(Item):
-    post_activate_item = RegistryLinkField(
-        document_type=Item,
-        caption=u'Итем, который будет положен в инвентарь после активации',
+    post_activate_items = ListField(
+        field=RegistryLinkField(
+            document_type='sublayers_server.model.registry_me.classes.item.Item',
+            caption=u"Итем который упадет в инвентарь",
+        ),
+        caption=u'Список итемов которые упадут в инвентарь после активации',
     )
     activate_success_audio = StringField(caption=u'Имя звука, сигнализизирующего об успешной активации итема', tags={'client'})
 

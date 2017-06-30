@@ -325,13 +325,23 @@ var Inventory = (function () {
     };
 
     Inventory.prototype.calcCountByNodeHash = function (node_hash, time) {
-        //console.log('Inventory.prototype.setNewSize', new_size);
+        //console.log('Inventory.prototype.calcCountByNodeHash', new_size);
         var count = 0;
         for (var pos in this.items)
             if (this.items.hasOwnProperty(pos))
                 if (this.items[pos].example.node_hash == node_hash)
                     count += this.items[pos].getCurrentVal(time);
 
+        return count;
+    };
+
+    Inventory.prototype.calcCountByNodeUID = function (uid, time) {
+        //console.log('Inventory.prototype.calcCountByNodeUID', new_size);
+        var count = 0;
+        for (var pos in this.items)
+            if (this.items.hasOwnProperty(pos))
+                if (this.items[pos].example.uid == uid)
+                    count += this.items[pos].getCurrentVal(time);
         return count;
     };
 

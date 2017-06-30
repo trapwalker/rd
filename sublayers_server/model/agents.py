@@ -31,7 +31,7 @@ from sublayers_common.ctx_timer import Timer
 from tornado.options import options
 
 import tornado.web
-
+from itertools import chain
 
 # todo: make agent offline status possible
 class Agent(Object):
@@ -163,17 +163,30 @@ class Agent(Object):
     def balance(self):
         return self.example.profile.balance
 
+    def on_load(self):
+        agent_profile = self.example.profile
+        for quest in chain(agent_profile.quests_active, agent_profile.quests_unstarted):
+            timers = quest.timers.values()
+            quest.timers = {}
+            for timer in timers:
+                quest_events.OnTimer(
+                    server=self.server,
+                    time=timer.time,
+                    quest=quest,
+                    name=timer.name,
+                ).post()
+
     def on_save(self, time):
-        agent_example = self.example
-        agent_example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
-        if self.car:
-            # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
-            self.car.on_save(time)
-            agent_example.profile.car = self.car.example
-        # elif self.current_location is None:  # todo: wtf ?!
-        #     self.example.profile.car = None
-        # todo: save chats, party...
         with Timer() as tm:
+            agent_example = self.example
+            agent_example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
+            if self.car:
+                # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
+                self.car.on_save(time)
+                agent_example.profile.car = self.car.example
+            # elif self.current_location is None:  # todo: wtf ?!
+            #     self.example.profile.car = None
+            # todo: save chats, party...
             # agent_example.delete()  # TODO: Добиться правильного пересохранения агента
             agent_example.save()
             #agent_example.save(force_insert=True)

@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.agents import User, QuickUser, TeachingUser
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.ctx_timer import Timer
 
 import random
 
@@ -17,15 +18,18 @@ class ServerAPI(API):
         """
         self.server = server
 
-    def get_agent(self, user, make=False, do_disconnect=False):
+    def get_agent(self, user, make=None, do_disconnect=False):
         """
         @rtype sublayers_server.model.agents.Agent
         """
+        if make is None:
+            make = user.quick
         agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
-            # agent_exemplar = yield Agent.objects.get(user_id=user.pk, quick_flag=False, teaching_flag=False)
-            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=False, teaching_flag=False).first()
+            is_created = False
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=user.quick, teaching_flag=False).first()
             if agent_exemplar is None:
+                is_created = True
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
                 # todo: doit
                 agent_exemplar = Agent(
@@ -55,6 +59,8 @@ class ServerAPI(API):
                 example=agent_exemplar,
             )
             log.info('Server API: New Agent is created: %s', agent)  # todo: fix text
+            if not is_created:
+                agent.on_load()
         else:
             if agent and do_disconnect:
                 if agent.connection:
@@ -73,7 +79,6 @@ class ServerAPI(API):
         assert user.quick
         agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
         if not agent:
-            # agent_exemplar = yield Agent.objects.get(user_id=user.pk, quick_flag=True)
             agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=True, teaching_flag=False).first()
             if agent_exemplar is None:
                 role_class_list = self.server.reg.get('/registry/world_settings').role_class_order

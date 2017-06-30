@@ -9,9 +9,7 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.classes.quests import Quest, QuestRange
 from sublayers_server.model.registry_me.classes.quests1 import DeliveryQuestSimple
 from sublayers_server.model.registry_me.tree import (
-    Subdoc,    
-    StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField,
-    EmbeddedNodeField, PositionField,
+    Subdoc, ListField, IntField, FloatField, EmbeddedDocumentField, EmbeddedNodeField, PositionField,
 )
 from sublayers_server.model.registry_me.classes import notes
 
@@ -134,6 +132,42 @@ class DeliveryFromCache(DeliveryQuestSimple):
     )
     cache_point = EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True)
 
+    loot_set_list = ListField(
+        root_default=[],
+        caption=u"Список возможных комплектов ненужных вещей",
+        field=ListField(
+            caption=u"Комплект ненужных вещей",
+            field=EmbeddedNodeField(
+                document_type='sublayers_server.model.registry_me.classes.item.Item',
+                caption=u"Необходимый итем",
+            ),
+        ),
+        reinst=True,
+    )
+    loot_set = ListField(
+        caption=u"Список ненужных вещей",
+        field=EmbeddedNodeField(
+            document_type='sublayers_server.model.registry_me.classes.item.Item',
+            caption=u"Необходимый итем",
+        ),
+    )
+
+    def init_delivery_set(self):
+        # Тут гененрация посылок
+        self.delivery_set = []
+        # Выбор только по первому элементу списка (т.к. в простой реализации квеста естьтолько список итемов а не пресеты)
+        choice = random.choice(self.delivery_set_list[0])
+        item = choice.instantiate(amount=choice.amount)
+        self.delivery_set.append(item)
+
+        # Тут гененрация ненужных вещей
+        self.loot_set = []
+        for i in range(random.choice([3, 4])): # 3-4 предмета
+            # Выбор только по первому элементу списка (т.к. в простой реализации квеста естьтолько список итемов а не пресеты)
+            choice = random.choice(self.loot_set_list[0])
+            item = choice.instantiate(amount=choice.amount)
+            self.loot_set.append(item)
+
     def init_target_point(self):
         base_point = random.choice(self.cache_points_generator)
         self.cache_point = MarkerMapObject(position=base_point.generate_random_point(), radius=self.cache_radius)
@@ -153,10 +187,9 @@ class DeliveryFromCache(DeliveryQuestSimple):
             self.deadline = 0
 
     def init_text(self):
-        self.text_short = u"Привезите вещи из тайника."
-        self.text = u"Привезите {} вещей из тайника {}. Награда: {:.0f}nc и {:.0f} кармы.".format(
-            len(self.delivery_set),
-            u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
+        self.text_short = u"Привезите посылку из тайника."
+        self.text = u"Привезите посылку из тайника{} Награда: {:.0f}nc и {:.0f} кармы.".format(
+            u"." if not self.deadline else u" за {}.".format(self.deadline_to_str()),
             self.reward_money,
             self.reward_karma,
         )
@@ -170,21 +203,44 @@ class DeliveryFromCache(DeliveryQuestSimple):
 
         items = []
         for item_example in self.delivery_set:
-            item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
+            # item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+        for item_example in self.loot_set:
+            # item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
 
         CreatePOILootEvent(
             server=event.server,
             time=event.time,
             poi_cls=QuestPrivatePOILoot,
             example=None,
-            inventory_size=len(self.delivery_set),
+            inventory_size=len(self.delivery_set) + len(self.loot_set),
             position=Point.random_gauss(self.cache_point.position.as_point(), self.cache_point.radius),
             life_time=life_time,
             items=items,
             connect_radius=0,
             extra=dict(private_name=private_name),
         ).post()
+
+    def can_take_items_uid(self, items, event):
+        if not self.agent.profile.car:
+            return False
+        if self.agent.profile._agent_model:
+            self.agent.profile._agent_model.inventory.save_to_example(time=event.time)
+        for item_need in items:
+            if not item_need in self.agent.profile.car.inventory.items:
+                return False
+        return True
+
+    def take_items_uid(self, items, event):
+        if not self.can_take_items_uid(items=items, event=event):
+            return False
+        copy_inventory = self.agent.profile.car.inventory.items[:]
+        for item in copy_inventory:
+            self.agent.profile.car.inventory.items.remove(item)
+        if self.agent.profile._agent_model:
+            self.agent.profile._agent_model.reload_inventory(time=event.time, save=False)
+        return True
 
 
 class MapActivateItemQuest(Quest):
