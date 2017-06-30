@@ -48,6 +48,7 @@ class ConsoleAnswerTeachingHandler(BaseHandler):
         answer = False if answer == 'false' else True
         if user.teaching_state == "":
             user.teaching_state = "map" if answer else "cancel"
+            user.car_index = 2
             user.save()
             self.finish('/quick/play' if answer else "")
         else:
