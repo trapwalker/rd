@@ -459,18 +459,15 @@ class SearchCourier(DeliveryFromCache):
             life_time = self.starttime + self.deadline - event.time
         else:
             life_time = event.server.poi_loot_objects_life_time
-        private_name = self.agent.profile._agent_model and self.agent.profile._agent_model.print_login() or self.agent.login
 
         items = []
-        for item_example in self.delivery_set:
-            # item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
         for item_example in self.loot_set:
-            # item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+            item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
 
-
-        self.agent.profile.quest_inventory.add_item(agent=self.agent, item=self.courier_medallion, event=event)
+        medallion = self.courier_medallion.instantiate()
+        self.dc.medallion_uid = medallion.uid
+        self.agent.profile.quest_inventory.add_item(agent=self.agent, item=medallion, event=event)
         self.log(text=u'Получена платиновая фишка.', event=event, position=self.cache_point.position)
 
         CreatePOICorpseEvent(
@@ -489,5 +486,8 @@ class SearchCourier(DeliveryFromCache):
         ).post()
 
     def take_medallion(self, event):
-        self.agent.profile.quest_inventory.del_item(agent=self.agent, item=self.courier_medallion, event=event)
+        medallion = self.agent.profile.quest_inventory.get_item_by_uid(self.dc.medallion_uid)
+        # todo: medallion не может не быть, если его нет то хз вообще как
+        if medallion:
+            self.agent.profile.quest_inventory.del_item(agent=self.agent, item=medallion, event=event)
         return True
