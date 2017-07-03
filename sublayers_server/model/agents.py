@@ -705,7 +705,6 @@ class Agent(Object):
         # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
         self.example.profile.on_event(event=event, cls=OnActivateItem, item_example=item.example)
 
-
 # todo: Переименовать в UserAgent
 class User(Agent):
     @event_deco

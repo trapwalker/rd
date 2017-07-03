@@ -436,10 +436,12 @@ class LocalServer(Server):
     #             agent_exemplar.profile.engineering.value = 20
     #             agent_exemplar.save()
 
-
 ########################################################################################################################
 class BasicLocalServer(LocalServer):
     def load_world(self):
+        from sublayers_server.model.ai_dispatcher import AIDispatcher
+        from sublayers_server.model.registry_me.classes.agents import Agent
+
         super(BasicLocalServer, self).load_world()
 
         # загрузка радиоточек
@@ -458,8 +460,32 @@ class BasicLocalServer(LocalServer):
         for gs_exm in gs_root.subnodes.values():
             GasStation(time=t, server=self, example=gs_exm)
 
+        # создание диспетчера ботов
+        dispatcher_name = 'bot_dispatcher'
+        dispatcher_user = UserProfile.get_by_name(name=dispatcher_name)
+        if dispatcher_user is None:
+            dispatcher_user = UserProfile(
+                name=dispatcher_name,
+                email='dispatcher_name@dispatcher_name',
+                raw_password='dispatcher_name',
+                avatar_link='',
+            ).save()
+        dispatcher_exemplar = Agent(
+            login=dispatcher_user.name,
+            user_id=str(dispatcher_user.pk),
+            profile=self.reg.get('/registry/agents/user').instantiate(
+                name=str(dispatcher_user.pk),
+                role_class='/registry/rpg_settings/role_class/chosen_one',
+            ),
+        )
+        self.ai_dispatcher = AIDispatcher(
+            server=self,
+            user=dispatcher_user,
+            time=self.get_time(),
+            example=dispatcher_exemplar,
+            quest_example=self.reg.get('/registry/quests/ai_dispatcher')
+        )
        # todo: Сделать загрузку стационарных точек радиации
-
 
 ########################################################################################################################
 class QuickLocalServer(LocalServer):
@@ -500,7 +526,6 @@ class QuickLocalServer(LocalServer):
             respawns_root.position = self.quick_game_start_pos
             MapRespawn(time=t, example=rs_exm, server=self)
 
-
         # Создание экземпляров машинок игроков для быстрой игры
         for car_proto in world_settings.quick_game_cars:
             self.quick_game_cars_proto.append(car_proto)
@@ -521,6 +546,8 @@ class QuickLocalServer(LocalServer):
     def load_ai_quick_bots(self):
         from sublayers_server.model.registry_me.classes.agents import Agent
         from sublayers_server.model.ai_quick_agent import AIQuickAgent
+
+        from sublayers_server.model.registry_me.classes.agents import Agent
 
         # if options.bot_reset:
         #     Agent.objects.all().delete()
