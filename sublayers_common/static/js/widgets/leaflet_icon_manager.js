@@ -101,6 +101,7 @@ var LeafletIconManager = (function(){
 
         this.load_new_icon('mine_001', '/static/img/map_icons/mine.png', [24, 17]);
         this.load_new_icon('turret_001', '/static/img/map_icons/turret.png', [15, 15]);
+        this.load_new_icon('radar_001', '/static/img/map_icons/radar_001.png', [15, 15]);
         // Animated Power Up
         this.load_new_icon('icon-power-up-build-set', '/static/img/map_icons/power_up/power_up_stay.png', [54, 54], 17);
         this.load_new_icon('icon-power-up-fuel', '/static/img/map_icons/power_up/power_up_oil_stay.png', [54, 54], 17);

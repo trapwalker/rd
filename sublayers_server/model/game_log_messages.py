@@ -193,20 +193,11 @@ class TransactionActivateAmmoBulletsLogMessage(TransactionActivateItemLogMessage
         return d
 
 
-class TransactionActivateMineLogMessage(TransactionActivateItemLogMessage):
-    pass
-
-
-class TransactionActivateRocketLogMessage(TransactionActivateItemLogMessage):
-    pass
-
-
-class TransactionActivateTurretLogMessage(TransactionActivateItemLogMessage):
-    pass
-
-
-class TransactionActivatePackageLogMessage(TransactionActivateItemLogMessage):
-    pass
+class TransactionActivateMineLogMessage(TransactionActivateItemLogMessage):pass
+class TransactionActivateRocketLogMessage(TransactionActivateItemLogMessage):pass
+class TransactionActivateTurretLogMessage(TransactionActivateItemLogMessage):pass
+class TransactionActivateMapRadarLogMessage(TransactionActivateItemLogMessage):pass
+class TransactionActivatePackageLogMessage(TransactionActivateItemLogMessage):pass
 
 
 class TransactionGasStationLogMessage(Message):

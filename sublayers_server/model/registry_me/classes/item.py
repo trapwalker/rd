@@ -187,6 +187,18 @@ class MapWeaponTurretItem(MapWeaponItem):
                (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
 
 
+class MapRadarItem(MapWeaponItem):
+    @classmethod
+    def activate(cls):
+        from sublayers_server.model.transaction_events import TransactionActivateMapRadar
+        return TransactionActivateMapRadar
+
+    def can_activate(self, time, agent_model=None):
+        return (agent_model is not None) and \
+               (agent_model.car is not None) and \
+               (agent_model.car.v(time=time) == 0) and (agent_model.car.a() == 0)
+
+
 class MechanicItem(SlotItem):
     p_visibility_min = FloatField(caption=u"Коэффициент минимальной заметности")
     p_visibility_max = FloatField(caption=u"Коэффициент максимальной заметности")

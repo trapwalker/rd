@@ -210,6 +210,7 @@ var ClientManager = (function () {
                 var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
             }
+            if (car.cls == 'Radar') var t = new WCanvasMarker(car);
 
             if (car.cls == "Rocket") {
                 car._icon_name = event.object.icon_name;
@@ -619,6 +620,7 @@ var ClientManager = (function () {
             case 'Rocket':
             case 'ScoutDroid':
             case 'Turret':
+            case 'Radar':
             case 'SlowMine':
             case 'BangMine':
             case 'POICorpse':
