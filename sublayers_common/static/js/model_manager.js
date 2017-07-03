@@ -423,6 +423,9 @@ var ClientManager = (function () {
             case 'MapActivationNoteFinish':
                 new QuestNoteNPCBtn(note); // todo: заменить на правильную ноту, когда появится
                 break;
+            case 'MapActivationRadarsNoteFinish':
+                new MapActivationRadarsNoteFinish(note);
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }

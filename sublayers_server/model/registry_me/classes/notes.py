@@ -86,12 +86,9 @@ class NPCWantedNote(NPCPageNote):
     pass
 
 
-class QuestRadiationNPCFinish(NPCPageNote):
-    pass
-
-
-class MapActivationNoteFinish(NPCPageNote):
-    pass
+class QuestRadiationNPCFinish(NPCPageNote): pass
+class MapActivationNoteFinish(NPCPageNote): pass
+class MapActivationRadarsNoteFinish(NPCPageNote): pass
 
 
 # Ноты обучения
