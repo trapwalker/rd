@@ -19,6 +19,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        sl=cli.sl:cli
+        sl=cli.main:main
     ''',
 )

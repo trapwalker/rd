@@ -7,8 +7,15 @@ log = logging.getLogger(__name__)
 from mongoengine import connect
 import click
 
+context_settings = dict(
+    default_map={
+        'db': 'rd',
+        'verbose': True,
+        # 'reload': dict(),
+    },
+)
 
-@click.group()
+@click.group(context_settings=context_settings)
 @click.option('--db', default='test_database', help='Database name')
 @click.option('--verbose/--no-verbose', is_flag=True, default=False, help='Verbose logging')
 #@click.option('--fixtures', '-x', is_flag=True, default=False, help='Fixtures reload')
