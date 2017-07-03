@@ -220,6 +220,13 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
+            try:
+                str(username)
+            except UnicodeEncodeError:
+                log.warning('None ascii character in nickname: %r', username)
+                self.finish({'status': 'fail_wrong_input'})
+                return
+
             # Проверяем свободен ли ник
             if user.name != username and User.get_by_name(name=username):
                 self.finish({'status': 'fail_exist_nickname'})
