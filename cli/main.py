@@ -10,8 +10,10 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    project_root = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..'))
+    _base_path = __file__  # sys.argv[0]
+    project_root = os.path.abspath(os.path.join(os.path.dirname(_base_path), '..'))
     sys.path.append(project_root)
+    global log
     log = logging.getLogger()
     try:
         import coloredlogs

@@ -30,3 +30,4 @@ def root(ctx, db, verbose):
         verbose=verbose,
     )
     db = connect(db=db)
+    log.debug('Use project root: %r', ctx.obj['project_root'])
