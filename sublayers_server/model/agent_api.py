@@ -444,6 +444,7 @@ class AgentAPI(API):
             assert not self.car.limbo and self.car.hp(time=time) > 0, 'Car HP <= 0 or limbo'
             self.car = self.agent.car
             self.send_init_car_map(time=time)
+            self.agent.current_location = None
             return
 
         # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город

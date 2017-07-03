@@ -58,6 +58,9 @@ var WCanvasMarker = (function (_super) {
             case "BangMine":
                 icon_name = "mine_001";
                 break;
+            case 'Radar':
+                icon_name = 'radar_001';
+                break;
             default:
                 console.warn('Не найдена иконка для', mobj);
                 return;

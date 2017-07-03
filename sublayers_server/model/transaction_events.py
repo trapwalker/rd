@@ -14,6 +14,7 @@ from sublayers_server.model.inventory import ItemState
 from sublayers_server.model.weapon_objects.mine import MineStartEvent
 from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
 from sublayers_server.model.slave_objects.turret import TurretStartEvent
+from sublayers_server.model.slave_objects.radar import MapRadarStartEvent
 import sublayers_server.model.messages as messages
 from sublayers_server.model.game_log_messages import (TransactionGasStationLogMessage,
                                                       TransactionHangarLogMessage,
@@ -31,7 +32,8 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionMechanicRepairLogMessage,
                                                       TransactionTunerLogMessage,
                                                       TransactionTraderLogMessage,
-                                                      TransactionTrainerLogMessage)
+                                                      TransactionTrainerLogMessage,
+                                                      TransactionActivateMapRadarLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
@@ -237,6 +239,34 @@ class TransactionActivateTurret(TransactionActivateItem):
 
         # Отправка сообщения в игровой лог
         TransactionActivateTurretLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+
+
+class TransactionActivateMapRadar(TransactionActivateItem):
+    def on_perform(self):
+        super(TransactionActivateMapRadar, self).on_perform()
+
+        if self.agent.current_location is not None:
+            return
+
+        # пытаемся получить инвентарь и итем
+        obj = self.server.objects.get(self.target)
+        inventory = self.inventory
+        item = self.item
+
+        # проверка входных параметров
+        if not isinstance(obj, Mobile):
+            log.warning('Target obj is not Mobile')
+            return
+
+        # Убрать радар из инвентаря
+        #  todo: да, нельзя юзать внутренний метод! Но значит его нужно сделать открытым!
+        item._div_item(count=1, time=self.time)
+
+        # установка
+        MapRadarStartEvent(starter=obj, time=self.time, example_turret=item.example.generate_obj).post()
+
+        # Отправка сообщения в игровой лог
+        TransactionActivateMapRadarLogMessage(agent=self.agent, time=self.time, item=item.example).post()
 
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):

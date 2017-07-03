@@ -839,7 +839,6 @@ class KillerQuest(Quest):
 
 
 class DeliveryQuest(Quest):
-    delivery_note_uid = UUIDField()  # todo: Использовать ноты по именам, а не по идентификаторам
     distance_table = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.disttable.DistTable')
     recipient_list = ListField(
         root_default=[],

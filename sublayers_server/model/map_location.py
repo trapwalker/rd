@@ -211,7 +211,7 @@ class Town(MapLocation):
     def on_contact_in(self, time, obj):
         super(Town, self).on_contact_in(time=time, obj=obj)
         if self.can_attack():
-            if isinstance(obj, ExtraMobile):  # todo: Уничтожить все подобные объекты (мины, ракеты, дроны)
+            if isinstance(obj, ExtraMobile) and obj.example.is_target():  # Мины, дроны, ракеты, радары
                 self.need_start_attack(obj=obj, time=time)
             elif isinstance(obj, Unit) and obj.owner:
                 if self not in obj.owner.watched_locations:

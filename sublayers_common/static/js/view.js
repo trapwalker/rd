@@ -33,6 +33,7 @@ $(document).ready(function () {
     ownerList = new OwnerList();
 
     ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
+    basic_server_mode = $('#settings_server_mode').text() == "basic";
 
     rpcCallList = new RPCCallList();
 
@@ -288,7 +289,7 @@ function addTestNotes() {
 
 }
 
-
+var basic_server_mode = true;
 var interface_scale_big = true;
 var interface_scale_small = true;
 var b_canvas;
