@@ -26,8 +26,8 @@ class SiteMainHandler(BaseSiteHandler):
         # Загружаем информацию о быстрой игре
         quick_game_info = self._get_quick_game()
 
-        if self.current_user:
-            self.set_cookie("forum_user", get_forum_cookie_str(self.current_user.name))
+        # if self.current_user:
+        #     self.set_cookie("forum_user", get_forum_cookie_str(self.current_user.name))
 
         self.render(
             'site_main.html',
