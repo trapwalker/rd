@@ -9,16 +9,18 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'virtualenv',
+        #'virtualenv',
         'tornado',
         'cachetools',
         'PyYAML',
         'click',
         'mongoengine',
         'psutil',
+        'coloredlogs',
+        #'pilow',
     ],
     entry_points='''
         [console_scripts]
-        sl=cli.main:main
+        rd=cli.main:main
     ''',
 )

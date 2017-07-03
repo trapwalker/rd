@@ -1,2 +1,0 @@
-
-env\Scripts\pip.exe %*
