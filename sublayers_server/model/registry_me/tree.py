@@ -622,7 +622,7 @@ class Node(Subdoc, SubdocToolsMixin):
         assert 'parent' not in kw, 'Parameter "parent" is not valid to instantiate: {!r}'.format(self)
         return type(self)(parent=self, **kw)
 
-    @warn_calling(skip=(r'site-packages',))
+    #@warn_calling(skip=(r'site-packages',))
     def __iter__(self):
         return super(Node, self).__iter__()
 
