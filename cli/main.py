@@ -26,8 +26,12 @@ def main(args=None):
     from cli.root import root
     from cli import agents, reg
 
+    prog_path, prog_name = os.path.split(sys.argv[0])
+    if prog_name == '__main__.py':
+        prog_path, prog_name = os.path.split(prog_path)
+
     root(
         args,
         obj={'project_root': project_root},
-        prog_name=os.path.basename(sys.argv[0]),
+        prog_name=prog_name,
     )
