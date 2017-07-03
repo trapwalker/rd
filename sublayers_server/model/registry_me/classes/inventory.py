@@ -96,6 +96,7 @@ class Inventory(Subdoc):
         for item in self.items or []:
             if item.uid == uid:
                 return item
+        return None
 
     def placing(self):
         u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
