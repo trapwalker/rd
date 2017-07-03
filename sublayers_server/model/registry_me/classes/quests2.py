@@ -64,9 +64,7 @@ class MeasureRadiation(Quest):
     measure_notes = ListField(
         default=[],
         caption=u"Список активных нотов маркеров на карте",
-        field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry_me.classes.notes.MapMarkerNote'
-        ),
+        field=UUIDField(),
         reinst=True,
     )
 
@@ -101,23 +99,25 @@ class MeasureRadiation(Quest):
                 position=marker.position,
                 radius=marker.radius,
             )
-            self.measure_notes.append(self.agent.profile.get_note(uid=note_uid))
+            self.measure_notes.append(note_uid)
 
     def check_notes(self, event):
         if not self.agent.profile._agent_model or not self.agent.profile._agent_model.car:
             return
 
         temp_notes = self.measure_notes[:]
-        for note in temp_notes:
-            position = self.agent.profile._agent_model.car.position(time=event.time)
-            if note.is_near(position=position):
-                self.log(text=u'Произведено измерение.', event=event, position=position)
-                self.measure_notes.remove(note)
-                self.agent.profile.del_note(uid=note.uid, time=event.time)
+        for note_uid in temp_notes:
+            note = self.agent.profile.get_note(note_uid)
+            if note:
+                position = self.agent.profile._agent_model.car.position(time=event.time)
+                if note.is_near(position=position):
+                    self.log(text=u'Произведено измерение.', event=event, position=position)
+                    self.measure_notes.remove(note_uid)
+                    self.agent.profile.del_note(uid=note_uid, time=event.time)
 
     def delete_notes(self, event):
-        for note in self.measure_notes:
-            self.agent.profile.del_note(uid=note.uid, time=event.time)
+        for note_uid in self.measure_notes:
+            self.agent.profile.del_note(uid=note_uid, time=event.time)
         self.measure_notes = []
 
 
