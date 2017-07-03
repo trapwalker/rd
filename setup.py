@@ -3,6 +3,10 @@
 
 from setuptools import setup, find_packages
 
+import os
+
+cli_tool_name = os.path.basename(os.path.dirname(__file__))
+
 setup(
     name='roaddogs',
     version='0.1',
@@ -21,6 +25,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        rd=cli.main:main
-    ''',
+        {cli_tool_name}=cli.main:main
+    '''.format(cli_tool_name=cli_tool_name),
 )
