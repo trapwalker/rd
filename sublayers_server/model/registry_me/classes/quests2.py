@@ -9,7 +9,7 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.classes.quests import Quest, QuestRange
 from sublayers_server.model.registry_me.classes.quests1 import DeliveryQuestSimple
 from sublayers_server.model.registry_me.tree import (
-    Subdoc, ListField, IntField, FloatField, EmbeddedDocumentField, EmbeddedNodeField, PositionField,
+    Subdoc, ListField, IntField, FloatField, EmbeddedDocumentField, EmbeddedNodeField, PositionField, UUIDField,
 )
 from sublayers_server.model.registry_me.classes import notes
 
@@ -290,30 +290,35 @@ class MapActivateItemQuest(Quest):
     activate_notes = ListField(
         default=[],
         caption=u"Список активных нотов маркеров на карте",
-        field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry_me.classes.notes.MapMarkerNote'
-        ),
+        field=UUIDField(),
         reinst=True,
     )
+
+    def init_activate_points(self):
+        self.activate_points = []
+        for i in range(0, random.randint(1, 10)):
+            base_point = random.choice(self.activate_points_generator)
+            self.activate_points.append(MarkerMapObject(position=base_point.generate_random_point(),
+                                                    radius=self.activate_radius))
 
     def init_activate_items(self):
         self.activate_items = []
         choice = random.choice(self.activate_items_generator)
-        item = choice.instantiate(amount=choice.amount)
-        self.activate_items.append(item)
-
-    def init_activate_points(self):
-        self.activate_points = []
-        base_point = random.choice(self.activate_points_generator)
-        self.activate_points.append(MarkerMapObject(position=base_point.generate_random_point(),
-                                                    radius=self.activate_radius))
+        need_count = len(self.activate_points)
+        count = 0
+        while count < need_count:
+            amount = min(choice.stack_size, need_count - count)
+            count += amount
+            if amount:
+                item = choice.instantiate(amount=amount)
+                self.activate_items.append(item)
 
     def init_distance(self):
         p1 = self.hirer.hometown.position.as_point()
         p2 = self.activate_points[0].position.as_point()
         return p1.distance(p2) * 2  #  дистация двойная, так как нужно съездить туда и обратно
 
-    def init_deadline(self, distance):
+    def init_deadline(self, distance=0):
         # Время выделенное на квест в секундах
         if self.design_speed:
             all_time = int(distance / self.design_speed)
@@ -330,34 +335,57 @@ class MapActivateItemQuest(Quest):
         )
 
     def init_notes(self, event):
-        note_uid = self.agent.profile.add_note(
-            quest_uid=self.uid,
-            note_class=notes.MapMarkerNote,
-            time=event.time,
-            position=self.activate_points[0].position,
-            radius=self.activate_points[0].radius,
-        )
-        self.activate_notes.append(self.agent.profile.get_note(uid=note_uid))
+        for point in self.activate_points:
+            note_uid = self.agent.profile.add_note(
+                quest_uid=self.uid,
+                note_class=notes.MapMarkerNote,
+                time=event.time,
+                position=point.position,
+                radius=point.radius,
+            )
+            self.activate_notes.append(note_uid)
 
     def check_notes(self, event):
         if not self.agent.profile._agent_model or not self.agent.profile._agent_model.car:
             return
 
         temp_notes = self.activate_notes[:]
-        for note in temp_notes:
-            position = self.agent.profile._agent_model.car.position(time=event.time)
-            if note.is_near(position=position):
-                self.log(text=u'Произведена активация.', event=event, position=position)
-                self.activate_notes.remove(note)
-                self.agent.profile.del_note(uid=note.uid, time=event.time)
+        for note_uid in temp_notes:
+            note = self.agent.profile.get_note(note_uid)
+            if note:
+                position = self.agent.profile._agent_model.car.position(time=event.time)
+                if note.is_near(position=position):
+                    self.log(text=u'Произведена активация.', event=event, position=position)
+                    self.activate_notes.remove(note_uid)
+                    self.agent.profile.del_note(uid=note_uid, time=event.time)
+                    return # Если вдруг позиции рядом, чтобы не засчиталась одна активация нескольким нотам
 
     def check_item(self, item):
         return self.activate_items[0].node_hash() == item.node_hash()
 
     def delete_notes(self, event):
-        for note in self.activate_notes:
-            self.agent.profile.del_note(uid=note.uid, time=event.time)
+        for note_uid in self.activate_notes:
+            self.agent.profile.del_note(uid=note_uid, time=event.time)
         self.activate_notes = []
+
+
+class MapActivateRadarsQuest(MapActivateItemQuest):
+    def init_distance(self):
+        return 0
+
+    def init_deadline(self):
+        self.deadline = len(self.activate_points) * 3600  # По часу на точку
+
+    def init_text(self):
+        self.text_short = u"Установить наблюдательные зонды."
+        self.text = u"Установите в заданных точках наблюдательные зонды в количестве: {}. Награда: {:.0f}nc.".format(
+            len(self.activate_points),
+            self.reward_money
+        )
+
+    def generate_reward(self):
+        self.reward_money = self.activate_price * len(self.activate_points)
+        self.reward_karma = 1
 
 
 class SearchCourier(DeliveryFromCache):
