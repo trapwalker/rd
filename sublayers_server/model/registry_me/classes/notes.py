@@ -74,7 +74,7 @@ class NPCPageNote(Note):
 
 
 class NPCDeliveryNote(NPCPageNote): pass
-class NPCDeliveryNoteUID(NPCPageNote): pass
+class NPCDeliveryNotePackage(NPCPageNote): pass
 class NPCDeliveryNoteCourier(NPCPageNote):  pass
 
 
