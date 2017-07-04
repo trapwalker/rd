@@ -26,7 +26,10 @@ def main(args=None):
         log.addHandler(_hndl)
 
     from cli.root import root
-    from cli import agents, reg
+    from cli import (
+        agents, reg,
+        # update,
+    )
 
     prog_path, prog_name = os.path.split(sys.argv[0])
     if prog_name == '__main__.py':
@@ -34,6 +37,13 @@ def main(args=None):
 
     root(
         args,
-        obj={'project_root': project_root},
+        obj={},
+        default_map={
+            'db': 'rd',
+            'verbose': True,
+            'project': project_root,
+
+            # 'reload': dict(),
+        },
         prog_name=prog_name,
     )

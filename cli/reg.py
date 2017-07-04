@@ -19,9 +19,6 @@ import click
 @click.pass_context
 def reg(ctx):
     """Operations with game registry"""
-    project_root = ctx.obj['project_root']
-    registry_path = os.path.join(project_root, u'sublayers_world')
-    ctx.obj.setdefault('registry_path', registry_path)
 
 
 @reg.command(name='clean')
@@ -35,14 +32,14 @@ def reg_clean(ctx):
 
 @reg.command(name='reload')
 @click.option('--export' ,'-x', 'dest', type=click.File(mode='w'), help='Export registry tree to the file')
-@click.option('--no_db', default=None, help='Do not store registry to DB (false by default)')
+@click.option('--no_db', is_flag=True, default=False, help='Do not store registry to DB')
 @click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
 @click.pass_context
 def reg_reload(ctx, dest, no_db, clean_agents):
     """Clean registry DB, load them from FS and save to DB"""
-    registry_path = ctx.obj['registry_path']
+    world = ctx.obj['world']
     try:
-        registry = get_global_registry(path=registry_path, reload=True, save_loaded=not no_db)
+        registry = get_global_registry(path=world, reload=True, save_loaded=not no_db)
     except Exception as e:
         log.error(e)
         return
@@ -60,9 +57,9 @@ def reg_reload(ctx, dest, no_db, clean_agents):
 @click.pass_context
 def reg_export(ctx, dest):
     """Clean registry DB, load them from FS and save to DB"""
-    registry_path = ctx.obj['registry_path']
+    world = ctx.obj['world']
     try:
-        registry = get_global_registry(path=registry_path, reload=False, save_loaded=False)
+        registry = get_global_registry(path=world, reload=False, save_loaded=False)
     except Exception as e:
         log.error(e)
         return
