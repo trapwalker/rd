@@ -210,6 +210,7 @@ var ClientManager = (function () {
                 var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
             }
+            if (car.cls == 'Radar') var t = new WCanvasMarker(car);
 
             if (car.cls == "Rocket") {
                 car._icon_name = event.object.icon_name;
@@ -330,8 +331,8 @@ var ClientManager = (function () {
             case 'NPCDeliveryNote':
                 new QuestNoteNPCBtnDelivery(note);
                 break;
-            case 'NPCDeliveryNoteUID':
-                new QuestNoteNPCBtnDeliveryUID(note);
+            case 'NPCDeliveryNotePackage':
+                new QuestNoteNPCBtnDeliveryPackage(note);
                 break;
             case 'NPCDeliveryNoteCourier':
                 new QuestNoteNPCBtnDeliveryCourier(note);
@@ -422,6 +423,9 @@ var ClientManager = (function () {
                 break;
             case 'MapActivationNoteFinish':
                 new QuestNoteNPCBtn(note); // todo: заменить на правильную ноту, когда появится
+                break;
+            case 'MapActivationRadarsNoteFinish':
+                new MapActivationRadarsNoteFinish(note);
                 break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
@@ -616,6 +620,7 @@ var ClientManager = (function () {
             case 'Rocket':
             case 'ScoutDroid':
             case 'Turret':
+            case 'Radar':
             case 'SlowMine':
             case 'BangMine':
             case 'POICorpse':

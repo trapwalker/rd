@@ -74,7 +74,7 @@ class NPCPageNote(Note):
 
 
 class NPCDeliveryNote(NPCPageNote): pass
-class NPCDeliveryNoteUID(NPCPageNote): pass
+class NPCDeliveryNotePackage(NPCPageNote): pass
 class NPCDeliveryNoteCourier(NPCPageNote):  pass
 
 
@@ -86,12 +86,9 @@ class NPCWantedNote(NPCPageNote):
     pass
 
 
-class QuestRadiationNPCFinish(NPCPageNote):
-    pass
-
-
-class MapActivationNoteFinish(NPCPageNote):
-    pass
+class QuestRadiationNPCFinish(NPCPageNote): pass
+class MapActivationNoteFinish(NPCPageNote): pass
+class MapActivationRadarsNoteFinish(NPCPageNote): pass
 
 
 # Ноты обучения

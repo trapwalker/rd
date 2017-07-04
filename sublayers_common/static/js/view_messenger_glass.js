@@ -771,6 +771,9 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog('Установлена турель: ' + msg.item_title + '.');
                     new WTextArcade('Установлена турель').start();
                     break;
+                case "TransactionActivateMapRadarLogMessage":
+                    this.addMessageToLog('Установлен радар: ' + msg.item_title + '.');
+                    break;
                 case "TransactionGasStationLogMessage":
                     if (msg.d_fuel > 0)
                         this.addMessageToLog('В бак долито ' +  Math.trunc(msg.d_fuel) + ' литров топлива.');

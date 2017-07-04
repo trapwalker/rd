@@ -15,10 +15,10 @@ from random import randint
 
 
 def clear_all_cookie(handler):
-    handler.clear_cookie("forum_user")
-    handler.clear_cookie("myforum_k")
-    handler.clear_cookie("myforum_sid")
-    handler.clear_cookie("myforum_u")
+    # handler.clear_cookie("forum_user")
+    # handler.clear_cookie("myforum_k")
+    # handler.clear_cookie("myforum_sid")
+    # handler.clear_cookie("myforum_u")
     handler.clear_cookie("user")
 
 
@@ -191,7 +191,7 @@ class StandardLoginHandler(BaseSiteHandler):
             return
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
-        self.set_cookie("forum_user", get_forum_cookie_str(user.name))
+        # self.set_cookie("forum_user", get_forum_cookie_str(user.name))
         # return self.redirect("/")
         self.finish({'status': 'success'})
 
@@ -217,6 +217,13 @@ class StandardLoginHandler(BaseSiteHandler):
                 username == '' or
                 len(username) > 100
             ):
+                self.finish({'status': 'fail_wrong_input'})
+                return
+
+            try:
+                str(username)
+            except UnicodeEncodeError:
+                log.warning('None ascii character in nickname: %r', username)
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
@@ -290,7 +297,7 @@ class StandardLoginHandler(BaseSiteHandler):
             #     self.finish({'status': 'Ошибка регистрации на форуме.'})
             #     log.info('User <{}> not registered on forum!'.format(username))
             #     return
-            self.set_cookie("forum_user", get_forum_cookie_str(username))
+            # self.set_cookie("forum_user", get_forum_cookie_str(username))
 
             user.save()
             self.finish({'status': 'success'})
@@ -341,7 +348,7 @@ class SetForumUserAuth(StandardLoginHandler):
     def get(self):
         user = self.current_user
         if user and user.name:
-            self.set_cookie("forum_user", get_forum_cookie_str(user.name))
+            # self.set_cookie("forum_user", get_forum_cookie_str(user.name))
             self.finish("OK")
         else:
             self.finish("Not auth")

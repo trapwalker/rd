@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1920"
+   height="1080"
+   viewBox="0 0 1920 1080"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="location.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5974">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop5976" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop5978" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5974"
+       id="radialGradient5980"
+       cx="746.02844"
+       cy="-94.399826"
+       fx="746.02844"
+       fy="-94.399826"
+       r="374"
+       gradientTransform="matrix(-1.5813598,1.5152451e-8,-1.262635e-8,-1.3177276,2356.8108,116.72312)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.0040916"
+     inkscape:cx="944.87826"
+     inkscape:cy="575.84266"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-nodes="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <image
+     sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../city_bg1.png"
+     xlink:href="../city_bg1.png"
+     y="0"
+     x="0"
+     id="img_back_0"
+     preserveAspectRatio="none"
+     height="1080"
+     width="1920" />
+  <g
+     inkscape:label="background"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-2.362448)">
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\ground+circle.png"
+       xlink:href="ground+circle.png"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="landscape"
+       x="485"
+       y="138.36244" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\nukeoil_bg.png"
+       xlink:href="nukeoil_bg.png"
+       y="138.36244"
+       x="485"
+       id="nukeoil-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none"
+       class="building-back" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="building"
+     class="townPageWrap"
+     transform="translate(0,2.3339844e-4)">
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\nukeoil.png"
+       xlink:href="nukeoil.png"
+       class="highlight-buildings"
+       y="321"
+       x="655"
+       id="img_house1_off"
+       preserveAspectRatio="none"
+       height="496"
+       width="612" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\nukeoil_hover.png"
+       xlink:href="nukeoil_hover.png"
+       style="display:none"
+       data-building="nukeoil"
+       class="highlight-buildings"
+       y="321"
+       x="655"
+       id="img_house1_on"
+       preserveAspectRatio="none"
+       height="496"
+       width="612" />
+    <g
+       inkscape:groupmode="layer"
+       id="layer6"
+       inkscape:label="build_path">
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 h -43 a 374,374 0 1 1 680.363,214.518 z"
+         id="path_h1"
+         inkscape:connector-curvature="0"
+         class="highlight-buildings"
+         data-building="nukeoil" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="930"
+         y="174"
+         id="path_text_h1"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-9-7"
+           x="930"
+           y="174"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Нукойл</tspan></text>
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="bottom_menu"
+     transform="translate(0,-3.7646484e-4)">
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../loc_active.png"
+       xlink:href="../loc_active.png"
+       style="display:block"
+       width="157"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_location"
+       x="1087"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../loc_hover.png"
+       xlink:href="../loc_hover.png"
+       y="896.00037"
+       x="1087"
+       id="btn_screen_location_hover"
+       preserveAspectRatio="none"
+       height="93"
+       width="157"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../loc_press.png"
+       xlink:href="../loc_press.png"
+       y="896.00037"
+       x="1087"
+       id="btn_screen_location_pressed"
+       preserveAspectRatio="none"
+       height="93"
+       width="157"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../chat_active.png"
+       xlink:href="../chat_active.png"
+       style="display:block"
+       width="168"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_chat"
+       x="1223"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../chat_hover.png"
+       xlink:href="../chat_hover.png"
+       width="168"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_chat_hover"
+       x="1223"
+       y="896.00037"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../chat_press.png"
+       xlink:href="../chat_press.png"
+       style="display:none"
+       width="168"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_chat_pressed"
+       x="1223"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../menu_active.png"
+       xlink:href="../menu_active.png"
+       y="896.00037"
+       x="1360"
+       id="btn_screen_menu"
+       preserveAspectRatio="none"
+       height="93"
+       width="178"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../menu_hover.png"
+       xlink:href="../menu_hover.png"
+       y="896.00037"
+       x="1360"
+       id="btn_screen_menu_hover"
+       preserveAspectRatio="none"
+       height="93"
+       width="178"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../menu_press.png"
+       xlink:href="../menu_press.png"
+       y="896.00037"
+       x="1360"
+       id="btn_screen_menu_pressed"
+       preserveAspectRatio="none"
+       height="93"
+       width="178"
+       style="display:none" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1086.0714,895.28608 14.6429,92.2143 140.7142,0 -22.5248,-91.30444 z"
+       id="btn_screen_location_area"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1223.9285,897.50038 22.5001,90.35714 141.0714,-0.35714 -32.1428,-90.35715 z"
+       id="btn_screen_chat_area"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1360,897.50038 32.5,90.35714 142.5,-0.35714 -45,-89.64286 z"
+       id="btn_screen_menu_area"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="right_menu"
+     transform="translate(0,4.621582e-4)">
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbup_noactive.png"
+       xlink:href="../rbup_noactive.png"
+       style="display:block"
+       width="316"
+       height="271"
+       preserveAspectRatio="none"
+       id="btn_3_noactive"
+       x="1442.0406"
+       y="416.21066" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbup_active.png"
+       xlink:href="../rbup_active.png"
+       y="405.38281"
+       x="1443.0508"
+       id="btn_3_active"
+       preserveAspectRatio="none"
+       height="299"
+       width="291"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbup_hover.png"
+       xlink:href="../rbup_hover.png"
+       style="display:none"
+       width="291"
+       height="299"
+       preserveAspectRatio="none"
+       id="btn_3_hover"
+       x="1443.0508"
+       y="405.38281" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbup_press.png"
+       xlink:href="../rbup_press.png"
+       style="display:none"
+       width="291"
+       height="299"
+       preserveAspectRatio="none"
+       id="btn_3_pressed"
+       x="1443.0508"
+       y="405.38281" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbdown_noactive.png"
+       xlink:href="../rbdown_noactive.png"
+       y="635.25079"
+       x="1392.0911"
+       id="btn_4_noactive"
+       preserveAspectRatio="none"
+       height="238"
+       width="327"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbdown_active.png"
+       xlink:href="../rbdown_active.png"
+       y="623.99951"
+       x="1391"
+       id="btn_4_active"
+       preserveAspectRatio="none"
+       height="268"
+       width="299"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbdown_hover.png"
+       xlink:href="../rbdown_hover.png"
+       y="623.99951"
+       x="1391"
+       id="btn_4_hover"
+       preserveAspectRatio="none"
+       height="268"
+       width="299"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../rbdown_press.png"
+       xlink:href="../rbdown_press.png"
+       y="623.99951"
+       x="1391"
+       id="btn_4_pressed"
+       preserveAspectRatio="none"
+       height="268"
+       width="299"
+       style="display:none" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1710.7143,543.57097 -242.1429,-120 -40,173.57143 244.2857,101.42857 z"
+       id="btn_3_area"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1664.2857,736.42811 -242.1429,-94.28571 -22.8571,160.71428 227.1429,77.14286 z"
+       id="btn_4_area"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="left_menu">
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbup_noactive.png"
+       xlink:href="../lbup_noactive.png"
+       style="display:block"
+       width="316"
+       height="267"
+       preserveAspectRatio="none"
+       id="btn_1_noactive"
+       x="158.02081"
+       y="420.72586" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbup_active.png"
+       xlink:href="../lbup_active.png"
+       style="display:none"
+       width="291"
+       height="299"
+       preserveAspectRatio="none"
+       id="btn_1_active"
+       x="186.81015"
+       y="405.89847" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbup_hover.png"
+       xlink:href="../lbup_hover.png"
+       style="display:none"
+       width="291"
+       height="299"
+       preserveAspectRatio="none"
+       id="btn_1_hover"
+       x="186.81015"
+       y="405.89847" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbup_press.png"
+       xlink:href="../lbup_press.png"
+       style="display:none"
+       width="291"
+       height="299"
+       preserveAspectRatio="none"
+       id="btn_1_pressed"
+       x="186.81015"
+       y="405.89847" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbdown_noactive.png"
+       xlink:href="../lbdown_noactive.png"
+       y="637.07117"
+       x="199.5594"
+       id="btn_2_noactive"
+       preserveAspectRatio="none"
+       height="238"
+       width="326"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbdown_active.png"
+       xlink:href="../lbdown_active.png"
+       y="625.45428"
+       x="227.95938"
+       id="btn_2_active"
+       preserveAspectRatio="none"
+       height="268"
+       width="299"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbdown_hover.png"
+       xlink:href="../lbdown_hover.png"
+       y="625.45428"
+       x="227.95938"
+       id="btn_2_hover"
+       preserveAspectRatio="none"
+       height="268"
+       width="299"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\nukeoil_001\../lbdown_press.png"
+       xlink:href="../lbdown_press.png"
+       y="625.45428"
+       x="227.95938"
+       id="btn_2_pressed"
+       preserveAspectRatio="none"
+       height="268"
+       width="299"
+       style="display:none" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="M 201.42857,542.85714 450,421.42857 491.42857,595 239.28571,698.57143 Z"
+       id="btn_1_area"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 247.85714,736.42857 240.71429,-93.57143 32.14286,156.42857 -237.14286,81.42858 z"
+       id="btn_2_area"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

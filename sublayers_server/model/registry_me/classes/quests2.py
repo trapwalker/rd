@@ -64,9 +64,7 @@ class MeasureRadiation(Quest):
     measure_notes = ListField(
         default=[],
         caption=u"Список активных нотов маркеров на карте",
-        field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry_me.classes.notes.MapMarkerNote'
-        ),
+        field=UUIDField(),
         reinst=True,
     )
 
@@ -101,23 +99,25 @@ class MeasureRadiation(Quest):
                 position=marker.position,
                 radius=marker.radius,
             )
-            self.measure_notes.append(self.agent.profile.get_note(uid=note_uid))
+            self.measure_notes.append(note_uid)
 
     def check_notes(self, event):
         if not self.agent.profile._agent_model or not self.agent.profile._agent_model.car:
             return
 
         temp_notes = self.measure_notes[:]
-        for note in temp_notes:
-            position = self.agent.profile._agent_model.car.position(time=event.time)
-            if note.is_near(position=position):
-                self.log(text=u'Произведено измерение.', event=event, position=position)
-                self.measure_notes.remove(note)
-                self.agent.profile.del_note(uid=note.uid, time=event.time)
+        for note_uid in temp_notes:
+            note = self.agent.profile.get_note(note_uid)
+            if note:
+                position = self.agent.profile._agent_model.car.position(time=event.time)
+                if note.is_near(position=position):
+                    self.log(text=u'Произведено измерение.', event=event, position=position)
+                    self.measure_notes.remove(note_uid)
+                    self.agent.profile.del_note(uid=note_uid, time=event.time)
 
     def delete_notes(self, event):
-        for note in self.measure_notes:
-            self.agent.profile.del_note(uid=note.uid, time=event.time)
+        for note_uid in self.measure_notes:
+            self.agent.profile.del_note(uid=note_uid, time=event.time)
         self.measure_notes = []
 
 
@@ -163,7 +163,6 @@ class DeliveryFromCache(DeliveryQuestSimple):
     def init_delivery_set(self):
         # Тут гененрация посылок
         self.delivery_set = []
-        # Выбор только по первому элементу списка (т.к. в простой реализации квеста естьтолько список итемов а не пресеты)
         choice = random.choice(self.delivery_set_list[0])
         item = choice.instantiate(amount=choice.amount)
         self.delivery_set.append(item)
@@ -171,7 +170,6 @@ class DeliveryFromCache(DeliveryQuestSimple):
         # Тут гененрация ненужных вещей
         self.loot_set = []
         for i in range(random.choice([3, 4])): # 3-4 предмета
-            # Выбор только по первому элементу списка (т.к. в простой реализации квеста естьтолько список итемов а не пресеты)
             choice = random.choice(self.loot_set_list[0])
             item = choice.instantiate(amount=choice.amount)
             self.loot_set.append(item)
@@ -210,12 +208,12 @@ class DeliveryFromCache(DeliveryQuestSimple):
         private_name = self.agent.profile._agent_model and self.agent.profile._agent_model.print_login() or self.agent.login
 
         items = []
-        for item_example in self.delivery_set:
-            # item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+        item = self.delivery_set[0].instantiate(amount=self.delivery_set[0].amount)
+        items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
+        self.dc.package_uid = item.uid
         for item_example in self.loot_set:
-            # item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+            item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
 
         CreatePOILootEvent(
             server=event.server,
@@ -230,25 +228,29 @@ class DeliveryFromCache(DeliveryQuestSimple):
             extra=dict(private_name=private_name),
         ).post()
 
-    def can_take_items_uid(self, items, event):
+    def can_take_package(self, event):
         if not self.agent.profile.car:
             return False
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.inventory.save_to_example(time=event.time)
-        for item_need in items:
-            if not item_need in self.agent.profile.car.inventory.items:
-                return False
-        return True
+        return self.agent.profile.car.inventory.get_item_by_uid(uid=self.dc.package_uid) is not None
 
-    def take_items_uid(self, items, event):
-        if not self.can_take_items_uid(items=items, event=event):
+    def take_items_package(self, event):
+        if not self.can_take_package(event=event):
             return False
-        copy_inventory = self.agent.profile.car.inventory.items[:]
-        for item in copy_inventory:
-            self.agent.profile.car.inventory.items.remove(item)
+        item = self.agent.profile.car.inventory.get_item_by_uid(uid=self.dc.package_uid)
+        self.agent.profile.car.inventory.items.remove(item)
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False)
         return True
+
+    def as_client_dict(self):
+        d = super(DeliveryFromCache, self).as_client_dict()
+        d.update(
+            package_example=self.delivery_set[0].as_client_dict() if len(self.delivery_set) > 0 else None,
+            package_uid=getattr(self.dc, 'package_uid', None)
+        )
+        return d
 
 
 class MapActivateItemQuest(Quest):
@@ -296,7 +298,7 @@ class MapActivateItemQuest(Quest):
 
     def init_activate_points(self):
         self.activate_points = []
-        for i in range(0, random.randint(1, 10)):
+        for i in range(0, random.randint(2, 6)):
             base_point = random.choice(self.activate_points_generator)
             self.activate_points.append(MarkerMapObject(position=base_point.generate_random_point(),
                                                     radius=self.activate_radius))
@@ -457,18 +459,15 @@ class SearchCourier(DeliveryFromCache):
             life_time = self.starttime + self.deadline - event.time
         else:
             life_time = event.server.poi_loot_objects_life_time
-        private_name = self.agent.profile._agent_model and self.agent.profile._agent_model.print_login() or self.agent.login
 
         items = []
-        for item_example in self.delivery_set:
-            # item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
         for item_example in self.loot_set:
-            # item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item_example, count=item_example.amount))
+            item = item_example.instantiate(amount=item_example.amount)
+            items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
 
-
-        self.agent.profile.quest_inventory.add_item(agent=self.agent, item=self.courier_medallion, event=event)
+        medallion = self.courier_medallion.instantiate()
+        self.dc.medallion_uid = medallion.uid
+        self.agent.profile.quest_inventory.add_item(agent=self.agent, item=medallion, event=event)
         self.log(text=u'Получена платиновая фишка.', event=event, position=self.cache_point.position)
 
         CreatePOICorpseEvent(
@@ -487,5 +486,8 @@ class SearchCourier(DeliveryFromCache):
         ).post()
 
     def take_medallion(self, event):
-        self.agent.profile.quest_inventory.del_item(agent=self.agent, item=self.courier_medallion, event=event)
+        medallion = self.agent.profile.quest_inventory.get_item_by_uid(self.dc.medallion_uid)
+        # todo: medallion не может не быть, если его нет то хз вообще как
+        if medallion:
+            self.agent.profile.quest_inventory.del_item(agent=self.agent, item=medallion, event=event)
         return True

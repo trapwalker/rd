@@ -10,7 +10,7 @@ from sublayers_server.model.registry_me.classes.inventory import InventoryField
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc,
     IntField, StringField, FloatField, EmbeddedDocumentField, ListField,
-    RegistryLinkField, EmbeddedNodeField, PositionField,
+    RegistryLinkField, EmbeddedNodeField, PositionField, BooleanField,
 )
 
 from math import pi
@@ -291,6 +291,8 @@ class Mobile(Node):
         if dvalue is not None:
             self._way += dvalue
 
+    def is_target(self):
+        return False
 
 class Car(Mobile):
     class QuickPanel(Subdoc):
@@ -475,11 +477,19 @@ class Drone(Mobile):
     pass
 
 
-class MapWeaponTurret(Mobile):
-    life_time = FloatField(caption=u"Время жизни турели")
+class ExtraMobile(Mobile):
+    life_time = FloatField(caption=u"Время жизни объекта")
+    can_attack = BooleanField(root_default=True, caption=u'Нужно ли городу агриться на объект')
+
+    def is_target(self):  # Является ли данный объект целью для атаки кого-либо
+        return self.can_attack
 
 
-class MapWeaponEffectMine(Mobile):
+class MapRadar(ExtraMobile):pass
+class MapWeaponTurret(ExtraMobile):pass
+
+
+class MapWeaponEffectMine(ExtraMobile):
     # todo: заменить имена эффектов на URI
     effects = ListField(
         caption=u'Эффекты', doc=u'Список эффектов (URI) накладываемых миной',
@@ -487,10 +497,9 @@ class MapWeaponEffectMine(Mobile):
     )
 
 
-class MapBangWeapon(Mobile):
+class MapBangWeapon(ExtraMobile):
     radius_damage = FloatField(caption=u"Радиус взрыва ракеты")
     damage = FloatField(caption=u"Дамаг в радиусе взрыва")
-    life_time = FloatField(caption=u"Время жизни ракеты")
 
 
 class MapWeaponRocket(MapBangWeapon):

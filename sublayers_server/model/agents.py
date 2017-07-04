@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
-from sublayers_server.model.units import Unit
+from sublayers_server.model.units import Unit, ExtraMobile
 from sublayers_server.model.weapon_objects.mine import BangMine
 from counterset import CounterSet
 from map_location import MapLocation, Town
@@ -418,11 +418,10 @@ class Agent(Object):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
             return False
 
-        if isinstance(target, BangMine):  # если этот объект является миной
-            # todo: Определение таргета должно быть в 3 этапа: спрашиваем у агента, спрашиваем у оружия, спрашиваем у самого таргета
-            # всё это прогонять через example и нужно для того, чтобы можно было делать интересные механики, например, пушки для разминирования
-            # или разминирования только в том случае, если прокачано что-то.
-            return False
+        if isinstance(target, ExtraMobile):  # если этот объект является миной
+            # Определение таргета в 3 этапа: спрашиваем у агента, спрашиваем у оружия, спрашиваем у самого таргета
+            if not target.example.is_target():
+                return False
 
         t_agent = target.main_agent
 
@@ -686,6 +685,8 @@ class Agent(Object):
 
     def on_setup_map_weapon(self, obj, time):
         # log.info('on_setup_map_weapon for {}'.format(obj))
+        if not obj.example.is_target():
+            return
         for poi in self.watched_locations:
             poi.on_enemy_candidate(agent=self, time=time, damage=False)
 
