@@ -44,8 +44,9 @@ class AITrafficQuest(AIEventQuest):
         from sublayers_server.model.registry_me.classes.agents import Agent as AgentExample
 
         car_proto = event.server.reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick_bot')
-        example_profile = event.server.reg.get('/registry/agents/user/ai_quest')
+        example_profile = event.server.reg.get('/registry/agents/user/ai_quest/traffic')
 
+        # todo: сделать несколько видов профилей ботов, чтобы там были прокачаны скилы и перки
         example_agent = AgentExample(
             login='',
             user_id='',
@@ -55,9 +56,10 @@ class AITrafficQuest(AIEventQuest):
             )
         )
 
+        route = event.server.reg.get('/registry/routes/whitehill_paloma_simple').instantiate()
+
         self.dc._main_agent = AIAgent(car_proto=car_proto,
-                                      action_quest=None,
-                                      route=None,
+                                      route=route,
                                       example=example_agent,
                                       user=None, time=event.time, server=event.server
                                       )
@@ -65,6 +67,7 @@ class AITrafficQuest(AIEventQuest):
     def displace_bots(self, event):
         # Метод удаления с карты агентов-ботов. Вызывается на при завершении квеста
         self.dc._main_agent.displace(time=event.time)
+        self.dc._main_agent = None
 
     def get_traffic_status(self, event):
         if self.dc._main_agent.car is None:

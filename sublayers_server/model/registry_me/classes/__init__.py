@@ -24,6 +24,8 @@ import quests2
 import teaching_quest
 import ai_dispatcher_quest
 import ai_event_quests
+import ai_action_quests
+import routes
 
 import notes
 

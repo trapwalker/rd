@@ -26,10 +26,10 @@ class AIDispatcher(AI):
 
 
 class AIAgent(AI):
-    def __init__(self, time, car_proto, action_quest, route, **kw):
+    def __init__(self, time, car_proto, route, **kw):
         super(AIAgent, self).__init__(time=time, **kw)
         self.car_proto = car_proto
-        self.action_quest = action_quest
+        self.action_quest = self.example.profile.ai_quest
         self.route = route
         self.create_ai_quest(time=time)
 
@@ -44,6 +44,7 @@ class AIAgent(AI):
     def create_ai_quest(self, event):
         if self.action_quest:
             new_quest = self.action_quest.instantiate(abstract=False, hirer=None)
+            new_quest.route = self.route
             if new_quest.generate(event=event, agent=self.example):
                 self.example.profile.add_quest(quest=new_quest, time=event.time)
                 self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
@@ -84,4 +85,8 @@ class AIAgent(AI):
     @property
     def is_online(self):
         return True
+
+    def is_target(self, target):
+        # todo: спросить у квеста, а потом у супера
+        return False
 
