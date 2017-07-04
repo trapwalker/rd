@@ -4,6 +4,12 @@ from __future__ import print_function
 import logging
 import sys
 
+class Formatter(logging.Formatter):
+    def formatException(self, ei):
+        res = super(Formatter, self).formatException(ei)
+        res = res.decode('utf-8')
+        return res
+
 
 def handler(cls=logging.StreamHandler, fmt=None, level=None, **kw):
     h = cls(**kw)
