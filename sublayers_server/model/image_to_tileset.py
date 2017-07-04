@@ -148,4 +148,4 @@ if __name__ == '__main__':
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
     print ts3.level
-    ts.save(open('d:/tiles/ts_water_z15_06-17', 'w'))
+    ts3.save(open('d:/tiles/ts_water_z15_06-17', 'w'))
