@@ -37,8 +37,8 @@ DEFAULT_CLEAN_WILDCARD = '*.yaml'
 
 @agents.command(name='export')
 @click.argument('dest', type=click.Path(file_okay=False, writable=True))
-@click.option('--fn-format', '-f', 'fn_format',default=DEFAULT_FN_TEMPLATE, help='Template to make filenames (%r by default)' % DEFAULT_FN_TEMPLATE)
-@click.option('--clean-wildcard', '-c', 'clean_wildcard', default=DEFAULT_CLEAN_WILDCARD, help='Wildcard to remove files from destination dir (%r by default)' % DEFAULT_CLEAN_WILDCARD)
+@click.option('--fn-format', '-f', 'fn_format', default=DEFAULT_FN_TEMPLATE, show_default=True, help='Template to make filenames')
+@click.option('--clean-wildcard', '-c', 'clean_wildcard', default=DEFAULT_CLEAN_WILDCARD, show_default=True, help='Wildcard to remove files from destination dir')
 @click.option('--no-clean', '-C', 'no_clean', is_flag=True, default=False, help='Do not clean dest directory by wildcard')
 @click.pass_context
 def agents_export(ctx, dest, fn_format, clean_wildcard, no_clean):
