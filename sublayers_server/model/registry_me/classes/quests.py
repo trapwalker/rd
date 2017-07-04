@@ -891,9 +891,13 @@ class DeliveryQuest(Quest):
 
     def as_client_dict(self):
         d = super(DeliveryQuest, self).as_client_dict()
-        d.update(
-            delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
-        )
+        try:
+            d.update(
+                delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],  # todo!!! разобраться почему оно может быть пустым
+            )
+        except Exception as e:
+            log.debug('Errorr!! {}'.format(e))
+            d.update(delivery_set=[])
         return d
 
 
