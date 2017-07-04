@@ -93,7 +93,7 @@ def init(quick_mode=False):
 
     log_root       = logger(None,                            level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_main_file, handler_screen])
     log_websrv     = logger('tornado.access',                level='DEBUG', propagate=0, handlers=[handler_websrv_file])
-    log_events     = logger('sublayers_server.model.events', level='INFO',  propagate=0, handlers=[handler_events_file])
+    log_events     = logger('sublayers_server.model.events', level='INFO',  propagate=0, handlers=[handler_errors_file, handler_events_file])
     log_app        = logger('tornado.application',           level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_main_file, handler_screen])
     log_pil        = logger('PIL.PngImagePlugin',            level='INFO',  propagate=0, handlers=[handler_null])
     log_party      = logger('sublayers_server.model.party',  level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_party_file])
