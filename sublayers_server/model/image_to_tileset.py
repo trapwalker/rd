@@ -27,20 +27,33 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
         for xx in xrange(x_start, x_finish):
             for yy in xrange(y_start, y_finish):
                 # TODO: поменять format(zoom, yy, xx) на format(zoom, xx, yy)
-                yield (directory + r'/{}/{}/{}.jpg'.format(zoom, xx, yy), xx, yy)
+                yield (directory + r'/{}/{}/{}.png'.format(zoom, xx, yy), xx, yy)
 
     def is_color(pxl):
         # todo: возможно сделать нестрогое сравнение через rgb: r, g, b = pxl
         # print pxl
         #return pxl == color
-        # r, g, b, a = pxl
-        r, g, b = pxl
-        return r > 150 and g > 150 and b > 150
+
+        # r, g, b = pxl
+        # return r < 150 #  and g < 150 and b < 150
+
+        r, g, b, a = pxl
+        return a != 0
 
     ts = Tileset()
 
+    all_tiles = (x_finish - x_start) * (y_finish - y_start)
+    last_prc = 0
+    count = 0
+
     for fn in tile_file(zoom):
-        print fn
+        # print fn
+        count += 1
+        current_prc = int(100 * count / all_tiles)
+        if current_prc != last_prc:
+            last_prc = current_prc
+            print '{} %'.format(last_prc)
+
         im = Image.open(fn[0])
         pxs = im.load()
         width, height = im.size
@@ -114,33 +127,25 @@ def MongoDBToTilesets(collection):
 
 
 if __name__ == '__main__':
-    ts = ImageToTileset(directory=r'd:/tiles/map_zones/road_20160712_teaser', zoom=15,
-                        x_start=6075, y_start=13165, x_finish=6130, y_finish=13221,
+    print 'start zone 1'
+    ts = ImageToTileset(directory=r'd:/tiles/map_zones/roads', zoom=15,
+                        x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
-    #ts = Tileset(open('d:/ts_wood_11'))
     print ts.level
-    ts.save(open('d:/tiles/ts_road_15_2', 'w'))
-    #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
-    '''
-    from pymongo import Connection
-    db_connection = Connection()
-    db = db_connection.maindb
-
-    #print TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road')
-    ts = MongoDBToTilesets(db.tile_sets)
-
-    print ts['wood'].level
-    print ts.keys()
-
-    #ts.save(open('d:/ts_wood2_11', 'w'))
-
-    #for e in db.tile_sets.find():
-    #    print e
-    '''
+    ts.save(open('d:/tiles/ts_road_z15_06-17', 'w'))
 
 
-    '''
-    ts = Tileset(open('d:/ts'))
-    print ts.level
-    TilesetToImage(ts, r"d:/temp_image4.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
-    '''
+    print 'start zone 2'
+    ts2 = ImageToTileset(directory=r'd:/tiles/map_zones/forest', zoom=15,
+                        x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
+                        color=(0, 0, 0))
+    print ts2.level
+    ts2.save(open('d:/tiles/ts_forest_z15_06-17', 'w'))
+
+
+    print 'start zone 3'
+    ts3 = ImageToTileset(directory=r'd:/tiles/map_zones/water', zoom=15,
+                        x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
+                        color=(0, 0, 0))
+    print ts3.level
+    ts.save(open('d:/tiles/ts_water_z15_06-17', 'w'))
