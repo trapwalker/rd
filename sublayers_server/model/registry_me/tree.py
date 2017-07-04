@@ -370,7 +370,7 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
 
             if isinstance(field, ListField):
                 subfield = field.field
-                return [clean_value(subfield, v) for v in value]
+                return [clean_value(subfield, v) for v in value or ()]
 
             if isinstance(field, DictField):
                 subfield = field.field

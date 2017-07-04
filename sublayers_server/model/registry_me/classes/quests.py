@@ -866,6 +866,7 @@ class DeliveryQuest(Quest):
     )
     delivery_set = ListField(
         caption=u"Список итемов для доставки",
+        tags={'client'},
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Необходимый итем",
@@ -888,13 +889,6 @@ class DeliveryQuest(Quest):
             self.recipient.hometown.title,
             self.reward_money
         )
-
-    def as_client_dict(self):
-        d = super(DeliveryQuest, self).as_client_dict()
-        d.update(
-            delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],
-        )
-        return d
 
 
 class AIQuickQuest(Quest):
