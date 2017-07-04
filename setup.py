@@ -21,6 +21,7 @@ setup(
         'mongoengine',
         'psutil',
         'coloredlogs',
+        'hgapi',
         #'pilow',
     ],
     entry_points='''
