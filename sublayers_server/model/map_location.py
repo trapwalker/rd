@@ -88,8 +88,8 @@ class MapLocation(Observer):
         LocationLogMessage(agent=agent, location=self, action='enter', time=event.time).post()
 
         for visitor in self.visitors:  # todo: optimize
-            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=True, time=event.time).post()
-            ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=event.time).post()
+            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent._login, action=True, time=event.time).post()
+            ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor._login, action=True, time=event.time).post()
         agent.current_location = self
         self.visitors.append(agent)
         # todo: review
@@ -109,7 +109,7 @@ class MapLocation(Observer):
 
             for visitor in self.visitors:
                 if not visitor is agent:
-                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor.user.name, action=True, time=event.time).post()
+                    ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor._login, action=True, time=event.time).post()
             self.inventory.send_inventory(agent, event.time)
         else:
             self.on_enter(agent=agent, event=event)
@@ -132,7 +132,7 @@ class MapLocation(Observer):
 
         agent.api.update_agent_api(time=event.time)  # todo: Пробросить event вместо time? ##refactor
         for visitor in self.visitors:
-            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent.user.name, action=False, time=event.time).post()
+            ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent._login, action=False, time=event.time).post()
 
     def add_to_chat(self, chat, time):
         super(MapLocation, self).add_to_chat(chat=chat, time=time)

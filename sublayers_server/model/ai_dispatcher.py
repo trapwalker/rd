@@ -21,3 +21,16 @@ class AIDispatcher(AI):
         else:
             log.debug('AIDispatcher not started!!!')
             del new_quest
+
+
+class AIAgent(AI):
+    def __init__(self, time, quest_example, **kw):
+        super(AIAgent, self).__init__(time=time, **kw)
+        pass
+
+    def print_login(self):
+        str_list = self._login.split('_')
+        if len(str_list) > 1:
+            return '_'.join(str_list[:-1])
+        else:
+            return self._login
