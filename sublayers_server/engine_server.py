@@ -179,11 +179,13 @@ class Application(BaseApplication):
 
             print _message
         except Exception as e:
-            log.critical(e)
-            print e
+            log.exception(e)
         else:
             log.debug('==== IOLoop START ' + '=' * 32)
-            tornado.ioloop.IOLoop.instance().start()
+            try:
+                tornado.ioloop.IOLoop.instance().start()
+            except Exception as e:
+                log.exception(e)
             log.debug('==== IOLoop FINISHED ' + '=' * 29)
         finally:
             log.debug('==== finally before stop')
@@ -214,6 +216,8 @@ def main():
 
         log.critical(u'Databse error: %s', msg)
         sys.exit(1)
+    except Exception as e:
+        log.exception(e)
 
 
 if __name__ == "__main__":

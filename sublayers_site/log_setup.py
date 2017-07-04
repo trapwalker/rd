@@ -43,6 +43,7 @@ def init():
         backupCount=5,
         encoding='utf-8',
         filename=local_path('log/errors.log'),
+        level='ERROR',
     )
     handler_stat_file = handler(
         fmt=formatter_stat,
@@ -54,8 +55,7 @@ def init():
         filename=local_path('_stat/stat.csv'),
     )
 
-    log_root   = logger(None,                  level='DEBUG', propagate=1, handlers=[handler_main_file, handler_screen])
+    log_root   = logger(None,                  level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_main_file, handler_screen])
     log_websrv = logger('tornado.access',      level='DEBUG', propagate=0, handlers=[handler_websrv_file])
-    log_app    = logger('tornado.application', level='DEBUG', propagate=1, handlers=[handler_main_file, handler_errors_file, handler_screen])
-    log_errors = logger('sublayers_site',      level='ERROR', propagate=1, handlers=[handler_errors_file, handler_screen])
+    log_app    = logger('tornado.application', level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_main_file, handler_screen])
     log_stat   = logger('statlog',             level='INFO',  propagate=0, handlers=[handler_stat_file])

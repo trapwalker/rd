@@ -87,11 +87,13 @@ def main():
     try:
         app.listen(options.port)
     except Exception as e:
-        log.critical(e)
-        print e
+        log.exception(e)
     else:
         log.debug('====== ioloop before start')
-        tornado.ioloop.IOLoop.instance().start()
+        try:
+            tornado.ioloop.IOLoop.instance().start()
+        except Exception as e:
+            log.exception(e)
         log.debug('====== ioloop after start')
     finally:
         log.debug('====== finally before stop')

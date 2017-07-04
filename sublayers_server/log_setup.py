@@ -54,6 +54,7 @@ def init(quick_mode=False):
         backupCount=5,
         encoding='utf-8',
         filename=local_path('log{}/errors.log'.format(log_path_suffix)),
+        level='ERROR',
     )
     handler_party_file = handler(
         fmt=formatter_complex,
@@ -90,13 +91,12 @@ def init(quick_mode=False):
         filename=local_path('_stat{}/stat_events.csv'.format(log_path_suffix)),
     )
 
-    log_root       = logger(None,                            level='DEBUG', propagate=1, handlers=[handler_main_file, handler_screen])
+    log_root       = logger(None,                            level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_main_file, handler_screen])
     log_websrv     = logger('tornado.access',                level='DEBUG', propagate=0, handlers=[handler_websrv_file])
     log_events     = logger('sublayers_server.model.events', level='INFO',  propagate=0, handlers=[handler_events_file])
-    log_app        = logger('tornado.application',           level='DEBUG', propagate=1, handlers=[handler_main_file, handler_errors_file, handler_screen])
+    log_app        = logger('tornado.application',           level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_main_file, handler_screen])
     log_pil        = logger('PIL.PngImagePlugin',            level='INFO',  propagate=0, handlers=[handler_null])
-    log_errors     = logger('sublayers_server',              level='ERROR', propagate=1, handlers=[handler_errors_file, handler_screen])
-    log_party      = logger('sublayers_server.model.party',  level='DEBUG', propagate=1, handlers=[handler_party_file])
+    log_party      = logger('sublayers_server.model.party',  level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_party_file])
     log_stat       = logger('statlog',                       level='INFO',  propagate=0, handlers=[handler_stat_file])
     log_statevents = logger('statlog_events',                level='INFO',  propagate=0, handlers=[handler_stat_file_events])
-    log_quest      = logger('sublayers_server.model.registry_me.classes.quests', level='DEBUG', propagate=1, handlers=[handler_quest_file])
+    log_quest      = logger('sublayers_server.model.registry_me.classes.quests', level='DEBUG', propagate=1, handlers=[handler_errors_file, handler_quest_file])
