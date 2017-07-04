@@ -68,6 +68,19 @@ class AIAgent(AI):
         super(AIAgent, self).drop_car(time=time, **kw)
         # todo: сообщить о завершении квеста
 
+    @event_deco
+    def displace(self, event):
+        self.save(time=event.time)
+        if self.car:
+            self.car.displace(time=event.time)
+        # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
+        if self.server.agents_by_name.get(self._login, None):
+            del self.server.agents_by_name[self._login]
+        else:
+            log.warn("Agent %s with key %s not found in server.agents_by_name", self, self._login)
+        log.info('Agent %s displaced by quest', self)
+        self.after_delete(event.time)
+
     @property
     def is_online(self):
         return True

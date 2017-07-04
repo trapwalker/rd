@@ -62,6 +62,10 @@ class AITrafficQuest(AIEventQuest):
                                       user=None, time=event.time, server=event.server
                                       )
 
+    def displace_bots(self, event):
+        # Метод удаления с карты агентов-ботов. Вызывается на при завершении квеста
+        self.dc._main_agent.displace(time=event.time)
+
     def get_traffic_status(self, event):
         if self.dc._main_agent.car is None:
             return 'fail'
