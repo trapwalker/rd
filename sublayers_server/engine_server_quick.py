@@ -12,10 +12,10 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging.config
 
 if __name__ == '__main__':
-    logging.config.fileConfig("logging_quick.conf")
+    import log_setup
+    log_setup.init(quick_mode=True)
 
 
 from sublayers_server.engine_server import main

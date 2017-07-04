@@ -12,10 +12,11 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging.config
+import logging
 
 if __name__ == '__main__':
-    logging.config.fileConfig("logging.conf")
+    import log_setup
+    log_setup.init(quick_mode=False)
 
 log = logging.getLogger()
 
@@ -200,7 +201,7 @@ class Application(BaseApplication):
 def main():
     try:
         log.info('\n\n\n' + '=' * 67)
-        settings.load('server.conf')
+        settings.load(os.path.join(os.path.dirname(__file__), 'server.conf'))
         service_tools.pidfile_save(options.pidfile)
         app = Application()
         # service_tools.set_terminate_handler(app.stop)

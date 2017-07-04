@@ -1,6 +1,10 @@
-import logging.config
 
-logging.config.fileConfig("logging.conf")
+import logging
+
+if __name__ == '__main__':
+    import log_setup
+    log_setup.init()
+
 log = logging.getLogger(__name__)
 
 
