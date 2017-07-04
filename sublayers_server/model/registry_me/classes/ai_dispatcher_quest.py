@@ -16,3 +16,14 @@ class AIDispatcherQuest(Quest):
             reinst=True,
         ),
     )
+
+    def refresh(self, event):
+        for quest_proto in self.quests:
+            if quest_proto.can_instantiate(event=event, agent=self.agent):
+                quest = quest_proto.instantiate(abstract=False, hirer=None)
+                if quest.generate(event=event, agent=self.agent):
+                    self.agent.profile.add_quest(quest=quest, time=event.time)
+                    self.agent.profile.start_quest(quest.uid, time=event.time, server=event.server)
+                else:
+                    log.debug('Quest dont generate: {!r}'.format(quest))
+                    del quest

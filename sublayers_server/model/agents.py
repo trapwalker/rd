@@ -32,7 +32,7 @@ from sublayers_server.model.utils import NameGenerator
 
 from tornado.options import options
 from itertools import chain
-from random import randint
+from random import randint, choice
 
 
 # todo: make agent offline status possible
@@ -55,13 +55,14 @@ class Agent(Object):
         self.api = None
         self.connection = None
         self.user = user
+        self._avatar_link = None
         if user is not None:
             self.server.agents[str(user.pk)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
             self.server.agents_by_name[user.name] = self
             self._login = user.name
         else:
             self._login = login or self.generate_fake_login()
-            if self.server.agents_by_name[self._login] is not None:
+            if self.server.agents_by_name.get(self._login, None) is None:
                 self.server.agents_by_name[self._login] = self
             else:
                 raise Exception(text='Not uniq agent name')
@@ -103,9 +104,20 @@ class Agent(Object):
         for i in xrange(0, max_iterations):
             name_pair = NameGenerator.pair()
             login = u'{}_{}_{}'.format(name_pair[0], name_pair[1], randint(100, 999))
-            if self.server.agents_by_name[login] is None:
+            if self.server.agents_by_name.get(login, None) is None:
                 return login
         raise Exception(text='dont generate uniq agent name')
+
+    @property
+    def avatar_link(self):
+        if self._avatar_link:
+            return self._avatar_link
+        if self.user:
+            self._avatar_link = self.user.avatar_link
+        else:
+            self._avatar_link = choice(self.server.reg.get('/registry/world_settings').avatar_list)
+        return self._avatar_link
+
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -741,7 +753,7 @@ class User(Agent):
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
         d['user_name'] = self._login
-        d['avatar_link'] = self.user.avatar_link
+        d['avatar_link'] = self.avatar_link
         return d
 
     def setup_logger(self, level=logging.INFO):
@@ -775,6 +787,19 @@ class AI(Agent):
     #     l.setLevel(level)
     #     l.addHandler(fileHandler)
     #     return l
+
+    # todo: пробросить сюда Ивент
+    def on_see(self, time, subj, obj):
+        super(AI, self).on_see(time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAISee, obj=obj)
+
+    # todo: пробросить сюда Ивент
+    def on_out(self, time, subj, obj):
+        super(AI, self).on_out(time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAIOut, obj=obj)
+
+    def on_save(self, time):
+        pass
 
 
 class QuickUser(User):

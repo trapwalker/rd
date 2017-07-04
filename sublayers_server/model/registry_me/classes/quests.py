@@ -794,7 +794,7 @@ class KillerQuest(Quest):
         return min(self.agent.profile.get_lvl(), max_relation_lvl)
 
     def append_victim(self, agent, event):
-        photo = "" if not agent.profile._agent_model else agent.profile._agent_model.user.avatar_link
+        photo = "" if not agent.profile._agent_model else agent.profile._agent_model.avatar_link
         login = agent.login if not agent.profile._agent_model else agent.profile._agent_model.print_login()
         self.victims.append(KillerQuestVictim(login=login, photo=photo, profile_id=agent.user_id))
 
