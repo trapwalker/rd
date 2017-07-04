@@ -12,9 +12,12 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging.config
+import logging
 
-logging.config.fileConfig("logging.conf")
+if __name__ == '__main__':
+    import log_setup
+    log_setup.init()
+
 log = logging.getLogger()
 
 import tornado.httpserver
