@@ -17,7 +17,7 @@ class PlayHandler(BaseHandler):
     def get(self):
         user = self.current_user
         # todo: ##REFACTORING
-        if user is not None and user.registration_status == 'register':
+        if user is not None:
             if options.mode == 'basic':
                 coord = None
                 agent = self.application.srv.api.get_agent(user=user, make=True, do_disconnect=False)
@@ -32,7 +32,7 @@ class PlayHandler(BaseHandler):
                     coord = agent.example.profile.car.position
 
                 # todo: убрать все что касается is_tester
-                if not user.quick and not user.is_tester:
+                if not user.quick and not user.is_tester and user.registration_status == 'register':
                     first_enter = user.teaching_state == ""  # Значит он не отвечал на вопрос про обучение
                     if user.teaching_state != "map":
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
