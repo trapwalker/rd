@@ -22,7 +22,7 @@ setup(
         'psutil',
         'coloredlogs',
         'hgapi',
-        #'pilow',
+        'pillow',
     ],
     entry_points='''
         [console_scripts]
