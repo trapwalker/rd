@@ -4,14 +4,20 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
-from sublayers_server.model.registry_me.tree import IntField, ListField, EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import IntField, ListField, RegistryLinkField, EmbeddedNodeField
 
 
 import random
 
 
 class AIEventQuest(Quest):
-    delay_time = IntField(root_default=60, caption=u'Минимальное время, которое должно пройти перед генерацией такого же квеста')
+    delay_time = IntField(root_default=60, caption=u'Минимальное время, между генерациями одного квеста')
+    cars = ListField(
+        root_default=list,
+        caption=u'Список машинок',
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
+    )
+
 
     def can_instantiate(self, event, agent):  # info: попытка сделать can_generate до инстанцирования квеста
         # log.debug('can_generate {} {!r}'.format(self.generation_group, self.parent))
@@ -41,8 +47,8 @@ class AITrafficQuest(AIEventQuest):
     test_end_time = IntField(caption=u'Интервал проверки достижения цели')
     routes = ListField(
         root_default=list,
-        caption=u"",
-        field=EmbeddedDocumentField(
+        caption=u"Список маршрутов",
+        field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.routes.Route',
         ),
         reinst=True,
@@ -53,11 +59,13 @@ class AITrafficQuest(AIEventQuest):
         from sublayers_server.model.ai_dispatcher import AIAgent
         from sublayers_server.model.registry_me.classes.agents import Agent as AgentExample
 
-        if not len(self.routes):
+        if not self.routes or not self.cars:
             return
 
-        car_proto = event.server.reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick_bot')
-        example_profile = event.server.reg.get('/registry/agents/user/ai_quest/traffic')
+        car_proto = random.choice(self.cars).instantiate()
+        route = random.choice(self.routes).instantiate()
+        example_profile = event.server.reg.get('/registry/agents/user/ai_quest')
+        action_quest = event.server.reg.get('/registry/quests/ai_action_quest/traffic')
 
         # todo: сделать несколько видов профилей ботов, чтобы там были прокачаны скилы и перки
         example_agent = AgentExample(
@@ -69,13 +77,15 @@ class AITrafficQuest(AIEventQuest):
             )
         )
 
-        route = random.choice(self.routes).instantiate()
+        self.dc._main_agent = AIAgent(
+            example=example_agent,
+            user=None, time=event.time, server=event.server
+        )
 
-        self.dc._main_agent = AIAgent(car_proto=car_proto,
-                                      route=route,
-                                      example=example_agent,
-                                      user=None, time=event.time, server=event.server
-                                      )
+        action_quest = action_quest.instantiate(abstract=False, hirer=None, route=route)
+        self.dc._main_agent.create_ai_quest(time=event.time, action_quest=action_quest)
+        car_example = car_proto.instantiate(position=route.get_start_point())
+        self.dc._main_agent.generate_car(time=event.time, car_example=car_example)
 
     def displace_bots(self, event):
         # Метод удаления с карты агентов-ботов. Вызывается на при завершении квеста
@@ -83,13 +93,9 @@ class AITrafficQuest(AIEventQuest):
         self.dc._main_agent = None
 
     def get_traffic_status(self, event):
-        if self.dc._main_agent.car is None:
+        main_agent = self.dc._main_agent
+        if main_agent.car is None:
             return 'fail'
-        if self.dc._main_agent.action_quest.status == 'end':
-            pass
-            # todo: спросить у маршрута, пройден ли он и если да, то вернуть 'win'
-
-
-    # todo: Список возможных типов ботов (охрана, доехать и тд)
-    # todo: Список возможных машинок для ботов
-
+        if main_agent.action_quest and main_agent.action_quest.status == 'end':
+            # спросить у квеста, пройден ли он и если да, то вернуть 'win'
+            return main_agent.action_quest.result

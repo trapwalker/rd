@@ -26,12 +26,10 @@ class AIDispatcher(AI):
 
 
 class AIAgent(AI):
-    def __init__(self, time, car_proto, route, **kw):
+    def __init__(self, time, **kw):
         super(AIAgent, self).__init__(time=time, **kw)
-        self.car_proto = car_proto
         self.action_quest = None
-        self.route = route
-        self.create_ai_quest(time=time)
+        self.target_uid_list = []  # uid модельных машинок, которые считаются врагами
 
     def print_login(self):
         str_list = self._login.split('_')
@@ -41,29 +39,21 @@ class AIAgent(AI):
             return self._login
 
     @event_deco
-    def create_ai_quest(self, event):
-        if self.example.profile.ai_quest:
-            new_quest = self.example.profile.ai_quest.instantiate(abstract=False, hirer=None)
-            if new_quest.generate(event=event, agent=self.example):
-                self.action_quest = new_quest
-                self.example.profile.add_quest(quest=new_quest, time=event.time)
-                new_quest.route = self.route
-                self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
-            else:
-                log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
-                del new_quest
-        self.generate_car(time=event.time)
+    def create_ai_quest(self, event, action_quest):
+        self.action_quest = action_quest
+        if action_quest and action_quest.generate(event=event, agent=self.example):
+            self.example.profile.add_quest(quest=action_quest, time=event.time)
+            self.example.profile.start_quest(action_quest.uid, time=event.time, server=self.server)
+        else:
+            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(action_quest, self))
+            del action_quest
 
     @event_deco
-    def generate_car(self, event):
+    def generate_car(self, event, car_example):
         # Добавить свою машинку на карту
-        self.example.profile.car = self.car_proto.instantiate()
+        self.example.profile.car = car_example
         self.example.profile.current_location = None
         self.current_location = None
-        # self.example.profile.car.position = Point.random_gauss(Point(12482409, 27045819), 100)  # todo: забрать из квеста-поведения
-        self.example.profile.car.position = self.action_quest.route.get_start_point()
-
-
         car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
         self.append_car(car=car, time=event.time)
         self.car.fire_auto_enable(enable=True, time=event.time + 0.1)
@@ -90,6 +80,7 @@ class AIAgent(AI):
         return True
 
     def is_target(self, target):
-        # todo: спросить у квеста, а потом у супера
-        return False
-
+        if self.action_quest:
+            self.action_quest.is_target(target=target)
+        else:
+            return super(AIAgent, self).is_target(target=target)

@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
-from sublayers_server.model.registry_me.tree import EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import EmbeddedDocumentField, ListField, EmbeddedNodeField
 
 
 class AIActionQuest(Quest):
@@ -27,12 +27,18 @@ class AIActionQuest(Quest):
         if position:
             ItemPreActivationEvent(agent=agent_model, owner_id=car.uid, position=position, target_id=car.uid, time=time).post()
 
+    def is_target(self, target):
+        agent_model = self.agent and self.agent.profile._agent_model
+        if agent_model:
+            return target.uid in agent_model.target_uid_list
+        return False
 
 
-class AIActionTraffic(AIActionQuest):
+class AIActionTrafficQuest(AIActionQuest):
     route = EmbeddedDocumentField(
         document_type='sublayers_server.model.registry_me.classes.routes.Route',
         caption=u"Маршрут квеста",
         reinst=True,
     )
+
 
