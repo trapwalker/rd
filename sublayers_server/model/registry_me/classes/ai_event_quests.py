@@ -5,10 +5,16 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
 from sublayers_server.model.registry_me.tree import (IntField, ListField, RegistryLinkField, EmbeddedNodeField,
-                                                     FloatField)
-
-
+                                                     FloatField, Subdoc, EmbeddedDocumentField)
 import random
+
+
+class LootGenerateRec(Subdoc):
+    item = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.item.Item',
+        caption=u"Итем который может попасть в инвентарь бота",
+    )
+    chance = FloatField(default=1.0, caption=u"Вероятность выпадения итема")
 
 
 class AIEventQuest(Quest):
@@ -19,6 +25,25 @@ class AIEventQuest(Quest):
         caption=u'Список машинок',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
+
+    max_loot_count = IntField(root_default=0, caption=u'Максимально возможное количество лута')
+    loot_rec_list = ListField(
+        root_default=list,
+        caption=u"Список для генерации инвентаря бота",
+        field=EmbeddedDocumentField(document_type=LootGenerateRec, reinst=True),
+        reinst=True
+    )
+
+    def init_bot_inventory(self, car_example):
+        if not car_example: return
+        free_position = max(car_example.inventory.size - len(car_example.inventory.items), 0)
+        count_loot = min(random.choice(range(self.max_loot_count)) + 1, free_position)
+        while count_loot:
+            item_rec = random.choice(self.loot_rec_list)
+            if item_rec.chance >= random.random():
+                item = item_rec.item.instantiate()
+                car_example.inventory.items.append(item)
+            count_loot -= 1
 
     # todo: удалять старые законченные квесты, сохраняя только последний по времени (сделать в этом методе!!!)
     def can_instantiate(self, event, agent):  # info: попытка сделать can_generate до инстанцирования квеста
@@ -87,6 +112,7 @@ class AITrafficQuest(AIEventQuest):
         action_quest = action_quest.instantiate(abstract=False, hirer=None, route=route)
         self.dc._main_agent.create_ai_quest(time=event.time, action_quest=action_quest)
         car_example = car_proto.instantiate(position=route.get_start_point())
+        self.init_bot_inventory(car_example=car_example)
         self.dc._main_agent.generate_car(time=event.time, car_example=car_example)
 
         log.debug('Quest {!r} deploy_bots: {!r}'.format(self, self.dc._main_agent))
