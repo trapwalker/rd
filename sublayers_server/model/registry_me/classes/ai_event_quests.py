@@ -93,8 +93,8 @@ class AITrafficQuest(AIEventQuest):
         self.dc._main_agent = None
 
     def get_traffic_status(self, event):
-        main_agent = self.dc._main_agent
-        if main_agent.car is None:
+        main_agent = getattr(self.dc, '_main_agent', None)
+        if main_agent and main_agent.car is None:
             return 'fail'
         if main_agent.action_quest and main_agent.action_quest.status == 'end':
             # спросить у квеста, пройден ли он и если да, то вернуть 'win'
