@@ -81,6 +81,13 @@ class AIAgent(AI):
 
     def is_target(self, target):
         if self.action_quest:
-            self.action_quest.is_target(target=target)
+            return self.action_quest.is_target(target=target)
         else:
             return super(AIAgent, self).is_target(target=target)
+
+    def on_get_damage(self, damager, **kw):
+        super(AIAgent, self).on_get_damage(damager=damager, **kw)
+        damager_uid = damager.uid
+        if damager_uid not in self.target_uid_list:
+            self.target_uid_list.append(damager_uid)
+

@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
-from sublayers_server.model.registry_me.tree import EmbeddedDocumentField, ListField, EmbeddedNodeField
+from sublayers_server.model.registry_me.tree import EmbeddedDocumentField
 
 
 class AIActionQuest(Quest):
@@ -41,4 +41,20 @@ class AIActionTrafficQuest(AIActionQuest):
         reinst=True,
     )
 
+    def get_max_cc(self):
+        agent_model = self.agent and self.agent.profile._agent_model
+        if agent_model:
+            return 1.0 if agent_model.target_uid_list else 0.5
+        return 1.0
 
+    def discharge_shoot_command(self, event):
+        agent_model = self.agent.profile._agent_model
+        car = agent_model.car if agent_model else None
+        if not car:
+            return
+        for sector in car.fire_sectors:
+            if sector.is_discharge():
+                for target_uid in agent_model.target_uid_list:
+                    target = event.server.objects.get(target_uid, None)
+                    if target and sector._test_target_in_sector(target=target, time=event.time):
+                        car.fire_discharge(side=sector.side, time=event.time)

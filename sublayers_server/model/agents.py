@@ -737,6 +737,11 @@ class Agent(Object):
         # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
         self.example.profile.on_event(event=event, cls=OnActivateItem, item_example=item.example)
 
+    def on_get_damage(self, event, damager, damage_type=None):
+        # log.debug('{} on_get_damage from {} with damage_type: {}'.format(self, damager.main_agent, damage_type))
+        pass
+
+
 # todo: Переименовать в UserAgent
 class User(Agent):
     @event_deco
