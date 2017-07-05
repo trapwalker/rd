@@ -40,6 +40,9 @@ class B(Node):
     items = ListField(field=EmbeddedNodeField(document_type=A))
     links = ListField(field=RegistryLinkField(document_type=A))
 
+class AA(A):
+    x = StringField()
+
 
 def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
@@ -81,27 +84,29 @@ def test3(reload=True, save_loaded=True):
 
 def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    from sublayers_server.model.registry_me.classes.agents import Agent
-    #reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
-    ag = Agent.objects.filter({}).first()
+    #from sublayers_server.model.registry_me.classes.agents import Agent
+    reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
+    #ag = Agent.objects.filter({}).first()
 
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
-    c = reg.get('reg:///registry/mobiles/cars/light/motorcycles/honda_hornet')
-    cc = c.instantiate()
-    w = reg.get('reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/dshkm_twin')
-    ww = w.instantiate()
-    cc.slot_FC = ww
+    #reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    # c = reg.get('reg:///registry/mobiles/cars/light/motorcycles/honda_hornet')
+    # cc = c.instantiate()
+    # w = reg.get('reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/dshkm_twin')
+    # ww = w.instantiate()
+    # cc.slot_FC = ww
+    a = reg.get('/registry/a')
+    b = reg.get('/registry/b')
 
     globals().update(locals())
 
 if __name__ == '__main__':
     import math
-    db_name = 'rd'
+    db_name = 'rd' + 't'
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
 
     
-    rel = 0
+    rel = 1
     test4(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

@@ -224,6 +224,14 @@ class EmbeddedNodeField(EmbeddedDocumentField):
         #         parent = REGISTRY.get(parent)
         #     cls = self.document_type if parent is None else type(parent)
         #     return cls(parent=parent, **value)
+
+        # Устанавливаем класс от родителя, если не указан явно. Если родителя нет, класс будет взят из описания поля
+        if isinstance(value, dict) and '_cls' not in value:
+            parent = value.get('parent', None)
+            if parent is not None and not isinstance(parent, Node):
+                parent = REGISTRY.get(parent)
+                value.setdefault('_cls', parent._cls)
+
         return super(EmbeddedNodeField, self).to_python(value)
 
     def __set__(self, instance, value):
