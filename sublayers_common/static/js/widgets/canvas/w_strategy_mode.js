@@ -14,6 +14,8 @@ var WStrategyModeManager = (function () {
         this.radar_width_point_opacity = 1.75 * Math.PI;
 
         this.icon_strategy_car = null;
+
+        this.line_d_angle = 0.775
     }
 
     WStrategyModeManager.prototype.update = function (targets) {
@@ -59,7 +61,7 @@ var WStrategyModeManager = (function () {
         ctx.fillStyle = grad1;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
+        ctx.arc(0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
@@ -79,12 +81,25 @@ var WStrategyModeManager = (function () {
         ctx.fillStyle = grad2;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
+        var temp_radius = this.radar_radius / mapCanvasManager.zoom_koeff;
+        ctx.arc(0, 0, temp_radius, -this.radar_width, this.radar_width, false);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
 
         ctx.restore();  // Возврат транслейта
+
+        ctx.save();
+        ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+        ctx.rotate(radar_direction - this.line_d_angle);
+        ctx.strokeStyle = "rgba(0, 255, 161, 0.05)";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, temp_radius);
+        ctx.stroke();
+        ctx.restore();
 
         // Отрисовка точек - новый вариант
         if (this.icon_strategy_car) {
