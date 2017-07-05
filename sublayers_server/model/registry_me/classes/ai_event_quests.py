@@ -13,7 +13,7 @@ import random
 
 class AIEventQuest(Quest):
     delay_time = IntField(root_default=60, caption=u'Минимальное время, между генерациями одного квеста')
-    chance_of_generation = FloatField(default_root=1.0, caption=u'Шанс генерации квеста')
+    chance_of_generation = FloatField(root_default=1.0, caption=u'Шанс генерации квеста')
     cars = ListField(
         root_default=list,
         caption=u'Список машинок',
@@ -89,15 +89,20 @@ class AITrafficQuest(AIEventQuest):
         car_example = car_proto.instantiate(position=route.get_start_point())
         self.dc._main_agent.generate_car(time=event.time, car_example=car_example)
 
+        log.debug('Quest {!r} deploy_bots: {!r}'.format(self, self.dc._main_agent))
+
     def displace_bots(self, event):
         # Метод удаления с карты агентов-ботов. Вызывается на при завершении квеста
-        self.dc._main_agent.displace(time=event.time)
-        self.dc._main_agent = None
+        main_agent = getattr(self.dc, '_main_agent', None)
+        if main_agent:
+            main_agent.displace(time=event.time)
+            self.dc._main_agent = None
+            log.debug('Quest {!r} displace bots: {!r}'.format(self, main_agent))
 
     def get_traffic_status(self, event):
         main_agent = getattr(self.dc, '_main_agent', None)
         if main_agent and main_agent.car is None:
             return 'fail'
-        if main_agent.action_quest and main_agent.action_quest.status == 'end':
+        if main_agent and main_agent.action_quest and main_agent.action_quest.status == 'end':
             # спросить у квеста, пройден ли он и если да, то вернуть 'win'
             return main_agent.action_quest.result
