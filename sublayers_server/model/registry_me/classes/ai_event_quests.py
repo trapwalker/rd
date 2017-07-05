@@ -4,7 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
-from sublayers_server.model.registry_me.tree import IntField, ListField, RegistryLinkField, EmbeddedNodeField
+from sublayers_server.model.registry_me.tree import (IntField, ListField, RegistryLinkField, EmbeddedNodeField,
+                                                     FloatField)
 
 
 import random
@@ -12,13 +13,14 @@ import random
 
 class AIEventQuest(Quest):
     delay_time = IntField(root_default=60, caption=u'Минимальное время, между генерациями одного квеста')
+    chance_of_generation = FloatField(default_root=1.0, caption=u'Шанс генерации квеста')
     cars = ListField(
         root_default=list,
         caption=u'Список машинок',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
 
-
+    # todo: удалять старые законченные квесты, сохраняя только последний по времени (сделать в этом методе!!!)
     def can_instantiate(self, event, agent):  # info: попытка сделать can_generate до инстанцирования квеста
         # log.debug('can_generate {} {!r}'.format(self.generation_group, self.parent))
         agent_quests_active = agent.profile.quests_active
@@ -40,7 +42,7 @@ class AIEventQuest(Quest):
                     generation_count += 1
                 if q.starttime and q.starttime + q.delay_time > current_time:
                     return False  # Если был выдан хоть один подобный квест, то ждать delay_time обязательно!
-        return generation_count < self.generation_max_count
+        return generation_count < self.generation_max_count and self.chance_of_generation >= random.random()
 
 
 class AITrafficQuest(AIEventQuest):
