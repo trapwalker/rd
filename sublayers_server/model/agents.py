@@ -25,7 +25,7 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem
+from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.utils import NameGenerator
 
@@ -739,7 +739,7 @@ class Agent(Object):
 
     def on_get_damage(self, event, damager, damage_type=None):
         # log.debug('{} on_get_damage from {} with damage_type: {}'.format(self, damager.main_agent, damage_type))
-        pass
+        self.example.profile.on_event(event=event, cls=OnGetDmg, obj=damager)
 
 
 # todo: Переименовать в UserAgent

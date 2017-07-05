@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
-from sublayers_server.model.registry_me.tree import EmbeddedDocumentField
+from sublayers_server.model.registry_me.tree import EmbeddedDocumentField, ListField, RegistryLinkField
 
 
 class AIActionQuest(Quest):
@@ -37,8 +37,17 @@ class AIActionQuest(Quest):
 class AIActionTrafficQuest(AIActionQuest):
     route = EmbeddedDocumentField(
         document_type='sublayers_server.model.registry_me.classes.routes.Route',
-        caption=u"Маршрут квеста",
+        caption=u"Маршрут квеста (Устанавливается квестом-событием)",
         reinst=True,
+    )
+
+    towns_protect = ListField(
+        root_default=list,
+        caption=u"Список городов покровителей (Устанавливается квестом-событием)",
+        reinst=True,
+        field=RegistryLinkField(
+            document_type='sublayers_server.model.registry_me.classes.poi.Town',
+        ),
     )
 
     def get_max_cc(self):
@@ -58,3 +67,12 @@ class AIActionTrafficQuest(AIActionQuest):
                     target = event.server.objects.get(target_uid, None)
                     if target and sector._test_target_in_sector(target=target, time=event.time):
                         car.fire_discharge(side=sector.side, time=event.time)
+
+    def towns_aggro(self, event):
+        agent = getattr(event, 'obj', None) and event.obj.main_agent
+        if not agent:
+            return
+        from sublayers_server.model.map_location import Town
+        for town in Town.get_towns():
+            if town.example in self.towns_protect:
+                town.on_enemy_candidate(agent=agent, damage=True, time=event.time)

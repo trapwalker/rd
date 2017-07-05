@@ -82,6 +82,15 @@ class AITrafficQuest(AIEventQuest):
         reinst=True,
     )
 
+    towns_protect = ListField(
+        root_default=list,
+        caption=u"Список городов покровителей",
+        reinst=True,
+        field=RegistryLinkField(
+            document_type='sublayers_server.model.registry_me.classes.poi.Town',
+        ),
+    )
+
     def deploy_bots(self, event):
         # Метод деплоя агентов на карту. Вызывается на on_start квеста
         from sublayers_server.model.ai_dispatcher import AIAgent
@@ -110,7 +119,7 @@ class AITrafficQuest(AIEventQuest):
             user=None, time=event.time, server=event.server
         )
 
-        action_quest = action_quest.instantiate(abstract=False, hirer=None, route=route)
+        action_quest = action_quest.instantiate(abstract=False, hirer=None, route=route, towns_protect=self.towns_protect)
         self.dc._main_agent.create_ai_quest(time=event.time, action_quest=action_quest)
         car_example = car_proto.instantiate(position=route.get_start_point())
         self.init_bot_inventory(car_example=car_example)
