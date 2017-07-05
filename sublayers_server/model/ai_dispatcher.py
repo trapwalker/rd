@@ -29,7 +29,7 @@ class AIAgent(AI):
     def __init__(self, time, car_proto, route, **kw):
         super(AIAgent, self).__init__(time=time, **kw)
         self.car_proto = car_proto
-        self.action_quest = self.example.profile.ai_quest
+        self.action_quest = None
         self.route = route
         self.create_ai_quest(time=time)
 
@@ -42,11 +42,12 @@ class AIAgent(AI):
 
     @event_deco
     def create_ai_quest(self, event):
-        if self.action_quest:
-            new_quest = self.action_quest.instantiate(abstract=False, hirer=None)
-            new_quest.route = self.route
+        if self.example.profile.ai_quest:
+            new_quest = self.example.profile.ai_quest.instantiate(abstract=False, hirer=None)
             if new_quest.generate(event=event, agent=self.example):
+                self.action_quest = new_quest
                 self.example.profile.add_quest(quest=new_quest, time=event.time)
+                new_quest.route = self.route
                 self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
             else:
                 log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
@@ -59,7 +60,9 @@ class AIAgent(AI):
         self.example.profile.car = self.car_proto.instantiate()
         self.example.profile.current_location = None
         self.current_location = None
-        self.example.profile.car.position = Point.random_gauss(Point(12482409, 27045819), 100)  # todo: забрать из квеста-поведения
+        # self.example.profile.car.position = Point.random_gauss(Point(12482409, 27045819), 100)  # todo: забрать из квеста-поведения
+        self.example.profile.car.position = self.action_quest.route.get_start_point()
+
 
         car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
         self.append_car(car=car, time=event.time)

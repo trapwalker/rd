@@ -4,7 +4,10 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.quests import Quest
-from sublayers_server.model.registry_me.tree import IntField
+from sublayers_server.model.registry_me.tree import IntField, ListField, EmbeddedDocumentField
+
+
+import random
 
 
 class AIEventQuest(Quest):
@@ -31,17 +34,27 @@ class AIEventQuest(Quest):
                     generation_count += 1
                 if q.starttime and q.starttime + q.delay_time > current_time:
                     return False  # Если был выдан хоть один подобный квест, то ждать delay_time обязательно!
-
         return generation_count < self.generation_max_count
 
 
 class AITrafficQuest(AIEventQuest):
     test_end_time = IntField(caption=u'Интервал проверки достижения цели')
+    routes = ListField(
+        root_default=list,
+        caption=u"",
+        field=EmbeddedDocumentField(
+            document_type='sublayers_server.model.registry_me.classes.routes.Route',
+        ),
+        reinst=True,
+    )
 
     def deploy_bots(self, event):
         # Метод деплоя агентов на карту. Вызывается на on_start квеста
         from sublayers_server.model.ai_dispatcher import AIAgent
         from sublayers_server.model.registry_me.classes.agents import Agent as AgentExample
+
+        if not len(self.routes):
+            return
 
         car_proto = event.server.reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick_bot')
         example_profile = event.server.reg.get('/registry/agents/user/ai_quest/traffic')
@@ -52,11 +65,11 @@ class AITrafficQuest(AIEventQuest):
             user_id='',
             profile=example_profile.instantiate(
                 name='',
-                role_class='/registry/rpg_settings/role_class/chosen_one',
+                role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: рандомизировать
             )
         )
 
-        route = event.server.reg.get('/registry/routes/whitehill_paloma_simple').instantiate()
+        route = random.choice(self.routes).instantiate()
 
         self.dc._main_agent = AIAgent(car_proto=car_proto,
                                       route=route,
@@ -72,9 +85,11 @@ class AITrafficQuest(AIEventQuest):
     def get_traffic_status(self, event):
         if self.dc._main_agent.car is None:
             return 'fail'
-        # todo: спросить у маршрута, пройден ли он и если да, то вернуть 'win'
+        if self.dc._main_agent.action_quest.status == 'end':
+            pass
+            # todo: спросить у маршрута, пройден ли он и если да, то вернуть 'win'
 
-    # todo: Список возможных маршрутов
+
     # todo: Список возможных типов ботов (охрана, доехать и тд)
     # todo: Список возможных машинок для ботов
 

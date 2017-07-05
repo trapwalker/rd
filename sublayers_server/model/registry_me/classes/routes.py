@@ -23,6 +23,9 @@ class Route(Node):
     cyclic = BooleanField(root_default=False, caption=u"Определяет, является ли маршрут циклическим")
     route_accuracy = IntField(root_default=100, caption=u"Точность подъезда к каждой точки маршрута")
 
+    def get_start_point(self):
+        return self.points[-1] if self.reverse else self.points[0]
+
     def nearest_point(self, position):  # Вызывать при возвращении на маршрут (или при старте маршрута)
         index = self.current_index
         current_distance = None
