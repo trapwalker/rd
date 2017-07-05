@@ -650,8 +650,8 @@ class Quest(Node):
         self.reward_money = round(self.total_reward_money * self.money_coef)
         self.reward_karma = self.total_reward_money * self.karma_coef / 1000
 
-        if len(self.reward_items_list) > 0:
-            self.reward_items = self.reward_items_list[random.randint(0, len(self.reward_items_list) - 1)]
+        if self.reward_items_list:
+            self.reward_items = random.choice(self.reward_items_list)
 
     def init_level(self):
         self.level = 1
@@ -866,6 +866,7 @@ class DeliveryQuest(Quest):
     )
     delivery_set = ListField(
         caption=u"Список итемов для доставки",
+        tags={'client'},
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Необходимый итем",
@@ -889,16 +890,6 @@ class DeliveryQuest(Quest):
             self.reward_money
         )
 
-    def as_client_dict(self):
-        d = super(DeliveryQuest, self).as_client_dict()
-        try:
-            d.update(
-                delivery_set=[delivery_rec.as_client_dict() for delivery_rec in self.delivery_set],  # todo!!! разобраться почему оно может быть пустым
-            )
-        except Exception as e:
-            log.debug('Errorr!! {}'.format(e))
-            d.update(delivery_set=[])
-        return d
 
 
 class AIQuickQuest(Quest):
