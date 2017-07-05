@@ -35,9 +35,10 @@ class AIEventQuest(Quest):
     )
 
     def init_bot_inventory(self, car_example):
-        if not car_example: return
+        if not car_example or not self.max_loot_count:
+            return
         free_position = max(car_example.inventory.size - len(car_example.inventory.items), 0)
-        count_loot = min(random.choice(range(self.max_loot_count)) + 1, free_position)
+        count_loot = min(random.randint(1, self.max_loot_count), free_position)
         while count_loot:
             item_rec = random.choice(self.loot_rec_list)
             if item_rec.chance >= random.random():
