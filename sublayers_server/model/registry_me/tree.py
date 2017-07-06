@@ -21,10 +21,9 @@ import six
 import codecs
 import copy
 from uuid import uuid1 as get_uuid
-from collections import deque, Counter, Callable
+from collections import deque, Counter
 from fnmatch import fnmatch
 
-import mongoengine
 from mongoengine import connect, Document, EmbeddedDocument, ValidationError
 from mongoengine.queryset.queryset import QuerySetNoDeRef
 from mongoengine.base import get_document
