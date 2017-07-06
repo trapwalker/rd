@@ -413,7 +413,8 @@ var ClientManager = (function () {
                     uid: note.uid,
                     position: note.position,
                     radius: note.radius,
-                    icon: quest && quest.map_icon,
+                    icon_full: quest && quest.map_icon_full,
+                    icon_circle: quest && quest.map_icon_circle,
                     focus_caption: quest && quest.caption
                 });
                 rad_note.is_active = quest && quest.active_notes_view;

@@ -7,11 +7,16 @@ var QuestMapMarkerNote = (function (_super) {
         this.position = new Point(options.position.x, options.position.y);
         this.focus_caption = options.focus_caption || "";
 
-        this.img_obj = new Image();
-        this.img_obj.src = "/" + options.icon;
+        this.icon_circle = new Image();
+        if (options.icon_circle)
+            this.icon_circle.src = "/" + options.icon_circle;
+
+        this.icon_full = new Image();
+        if (options.icon_full)
+            this.icon_full.src = "/" + options.icon_full;
 
         this.img_width = 40;
-        this.img_height = 50;
+        this.img_height = 66;
         this.offset_x = -0.5;
         this.offset_y = -1.0;
         this.scale_icon_x = 1.0;
@@ -52,20 +57,37 @@ var QuestMapMarkerNote = (function (_super) {
         //console.log("QuestMapMarkerNote.prototype.redraw");
         if (! this.is_active) return;
 
+        var focused = mapCanvasManager._mouse_focus_widget == this;
+
         ctx.save();
         var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         this._last_ctx_pos = ctx_pos;
         ctx.translate(ctx_pos.x, ctx_pos.y);
 
         // Отрисовка иконки
-        if (this.img_obj && this.img_obj.complete) {
-            ctx.drawImage(this.img_obj, 0, 0, this.img_width, this.img_height,
+        if (this.icon_circle && this.icon_circle.complete) {
+            ctx.drawImage(this.icon_circle, 0, 0, this.img_width, this.img_height,
                 this.offset_x * this.img_width * this.scale_icon_x, this.offset_y * this.img_height * this.scale_icon_y,
                 this.img_width * this.scale_icon_x, this.img_height * this.scale_icon_y);
+
+            var opacity = mapCanvasManager.real_zoom - 14.;
+            if (focused)
+                opacity = 1;
+            else
+                opacity = Math.max(Math.min(1, opacity), 0);
+
+            if (this.icon_full && this.icon_full.complete && opacity > 0) {
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.drawImage(this.icon_full, 0, 0, this.img_width, this.img_height,
+                    this.offset_x * this.img_width * this.scale_icon_x, this.offset_y * this.img_height * this.scale_icon_y,
+                    this.img_width * this.scale_icon_x, this.img_height * this.scale_icon_y);
+                ctx.restore();
+            }
         }
 
         // Отрисовка круга и текста, если нота находится в фокусе
-        if (mapManager.getZoom() > 15 && this.radius > 0 && mapCanvasManager._mouse_focus_widget == this) {
+        if (mapManager.getZoom() > 15 && this.radius > 0 && focused) {
             // Если мы в зумировании, то рисовать круг с прозрачностью
             var opacity = mapCanvasManager.real_zoom - 15.;
             opacity = Math.max(Math.min(1, opacity), 0);
