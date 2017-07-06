@@ -76,16 +76,6 @@ class AIQuickAgent(AI):
     def is_online(self):
         return True
 
-    # todo: пробросить сюда Ивент
-    def on_see(self, time, subj, obj):
-        super(AIQuickAgent, self).on_see(time=time, subj=subj, obj=obj)
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnAISee, obj=obj)
-
-    # todo: пробросить сюда Ивент
-    def on_out(self, time, subj, obj):
-        super(AIQuickAgent, self).on_out(time=time, subj=subj, obj=obj)
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnAIOut, obj=obj)
-
     def on_die(self, **kw):
         super(AIQuickAgent, self).on_die(**kw)
         self._quick_bot_deaths += 1

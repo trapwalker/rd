@@ -32,7 +32,7 @@ class PlayHandler(BaseHandler):
                     coord = agent.example.profile.car.position
 
                 # todo: убрать все что касается is_tester
-                if not user.quick and not user.is_tester:
+                if not user.quick and not user.is_tester and user.registration_status == 'register':
                     first_enter = user.teaching_state == ""  # Значит он не отвечал на вопрос про обучение
                     if user.teaching_state != "map":
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,

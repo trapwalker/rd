@@ -459,11 +459,14 @@ class AgentProfile(Node):
         assert False, 'for {} not found Insurance'.format(self)
 
 
-class AIQuickAgentProfile(AgentProfile):
+class AIAgentProfile(AgentProfile):
     ai_quest = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.quests.Quest',
         reinst=True,
     )
+
+
+class AIQuickAgentProfile(AIAgentProfile):pass
 
 
 class Agent(Document):

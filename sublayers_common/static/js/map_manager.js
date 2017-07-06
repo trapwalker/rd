@@ -14,6 +14,10 @@ function onMouseUpMap(mouseEventObject) {
         mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject);
     else {
         var click_point = new Point(mouseEventObject.clientX, mouseEventObject.clientY);
+        // info: для удобного задания маршрутов
+        //var a = summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
+        //                                  mulScalVector(click_point, mapManager.getZoomKoeff()));
+        //console.log('{x: ' + Math.floor(a.x) + ', y: ' + Math.floor(a.y) + '}');
         clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
                                           mulScalVector(click_point, mapManager.getZoomKoeff())));
     }

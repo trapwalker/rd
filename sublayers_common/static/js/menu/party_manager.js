@@ -165,8 +165,8 @@ var PartyManager = (function () {
         }
 
         // Вешаем клики на настройку деления опыта
-        this.jq_cur_share_exp_type = self.jq_main_div.find('#partyShareExpType');
-        this.set_share_exp_type();
+        self.jq_cur_share_exp_type = self.jq_main_div.find('#partyShareExpType');
+        self.set_share_exp_type();
 
         // Вешаем клик на кнопку создать
         self.jq_main_div.find('.party-page-create-btn').click(function() {

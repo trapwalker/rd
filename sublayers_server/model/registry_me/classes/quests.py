@@ -503,6 +503,13 @@ class Quest(Node):
             if self.status == 'end' and old_status == 'active':  # quest finished
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
                 self.endtime = event.time
+                self._on_end_quest(event)
+
+    def _on_end_quest(self, event):
+        agent_example = self.agent and self.agent.profile
+        if agent_example:
+            agent_example.quests_ended.append(self)
+            agent_example.quests_active.remove(self)
 
     def make_global_context(self):
         ctx = dict(
@@ -794,7 +801,7 @@ class KillerQuest(Quest):
         return min(self.agent.profile.get_lvl(), max_relation_lvl)
 
     def append_victim(self, agent, event):
-        photo = "" if not agent.profile._agent_model else agent.profile._agent_model.user.avatar_link
+        photo = "" if not agent.profile._agent_model else agent.profile._agent_model.avatar_link
         login = agent.login if not agent.profile._agent_model else agent.profile._agent_model.print_login()
         self.victims.append(KillerQuestVictim(login=login, photo=photo, profile_id=agent.user_id))
 
@@ -889,6 +896,7 @@ class DeliveryQuest(Quest):
             self.recipient.hometown.title,
             self.reward_money
         )
+
 
 
 class AIQuickQuest(Quest):
