@@ -576,19 +576,19 @@ var WCanvasStaticTownMarker = (function (_super) {
 
         this._last_iteration_view_radius = true;
 
-        if (mapManager.getZoom() < 14) return;
+        // Убрано отображение радиуса города
+        //if (mapManager.getZoom() < 14) return;
         // Если мы в зумировании, то рисовать круг с прозрачностью
-
-        ctx.save();
-        ctx.globalAlpha = opacity * 0.5;
-        ctx.beginPath();
-        ctx.strokeStyle = "#00cc81";
-        //ctx.setLineDash([10, 10]);
-        ctx.lineWidth = 4;
-        ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore();
+        //ctx.save();
+        //ctx.globalAlpha = opacity * 0.5;
+        //ctx.beginPath();
+        //ctx.strokeStyle = "#00cc81";
+        ////ctx.setLineDash([10, 10]);
+        //ctx.lineWidth = 4;
+        //ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+        //ctx.stroke();
+        //ctx.closePath();
+        //ctx.restore();
     };
 
     return WCanvasStaticTownMarker;
