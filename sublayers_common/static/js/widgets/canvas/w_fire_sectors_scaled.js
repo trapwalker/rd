@@ -71,8 +71,8 @@ var WCanvasFireSectorsScaled = (function (_super) {
     WCanvasFireSectorsScaled.prototype._drawOneSector = function(ctx, minRadius, maxRadius, width, direction){
         // Пример с красным кружком
         var grad_fill = ctx.createRadialGradient(0, 0, minRadius, 0, 0, maxRadius);
-        grad_fill.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        grad_fill.addColorStop(0.33, "rgba(85, 255, 85, 0.2)");
+        grad_fill.addColorStop(0.0, "rgba(0, 255, 161, 0)");
+        grad_fill.addColorStop(0.33, "rgba(0, 255, 161, 0.2)");
 
         ctx.save();
 
@@ -101,9 +101,9 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.save();
 
         var grad_stroke = ctx.createRadialGradient(0, 0, minRadius, 0, 0, maxRadius);
-        grad_stroke.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        grad_stroke.addColorStop(0.2, "rgba(85, 255, 85, 1)");
-        grad_stroke.addColorStop(1.0, "rgba(85, 255, 85, 1)");
+        grad_stroke.addColorStop(0.0, "rgba(0, 255, 161, 0)");
+        grad_stroke.addColorStop(0.2, "rgba(0, 255, 161, 1)");
+        grad_stroke.addColorStop(1.0, "rgba(0, 255, 161, 1)");
 
         ctx.rotate(direction);
 
@@ -124,14 +124,14 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.strokeStyle = 'rgba(85, 255, 85, 0.6)';
 
         var grad_left_zacep_22 = ctx.createRadialGradient(sp22.x, sp22.y, 0, sp22.x, sp22.y, 50);
-        grad_left_zacep_22.addColorStop(0.0, "rgba(85, 255, 85, 0.65)");
-        grad_left_zacep_22.addColorStop(1.0, "rgba(85, 255, 85, 0)");
+        grad_left_zacep_22.addColorStop(0.0, "rgba(0, 255, 161, 0.65)");
+        grad_left_zacep_22.addColorStop(1.0, "rgba(0, 255, 161, 0)");
 
         var grad_left_zacep_21 = ctx.createRadialGradient(sp21.x, sp21.y, 0, sp21.x, sp21.y, 50);
-        grad_left_zacep_21.addColorStop(0.0, "rgba(85, 255, 85, 0.65)");
-        grad_left_zacep_21.addColorStop(1.0, "rgba(85, 255, 85, 0)");
+        grad_left_zacep_21.addColorStop(0.0, "rgba(0, 255, 161, 0.65)");
+        grad_left_zacep_21.addColorStop(1.0, "rgba(0, 255, 161, 0)");
 
-        ctx.strokeStyle = 'rgba(85, 255, 85, 0.6)';
+        ctx.strokeStyle = 'rgba(0, 255, 161, 0.6)';
         ctx.strokeStyle = grad_left_zacep_22;
         ctx.beginPath();
         ctx.arc(0, 0, maxRadius, -half_width, -half_width + diff_zacep, false);
@@ -152,7 +152,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.save();
         ctx.rotate(direction);
 
-        ctx.strokeStyle = 'rgba(85, 255, 85, 0.6)';
+        ctx.strokeStyle = 'rgba(0, 255, 161, 0.6)';
         // вывод тонкой линии
         ctx.beginPath();
         ctx.arc(0, 0, recharge_area_radius, -half_width, half_width, false);
@@ -184,7 +184,7 @@ var WCanvasFireSectorsScaled = (function (_super) {
         ctx.font = font_size + "px MICRADI";
         ctx.textAlign = "center";
         ctx.textBaseline = "center";
-        ctx.fillStyle = 'rgba(85, 255, 85, 0.6)';
+        ctx.fillStyle = 'rgba(0, 255, 161, 0.6)';
 
         // todo: вычисляем
         var recharge_text = recharge_state.prc >= 1 ? "READY" : "RELOAD";
@@ -224,9 +224,9 @@ var WCanvasFireSectorsScaled = (function (_super) {
 
     WCanvasFireSectorsScaled.prototype._drawOneAutoSector = function(ctx, radius, width, direction){
         var grad_stroke = ctx.createRadialGradient(0, 0, 5, 0, 0, radius);
-        grad_stroke.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        grad_stroke.addColorStop(0.2, "rgba(85, 255, 85, 0)");
-        grad_stroke.addColorStop(1.0, "rgba(85, 255, 85, 1)");
+        grad_stroke.addColorStop(0.0, "rgba(0, 255, 161, 0)");
+        grad_stroke.addColorStop(0.2, "rgba(0, 255, 161, 0)");
+        grad_stroke.addColorStop(1.0, "rgba(0, 255, 161, 1)");
 
         ctx.save();
         ctx.rotate(direction);
@@ -242,8 +242,8 @@ var WCanvasFireSectorsScaled = (function (_super) {
 
         // Заливка
         var grad_fill = ctx.createRadialGradient(0, 0, 5, 0, 0, radius);
-        grad_fill.addColorStop(0.0, "rgba(85, 255, 85, 0)");
-        grad_fill.addColorStop(0.33, "rgba(85, 255, 85, 0.05)");
+        grad_fill.addColorStop(0.0, "rgba(0, 255, 161, 0)");
+        grad_fill.addColorStop(0.33, "rgba(0, 255, 161, 0.05)");
         ctx.fillStyle = grad_fill;
         ctx.fill();
 
