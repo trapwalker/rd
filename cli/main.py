@@ -16,6 +16,7 @@ def main(args=None):
     global log
     log = logging.getLogger()
     try:
+        raise ImportError
         import coloredlogs
         coloredlogs.DEFAULT_FIELD_STYLES['levelname']['color'] = 'green'
         coloredlogs.install(level=logging.DEBUG, fmt='%(levelname)-8s| %(message)s')
