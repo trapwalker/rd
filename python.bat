@@ -1,2 +1,2 @@
 
-env\Scripts\python.exe %*
+python.exe %*
