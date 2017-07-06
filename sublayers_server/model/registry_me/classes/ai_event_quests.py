@@ -164,7 +164,7 @@ class AITrafficQuest(AIEventQuest):
         self.init_bot_inventory(car_example=car_example)
         self.dc._main_agent.generate_car(time=event.time, car_example=car_example)
 
-        log.debug('Quest {!r} deploy_bots: {!r}'.format(self, self.dc._main_agent))
+        # log.debug('Quest {!r} deploy_bots: {!r}'.format(self, self.dc._main_agent))
 
     def displace_bots(self, event):
         # Метод удаления с карты агентов-ботов. Вызывается на при завершении квеста
@@ -172,7 +172,7 @@ class AITrafficQuest(AIEventQuest):
         if main_agent:
             main_agent.displace(time=event.time)
             self.dc._main_agent = None
-            log.debug('Quest {!r} displace bots: {!r}'.format(self, main_agent))
+            # log.debug('Quest {!r} displace bots: {!r}'.format(self, main_agent))
 
     def get_traffic_status(self, event):
         main_agent = getattr(self.dc, '_main_agent', None)

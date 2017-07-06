@@ -457,7 +457,7 @@ class Quest(Node):
                 return False
                 #raise e
             else:
-                log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
+                # log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
                 if self.agent:
                     self.agent.profile.quests_unstarted.remove(self)
                     self.agent.profile.quests_active.append(self)
