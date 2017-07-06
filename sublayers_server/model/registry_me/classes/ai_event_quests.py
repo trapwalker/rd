@@ -6,6 +6,9 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me.classes.quests import Quest
 from sublayers_server.model.registry_me.tree import (IntField, ListField, RegistryLinkField, EmbeddedNodeField,
                                                      FloatField, Subdoc, EmbeddedDocumentField)
+from sublayers_server.model.vectors import Point
+
+from math import pi
 import random
 
 
@@ -154,7 +157,10 @@ class AITrafficQuest(AIEventQuest):
 
         action_quest = action_quest.instantiate(abstract=False, hirer=None, route=route, towns_protect=self.towns_protect)
         self.dc._main_agent.create_ai_quest(time=event.time, action_quest=action_quest)
-        car_example = car_proto.instantiate(position=route.get_start_point())
+        car_example = car_proto.instantiate(
+            position=Point.random_gauss(route.get_start_point().as_point(), 30),
+            direction=random.random() * 2 * pi,
+        )
         self.init_bot_inventory(car_example=car_example)
         self.dc._main_agent.generate_car(time=event.time, car_example=car_example)
 
