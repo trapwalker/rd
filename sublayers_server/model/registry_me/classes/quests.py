@@ -258,7 +258,8 @@ class Quest(Node):
     text_short  = StringField(tags={'client'}, caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
     typename    = StringField(tags={'client'}, caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon   = StringField(tags={'client'}, caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
-    map_icon    = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
+    map_icon_full    = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
+    map_icon_circle  = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
     level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = FloatField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
     endtime     = FloatField(root_default=0, caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
@@ -456,7 +457,7 @@ class Quest(Node):
                 return False
                 #raise e
             else:
-                log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
+                # log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
                 if self.agent:
                     self.agent.profile.quests_unstarted.remove(self)
                     self.agent.profile.quests_active.append(self)
