@@ -38,7 +38,8 @@ class SlowMine(UnitWeapon):
         self.effects = self.example.effects
 
     def can_see_me(self, subj, **kw):
-        return subj is self.starter or super(SlowMine, self).can_see_me(subj=subj, **kw)
+        # Мину видят только установившие и города
+        return subj is self.starter or isinstance(subj, Town) and super(SlowMine, self).can_see_me(subj=subj, **kw)
 
     def on_init(self, event):
         super(SlowMine, self).on_init(event)
@@ -96,8 +97,8 @@ class BangMine(UnitWeapon):
         self._mine_is_active = False
 
     def can_see_me(self, subj, **kw):
-        return subj is self.starter or isinstance(subj, Town)  # Мину видят только установившие и города
-        # return subj is self.starter or super(BangMine, self).can_see_me(subj=subj, **kw)
+        # Мину видят только установившие и города
+        return subj is self.starter or isinstance(subj, Town) and super(BangMine, self).can_see_me(subj=subj, **kw)
 
     def on_init(self, event):
         super(BangMine, self).on_init(event)

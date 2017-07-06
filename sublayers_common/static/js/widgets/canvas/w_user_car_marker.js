@@ -332,7 +332,7 @@ var WCanvasCarMarker = (function (_super) {
             ctx.restore(); // Возврат после поворота
         }
 
-        if (focused && this.icon_obj_focused) {
+        if (focused && this.icon_obj_focused && mobj != user.userCar) {
             ctx.drawImage(this.icon_obj_focused.img, -this.icon_obj_focused.iconSize[0] >> 1, -this.icon_obj_focused.iconSize[1] >> 1);
         }
 
@@ -476,7 +476,8 @@ var WCanvasStaticTownMarker = (function (_super) {
     __extends(WCanvasStaticTownMarker, _super);
 
     function WCanvasStaticTownMarker(mobj) {
-        this.icon_obj_up = null;
+        this.icon_full = null;
+        this.icon_circle = null;
         _super.call(this, mobj);
         this._last_iteration_view_radius = false;
     }
@@ -511,7 +512,18 @@ var WCanvasStaticTownMarker = (function (_super) {
                     case 'reg:///registry/poi/locations/towns/paloma':
                         icon_name = 'city_paloma';
                         break;
+                    case 'reg:///registry/poi/locations/towns/nukeoil_005':
+                    case 'reg:///registry/poi/locations/towns/nukeoil_004':
+                    case 'reg:///registry/poi/locations/towns/nukeoil_003':
+                    case 'reg:///registry/poi/locations/towns/nukeoil_002':
+                    case 'reg:///registry/poi/locations/towns/nukeoil_001':
+                        icon_name = 'gas_station';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/mine_whitehill':
+                        icon_name = 'mine_whitehill';
+                        break;
                     default:
+                        console.log('Не найдена иконка. Установлена стандартная. ', mobj.example.node_hash);
                         icon_name = 'city';
                 }
                 break;
@@ -523,8 +535,9 @@ var WCanvasStaticTownMarker = (function (_super) {
                 icon_name = 'city';
         }
         this.cm_z_index = 75;
-        this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_name);
-        this.icon_obj_up = iconsLeaflet.getIcon('icon_' + icon_name + '_up');
+        this.icon_full = iconsLeaflet.getIcon('icon_' + icon_name + '_full');
+        this.icon_circle = iconsLeaflet.getIcon('icon_' + icon_name + '_circle');
+        this.icon_obj = this.icon_full;
         if (!this.icon_obj) return;
         this.frame_count = this.icon_obj.frames;
         this.time_of_frame = this.duration / this.icon_obj.frames;
@@ -549,22 +562,62 @@ var WCanvasStaticTownMarker = (function (_super) {
             clientManager.sendGoto(this._last_mobj_position);
     };
 
+    WCanvasStaticTownMarker.prototype.redraw = function(ctx, time, client_time){
+        //console.log('WCanvasMarker.prototype.redraw');
+        var img_obj_circle = this.icon_circle;  // Рисуем всегда
+        var img_obj_full = this.icon_full;  // Рисуем при определённом зуме или при фокусе
+        if (!img_obj_circle || !img_obj_full) return;
+        var visible_state = this.getVisibleState(time);
+        if (visible_state == 0) return;
+        ctx.save();
+        if (visible_state != 1.) {
+            ctx.globalAlpha = visible_state;
+        }
+        var pos = this.mobj.getCurrentCoord(time);
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+        ctx.rotate(this._get_rotate_angle(time));
+        var scale = this._get_scale_koeff(time);
+        ctx.scale(scale, scale);
+
+        var frame = this._get_frame_num(time, client_time);  // передаём именно client_time для правильной анимации на клиенте
+        ctx.drawImage(img_obj_circle.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+            this.offset_x * img_obj_circle.size[0] * this.scale_icon_x, this.offset_y * img_obj_circle.size[1] * this.scale_icon_y,
+            this.frame_width * this.scale_icon_x, this.frame_height * this.scale_icon_y);
+
+        // Сохранение кешируемых значений
+        this._last_mobj_direction = this.mobj.getCurrentDirection(time);
+        this._last_mobj_position = pos;
+        this._last_mobj_ctx_pos = ctx_pos;
+        this._last_visible_state = visible_state;
+
+
+        var opacity = mapCanvasManager.real_zoom - 14.;
+        if (mapCanvasManager._mouse_focus_widget == this)
+            opacity = 1;
+        else
+            opacity = Math.max(Math.min(1, opacity), 0);
+
+        if (img_obj_full && opacity > 0) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(img_obj_full.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+                this.offset_x * img_obj_full.size[0] * this.scale_icon_x, this.offset_y * img_obj_full.size[1] * this.scale_icon_y,
+                this.frame_width * this.scale_icon_x, this.frame_height * this.scale_icon_y);
+            ctx.restore();
+        }
+
+        ctx.restore();  // Возврат транслейта
+
+        this.post_redraw(ctx, time, client_time);
+    };
+
     WCanvasStaticTownMarker.prototype.post_redraw = function(ctx, time, client_time) {
         if (! user.userCar) return;
 
         // Рассчёт дистанции между машинкой юзера и городом
         var u_car_pos = user.userCar.getCurrentCoord(time);
         var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
-
-        var opacity = mapCanvasManager.real_zoom -  14.;
-        opacity = Math.max(Math.min(1, opacity), 0);
-
-        if (this.icon_obj_up) {
-            ctx.save();
-            ctx.globalAlpha = opacity;
-            ctx.drawImage(this.icon_obj_up.img, this._last_mobj_ctx_pos.x - this.frame_width * 0.5, this._last_mobj_ctx_pos.y - this.frame_height);
-            ctx.restore();
-        }
 
         if (mapCanvasManager._mouse_focus_widget != this && distance2 > this.mobj.p_observing_range * this.mobj.p_observing_range) {
             this._last_iteration_view_radius = false;
@@ -576,19 +629,19 @@ var WCanvasStaticTownMarker = (function (_super) {
 
         this._last_iteration_view_radius = true;
 
-        if (mapManager.getZoom() < 14) return;
+        // Убрано отображение радиуса города
+        //if (mapManager.getZoom() < 14) return;
         // Если мы в зумировании, то рисовать круг с прозрачностью
-
-        ctx.save();
-        ctx.globalAlpha = opacity * 0.5;
-        ctx.beginPath();
-        ctx.strokeStyle = "#00cc81";
-        //ctx.setLineDash([10, 10]);
-        ctx.lineWidth = 4;
-        ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore();
+        //ctx.save();
+        //ctx.globalAlpha = opacity * 0.5;
+        //ctx.beginPath();
+        //ctx.strokeStyle = "#00cc81";
+        ////ctx.setLineDash([10, 10]);
+        //ctx.lineWidth = 4;
+        //ctx.arc(this._last_mobj_ctx_pos.x, this._last_mobj_ctx_pos.y, (this.mobj.p_enter_range / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+        //ctx.stroke();
+        //ctx.closePath();
+        //ctx.restore();
     };
 
     return WCanvasStaticTownMarker;

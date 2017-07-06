@@ -44,7 +44,7 @@ class Message(object):
     def send(self):
         # todo: online status optimization
         connection = self.agent.connection
-        # log.debug('Send message: %s to %r', self, self.agent.user.name)
+        # log.debug('Send message: %s to %r', self, self.agent._login)
         if connection:
             if connection.ws_connection:
                 package = make_push_package([self])
@@ -74,9 +74,9 @@ class Message(object):
 
         else:
             # todo: refactoring
-            from sublayers_server.model.ai_quick_agent import AIQuickAgent
-            if not isinstance(self.agent, AIQuickAgent):
-                log.debug('Connection not found for agent %s', self.agent.user.name)
+            from sublayers_server.model.agents import AI
+            if not isinstance(self.agent, AI):
+                log.debug('Connection not found for agent %s', self.agent._login)
 
     def __str__(self):
         return self.__str_template__.format(self=self)

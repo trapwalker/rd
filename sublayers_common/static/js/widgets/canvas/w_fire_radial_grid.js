@@ -75,7 +75,7 @@ var WFCanvasireRadialGrid = (function (_super) {
         var max_radius = this.max_radius;
         var max_circles = this.max_circles;
 
-        ctx.strokeStyle = "rgba(85, 255, 85, 0.4)";
+        ctx.strokeStyle = "rgba(0, 255, 161, 0.4)";
 
         // Отрисовка кругов
         for (var i = 1; i <= max_circles; i++) {
@@ -90,8 +90,8 @@ var WFCanvasireRadialGrid = (function (_super) {
         ctx.save();
 
         var grad_line45 = ctx.createRadialGradient(p1.x, p1.y, 0, p1.x, p1.y, 30);
-        grad_line45.addColorStop(0.0, "rgba(85, 255, 85, 0.65)");
-        grad_line45.addColorStop(1.0, "rgba(85, 255, 85, 0)");
+        grad_line45.addColorStop(0.0, "rgba(0, 255, 161, 0.65)");
+        grad_line45.addColorStop(1.0, "rgba(0, 255, 161, 0)");
 
         ctx.strokeStyle = grad_line45;
         var pi_d2 = Math.PI / 2.;
@@ -111,7 +111,7 @@ var WFCanvasireRadialGrid = (function (_super) {
         }
         ctx.restore();
 
-        ctx.fillStyle = "rgba(85, 255, 85, 1)";
+        ctx.fillStyle = "rgba(0, 255, 161, 1)";
         ctx.save();
         // Добавление радиальных точек
         for (var i = 1; i <= max_circles; i++)
@@ -137,7 +137,7 @@ var WFCanvasireRadialGrid = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "center";
         ctx.font = "6pt MICRADI";
-        ctx.fillStyle = 'rgba(85, 255, 85, 0.6)';
+        ctx.fillStyle = 'rgba(0, 255, 161, 0.6)';
         var max_zoomator = rotateVector(new Point(max_radius, 0), -3 * Math.PI / 4 + car_dir);
 
         ctx.rotate(-car_dir);

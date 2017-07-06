@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 
 import logging
-from model.events import event_deco
 
 log = logging.getLogger(__name__)
 
@@ -160,7 +159,7 @@ class AgentConsoleNamespace(Namespace):
 
     def reset(self, *names):
         agents_by_name = self.agent.server.agents_by_name
-        names = names or [self.agent.user.name]
+        names = names or [self.agent._login]
         if '*' in names:
             names = agents_by_name.keys()
 
@@ -223,7 +222,7 @@ class SetPartyEvent(Event):
 
     def on_perform(self):
         super(SetPartyEvent, self).on_perform()
-        log.info('%r try to set or create party %r', self.agent.user.name, self.name)
+        log.info('%r try to set or create party %r', self.agent._login, self.name)
         if self.name is None:
             if self.agent.party:
                 self.agent.party.exclude(self.agent, time=self.time)
@@ -597,13 +596,13 @@ class AgentAPI(API):
 
     @public_method
     def console_cmd(self, cmd):
-        log.debug('Agent %r cmd: %r', self.agent.user.name, cmd)
-        self.agent.log.info('Agent {} cmd: {!r}'.format(self.agent.user.name, cmd))
+        log.debug('Agent %r cmd: %r', self.agent._login, cmd)
+        self.agent.log.info('Agent {} cmd: {!r}'.format(self.agent._login, cmd))
         try:
             self.console.on_cmd(cmd.lstrip('/'))
         except Exception as e:
-            # log.warning('Agent {} try cmd: {!r} and generate exception {}'.format(self.agent.user.name, cmd, e.__class__.__name__))
-            log.warning('Agent {} try cmd: {!r} and generate exception'.format(self.agent.user.name, cmd))
+            # log.warning('Agent {} try cmd: {!r} and generate exception {}'.format(self.agent._login, cmd, e.__class__.__name__))
+            log.warning('Agent {} try cmd: {!r} and generate exception'.format(self.agent._login, cmd))
 
     @basic_mode
     @public_method

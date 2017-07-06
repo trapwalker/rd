@@ -25,21 +25,23 @@ from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
-from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem
+from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
 from sublayers_common.ctx_timer import Timer
+from sublayers_server.model.utils import NameGenerator
+
 
 from tornado.options import options
-
-import tornado.web
 from itertools import chain
+from random import randint, choice
+
 
 # todo: make agent offline status possible
 class Agent(Object):
-    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self.user.name!r}>'
+    __str_template__ = '<{self.dead_mark}{self.classname} #{self.id} AKA {self._login!r}>'
 
     # todo: Перенести аргумент user  в конструктор UserAgent
     # todo: Делать сохранение неюзер-агентов в особую коллекцию без идентификации по профилю
-    def __init__(self, user, time, example, party=None, **kw):
+    def __init__(self, user, time, example, login='', party=None, **kw):
         """
         @type example: sublayers_server.model.registry_me.classes.agents.Agent
         """
@@ -53,8 +55,18 @@ class Agent(Object):
         self.api = None
         self.connection = None
         self.user = user
-        self.server.agents[str(user.pk)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
-        self.server.agents_by_name[user.name] = self
+        self._avatar_link = None
+        if user is not None:
+            self.server.agents[str(user.pk)] = self  #todo: Перенести помещение в коллекцию в конец инициализации
+            self.server.agents_by_name[user.name] = self
+            self._login = user.name
+        else:
+            self._login = login or self.generate_fake_login()
+            if self.server.agents_by_name.get(self._login, None) is None:
+                self.server.agents_by_name[self._login] = self
+            else:
+                raise Exception(text='Not uniq agent name')
+
         self._logger_file_handler = None
         self._logger = self.setup_logger()
         self.car = None
@@ -86,6 +98,26 @@ class Agent(Object):
         self.parking_bag = None  # Инвентарь выбранной машинки в паркинге (Специальный объект, у которого есть inventory)
 
         self.log.info('Agent Created %s', self)
+
+    def generate_fake_login(self):
+        max_iterations = 500
+        for i in xrange(0, max_iterations):
+            name_pair = NameGenerator.pair()
+            login = u'{}_{}_{}'.format(name_pair[0], name_pair[1], randint(100, 999))
+            if self.server.agents_by_name.get(login, None) is None:
+                return login
+        raise Exception(text='dont generate uniq agent name')
+
+    @property
+    def avatar_link(self):
+        if self._avatar_link:
+            return self._avatar_link
+        if self.user:
+            self._avatar_link = self.user.avatar_link
+        else:
+            self._avatar_link = choice(self.server.reg.get('/registry/world_settings').avatar_list)
+        return self._avatar_link
+
 
     def tp(self, time, location, radius=None):
         self.current_location = location
@@ -119,7 +151,7 @@ class Agent(Object):
         return self._logger
 
     def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self.user.name)
+        logger_name = 'agent_{}'.format(self._login)
         log_file = 'log/agents/{}.log'.format(logger_name)
         l = logging.getLogger(logger_name)
         l.propagate = 0
@@ -179,7 +211,7 @@ class Agent(Object):
     def on_save(self, time):
         with Timer() as tm:
             agent_example = self.example
-            agent_example.login = self.user.name  # todo: Не следует ли переименовать поле example.login?
+            agent_example.login = self._login  # todo: Не следует ли переименовать поле example.login?
             if self.car:
                 # todo: review (логичнее бы тут поставить self.car.save(time), но тогда возможно теряется смысл следующей строки)
                 self.car.on_save(time)
@@ -222,7 +254,7 @@ class Agent(Object):
     def as_dict(self, **kw):
         d = super(Agent, self).as_dict(**kw)
         d.update(
-            login=self.user.name,  # todo: Переименовать login
+            login=self._login,  # todo: Переименовать login
             party=self.party.as_dict() if self.party else None,
             balance=self.balance,
         )
@@ -322,10 +354,10 @@ class Agent(Object):
         else:
             log.warn("Agent %s with key %s not found in server.agents", self, self.user.pk)
 
-        if self.server.agents_by_name.get(self.user.name, None):
-            del self.server.agents_by_name[self.user.name]
+        if self.server.agents_by_name.get(self._login, None):
+            del self.server.agents_by_name[self._login]
         else:
-            log.warn("Agent %s with key %s not found in server.agents_by_name", self, self.user.name)
+            log.warn("Agent %s with key %s not found in server.agents_by_name", self, self._login)
 
         self.after_delete(event.time)
 
@@ -658,13 +690,13 @@ class Agent(Object):
             self.parking_bag = ParkingBag(agent=self, example_inventory=new_example_inventory, time=time)
 
     def print_login(self):
-        return self.user.name
+        return self._login
 
     def set_teaching_state(self, state):
         user = self.user
         user.teaching_state = state
         user.save()
-        self.log.info('teaching state for user <{!r}> changed: {!r}'.format(user.name, state))
+        self.log.info('teaching state for user <{!r}> changed: {!r}'.format(self._login, state))
         
     def on_discharge_shoot(self, obj, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
@@ -705,6 +737,10 @@ class Agent(Object):
         # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
         self.example.profile.on_event(event=event, cls=OnActivateItem, item_example=item.example)
 
+    def on_get_damage(self, event, damager, damage_type=None):
+        # log.debug('{} on_get_damage from {} with damage_type: {}'.format(self, damager.main_agent, damage_type))
+        self.example.profile.on_event(event=event, cls=OnGetDmg, obj=damager)
+
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -721,12 +757,12 @@ class User(Agent):
 
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
-        d['user_name'] = self.user.name
-        d['avatar_link'] = self.user.avatar_link
+        d['user_name'] = self._login
+        d['avatar_link'] = self.avatar_link
         return d
 
     def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self.user.name)
+        logger_name = 'agent_{}'.format(self._login)
         log_file = 'log/agents/{}.log'.format(logger_name)
         l = logging.getLogger(logger_name)
         l.propagate = 0
@@ -746,7 +782,7 @@ class User(Agent):
 class AI(Agent):
     u""" Класс-родитель для всех агентов-ботов """
     # def setup_logger(self, level=logging.INFO):
-    #     logger_name = 'agent_{}'.format(self.user.name)
+    #     logger_name = 'agent_{}'.format(self._login)
     #     log_file = 'log/agents/bot_{}.log'.format(logger_name)
     #     l = logging.getLogger(logger_name)
     #     l.propagate = 0
@@ -756,6 +792,19 @@ class AI(Agent):
     #     l.setLevel(level)
     #     l.addHandler(fileHandler)
     #     return l
+
+    # todo: пробросить сюда Ивент
+    def on_see(self, time, subj, obj):
+        super(AI, self).on_see(time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAISee, obj=obj)
+
+    # todo: пробросить сюда Ивент
+    def on_out(self, time, subj, obj):
+        super(AI, self).on_out(time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAIOut, obj=obj)
+
+    def on_save(self, time):
+        pass
 
 
 class QuickUser(User):
@@ -860,8 +909,8 @@ class QuickUser(User):
 
     def init_example_car(self):
         user = self.user
-        # log.info('QuickGameUser Try get new car: %s  [car_index=%s]', user.name, user.car_index)
-        self.log.info('QuickGameUser Try get new car: {!r}  [car_index={}]'.format(user.name, user.car_index))
+        # log.info('QuickGameUser Try get new car: %s  [car_index=%s]', self._login, user.car_index)
+        self.log.info('QuickGameUser Try get new car: {!r}  [car_index={}]'.format(self._login, user.car_index))
         # Создание "быстрой" машинки
         try:
             user.car_index = int(user.car_index)
@@ -892,11 +941,11 @@ class QuickUser(User):
         SetMapCenterMessage(agent=self, time=event.time, center=self._next_respawn_point).post()  # send message to load map
 
     def print_login(self):
-        str_list = self.user.name.split('_')
+        str_list = self._login.split('_')
         if len(str_list) > 1:
             return '_'.join(str_list[:-1])
         else:
-            return self.user.name
+            return self._login
 
 
 class TeachingUser(QuickUser):
