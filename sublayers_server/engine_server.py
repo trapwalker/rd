@@ -12,10 +12,11 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging.config
+import logging
 
 if __name__ == '__main__':
-    logging.config.fileConfig("logging.conf")
+    import log_setup
+    log_setup.init(quick_mode=False)
 
 log = logging.getLogger()
 
@@ -178,11 +179,13 @@ class Application(BaseApplication):
 
             print _message
         except Exception as e:
-            log.critical(e)
-            print e
+            log.exception(e)
         else:
             log.debug('==== IOLoop START ' + '=' * 32)
-            tornado.ioloop.IOLoop.instance().start()
+            try:
+                tornado.ioloop.IOLoop.instance().start()
+            except Exception as e:
+                log.exception(e)
             log.debug('==== IOLoop FINISHED ' + '=' * 29)
         finally:
             log.debug('==== finally before stop')
@@ -200,7 +203,7 @@ class Application(BaseApplication):
 def main():
     try:
         log.info('\n\n\n' + '=' * 67)
-        settings.load('server.conf')
+        settings.load(os.path.join(os.path.dirname(__file__), 'server.conf'))
         service_tools.pidfile_save(options.pidfile)
         app = Application()
         # service_tools.set_terminate_handler(app.stop)
@@ -213,6 +216,8 @@ def main():
 
         log.critical(u'Databse error: %s', msg)
         sys.exit(1)
+    except Exception as e:
+        log.exception(e)
 
 
 if __name__ == "__main__":

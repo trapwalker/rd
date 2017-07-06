@@ -12,9 +12,12 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging.config
+import logging
 
-logging.config.fileConfig("logging.conf")
+if __name__ == '__main__':
+    import log_setup
+    log_setup.init()
+
 log = logging.getLogger()
 
 import tornado.httpserver
@@ -84,11 +87,13 @@ def main():
     try:
         app.listen(options.port)
     except Exception as e:
-        log.critical(e)
-        print e
+        log.exception(e)
     else:
         log.debug('====== ioloop before start')
-        tornado.ioloop.IOLoop.instance().start()
+        try:
+            tornado.ioloop.IOLoop.instance().start()
+        except Exception as e:
+            log.exception(e)
         log.debug('====== ioloop after start')
     finally:
         log.debug('====== finally before stop')

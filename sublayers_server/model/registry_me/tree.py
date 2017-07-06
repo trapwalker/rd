@@ -21,10 +21,9 @@ import six
 import codecs
 import copy
 from uuid import uuid1 as get_uuid
-from collections import deque, Counter, Callable
+from collections import deque, Counter
 from fnmatch import fnmatch
 
-import mongoengine
 from mongoengine import connect, Document, EmbeddedDocument, ValidationError
 from mongoengine.queryset.queryset import QuerySetNoDeRef
 from mongoengine.base import get_document
@@ -630,7 +629,7 @@ class Node(Subdoc, SubdocToolsMixin):
         assert 'parent' not in kw, 'Parameter "parent" is not valid to instantiate: {!r}'.format(self)
         return type(self)(parent=self, **kw)
 
-    @warn_calling(skip=(r'site-packages',))
+    #@warn_calling(skip=(r'site-packages',))
     def __iter__(self):
         return super(Node, self).__iter__()
 

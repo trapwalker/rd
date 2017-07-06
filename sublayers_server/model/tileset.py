@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging.config
+import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.tileid import Tileid, ROOT
