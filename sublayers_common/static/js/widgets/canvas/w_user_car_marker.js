@@ -332,7 +332,7 @@ var WCanvasCarMarker = (function (_super) {
             ctx.restore(); // Возврат после поворота
         }
 
-        if (focused && this.icon_obj_focused) {
+        if (focused && this.icon_obj_focused && mobj != user.userCar) {
             ctx.drawImage(this.icon_obj_focused.img, -this.icon_obj_focused.iconSize[0] >> 1, -this.icon_obj_focused.iconSize[1] >> 1);
         }
 
