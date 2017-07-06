@@ -40,6 +40,13 @@
 - hg clone ssh://hg@bitbucket.org/ANTiPodec/sublayers ~/rd
 - hg clone ssh://hg@bitbucket.org/ANTiPodec/sublayers_world ~/rd/sublayers_world
 
+- hg clone https://bitbucket.org/svp/flatcraft ~/flatcraft
+- mkdir -p ~/rd/sublayers_common/static/ab-test/zoom
+- ln -s ~/flatcraft/client/test_page ~/rd/sublayers_common/static/ab-test/zoom/svp
+
+- ln -s ~/rd/sublayers_server/_stat ~/rd/sublayers_common/static/stat
+- ln -s ~/rd/sublayers_server/log ~/rd/sublayers_common/static/log
+
 
 ## Установка monitorix
 
