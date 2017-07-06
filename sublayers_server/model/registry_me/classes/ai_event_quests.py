@@ -7,7 +7,6 @@ from sublayers_server.model.registry_me.classes.quests import Quest
 from sublayers_server.model.registry_me.tree import (IntField, ListField, RegistryLinkField, EmbeddedNodeField,
                                                      FloatField, Subdoc, EmbeddedDocumentField)
 import random
-from itertools import chain
 
 
 class LootGenerateRec(Subdoc):
@@ -106,6 +105,26 @@ class AITrafficQuest(AIEventQuest):
         ),
     )
 
+    def instantiate_agent(self, event, agent_proto):
+        example_profile = agent_proto.instantiate(
+            name='',
+            role_class=random.choice(event.server.reg.get('/registry/world_settings').role_class_order or ['/registry/rpg_settings/role_class/chosen_one']),
+        )
+
+        example_profile.set_karma(time=event.time, value=random.randint(-30, 60))
+
+        example_profile.driving.value = max(example_profile.driving.value + random.randint(-5, 5), 0)
+        example_profile.shooting.value = max(example_profile.shooting.value + random.randint(-5, 5), 0)
+        example_profile.masking.value = max(example_profile.masking.value + random.randint(-5, 5), 0)
+        example_profile.leading.value = max(example_profile.leading.value + random.randint(-5, 5), 0)
+        example_profile.trading.value = max(example_profile.trading.value + random.randint(-5, 5), 0)
+        example_profile.engineering.value = max(example_profile.engineering.value + random.randint(-5, 5), 0)
+
+        points = example_profile.driving.value + example_profile.shooting.value + example_profile.masking.value + example_profile.leading.value + example_profile.trading.value + example_profile.engineering.value
+        exp = example_profile.exp_table.get_need_exp_by_points(points - example_profile.role_class.start_free_point_perks)
+        example_profile.set_exp(time=event.time, value=exp)
+        return example_profile
+
     def deploy_bots(self, event):
         # Метод деплоя агентов на карту. Вызывается на on_start квеста
         from sublayers_server.model.ai_dispatcher import AIAgent
@@ -119,14 +138,13 @@ class AITrafficQuest(AIEventQuest):
         example_profile = event.server.reg.get('/registry/agents/user/ai_quest')
         action_quest = event.server.reg.get('/registry/quests/ai_action_quest/traffic')
 
+        example_profile = self.instantiate_agent(event, example_profile)
+
         # todo: сделать несколько видов профилей ботов, чтобы там были прокачаны скилы и перки
         example_agent = AgentExample(
             login='',
             user_id='',
-            profile=example_profile.instantiate(
-                name='',
-                role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: рандомизировать
-            )
+            profile=example_profile,
         )
 
         self.dc._main_agent = AIAgent(
