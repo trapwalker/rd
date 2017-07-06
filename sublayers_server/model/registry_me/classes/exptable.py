@@ -96,3 +96,11 @@ class ExpTable(Node):
                 if pair.k >= dvalue:
                     return pair.v
         return 1.0
+
+    def get_need_exp_by_points(self, points):
+        pairs = [(p.k, p.v) for p in self.user_exp_table]
+        pairs.sort(key=lambda x: x[0])
+        for p in pairs:
+            if p[0] > points:
+                return p[1]
+        return 0

@@ -350,6 +350,10 @@ class Unit(Observer):
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
         self.example.set_exp(dvalue=d_car_exp, time=event.time) # начисляем опыт машинке
 
+    def on_get_damage(self, event, damager, damage_type=None):
+        if self.main_agent:
+            self.main_agent.on_get_damage(event=event, damager=damager, damage_type=damage_type)
+
     def on_discharge_shoot(self, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
         self.main_agent.on_discharge_shoot(obj=self, targets=targets, is_damage_shoot=is_damage_shoot, time=time)
@@ -687,7 +691,7 @@ class ExtraMobile(Mobile):
 
     def as_dict(self, time):
         d = super(ExtraMobile, self).as_dict(time=time)
-        login = None if self.main_unit is None else self.main_agent.user.name
+        login = None if self.main_unit is None else self.main_agent._login
         d.update(
             main_agent_login=login,
         )

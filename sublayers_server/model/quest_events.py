@@ -74,6 +74,12 @@ class OnDie(QuestEvent): pass
 class OnMakeDmg(QuestEvent): pass
 
 
+class OnGetDmg(QuestEvent):
+    def __init__(self, obj, **kw):
+        super(OnGetDmg, self).__init__(**kw)
+        self.obj = obj
+
+
 class OnAISee(QuestEvent):
     def __init__(self, obj, **kw):
         super(OnAISee, self).__init__(**kw)

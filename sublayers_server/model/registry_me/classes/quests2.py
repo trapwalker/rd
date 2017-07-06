@@ -247,7 +247,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
     def as_client_dict(self):
         d = super(DeliveryFromCache, self).as_client_dict()
         d.update(
-            package_example=self.delivery_set[0].as_client_dict() if len(self.delivery_set) > 0 else None,
+            package_example=self.delivery_set[0].as_client_dict() if self.delivery_set and len(self.delivery_set) > 0 else None,
             package_uid=getattr(self.dc, 'package_uid', None)
         )
         return d

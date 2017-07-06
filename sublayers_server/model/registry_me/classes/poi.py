@@ -146,6 +146,7 @@ class Town(MapLocation):
                 return build
         return None
 
+
 class GasStation(Town):
     u"""Заправочная станция"""
 

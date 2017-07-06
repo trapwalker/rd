@@ -70,8 +70,8 @@ class ActivateBarterMessage(Message):
         d = super(ActivateBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.user.name,
-            recipient=self.barter.recipient.user.name,
+            initiator=self.barter.initiator._login,
+            recipient=self.barter.recipient._login,
         )
         return d
 
@@ -225,7 +225,7 @@ class Barter(object):
                     return barter
         if recipient_login is not None:
             for barter in agent.barters:
-                if barter.recipient.user.name == recipient_login:
+                if barter.recipient._login == recipient_login:
                     return barter
         return None
 

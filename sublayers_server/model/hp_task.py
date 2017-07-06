@@ -73,6 +73,10 @@ class HPTask(TaskSingleton):
             for agent in self.owner.subscribed_agents:
                 FireAutoEffect(agent=agent, subj=self.del_shooter, obj=self.owner, action=False, time=event.time).post()
 
+        if self.add_shooter or self.shooter:
+            damage_type = 'dhp' if self.shooter else 'dps'
+            owner.on_get_damage(event=event, damager=self.add_shooter or self.shooter, damage_type=damage_type)
+
         # info Раньше вызывались эвенты, сейчас self._update_state вызывается сразу, так как если был вызван HPTask,
         # то мы обязаны сделать апдейт hp_state, иначе списывание дамага может не прекратиться.
         time = event.time

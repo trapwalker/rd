@@ -551,6 +551,7 @@ var ViewMessengerGlass = (function () {
     ViewMessengerGlass.prototype._setCompactChat = function () {
         this.textAreaCompact.empty();
         var chat = this.activeChat;
+        if (!chat) return;
         for (var i = 0; i < chat.mesList.length; i++) {
             var msg = chat.mesList[i];
             if (msg.hasOwnProperty('user') && msg.hasOwnProperty('text') && msg.hasOwnProperty('time'))
