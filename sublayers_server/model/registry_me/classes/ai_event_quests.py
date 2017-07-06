@@ -7,6 +7,7 @@ from sublayers_server.model.registry_me.classes.quests import Quest
 from sublayers_server.model.registry_me.tree import (IntField, ListField, RegistryLinkField, EmbeddedNodeField,
                                                      FloatField, Subdoc, EmbeddedDocumentField)
 import random
+from itertools import chain
 
 
 class LootGenerateRec(Subdoc):
@@ -67,8 +68,22 @@ class AIEventQuest(Quest):
                 if not q.endtime or q.endtime + q.generation_cooldown > current_time:  # todo: правильно проверять завершённые квестов
                     generation_count += 1
                 if q.starttime and q.starttime + q.delay_time > current_time:
-                    return False  # Если был выдан хоть один подобный квест, то ждать delay_time обязательно!
+                    return False  # Если недавно был выдан хоть один подобный квест, то ждать delay_time обязательно!
         return generation_count < self.generation_max_count and self.chance_of_generation >= random.random()
+
+    def _on_end_quest(self, event):
+        super(AIEventQuest, self)._on_end_quest(event=event)
+        agent_ended_quests = self.agent and self.agent.profile.quests_ended
+        if agent_ended_quests is None:
+            return
+        # Удалить все квесты, которые совпадают с текущим по q.parent and q.generation_group
+        target_parent = self.parent
+        target_group = self.generation_group
+        quests_ended = []
+        for q in agent_ended_quests:
+            if q is self or q.parent != target_parent or q.generation_group != target_group:
+                quests_ended.append(q)
+        self.agent.profile.quests_ended = quests_ended
 
 
 class AITrafficQuest(AIEventQuest):

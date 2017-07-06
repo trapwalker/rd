@@ -503,6 +503,13 @@ class Quest(Node):
             if self.status == 'end' and old_status == 'active':  # quest finished
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
                 self.endtime = event.time
+                self._on_end_quest(event)
+
+    def _on_end_quest(self, event):
+        agent_example = self.agent and self.agent.profile
+        if agent_example:
+            agent_example.quests_ended.append(self)
+            agent_example.quests_active.remove(self)
 
     def make_global_context(self):
         ctx = dict(
