@@ -671,7 +671,7 @@ class EnterToLocation(Message):
         else:
             log.warn('Unknown type location: %s', location)
         d.update(
-            location=self.location.as_dict(time=self.time),
+            location=self.location.as_dict(time=self.time, from_message_see=False),
             relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.profile.get_relationship(npc=npc))
                       for npc in location.example.get_npc_list()],
             location_html=location_html,
@@ -680,16 +680,17 @@ class EnterToLocation(Message):
 
 
 class ExitFromLocation(Message):
-    def __init__(self, location, **kw):
-        super(ExitFromLocation, self).__init__(**kw)
-        self.location = location
+    pass
+    # def __init__(self, location, **kw):
+    #     super(ExitFromLocation, self).__init__(**kw)
+    #     self.location = location
 
-    def as_dict(self):
-        d = super(ExitFromLocation, self).as_dict()
-        d.update(
-            location=self.location.as_dict(time=self.time)
-        )
-        return d
+    # def as_dict(self):
+    #     d = super(ExitFromLocation, self).as_dict()
+    #     d.update(
+    #         location=self.location.as_dict(time=self.time)
+    #     )
+    #     return d
 
 
 class ChangeLocationVisitorsMessage(Message):
