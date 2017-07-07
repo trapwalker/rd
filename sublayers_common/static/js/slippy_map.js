@@ -35,7 +35,7 @@
                     {
                         name: "merged",
                         url: function (x, y, z) {
-                            return "http://roaddogs.ru/map/merged/" + z + "/" + x + "/" + y + ".jpg";
+                            return "http://roaddogs.ru/map/merged/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
