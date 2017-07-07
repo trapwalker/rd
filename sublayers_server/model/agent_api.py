@@ -414,9 +414,9 @@ class AgentAPI(API):
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
         # For ReInit Time
-        t0 = self.agent.server.get_time()
-        for add_mul in xrange(1, 6):
-            InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
+        # t0 = self.agent.server.get_time()
+        # for add_mul in xrange(1, 6):
+        #     InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
 
     def on_update_agent_api(self, time):
         self.agent.log.info("on_update_agent_api")
@@ -1019,7 +1019,7 @@ class AgentAPI(API):
         self.agent.log.info('teleport x={}, y={}'.format(x, y))
         p = Point(long(x), long(y))
         if self.agent.car and p:
-            self.agent.save(time=self.agent.server.get_time())
+            # self.agent.save(time=self.agent.server.get_time())
             ex_car = self.agent.car.example
             self.agent.car.displace(time=self.agent.server.get_time())
 
