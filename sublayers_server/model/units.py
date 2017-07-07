@@ -234,20 +234,15 @@ class Unit(Observer):
 
     def on_die(self, event):
         super(Unit, self).on_die(event)
+        self.inventory.save_to_example(time=event.time)
         # Отправка сообщения owner'у о гибели машинки
         if self.owner:
             self.owner.on_die(event=event, unit=self)
-        # todo: удалить себя и на этом месте создать обломки
+            self.owner.example.profile.car = None
+
         self.delete(time=event.time)
 
-        # вернуть агенту стоимость машинки
-        if self.owner:
-            self.owner.example.set_balance(time=event.time, delta=self.example.price)
-            # todo: возможно это нужно перенести (!)
-            self.owner.example.car = None
-
-        if not self.inventory.is_empty():
-            self.post_die_loot(event)
+        self.post_die_loot(event)
 
     def post_die_loot(self, event):
         # Данный метод упределяет как и куда денется лут из Unit объекта: взрыв, проезд и тд.
@@ -355,6 +350,10 @@ class Unit(Observer):
         d_car_exp = self.example.exp_table.car_exp_price_by_exp(exp=obj.example.exp)
         self.example.set_exp(dvalue=d_car_exp, time=event.time) # начисляем опыт машинке
 
+    def on_get_damage(self, event, damager, damage_type=None):
+        if self.main_agent:
+            self.main_agent.on_get_damage(event=event, damager=damager, damage_type=damage_type)
+
     def on_discharge_shoot(self, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
         self.main_agent.on_discharge_shoot(obj=self, targets=targets, is_damage_shoot=is_damage_shoot, time=time)
@@ -460,7 +459,7 @@ class Mobile(Unit):
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
-            ef = self.server.reg['effects/fuel/empty']
+            ef = self.server.reg.get('/registry/effects/fuel/empty', None)
             if ef:
                 ef.done(owner=self, time=time)  # снять эффект
 
@@ -474,7 +473,7 @@ class Mobile(Unit):
         super(Mobile, self).on_before_delete(event=event)
 
     def on_fuel_empty(self, event):
-        ef = self.server.reg['effects/fuel/empty']
+        ef = self.server.reg.get('/registry/effects/fuel/empty', None)
         if ef:
             ef.start(owner=self, time=event.time)
 
@@ -561,6 +560,16 @@ class Bot(Mobile):
         # Если есть киллер, значит труп был убит залповой стрельбой или взрывом
         killer = event.killer
         time = event.time
+
+        items = []
+        if self.owner:
+            items_examples = self.owner.example.profile.insurance.on_car_die(agent=self.owner.example, car=self.example,
+                                                                     is_bang=killer is not None, time=event.time)
+            items = [ItemState(server=self.server, time=event.time, example=item, count=item.amount)
+                     for item in items_examples if item.amount > 0]
+        else:
+            items = self.inventory.get_items()
+
         if killer:
             # Отправить сообщение об анимации направленного убийства
             direction = killer.position(time).direction(self.position(time))
@@ -575,7 +584,7 @@ class Bot(Mobile):
                 inventory_size=self.example.inventory.size,
                 position=Point.random_gauss(self.position(time), 10),
                 life_time=self.server.poi_loot_objects_life_time,
-                items=self.inventory.get_items(),
+                items=items,
             ).post()
         else:
             # Отправить сообщенеи об анимации не направленного убийства
@@ -589,7 +598,7 @@ class Bot(Mobile):
                 inventory_size=self.example.inventory.size,
                 position=self.position(event.time),
                 life_time=self.server.poi_loot_objects_life_time,
-                items=self.inventory.get_items(),
+                items=items,
                 sub_class_car=self.example.sub_class_car,
                 car_direction=self.direction(time),
                 donor_v=self.v(event.time),
@@ -682,7 +691,7 @@ class ExtraMobile(Mobile):
 
     def as_dict(self, time):
         d = super(ExtraMobile, self).as_dict(time=time)
-        login = None if self.main_unit is None else self.main_agent.user.name
+        login = None if self.main_unit is None else self.main_agent._login
         d.update(
             main_agent_login=login,
         )

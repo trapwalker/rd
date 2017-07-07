@@ -13,6 +13,10 @@ var PartyManager = (function () {
         this.selected_party_name = '';
         this.invite_user_name = '';
         this.party_user_name = '';
+
+        this.share_exp_type_list = ['Каждому своё', 'Поровну'];
+        this.cur_share_exp_type = 0;
+        this.jq_cur_share_exp_type = $();
     }
 
     PartyManager.prototype.user_in_party = function (user_name) {
@@ -127,11 +131,20 @@ var PartyManager = (function () {
             this._set_user_info(user_info, this.jq_main_div.find('.party_page_management'));
     };
 
+    PartyManager.prototype.set_share_exp_type = function (d_value) {
+        if (d_value) this.cur_share_exp_type += d_value;
+        var len_type_list = this.share_exp_type_list.length;
+        while (this.cur_share_exp_type < 0) this.cur_share_exp_type += len_type_list;
+        while (this.cur_share_exp_type >= len_type_list) this.cur_share_exp_type -= len_type_list;
+        this.jq_cur_share_exp_type.text(this.share_exp_type_list[this.cur_share_exp_type]);
+    };
+
     PartyManager.prototype.redraw = function (jq_main_div) {
         //console.log('PartyManager.prototype.redraw', $(jq_main_div));
         var self = partyManager;
         self.jq_main_div = $(jq_main_div).first();
         if (self.jq_main_div.find('.party-window-menu-item').length == 0) return;
+
         // Вешаем клики на кнопки верхнего меню
         self.jq_main_div.find('.party-window-menu-item').click(function() {
             var data = $(this).data('page_class');
@@ -151,12 +164,16 @@ var PartyManager = (function () {
             $(self.jq_main_div.find('.party-window-menu-item')[1]).addClass('unactive');
         }
 
+        // Вешаем клики на настройку деления опыта
+        self.jq_cur_share_exp_type = self.jq_main_div.find('#partyShareExpType');
+        self.set_share_exp_type();
+
         // Вешаем клик на кнопку создать
         self.jq_main_div.find('.party-page-create-btn').click(function() {
             var name = partyManager.jq_main_div.find('.party-page-create-name-input').first().val();
             var description = partyManager.jq_main_div.find('.party-page-create-target-textarea').first().val();
             if (name && (name != ''))
-                clientManager.sendCreatePartyFromTemplate(name, description);
+                clientManager.sendCreatePartyFromTemplate(name, description, self.cur_share_exp_type);
             partyManager.jq_main_div.find('.party-page-create-name-input').first().val('');
             partyManager.jq_main_div.find('.party-page-create-target-textarea').first().val('');
         });
@@ -189,9 +206,10 @@ var PartyManager = (function () {
         var i;
         for (i = 0; i < this.invites.length; i++) {
             var invite = this.invites[i];
+            var share_exp_str = invite.party.share_exp ? 'Поровну' : 'Каждому своё';
             back_class = (back_class == 'party-page-line-light') ? 'party-page-line-dark' : 'party-page-line-light';
             var jq_invite = $(
-                '<div class="party-page-invite-invites-line party-page-line ' + back_class + '" data-party_name="' + invite.party.name + '">' + invite.party.name + ' [' + invite.sender.login + ']' +
+                '<div class="party-page-invite-invites-line party-page-line ' + back_class + '" data-party_name="' + invite.party.name + '">' + invite.party.name + ' [Опыт: '+ share_exp_str + '; Пригласил: ' + invite.sender.login + ']' +
                     '<div class="party-page-invite-invites-accept-btn" data-party_name="' + invite.party.name + '">+</div>' +
                     '<div class="party-page-invite-invites-del-btn" data-invite_id="' + invite.invite_id + '">&ndash;</div>' +
                 '</div>'

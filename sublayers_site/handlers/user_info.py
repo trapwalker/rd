@@ -7,14 +7,11 @@ from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 
 from bson.objectid import ObjectId, InvalidId
-import tornado
-
 from time import mktime
 import datetime
 
 
 class GetUserInfoHandler(BaseSiteHandler):
-    @tornado.gen.coroutine
     def post(self):
         user = self.current_user
         user_info = dict()
@@ -26,13 +23,13 @@ class GetUserInfoHandler(BaseSiteHandler):
             self.finish({'user_status': 'quick_user', 'user_name': user.name})
             return
 
-        user_info = yield self._get_car(user=user)
+        user_info = self._get_car(user=user)
         agent_info = user_info.get('user_info', dict())
 
         created = None
         if user.date_created is None:
             user.date_created = datetime.datetime.now()
-            yield user.save()
+            user.save()
             log.warn('User dont have date_created. Setup now Date')
 
         created = mktime(user.date_created.timetuple()) * 1000
@@ -52,14 +49,12 @@ class GetUserInfoHandler(BaseSiteHandler):
 
 
 class GetUserInfoByIDHandler(BaseSiteHandler):
-    @tornado.gen.coroutine
     def post(self):
-        pass
         user_id = self.get_argument('user_id', None)
         if user_id:
             user = None
             try:
-                user = yield User.objects.get(ObjectId(user_id))
+                user = User.objects.filter(pk=ObjectId(user_id)).first()
             except InvalidId as e:
                 log.warning('User resolve error: %r', e)
             if user:
@@ -68,7 +63,7 @@ class GetUserInfoByIDHandler(BaseSiteHandler):
                         'user_name': user.name,
                     })
                 else:
-                    user_info = yield self._get_car(user=user)
+                    user_info = self._get_car(user=user)
                     self.finish({
                         'user_name': user.name,
                         'user_car_html': user_info.get('html_car_img', ''),

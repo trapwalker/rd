@@ -1,3 +1,22 @@
+{% try %}
+  {% set car_info_table_agent = agent.example %}
+{% except %}
+    {% set car_info_table_agent = None %}
+{% end %}
+
+{% if car_info_table_agent %}
+    {% set v_value = round(car.get_modify_value(param_name='v_forward', example_agent=car_info_table_agent) * 3.6) %}
+    {% set v_dvalue = v_value - round(car.get_modify_value(param_name='v_forward', example_agent=None) * 3.6) %}
+    {% if v_dvalue < 0 %}
+        {% set str_value = "{}({})".format(int(v_value), int(v_dvalue)) %}
+    {% else %}
+        {% set str_value = "{}".format(int(v_value)) %}
+    {% end %}
+{% else %}
+    {% set v_value = round(car.get_modify_value(param_name='v_forward', example_agent=None) * 3.6) %}
+    {% set str_value = "{}".format(int(v_value)) %}
+{% end %}
+
 <div class="car-info-block-info">
     <div class="car-info-block-body-right-menu">
         <div class="mainCarInfoWindow-body-right-menu-button active" onclick="CarTableInfoMenuClick(this)" data-page="model">TTX</div>
@@ -9,14 +28,18 @@
         <div class="car-info-block-body-right-list-text value uneven">{{ car.class_car }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspПрочность:</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.max_hp }}</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspСлотов кузова:</div>
-        <div class="car-info-block-body-right-list-text value uneven">{{ car.get_count_slots(tags='armorer') }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspСлотов багажника:</div>
-        <div class="car-info-block-body-right-list-text value even">{{ car.inventory.size }}</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspОбъём бака:</div>
-        <div class="car-info-block-body-right-list-text value uneven">{{ car.max_fuel }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspРасход топлива:</div>
-        <div class="car-info-block-body-right-list-text value even">{{ car.p_fuel_rate }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbspCкорость:</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ str_value }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspСлотов кузова:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ car.get_count_slots(tags='armorer') }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbspСлотов багажника:</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ car.inventory.size }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspОбъём бака:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ car.max_fuel }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbspРасход топлива:</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ car.p_fuel_rate }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspНавык вождения:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ car.needed_driving }}</div>
         <div class="car-info-block-body-right-list-bonuses">Бонусы местности:</div>
         <!--<div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>-->
         <!--<div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>-->

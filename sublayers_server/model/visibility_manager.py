@@ -28,9 +28,7 @@ class TileContactSearchEvent(Event):
             # else:
             #     del vis_mng.tiles[tid]
         except Exception as e:
-            log.debug('Error TileContactSearchEvent')
-            log.debug(e)
-            pass
+            log.exception('Error TileContactSearchEvent: %s', e)
         finally:
             if len(vis_mng.tiles[tid][1]) > 0:
                 TileContactSearchEvent(vis_mng=vis_mng, tile_id=tid, time=self.time + vis_mng.interval).post()

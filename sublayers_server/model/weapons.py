@@ -150,6 +150,7 @@ class WeaponAuto(Weapon):
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, weapon=self, sector=self.sector, action=True, time=time).post()
         self.owner.on_autofire_start(target=car, time=time)
+        self.owner.main_agent.example.profile.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
 
     def _stop_fire_to_car(self, car, time):
         # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)

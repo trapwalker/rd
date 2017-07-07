@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging.config
-if __name__ == '__main__':
-    logging.config.fileConfig("../logging.conf")
+import logging
 log = logging.getLogger(__name__)
 
 import sys

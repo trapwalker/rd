@@ -1,7 +1,6 @@
 var WTextArcade = (function () {
     WTextArcade.prototype.queue = [];
 
-
     WTextArcade.prototype.position_functions = {
         easeOutElastic: function(x, t, b, c, d) {
             // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
@@ -54,6 +53,7 @@ var WTextArcade = (function () {
     }
 
     WTextArcade.prototype.start = function() {
+        if (basic_server_mode) return;
         this.queue.push(this);
         if (this.queue.length == 1) setTimeout(this._start.bind(this), 10);
     };

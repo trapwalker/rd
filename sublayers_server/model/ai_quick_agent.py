@@ -9,9 +9,6 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
 from sublayers_server.model.quest_events import OnAISee, OnAIOut
 
-import random
-import tornado.gen
-
 
 class InitAIQuickCar(Event):
     def __init__(self, ai, **kw):
@@ -21,7 +18,7 @@ class InitAIQuickCar(Event):
 
     def on_perform(self):
         super(InitAIQuickCar, self).on_perform()
-        self.server.ioloop.add_callback(callback=self.ai.on_timer_restart_car, event=self)
+        self.ai.on_timer_restart_car(event=self)
 
 
 class AIQuickAgent(AI):
@@ -38,12 +35,11 @@ class AIQuickAgent(AI):
 
     @event_deco
     def create_ai_quest(self, event):
-        quest_parent = self.example.ai_quest
+        quest_parent = self.example.profile.ai_quest
         new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        new_quest.agent = self.example
-        if new_quest.generate(event=event):
-            self.example.add_quest(quest=new_quest, time=event.time)
-            self.example.start_quest(new_quest.uid, time=event.time, server=self.server)
+        if new_quest.generate(event=event, agent=self.example):
+            self.example.profile.add_quest(quest=new_quest, time=event.time)
+            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
         else:
             log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
             del new_quest
@@ -52,18 +48,16 @@ class AIQuickAgent(AI):
     def timer_restart_car(self, time):
         InitAIQuickCar(ai=self, time=time).post()
 
-    @tornado.gen.coroutine
     def on_timer_restart_car(self, event):
-        # if self.worked and len(self.server.app.clients) * 2 < self.server.reg['world_settings'].quick_game_bot_count:
+        # if self.worked and len(self.server.app.clients) * 2 < self.server.reg.get('/registry/world_settings').quick_game_bot_count:
         if self.worked:
             # Добавить свою машинку на карту
-            self.example.car = self._car_proto.instantiate(fixtured=False)
-            yield self.example.car.load_references()
-            self.example.current_location = None
+            self.example.profile.car = self._car_proto.instantiate()
+            self.example.profile.current_location = None
             self.current_location = None
-            self.example.car.position = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius) # Радиус появления ботов в быстрой игре
+            self.example.profile.car.position = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius) # Радиус появления ботов в быстрой игре
 
-            car = Bot(time=event.time, example=self.example.car, server=self.server, owner=self)
+            car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
             self.car.fire_auto_enable(enable=True, time=event.time + 0.1)
 
@@ -82,16 +76,6 @@ class AIQuickAgent(AI):
     def is_online(self):
         return True
 
-    # todo: пробросить сюда Ивент
-    def on_see(self, time, subj, obj):
-        super(AIQuickAgent, self).on_see(time=time, subj=subj, obj=obj)
-        self.example.on_event(event=Event(server=self.server, time=time), cls=OnAISee, obj=obj)
-
-    # todo: пробросить сюда Ивент
-    def on_out(self, time, subj, obj):
-        super(AIQuickAgent, self).on_out(time=time, subj=subj, obj=obj)
-        self.example.on_event(event=Event(server=self.server, time=time), cls=OnAIOut, obj=obj)
-
     def on_die(self, **kw):
         super(AIQuickAgent, self).on_die(**kw)
         self._quick_bot_deaths += 1
@@ -99,4 +83,3 @@ class AIQuickAgent(AI):
     def on_kill(self, **kw):
         super(AIQuickAgent, self).on_kill(**kw)
         self._quick_bot_kills += 1
-

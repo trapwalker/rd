@@ -60,7 +60,7 @@ class ChatRoomPrivateCreateEvent(Event):
 
     def on_perform(self):
         super(ChatRoomPrivateCreateEvent, self).on_perform()
-        # assert False, '# todo: Get agent by user._id'
+        # assert False, '# todo: Get agent by user.pk'
         recipient = self.server.agents_by_name.get(str(self.recipient_login), None)
         if not recipient:
             log.warning('Agent with login %r not found', self.recipient_login)
@@ -235,9 +235,9 @@ class PrivateChatRoom(ChatRoom):
                     chat.exclude(agent=agent, time=time)
 
     def __init__(self, agent, recipient, time):
-        assert isinstance(agent.user.name, unicode)
-        assert isinstance(recipient.user.name, unicode)
-        super(PrivateChatRoom, self).__init__(time=time, name=(u"{!s} -> {!s}".format(agent.user.name, recipient.user.name)))  # todo: use unicode
+        assert isinstance(agent._login, unicode)
+        assert isinstance(recipient._login, unicode)
+        super(PrivateChatRoom, self).__init__(time=time, name=(u"{!s} -> {!s}".format(agent._login, recipient.user.name)))  # todo: use unicode
         self.include(agent=agent, time=time)
         self.include(agent=recipient, time=time)
 

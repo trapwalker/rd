@@ -69,7 +69,7 @@ var ClientManager = (function () {
 
     ClientManager.prototype._getOwner = function (data) {
         if(data)
-            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser") {
+            if (data.cls === "User" || data.cls === "QuickUser" || data.cls === "AIQuickAgent" || data.cls === "TeachingUser" || data.cls === "AIAgent") {
                 var party = null;
                 if (data.party)
                     party = new OwnerParty(data.party.id, data.party.name);
@@ -210,6 +210,7 @@ var ClientManager = (function () {
                 var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
             }
+            if (car.cls == 'Radar') var t = new WCanvasMarker(car);
 
             if (car.cls == "Rocket") {
                 car._icon_name = event.object.icon_name;
@@ -330,6 +331,12 @@ var ClientManager = (function () {
             case 'NPCDeliveryNote':
                 new QuestNoteNPCBtnDelivery(note);
                 break;
+            case 'NPCDeliveryNotePackage':
+                new QuestNoteNPCBtnDeliveryPackage(note);
+                break;
+            case 'NPCDeliveryNoteCourier':
+                new QuestNoteNPCBtnDeliveryCourier(note);
+                break;
             case 'QuestNoteNPCCar':
                 break;
             case 'NPCWantedNote':
@@ -361,6 +368,9 @@ var ClientManager = (function () {
                 break;
             case 'TrainerTeachingNote':
                 teachingManager.update(new TrainerTeachingNote(note));
+                break;
+            case 'ExitBtnTeachingNote':
+                teachingManager.update(new ExitBtnTeachingNote(note));
                 break;
             case 'CruiseSpeedTeachingMapNote':
                 teachingMapManager.update(new CruiseSpeedTeachingMapNote(note));
@@ -396,20 +406,27 @@ var ClientManager = (function () {
                 teachingMapManager.update(new TryGameTeachingMapNote(note));
                 break;
             case 'MapMarkerNote':
+                //console.log('MapMarkerNote', note);
                 var quest = journalManager.quests.getQuest(note.quest_uid);
                 var rad_note = new QuestMapMarkerNote({
                     quest_uid: note.quest_uid,
                     uid: note.uid,
-                    position: note.marker.position,
-                    radius: note.marker.radius,
-                    icon: quest && quest.map_icon,
+                    position: note.position,
+                    radius: note.radius,
+                    icon_full: quest && quest.map_icon_full,
+                    icon_circle: quest && quest.map_icon_circle,
                     focus_caption: quest && quest.caption
                 });
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
             case 'QuestRadiationNPCFinish':
+                new QuestNoteNPCBtnRadiation(note);
+                break;
             case 'MapActivationNoteFinish':
                 new QuestNoteNPCBtn(note); // todo: заменить на правильную ноту, когда появится
+                break;
+            case 'MapActivationRadarsNoteFinish':
+                new MapActivationRadarsNoteFinish(note);
                 break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
@@ -417,6 +434,11 @@ var ClientManager = (function () {
     };
 
     // Входящие сообщения
+
+    ClientManager.prototype.RefreshMessage = function (event) {
+        console.log('ClientManager.prototype.RefreshMessage: ', event.comment);
+        setTimeout(function(){window.location.reload()}, 2000) ;
+    };
 
     ClientManager.prototype.InitAgent = function(event){
         //console.log('ClientManager.prototype.InitAgent', event);
@@ -512,6 +534,8 @@ var ClientManager = (function () {
             if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
                 mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
                 mapManager.widget_fire_radial_grid = new WFCanvasireRadialGrid(mcar);
+
+                mapManager.setZoom(mapManager.getZoom(), true);
             }
 
             // Инициализация виджетов работы с канвасом
@@ -527,6 +551,8 @@ var ClientManager = (function () {
             // Инициализация мап-зума
             var curr_cord = mcar.getCurrentCoord(clock.getCurrentTime());
             mapManager.set_coord({x: curr_cord.x, y: curr_cord.y});
+
+            returnFocusToMap();
         }
 
 
@@ -595,6 +621,7 @@ var ClientManager = (function () {
             case 'Rocket':
             case 'ScoutDroid':
             case 'Turret':
+            case 'Radar':
             case 'SlowMine':
             case 'BangMine':
             case 'POICorpse':
@@ -650,17 +677,21 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.Die = function (event) {
-        //console.log('ClientManager.prototype.Die');
+        //console.log('ClientManager.prototype.Die', event);
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
-        modalWindow.modalDialogInfoShow({
-            caption: 'Car Crash',
-            header: 'Крушение!',
-            body_text: 'Ваш автомобиль потерпел крушение. Вы можете взять другой в городе.',
-            callback_ok: function () {
-                window.location.reload();
-            }
-        });
+
+        if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/premium')
+            textConsoleManager.start('die_premium', 3000, event);
+        else if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/shareholder')
+            textConsoleManager.start('die_shareholder', 3000, event);
+        else if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/base')
+            textConsoleManager.start('die_base', 3000, event);
+        else {
+            alert('Странная страховка: ' + event.insurance);
+            location.reload();
+        }
+
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
@@ -1042,6 +1073,8 @@ var ClientManager = (function () {
         console.log('ClientManager.prototype.ChangeAgentKarma', event);
         if (locationManager.in_location_flag)
             locationManager.npc_relations = event.relations;
+        user.example_agent.rpg_info.karma = event.karma;
+        characterManager.redraw();
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
@@ -1170,6 +1203,10 @@ var ClientManager = (function () {
         if ((npc == null) || (curr_place == npc) || (curr_place instanceof LocationPlaceBuilding &&
             curr_place.building_rec.head.node_hash == npc.npc_rec.node_hash)) {
             curr_place.set_header_text($('<div>' + event.replica + '</div>'));
+
+            if (event.replica_type == 'Error') {
+                audioManager.play({name: "npc_transaction_fail", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            }
         }
 
     };
@@ -1230,8 +1267,11 @@ var ClientManager = (function () {
 
     ClientManager.prototype.NPCTransactionMessage = function (event) {
         //console.log('ClientManager.prototype.NPCTransactionMessage', event);
-        if (locationManager.npc.hasOwnProperty(event.npc_html_hash))
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
+            // Звук успешного завершения транзакции
+            audioManager.play({name: "npc_transaction_finish", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        }
     };
 
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
@@ -1309,7 +1349,7 @@ var ClientManager = (function () {
     ClientManager.prototype.TraderClearMessage = function (event) {
         //console.log('ClientManager.prototype.TraderClearMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
-        if (trader) trader.clear();
+        if (trader) trader.clear_assortment();
     };
 
     ClientManager.prototype.TrainerInfoMessage = function (event) {
@@ -1611,13 +1651,14 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description) {
+    ClientManager.prototype.sendCreatePartyFromTemplate = function (name, description, exp_share_type) {
         var mes = {
             call: "send_create_party_from_template",
             rpc_call_id: rpcCallList.getID(),
             params: {
-                name: name && name.toString(),
-                description: description
+                name: name,
+                description: description,
+                exp_share_type: exp_share_type == 1
             }
         };
         rpcCallList.add(mes);
@@ -1689,6 +1730,20 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
+
+    ClientManager.prototype.sendPartyShareOptions = function (share_exp) {
+        var mes = {
+            call: "change_party_share_option",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                share_exp: share_exp
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+
 
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
         //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
@@ -1916,6 +1971,19 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendGoToRespawn = function (town_node_hash) {
+        //console.log('ClientManager.prototype.sendQuickPlayAgain');
+        var mes = {
+            call: "go_to_respawn",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                town_node_hash: town_node_hash
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     // Сообщения локаций
 
     ClientManager.prototype.sendEnterToNPC = function (npc) {
@@ -1967,6 +2035,19 @@ var ClientManager = (function () {
                 head_node_hash: build.building_rec.head.node_hash,
                 build_name: build.building_rec.name
             }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
+    // Nukeoil
+
+    ClientManager.prototype.sendInsuranceBuy = function (insurance_node_hash) {
+        //console.log('ClientManager.prototype.sendFuelStationActive');
+        var mes = {
+            call: "insurance_buy",
+            rpc_call_id: rpcCallList.getID(),
+            params: { insurance_node_hash: insurance_node_hash }
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

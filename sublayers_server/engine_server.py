@@ -12,10 +12,13 @@ def parent_folder(fn):
 
 sys.path.append(parent_folder(__file__))
 
-import logging.config
+import logging
 
-logging.config.fileConfig("logging.conf")
-log = logging.getLogger(__name__)
+if __name__ == '__main__':
+    import log_setup
+    log_setup.init(quick_mode=False)
+
+log = logging.getLogger()
 
 import tornado.escape
 import tornado.ioloop
@@ -24,12 +27,14 @@ import tornado.websocket
 import tornado.options
 from tornado.options import options
 import socket
+import pymongo.errors
 
 from sublayers_server import settings
 from sublayers_server import uimodules
 
 from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
+from sublayers_common.ctx_timer import Timer
 
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
@@ -54,16 +59,16 @@ from sublayers_server.handlers.site.site_auth import (
 )
 from sublayers_server.handlers.context_panel import ContextPanelListHandler
 
-from sublayers_server.handlers.statistics import (ServerStatisticsHandler, ServerStatForSite, ServerStatMessagesHandler,
-                                                  ServerStatEventsHandler, ServerStatHandlersHandler,
-                                                  ServerStatGraphicsHandler, ServerStatEventGraphicsHandler)
+from sublayers_server.handlers.statistics import (
+    ServerStatisticsHandler, ServerStatForSite, ServerStatMessagesHandler, ServerStatEventsHandler,
+    ServerStatHandlersHandler, ServerStatGraphicsHandler, ServerStatEventGraphicsHandler,
+)
 from sublayers_server.handlers.test_interlacing import TestInterlacingHandler
-from sublayers_server.model.event_machine import LocalServer
+from sublayers_server.model.event_machine import BasicLocalServer, QuickLocalServer
 
 from sublayers_server.handlers.site_api import (
     APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
 )
-
 from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
 
 
@@ -89,16 +94,17 @@ class Application(BaseApplication):
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
-
-        self.srv = LocalServer(app=self)
-        log.debug('server instance init')
-        self.srv.start()
-        log.info('ENGINE LOOP STARTED: mode={options.mode}'.format(options=options) + '-' * 50)
+        self.init_handlers()
         self.clients = []
-        self.chat = []
-        # todo: truncate chat history
-        self.srv.load_registry()
+        self.chat = []  # todo: truncate chat history
 
+        _server_class = dict(quick=QuickLocalServer, basic=BasicLocalServer)[options.mode]
+        self.srv = _server_class(app=self)
+        with Timer(logger=None) as t:
+            self.srv.load_world()
+            log.info('World loading DONE ({:.3f}s).'.format(t.duration))
+
+    def init_handlers(self):
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта
             (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),
@@ -155,6 +161,37 @@ class Application(BaseApplication):
             (r"/interlacing", TestInterlacingHandler),
         ])
 
+    def start(self):
+        self.srv.start()
+        try:
+            self.listen(options.port)
+        except socket.error as e:
+            if os.name == 'nt':
+                _message = str(e).decode('cp1251', errors='ignore')
+            else:
+                _message = e
+
+            _message = u'{} port: {}'.format(_message, options.port)
+            try:
+                log.critical(_message)
+            except:
+                log.critical(repr(_message))
+
+            print _message
+        except Exception as e:
+            log.exception(e)
+        else:
+            log.debug('==== IOLoop START ' + '=' * 32)
+            try:
+                tornado.ioloop.IOLoop.instance().start()
+            except Exception as e:
+                log.exception(e)
+            log.debug('==== IOLoop FINISHED ' + '=' * 29)
+        finally:
+            log.debug('==== finally before stop')
+            self.stop()
+            log.debug('==== finally after stop')
+
     def on_stop(self):
         if self.srv.is_active:
             self.srv.stop()
@@ -164,28 +201,23 @@ class Application(BaseApplication):
 
 
 def main():
-    log.info('\n\n\n' + '==' * 70)
-    settings.load('server.conf')
-    service_tools.pidfile_save(options.pidfile)
-    app = Application()
-    # service_tools.set_terminate_handler(app.stop)
     try:
-        log.info('port %s listening', options.port)
-        app.listen(options.port)
-    except socket.error as e:
-        log.critical(e)
-        print e
+        log.info('\n\n\n' + '=' * 67)
+        settings.load(os.path.join(os.path.dirname(__file__), 'server.conf'))
+        service_tools.pidfile_save(options.pidfile)
+        app = Application()
+        # service_tools.set_terminate_handler(app.stop)
+        app.start()
+    except pymongo.errors.ConnectionFailure as e:
+        try:
+            msg = str(e).decode('cp1251') if os.name == 'nt' else repr(e)
+        except:
+            msg = repr(e)
+
+        log.critical(u'Databse error: %s', msg)
+        sys.exit(1)
     except Exception as e:
-        log.critical(e)
-        print e
-    else:
-        log.debug('====== ioloop start')
-        tornado.ioloop.IOLoop.instance().start()
-        log.debug('====== ioloop finished')
-    finally:
-        log.debug('====== finally before stop')
-        app.stop()
-        log.debug('====== finally after stop')
+        log.exception(e)
 
 
 if __name__ == "__main__":

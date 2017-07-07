@@ -133,6 +133,8 @@ var LocationManager = (function () {
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
 
+                locationManager.set_panels_location_screen();
+
                 // при попадании на ландшафт города нужно вызвать обновление teachingManager
                 teachingManager.redraw();
             }
@@ -188,7 +190,7 @@ var LocationManager = (function () {
             this.buildings[building_rec.name] = this._getBuildingByType(building_rec, this.jq_town_div);
         }
         if (this.location_cls == 'GasStation')
-            this.screens.location_screen = this.buildings['nucoil'];
+            this.screens.location_screen = this.buildings['nukeoil'];
         this.active_screen_name = 'location_screen';
 
         // Установка отношений для всех нпс в городе
@@ -354,9 +356,9 @@ var LocationManager = (function () {
     LocationManager.prototype._getBuildingByType = function (building_rec, jq_town_div) {
         //console.log('LocationManager.prototype._getBuildingByType', building_rec);
         switch (building_rec.name) {
-            case 'autoservice':
+            case 'service':
                 return (new LocationServiceBuilding(building_rec, jq_town_div));
-            case 'nucoil':
+            case 'nukeoil':
                 return (new LocationNucoilBuilding(building_rec, jq_town_div));
             default:
                 return (new LocationPlaceBuilding(building_rec, jq_town_div));
@@ -419,6 +421,14 @@ var LocationManager = (function () {
 
     LocationManager.prototype.handler_mouseleave = function() {
         this.screens[this.active_screen_name].set_panels();
+    };
+
+    LocationManager.prototype.set_panels_location_screen = function() {
+        //console.log('LocationManager.prototype.handler_mouseleave');
+        if (this.active_screen_name = "location_screen") {
+            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+            locationManager.panel_right.show({}, 'location');
+        }
     };
 
 
@@ -494,7 +504,7 @@ var LocationPanelInfo = (function () {
     };
 
     LocationPanelInfo.prototype.show_location = function (options) {
-        //console.log('LocationPanelInfo.prototype.show_building', options);
+        //console.trace('LocationPanelInfo.prototype.show_location', options);
         var jq_panel = this.jq_main_div.find('.pi-location').first();
         jq_panel.find('.location').text(locationManager.example.title);
         jq_panel.find('.head').text('Нет');
@@ -529,6 +539,23 @@ var LocationPanelInfo = (function () {
     LocationPanelInfo.prototype.show_nukeoil = function (options) {
         //console.log('LocationPanelInfo.prototype.show_nukeoil', options);
         var jq_panel = this.jq_main_div.find('.pi-nukeoil').first();
+        if (user.example_agent && user.example_agent.insurance) {
+            var ins = user.example_agent.insurance;
+            jq_panel.find('.pi-nukeoil-insurance-block').first()
+                .css('background', 'transparent url(/' + ins.icon_right_panel + ') 100% 100% no-repeat');
+            jq_panel.find('.panel-info-line.insurance-name').first().text(ins.title);
+            if (ins.starttime && ins.deadline) {
+                jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'block');
+                
+                var start_quest_date = new Date((ins.starttime + ins.deadline) * 1000);
+                start_quest_date.setFullYear(start_quest_date.getFullYear() + 100);
+                var start_quest_date_s = start_quest_date.toLocaleString('ru');
+                jq_panel.find('.panel-info-line.insurance-deadline.time').first().text(start_quest_date_s);
+            }
+            else
+                jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'none');
+
+        }
         jq_panel.css('display', 'block');
     };
 

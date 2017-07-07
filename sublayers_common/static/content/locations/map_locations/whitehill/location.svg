@@ -241,7 +241,7 @@
        xlink:href="nukeoil_bg.png"
        y="138.36244"
        x="485"
-       id="nucoil-back"
+       id="nukeoil-back"
        preserveAspectRatio="none"
        height="752"
        width="943"
@@ -287,7 +287,7 @@
        width="943"
        height="752"
        preserveAspectRatio="none"
-       id="autoservice-back"
+       id="service-back"
        x="485"
        y="138.36244"
        class="building-back" />
@@ -363,7 +363,7 @@
        width="141"
        style="display:none"
        class="highlight-buildings"
-       data-building="nucoil" />
+       data-building="nukeoil" />
     <image
        sodipodi:absref="D:\projects\road_dogs\sublayers_common\static\content\locations\map_locations\whitehill\mayor.png"
        xlink:href="mayor.png"
@@ -455,7 +455,7 @@
        x="995.27216"
        y="621.75818"
        class="highlight-buildings"
-       data-building="autoservice" />
+       data-building="service" />
     <image
        sodipodi:absref="D:\projects\road_dogs\sublayers_common\static\content\locations\map_locations\whitehill\market.png"
        xlink:href="market.png"
@@ -512,7 +512,7 @@
          id="path_h1"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
-         data-building="nucoil" />
+         data-building="nukeoil" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5972);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
          d="m 670.5,518 a 288,288 0 0 1 576,0 l 43,0 a 331,331 0 0 0 -662,0 z"
@@ -539,7 +539,7 @@
          d="M 1070.93,630.43 A 159,159 0 1 0 799.5,518 l -43,0 a 202,202 0 1 1 344.836,142.836 z"
          id="path_h5"
          inkscape:connector-curvature="0"
-         data-building="autoservice"
+         data-building="service"
          class="highlight-buildings" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5944);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"

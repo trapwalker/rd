@@ -128,54 +128,54 @@
 }
 .party-page-create-target-textarea:focus { outline: none; }
 
-.party-page-create-images-block {
+.party-page-create-setting-line {
     position: relative;
-    height: 146px;
     width: 100%;
-    overflow: hidden;
-    margin-top: 15px;
+    height: 30px;
+    margin: 5px 0;
 }
-#townMenuLocation .party-page-create-images-block { margin-top: 5px; }
 
-.party-page-create-images-slide-btn {
+.party-page-create-setting-caption {
     position: relative;
+    width: calc(100% - 200px);
+    height: 30px;
+    line-height: 30px;
     float: left;
-    width: 17px;
-    height: 24px;
-    margin-top: 60px;
 }
-.party-page-create-images-slide-btn.left { background: transparent url('/static/img/chat/btn_slide_left.png') 50% 50% no-repeat; margin-right: 10px; }
-.party-page-create-images-slide-btn.left:hover { background: transparent url('/static/img/chat/btn_slide_left_over.png') 50% 50% no-repeat; }
-.party-page-create-images-slide-btn.right { background: transparent url('/static/img/chat/btn_slide_right.png') 50% 50% no-repeat; margin-left: 10px; }
-.party-page-create-images-slide-btn.right:hover { background: transparent url('/static/img/chat/btn_slide_right_over.png') 50% 50% no-repeat; }
 
-.party-page-create-images-wrap {
+.party-page-create-setting-list {
     position: relative;
+    width: 200px;
+    height: 30px;
     float: left;
+}
+
+.party-page-create-setting-list.dark-back {
+    background-color: #000000;
+    background-image: linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07),
+                      linear-gradient(45deg, #081b07 25%, transparent 25%, transparent 74%, #081b07 75%, #081b07);
+    background-size: 2px 2px;
+    background-position: 0 0, 1px 1px;
+}
+
+.party-page-create-setting-list-btn {
+    position: relative;
+    box-sizing: border-box;
+    margin: 8px 4px 0 4px;
+    border: 6px solid transparent;
+    float: left;
+}
+.party-page-create-setting-list-btn.left { border-right: 6px solid #31c811; }
+.party-page-create-setting-list-btn.right { border-left: 6px solid #31c811; }
+
+.party-page-create-setting-list-item {
+    position: relative;
     height: 100%;
-    width: calc(100% - 54px);
-    overflow: hidden;
-}
-
-.party-page-create-images-container {
-    position: relative;
-    width: 900px;
-}
-
-.party-page-create-images {
-    position: relative;
+    width: calc(100% - 40px);
     float: left;
-    width: 170px;
-    height: 146px;
-    margin-right: 10px;
+    text-align: center;
+    line-height: 30px;
 }
-.party-page-create-images.image1 {background: #082801 url('/static/img/party_avatars/dog_1.png') 100% 100% no-repeat; }
-.party-page-create-images.image2 {background: #082801 url('/static/img/party_avatars/dog_2.png') 100% 100% no-repeat; }
-.party-page-create-images.image3 {background: #082801 url('/static/img/party_avatars/dog_3.png') 100% 100% no-repeat; }
-.party-page-create-images.image4 {background: #082801 url('/static/img/party_avatars/dog_4.png') 100% 100% no-repeat; }
-.party-page-create-images.image5 {background: #082801 url('/static/img/party_avatars/dog_5.png') 100% 100% no-repeat; }
-.party-page-create-images:hover { background-color: #0e4b00; }
-.party-page-create-images.active { background-color: #0e4b00; }
 
 .party-page-create-btn {
     position: absolute;

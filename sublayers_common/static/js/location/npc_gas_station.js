@@ -255,7 +255,7 @@ var LocationGasStationNPC = (function (_super) {
     LocationGasStationNPC.prototype.set_header_text = function (html_text) {
         if (!locationManager.isActivePlace(this)) return;
         // заполнить в шапку стоимость ремонта.
-        if (! html_text) {
+        if (! html_text && user.example_car) {
             var current_gas = this._get_gas_by_prc(this.current_prc_gas) - user.example_car.fuel;
             if (current_gas < 0) current_gas = 0;
             current_gas += this._get_selected_volume();

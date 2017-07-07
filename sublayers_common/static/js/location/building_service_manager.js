@@ -56,7 +56,6 @@ var LocationServiceBuilding = (function (_super) {
             this.jq_repair_carette = jq_repair_page.find('#autoserviceRepairCarrette');
             this.jq_hp_value = jq_repair_page.find('#autoserviceRepairHPValue');
 
-
             // Повесить драгабл на каретку
             var jq_rail = jq_repair_page.find('#autoserviceRepairRail');
             this.rail_width = jq_rail.outerWidth() - this.jq_repair_carette.outerWidth();
@@ -79,7 +78,6 @@ var LocationServiceBuilding = (function (_super) {
         else {
             jq_repair_page.text('Отсутствует машинка');
         }
-
 
         _super.prototype.update.call(this);
     };
@@ -130,20 +128,19 @@ var LocationServiceBuilding = (function (_super) {
 
     LocationServiceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        if (this.active_central_page == 'buildingPageRepair_autoservice') {
+        if (this.active_central_page == 'buildingPageRepair_service') {
             locationManager.setBtnState(1, '</br>Ремонт', user.example_car ? true : false);
-            locationManager.setBtnState(2, 'Ремонт</br>всего', user.example_car ? true : false);
+            locationManager.setBtnState(2, 'Полный</br>ремонт', user.example_car ? true : false);
             locationManager.setBtnState(3, '</br>Назад', true);
             locationManager.setBtnState(4, '</br>Выход', true);
         }
-        else {
+        else
             _super.prototype.set_buttons.call(this);
-        }
     };
 
     LocationServiceBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationServiceBuilding.prototype.clickBtn', btnIndex);
-        if (this.active_central_page == 'buildingPageRepair_autoservice') {
+        if (this.active_central_page == 'buildingPageRepair_service') {
             if (btnIndex == '1') {
                 //console.log('Попытка отремонтировать машину');
                 var hp = this._get_hp_by_prc(this.current_prc_hp);

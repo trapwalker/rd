@@ -6,8 +6,14 @@
 .pi-nukeoil-lines {
     position: relative;
     width: 100%;
-    height: 37px;
 }
+
+.pi-nukeoil .panel-info-line-block {
+    position: relative;
+    width: 100%;
+    height: 16px;
+}
+
 
 .pi-nukeoil-insurance-block {
     position: relative;
@@ -15,9 +21,7 @@
     height: 170px;
     margin: 5px auto 0 auto;
 }
-.pi-nukeoil-insurance-block.standard { background-image: url("/static/content/locations/institutions/nucoil/standart_small.png"); }
-.pi-nukeoil-insurance-block.premium { background-image: url("/static/content/locations/institutions/nucoil/premium_small.png"); }
-.pi-nukeoil-insurance-block.vip { background-image: url("/static/content/locations/institutions/nucoil/vip_small.png"); }
+
 .pi-nukeoil-insurance-block::before {
     content: " ";
     display: block;

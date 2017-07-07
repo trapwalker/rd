@@ -143,7 +143,7 @@
                     <div class="circle {{ 'on' if bot.car else '' }}"></div>
                 </div>
                 <div class="worked">
-                    <input type="checkbox" {{ "checked" if bot.worked else "" }} onclick="sendChangeWorkedBot('{{ bot.user.name }}')"/>
+                    <input type="checkbox" {{ "checked" if bot.worked else "" }} onclick="sendChangeWorkedBot('{{ bot._login }}')"/>
                 </div>
                 <div class="kills">{{ bot._quick_bot_kills }}</div>
                 <div class="deaths">{{ bot._quick_bot_deaths }}</div>

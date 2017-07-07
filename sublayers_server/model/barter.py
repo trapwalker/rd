@@ -70,8 +70,8 @@ class ActivateBarterMessage(Message):
         d = super(ActivateBarterMessage, self).as_dict()
         d.update(
             barter_id=self.barter.id,
-            initiator=self.barter.initiator.user.name,
-            recipient=self.barter.recipient.user.name,
+            initiator=self.barter.initiator._login,
+            recipient=self.barter.recipient._login,
         )
         return d
 
@@ -225,7 +225,7 @@ class Barter(object):
                     return barter
         if recipient_login is not None:
             for barter in agent.barters:
-                if barter.recipient.user.name == recipient_login:
+                if barter.recipient._login == recipient_login:
                     return barter
         return None
 
@@ -334,8 +334,8 @@ class Barter(object):
         self.recipient_inv.add_inventory(inventory=self.initiator_table, time=event.time)
 
         # Обмен деньгами
-        self.initiator.example.set_balance(time=event.time, delta=self.recipient_money - self.initiator_money)
-        self.recipient.example.set_balance(time=event.time, delta=self.initiator_money - self.recipient_money)
+        self.initiator.example.profile.set_balance(time=event.time, delta=self.recipient_money - self.initiator_money)
+        self.recipient.example.profile.set_balance(time=event.time, delta=self.initiator_money - self.recipient_money)
 
         # Отправить сообщения о закрытии окон
         SuccessBarterMessage(agent=self.initiator, barter=self, time=event.time).post()

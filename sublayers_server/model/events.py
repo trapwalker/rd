@@ -219,7 +219,9 @@ class Delete(Objective):
 class Save(Objective):
     def on_perform(self):
         super(Save, self).on_perform()
-        self.obj.on_save(time=self.time)
+        with Timer() as tm:
+            self.obj.on_save(time=self.time)
+            log.debug('%r save DONE (%.3fs)', self.obj, tm.duration)
 
 
 class SearchZones(Objective):
@@ -429,12 +431,6 @@ class ActivateLocationChats(Event):
     def on_perform(self):
         super(ActivateLocationChats, self).on_perform()
         self.location.activate_chats(event=self)
-
-
-class LoadWorldEvent(Event):
-    def on_perform(self):
-        super(LoadWorldEvent, self).on_perform()
-        self.server.on_load_world(self)
 
 
 class InsertNewServerZone(Event):

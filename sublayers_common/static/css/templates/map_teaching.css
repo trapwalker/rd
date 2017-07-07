@@ -13,7 +13,7 @@
 .map-teaching-window-main.zoom_slider          { height: 256px; width: 460px; }
 .map-teaching-window-main.discharge_shooting   { height: 307px; width: 460px; }
 .map-teaching-window-main.auto_shooting        { height: 307px; width: 460px; }
-.map-teaching-window-main.try_kill             { height: 361px; width: 460px; }
+.map-teaching-window-main.try_kill             { height: 156px; width: 460px; }
 
 .map-teaching-content-wrap {
     position: relative;

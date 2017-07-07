@@ -14,10 +14,12 @@ var WStrategyModeManager = (function () {
         this.radar_width_point_opacity = 1.75 * Math.PI;
 
         this.icon_strategy_car = null;
+
+        this.line_d_angle = 0.775
     }
 
     WStrategyModeManager.prototype.update = function (targets) {
-        //console.log('WStrategyModeManager.prototype.update');
+        //console.log('WStrategyModeManager.prototype.update', targets);
         this.targets = targets;
     };
 
@@ -42,33 +44,6 @@ var WStrategyModeManager = (function () {
         var radar_fake_dir = radar_direction + this.radar_width;
         var car_pos = user.userCar.getCurrentCoord(time);
 
-        // ќтрисовка точек - новый вариант
-        if (this.icon_strategy_car) {
-            ctx.save();
-            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
-            for (var i = 0; i < this.targets.length; i++) {
-                var p = mulScalVector(subVector(this.targets[i], car_pos), 1.0 / mapCanvasManager.zoom_koeff);
-                // todo: не рисовать точки, которые заведомо никак не попадут на канвас
-                var angle_p = angleVectorRadCCW2(p);
-                var angle_diff = normalizeAngleRad2(radar_fake_dir - angle_p);
-                var opacity = 0;
-                if (angle_diff < this.radar_width_point_opacity) {
-                    opacity = Math.abs(1.0 - angle_diff / this.radar_width_point_opacity);
-                }
-
-                if (opacity > 1.0 || opacity < 0.0) {console.log('что-то не то'); opacity = 0.1}
-                ctx.save();
-                ctx.translate(p.x, p.y);
-                ctx.globalAlpha = opacity;
-                ctx.drawImage(this.icon_strategy_car.img, -this.icon_strategy_car.iconSize[0] >> 1, -this.icon_strategy_car.iconSize[1] >> 1);
-                ctx.restore();
-            }
-            ctx.restore();
-        }
-        else {
-            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car');
-        }
-
         // ќтрисовка линии радара
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
@@ -86,7 +61,7 @@ var WStrategyModeManager = (function () {
         ctx.fillStyle = grad1;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
+        ctx.arc(0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
@@ -106,16 +81,56 @@ var WStrategyModeManager = (function () {
         ctx.fillStyle = grad2;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.arc( 0, 0, this.radar_radius / mapCanvasManager.zoom_koeff, -this.radar_width, this.radar_width, false);
+        var temp_radius = this.radar_radius / mapCanvasManager.zoom_koeff;
+        ctx.arc(0, 0, temp_radius, -this.radar_width, this.radar_width, false);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
 
         ctx.restore();  // ¬озврат транслейта
-    };
 
+        ctx.save();
+        ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+        ctx.rotate(radar_direction - this.line_d_angle);
+        ctx.strokeStyle = "rgba(0, 255, 161, 0.05)";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, temp_radius);
+        ctx.stroke();
+        ctx.restore();
+
+        // ќтрисовка точек - новый вариант
+        if (this.icon_strategy_car) {
+            ctx.save();
+            ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
+            for (var i = 0; i < this.targets.length; i++) {
+                var p = mulScalVector(subVector(this.targets[i], car_pos), 1.0 / mapCanvasManager.zoom_koeff);
+                // todo: не рисовать точки, которые заведомо никак не попадут на канвас
+                var angle_p = angleVectorRadCCW2(p);
+                var angle_diff = normalizeAngleRad2(radar_fake_dir - angle_p);
+                var opacity = 0;
+                if (angle_diff < this.radar_width_point_opacity)
+                    opacity = Math.abs(1.0 - angle_diff / this.radar_width_point_opacity);
+
+                if (opacity > 1.0 || opacity < 0.0) {console.log('что-то не то'); opacity = 0.1}
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.globalAlpha = opacity;
+                ctx.drawImage(this.icon_strategy_car.img, -this.icon_strategy_car.iconSize[0] >> 1, -this.icon_strategy_car.iconSize[1] >> 1);
+                ctx.restore();
+            }
+            ctx.restore();
+        }
+        else {
+            this.icon_strategy_car = iconsLeaflet.getIcon('icon_strategy_mode_car');
+        }
+    };
 
     return WStrategyModeManager;
 })();
+
 
 var wStrategyModeManager;

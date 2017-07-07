@@ -19,9 +19,9 @@ class MineStartEvent(Event):
 
     def on_perform(self):
         super(MineStartEvent, self).on_perform()
-        if self.example_mine.__cls__ == u"MapWeaponEffectMine":
+        if self.example_mine._cls == u"MapWeaponEffectMine":
             SlowMine(time=self.time, starter=self.starter, example=self.example_mine)
-        elif self.example_mine.__cls__ == u"MapWeaponBangMine":
+        elif self.example_mine._cls == u"MapWeaponBangMine":
             BangMine(time=self.time, starter=self.starter, example=self.example_mine)
 
 
@@ -38,7 +38,8 @@ class SlowMine(UnitWeapon):
         self.effects = self.example.effects
 
     def can_see_me(self, subj, **kw):
-        return subj is self.starter or super(SlowMine, self).can_see_me(subj=subj, **kw)
+        # Мину видят только установившие и города
+        return subj is self.starter or isinstance(subj, Town) and super(SlowMine, self).can_see_me(subj=subj, **kw)
 
     def on_init(self, event):
         super(SlowMine, self).on_init(event)
@@ -96,8 +97,8 @@ class BangMine(UnitWeapon):
         self._mine_is_active = False
 
     def can_see_me(self, subj, **kw):
-        return subj is self.starter or isinstance(subj, Town)  # Мину видят только установившие и города
-        # return subj is self.starter or super(BangMine, self).can_see_me(subj=subj, **kw)
+        # Мину видят только установившие и города
+        return subj is self.starter or isinstance(subj, Town) and super(BangMine, self).can_see_me(subj=subj, **kw)
 
     def on_init(self, event):
         super(BangMine, self).on_init(event)
