@@ -98,10 +98,21 @@ class AgentConsoleNamespace(Namespace):
         self.api.delete_car()
 
     # todo: Завернуть сообщения консоли в отдельные события
-    def money(self, value=None):
+    def money(self, value=None, user=None):
+        agent = None
+        if user is None:
+            agent = self.agent
+        elif isinstance(user, basestring):
+            agent = self.agent.server.agents_by_name.get(user.strip())
+
+        if agent is None:
+            self.write(u'User `{}` is not found.'.format(user))
+            log.warning(u'Странный пользователь передан команде /money: {!r}'.format(user))
+            return None
+
         if value is not None:
             value = int(value)
-            if value > 1000:
+            if value > 100000:
                 self.write(random.choice([  # todo: вынести вариации диалогов в ямл
                     u'А харя не треснет?',
                     u'Поди заработай, халявщик!',
@@ -111,10 +122,10 @@ class AgentConsoleNamespace(Namespace):
                     u'Губа не дура',
                     u'Да ты охренел!',
                 ]))
-            self.agent.example.profile.set_balance(time=self.agent.server.get_time(), new_balance=value)
+            agent.example.profile.set_balance(time=self.agent.server.get_time(), new_balance=value)
 
-        self.write('You have {} money.'.format(self.agent.balance))
-        return self.agent.balance
+        self.write('User {agent._login} have {agent.balance} money.'.format(agent=agent))
+        return agent.balance
 
     def exp(self, value):
         self.agent.example.profile.set_exp(dvalue=int(value), time=self.agent.server.get_time())
