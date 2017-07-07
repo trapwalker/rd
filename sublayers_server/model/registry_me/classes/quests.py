@@ -510,7 +510,11 @@ class Quest(Node):
         agent_example = self.agent and self.agent.profile
         if agent_example:
             agent_example.quests_ended.append(self)
-            agent_example.quests_active.remove(self)
+            try:
+                agent_example.quests_active.remove(self)
+            except ValueError as e:
+                log.warning(u'Квеста (%r) не оказалось в списке активных по его окончании у агента %r', self, self.agent)
+                log.exception(e)
 
     def make_global_context(self):
         ctx = dict(

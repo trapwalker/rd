@@ -99,7 +99,8 @@ class MapLocation(Observer):
         ).post()
 
     def on_re_enter(self, agent, event):
-        agent.save(event.time)  # todo: Уточнить можно ли сохранять здесь
+        log.warning(u'ВНИМАНИЕ! [MapLocation.on_re_enter] Тут раньше сохранялся агент. Сохранение отключено для анализа производительности.')
+        # agent.save(event.time)  # todo: Уточнить можно ли сохранять здесь
         if agent in self.visitors:
             PreEnterToLocation(agent=agent, location=self, time=event.time).post()
             # todo: review agent.on_enter_location call
