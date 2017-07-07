@@ -82,6 +82,15 @@ var QuestMapMarkerNote = (function (_super) {
                 ctx.drawImage(this.icon_full, 0, 0, this.img_width, this.img_height,
                     this.offset_x * this.img_width * this.scale_icon_x, this.offset_y * this.img_height * this.scale_icon_y,
                     this.img_width * this.scale_icon_x, this.img_height * this.scale_icon_y);
+                if (focused && this.focus_caption) {
+                    // Название квеста
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.font = "8pt MICRADI";
+                    ctx.fillStyle = 'rgba(0, 255, 161, 0.9)';
+                    ctx.fillText(this.focus_caption, 0, this.img_height * this.offset_y * 0.85);
+                }
+
                 ctx.restore();
             }
         }
@@ -102,15 +111,6 @@ var QuestMapMarkerNote = (function (_super) {
             ctx.stroke();
             ctx.closePath();
             ctx.restore();
-
-            // Текст названия квеста (генератора)
-            if (this.focus_caption) {
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.font = "8pt MICRADI";
-                ctx.fillStyle = 'rgba(0, 255, 161, 0.9)';
-                ctx.fillText(this.focus_caption, 0, this.img_height * this.offset_y);
-            }
         }
 
         ctx.restore();  // Возврат транслейта
