@@ -867,8 +867,10 @@ class NPCReplicaMessage(Message):
         d.update(
             replica=self.replica,
             replica_type=self.replica_type,
-            npc_node_hash=None if self.npc is None else self.npc.node_hash(),
+            npc_node_hash=self.npc.node_hash() if self.npc is not None and hasattr(self.npc, 'node_hash') else None,
         )
+        if isinstance(self.npc, bool):
+            log.warning('NPC in %r is bool: %r', self, self.npc)
         return d
 
 
