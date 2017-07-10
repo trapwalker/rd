@@ -1,2 +1,2 @@
 
-python.exe %*
+@python.exe %*
