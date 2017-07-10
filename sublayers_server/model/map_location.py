@@ -235,7 +235,7 @@ class Town(MapLocation):
 
     def on_enemy_candidate(self, agent, damage, time):
         # log.info('{} on_enemy_candidate: {}'.format(self, agent))
-        if agent.car and (self.position(time).distance(agent.car.position(time)) < self.example.p_enter_range or damage):
+        if self.can_attack() and agent.car and (self.position(time).distance(agent.car.position(time)) < self.example.p_enter_range or damage):
             self.enemy_agents[agent.print_login()] = time + self.aggro_time
             self.need_start_attack(obj=agent.car, time=time)
 

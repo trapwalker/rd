@@ -355,7 +355,7 @@ class TransactionTownNPC(TransactionEvent):
         if error is True:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=None,
                                        replica=u'У нас возникли трудности c поиском NPC в данной локации.').post()
-            return False
+            return None
         return npc
 
     def is_agent_available_transaction(self, npc, with_car=True, with_barter=True):
@@ -1158,7 +1158,12 @@ class TransactionSetRPGState(TransactionTownNPC):
             return False
 
         for perk_id in perk_rec['perk'].perks_req:
-            perk_req = self.agent.server.reg.get(perk_id)
+            try:
+                perk_req = self.agent.server.reg.get(perk_id)
+            except Exception as e:
+                log.warning('Not found perk_id <{}> for node_has {}'.format(perk_id, perk_node_hash))
+                log.exception(e)
+                return False
             if not self.perks[perk_req.node_hash()][u'state']:  # todo: ##REVIEW Menkent
                 return False
         return True
