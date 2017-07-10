@@ -76,8 +76,15 @@ def test3(reload=True, save_loaded=True):
             log.debug('Agent {} loaded'.format(num))
         return a
 
-    a = ag(1)
-    b = ag(2)
+    #a = ag(1)
+    #b = ag(2)
+    t = reg.get('reg:///registry/poi/locations/towns/prior')
+    with Timer() as t0:
+        for b in t.buildings:
+            with Timer() as t1:
+                x = b.as_client_dict()
+                print(u'[{t1.duration:.3f}s] - {b.title}'.format(**locals()))
+    print('TOTAL:', t0.duration)
 
 
     globals().update(locals())
@@ -106,8 +113,8 @@ if __name__ == '__main__':
     log.info('Use {db_name!r} db'.format(**locals()))
 
     
-    rel = 1
-    test4(reload=rel, save_loaded=True)
+    rel = 0
+    test3(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')
