@@ -490,3 +490,17 @@ class Agent(Document):
 
     def save_to_file(self, f, **kw):
         yaml_tools.save_to_file(self.to_mongo().to_dict(), f, **kw)
+
+    def __repr__(self):
+        return '<{self.__class__.__name__}({qf}{tf}):{self.login!r}>'.format(
+            self=self,
+            qf='Q' if self.quick_flag else 'q',
+            tf='T' if self.teaching_flag else 't',
+        )
+
+    def __unicode__(self):
+        return u'<{self.__class__.__name__}({qf}{tf}):{self.login}>'.format(
+            self=self,
+            qf=u'Q' if self.quick_flag else 'q',
+            tf=u'T' if self.teaching_flag else 't',
+        )

@@ -121,7 +121,7 @@ class MapLocation(Observer):
             self.inventory.del_visitor(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
             self.inventory.del_manager(agent=agent)
 
-        ExitFromLocation(agent=agent, location=self, time=event.time).post()  # отправть сообщения входа в город
+        ExitFromLocation(agent=agent, time=event.time).post()  # отправть сообщения входа в город
         LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
         agent.api.on_simple_update_agent_api(time=event.time)
         for visitor in self.visitors:
@@ -176,9 +176,16 @@ class Town(MapLocation):
     #     # if self.example.trader:
     #     #     InventoryHideMessage(agent=agent, time=event.time, inventory_id=str(self.uid) + '_trader').post()
 
-    def as_dict(self, time):
+    def as_dict(self, time, from_message_see=True):
         d = super(Town, self).as_dict(time=time)
-        d.update(example=self.example.as_client_dict())
+        if from_message_see:
+            example = self.example
+            ex_dict = dict()
+            ex_dict['p_enter_range'] = example.p_enter_range
+            ex_dict['node_hash'] = example.node_hash()
+            d.update(example=ex_dict)
+        else:
+            d.update(example=self.example.as_client_dict())
         return d
 
     @classmethod
