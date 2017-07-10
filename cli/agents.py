@@ -32,7 +32,7 @@ def agents_clean(ctx):
     agents_clean()
 
 
-DEFAULT_FN_TEMPLATE = '{agent.login}.yaml'
+DEFAULT_FN_TEMPLATE = '{agent.pk}.{agent.login}.yaml'
 DEFAULT_CLEAN_WILDCARD = '*.yaml'
 
 @agents.command(name='export')
