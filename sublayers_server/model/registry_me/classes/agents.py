@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
-from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserExampleSelfRPGMessage
+from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserChangeEXP, UserChangeQuestInventory
 from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage, SkillLogMessage
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
@@ -59,7 +59,6 @@ class AgentProfile(Node):
         field=EmbeddedDocumentField(document_type=RelationshipRec, reinst=True),
         caption=u'Список взаимоотношений игрока с NPCs',
         root_default=list,
-        tags={'client'},
         reinst=True,
     )
 
@@ -310,12 +309,8 @@ class AgentProfile(Node):
 
     def as_client_dict(self):
         d = super(AgentProfile, self).as_client_dict()
-        for name, calc_value in self.iter_skills():
-            d[name] = calc_value
         d['role_class'] = '' if self.role_class is None else self.role_class.description
         d['insurance'] = self.insurance.as_client_dict()
-        # todo: список перков
-        # todo: машинка
         return d
 
     def get_car_list_by_npc(self, npc):
@@ -354,9 +349,7 @@ class AgentProfile(Node):
             old_perk_lvl = int(old_lvl / 10)
             if perk_lvl > old_perk_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=perk_lvl).post()
-
-        UserExampleSelfRPGMessage(agent=self._agent_model, time=time).post()
-
+        UserChangeEXP(agent=self._agent_model, time=time).post()
         assert self.value_exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
     def set_karma(self, time, value=None, dvalue=None):
@@ -433,7 +426,7 @@ class AgentProfile(Node):
 
     def change_quest_inventory(self, event):
         if self._agent_model:
-           UserExampleSelfRPGMessage(agent=self._agent_model, time=event.time).post()
+            UserChangeQuestInventory(agent=self._agent_model, time=event.time).post()
 
     def get_agent_effects(self, time):
         effects = []  # каждый эффект должен иметь поля: source, title, description, deadline

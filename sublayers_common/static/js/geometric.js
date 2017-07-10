@@ -185,8 +185,11 @@ function mulVectVectors2D(a, b) {
 }
 
 // Установка опций при создании объектов
-function setOptions(src, dest) {
-    for (var key in src) dest[key] = src[key];
+function setOptions(src, dest, debug) {
+    for (var key in src) {
+        if (debug) console.log('setOptions ', debug, key)
+        dest[key] = src[key];
+    }
 }
 
 // Остановка "всплытия" событий

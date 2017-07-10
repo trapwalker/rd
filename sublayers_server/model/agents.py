@@ -16,7 +16,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
-    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
+    PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
     SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
@@ -543,7 +543,6 @@ class Agent(Object):
                 self.example.profile.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе
-        UserExampleSelfRPGMessage(agent=self, time=event.time).post()
         self.example.profile.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
