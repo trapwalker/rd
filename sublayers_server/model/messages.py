@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-from uuid import UUID
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
 from sublayers_common.ctx_timer import Timer
@@ -47,17 +46,16 @@ class Message(object):
         # log.debug('Send message: %s to %r', self, self.agent._login)
         if connection:
             if connection.ws_connection:
-                package = make_push_package([self])
-                try:
-                    data = serialize(package)
-                except Exception as e:
-                    log.error('The problem in serialization package %r of message %r: %r', package, self, e)
-                    raise e
-
                 with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
+                    package = make_push_package([self])
+                    try:
+                        data = serialize(package)
+                    except Exception as e:
+                        log.error('The problem in serialization package %r of message %r: %r', package, self, e)
+                        raise e
                     connection.send(data)
+                    len_data = len(data)
 
-                len_data = len(data)
                 cl_name = self.classname
                 if self.messages_metrics.get(cl_name, None):
                     average = self.messages_metrics[cl_name]["average"]
@@ -670,6 +668,7 @@ class EnterToLocation(Message):
             else:
                 log.warn('Unknown type location: %s', location)
             self.locations_cache[location.example.uri] = location_html
+            log.debug('{}  added to cache '.format(location.example.uri))
         return location_html
 
     def as_dict(self):
