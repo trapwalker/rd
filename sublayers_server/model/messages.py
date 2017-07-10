@@ -644,32 +644,39 @@ class PreEnterToLocation(Message):
 
 
 class EnterToLocation(Message):
+    locations_cache = {}  # key=URI value=html локации
+
     def __init__(self, location, agent, **kw):
         super(EnterToLocation, self).__init__(agent=agent, **kw)
         self.location = location
         self.agent = agent
 
+    def get_location_html(self):
+        location = self.location
+        location_html = self.locations_cache.get(location.example.uri, None)
+        if location_html is None:
+            svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
+            svg_code = ''
+            with open(os.path.join(svg_link, 'location.svg')) as f:
+                svg_code = f.read()
+                svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
+            location_html = ''
+            from sublayers_server.model.map_location import Town, GasStation
+            if isinstance(location, Town) or isinstance(location, GasStation):
+                location_html = tornado.template.Loader(
+                    root_directory="templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("location.html").generate(location=location, svg_code=svg_code)
+            else:
+                log.warn('Unknown type location: %s', location)
+            self.locations_cache[location.example.uri] = location_html
+        return location_html
+
     def as_dict(self):
         d = super(EnterToLocation, self).as_dict()
-
         agent = self.agent
         location = self.location
-
-        svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
-        svg_code = ''
-        with open(os.path.join(svg_link, 'location.svg')) as f:
-            svg_code = f.read()
-            svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
-
-        from sublayers_server.model.map_location import Town, GasStation
-        location_html = None
-        if isinstance(location, Town) or isinstance(location, GasStation):
-            location_html = tornado.template.Loader(
-                root_directory="templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("location.html").generate(location=location, svg_code=svg_code)
-        else:
-            log.warn('Unknown type location: %s', location)
+        location_html = self.get_location_html()
         d.update(
             location=self.location.as_dict(time=self.time, from_message_see=False),
             relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.profile.get_relationship(npc=npc))
