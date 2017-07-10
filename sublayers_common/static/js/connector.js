@@ -143,9 +143,16 @@ var WSConnector = (function(_super){
                 clientManager.sendAgentLog("ClientWarning: decode_time for message<" + mes_type + ">  " + this.decode_time + " s");
             }
         }
+
+        if (mes.body && mes.body.events && mes.body.events[0] && _ttt_)
+            console.log(msg.length, mes.body.events[0]);
+            //console.log(mes.body.events[0].cls);
+
         // отправить сообщение в мессадж стрим
         if (mes)
             message_stream.receiveMessage(mes);
+
+
         // обязательно возвращать true
         var time_length = clock.getCurrentTime() - time_start;
         if (time_length > this.max_time)
@@ -176,3 +183,6 @@ var WSConnector = (function(_super){
 
     return WSConnector;
 })(Connector);
+
+
+var _ttt_ = false;
