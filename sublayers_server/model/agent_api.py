@@ -1050,7 +1050,7 @@ class AgentAPI(API):
 
             def set_new_position(event):
                 ex_car.position = p
-                self.update_agent_api(time=event.time + 0.1)
+                self.on_simple_update_agent_api(time=event.time + 0.1)
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 
