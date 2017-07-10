@@ -28,6 +28,9 @@ def static_world_link_repr(link):
 
 
 class AuthHandlerMixin(tornado.web.RequestHandler):
+    def initialize(self):
+        self._handler_start_time = None
+
     def prepare(self):
         self._handler_start_time = time()
         user = None
