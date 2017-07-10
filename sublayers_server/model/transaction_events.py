@@ -355,7 +355,7 @@ class TransactionTownNPC(TransactionEvent):
         if error is True:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=None,
                                        replica=u'У нас возникли трудности c поиском NPC в данной локации.').post()
-            return False
+            return None
         return npc
 
     def is_agent_available_transaction(self, npc, with_car=True, with_barter=True):
