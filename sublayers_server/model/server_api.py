@@ -43,7 +43,7 @@ class ServerAPI(API):
                         role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
                     ),
                 ).save()
-                log.waning('Make new agent for %r #%s: qf=%s, tf=%s, srv_mode=%s', user.name, user.pk, user.quick,
+                log.warning('Make new agent for %r #%s: qf=%s, tf=%s, srv_mode=%s', user.name, user.pk, user.quick,
                            agent_exemplar.teaching_flag, options.mode)
                 if options.mode == 'quick':
                     log.warning(u'ВНИМАНИЕ!!! Создан обычный тпользователь в режиме быстрой игры!')
@@ -145,7 +145,7 @@ class ServerAPI(API):
                         role_class=random.choice(self.server.reg.get('/registry/world_settings').role_class_order),
                     ),
                 )
-                log.waning('Make new agent for %r #%s: qf=%s, tf=%s, srv_mode=%s', user.name, user.pk, user.quick, agent_exemplar.teaching_flag, options.mode)
+                log.warning('Make new agent for %r #%s: qf=%s, tf=%s, srv_mode=%s', user.name, user.pk, user.quick, agent_exemplar.teaching_flag, options.mode)
                 # Если был найден агент из основной игры, то скопировать всю информацию из него
                 if main_agent_exemplar:
                     # todo: Agent profile cloning mechanism
