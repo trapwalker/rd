@@ -427,10 +427,6 @@ var LocationTraderNPC = (function (_super) {
         _super.prototype.update.call(this, data);
     };
 
-    LocationTraderNPC.prototype.get_self_info = function () {
-        clientManager.sendGetTraderInfo(this);
-    };
-
     LocationTraderNPC.prototype.set_buttons = function () {
         //console.log('LocationParkingNPC.prototype.set_buttons', this.cars_list.length);
         if (!locationManager.isActivePlace(this)) return;

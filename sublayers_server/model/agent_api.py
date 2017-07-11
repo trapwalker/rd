@@ -15,7 +15,7 @@ from sublayers_server.model.api_tools import API, public_method, basic_mode
 from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGetAllInvitesEvent, \
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
-    Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent,
+    Event, EnterToMapLocation, ReEnterToLocation, ExitFromMapLocation, ShowInventoryEvent, event_deco,
     HideInventoryEvent, ItemActionInventoryEvent, ItemActivationEvent, ItemPreActivationEvent, MassiveLootAroundEvent,
     LootPickEvent, EnterToNPCEvent, StrategyModeInfoObjectsEvent, TakeItemInventoryEvent, TakeAllInventoryEvent)
 from sublayers_server.model.transaction_events import (
@@ -425,9 +425,9 @@ class AgentAPI(API):
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
 
         # For ReInit Time
-        t0 = self.agent.server.get_time()
-        for add_mul in xrange(1, 6):
-            InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
+        # t0 = self.agent.server.get_time()
+        # for add_mul in xrange(1, 6):
+        #     InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
 
     def on_update_agent_api(self, time):
         self.agent.log.info("on_update_agent_api")
@@ -471,6 +471,20 @@ class AgentAPI(API):
             return
 
         log.watning('on_update_agent_api Agent placing error %s', self.agent)
+
+    @event_deco
+    def on_simple_update_agent_api(self, event):
+        self.agent.log.info("on_simple_update_agent_api")
+
+        if self.agent.example.profile.car and not self.agent.car:
+            self.make_car(time=event.time)
+            assert not self.car.limbo and self.car.hp(time=event.time) > 0, 'Car HP <= 0 or limbo'
+            self.car = self.agent.car
+            self.send_init_car_map(time=event.time)
+            self.agent.current_location = None
+            return
+
+        log.watning('on_simple_update_agent_api Agent placing error %s', self.agent)
 
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.profile.car, server=self.agent.server, owner=self.agent)
@@ -916,13 +930,13 @@ class AgentAPI(API):
     @public_method
     def get_about_self(self):
         self.agent.log.info('get_about_self')
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        messages.UserGetAboutSelf(agent=self.agent, time=self.agent.server.get_time()).post()
 
     @public_method
     def set_about_self(self, text):
         self.agent.log.info('set_about_self text={!r}'.format(text))
         self.agent.example.profile.about_self = text
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.agent.server.get_time()).post()
+        messages.UserGetAboutSelf(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Квесты
 
@@ -1030,13 +1044,13 @@ class AgentAPI(API):
         self.agent.log.info('teleport x={}, y={}'.format(x, y))
         p = Point(long(x), long(y))
         if self.agent.car and p:
-            self.agent.save(time=self.agent.server.get_time())
+            # self.agent.save(time=self.agent.server.get_time())
             ex_car = self.agent.car.example
             self.agent.car.displace(time=self.agent.server.get_time())
 
             def set_new_position(event):
                 ex_car.position = p
-                self.update_agent_api(time=event.time + 0.1)
+                self.on_simple_update_agent_api(time=event.time + 0.1)
 
             Event(server=self.agent.server, time=self.agent.server.get_time() + 0.1, callback_after=set_new_position).post()
 

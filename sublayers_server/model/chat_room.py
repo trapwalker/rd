@@ -147,7 +147,7 @@ class ChatRoom(object):
         return len(self.members)
 
     def __str__(self):
-        return '<ChatRoom {self.name}/{n}>'.format(self=self, n=len(self))
+        return u'<ChatRoom {self.name}/{n}>'.format(self=self, n=len(self))
 
     id = property(id)
 

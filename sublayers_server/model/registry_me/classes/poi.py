@@ -114,20 +114,25 @@ class Town(MapLocation):
     buildings = ListField(  # todo: (!) Обойти все упоминания и исправить интерфейс
         field=EmbeddedDocumentField(document_type=Building),
         caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.',
-        tags={'client'},
+        #tags={'client'},
     )
 
     delay_attack = IntField(caption=u'Промежуток между атаками')
     aggro_time = IntField(caption=u'Длительность агра города в секундах')
 
+    _town_npc_list = None
+
     def get_npc_list(self):
+        # info: данный метод кеширует свой результат
         # todo: rename to get_instances_list
-        res = []
-        for building in self.buildings:
-            res.extend(building.instances)
-            if building.head not in res:
-                res.append(building.head)
-        return res
+        res = self._town_npc_list or []
+        if not res:
+            for building in self.buildings:
+                res.extend(building.instances)
+                if building.head not in res:
+                    res.append(building.head)
+            self._town_npc_list = res
+        return self._town_npc_list
 
     def get_npc_by_type(self, type):
         for npc in self.get_npc_list():
@@ -187,7 +192,8 @@ class Trainer(Institution):
 
 class Hangar(Institution):
     car_list = ListField(
-        caption=u"Список продаваемых машин", tags={'client'},
+        caption=u"Список продаваемых машин",
+        # tags={'client'},
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
 

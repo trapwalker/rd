@@ -9,6 +9,7 @@ from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.ctx_timer import Timer
 
 import random
+from tornado.options import options
 
 
 class ServerAPI(API):
@@ -27,7 +28,7 @@ class ServerAPI(API):
         agent = self.server.agents.get(str(user.pk), None)  # todo: raise exceptions if absent but not make
         if not agent and make:
             is_created = False
-            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=user.quick, teaching_flag=False).first()
+            agent_exemplar = Agent.objects.filter(user_id=str(user.pk), quick_flag=options.mode == 'quick', teaching_flag=False).first()
             if agent_exemplar is None:
                 is_created = True
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
@@ -35,12 +36,17 @@ class ServerAPI(API):
                 agent_exemplar = Agent(
                     login=user.name,
                     user_id=str(user.pk),
+                    quick_flag=options.mode == 'quick',
                     profile=self.server.reg.get('/registry/agents/user').instantiate( #  dict(
                         #parent='/registry/agents/user',
                         name=str(user.pk),
                         role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
                     ),
                 ).save()
+                log.warning('Make new agent for %r #%s: qf=%s, tf=%s, srv_mode=%s', user.name, user.pk, user.quick,
+                           agent_exemplar.teaching_flag, options.mode)
+                if options.mode == 'quick':
+                    log.warning(u'ВНИМАНИЕ!!! Создан обычный тпользователь в режиме быстрой игры!')
 
                 for class_skill in agent_exemplar.profile.role_class.class_skills or []:
                     # todo: Перебирать объекты реестра
@@ -86,6 +92,7 @@ class ServerAPI(API):
                 agent_exemplar = Agent(
                     login=user.name,
                     user_id=str(user.pk),
+                    quick_flag=True,
                     profile=dict(
                         parent='/registry/agents/user/quick',
                         name=str(user.pk),
@@ -130,7 +137,7 @@ class ServerAPI(API):
                 agent_exemplar = Agent(
                     login=user.name,
                     user_id=str(user.pk),
-                    quick_flag=user.quick,
+                    quick_flag=True,
                     #fixtured=False,  # todo: add `'fixtured' flag to Agent
 
                     profile=self.server.reg.get('/registry/agents/user/quick').instantiate(
@@ -138,6 +145,7 @@ class ServerAPI(API):
                         role_class=random.choice(self.server.reg.get('/registry/world_settings').role_class_order),
                     ),
                 )
+                log.warning('Make new agent for %r #%s: qf=%s, tf=%s, srv_mode=%s', user.name, user.pk, user.quick, agent_exemplar.teaching_flag, options.mode)
                 # Если был найден агент из основной игры, то скопировать всю информацию из него
                 if main_agent_exemplar:
                     # todo: Agent profile cloning mechanism

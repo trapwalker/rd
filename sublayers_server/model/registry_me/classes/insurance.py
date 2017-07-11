@@ -36,7 +36,7 @@ class Insurance(QuestItem):
         for item in items:
             if isinstance(item, Insurance):
                 inventory.items.remove(item)
-        super(Insurance, self).add_to_inventory(inventory, event)
+        return super(Insurance, self).add_to_inventory(inventory, event)
 
     def del_from_inventory(self, inventory, event):
         super(Insurance, self).del_from_inventory(inventory, event)

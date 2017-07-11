@@ -19,7 +19,7 @@ def main(args=None):
         raise ImportError
         import coloredlogs
         coloredlogs.DEFAULT_FIELD_STYLES['levelname']['color'] = 'green'
-        coloredlogs.install(level=logging.DEBUG, fmt='%(levelname)-8s| %(message)s')
+        coloredlogs.install(level=logging.DEBUG, fmt='%(levelname)-8s| %(message)s', stream=sys.stderr)
     except ImportError:
         log.level = logging.DEBUG
         _hndl = logging.StreamHandler(sys.stderr)

@@ -137,8 +137,12 @@ var LocationTrainerNPC = (function (_super) {
         for (var buy_skill_name in this.buy_skills)
             if (this.buy_skills.hasOwnProperty(buy_skill_name)) {
                 var buy_skill = this.buy_skills[buy_skill_name];
-                for (var val = buy_skill.value; val > buy_skill.start_value; val--)
-                    price += buy_skill.price[val].price;
+                for (var val = buy_skill.value; val > buy_skill.start_value; val--) {
+                    if (buy_skill.price[val])
+                        price += buy_skill.price[val].price;
+                    //else
+                    //    console.warn(buy_skill.price, '   has no attr =', val)
+                }
             }
 
         return price;

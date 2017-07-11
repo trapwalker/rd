@@ -2,8 +2,8 @@
 
 SUFFIX=''
 
-PTH=/home/sl/sublayers$SUFFIX
-PTHW=$PTH/sublayers_server/world
+PTH=/home/sl/rd$SUFFIX
+PTHW=$PTH/sublayers_world
 
 echo `date --rfc-3339=seconds` Start update of $PTH
 
@@ -20,4 +20,4 @@ echo `date --rfc-3339=seconds` repo: $PTH new_revisions: [$REV2] [$REV2w]
 
 [ "$REV1" = "$REV2" ] || echo "Server source changed: $REV1 != $REV2"
 [ "$REV1w" = "$REV2w" ] || echo "Server world changed: $REV1w != $REV2w"
-[ "$REV1" = "$REV2" ] && [ "$REV1w" = "$REV2w" ] && echo 'no changes' || service sl$SUFFIX restart
+#[ "$REV1" = "$REV2" ] && [ "$REV1w" = "$REV2w" ] && echo 'no changes' || service sl$SUFFIX restart
