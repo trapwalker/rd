@@ -10,13 +10,11 @@ from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, PreEnterToLocation, TownAttackMessage
 )
 from sublayers_server.model.game_log_messages import LocationLogMessage
-from sublayers_server.model.registry_me.uri import URI
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.events import ActivateLocationChats, Event, event_deco
+from sublayers_server.model.events import ActivateLocationChats, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry_me.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
-from sublayers_common.ctx_timer import Timer
 
 from tornado.options import options
 import random
@@ -118,10 +116,11 @@ class MapLocation(Observer):
         else:
             self.on_enter(agent=agent, event=event)
 
-    def on_exit(self, agent, event):
+    def on_exit(self, agent, event, dc_agent=False):
         self.visitors.remove(agent)
         agent.current_location = None
-        agent.on_exit_location(location=self, event=event)
+        if not dc_agent:
+            agent.on_exit_location(location=self, event=event)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
         PrivateChatRoom.close_privates(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
@@ -130,10 +129,10 @@ class MapLocation(Observer):
         if self.inventory is not None:
             self.inventory.del_visitor(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
             self.inventory.del_manager(agent=agent)
-
-        ExitFromLocation(agent=agent, time=event.time).post()  # отправть сообщения входа в город
-        LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
-        agent.api.on_simple_update_agent_api(time=event.time)
+        if not dc_agent:
+            ExitFromLocation(agent=agent, time=event.time).post()  # отправть сообщения входа в город
+            LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
+            agent.api.on_simple_update_agent_api(time=event.time)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent._login, action=False, time=event.time).post()
 

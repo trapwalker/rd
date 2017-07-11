@@ -350,6 +350,9 @@ class Agent(Object):
             self.car.displace(time=event.time)
         log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
 
+        if self.current_location:
+            self.current_location.on_exit(agent=self, event=event, dc_agent=True)
+
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
         if self.server.agents.get(str(self.user.pk), None):
             del self.server.agents[str(self.user.pk)]
