@@ -43,8 +43,6 @@ class RelationshipRec(Subdoc):
 class AgentProfile(Node):
     '''Inheritable data about agent'''
     # todo: remove ##deprecated
-    teaching_flag = BooleanField(caption=u'deprecated flag')
-    # todo: remove ##deprecated
     quick_flag = BooleanField(caption=u'deprecated flag')
 
     # todo: если будет нормально сохраняться current_location = None, то убрать флаг
@@ -466,7 +464,7 @@ class Agent(Document):
     user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
     login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
     profile = EmbeddedNodeField(caption=u'Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
-    teaching_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом обучения')
+    teaching_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом обучения из основной игры')
     quick_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом быстрой игры')
 
     def __init__(self, *av, **kw):
