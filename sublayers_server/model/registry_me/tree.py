@@ -386,9 +386,13 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
             assert not hasattr(value, '_instance'), 'Unsupported value {!r} of field {!r} to serializtion by as_client_dict'.format(value, field)
             return value
 
-        d = {}
-        for name, attr, getter in self.iter_attrs(tags='client'):
-            d[name] = clean_value(attr, getter())
+        with Timer() as tm:
+            d = {}
+            for name, attr, getter in self.iter_attrs(tags='client'):
+                d[name] = clean_value(attr, getter())
+
+        if tm.duration > 0.3:
+            log.warning('!!!! DURATION {tm.duration:.4f} subdoc.as_client_dict({self!r})'.format(**locals()))
 
         return d
 

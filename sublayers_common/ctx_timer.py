@@ -116,11 +116,13 @@ class Timer(object):
     def __exit__(self, ex_type, ex_value, traceback):
         self.stop()
 
-    def __call__(self, func):
+    def __call__(self, func, name=None):
         self._it_is_decorator = True
         @wraps(func)
         def closure(*av, **kw):
             timer = copy(self)
+            if name is not None:
+                timer.name = name
             timer._it_is_decorator = False
             if timer.name is None:  # TODO: ##OPTIMIZE extract from closure
                 # todo: call number store
@@ -134,6 +136,21 @@ class Timer(object):
 
         return closure
 
+
+class T(Timer):
+    def __init__(
+            self,
+            name=None,
+            logger=sys.stdout,
+            log_start=None,
+            log_stop='Timer: {timer.duration:.4f}s - {timer.name}',
+            log_level=logging.DEBUG,
+            log_name=None,
+            **kw
+        ):
+        super(T, self).__init__(
+            name=name, logger=logger, log_start=log_start, log_stop=log_stop, log_level=log_level, log_name=log_name, **kw
+        )
 
 
 if __name__ == '__main__':

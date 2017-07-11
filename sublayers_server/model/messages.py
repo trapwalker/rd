@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-from uuid import UUID
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
 from sublayers_common.ctx_timer import Timer
@@ -47,17 +46,16 @@ class Message(object):
         # log.debug('Send message: %s to %r', self, self.agent._login)
         if connection:
             if connection.ws_connection:
-                package = make_push_package([self])
-                try:
-                    data = serialize(package)
-                except Exception as e:
-                    log.error('The problem in serialization package %r of message %r: %r', package, self, e)
-                    raise e
-
                 with Timer(name='message_send_timer', log_start=None, logger=None, log_stop=None) as message_send_timer:
+                    package = make_push_package([self])
+                    try:
+                        data = serialize(package)
+                    except Exception as e:
+                        log.error('The problem in serialization package %r of message %r: %r', package, self, e)
+                        raise e
                     connection.send(data)
+                    len_data = len(data)
 
-                len_data = len(data)
                 cl_name = self.classname
                 if self.messages_metrics.get(cl_name, None):
                     average = self.messages_metrics[cl_name]["average"]
@@ -644,32 +642,41 @@ class PreEnterToLocation(Message):
 
 
 class EnterToLocation(Message):
+    # info: данный мессадж кеширует свой результат
+    locations_cache = {}  # key=URI value=html локации
+
     def __init__(self, location, agent, **kw):
         super(EnterToLocation, self).__init__(agent=agent, **kw)
         self.location = location
         self.agent = agent
 
+    def get_location_html(self):
+        location = self.location
+        location_html = self.locations_cache.get(location.example.uri, None)
+        if location_html is None:
+            svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
+            svg_code = ''
+            with open(os.path.join(svg_link, 'location.svg')) as f:
+                svg_code = f.read()
+                svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
+            location_html = ''
+            from sublayers_server.model.map_location import Town, GasStation
+            if isinstance(location, Town) or isinstance(location, GasStation):
+                location_html = tornado.template.Loader(
+                    root_directory="templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("location.html").generate(location=location, svg_code=svg_code)
+            else:
+                log.warn('Unknown type location: %s', location)
+            self.locations_cache[location.example.uri] = location_html
+            log.debug('{}  added to cache '.format(location.example.uri))
+        return location_html
+
     def as_dict(self):
         d = super(EnterToLocation, self).as_dict()
-
         agent = self.agent
         location = self.location
-
-        svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
-        svg_code = ''
-        with open(os.path.join(svg_link, 'location.svg')) as f:
-            svg_code = f.read()
-            svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
-
-        from sublayers_server.model.map_location import Town, GasStation
-        location_html = None
-        if isinstance(location, Town) or isinstance(location, GasStation):
-            location_html = tornado.template.Loader(
-                root_directory="templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("location.html").generate(location=location, svg_code=svg_code)
-        else:
-            log.warn('Unknown type location: %s', location)
+        location_html = self.get_location_html()
         d.update(
             location=self.location.as_dict(time=self.time, from_message_see=False),
             relations=[dict(npc_node_hash=npc.node_hash(), relation=agent.example.profile.get_relationship(npc=npc))
@@ -681,16 +688,6 @@ class EnterToLocation(Message):
 
 class ExitFromLocation(Message):
     pass
-    # def __init__(self, location, **kw):
-    #     super(ExitFromLocation, self).__init__(**kw)
-    #     self.location = location
-
-    # def as_dict(self):
-    #     d = super(ExitFromLocation, self).as_dict()
-    #     d.update(
-    #         location=self.location.as_dict(time=self.time)
-    #     )
-    #     return d
 
 
 class ChangeLocationVisitorsMessage(Message):
@@ -937,6 +934,214 @@ class NPCTransactionMessage(Message):
         return d
 
 
+class UserChangeEXP(Message):
+    def as_dict(self):
+        d = super(UserChangeEXP, self).as_dict()
+        agent = self.agent
+        agent_example = agent.example.profile
+        cur_exp = agent_example.exp
+        lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.profile.exp_table.by_exp(exp=cur_exp)
+        d.update(
+            data=dict(
+                cur_lvl=math.floor(lvl / 10),
+                cur_exp=cur_exp,
+                cur_lvl_exp=agent.example.profile.exp_table.user_exp_by_lvl(lvl=lvl),
+                next_lvl_exp=next_lvl_exp,
+                all_skill_points=(lvl + agent_example.role_class.start_free_point_skills),
+                all_perks_points=math.floor(lvl / 10) + agent_example.role_class.start_free_point_perks,
+            )
+        )
+        return d
+
+
+class UserChangeQuestInventory(Message):
+    def as_dict(self):
+        d = super(UserChangeQuestInventory, self).as_dict()
+        agent = self.agent
+        agent_example = agent.example.profile
+        quest_inventory = []
+        insurance = agent_example.insurance
+        for item in agent_example.quest_inventory.items:
+            dd = item.as_client_dict()
+            if item is insurance:
+                dd.update(title=u'{}: {}'.format(agent.print_login(), item.title))
+            quest_inventory.append(dd)
+        d.update(
+            data=dict(
+                quest_inventory=quest_inventory,
+                agent_effects=agent_example.get_agent_effects(time=self.time),
+            ),
+        )
+        return d
+    
+
+class UserChangePerkSkill(Message):
+    def as_dict(self):
+        d = super(UserChangePerkSkill, self).as_dict()
+        agent_example = self.agent.example.profile                
+        d.update(                                   
+            rpg_info=dict(
+                driving=agent_example.driving.as_client_dict(),
+                shooting=agent_example.shooting.as_client_dict(),
+                masking=agent_example.masking.as_client_dict(),
+                leading=agent_example.leading.as_client_dict(),
+                trading=agent_example.trading.as_client_dict(),
+                engineering=agent_example.engineering.as_client_dict(),
+                buy_driving=agent_example.buy_driving.as_client_dict(),
+                buy_shooting=agent_example.buy_shooting.as_client_dict(),
+                buy_masking=agent_example.buy_masking.as_client_dict(),
+                buy_leading=agent_example.buy_leading.as_client_dict(),
+                buy_trading=agent_example.buy_trading.as_client_dict(),
+                buy_engineering=agent_example.buy_engineering.as_client_dict(),
+                perks=[
+                    dict(
+                        perk=perk.as_client_dict(),
+                        active=perk in agent_example.perks,
+                        perk_req=[p_req.node_hash() for p_req in perk.perks_req],
+                    ) for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter()
+                ],
+            ),
+        )
+        return d
+
+
+class UserGetAboutSelf(Message):
+    def as_dict(self):
+        d = super(UserGetAboutSelf, self).as_dict()
+        d.update(about_self=self.agent.example.profile.about_self if self.agent and self.agent.example.profile else '')
+        return d
+
+
+class UserExampleCarInfo(Message):
+    def as_dict(self):
+        d = super(UserExampleCarInfo, self).as_dict()
+        ex_car = self.agent.example.profile.car
+        d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
+        return d
+
+
+class UserExampleCarView(Message):
+    def as_dict(self):
+        d = super(UserExampleCarView, self).as_dict()
+        agent = self.agent
+        ex_car = agent.example.profile.car
+        templates = dict()
+        if ex_car:
+            # Шаблоны машинки
+            template_car_img = tornado.template.Loader(
+                "../sublayers_server/templates/location",
+                namespace=agent.connection.get_template_namespace()
+            ).load("car_info_img_ext.html")
+            template_table = tornado.template.Loader(
+                "templates/location",
+                namespace=agent.connection.get_template_namespace()
+            ).load("car_info_table.html")
+            templates['html_car_img'] = template_car_img.generate(car=ex_car)
+            templates['html_car_table'] = template_table.generate(car=ex_car, agent=agent)
+        else:
+            templates['html_car_img'] = None
+            templates['html_car_table'] = None
+        d['templates'] = templates
+        return d
+
+
+class UserExampleCarSlots(Message):
+    def as_dict(self):
+        d = super(UserExampleCarSlots, self).as_dict()
+        agent = self.agent
+        ex_car = agent.example.profile.car
+        if ex_car:
+            # Информация по слотам
+            car_npc_info = dict()
+            car_npc_info['armorer_slots'] = [
+                dict(name=k, value=v and v.as_client_dict())
+                for k, v in ex_car.iter_slots(tags='armorer')
+            ]
+            car_npc_info['armorer_slots_flags'] = [
+                dict(name=name, value=getter and getter())
+                for name, attr, getter in ex_car.iter_attrs(tags='slot_limit')
+            ]
+            # Информация для механика
+            car_npc_info['mechanic_slots'] = [
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in ex_car.iter_slots2(tags='mechanic')
+            ]
+            # Информация для тюнера
+            car_npc_info['tuner_slots'] = [
+                dict(name=k, value=v and v.as_client_dict(), tags=[el for el in attr.tags])
+                for k, v, attr in ex_car.iter_slots2(tags='tuner')
+            ]
+            d['car_npc_info'] = car_npc_info
+        return d
+
+
+class UserExampleCarNPCTemplates(Message):
+    def as_dict(self):
+        d = super(UserExampleCarNPCTemplates, self).as_dict()
+        d['templates'] = dict()
+        ex_car = self.agent.example.profile.car
+        if ex_car:
+            template_armorer_car = tornado.template.Loader(
+                "../sublayers_common/",
+                namespace=self.agent.connection.get_template_namespace()
+            ).load(ex_car.armorer_car)
+
+            path_static = os.path.join(options.static_path, '..')
+            # todo: чтение файлов с диска - не очень хорошо! Возможно закешировать!
+
+            html_tuner_car = ''
+            with open(os.path.join(path_static, ex_car.tuner_car)) as f:
+                html_tuner_car = f.read()
+
+            armorer_sectors_svg = ''
+            with open(os.path.join(path_static, ex_car.armorer_sectors_svg)) as f:
+                armorer_sectors_svg = f.read()
+
+            # механик-системы
+            mechanic_engine = ''
+            with open(os.path.join(path_static, ex_car.mechanic_engine)) as f:
+                mechanic_engine = f.read()
+            mechanic_transmission = ''
+            with open(os.path.join(path_static, ex_car.mechanic_transmission)) as f:
+                mechanic_transmission = f.read()
+            mechanic_brakes = ''
+            with open(os.path.join(path_static, ex_car.mechanic_brakes)) as f:
+                mechanic_brakes = f.read()
+            mechanic_cooling = ''
+            with open(os.path.join(path_static, ex_car.mechanic_cooling)) as f:
+                mechanic_cooling = f.read()
+            mechanic_suspension = ''
+            with open(os.path.join(path_static, ex_car.mechanic_suspension)) as f:
+                mechanic_suspension = f.read()
+
+            d['templates']['html_armorer_car'] = template_armorer_car.generate(car=ex_car, need_css_only=False)
+            d['templates']['html_tuner_car'] = html_tuner_car
+            d['templates']['armorer_sectors_svg'] = armorer_sectors_svg
+            d['templates']['mechanic_engine'] = mechanic_engine
+            d['templates']['mechanic_transmission'] = mechanic_transmission
+            d['templates']['mechanic_brakes'] = mechanic_brakes
+            d['templates']['mechanic_cooling'] = mechanic_cooling
+            d['templates']['mechanic_suspension'] = mechanic_suspension
+        else:
+            d['templates']['html_armorer_car'] = None
+            d['templates']['html_tuner_car'] = None
+            d['templates']['armorer_sectors_svg'] = None
+            d['templates']['mechanic_engine'] = None
+            d['templates']['mechanic_transmission'] = None
+            d['templates']['mechanic_brakes'] = None
+            d['templates']['mechanic_cooling'] = None
+            d['templates']['mechanic_suspension'] = None
+        return d
+
+
+
+class UserExampleChangeInsurance(Message):
+    def as_dict(self):
+        d = super(UserExampleChangeInsurance, self).as_dict()
+        d['insurance'] = self.agent.example.profile.insurance.as_client_dict()
+        return d
+
+
 # Вызывается тогда, когда нужна только RPG сотставляющая
 class UserExampleSelfRPGMessage(Message):
     def as_dict(self):
@@ -960,7 +1165,7 @@ class UserExampleSelfRPGMessage(Message):
             cur_exp=cur_exp,
             cur_lvl_exp=agent.example.profile.exp_table.user_exp_by_lvl(lvl=lvl),
             next_lvl_exp=next_lvl_exp,
-            # todo: ##REFACTORING
+
             all_skill_points=(lvl + agent.example.profile.role_class.start_free_point_skills),  # без учета купленныых!!!
             driving        =agent.example.profile.driving        .as_client_dict(),
             shooting       =agent.example.profile.shooting       .as_client_dict(),
@@ -1002,6 +1207,7 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
         d['avatar_link'] = user.avatar_link
         d['example_agent'] = agent.example.profile.as_client_dict()
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
+
         if ex_car:
             # Шаблоны машинки
             templates = dict()
@@ -1056,6 +1262,7 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
 
             path_static = os.path.join(options.static_path, '..')
             # todo: чтение файлов с диска - не очень хорошо! Возможно закешировать!
+
             html_tuner_car = ''
             with open(os.path.join(path_static, ex_car.tuner_car)) as f:
                 html_tuner_car = f.read()
@@ -1141,11 +1348,12 @@ class NPCInfoMessage(Message):
 
 # Сообщение-ответ для клиента - информация об нпц-ангаре
 class HangarInfoMessage(NPCInfoMessage):
-    def as_dict(self):
-        d = super(HangarInfoMessage, self).as_dict()
+    # info: данный мессадж кеширует свой результат
+    npc_cars = dict()  # key: npc.uri   val = [dict(car, html_car_table, html_car_img)]
 
-        npc = self.npc
-        if npc and npc.type == 'hangar':
+    def get_car_list(self, npc):
+        car_list = self.npc_cars.get(npc.uri, None)
+        if car_list is None:
             template_table = tornado.template.Loader(
                 "templates/location",
                 namespace=self.agent.connection.get_template_namespace()
@@ -1156,11 +1364,20 @@ class HangarInfoMessage(NPCInfoMessage):
                 namespace=self.agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
 
-            d.update(cars=[dict(
+            car_list = [dict(
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
-            ) for car in npc.car_list])
+            ) for car in npc.car_list]
+
+            self.npc_cars[npc.uri] = car_list
+        return car_list
+
+    def as_dict(self):
+        d = super(HangarInfoMessage, self).as_dict()
+        npc = self.npc
+        if npc and npc.type == 'hangar':
+            d.update(cars=self.get_car_list(npc))
         return d
 
 

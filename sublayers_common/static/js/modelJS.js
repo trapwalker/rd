@@ -567,7 +567,8 @@ var User = (function () {
         this.quick = false;
 
         this.example_car = null;
-        this.example_agent = null;
+        //this.example_agent = null;
+        this.example_agent = {rpg_info: {}};
         this.avatar_link = null;
         this.templates = {};
         this.car_npc_info = null;

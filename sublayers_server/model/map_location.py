@@ -7,8 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.base import Observer
 from sublayers_server.model.units import Unit, ExtraMobile
 from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, UserExampleSelfMessage, PreEnterToLocation,
-    TownAttackMessage
+    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, PreEnterToLocation, TownAttackMessage
 )
 from sublayers_server.model.game_log_messages import LocationLogMessage
 from sublayers_server.model.registry_me.uri import URI
@@ -73,7 +72,6 @@ class MapLocation(Observer):
                     else:
                         del new_quest
 
-
     def on_enter(self, agent, event):
         agent.on_enter_location(location=self, event=event)  # todo: (!)
         PreEnterToLocation(agent=agent, location=self, time=event.time).post()
@@ -92,11 +90,6 @@ class MapLocation(Observer):
             ChangeLocationVisitorsMessage(agent=agent, visitor_login=visitor._login, action=True, time=event.time).post()
         agent.current_location = self
         self.visitors.append(agent)
-        # todo: review
-        Event(
-            server=agent.server, time=event.time,
-            callback_after=lambda event: UserExampleSelfMessage(agent=agent, time=event.time).post()
-        ).post()
 
     def on_re_enter(self, agent, event):
         log.warning(u'ВНИМАНИЕ! [MapLocation.on_re_enter] Тут раньше сохранялся агент. Сохранение отключено для анализа производительности.')
@@ -130,8 +123,7 @@ class MapLocation(Observer):
 
         ExitFromLocation(agent=agent, time=event.time).post()  # отправть сообщения входа в город
         LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
-
-        agent.api.update_agent_api(time=event.time)  # todo: Пробросить event вместо time? ##refactor
+        agent.api.on_simple_update_agent_api(time=event.time)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent._login, action=False, time=event.time).post()
 
@@ -179,6 +171,8 @@ class Town(MapLocation):
 
         self.can_aggro = self.example.get_building_by_type('nukeoil')
 
+        self._as_cliend_dict_cache = self.example.as_client_dict()
+
     # def on_exit(self, agent, event):
     #     super(Town, self).on_exit(agent=agent, event=event)
     #     # if self.example.trader:
@@ -193,7 +187,7 @@ class Town(MapLocation):
             ex_dict['node_hash'] = example.node_hash()
             d.update(example=ex_dict)
         else:
-            d.update(example=self.example.as_client_dict())
+            d.update(example=self._as_cliend_dict_cache)
         return d
 
     @classmethod
