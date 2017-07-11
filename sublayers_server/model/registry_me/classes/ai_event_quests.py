@@ -49,8 +49,7 @@ class AIEventQuest(Quest):
                 car_example.inventory.items.append(item)
             count_loot -= 1
 
-    # todo: удалять старые законченные квесты, сохраняя только последний по времени (сделать в этом методе!!!)
-    def can_instantiate(self, event, agent):  # info: попытка сделать can_generate до инстанцирования квеста
+    def can_instantiate(self, event, agent, hirer=None):  # info: попытка сделать can_generate до инстанцирования квеста
         # log.debug('can_generate {} {!r}'.format(self.generation_group, self.parent))
         agent_quests_active = agent.profile.quests_active
 

@@ -682,7 +682,57 @@ class Quest(Node):
 
     def can_generate(self, event):
         # log.debug('can_generate {} {!r}'.format(self.generation_group, self.parent))
-        agent = self.agent
+        # закоментировано и возвращает всегда True, так как основная проверка в can_instantiate
+        # agent = self.agent
+        # agent_all_quests = agent.profile.quests
+        # agent_quests_active_ended = chain(agent.profile.quests_ended, agent.profile.quests_active)
+        #
+        # # Этапы генерации:
+        # # Квест не сгенерируется, если:
+        # # - парент одинаковый и
+        # # - достигнуто максимальное количество квестов у данного нпц в данной generation_group и
+        # # - После сдачи квеста не вышел кулдаун и
+        # # - Такой квест был последним взятым у данного нпц
+        #
+        # def get_count_quest(target_quest, quests, current_time):
+        #     res = 0
+        #     target_parent = target_quest.parent
+        #     target_hirer = target_quest.hirer
+        #     target_group = target_quest.generation_group
+        #     for q in quests:
+        #         if q.parent == target_parent and q.hirer == target_hirer and q.generation_group == target_group:
+        #             if not q.endtime or q.endtime + q.generation_cooldown > current_time:  # todo: правильно проверять завершённые квестов
+        #                 res += 1
+        #     return res
+        #
+        # def last_taken_quest_from_npc(npc, quests):  # возвращает последний взятый у данного нпц квест
+        #     res = None
+        #     if npc is None:
+        #         return None
+        #     for q in quests:
+        #         if q.hirer and npc.node_hash() == q.hirer.node_hash() and (res is None or res.starttime and res.starttime < q.starttime):
+        #             res = q
+        #     return res
+        #
+        # if self.hirer is None:  # если hirer не указан, то можно генерировать
+        #     return True
+        #
+        # generation_count = get_count_quest(self, agent_all_quests, event.time)
+        # # log.debug('generation_count {}  >  {}'.format(generation_count, self.generation_max_count))
+        #
+        # if generation_count >= self.generation_max_count:
+        #     return False
+        #
+        # # Если взят последний квест такой же - то не генерировать новый, даже если позволяет количество
+        # last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_active_ended)
+        # if last_npc_q and last_npc_q.parent == self.parent and last_npc_q.generation_group == self.generation_group:
+        #     return False
+
+        return True
+
+    def can_instantiate(self, event, agent, hirer):  # info: попытка сделать can_generate до инстанцирования квеста
+        if agent is None:
+            return False
         agent_all_quests = agent.profile.quests
         agent_quests_active_ended = chain(agent.profile.quests_ended, agent.profile.quests_active)
 
@@ -696,7 +746,7 @@ class Quest(Node):
         def get_count_quest(target_quest, quests, current_time):
             res = 0
             target_parent = target_quest.parent
-            target_hirer = target_quest.hirer
+            target_hirer = hirer
             target_group = target_quest.generation_group
             for q in quests:
                 if q.parent == target_parent and q.hirer == target_hirer and q.generation_group == target_group:
@@ -713,7 +763,7 @@ class Quest(Node):
                     res = q
             return res
 
-        if self.hirer is None:  # если hirer не указан, то можно генерировать
+        if hirer is None:  # если hirer не указан, то можно генерировать
             return True
 
         generation_count = get_count_quest(self, agent_all_quests, event.time)
@@ -723,7 +773,7 @@ class Quest(Node):
             return False
 
         # Если взят последний квест такой же - то не генерировать новый, даже если позволяет количество
-        last_npc_q = last_taken_quest_from_npc(self.hirer, agent_quests_active_ended)
+        last_npc_q = last_taken_quest_from_npc(hirer, agent_quests_active_ended)
         if last_npc_q and last_npc_q.parent == self.parent and last_npc_q.generation_group == self.generation_group:
             return False
 
