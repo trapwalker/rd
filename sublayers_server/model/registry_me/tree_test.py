@@ -90,15 +90,20 @@ def test3(reload=True, save_loaded=True):
     #T = T()
     tr = t.buildings[0].head
 
-    with T('Trader refresh TOTAL'):
-        for i in xrange(10):
-            with T('Trader refresh #{}'.format(i)):
-                tr.on_refresh(None)
+    with T('Trader refresh'):
+        tr.on_refresh(None)
 
-    with T('Get assort     TOTAL'):
+    with T('Get assort TOTAL'):
         for i in xrange(10):
             with T('Get assort #{}'.format(i)):
                 tr.get_trader_assortment(a)
+
+    m = reg.get('/registry/institutions/mayor/whitehill_manny_askorti')
+    q = m.quests[-2]
+    #q = reg.get('/registry/quests/search_courier')
+    with T('quest inst'):
+        qq = q.instantiate()
+
 
     globals().update(locals())
 

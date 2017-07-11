@@ -10,9 +10,8 @@ from sublayers_server.model.messages import (
     EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, PreEnterToLocation, TownAttackMessage
 )
 from sublayers_server.model.game_log_messages import LocationLogMessage
-from sublayers_server.model.registry_me.uri import URI
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.events import ActivateLocationChats, Event, event_deco
+from sublayers_server.model.events import ActivateLocationChats, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry_me.classes.trader import TraderRefreshEvent, Trader
 from sublayers_server.model.inventory import Inventory
@@ -53,6 +52,13 @@ class MapLocation(Observer):
         # Свалка
         self.inventory = Inventory(max_size=100, owner=self)
 
+        # Кеширование квестов
+        self._cache_head_quests = dict()
+        for building in self.example.buildings or []:
+            head = building.head
+            quests = head.quests or []
+            self._cache_head_quests[head] = quests
+
     def can_come(self, agent, time):
         return False
 
@@ -62,15 +68,17 @@ class MapLocation(Observer):
             chat.room.include(agent=agent, time=event.time)
 
     def generate_quests(self, event, agent):
-        for building in self.example.buildings or []:
-            head = building.head
-            for quest in head and head.quests or []:
+        for head, quests in self._cache_head_quests.iteritems():
+            for quest in quests:
                 for x in xrange(0, quest.generation_max_count):
-                    new_quest = quest.instantiate(abstract=False, hirer=head)
-                    if new_quest.generate(event=event, agent=agent.example):
-                        agent.example.profile.add_quest(quest=new_quest, time=event.time)
+                    if quest.can_instantiate(event=event, agent=agent.example, hirer=head):
+                        new_quest = quest.instantiate(abstract=False, hirer=head)
+                        if new_quest.generate(event=event, agent=agent.example):
+                            agent.example.profile.add_quest(quest=new_quest, time=event.time)
+                        else:
+                            del new_quest
                     else:
-                        del new_quest
+                        break  # Если квест нельзя сгенерировать, то нет смысла проверять ещё
 
     def on_enter(self, agent, event):
         agent.on_enter_location(location=self, event=event)  # todo: (!)
@@ -108,10 +116,11 @@ class MapLocation(Observer):
         else:
             self.on_enter(agent=agent, event=event)
 
-    def on_exit(self, agent, event):
+    def on_exit(self, agent, event, dc_agent=False):
         self.visitors.remove(agent)
         agent.current_location = None
-        agent.on_exit_location(location=self, event=event)
+        if not dc_agent:
+            agent.on_exit_location(location=self, event=event)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
         PrivateChatRoom.close_privates(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
@@ -120,10 +129,10 @@ class MapLocation(Observer):
         if self.inventory is not None:
             self.inventory.del_visitor(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
             self.inventory.del_manager(agent=agent)
-
-        ExitFromLocation(agent=agent, time=event.time).post()  # отправть сообщения входа в город
-        LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
-        agent.api.on_simple_update_agent_api(time=event.time)
+        if not dc_agent:
+            ExitFromLocation(agent=agent, time=event.time).post()  # отправть сообщения входа в город
+            LocationLogMessage(agent=agent, action='exit', location=self, time=event.time).post()
+            agent.api.on_simple_update_agent_api(time=event.time)
         for visitor in self.visitors:
             ChangeLocationVisitorsMessage(agent=visitor, visitor_login=agent._login, action=False, time=event.time).post()
 

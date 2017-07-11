@@ -36,14 +36,15 @@ class AIQuickAgent(AI):
     @event_deco
     def create_ai_quest(self, event):
         quest_parent = self.example.profile.ai_quest
-        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        if new_quest.generate(event=event, agent=self.example):
-            self.example.profile.add_quest(quest=new_quest, time=event.time)
-            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
-        else:
-            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
-            del new_quest
-        self.timer_restart_car(time=event.time)
+        if quest_parent.can_instantiate(event=event, agent=self.example, hirer=None):
+            new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+            if new_quest.generate(event=event, agent=self.example):
+                self.example.profile.add_quest(quest=new_quest, time=event.time)
+                self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
+            else:
+                log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+                del new_quest
+            self.timer_restart_car(time=event.time)
 
     def timer_restart_car(self, time):
         InitAIQuickCar(ai=self, time=time).post()

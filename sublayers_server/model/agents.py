@@ -350,6 +350,9 @@ class Agent(Object):
             self.car.displace(time=event.time)
         log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
 
+        if self.current_location:
+            self.current_location.on_exit(agent=self, event=event, dc_agent=True)
+
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
         if self.server.agents.get(str(self.user.pk), None):
             del self.server.agents[str(self.user.pk)]
@@ -748,13 +751,14 @@ class User(Agent):
     @event_deco
     def create_teaching_quest(self, event):
         quest_parent = self.server.reg.get('/registry/quests/teaching')
-        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        if new_quest.generate(event=event, agent=self.example):
-            self.example.profile.add_quest(quest=new_quest, time=event.time)
-            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
-        else:
-            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
-            del new_quest
+        if quest_parent.can_instantiate(event=event, agent=self.example, hirer=None):
+            new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+            if new_quest.generate(event=event, agent=self.example):
+                self.example.profile.add_quest(quest=new_quest, time=event.time)
+                self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
+            else:
+                log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+                del new_quest
 
     def as_dict(self, **kw):
         d = super(User, self).as_dict(**kw)
@@ -975,15 +979,16 @@ class TeachingUser(QuickUser):
     @event_deco
     def create_teaching_quest_map(self, event):
         quest_parent = self.server.reg.get('/registry/quests/teaching_map')
-        new_quest = quest_parent.instantiate(abstract=False, hirer=None)
-        if new_quest.generate(event=event, agent=self.example):
-            self.example.profile.add_quest(quest=new_quest, time=event.time)
-            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
-            if self.user.quick:
-                self.set_teaching_state('map')
-        else:
-            log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
-            del new_quest
+        if quest_parent.can_instantiate(event=event, agent=self.example, hirer=None):
+            new_quest = quest_parent.instantiate(abstract=False, hirer=None)
+            if new_quest.generate(event=event, agent=self.example):
+                self.example.profile.add_quest(quest=new_quest, time=event.time)
+                self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
+                if self.user.quick:
+                    self.set_teaching_state('map')
+            else:
+                log.debug('Quest<{}> dont generate for <{}>! Error!'.format(new_quest, self))
+                del new_quest
 
     @event_deco
     def init_example_car_teaching(self, event):

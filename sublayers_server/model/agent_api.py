@@ -756,7 +756,7 @@ class AgentAPI(API):
 
     @public_method
     def get_loot(self, poi_id):
-        log.info('agent %r want loot =%r', self.agent, poi_id)
+        # log.info('agent %r want loot =%r', self.agent, poi_id)
         self.agent.log.info('get_loot poi_id={}'.format(poi_id))
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
@@ -765,13 +765,13 @@ class AgentAPI(API):
     @basic_mode
     @public_method
     def sell_car_in_hangar(self, npc_node_hash):
-        log.info('agent %r sell car', self.agent)
+        self.agent.log.info('agent %r sell car', self.agent)
         TransactionHangarSell(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @basic_mode
     @public_method
     def buy_car_in_hangar(self, car_number, npc_node_hash):
-        log.info('agent %r want buy car, with number=%r', self.agent, car_number)
+        self.agent.log.info('agent %r want buy car, with number=%r', self.agent, car_number)
         TransactionHangarBuy(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
 
     @basic_mode
@@ -784,13 +784,13 @@ class AgentAPI(API):
     @basic_mode
     @public_method
     def parking_leave_car(self, npc_node_hash):
-        log.info('agent %r sell car', self.agent)
+        self.agent.log.info('agent %r sell car', self.agent)
         TransactionParkingLeave(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @basic_mode
     @public_method
     def parking_select_car(self, car_number, npc_node_hash):
-        log.info('agent %r want buy car, with number=%r', self.agent, car_number)
+        self.agent.log.info('agent %r want buy car, with number=%r', self.agent, car_number)
         TransactionParkingSelect(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
 
     @basic_mode
@@ -863,7 +863,7 @@ class AgentAPI(API):
     @public_method
     def init_barter(self, recipient_login):
         self.agent.log.info('init_barter recipient_login={!r}'.format(recipient_login))
-        log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
+        # log.debug('Agent %s invite %s to barter', self.agent, recipient_login)
         InitBarterEvent(initiator=self.agent, recipient_login=recipient_login,
                         time=self.agent.server.get_time()).post()
 

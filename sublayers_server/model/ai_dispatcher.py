@@ -16,13 +16,14 @@ class AIDispatcher(AI):
 
     @event_deco
     def create_ai_quest(self, event, quest_example):
-        new_quest = quest_example.instantiate(abstract=False, hirer=None)
-        if new_quest.generate(event=event, agent=self.example):
-            self.example.profile.add_quest(quest=new_quest, time=event.time)
-            self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
-        else:
-            log.debug('AIDispatcher not started!!!')
-            del new_quest
+        if quest_example.can_instantiate(event=event, agent=self.example, hirer=None):
+            new_quest = quest_example.instantiate(abstract=False, hirer=None)
+            if new_quest.generate(event=event, agent=self.example):
+                self.example.profile.add_quest(quest=new_quest, time=event.time)
+                self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
+            else:
+                log.debug('AIDispatcher not started!!!')
+                del new_quest
 
 
 class AIAgent(AI):
@@ -72,7 +73,7 @@ class AIAgent(AI):
             del self.server.agents_by_name[self._login]
         else:
             log.warn("Agent %s with key %s not found in server.agents_by_name", self, self._login)
-        log.info('Agent %s displaced by quest', self)
+        # log.info('Agent %s displaced by quest', self)
         self.after_delete(event.time)
 
     @property
