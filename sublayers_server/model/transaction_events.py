@@ -508,9 +508,9 @@ class TransactionHangarBuy(TransactionTownNPC):
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
         agent_balance = self.agent.balance
-        agent_balance += 0 if self.agent.example.profile.car is None else self.agent.example.profile.car.price
+        old_car_price = 0 if self.agent.example.profile.car is None else self.agent.example.profile.car.price
         # todo: refactoring (use inventory to choose car)
-        if agent_balance >= car_proto.price:
+        if (agent_balance + old_car_price) >= car_proto.price:
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
@@ -528,9 +528,9 @@ class TransactionHangarBuy(TransactionTownNPC):
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
+            self.agent.example.profile.set_balance(time=self.time, delta=-car_proto.price + old_car_price)
             self.agent.example.profile.car = car_example
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
-            self.agent.example.profile.set_balance(time=self.time, delta=-car_proto.price)
 
             messages.UserExampleCarNPCTemplates(agent=self.agent, time=self.time).post()
             messages.UserExampleCarInfo(agent=self.agent, time=self.time).post()
