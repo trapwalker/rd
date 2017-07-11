@@ -642,6 +642,7 @@ class PreEnterToLocation(Message):
 
 
 class EnterToLocation(Message):
+    # info: данный мессадж кеширует свой результат
     locations_cache = {}  # key=URI value=html локации
 
     def __init__(self, location, agent, **kw):
@@ -687,16 +688,6 @@ class EnterToLocation(Message):
 
 class ExitFromLocation(Message):
     pass
-    # def __init__(self, location, **kw):
-    #     super(ExitFromLocation, self).__init__(**kw)
-    #     self.location = location
-
-    # def as_dict(self):
-    #     d = super(ExitFromLocation, self).as_dict()
-    #     d.update(
-    #         location=self.location.as_dict(time=self.time)
-    #     )
-    #     return d
 
 
 class ChangeLocationVisitorsMessage(Message):
@@ -1357,6 +1348,7 @@ class NPCInfoMessage(Message):
 
 # Сообщение-ответ для клиента - информация об нпц-ангаре
 class HangarInfoMessage(NPCInfoMessage):
+    # info: данный мессадж кеширует свой результат
     npc_cars = dict()  # key: npc.uri   val = [dict(car, html_car_table, html_car_img)]
 
     def get_car_list(self, npc):
