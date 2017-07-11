@@ -192,7 +192,8 @@ class Application(BaseApplication):
             self.stop()
             log.debug('==== finally after stop')
 
-    def on_stop(self):
+    def stop(self):
+        self.srv.flash_save()
         if self.srv.is_active:
             self.srv.stop()
 

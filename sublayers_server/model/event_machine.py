@@ -12,7 +12,7 @@ from sublayers_server.model import errors
 
 from sublayers_server.model.map_location import RadioPoint, Town, GasStation, MapRespawn
 from sublayers_server.model.radiation import StationaryRadiation
-from sublayers_server.model.events import event_deco
+from sublayers_server.model.events import event_deco, Event
 from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry_me.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
@@ -170,9 +170,24 @@ class Server(object):
 
     def save(self, time):
         log.debug('==== Server save ' + '=' * 33)
-        with Timer(logger=None) as t:
+        with Timer() as t:
             for agent in self.agents.values():
                 agent.save(time=time)
+            Event(
+                server=self,
+                time=time,
+                callback_after=lambda event: log.info(
+                    '==== Server saved DONE ({t:.3f}s) {line}'.format(t=event.time - time, line='=' * 18)
+                ),
+            ).post()
+
+    def flash_save(self):
+        log.debug('==== Server emergency save start ' + '=' * 17)
+        time = self.get_time()
+        with Timer() as t:
+            for agent in self.agents.values():
+                agent.on_save(time=time)
+        log.debug('==== Server emergency save DONE ({:.3f}s) {}'.format(t.duration, '=' * 9))
 
     @event_deco
     def server_stat_log(self, event, **kw):
@@ -350,6 +365,7 @@ class LocalServer(Server):
 
     def stop(self, timeout=None):
         # self.periodic.stop()
+        self.flash_save()
         log.info('---- Game server finished ' + '-' * 25 + '\n')
         self.is_terminated = True
         # if self.app:
@@ -369,13 +385,6 @@ class LocalServer(Server):
 
         with codecs.open('srv_dump.yaml', 'r', encoding='utf-8') as f:
             srv2 = yaml_tools.load(stream=f)
-
-    def save(self, *av, **kw):
-        super(LocalServer, self).save(*av, **kw)
-
-    def reset_user(self, user=None):
-        if user is None:
-            pass
 
     # def load_test_accounts(self):
     #     from sublayers_server.model.registry_me.classes.agents import Agent
