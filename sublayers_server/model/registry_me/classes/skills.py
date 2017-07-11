@@ -31,7 +31,6 @@ class Skill(Node):
 
     def calc_value(self, value=-1):
         # limit = self.mod.limit if self.mod.limit > 0 else self.limit
-
         if value < 0:
             value = self.value
         if self.mod.bonus_step > 0:
@@ -59,5 +58,4 @@ class BuySkill(Node):
         caption=u'Таблица цен на очки навыков', tags={'client'},
         field=EmbeddedDocumentField(document_type=SkillPriceItem),
         readonly=True,
-        # reinst=True,
     )

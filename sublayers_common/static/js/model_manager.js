@@ -1313,14 +1313,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserChangeEXP = function(event) {
-        console.log('ClientManager.prototype.UserChangeEXP', event);
+        //console.log('ClientManager.prototype.UserChangeEXP', event);
         setOptions(event.data, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
     };
 
     ClientManager.prototype.UserChangePerkSkill = function(event) {
-        console.log('ClientManager.prototype.UserChangePerkSkill', event);
+        //console.log('ClientManager.prototype.UserChangePerkSkill', event);
         setOptions(event.rpg_info, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
@@ -1341,58 +1341,35 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserChangeQuestInventory = function(event) {
-        console.log('ClientManager.prototype.UserChangeQuestInventory', event);
+        //console.log('ClientManager.prototype.UserChangeQuestInventory', event);
         setOptions(event.data, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
     };
 
     ClientManager.prototype.UserExampleCarInfo = function(event) {
-        console.log('ClientManager.prototype.UserExampleCarInfo', event);
+        //console.log('ClientManager.prototype.UserExampleCarInfo', event);
         user.example_car = event.example_car;
         locationManager.update();
     };
 
     ClientManager.prototype.UserExampleCarView = function(event) {
-        console.log('ClientManager.prototype.UserExampleCarView', event);
+        //console.log('ClientManager.prototype.UserExampleCarView', event);
         setOptions(event.templates, user.templates);
         locationManager.update();
     };
 
     ClientManager.prototype.UserExampleCarSlots = function(event) {
-        console.log('ClientManager.prototype.UserExampleCarSlots', event);
+        //console.log('ClientManager.prototype.UserExampleCarSlots', event);
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
         locationManager.update();
     };
 
     ClientManager.prototype.UserExampleCarNPCTemplates = function(event) {
-        console.log('ClientManager.prototype.UserExampleCarNPCTemplates', event);
+        //console.log('ClientManager.prototype.UserExampleCarNPCTemplates', event);
         setOptions(event.templates, user.templates);
         locationManager.update();
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     ClientManager.prototype.HangarInfoMessage = function (event) {
         //console.log('ClientManager.prototype.HangarInfoMessage', event);
