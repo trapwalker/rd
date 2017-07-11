@@ -18,7 +18,7 @@ if __name__ == '__main__':
         log.addHandler(_hndl)
 
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_common.ctx_timer import Timer
+from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.registry_me.tree import (
     connect,
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
@@ -76,7 +76,7 @@ def test3(reload=True, save_loaded=True):
             log.debug('Agent {} loaded'.format(num))
         return a
 
-    #a = ag(1)
+    a = ag(1)
     #b = ag(2)
     t = reg.get('reg:///registry/poi/locations/towns/prior')
     with Timer() as t0:
@@ -86,6 +86,19 @@ def test3(reload=True, save_loaded=True):
                 print(u'[{t1.duration:.3f}s] - {b.title}'.format(**locals()))
     print('TOTAL:', t0.duration)
 
+    #T = lambda name: Timer(name=name, log_start=None, logger=log)
+    #T = T()
+    tr = t.buildings[0].head
+
+    with T('Trader refresh TOTAL'):
+        for i in xrange(10):
+            with T('Trader refresh #{}'.format(i)):
+                tr.on_refresh(None)
+
+    with T('Get assort     TOTAL'):
+        for i in xrange(10):
+            with T('Get assort #{}'.format(i)):
+                tr.get_trader_assortment(a)
 
     globals().update(locals())
 
