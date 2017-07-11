@@ -142,7 +142,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
                 caption=u"Необходимый итем",
             ),
         ),
-        reinst=True,
+        #reinst=True,
     )
     loot_set = ListField(
         caption=u"Список ненужных вещей",
