@@ -1274,6 +1274,7 @@ var ClientManager = (function () {
         }
     };
 
+
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
@@ -1293,8 +1294,7 @@ var ClientManager = (function () {
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
-        user.example_agent = event.example_agent;
-        user.example_agent.rpg_info = event.rpg_info;
+        setOptions(event.example_agent, user.example_agent);
         user.avatar_link = event.avatar_link;
         if (event.example_car && event.templates) {
             user.templates.html_car_img = event.templates.html_car_img;
@@ -1302,18 +1302,97 @@ var ClientManager = (function () {
         }
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
-        // Проверить не надо ли запустить окно информации об автомобиле
-        if (carManager.is_active) carManager.open_window();
-
         this.UserExampleSelfRPGMessage(event);
     };
 
     ClientManager.prototype.UserExampleSelfRPGMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
-        user.example_agent.rpg_info = event.rpg_info;
+        setOptions(event.rpg_info, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
     };
+
+    ClientManager.prototype.UserChangeEXP = function(event) {
+        console.log('ClientManager.prototype.UserChangeEXP', event);
+        setOptions(event.data, user.example_agent.rpg_info);
+        characterManager.redraw();
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserChangePerkSkill = function(event) {
+        console.log('ClientManager.prototype.UserChangePerkSkill', event);
+        setOptions(event.rpg_info, user.example_agent.rpg_info);
+        characterManager.redraw();
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserGetAboutSelf = function(event) {
+        //console.log('ClientManager.prototype.UserGetAboutSelf', event);
+        user.example_agent.about_self = event.about_self;
+        characterManager.redraw();
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserExampleChangeInsurance = function(event) {
+        //console.log('ClientManager.prototype.UserExampleChangeInsurance', event);
+        user.example_agent.insurance = event.insurance;
+        //characterManager.redraw();
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserChangeQuestInventory = function(event) {
+        console.log('ClientManager.prototype.UserChangeQuestInventory', event);
+        setOptions(event.data, user.example_agent.rpg_info);
+        characterManager.redraw();
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserExampleCarInfo = function(event) {
+        console.log('ClientManager.prototype.UserExampleCarInfo', event);
+        user.example_car = event.example_car;
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserExampleCarView = function(event) {
+        console.log('ClientManager.prototype.UserExampleCarView', event);
+        setOptions(event.templates, user.templates);
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserExampleCarSlots = function(event) {
+        console.log('ClientManager.prototype.UserExampleCarSlots', event);
+        user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
+        locationManager.update();
+    };
+
+    ClientManager.prototype.UserExampleCarNPCTemplates = function(event) {
+        console.log('ClientManager.prototype.UserExampleCarNPCTemplates', event);
+        setOptions(event.templates, user.templates);
+        locationManager.update();
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ClientManager.prototype.HangarInfoMessage = function (event) {
         //console.log('ClientManager.prototype.HangarInfoMessage', event);

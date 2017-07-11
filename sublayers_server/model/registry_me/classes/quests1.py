@@ -60,7 +60,7 @@ class DeliveryPassengerQuest(DeliveryQuestSimple):
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Town', )
     )
     destination = RegistryLinkField(
-        caption=u'Пункт назначения', document_type='sublayers_server.model.registry_me.classes.poi.Town', tags={'client'})
+        caption=u'Пункт назначения', document_type='sublayers_server.model.registry_me.classes.poi.Town')
 
     def init_distance(self):
         town1 = self.hirer.hometown

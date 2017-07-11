@@ -321,13 +321,13 @@ class TransactionBuyInsurance(TransactionEvent):
         if target_insurance.node_hash() == agent_insurance.node_hash():
             # Продлить страховку
             agent_insurance.prolong(delta=target_insurance.deadline)
+            example_agent.change_quest_inventory(event=self)  # Отправить мессадж об изменении квестового инвентаря
         else:
             # Заменить страховку
             # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
             new_insurance = target_insurance.instantiate()
             example_agent.profile.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
-
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleChangeInsurance(agent=self.agent, time=self.time).post()
 
 
 class TransactionTownNPC(TransactionEvent):
@@ -436,7 +436,8 @@ class TransactionGasStation(TransactionTownNPC):
             else:
                 ex_car.inventory.items.append(item)
 
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        messages.UserExampleCarInfo(agent=agent, time=self.time).post()
+
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Эвент квестов
@@ -475,7 +476,12 @@ class TransactionHangarSell(TransactionTownNPC):
         self.agent.example.profile.set_balance(time=self.time, delta=self.agent.example.profile.car.price)
         self.agent.example.profile.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
-        messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+
+        messages.UserExampleCarNPCTemplates(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarInfo(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarView(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarSlots(agent=self.agent, time=self.time).post()
+
         TransactionHangarLogMessage(agent=self.agent, time=self.time, car=log_car, price=log_car.price, action="sell").post()
 
 
@@ -525,7 +531,11 @@ class TransactionHangarBuy(TransactionTownNPC):
             self.agent.example.profile.car = car_example
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             self.agent.example.profile.set_balance(time=self.time, delta=-car_proto.price)
-            messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+
+            messages.UserExampleCarNPCTemplates(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarInfo(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarView(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarSlots(agent=self.agent, time=self.time).post()
 
             # Эвент квестов
             self.agent.example.profile.on_event(event=self, cls=quest_events.OnBuyCar)
@@ -622,10 +632,13 @@ class TransactionParkingSelect(TransactionTownNPC):
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
             agent_ex.profile.car_list.remove(car_list[self.car_number])
             agent_ex.profile.car.last_parking_npc = None
-
             agent.example.profile.set_balance(time=self.time, delta=-summ_for_paying)
 
-            messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarNPCTemplates(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarInfo(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarView(agent=self.agent, time=self.time).post()
+            messages.UserExampleCarSlots(agent=self.agent, time=self.time).post()
+
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
 
@@ -662,7 +675,11 @@ class TransactionParkingLeave(TransactionTownNPC):
         agent_ex.profile.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
-        messages.UserExampleSelfMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarNPCTemplates(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarInfo(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarView(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarSlots(agent=self.agent, time=self.time).post()
+
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         TransactionParkingLogMessage(agent=self.agent, time=self.time, car=car_example, price=0,
@@ -750,7 +767,10 @@ class TransactionArmorerApply(TransactionTownNPC):
             item.position = position
             agent.example.profile.car.inventory.items.append(item)
             position += 1
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+
+        messages.UserExampleCarSlots(agent=agent, time=self.time).post()
+        messages.UserExampleCarView(agent=agent, time=self.time).post()
+
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Эвент для квестов
@@ -852,7 +872,10 @@ class TransactionMechanicApply(TransactionTownNPC):
             item.position = position
             agent.example.profile.car.inventory.items.append(item)
             position += 1
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+
+        messages.UserExampleCarSlots(agent=agent, time=self.time).post()
+        messages.UserExampleCarView(agent=agent, time=self.time).post()
+
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
@@ -899,7 +922,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         ex_car.hp = ex_car.hp + self.hp
         agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
 
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        messages.UserExampleCarInfo(agent=agent, time=self.time).post()
 
         # todo: Отправить транзакционное сообщение для здания (раньше такого не делали)
         # Отправка сообщения о транзакции
@@ -998,7 +1021,9 @@ class TransactionTunerApply(TransactionTownNPC):
             agent.example.profile.car.inventory.items.append(item)
             position += 1
 
-        messages.UserExampleSelfShortMessage(agent=agent, time=self.time).post()
+        messages.UserExampleCarSlots(agent=agent, time=self.time).post()
+        messages.UserExampleCarView(agent=agent, time=self.time).post()
+
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
@@ -1288,7 +1313,8 @@ class TransactionSetRPGState(TransactionTownNPC):
                 if perk_rec['perk'] in agent.example.profile.perks:
                     agent.example.profile.perks.remove(perk_rec['perk'])
 
-        messages.UserExampleSelfShortMessage(agent=self.agent, time=self.time).post()
+        messages.UserExampleCarView(agent=agent, time=self.time).post()
+        messages.UserChangePerkSkill(agent=agent, time=self.time).post()
 
         self.agent.example.profile.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
 

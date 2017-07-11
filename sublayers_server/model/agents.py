@@ -16,8 +16,8 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
-    PartyErrorMessage, UserExampleSelfRPGMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage
+    PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -292,6 +292,7 @@ class Agent(Object):
             if car.inventory:
                 self.inventory = car.inventory
                 self.inventory.add_change_call_back(self.on_change_inventory_cb)
+            UserExampleCarInfo(agent=self, time=time).post()
 
     def drop_car(self, car, time, drop_owner=True):
         self.log.info('drop_car {}  time={}'.format(car, time))
@@ -307,6 +308,7 @@ class Agent(Object):
             if self.inventory:
                 self.inventory.del_change_call_back(self.on_change_inventory_cb)
                 self.inventory = None
+            UserExampleCarInfo(agent=self, time=time).post()
 
     def on_connect(self, connection):
         self.log.info('on_connect {}'.format(connection))
@@ -543,7 +545,6 @@ class Agent(Object):
                 self.example.profile.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
         # Отправить сообщение на клиент о начисленной экспе
-        UserExampleSelfRPGMessage(agent=self, time=event.time).post()
         self.example.profile.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
         # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
