@@ -1302,9 +1302,6 @@ var ClientManager = (function () {
         }
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
-        // Проверить не надо ли запустить окно информации об автомобиле
-        if (carManager.is_active) carManager.open_window();
-
         this.UserExampleSelfRPGMessage(event);
     };
 
@@ -1330,14 +1327,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserGetAboutSelf = function(event) {
-        console.log('ClientManager.prototype.UserGetAboutSelf', event);
+        //console.log('ClientManager.prototype.UserGetAboutSelf', event);
         user.example_agent.about_self = event.about_self;
         characterManager.redraw();
         locationManager.update();
     };
 
     ClientManager.prototype.UserExampleChangeInsurance = function(event) {
-        console.log('ClientManager.prototype.UserExampleChangeInsurance', event);
+        //console.log('ClientManager.prototype.UserExampleChangeInsurance', event);
         user.example_agent.insurance = event.insurance;
         //characterManager.redraw();
         locationManager.update();

@@ -244,7 +244,7 @@ class Trader(Institution):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
         for price in self._current_list:
-            if price.is_lot and (price.count > 0 or price.is_infinity) and not self.item_in_ignore_list(price.item):
+            if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
                     dict(
                         item=price.item.as_client_dict(),

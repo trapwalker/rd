@@ -23,7 +23,6 @@ from itertools import chain
 class RelationshipRec(Subdoc):
     npc = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
-        tags={'client'},
         caption=u"Целевой NPC",
     )
     rel_index = FloatField(default=-100, caption=u"Накапливаемое отношение")

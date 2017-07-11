@@ -642,6 +642,7 @@ class PreEnterToLocation(Message):
 
 
 class EnterToLocation(Message):
+    # info: данный мессадж кеширует свой результат
     locations_cache = {}  # key=URI value=html локации
 
     def __init__(self, location, agent, **kw):
@@ -687,16 +688,6 @@ class EnterToLocation(Message):
 
 class ExitFromLocation(Message):
     pass
-    # def __init__(self, location, **kw):
-    #     super(ExitFromLocation, self).__init__(**kw)
-    #     self.location = location
-
-    # def as_dict(self):
-    #     d = super(ExitFromLocation, self).as_dict()
-    #     d.update(
-    #         location=self.location.as_dict(time=self.time)
-    #     )
-    #     return d
 
 
 class ChangeLocationVisitorsMessage(Message):
@@ -1357,11 +1348,12 @@ class NPCInfoMessage(Message):
 
 # Сообщение-ответ для клиента - информация об нпц-ангаре
 class HangarInfoMessage(NPCInfoMessage):
-    def as_dict(self):
-        d = super(HangarInfoMessage, self).as_dict()
+    # info: данный мессадж кеширует свой результат
+    npc_cars = dict()  # key: npc.uri   val = [dict(car, html_car_table, html_car_img)]
 
-        npc = self.npc
-        if npc and npc.type == 'hangar':
+    def get_car_list(self, npc):
+        car_list = self.npc_cars.get(npc.uri, None)
+        if car_list is None:
             template_table = tornado.template.Loader(
                 "templates/location",
                 namespace=self.agent.connection.get_template_namespace()
@@ -1372,11 +1364,20 @@ class HangarInfoMessage(NPCInfoMessage):
                 namespace=self.agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
 
-            d.update(cars=[dict(
+            car_list = [dict(
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
-            ) for car in npc.car_list])
+            ) for car in npc.car_list]
+
+            self.npc_cars[npc.uri] = car_list
+        return car_list
+
+    def as_dict(self):
+        d = super(HangarInfoMessage, self).as_dict()
+        npc = self.npc
+        if npc and npc.type == 'hangar':
+            d.update(cars=self.get_car_list(npc))
         return d
 
 

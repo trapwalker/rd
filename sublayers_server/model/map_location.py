@@ -171,6 +171,8 @@ class Town(MapLocation):
 
         self.can_aggro = self.example.get_building_by_type('nukeoil')
 
+        self._as_cliend_dict_cache = self.example.as_client_dict()
+
     # def on_exit(self, agent, event):
     #     super(Town, self).on_exit(agent=agent, event=event)
     #     # if self.example.trader:
@@ -185,7 +187,7 @@ class Town(MapLocation):
             ex_dict['node_hash'] = example.node_hash()
             d.update(example=ex_dict)
         else:
-            d.update(example=self.example.as_client_dict())
+            d.update(example=self._as_cliend_dict_cache)
         return d
 
     @classmethod
