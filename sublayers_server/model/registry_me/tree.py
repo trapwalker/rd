@@ -51,7 +51,7 @@ CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other fie
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
 
 IGNORE_WRONG_LINKS = True  # False
-CACHE_INHERITED_FIELDS = True  # Локальное кэширование унаследованных значений нода
+CACHE_INHERITED_FIELDS = False  # Локальное кэширование унаследованных значений нода
 
 
 class RegistryError(Exception):
