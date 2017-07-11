@@ -51,7 +51,7 @@ CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other fie
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
 
 IGNORE_WRONG_LINKS = True  # False
-CACHE_INHERITED_FIELDS = False  # Локальное кэширование унаследованных значений нода
+CACHE_INHERITED_FIELDS = True  # Локальное кэширование унаследованных значений нода
 
 
 class RegistryError(Exception):
@@ -92,9 +92,8 @@ def field_getter_decorator(getter):
                     # try to inherite parent value
                     assert name not in _data, 'Attribute {} marked as inherited, but it present in _dict'.format(name)
 
-                    inherited_cache = None
-                    if CACHE_INHERITED_FIELDS:
-                        inherited_cache = self.__dict__.setdefault('_inherited_cache', {})
+                    inherited_cache = instance._inherited_cache
+                    if inherited_cache is not None:
                         res = inherited_cache.get(name, Nil)
                         if res is not Nil:
                             return res
@@ -618,6 +617,7 @@ class Node(Subdoc, SubdocToolsMixin):
             _empty_overrided_fields=_empty_overrided_fields,
             **extra
         )
+        self._inherited_cache = {} if CACHE_INHERITED_FIELDS else None
         self._need_reinst = False
         global REGISTRY
         if isinstance(parent, Node) and REGISTRY.loading != 'preloading':
