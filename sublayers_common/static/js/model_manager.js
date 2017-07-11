@@ -1302,9 +1302,6 @@ var ClientManager = (function () {
         }
         user.car_npc_info = event.hasOwnProperty('car_npc_info') ? event.car_npc_info : null;
 
-        // Проверить не надо ли запустить окно информации об автомобиле
-        if (carManager.is_active) carManager.open_window();
-
         this.UserExampleSelfRPGMessage(event);
     };
 

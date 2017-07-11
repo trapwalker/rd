@@ -74,7 +74,7 @@ $(document).ready(function () {
         if (windowTemplateManager.isOpen('car_info'))
             windowTemplateManager.closeUniqueWindow('car_info');
         else
-            carManager.get_info();
+            carManager.open_window();
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
