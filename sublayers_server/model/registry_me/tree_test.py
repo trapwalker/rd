@@ -98,6 +98,13 @@ def test3(reload=True, save_loaded=True):
             with T('Get assort #{}'.format(i)):
                 tr.get_trader_assortment(a)
 
+    m = reg.get('/registry/institutions/mayor/whitehill_manny_askorti')
+    q = m.quests[-2]
+    #q = reg.get('/registry/quests/search_courier')
+    with T('quest inst'):
+        qq = q.instantiate()
+
+
     globals().update(locals())
 
 def test4(reload=True, save_loaded=True):
