@@ -493,7 +493,6 @@ class Quest(Node):
             self.do_state_exit(old_state, event)
 
         self.current_state = new_state_id
-        self.do_state_enter(new_state, event)
 
         agent_model = self.agent and self.agent.profile._agent_model
         if agent_model:
@@ -505,6 +504,8 @@ class Quest(Node):
                 QuestStartStopLogMessage(agent=agent_model, time=event.time, quest=self, action=False).post()
                 self.endtime = event.time
                 self._on_end_quest(event)
+
+        self.do_state_enter(new_state, event)
 
     def _on_end_quest(self, event):
         agent_example = self.agent and self.agent.profile

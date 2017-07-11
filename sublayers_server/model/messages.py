@@ -976,10 +976,21 @@ class UserChangeQuestInventory(Message):
     
 
 class UserChangePerkSkill(Message):
+    all_perks = []
+
     def as_dict(self):
         d = super(UserChangePerkSkill, self).as_dict()
-        agent_example = self.agent.example.profile                
-        d.update(                                   
+        agent_example = self.agent.example.profile
+
+        if not self.all_perks:
+            for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
+                self.all_perks.append(dict(
+                    perk=perk,
+                    perk_dict=perk.as_client_dict(),
+                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
+                ))
+
+        d.update(
             rpg_info=dict(
                 driving=agent_example.driving.as_client_dict(),
                 shooting=agent_example.shooting.as_client_dict(),
@@ -995,10 +1006,10 @@ class UserChangePerkSkill(Message):
                 buy_engineering=agent_example.buy_engineering.as_client_dict(),
                 perks=[
                     dict(
-                        perk=perk.as_client_dict(),
-                        active=perk in agent_example.perks,
-                        perk_req=[p_req.node_hash() for p_req in perk.perks_req],
-                    ) for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter()
+                        perk=perk_rec['perk_dict'],
+                        active=perk_rec['perk'] in agent_example.perks,
+                        perk_req=perk_rec['perk_req'],
+                    ) for perk_rec in self.all_perks
                 ],
             ),
         )
@@ -1132,7 +1143,6 @@ class UserExampleCarNPCTemplates(Message):
             d['templates']['mechanic_cooling'] = None
             d['templates']['mechanic_suspension'] = None
         return d
-
 
 
 class UserExampleChangeInsurance(Message):

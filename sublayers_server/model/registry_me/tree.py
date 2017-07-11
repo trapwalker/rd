@@ -51,6 +51,7 @@ CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other fie
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
 
 IGNORE_WRONG_LINKS = True  # False
+CACHE_INHERITED_FIELDS = False  # Локальное кэширование унаследованных значений нода
 
 
 class RegistryError(Exception):
@@ -63,6 +64,10 @@ class RegistryNodeFormatError(RegistryError):
 
 class RegistryNodeIsNotFound(RegistryError):
     pass
+
+
+class Nil:
+    """Impossible value of field"""
 
 
 def field_getter_decorator(getter):
@@ -86,9 +91,20 @@ def field_getter_decorator(getter):
                 if name not in _empty_overrided_fields and name not in _data:
                     # try to inherite parent value
                     assert name not in _data, 'Attribute {} marked as inherited, but it present in _dict'.format(name)
+
+                    inherited_cache = None
+                    if CACHE_INHERITED_FIELDS:
+                        inherited_cache = self.__dict__.setdefault('_inherited_cache', {})
+                        res = inherited_cache.get(name, Nil)
+                        if res is not Nil:
+                            return res
+
                     parent = instance.parent
                     if parent is not None and name in type(parent)._fields:
-                        return getattr(parent, name)
+                        res = getattr(parent, name)
+                        if inherited_cache is not None:
+                            inherited_cache[name] = res
+                        return res
 
                     root_default = getattr(self, 'root_default', None)
                     root_default = root_default() if root_default is not None and callable(root_default) else root_default
