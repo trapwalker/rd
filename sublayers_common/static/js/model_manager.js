@@ -1327,14 +1327,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserGetAboutSelf = function(event) {
-        console.log('ClientManager.prototype.UserGetAboutSelf', event);
+        //console.log('ClientManager.prototype.UserGetAboutSelf', event);
         user.example_agent.about_self = event.about_self;
         characterManager.redraw();
         locationManager.update();
     };
 
     ClientManager.prototype.UserExampleChangeInsurance = function(event) {
-        console.log('ClientManager.prototype.UserExampleChangeInsurance', event);
+        //console.log('ClientManager.prototype.UserExampleChangeInsurance', event);
         user.example_agent.insurance = event.insurance;
         //characterManager.redraw();
         locationManager.update();

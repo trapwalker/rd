@@ -17,7 +17,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage
+    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -292,6 +292,7 @@ class Agent(Object):
             if car.inventory:
                 self.inventory = car.inventory
                 self.inventory.add_change_call_back(self.on_change_inventory_cb)
+            UserExampleCarInfo(agent=self, time=time).post()
 
     def drop_car(self, car, time, drop_owner=True):
         self.log.info('drop_car {}  time={}'.format(car, time))
@@ -307,6 +308,7 @@ class Agent(Object):
             if self.inventory:
                 self.inventory.del_change_call_back(self.on_change_inventory_cb)
                 self.inventory = None
+            UserExampleCarInfo(agent=self, time=time).post()
 
     def on_connect(self, connection):
         self.log.info('on_connect {}'.format(connection))
