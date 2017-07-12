@@ -1,0 +1,14 @@
+#! /bin/sh
+
+x=`screen -ls | grep -G "\.rd\s*("`
+
+echo RES===\[$x\]
+
+if [ "$x" ]
+then
+    echo "Server console already started"
+    screen -dRS rd $*
+else
+    echo "Server console initialization..."
+    screen -S rd -c ~/rd/deploy/screen.conf $*
+fi
