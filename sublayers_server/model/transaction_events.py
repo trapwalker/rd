@@ -321,7 +321,7 @@ class TransactionBuyInsurance(TransactionEvent):
         if target_insurance.node_hash() == agent_insurance.node_hash():
             # Продлить страховку
             agent_insurance.prolong(delta=target_insurance.deadline)
-            example_agent.change_quest_inventory(event=self)  # Отправить мессадж об изменении квестового инвентаря
+            example_agent.profile.change_quest_inventory(event=self)  # Отправить мессадж об изменении квестового инвентаря
         else:
             # Заменить страховку
             # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
