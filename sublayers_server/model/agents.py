@@ -601,6 +601,7 @@ class Agent(Object):
             barter.cancel(time=event.time-0.01)
 
         self.example.profile.in_location_flag = True
+        self.example.profile.last_town = location.example
 
         # Раздеплоить машинку агента
         if self.car:  # Вход в город и раздеплой машинки
@@ -623,7 +624,6 @@ class Agent(Object):
     def on_exit_location(self, location, event):
         # log.debug('%s:: on_exit_location(%s)', self, location)
         self.example.profile.in_location_flag = False
-        self.example.profile.last_town = location.example
 
         if self.inventory:
             self.inventory.save_to_example(time=event.time)
