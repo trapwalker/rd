@@ -118,8 +118,8 @@ class MapLocation(Observer):
 
     def on_exit(self, agent, event, dc_agent=False):
         self.visitors.remove(agent)
-        agent.current_location = None
         if not dc_agent:
+            agent.current_location = None
             agent.on_exit_location(location=self, event=event)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor
