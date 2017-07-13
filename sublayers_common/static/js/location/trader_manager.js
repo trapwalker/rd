@@ -370,8 +370,8 @@ var LocationTraderNPC = (function (_super) {
 
     LocationTraderNPC.prototype.updatePrice = function(event) {
         //console.log('TraderManager.prototype.updatePrice', event.trader_assortment);
-        this.trader_assortment = event.trader_assortment;
-        this.agent_assortment = event.agent_assortment;
+        if (event.trader_assortment) this.trader_assortment = event.trader_assortment;
+        if (event.agent_assortment) this.agent_assortment = event.agent_assortment;
         this.updateTraderInv();
         this.updatePlayerInv();
         this.calcPriceTables();
@@ -425,6 +425,10 @@ var LocationTraderNPC = (function (_super) {
         this.updatePlayerInv();
         this.updateTraderInv();
         _super.prototype.update.call(this, data);
+    };
+
+    LocationTraderNPC.prototype.get_self_info = function () {
+        clientManager.sendGetTraderInfo(this);
     };
 
     LocationTraderNPC.prototype.set_buttons = function () {

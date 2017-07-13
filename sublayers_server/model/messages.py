@@ -1419,15 +1419,9 @@ class ParkingInfoMessage(NPCInfoMessage):
 class TraderInfoMessage(NPCInfoMessage):
     def __init__(self, **kw):
         super(TraderInfoMessage, self).__init__(**kw)
-        self.position = 0
-
-    def _get_position(self):
-        self.position += 1
-        return self.position - 1
 
     def as_dict(self):
         d = super(TraderInfoMessage, self).as_dict()
-
         # Получаем сервер и экземпляр торговца
         server = self.agent.server
         npc = self.npc
@@ -1441,6 +1435,24 @@ class TraderInfoMessage(NPCInfoMessage):
             d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.profile.car.inventory.items)
         else:
             d['agent_assortment'] = []
+        return d
+
+
+class TraderAgentAssortmentMessage(NPCInfoMessage):
+    def __init__(self, **kw):
+        super(TraderAgentAssortmentMessage, self).__init__(**kw)
+
+    def as_dict(self):
+        d = super(TraderAgentAssortmentMessage, self).as_dict()
+        # Получаем сервер и экземпляр торговца
+        server = self.agent.server
+        npc = self.npc
+        if npc is None:
+            log.warning('NPC not found: %s', self.npc_node_hash)
+            return d
+
+        if self.agent.example.profile.car:
+            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.profile.car.inventory.items)
         return d
 
 
