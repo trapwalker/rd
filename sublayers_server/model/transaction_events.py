@@ -1074,7 +1074,7 @@ class TransactionTraderApply(TransactionTownNPC):
             if (item_ex is None) or (item_ex.amount < table_rec['count']):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} отсутствует в нужном количестве!'.format(item_ex.title)).post()
+                                     replica=u'{} отсутствует в нужном количестве!'.format(item_ex and item_ex.title)).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
