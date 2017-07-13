@@ -332,7 +332,7 @@ class Trader(Institution):
         return current_price
 
     def change_price(self, item, count):
-        price = self.get_item_price2(item)
+        price = self.get_item_price2(item, for_agent=True)
         if price:
             price.change(count, item)
 
