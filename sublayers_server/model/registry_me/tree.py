@@ -985,7 +985,12 @@ def _deep_import(path, reg_name='registry'):
 
     imp_list.sort()
     for module in imp_list:
-        import_module('.'.join(module))
+        module_str = '.'.join(module)
+        try:
+            import_module(module_str)
+        except ImportError as e:
+            log.exception("Can't import {module_str}: {e}".format(**locals()))
+            raise e
 
 
 def get_global_registry(path, reload=False, save_loaded=True):
