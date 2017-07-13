@@ -286,8 +286,8 @@ class AgentProfile(Node):
             d[name] = 0
 
         for item in self.quest_inventory.items:
-                for name in d.keys():
-                    d[name] += getattr(item, name, 0)
+            for name in d.keys():
+                d[name] += getattr(item, name, 0)
         return d
 
     def iter_perks(self):  # todo: need review

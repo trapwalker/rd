@@ -74,11 +74,10 @@ class Price(object):
     def __str__(self):
         return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
 
-    def get_price(self, item, agent):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
-        # todo: добавить влияние навыка торговинга
+    def get_price(self, item, skill_effect):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         return dict(
-            buy=self.price * item.base_price * (1 - self.trader.margin),
-            sale=self.price * item.base_price * (1 + self.trader.margin),
+            buy=self.price * item.base_price * (1 - self.trader.margin * skill_effect),
+            sale=self.price * item.base_price * (1 + self.trader.margin * skill_effect),
         )
 
     def change(self, count, item):  # Вызывается в случае изменения количества итемов
@@ -167,7 +166,6 @@ class Trader(Institution):
 
         self._is_init = True
 
-
     def get_item_by_uid(self, uid):
         for price in self._current_list:
             if price.item.uid == uid:
@@ -243,6 +241,9 @@ class Trader(Institution):
     def get_trader_assortment(self, agent):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
+        agent_trading = agent.example.profile.trading.calc_value() + \
+                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
+        skill_effect = 1 - (agent_trading - self.trading + 100) / 200.
         for price in self._current_list:
             if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
@@ -250,7 +251,7 @@ class Trader(Institution):
                         item=price.item.as_client_dict(),
                         count=price.count,
                         infinity=price.is_infinity,
-                        price=price.get_price(price.item, agent),
+                        price=price.get_price(item=price.item, skill_effect=skill_effect),
                     ))
         return res
 
@@ -262,6 +263,9 @@ class Trader(Institution):
 
     def get_agent_assortment(self, agent, car_items):
         res = []
+        agent_trading = agent.example.profile.trading.calc_value() + \
+                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
+        skill_effect = 1 - (agent_trading - self.trading + 100) / 200.
         for item in car_items:
             if not self.item_in_ignore_list(item):
                 price = self.get_item_price(item)
@@ -269,7 +273,7 @@ class Trader(Institution):
                     res.append(
                         dict(
                             item=item.as_client_dict(),
-                            price=price.get_price(item, agent),
+                            price=price.get_price(item=item, skill_effect=skill_effect),
                             count=item.amount,
                         ))
         return res
