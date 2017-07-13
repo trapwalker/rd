@@ -67,12 +67,16 @@ class Price(object):
         self.count = count  # количество в штуках (не стеки)
         self.item = item or price_option.item
         self.price_option = price_option
+        self._item_client_dict = self.item.as_client_dict()
 
     # def is_match(self, item):
     #     return item and item.get_ancestor_level(self.item) >= 0
 
     def __str__(self):
         return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
+
+    def get_item_dict(self):
+        return self._item_client_dict
 
     def get_price(self, item, skill_effect):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         return dict(
@@ -256,7 +260,7 @@ class Trader(Institution):
             if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
                     dict(
-                        item=price.item.as_client_dict(),
+                        item=price.get_item_dict(),
                         count=price.count,
                         infinity=price.is_infinity,
                         price=price.get_price(item=price.item, skill_effect=skill_effect),
