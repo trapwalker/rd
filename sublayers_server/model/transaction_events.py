@@ -1085,7 +1085,7 @@ class TransactionTraderApply(TransactionTownNPC):
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
-            price = npc.get_item_price(item=item_ex)
+            price = npc.get_item_price2(item=item_ex, for_agent=True)
             if price is None:
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,

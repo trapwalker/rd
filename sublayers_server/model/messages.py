@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
-from sublayers_common.ctx_timer import Timer
+from sublayers_common.ctx_timer import Timer, T
 
 import math
 import os.path
@@ -1422,42 +1422,28 @@ class ParkingInfoMessage(NPCInfoMessage):
 
 # Сообщение-ответ для клиента - информация об нпц-торговце
 class TraderInfoMessage(NPCInfoMessage):
-    def __init__(self, **kw):
-        super(TraderInfoMessage, self).__init__(**kw)
-
     def as_dict(self):
         d = super(TraderInfoMessage, self).as_dict()
-        # Получаем сервер и экземпляр торговца
-        server = self.agent.server
         npc = self.npc
         if npc is None:
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
-
-        d['agent_balance'] = self.agent.balance
+        # with T(name='get_trader_assortment'):
         d['trader_assortment'] = npc.get_trader_assortment(agent=self.agent)
-        if self.agent.example.profile.car:
-            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.profile.car.inventory.items)
-        else:
-            d['agent_assortment'] = []
         return d
 
 
 class TraderAgentAssortmentMessage(NPCInfoMessage):
-    def __init__(self, **kw):
-        super(TraderAgentAssortmentMessage, self).__init__(**kw)
-
     def as_dict(self):
         d = super(TraderAgentAssortmentMessage, self).as_dict()
-        # Получаем сервер и экземпляр торговца
-        server = self.agent.server
         npc = self.npc
         if npc is None:
             log.warning('NPC not found: %s', self.npc_node_hash)
             return d
-
-        if self.agent.example.profile.car:
-            d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.profile.car.inventory.items)
+        if self.agent.example.profile.car is None:
+            return d
+        # with T(name='get_agent_assortment'):
+        d['agent_assortment'] = npc.get_agent_assortment(agent=self.agent, car_items=self.agent.example.profile.car.inventory.items)
         return d
 
 
