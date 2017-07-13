@@ -34,7 +34,8 @@ import os
 
 def test2(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
+    #reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     globals().update(locals())
 

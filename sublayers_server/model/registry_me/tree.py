@@ -1004,12 +1004,14 @@ def get_global_registry(path, reload=False, save_loaded=True):
         REGISTRY = None
 
     if REGISTRY is None:
-        _deep_import(path, reg_name='registry')
+        with Timer() as t:
+            _deep_import(path, reg_name='registry')
+            log.debug('Registry instant classes import DONE ({:.3f}s)'.format(t.duration))
 
     if REGISTRY is None and not reload:
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
-            log.debug('Registry {}fetched from DB ({:.3f}s).'.format('is NOT ' if REGISTRY is None else '', t.duration))
+            log.debug('Registry {}fetched from DB ({:.3f}s)'.format('is NOT ' if REGISTRY is None else '', t.duration))
 
     if REGISTRY is None:
         if save_loaded:
