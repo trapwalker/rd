@@ -957,8 +957,10 @@ class TeachingUser(QuickUser):
     def __init__(self, time, **kw):
         super(TeachingUser, self).__init__(time=time, **kw)
         self.armory_shield_status = False
+        self.quest_parent = None
         if not self.user.quick:
             assert self.user.teaching_state == 'map'
+            self.quest_parent = self.server.reg.get('/registry/quests/teaching_map')
             self.create_teaching_quest_map(time=time)
 
         # Тест Авто Стрельбы
@@ -970,7 +972,9 @@ class TeachingUser(QuickUser):
             StartQuickGame(agent=self, time=self.server.get_time()).post()
 
     def has_active_teaching_quest(self):
-        quest_parent = self.server.reg.get('/registry/quests/teaching_map')
+        quest_parent = self.quest_parent or self.server.reg.get('/registry/quests/teaching_map')
+        if quest_parent is None:
+            return False
         for q in self.example.profile.quests_active:
             if q.parent == quest_parent and q.status == 'active':
                 return True
@@ -978,12 +982,15 @@ class TeachingUser(QuickUser):
 
     @event_deco
     def create_teaching_quest_map(self, event):
-        quest_parent = self.server.reg.get('/registry/quests/teaching_map')
+        quest_parent = self.quest_parent or self.server.reg.get('/registry/quests/teaching_map')
+        if quest_parent is None:
+            return
         if quest_parent.can_instantiate(event=event, agent=self.example, hirer=None):
             new_quest = quest_parent.instantiate(abstract=False, hirer=None)
             if new_quest.generate(event=event, agent=self.example):
                 self.example.profile.add_quest(quest=new_quest, time=event.time)
                 self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
+                self.quest_parent = quest_parent
                 if self.user.quick:
                     self.set_teaching_state('map')
             else:
