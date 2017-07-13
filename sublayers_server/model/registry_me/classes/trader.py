@@ -238,12 +238,20 @@ class Trader(Institution):
         for visitor in location.visitors:
             TraderInfoMessage(agent=visitor, time=time, npc_node_hash=self.node_hash()).post()
 
+    def send_change_price(self, price, time):
+        print('send_change_price')
+        # for visitor in location.visitors:
+        #     TraderInfoMessage(agent=visitor, time=time, npc_node_hash=self.node_hash()).post()
+
+    def get_agent_skill_effect(self, agent):
+        agent_trading = agent.example.profile.trading.calc_value() + \
+                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
+        return 1 - (agent_trading - self.trading + 100) / 200.
+
     def get_trader_assortment(self, agent):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
-        agent_trading = agent.example.profile.trading.calc_value() + \
-                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
-        skill_effect = 1 - (agent_trading - self.trading + 100) / 200.
+        skill_effect = self.get_agent_skill_effect(agent)
         for price in self._current_list:
             if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
@@ -263,9 +271,7 @@ class Trader(Institution):
 
     def get_agent_assortment(self, agent, car_items):
         res = []
-        agent_trading = agent.example.profile.trading.calc_value() + \
-                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
-        skill_effect = 1 - (agent_trading - self.trading + 100) / 200.
+        skill_effect = self.get_agent_skill_effect(agent)
         for item in car_items:
             if not self.item_in_ignore_list(item):
                 price = self.get_item_price(item)
