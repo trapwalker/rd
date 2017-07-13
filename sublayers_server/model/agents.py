@@ -990,6 +990,7 @@ class TeachingUser(QuickUser):
             if new_quest.generate(event=event, agent=self.example):
                 self.example.profile.add_quest(quest=new_quest, time=event.time)
                 self.example.profile.start_quest(new_quest.uid, time=event.time, server=self.server)
+                self.quest_parent = quest_parent
                 if self.user.quick:
                     self.set_teaching_state('map')
             else:
