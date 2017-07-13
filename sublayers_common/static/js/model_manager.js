@@ -1402,6 +1402,12 @@ var ClientManager = (function () {
         if (trader) trader.updatePrice(event)
     };
 
+    ClientManager.prototype.TraderAgentAssortmentMessage = function (event) {
+        //console.log('ClientManager.prototype.TraderAgentAssortmentMessage', event);
+        var trader = locationManager.npc[event.npc_html_hash];
+        if (trader) trader.updatePrice(event)
+    };
+
     ClientManager.prototype.TraderClearMessage = function (event) {
         //console.log('ClientManager.prototype.TraderClearMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];

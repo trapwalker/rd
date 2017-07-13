@@ -277,6 +277,9 @@ class AgentProfile(Node):
         for name, attr, getter in self.iter_attrs(tags={'skill'}):
             yield name, getter().calc_value()
 
+    def get_current_agent_trading(self):
+        return self.trading.calc_value() + self.get_quest_skill_modifier().get('trading', 0)
+
     def get_quest_skill_modifier(self):
         d = dict()
         if len(self.quest_inventory.items) == 0:
@@ -286,8 +289,8 @@ class AgentProfile(Node):
             d[name] = 0
 
         for item in self.quest_inventory.items:
-                for name in d.keys():
-                    d[name] += getattr(item, name, 0)
+            for name in d.keys():
+                d[name] += getattr(item, name, 0)
         return d
 
     def iter_perks(self):  # todo: need review

@@ -16,8 +16,8 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
-    PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage,
-    SetObserverForClient, Die, QuickGameDie, TraderInfoMessage, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo
+    PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage, TraderAgentAssortmentMessage,
+    SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -565,7 +565,7 @@ class Agent(Object):
             if self.current_location:
                 trader = self.current_location.example.get_npc_by_type(Trader)
                 if trader:
-                    TraderInfoMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
+                    TraderAgentAssortmentMessage(npc_node_hash=trader.node_hash(), agent=self, time=time).post()
             self.on_inv_change(event=event, diff_inventories=self.inventory.example.diff_total_inventories(total_info=total_old))
 
     def on_inv_change(self, event, diff_inventories, make_game_log=True):
