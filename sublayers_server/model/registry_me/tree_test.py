@@ -29,24 +29,12 @@ from sublayers_server.model.registry_me.tree import (
 )
 
 from pprint import pprint as pp
-
-
-class A(Node):
-    s = StringField()
-    g = GenericEmbeddedDocumentField(default=lambda: DynamicSubdoc(), not_inherited=True, reinst=True)
-
-class B(Node):
-    it = EmbeddedNodeField(document_type=A)
-    items = ListField(field=EmbeddedNodeField(document_type=A))
-    links = ListField(field=RegistryLinkField(document_type=A))
-
-class AA(A):
-    x = StringField()
+import os
 
 
 def test2(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
 
     globals().update(locals())
 

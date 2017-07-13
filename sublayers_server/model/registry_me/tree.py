@@ -965,7 +965,30 @@ class Root(Node):
 
 REGISTRY = None
 
-def get_global_registry(path=None, reload=False, save_loaded=True):
+
+def _deep_import(path, reg_name='registry'):
+    from importlib import import_module
+    apath = os.path.normpath(os.path.abspath(path))
+
+    if apath not in sys.path:
+        sys.path.append(apath)
+
+    root_depth = len(apath.split(os.path.sep))
+    print(root_depth, apath.split(os.path.sep))
+
+    imp_list = []
+    for r, d, f in os.walk(os.path.join(apath, reg_name)):
+        if '__init__.py' in f:
+            r = os.path.normpath(r)
+            rr = tuple(r.split(os.path.sep)[root_depth:])
+            imp_list.append(rr)
+
+    imp_list.sort()
+    for module in imp_list:
+        import_module('.'.join(module))
+
+
+def get_global_registry(path, reload=False, save_loaded=True):
     """
     :param path: Path to registry structure in filesystem
     :type: basestring
@@ -980,6 +1003,9 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
     if reload:
         REGISTRY = None
 
+    if REGISTRY is None:
+        _deep_import(path, reg_name='registry')
+
     if REGISTRY is None and not reload:
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
@@ -992,14 +1018,11 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
                 log.debug('Registry DB cleaned ({:.3f}s).'.format(t.duration))
 
         REGISTRY = Registry()
-        if path:
-            REGISTRY.load(path)
-            if save_loaded:
-                with Timer(logger=None) as t:
-                    REGISTRY.save()
-                    log.debug('Registry saved to DB ({:.3f}s).'.format(t.duration))
-        else:
-            log.warning("Registry path unspecified. It's empty now!")
+        REGISTRY.load(path)
+        if save_loaded:
+            with Timer(logger=None) as t:
+                REGISTRY.save()
+                log.debug('Registry saved to DB ({:.3f}s).'.format(t.duration))
 
     return REGISTRY
 
