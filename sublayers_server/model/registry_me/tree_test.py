@@ -44,6 +44,13 @@ class AA(A):
     x = StringField()
 
 
+def test2(reload=True, save_loaded=True):
+    import sublayers_server.model.registry_me.classes
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+
+    globals().update(locals())
+
+
 def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
@@ -131,8 +138,8 @@ if __name__ == '__main__':
     log.info('Use {db_name!r} db'.format(**locals()))
 
     
-    rel = 0
-    test3(reload=rel, save_loaded=True)
+    rel = 1
+    test2(reload=rel, save_loaded=True)
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')

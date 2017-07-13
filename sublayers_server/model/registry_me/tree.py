@@ -421,15 +421,6 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
     #
     #     return last_instance
 
-    def __get_registry__(self):
-        return get_global_registry()
-        # todo: cache it
-        # root = self.root_instance()
-        # reg_getter = getattr(root, '__get_registry__')
-        # if reg_getter is None or root is self:
-        #     raise ValueError('Root instance {!r} has not registry getter'.format(self))
-        # return reg_getter()
-
     def __setattr__(self, key, value):
         if key != '_initialised' and getattr(self, '_initialised', None):
             field = type(self)._fields.get(key)  # todo: support dynamic fields too
@@ -802,13 +793,7 @@ class Registry(Document):
     def __nonzero__(self):
         return True
 
-    def __get_registry__(self):
-        return get_global_registry()
-
     # todo: del mentions "_put"
-
-    def __get_registry__(self):
-        return self
 
     def get(self, uri, *defaults):
         """
