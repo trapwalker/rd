@@ -221,8 +221,6 @@ class QuestState(Node):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 
-
-
 class Quest(Node):
     first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
@@ -952,7 +950,6 @@ class DeliveryQuest(Quest):
             self.recipient.hometown.title,
             self.reward_money
         )
-
 
 
 class AIQuickQuest(Quest):
