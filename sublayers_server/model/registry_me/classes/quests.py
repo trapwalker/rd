@@ -379,11 +379,8 @@ class Quest(Node):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def generate(self, event, agent, **kw):
-        """
-        :param event: sublayers_server.model.events.Event
-        """
-        self._agent = agent
+    def on_generate_(self, event, **kw):
+        # TODO: Удалить устаревший вызов кода из текста
         code_text = self.on_generate
         if not code_text:
             return
@@ -406,24 +403,28 @@ class Quest(Node):
         )
         try:
             exec code in self.global_context, self.local_context
+        finally:
+            del self.local_context
+
+    def generate(self, event, agent, **kw):
+        """
+        :param event: sublayers_server.model.events.Event
+        """
+        self._agent = agent
+        #time = kw.pop('time', event and event.time)
+
+        try:
+            self.on_generate_(event=event, **kw)
         except Cancel as e:
-            log.debug('Quest {uri} is cancelled: {e.message}'.format(uri=fn, e=e))
-            return False
+            raise e
         except Exception as e:
             log.exception('Runtime error in quest handler `on_generate`.')
             self._set_error_status('on_generate', event, e)
             return False
-            #raise e
         else:
             return True
-        finally:
-            del self.local_context
 
-    @event_deco
-    def start(self, event, **kw):
-        """
-        :param event: sublayers_server.model.events.Event
-        """
+    def on_start_(self, event, **kw):
         assert not self.abstract
 
         code_text = self.on_start
@@ -446,25 +447,31 @@ class Quest(Node):
             )
             try:
                 exec code in self.global_context, self.local_context
-            except Cancel as e:
-                log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
-                return False
-            except Exception as e:
-                log.exception('Runtime error in quest handler `on_start`.')
-                self._set_error_status('on_start', event, e)
-                return False
-                #raise e
-            else:
-                # log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
-                if self.agent:
-                    self.agent.profile.quests_unstarted.remove(self)
-                    self.agent.profile.quests_active.append(self)
-
-                self.set_state(new_state=self.first_state, event=event)
-                return True
-
             finally:
                 del self.local_context
+
+    @event_deco
+    def start(self, event, **kw):
+        """
+        :param event: sublayers_server.model.events.Event
+        """
+        try:
+            self.on_start_(event, **kw)
+        except Cancel as e:
+            log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
+            return False
+        except Exception as e:
+            log.exception('Runtime error in quest handler `on_start`.')
+            self._set_error_status('on_start', event, e)
+            return False
+        else:
+            # log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
+            if self.agent:
+                self.agent.profile.quests_unstarted.remove(self)
+                self.agent.profile.quests_active.append(self)
+
+            self.set_state(new_state=self.first_state, event=event)
+            return True
 
     def set_state(self, new_state, event):
         assert new_state
@@ -989,3 +996,24 @@ class AIQuickQuest(Quest):
                 position = item_rec["position"]
         if position:
             ItemPreActivationEvent(agent=agent_model, owner_id=car.uid, position=position, target_id=car.uid, time=time).post()
+
+
+class MarkerMapObject(Subdoc):
+    position = PositionField(caption=u"Координаты объекта")
+    radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags={'client'})
+
+    def is_near(self, position):
+        if isinstance(position, PositionField):
+            position = position.as_point()
+        if isinstance(position, Point):
+            distance = self.position.as_point().distance(target=position)
+            return distance <= self.radius
+        return False
+
+    def generate_random_point(self):
+        return Point.random_point(p=self.position.as_point(), radius=self.radius)
+
+    def as_client_dict(self):
+        d = super(MarkerMapObject, self).as_client_dict()
+        d.update(position=self.position.as_point())
+        return d
