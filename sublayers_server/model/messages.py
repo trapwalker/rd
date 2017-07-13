@@ -1386,7 +1386,12 @@ class HangarInfoMessage(NPCInfoMessage):
         d = super(HangarInfoMessage, self).as_dict()
         npc = self.npc
         if npc and npc.type == 'hangar':
-            d.update(cars=self.get_car_list(npc))
+            d.update(
+                npc_margin=npc.margin,
+                npc_trading=npc.trading,
+                agent_trading=self.agent.example.profile.get_current_agent_trading(),
+                cars=self.get_car_list(npc),
+            )
         return d
 
 

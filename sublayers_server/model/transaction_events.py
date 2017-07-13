@@ -467,13 +467,15 @@ class TransactionHangarSell(TransactionTownNPC):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        skill_effect = 1 - (self.agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
+
         # todo: translate
-        info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.profile.car.title, str(self.agent.example.profile.car.price))
+        info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.profile.car.title, str(price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
-
         log_car = self.agent.example.profile.car
-        self.agent.example.profile.set_balance(time=self.time, delta=self.agent.example.profile.car.price)
+        self.agent.example.profile.set_balance(time=self.time, delta=price)
         self.agent.example.profile.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
@@ -508,27 +510,32 @@ class TransactionHangarBuy(TransactionTownNPC):
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
         agent_balance = self.agent.balance
-        old_car_price = 0 if self.agent.example.profile.car is None else self.agent.example.profile.car.price
-        # todo: refactoring (use inventory to choose car)
-        if (agent_balance + old_car_price) >= car_proto.price:
+        skill_effect = 1 - (self.agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        if self.agent.example.profile.car:
+            old_car_price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
+        else:
+            old_car_price = 0
+        new_car_price = int(car_proto.price * (1 + npc.margin * skill_effect))
+
+        if (agent_balance + old_car_price) >= new_car_price:
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if self.agent.example.profile.car:
                 info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
-                                                               str(car_proto.price - self.agent.example.profile.car.price))
+                                                               str(new_car_price - old_car_price))
                 TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.profile.car,
                                             price=self.agent.example.profile.car.price, action="sell").post()
             else:
-                info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-car_proto.price))
+                info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-new_car_price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
-            self.agent.example.profile.set_balance(time=self.time, delta=-car_proto.price + old_car_price)
+            self.agent.example.profile.set_balance(time=self.time, delta=-new_car_price + old_car_price)
             self.agent.example.profile.car = car_example
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
