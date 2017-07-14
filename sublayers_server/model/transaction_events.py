@@ -467,7 +467,8 @@ class TransactionHangarSell(TransactionTownNPC):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        skill_effect = 1 - (self.agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+
+        skill_effect = npc.get_trading_effect(agent_example=self.agent.example)
         price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
 
         # todo: translate
@@ -510,7 +511,7 @@ class TransactionHangarBuy(TransactionTownNPC):
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
         agent_balance = self.agent.balance
-        skill_effect = 1 - (self.agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        skill_effect = npc.get_trading_effect(agent_example=self.agent.example)
         if self.agent.example.profile.car:
             old_car_price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
         else:
@@ -916,8 +917,8 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             return
 
         hp_price = ex_car.price * npc.repair_cost / ex_car.max_hp
-        skill_effect = 1 - (agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
-        repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin * skill_effect))
+        skill_effect = npc.get_trading_effect(agent_example=agent.example)
+        repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin_repair * skill_effect))
         if agent.balance < repair_cost:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -1061,7 +1062,7 @@ class TransactionTraderApply(TransactionTownNPC):
         buy_list = []
         sell_list = []
         agent = self.agent
-        skill_effect = npc.get_agent_skill_effect(agent=agent)
+        skill_effect = npc.get_trading_effect(agent_example=agent.example)
         ex_car = agent.example.profile.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
