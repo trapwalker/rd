@@ -1194,13 +1194,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             (perk_rec['perk'].level_req > self.lvl)):
             return False
 
-        for perk_id in perk_rec['perk'].perks_req:
-            try:
-                perk_req = self.agent.server.reg.get(perk_id)
-            except Exception as e:
-                log.warning('Not found perk_id <{}> for node_has {}'.format(perk_id, perk_node_hash))
-                log.exception(e)
-                return False
+        for perk_req in perk_rec['perk'].perks_req:
             if not self.perks[perk_req.node_hash()][u'state']:  # todo: ##REVIEW Menkent
                 return False
         return True
