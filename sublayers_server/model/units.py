@@ -24,6 +24,7 @@ from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
 from sublayers_server.model.inventory import Inventory, ItemState
 
 from math import radians
+from tornado.options import options
 
 
 class Unit(Observer):
@@ -201,7 +202,8 @@ class Unit(Observer):
         super(Unit, self).on_init(event)
         self.check_auto_fire_interval = BALANCE.interval_refresh
         self.check_zone_interval = BALANCE.interval_refresh
-        SearchZones(obj=self, time=event.time).post()
+        if not options.zones_disable and not options.quick_debug:
+            SearchZones(obj=self, time=event.time).post()
         # зарядить все орудия
         for weapon in self.weapon_list():
             item = self.inventory.get_item_by_cls(balance_cls_list=[weapon.example.ammo], time=event.time)
