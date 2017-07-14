@@ -1359,19 +1359,29 @@ class NPCInfoMessage(Message):
 class HangarInfoMessage(NPCInfoMessage):
     # info: данный мессадж кеширует свой результат
     npc_cars = dict()  # key: npc.uri   val = [dict(car, html_car_table, html_car_img)]
+    template_table = None
+    template_img = None
 
     def get_car_list(self, npc):
-        car_list = self.npc_cars.get(npc.uri, None)
+        car_list = HangarInfoMessage.npc_cars.get(npc.uri, None)
         if car_list is None:
-            template_table = tornado.template.Loader(
-                "templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("car_info_table.html")
+            if HangarInfoMessage.template_table:
+                template_table = HangarInfoMessage.template_table
+            else:
+                template_table = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_table.html")
+                HangarInfoMessage.template_table = template_table
 
-            template_img = tornado.template.Loader(
-                "templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("car_info_img_ext.html")
+            if HangarInfoMessage.template_img:
+                template_img = HangarInfoMessage.template_img
+            else:
+                template_img = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_img_ext.html")
+            HangarInfoMessage.template_img = template_img
 
             car_list = [dict(
                 car=car.as_client_dict(),
@@ -1379,7 +1389,7 @@ class HangarInfoMessage(NPCInfoMessage):
                 html_car_img=template_img.generate(car=car),
             ) for car in npc.car_list]
 
-            self.npc_cars[npc.uri] = car_list
+            HangarInfoMessage.npc_cars[npc.uri] = car_list
         return car_list
 
     def as_dict(self):
