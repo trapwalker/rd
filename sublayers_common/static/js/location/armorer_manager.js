@@ -5,14 +5,17 @@ var LocationArmorerNPC = (function (_super) {
         //console.log('LocationPlaceNPC', npc_rec);
         _super.call(this, npc_rec, jq_town_div, building_name);
 
-
+        this.start_items = {};
         this.items = {};
+
         this.inv_show_div = null;
         this.armorer_slots = [];
         this.armorer_slots_flags = {};
         this.active_slot = null;
         this.image_scale = null;
 
+        this.setup_cost = 0;
+        this.clear_cost = 0;
 
         this.jq_car_view = this.jq_main_div.find('.armorer-car').first();
         this.jq_sectors_slot_name = this.jq_main_div.find('.armorerSectors-slotName').first();
@@ -24,7 +27,7 @@ var LocationArmorerNPC = (function (_super) {
     LocationArmorerNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Установить', true);
+            locationManager.setBtnState(1, '</br>Применить', true);
             locationManager.setBtnState(2, '</br>Отмена', true);
         }
         else {
@@ -72,6 +75,29 @@ var LocationArmorerNPC = (function (_super) {
         }
     };
 
+    LocationArmorerNPC.prototype.getPrice = function() {
+        var all_price = 0;
+        for (var slot_name in this.items)
+            if (this.items.hasOwnProperty(slot_name) && this.start_items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0)) {
+                var old_item_rec = this.start_items[slot_name];
+                var new_item_rec = this.items[slot_name];
+
+                if (old_item_rec.example && (!new_item_rec.example ||
+                                            (old_item_rec.example.uid != new_item_rec.example.uid))) {
+                    //console.log('1 ', slot_name, old_item_rec, new_item_rec);
+                    all_price += this.clear_cost;
+                }
+
+                if (new_item_rec.example && (!old_item_rec.example ||
+                                            (old_item_rec.example.uid != new_item_rec.example.uid) ||
+                                            (old_item_rec.direction != new_item_rec.direction))) {
+                    //console.log('2 ', slot_name, old_item_rec, new_item_rec);
+                    all_price += this.setup_cost;
+                }
+            }
+        return all_price;
+    };
+
     LocationArmorerNPC.prototype.exportSlotState = function() {
         var result = {};
         for (var slot_name in this.items)
@@ -98,6 +124,11 @@ var LocationArmorerNPC = (function (_super) {
         //console.log('LocationArmorerNPC.prototype.update', data);
         this.clear_user_info();
         if (user.example_car && user.car_npc_info) {
+            var npc = this.npc_rec;
+            var skill_effect = 1 - (user.actual_trading - npc.trading + 100) / 200;
+            this.setup_cost = user.example_car.price * npc.setup_cost * (1 + npc.margin_slot * skill_effect);
+            this.clear_cost = user.example_car.price * npc.clear_cost * (1 + npc.margin_slot * skill_effect);
+
             var self = this;
             this.armorer_slots = user.car_npc_info.armorer_slots;
             if (user.car_npc_info.armorer_slots_flags) this._update_armorer_slots_flags(user.car_npc_info.armorer_slots_flags);
@@ -186,6 +217,7 @@ var LocationArmorerNPC = (function (_super) {
             this.resizeInventory(this.inv_show_div);
 
             // Добавить итемы слотов
+            this.start_items = {}
             for (var i = 0; i < this.armorer_slots.length; i++) {
                 var direction = '';
                 if (this.armorer_slots[i].value)
@@ -196,6 +228,11 @@ var LocationArmorerNPC = (function (_super) {
                     direction: direction
                 };
                 this.items[item_rec.position] = item_rec;
+                this.start_items[item_rec.position] = {
+                    example: this.armorer_slots[i].value,
+                    position: this.armorer_slots[i].name,
+                    direction: direction
+                };
                 $('#top_' + item_rec.position).data('pos', item_rec.position);
                 $('#side_' + item_rec.position).data('pos', item_rec.position);
             }
@@ -388,9 +425,7 @@ var LocationArmorerNPC = (function (_super) {
             this.activeSlot(dest);
         else
             this.activeSlot(null);
-
-
-        // todo: сделать запрос стоимости текущих настроек
+        this.set_header_text();
     };
 
     LocationArmorerNPC.prototype.set_panels = function () {
@@ -453,6 +488,7 @@ var LocationArmorerNPC = (function (_super) {
             LocationArmorerNPC.setSectorActive(item_rec.direction);
             this.reDrawItem(this.active_slot);
         }
+        this.set_header_text();
     };
 
     LocationArmorerNPC.prototype.getSlotTextInfo = function(slot_name) {
@@ -497,11 +533,11 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
-        // todo: Знаю, что нет прямой речи. Но без цены тут нечего выводить!
         if (!html_text) {
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                jq_text_div.append('<div>Давай повесим пушек на твоё корыто</div>');
+                var price = this.getPrice();
+                jq_text_div.append('<div>Стоимость всех изменений ' + price + 'NC.</div>');
             }
             else
                 jq_text_div.append('<div>А машина где? Угнали?</div>');

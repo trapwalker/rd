@@ -126,7 +126,7 @@ class Server(object):
     def load_world(self):
         # todo: регистрация эффектов, должно быть обязательно раньше зон
         # создание зон
-        if options.zones_disable:
+        if options.zones_disable or options.quick_debug:
             log.info('Zones activation disabled')
         else:
             self.init_zones(time=self.get_time())

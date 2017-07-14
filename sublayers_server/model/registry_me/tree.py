@@ -421,15 +421,6 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
     #
     #     return last_instance
 
-    def __get_registry__(self):
-        return get_global_registry()
-        # todo: cache it
-        # root = self.root_instance()
-        # reg_getter = getattr(root, '__get_registry__')
-        # if reg_getter is None or root is self:
-        #     raise ValueError('Root instance {!r} has not registry getter'.format(self))
-        # return reg_getter()
-
     def __setattr__(self, key, value):
         if key != '_initialised' and getattr(self, '_initialised', None):
             field = type(self)._fields.get(key)  # todo: support dynamic fields too
@@ -802,13 +793,7 @@ class Registry(Document):
     def __nonzero__(self):
         return True
 
-    def __get_registry__(self):
-        return get_global_registry()
-
     # todo: del mentions "_put"
-
-    def __get_registry__(self):
-        return self
 
     def get(self, uri, *defaults):
         """
@@ -980,7 +965,35 @@ class Root(Node):
 
 REGISTRY = None
 
-def get_global_registry(path=None, reload=False, save_loaded=True):
+
+def _deep_import(path, reg_name='registry'):
+    from importlib import import_module
+    apath = os.path.normpath(os.path.abspath(path))
+
+    if apath not in sys.path:
+        sys.path.append(apath)
+
+    root_depth = len(apath.split(os.path.sep))
+    print(root_depth, apath.split(os.path.sep))
+
+    imp_list = []
+    for r, d, f in os.walk(os.path.join(apath, reg_name)):
+        if '__init__.py' in f:
+            r = os.path.normpath(r)
+            rr = tuple(r.split(os.path.sep)[root_depth:])
+            imp_list.append(rr)
+
+    imp_list.sort()
+    for module in imp_list:
+        module_str = '.'.join(module)
+        try:
+            import_module(module_str)
+        except ImportError as e:
+            log.exception("Can't import {module_str}: {e}".format(**locals()))
+            raise e
+
+
+def get_global_registry(path, reload=False, save_loaded=True):
     """
     :param path: Path to registry structure in filesystem
     :type: basestring
@@ -995,10 +1008,15 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
     if reload:
         REGISTRY = None
 
+    if REGISTRY is None:
+        with Timer() as t:
+            _deep_import(path, reg_name='registry')
+            log.debug('Registry instant classes import DONE ({:.3f}s)'.format(t.duration))
+
     if REGISTRY is None and not reload:
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
-            log.debug('Registry {}fetched from DB ({:.3f}s).'.format('is NOT ' if REGISTRY is None else '', t.duration))
+            log.debug('Registry {}fetched from DB ({:.3f}s)'.format('is NOT ' if REGISTRY is None else '', t.duration))
 
     if REGISTRY is None:
         if save_loaded:
@@ -1007,14 +1025,11 @@ def get_global_registry(path=None, reload=False, save_loaded=True):
                 log.debug('Registry DB cleaned ({:.3f}s).'.format(t.duration))
 
         REGISTRY = Registry()
-        if path:
-            REGISTRY.load(path)
-            if save_loaded:
-                with Timer(logger=None) as t:
-                    REGISTRY.save()
-                    log.debug('Registry saved to DB ({:.3f}s).'.format(t.duration))
-        else:
-            log.warning("Registry path unspecified. It's empty now!")
+        REGISTRY.load(path)
+        if save_loaded:
+            with Timer(logger=None) as t:
+                REGISTRY.save()
+                log.debug('Registry saved to DB ({:.3f}s).'.format(t.duration))
 
     return REGISTRY
 

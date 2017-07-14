@@ -1454,7 +1454,6 @@ var ClientManager = (function () {
     // Журнал (квесты)
     ClientManager.prototype.QuestsInitMessage = function (event) {
         //console.log('ClientManager.prototype.QuestInitMessage', event);
-        journalManager.quests.clear();
         var i;
         for (i = 0; i < event.quests.length; i++)
             journalManager.quests.addQuest(event.quests[i]);

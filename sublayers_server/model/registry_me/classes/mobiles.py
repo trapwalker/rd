@@ -294,6 +294,7 @@ class Mobile(Node):
     def is_target(self):
         return False
 
+
 class Car(Mobile):
     class QuickPanel(Subdoc):
         qb_1 = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item')

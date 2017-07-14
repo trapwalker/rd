@@ -522,6 +522,7 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.location').text(options.build.title);
         jq_panel.find('.head').text(options.build.head.title);
         jq_panel.find('.karma').text(getKarmaName(options.build.head.karma));
+        jq_panel.find('.skill').text(options.build.head.trading);
         jq_panel.css('display', 'block');
     };
 

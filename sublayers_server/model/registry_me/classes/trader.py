@@ -14,6 +14,8 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField,
 )
 
+from tornado.options import options
+
 
 class TraderRefreshEvent(Event):
     def __init__(self, trader, location, **kw):
@@ -112,10 +114,7 @@ class Price(object):
                 self.is_lot = True
 
 
-class Trader(Institution):    
-    # Навык торговли торговца 0..300
-    trading = IntField(caption=u"Навык торговли", root_default=0)
-
+class Trader(Institution):
     # Время полного обновление ассортимента торговца (сек.)
     refresh_time = IntField(caption=u"Интервал завоза (c, по умолчанию или 0 - никогда)")
 
@@ -244,15 +243,10 @@ class Trader(Institution):
             TraderInfoMessage(agent=visitor, time=time, npc_node_hash=h).post()
             TraderAgentAssortmentMessage(agent=visitor, time=time, npc_node_hash=h).post()
 
-    def get_agent_skill_effect(self, agent):
-        agent_trading = agent.example.profile.trading.calc_value() + \
-                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
-        return 1 - (agent_trading - self.trading + 100) / 200.
-
     def get_trader_assortment(self, agent):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
-        skill_effect = self.get_agent_skill_effect(agent)
+        skill_effect = self.get_trading_effect(agent_example=agent.example)
         for price in self._current_list:
             if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
@@ -272,7 +266,11 @@ class Trader(Institution):
 
     def get_agent_assortment(self, agent, car_items):
         res = []
-        skill_effect = self.get_agent_skill_effect(agent)
+        if options.quick_debug:
+            log.warning('Trader get_agent_assortment DISABLED by options.quick_debug')
+            return res
+
+        skill_effect = self.get_trading_effect(agent_example=agent.example)
         for item in car_items:
             price = self.get_item_price2(item, for_agent=True)
             if price:

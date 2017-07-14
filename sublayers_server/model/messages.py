@@ -981,13 +981,21 @@ class UserChangePerkSkill(Message):
         d = super(UserChangePerkSkill, self).as_dict()
         agent_example = self.agent.example.profile
 
-        if not self.all_perks:
+        if not UserChangePerkSkill.all_perks:
             for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
-                self.all_perks.append(dict(
+                UserChangePerkSkill.all_perks.append(dict(
                     perk=perk,
                     perk_dict=perk.as_client_dict(),
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ))
+        perk_list = UserChangePerkSkill.all_perks
+
+        agent_perks = agent_example.perks
+        perks = [dict(
+            perk=perk_rec['perk_dict'],
+            active=perk_rec['perk'] in agent_perks,
+            perk_req=perk_rec['perk_req'],
+        ) for perk_rec in perk_list]
 
         d.update(
             rpg_info=dict(
@@ -1003,13 +1011,7 @@ class UserChangePerkSkill(Message):
                 buy_leading=agent_example.buy_leading.as_client_dict(),
                 buy_trading=agent_example.buy_trading.as_client_dict(),
                 buy_engineering=agent_example.buy_engineering.as_client_dict(),
-                perks=[
-                    dict(
-                        perk=perk_rec['perk_dict'],
-                        active=perk_rec['perk'] in agent_example.perks,
-                        perk_req=perk_rec['perk_req'],
-                    ) for perk_rec in self.all_perks
-                ],
+                perks=perks,
             ),
         )
         return d
@@ -1160,6 +1162,8 @@ class UserActualTradingMessage(Message):
 
 # Вызывается тогда, когда нужна только RPG сотставляющая
 class UserExampleSelfRPGMessage(Message):
+    all_perks = []
+
     def as_dict(self):
         d = super(UserExampleSelfRPGMessage, self).as_dict()
         agent = self.agent
@@ -1175,7 +1179,25 @@ class UserExampleSelfRPGMessage(Message):
                 dd.update(title=u'{}: {}'.format(agent.print_login(), item.title))
             quest_inventory.append(dd)
 
-        rpg_info = dict(
+        rpg_info = dict()
+        # Кеширование списка перков
+        if not UserExampleSelfRPGMessage.all_perks:
+            for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
+                UserExampleSelfRPGMessage.all_perks.append(dict(
+                    perk=perk,
+                    perk_dict=perk.as_client_dict(),
+                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
+                ))
+        deep_perks = UserExampleSelfRPGMessage.all_perks
+
+        agent_perks = agent.example.profile.perks
+        perks = [dict(
+            perk=perk['perk_dict'],
+            active=perk['perk'] in agent_perks,
+            perk_req=perk['perk_req'],
+        ) for perk in deep_perks]
+
+        rpg_info.update(
             karma=agent.example.profile.karma,
             cur_lvl=math.floor(lvl / 10),
             cur_exp=cur_exp,
@@ -1197,15 +1219,9 @@ class UserExampleSelfRPGMessage(Message):
             buy_engineering=agent.example.profile.buy_engineering.as_client_dict(),
 
             all_perks_points=math.floor(lvl / 10) + agent.example.profile.role_class.start_free_point_perks,
-            perks=[
-                dict(
-                    perk=perk.as_client_dict(),
-                    active=perk in agent.example.profile.perks,
-                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
-                ) for perk in agent.server.reg.get('/registry/rpg_settings/perks').deep_iter()
-            ],
+            perks=perks,
             quest_inventory=quest_inventory,
-            agent_effects=agent.example.profile.get_agent_effects(time=self.time)
+            agent_effects=agent.example.profile.get_agent_effects(time=self.time),
         )
         d['rpg_info'] = rpg_info
         return d
@@ -1320,19 +1336,13 @@ class QuestsInitMessage(Message):
     u"""Отправка всех квестов агента на клиент"""
     def as_dict(self):
         d = super(QuestsInitMessage, self).as_dict()
+        journal = [quest.as_client_dict() for quest in self.agent.example.profile.journal_quests]
+        unstarted = [quest.as_unstarted_quest_dict() for quest in self.agent.example.profile.quests_unstarted]
+        journal.extend(unstarted)
         d.update(
-            quests=[quest.as_client_dict() for quest in self.agent.example.profile.quests],
+            quests=journal,
             notes=[note.as_client_dict() for note in self.agent.example.profile.notes],
         )
-        q = d['quests'] and d['quests'][0] or None
-        #if q and q['hirer'] is None:
-        #    log.error(
-        #        '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
-        #        self.__class__, q,
-        #        self.agent.example.profile.quests_unstarted,
-        #        self.agent.example.profile.quests_active,
-        #        self.agent.example.profile.quests_ended,
-        #    )
         return d
 
 
@@ -1366,19 +1376,29 @@ class NPCInfoMessage(Message):
 class HangarInfoMessage(NPCInfoMessage):
     # info: данный мессадж кеширует свой результат
     npc_cars = dict()  # key: npc.uri   val = [dict(car, html_car_table, html_car_img)]
+    template_table = None
+    template_img = None
 
     def get_car_list(self, npc):
-        car_list = self.npc_cars.get(npc.uri, None)
+        car_list = HangarInfoMessage.npc_cars.get(npc.uri, None)
         if car_list is None:
-            template_table = tornado.template.Loader(
-                "templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("car_info_table.html")
+            if HangarInfoMessage.template_table:
+                template_table = HangarInfoMessage.template_table
+            else:
+                template_table = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_table.html")
+                HangarInfoMessage.template_table = template_table
 
-            template_img = tornado.template.Loader(
-                "templates/location",
-                namespace=self.agent.connection.get_template_namespace()
-            ).load("car_info_img_ext.html")
+            if HangarInfoMessage.template_img:
+                template_img = HangarInfoMessage.template_img
+            else:
+                template_img = tornado.template.Loader(
+                    "templates/location",
+                    namespace=self.agent.connection.get_template_namespace()
+                ).load("car_info_img_ext.html")
+            HangarInfoMessage.template_img = template_img
 
             car_list = [dict(
                 car=car.as_client_dict(),
@@ -1386,7 +1406,7 @@ class HangarInfoMessage(NPCInfoMessage):
                 html_car_img=template_img.generate(car=car),
             ) for car in npc.car_list]
 
-            self.npc_cars[npc.uri] = car_list
+            HangarInfoMessage.npc_cars[npc.uri] = car_list
         return car_list
 
     def as_dict(self):
