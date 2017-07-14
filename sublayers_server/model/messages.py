@@ -1151,6 +1151,13 @@ class UserExampleChangeInsurance(Message):
         return d
 
 
+class UserActualTradingMessage(Message):
+    def as_dict(self):
+        d = super(UserActualTradingMessage, self).as_dict()
+        d['trading'] = self.agent.example.profile.get_current_agent_trading()
+        return d
+
+
 # Вызывается тогда, когда нужна только RPG сотставляющая
 class UserExampleSelfRPGMessage(Message):
     def as_dict(self):
@@ -1393,7 +1400,6 @@ class HangarInfoMessage(NPCInfoMessage):
             d.update(
                 npc_margin=npc.margin,
                 npc_trading=npc.trading,
-                agent_trading=self.agent.example.profile.get_current_agent_trading(),
                 cars=self.get_car_list(npc),
             )
         return d

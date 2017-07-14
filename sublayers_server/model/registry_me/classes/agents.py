@@ -4,7 +4,9 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model import quest_events
-from sublayers_server.model.messages import ChangeAgentKarma, ChangeAgentBalance, UserChangeEXP, UserChangeQuestInventory
+from sublayers_server.model.messages import (
+    ChangeAgentKarma, ChangeAgentBalance, UserChangeEXP, UserChangeQuestInventory, UserActualTradingMessage
+)
 from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage, SkillLogMessage
 from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
@@ -434,6 +436,7 @@ class AgentProfile(Node):
     def change_quest_inventory(self, event):
         if self._agent_model:
             UserChangeQuestInventory(agent=self._agent_model, time=event.time).post()
+            UserActualTradingMessage(agent=self._agent_model, time=event.time).post()
 
     def get_agent_effects(self, time):
         effects = []  # каждый эффект должен иметь поля: source, title, description, deadline

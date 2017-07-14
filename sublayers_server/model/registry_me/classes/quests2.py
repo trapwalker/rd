@@ -298,7 +298,7 @@ class MapActivateItemQuest(Quest):
 
     def init_activate_points(self):
         self.activate_points = []
-        for i in range(0, random.randint(2, 6)):
+        for i in range(0, random.randint(3, 6)):
             base_point = random.choice(self.activate_points_generator)
             self.activate_points.append(MarkerMapObject(position=base_point.generate_random_point(),
                                                     radius=self.activate_radius))

@@ -914,9 +914,10 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'Недопустимое значение ремонта!').post()
             return
-        # todo: взять цену за ремонт одного HP откуда-то! Здание, NPC, или из самой машинки
-        repair_cost = self.hp * 1
-        repair_cost = math.ceil(repair_cost)
+
+        hp_price = ex_car.price * npc.repair_cost / ex_car.max_hp
+        skill_effect = 1 - (agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin * skill_effect))
         if agent.balance < repair_cost:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -928,7 +929,6 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             return
         ex_car.hp = ex_car.hp + self.hp
         agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
-
         messages.UserExampleCarInfo(agent=agent, time=self.time).post()
 
         # todo: Отправить транзакционное сообщение для здания (раньше такого не делали)
@@ -1115,7 +1115,7 @@ class TransactionTraderApply(TransactionTownNPC):
             if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} отсутствует в нужном количестве!'.format(price.item.title)).post()
+                                           replica=u'{} отсутствует в нужном количестве!'.format(price.item.title)).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
@@ -1325,6 +1325,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         messages.UserExampleCarView(agent=agent, time=self.time).post()
         messages.UserChangePerkSkill(agent=agent, time=self.time).post()
+        messages.UserActualTradingMessage(agent=agent, time=self.time).post()
 
         self.agent.example.profile.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
 
