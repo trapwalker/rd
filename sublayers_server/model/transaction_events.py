@@ -36,6 +36,7 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateMapRadarLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
+from sublayers_common.ctx_timer import T
 
 
 # todo: перенести логику транзакций из отдельных классов в методы реестровых классов, например итемов (под декоратор)
@@ -1314,15 +1315,16 @@ class TransactionSetRPGState(TransactionTownNPC):
         self.agent.example.profile.buy_engineering.value = self.buy_skills[u'buy_engineering']
         # todo: ##REFACTORING
 
+        agent_perks = agent.example.profile.perks
         for perk_node_hash in self.perks:
             perk_rec = self.perks[perk_node_hash]
             if perk_rec[u'state']:
-                if perk_rec['perk'] not in agent.example.profile.perks:
-                    agent.example.profile.perks.append(perk_rec['perk'])
+                if perk_rec['perk'] not in agent_perks :
+                    agent_perks.append(perk_rec['perk'])
                     perk_count += 1
             else:
-                if perk_rec['perk'] in agent.example.profile.perks:
-                    agent.example.profile.perks.remove(perk_rec['perk'])
+                if perk_rec['perk'] in agent_perks:
+                    agent_perks.remove(perk_rec['perk'])
 
         messages.UserExampleCarView(agent=agent, time=self.time).post()
         messages.UserChangePerkSkill(agent=agent, time=self.time).post()
