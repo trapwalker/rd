@@ -199,6 +199,12 @@ class Hangar(Institution):
     )
 
 
+class Mechanic(Institution):
+    margin = FloatField(caption=u'Маржа с которой торгует NPC', root_default=0.2, tags={'client'})
+    trading = IntField(caption=u"Навык торговли NPC", root_default=0, tags={'client'})
+    repair_cost = FloatField(caption=u"Коэффициент стоимости ремонта от стоимости машины", root_default=0.5, tags={'client'})
+
+
 class Parking(Institution):
     cost_for_day_parking = FloatField(caption=u'Стоимость дня у парковщика', tags={'client'})
 

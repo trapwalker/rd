@@ -24,11 +24,9 @@ var LocationHangarNPC = (function (_super) {
             jq_car_list.empty();
             jq_car_list_inventory.empty();
 
-            if (data.hasOwnProperty('agent_trading') &&
-                data.hasOwnProperty('npc_trading') &&
-                data.hasOwnProperty('npc_margin')) {
+            if (data.hasOwnProperty('npc_trading') && data.hasOwnProperty('npc_margin')) {
                 this.npc_margin = data.npc_margin;
-                this.skill_effect = 1 - (data.agent_trading - data.npc_trading + 100) / 200;
+                this.skill_effect = 1 - (user.actual_trading - data.npc_trading + 100) / 200;
                 for (var i = 0; i < this.cars_list.length; i++)
                     this.cars_list[i].car.price = Math.floor(this.cars_list[i].car.price * (1 + data.npc_margin * this.skill_effect));
             }
