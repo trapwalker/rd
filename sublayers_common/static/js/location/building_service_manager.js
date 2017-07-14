@@ -15,7 +15,6 @@ var LocationServiceBuilding = (function (_super) {
         this.jq_repair_carette = null;
 
         this.update();
-        console.log(this);
     }
 
     LocationServiceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
@@ -108,8 +107,8 @@ var LocationServiceBuilding = (function (_super) {
         var npc = this.building_rec.head;
         var hp_price = user.example_car.price * npc.repair_cost / user.example_car.max_hp;
         var skill_effect = 1 - (user.actual_trading - npc.trading + 100) / 200;
-        var current_price = (current_hp * hp_price) * (1 + npc.margin * skill_effect);
-        var max_price = (max_hp * hp_price) * (1 + npc.margin * skill_effect);
+        var current_price = (current_hp * hp_price) * (1 + npc.margin_repair * skill_effect);
+        var max_price = (max_hp * hp_price) * (1 + npc.margin_repair * skill_effect);
 
         this.set_header_text(
             'Ремонт: ' + Math.ceil(current_price) + ' NC</br>' +

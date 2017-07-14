@@ -19,6 +19,8 @@ var LocationArmorerNPC = (function (_super) {
         this.jq_sectors_view = this.jq_main_div.find('.armorerSectors-svg').first();
 
         this.update();
+
+        //console.log(this);
     }
 
     LocationArmorerNPC.prototype.set_buttons = function () {
