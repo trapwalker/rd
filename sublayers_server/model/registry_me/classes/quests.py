@@ -122,6 +122,22 @@ class QuestState_(object):
         pass
 
 
+class FinalState(QuestState_):
+    status = 'end'
+
+
+class WinState(FinalState):
+    result = 'win'
+
+
+class FailState(FinalState):
+    result = 'fail'
+
+
+class FailByCancelState(FailState):
+    pass
+
+
 # todo: ##DEPRECATED
 class QuestState(Node):
     id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
@@ -319,11 +335,13 @@ class Quest(Node):
     def _set_error_status(self, handler, event, e):
         self._error = True
 
+    # todo: ##DEPRECATED
     @property
     def states_map(self):
         states_map = getattr(self, '_states_map', None)
+        states = self.states
         if not states_map:
-            states_map = {state.id: state for state in self.states}  # todo: optimize
+            states_map = states and {state.id: state for state in states} or {}  # todo: optimize
             self._states_map = states_map
 
         return states_map
@@ -519,6 +537,7 @@ class Quest(Node):
             self.do_state_exit(old_state, event)
 
         self.current_state = next_state_id
+        self._state = next_state
 
         agent_model = self.agent and self.agent.profile._agent_model
         if agent_model:
