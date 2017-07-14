@@ -20,7 +20,7 @@ var LocationArmorerNPC = (function (_super) {
 
         this.update();
 
-        //console.log(this);
+        console.log(this);
     }
 
     LocationArmorerNPC.prototype.set_buttons = function () {

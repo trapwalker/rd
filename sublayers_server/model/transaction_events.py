@@ -712,7 +712,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         agent = self.agent
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
-        # Сохраняем текущий инвентарь в экзампл и удаляем его с клиента
+        # Сохраняем текущий инвентарь в экзампл
         agent.inventory.save_to_example(time=self.time)
 
         # Заполняем буфер итемов
@@ -721,15 +721,31 @@ class TransactionArmorerApply(TransactionTownNPC):
         for item in agent.example.profile.car.inventory.items:
             armorer_buffer.append(item)
 
+        # Подготавливаем константы расчета стоимости
+        all_price = 0
+        skill_effect = npc.get_trading_effect(agent_example=agent.example)
+        clear_slot_price = ex_car.price * npc.clear_cost * (1 + npc.margin_slot * skill_effect)
+        setup_slot_price = ex_car.price * npc.setup_cost * (1 + npc.margin_slot * skill_effect)
+
+        # Проход 0: проверяем корректность направлений
+        for slot_name in self.armorer_slots.keys():
+            new_item = self.armorer_slots[slot_name]['example']
+            new_item_direction = self.armorer_slots[slot_name]['direction']
+            if (new_item is not None) and (new_item_direction not in getattr(ex_car, get_flags(slot_name))):
+                log.warning('Alarm: Direction for slot<%s> dont access (slot: %s; direction: %s)', slot_name,
+                            getattr(ex_car, get_flags(slot_name)), self.armorer_slots[slot_name]['direction'])
+                messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                               info_string=u"Не удалось завершить транзакцию.").post()
+                return
+
         # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в armorer_buffer)
         for slot_name, slot_value in ex_car.iter_slots(tags='armorer'):
             old_item = slot_value
             new_item = self.armorer_slots[slot_name]['example']
             if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
-                # todo: добавить стоимость демонтажа итема
+                all_price += clear_slot_price  # добавить стоимость демонтажа итема
                 armorer_buffer.append(slot_value)
                 remove_list.append(slot_value)
-                setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по armorer_slots и обработка всех ситуаций)
         for slot_name in self.armorer_slots.keys():
@@ -739,47 +755,66 @@ class TransactionArmorerApply(TransactionTownNPC):
             if new_item is None:  # если в данном слоте должно быть пусто
                 continue  # то идём к следующему шагу цикла
 
-            # Если у слота установлено недопустимое направление, то перейти к следующему итему
-            if self.armorer_slots[slot_name]['direction'] not in getattr(ex_car, get_flags(slot_name)):
-                log.warning('Alarm: Direction for slot<%s> dont access (slot: %s; direction: %s)', slot_name,
-                            getattr(ex_car, get_flags(slot_name)), self.armorer_slots[slot_name]['direction'])
-                continue
-
-            if old_item is not None:  # поворот итема или отсутствие действия
-                if old_item.direction != self.armorer_slots[slot_name]['direction']:  # поворот
-                    # todo: добавить стоимость поворота итема
-                    old_item.direction = self.armorer_slots[slot_name]['direction']
-            else:  # установка итема в слот из armorer_buffer
-                search_item = None
+            search_item = None
+            if (old_item is not None) and (old_item.node_hash() == new_item['node_hash']):
+                search_item = old_item
+            else:
                 for item in armorer_buffer:
                     if item.node_hash() == new_item['node_hash']:
                         search_item = item
                         break
-                if search_item is not None:
-                    # todo: добавить стоимость монтажа итема
-                    # Проверка допустимости веса для слота
-                    slot_weight = int(getattr(ex_car, get_flags(slot_name)).split('_')[1])
-                    item_weight = int(getattr(search_item, 'weight_class'))
-                    if slot_weight >= item_weight:
-                        armorer_buffer.remove(search_item)
-                        search_item.direction = self.armorer_slots[slot_name]['direction']
-                        setattr(ex_car, slot_name, search_item)
-                        setup_list.append(search_item)
-                    else:
-                        log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s', item_weight,
-                                    slot_name, slot_weight)
 
-        # Закидываем буффер в инвентарь
+            if search_item is not None:
+                # Проверка допустимости веса для слота
+                slot_weight = int(getattr(ex_car, get_flags(slot_name)).split('_')[1])
+                item_weight = int(getattr(search_item, 'weight_class'))
+                if slot_weight >= item_weight:
+                    all_price += setup_slot_price  # добавить стоимость монтажа итема
+                    if search_item is not old_item:
+                        armorer_buffer.remove(search_item)
+                    self.armorer_slots[slot_name]['example'] = search_item
+                    setup_list.append(search_item)
+                else:
+                    log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s',
+                                item_weight, slot_name, slot_weight)
+                    messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                                   info_string=u"Не удалось завершить транзакцию.").post()
+                    return
+            else:
+                log.warning('Alarm: Try to set unknown Item [weight=%s] in Slot<%s> with weight=%s',
+                            item_weight, slot_name, slot_weight)
+                messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                               info_string=u"Не удалось завершить транзакцию.").post()
+                return
+
+        # Проверяем хватает ли места в инвентаре и денег
+        if ex_car.inventory.size < len(armorer_buffer):
+            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                           info_string=u"Недостаточно места в инвентаре.").post()
+            return
+
+        all_price = math.ceil(all_price)
+        if self.agent.balance < all_price:
+            messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
+                                           info_string=u"Не хватет денег.").post()
+            return
+
+        # Закидываем буффер в инвентарь, применяем слоты, вычитаем деньги
         position = 0
         agent.example.profile.car.inventory.items = []
         for item in armorer_buffer:
             item.position = position
             agent.example.profile.car.inventory.items.append(item)
             position += 1
+        for slot_name in self.armorer_slots.keys():
+            new_item = self.armorer_slots[slot_name]['example']
+            setattr(ex_car, slot_name, new_item)
+            if new_item is not None:
+                search_item.direction = self.armorer_slots[slot_name]['direction']
+        agent.example.profile.set_balance(time=self.time, delta=-all_price)
 
         messages.UserExampleCarSlots(agent=agent, time=self.time).post()
         messages.UserExampleCarView(agent=agent, time=self.time).post()
-
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Эвент для квестов
@@ -788,9 +823,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        # todo: правильную стоимость услуг вывести сюда
-        # todo: translate
-        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
+        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(all_price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
