@@ -75,9 +75,6 @@ var LocationServiceBuilding = (function (_super) {
             this._set_carette(prc_hp);
             this._show_text_hp();
         }
-        else {
-            jq_repair_page.text('Отсутствует ТС');
-        }
 
         _super.prototype.update.call(this);
     };

@@ -742,7 +742,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         for slot_name, slot_value in ex_car.iter_slots(tags='armorer'):
             old_item = slot_value
             new_item = self.armorer_slots[slot_name]['example']
-            if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
+            if (old_item is not None) and ((new_item is None) or (old_item.uid != UUID(new_item['uid']))):
                 all_price += clear_slot_price  # добавить стоимость демонтажа итема
                 armorer_buffer.append(slot_value)
                 remove_list.append(slot_value)
@@ -755,24 +755,26 @@ class TransactionArmorerApply(TransactionTownNPC):
             if new_item is None:  # если в данном слоте должно быть пусто
                 continue  # то идём к следующему шагу цикла
 
-            search_item = None
-            if (old_item is not None) and (old_item.node_hash() == new_item['node_hash']):
-                search_item = old_item
-            else:
-                for item in armorer_buffer:
-                    if item.node_hash() == new_item['node_hash']:
-                        search_item = item
-                        break
+            if (old_item is not None) and (old_item.uid == UUID(new_item['uid'])):
+                self.armorer_slots[slot_name]['example'] = old_item
+                setup_list.append(old_item)
+                if old_item.direction != self.armorer_slots[slot_name]['direction']:
+                    all_price += setup_slot_price  # добавить стоимость монтажа итема
+                continue
 
+            search_item = None
+            for item in armorer_buffer:
+                if item.uid == UUID(new_item['uid']):
+                    search_item = item
+                    break
             if search_item is not None:
                 # Проверка допустимости веса для слота
                 slot_weight = int(getattr(ex_car, get_flags(slot_name)).split('_')[1])
                 item_weight = int(getattr(search_item, 'weight_class'))
                 if slot_weight >= item_weight:
                     all_price += setup_slot_price  # добавить стоимость монтажа итема
-                    if search_item is not old_item:
-                        armorer_buffer.remove(search_item)
                     self.armorer_slots[slot_name]['example'] = search_item
+                    armorer_buffer.remove(search_item)
                     setup_list.append(search_item)
                 else:
                     log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s',
@@ -810,7 +812,7 @@ class TransactionArmorerApply(TransactionTownNPC):
             new_item = self.armorer_slots[slot_name]['example']
             setattr(ex_car, slot_name, new_item)
             if new_item is not None:
-                search_item.direction = self.armorer_slots[slot_name]['direction']
+                new_item.direction = self.armorer_slots[slot_name]['direction']
         agent.example.profile.set_balance(time=self.time, delta=-all_price)
 
         messages.UserExampleCarSlots(agent=agent, time=self.time).post()
@@ -823,7 +825,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(all_price))
+        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(int(all_price)))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
