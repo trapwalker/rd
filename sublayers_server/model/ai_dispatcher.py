@@ -7,15 +7,16 @@ from sublayers_server.model.agents import AI
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
+from sublayers_common.ctx_timer import T
 
 
 class AIDispatcher(AI):
     def __init__(self, time, quest_example, **kw):
         super(AIDispatcher, self).__init__(time=time, **kw)
-        self.create_ai_quest(time=time, quest_example=quest_example)
+        self.create_ai_dispatcher_quest(time=time, quest_example=quest_example)
 
     @event_deco
-    def create_ai_quest(self, event, quest_example):
+    def create_ai_dispatcher_quest(self, event, quest_example):
         if quest_example.can_instantiate(event=event, agent=self.example, hirer=None):
             new_quest = quest_example.instantiate(abstract=False, hirer=None)
             if new_quest.generate(event=event, agent=self.example):
@@ -52,8 +53,8 @@ class AIAgent(AI):
     @event_deco
     def generate_car(self, event, car_example):
         # Добавить свою машинку на карту
+        # with T(name='car_example'):  # long
         self.example.profile.car = car_example
-        self.example.profile.current_location = None
         self.current_location = None
         car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
         self.append_car(car=car, time=event.time)
