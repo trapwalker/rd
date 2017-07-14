@@ -39,6 +39,19 @@ class Item(Node):
         d.update(ids=self.ids())
         return d
 
+    def as_assortment_dict(self):
+        d = dict(
+            title=self.title,
+            description=self.description,
+            inv_icon_mid=self.inv_icon_mid,
+            stack_size=self.stack_size,
+            node_hash=self.node_hash(),
+            uid=self.uid,
+            tags=list(self.tag_set),
+            amount=self.amount,
+        )
+        return d
+
     @classmethod
     def activate(cls):
         pass

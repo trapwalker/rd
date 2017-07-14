@@ -6,9 +6,8 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.base import Observer
 from sublayers_server.model.units import Unit, ExtraMobile
-from sublayers_server.model.messages import (
-    EnterToLocation, ExitFromLocation, ChangeLocationVisitorsMessage, PreEnterToLocation, TownAttackMessage
-)
+from sublayers_server.model.messages import (UserActualTradingMessage, EnterToLocation, ExitFromLocation,
+                                             ChangeLocationVisitorsMessage, PreEnterToLocation, TownAttackMessage)
 from sublayers_server.model.game_log_messages import LocationLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.events import ActivateLocationChats, event_deco
@@ -82,6 +81,7 @@ class MapLocation(Observer):
 
     def on_enter(self, agent, event):
         agent.on_enter_location(location=self, event=event)  # todo: (!)
+        UserActualTradingMessage(agent=agent, time=event.time).post()
         PreEnterToLocation(agent=agent, location=self, time=event.time).post()
         self.generate_quests(event=event, agent=agent)
         ActivateLocationChats(agent=agent, location=self, time=event.time + 0.1).post()
@@ -102,6 +102,7 @@ class MapLocation(Observer):
     def on_re_enter(self, agent, event):
         log.warning(u'ВНИМАНИЕ! [MapLocation.on_re_enter] Тут раньше сохранялся агент. Сохранение отключено для анализа производительности.')
         # agent.save(event.time)  # todo: Уточнить можно ли сохранять здесь
+        UserActualTradingMessage(agent=agent, time=event.time).post()
         if agent in self.visitors:
             PreEnterToLocation(agent=agent, location=self, time=event.time).post()
             # todo: review agent.on_enter_location call
@@ -118,8 +119,8 @@ class MapLocation(Observer):
 
     def on_exit(self, agent, event, dc_agent=False):
         self.visitors.remove(agent)
-        agent.current_location = None
         if not dc_agent:
+            agent.current_location = None
             agent.on_exit_location(location=self, event=event)
         for chat in self.radio_points:
             chat.room.exclude(agent=agent, time=event.time)  # todo: Пробросить event вместо time ##refactor

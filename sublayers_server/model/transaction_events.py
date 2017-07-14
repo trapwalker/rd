@@ -467,13 +467,15 @@ class TransactionHangarSell(TransactionTownNPC):
         # Отправка сообщения о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
+        skill_effect = 1 - (self.agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
+
         # todo: translate
-        info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.profile.car.title, str(self.agent.example.profile.car.price))
+        info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.profile.car.title, str(price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
-
         log_car = self.agent.example.profile.car
-        self.agent.example.profile.set_balance(time=self.time, delta=self.agent.example.profile.car.price)
+        self.agent.example.profile.set_balance(time=self.time, delta=price)
         self.agent.example.profile.car = None
         self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list)
 
@@ -508,27 +510,32 @@ class TransactionHangarBuy(TransactionTownNPC):
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
         agent_balance = self.agent.balance
-        old_car_price = 0 if self.agent.example.profile.car is None else self.agent.example.profile.car.price
-        # todo: refactoring (use inventory to choose car)
-        if (agent_balance + old_car_price) >= car_proto.price:
+        skill_effect = 1 - (self.agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        if self.agent.example.profile.car:
+            old_car_price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
+        else:
+            old_car_price = 0
+        new_car_price = int(car_proto.price * (1 + npc.margin * skill_effect))
+
+        if (agent_balance + old_car_price) >= new_car_price:
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if self.agent.example.profile.car:
                 info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
-                                                               str(car_proto.price - self.agent.example.profile.car.price))
+                                                               str(new_car_price - old_car_price))
                 TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.profile.car,
                                             price=self.agent.example.profile.car.price, action="sell").post()
             else:
-                info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-car_proto.price))
+                info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-new_car_price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
             car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
-            self.agent.example.profile.set_balance(time=self.time, delta=-car_proto.price + old_car_price)
+            self.agent.example.profile.set_balance(time=self.time, delta=-new_car_price + old_car_price)
             self.agent.example.profile.car = car_example
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
@@ -907,9 +914,10 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'Недопустимое значение ремонта!').post()
             return
-        # todo: взять цену за ремонт одного HP откуда-то! Здание, NPC, или из самой машинки
-        repair_cost = self.hp * 1
-        repair_cost = math.ceil(repair_cost)
+
+        hp_price = ex_car.price * npc.repair_cost / ex_car.max_hp
+        skill_effect = 1 - (agent.example.profile.get_current_agent_trading() - npc.trading + 100) / 200.0
+        repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin * skill_effect))
         if agent.balance < repair_cost:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'У вас недостаточно стредств!').post()
@@ -921,7 +929,6 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             return
         ex_car.hp = ex_car.hp + self.hp
         agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
-
         messages.UserExampleCarInfo(agent=agent, time=self.time).post()
 
         # todo: Отправить транзакционное сообщение для здания (раньше такого не делали)
@@ -1054,6 +1061,7 @@ class TransactionTraderApply(TransactionTownNPC):
         buy_list = []
         sell_list = []
         agent = self.agent
+        skill_effect = npc.get_agent_skill_effect(agent=agent)
         ex_car = agent.example.profile.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
@@ -1073,17 +1081,17 @@ class TransactionTraderApply(TransactionTownNPC):
             if (item_ex is None) or (item_ex.amount < table_rec['count']):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} отсутствует в нужном количестве!'.format(item_ex.title)).post()
+                                     replica=u'{} отсутствует в нужном количестве!'.format(item_ex and item_ex.title)).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
-            price = npc.get_item_price(item=item_ex)
+            price = npc.get_item_price2(item=item_ex, for_agent=True)
             if price is None:
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'{} не продаётся и не покупается!'.format(item_ex.title)).post()
                 return
-            item_sale_price = price.get_price(item=item_ex, agent=agent)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
+            item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
             sell_list.append(item_ex)
 
@@ -1099,6 +1107,7 @@ class TransactionTraderApply(TransactionTownNPC):
 
         # Обход столика торговца, зачисление итемов и расчет стоимости
         buy_price = 0  # цена того что игрок покупает
+
         for table_rec in self.trader_table:
             price = npc.get_item_by_uid(uid=table_rec['uid'])
 
@@ -1106,11 +1115,12 @@ class TransactionTraderApply(TransactionTownNPC):
             if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} отсутствует в нужном количестве!'.format(price.item.title)).post()
+                                           replica=u'{} отсутствует в нужном количестве!'.format(price.item.title)).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
-            item_buy_price = price.get_price(item=price.item, agent=agent)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
+
+            item_buy_price = price.get_price(item=price.item, skill_effect=skill_effect)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
             buy_price += item_buy_price
             buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
@@ -1315,6 +1325,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         messages.UserExampleCarView(agent=agent, time=self.time).post()
         messages.UserChangePerkSkill(agent=agent, time=self.time).post()
+        messages.UserActualTradingMessage(agent=agent, time=self.time).post()
 
         self.agent.example.profile.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
 

@@ -6,6 +6,8 @@ var LocationHangarNPC = (function (_super) {
         _super.call(this, npc_rec, jq_town_div, building_name);
         this.cars_list = [];
         this.current_car = null;
+        this.skill_effect = 1;
+        this.npc_margin = 0;
     }
 
     LocationHangarNPC.prototype.get_self_info = function () {
@@ -17,12 +19,17 @@ var LocationHangarNPC = (function (_super) {
         //console.log('LocationHangarNPC.prototype.update', data);
         if (data && data.hasOwnProperty('cars')) {
             this.cars_list = data.cars;
-
             var jq_car_list = this.jq_main_div.find('.hangar-center').first();
             var jq_car_list_inventory = this.jq_main_div.find('.hangar-car-list-list').first();
-
             jq_car_list.empty();
             jq_car_list_inventory.empty();
+
+            if (data.hasOwnProperty('npc_trading') && data.hasOwnProperty('npc_margin')) {
+                this.npc_margin = data.npc_margin;
+                this.skill_effect = 1 - (user.actual_trading - data.npc_trading + 100) / 200;
+                for (var i = 0; i < this.cars_list.length; i++)
+                    this.cars_list[i].car.price = Math.floor(this.cars_list[i].car.price * (1 + data.npc_margin * this.skill_effect));
+            }
 
             for (var i = 0; i < this.cars_list.length; i++) {
                 var car_rec = this.cars_list[i];
@@ -40,7 +47,7 @@ var LocationHangarNPC = (function (_super) {
                 jq_car_list.append(jq_car);
 
                 var jq_inv_car = $(
-                    '<div class="npcInventory-itemWrap" data-car_number="' + i + '" ' + 'data-car_price="' + car_rec.car.price + '">' +
+                    '<div class="npcInventory-itemWrap" data-car_number="' + i + '">' +
                         '<div class="npcInventory-item">' +
                             '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
                             '<div class="npcInventory-name">' + car_rec.car.title + '</div>' +
@@ -57,9 +64,6 @@ var LocationHangarNPC = (function (_super) {
                 // Сбросить предыдущее выделение и выджелить выбранный итем
                 self.jq_main_div.find('.npcInventory-itemWrap').removeClass('active');
                 $(this).addClass('active');
-
-                // todo: Установить цену
-                //$('#hangar-footer-price').text($(this).data('car_price'));
 
                 // Скрыть информационные окна всех машинок, показать выбранную
                 self.jq_main_div.find('.hangar-center-info-car-wrap').css('display', 'none');
@@ -108,8 +112,9 @@ var LocationHangarNPC = (function (_super) {
         if (!html_text) {
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                jq_text_div.append('<div>Обменять ТС: ' + (user.example_car.price - this.cars_list[this.current_car].car.price) + 'NC</div>');
-                jq_text_div.append('<div>Продать ТС: ' + user.example_car.price + 'NC</div>');
+                var user_car_price = Math.floor(user.example_car.price * (1 - this.npc_margin * this.skill_effect));
+                jq_text_div.append('<div>Обменять ТС: ' + (user_car_price - this.cars_list[this.current_car].car.price) + 'NC</div>');
+                jq_text_div.append('<div>Продать ТС: ' + user_car_price + 'NC</div>');
             }
             else
                 jq_text_div.append('<div>Купить ТС: -' + this.cars_list[this.current_car].car.price + 'NC</div>');

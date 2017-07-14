@@ -1274,7 +1274,6 @@ var ClientManager = (function () {
         }
     };
 
-
     // Examples - Различные виды example'ов (для машинки, для агента, для чего-то ещё (возможно)
     ClientManager.prototype.UserExampleSelfMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfMessage', event);
@@ -1371,6 +1370,11 @@ var ClientManager = (function () {
         locationManager.update();
     };
 
+    ClientManager.prototype.UserActualTradingMessage = function (event) {
+        //console.log('ClientManager.prototype.UserActualTradingMessage', event);
+        user.actual_trading = event.trading;
+    };
+
     ClientManager.prototype.HangarInfoMessage = function (event) {
         //console.log('ClientManager.prototype.HangarInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
@@ -1399,6 +1403,12 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.TraderInfoMessage', event);
         var trader = locationManager.npc[event.npc_html_hash];
         user.example_agent.balance = event.agent_balance;
+        if (trader) trader.updatePrice(event)
+    };
+
+    ClientManager.prototype.TraderAgentAssortmentMessage = function (event) {
+        //console.log('ClientManager.prototype.TraderAgentAssortmentMessage', event);
+        var trader = locationManager.npc[event.npc_html_hash];
         if (trader) trader.updatePrice(event)
     };
 

@@ -25,7 +25,8 @@ def event_deco(func):
         )
         assert server, 'event_deco decorated method called without `server` source'
         # time = kw.pop('time', server.get_time())
-        event = Event(server=server, time=time, callback_after=partial(func, self, **kw))
+        event = Event(server=server, time=time, callback_after=partial(func, self, **kw),
+                      comment='event_deco_{}'.format(func.__name__))
         event.post()
         return event
 
@@ -138,6 +139,8 @@ class Event(object):
                 self.callback_after(event=self)
 
         cl_name = self.classname
+        if cl_name == 'Event':
+            cl_name = self.comment or 'Event'
         duration = event_perform_timer.duration
         if self.events_metrics.get(cl_name, None):
             self.events_metrics[cl_name]["count"] += 1

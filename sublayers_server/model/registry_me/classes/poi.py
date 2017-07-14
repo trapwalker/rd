@@ -191,11 +191,18 @@ class Trainer(Institution):
 
 
 class Hangar(Institution):
+    margin = FloatField(caption=u'Маржа с которой торгует NPC', root_default=0.2)
+    trading = IntField(caption=u"Навык торговли NPC", root_default=0)
     car_list = ListField(
         caption=u"Список продаваемых машин",
-        # tags={'client'},
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
+
+
+class Mechanic(Institution):
+    margin = FloatField(caption=u'Маржа с которой торгует NPC', root_default=0.2, tags={'client'})
+    trading = IntField(caption=u"Навык торговли NPC", root_default=0, tags={'client'})
+    repair_cost = FloatField(caption=u"Коэффициент стоимости ремонта от стоимости машины", root_default=0.5, tags={'client'})
 
 
 class Parking(Institution):
