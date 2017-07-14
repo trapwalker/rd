@@ -28,7 +28,7 @@ var SettingsManager = (function() {
                 settingsManager.options["auto_simple_bot"].set_callback(true);
         }, 2000);
 
-        this._game_color_return_to_def = this.getCookie("_game_color_return_to_def") == "1";  // Для восстановления фильтра карты при переключениях режима отображения карты
+        this._game_color_return_to_def_from_green = this.getCookie("_game_color_return_to_def_from_green") == "1";  // Для восстановления фильтра карты при переключениях режима отображения карты
     }
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
@@ -168,7 +168,7 @@ var SettingsManager = (function() {
             ],
             set_callback: function(new_value, from_first_load) {
                 $("#bodydiv").attr("style", "filter: " + new_value);
-                if (!from_first_load) settingsManager._game_color_return_to_def = false;
+                if (!from_first_load) settingsManager._game_color_return_to_def_from_green = false;
             },
         },
         /* Настройка графики */
@@ -236,14 +236,14 @@ var SettingsManager = (function() {
                     settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[3].value;
                     settingsManager.refresh_list_options(settingsManager.options.game_color);
                     settingsManager.options.game_color.set_callback("url(#green);");
-                    settingsManager._game_color_return_to_def = true;
+                    settingsManager._game_color_return_to_def_from_green = true;
                 }
                 // Если включили, то при необходимости вернуться к палитре по умолчанию
-                if (new_value != "front" && settingsManager._game_color_return_to_def) {
+                if (new_value != "front" && settingsManager._game_color_return_to_def_from_green) {
                     settingsManager.options.game_color.currentValue = settingsManager.options.game_color.list_values[0].value;
                     settingsManager.refresh_list_options(settingsManager.options.game_color);
                     settingsManager.options.game_color.set_callback(settingsManager.options.game_color.default);
-                    settingsManager._game_color_return_to_def = false;
+                    settingsManager._game_color_return_to_def_from_green = false;
                 }
             },
         },
@@ -840,7 +840,7 @@ var SettingsManager = (function() {
         // Админский режим
         this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0");
         // Сохранить значение "восстановления палитры"
-        this.setCookie("_game_color_return_to_def", this._game_color_return_to_def ? "1" : "0");
+        this.setCookie("_game_color_return_to_def_from_green", this._game_color_return_to_def_from_green ? "1" : "0");
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {
@@ -1142,8 +1142,8 @@ var SettingsManager = (function() {
                 if (option.list_values[i].value == option.currentValue)
                     curr_index = i;
         if (!curr_index) curr_index = 0;
-
-        option.jq_div.find(".settings-list").first().text(option.list_values[curr_index].text);
+        if(option.jq_div)
+            option.jq_div.find(".settings-list").first().text(option.list_values[curr_index].text);
     };
 
     SettingsManager.prototype._handler_list_click = function(opt_name, dvalue) {
