@@ -272,7 +272,7 @@ class Quest(Node):
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
     )
     town        = RegistryLinkField(
-        tags={'client'}, caption=u'Город выдачи', doc=u'Город выдачи квеста',
+        caption=u'Город выдачи', doc=u'Город выдачи квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     history     = ListField(
@@ -374,6 +374,21 @@ class Quest(Node):
             status=self.status,
             result=self.result,
             #log=self._log,
+        )
+        return d
+
+    def as_unstarted_quest_dict(self):
+        d = dict()
+        d.update(
+            uid=self.uid,
+            status=self.status,
+            result=self.result,
+            hirer=dict(node_hash=self.hirer.node_hash()),
+            caption=self.caption,
+            text_short=self.text_short,
+            list_icon=self.list_icon,
+            level=self.level,
+            deadline=self.deadline,
         )
         return d
 

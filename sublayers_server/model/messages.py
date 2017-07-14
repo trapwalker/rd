@@ -1313,19 +1313,13 @@ class QuestsInitMessage(Message):
     u"""Отправка всех квестов агента на клиент"""
     def as_dict(self):
         d = super(QuestsInitMessage, self).as_dict()
+        journal = [quest.as_client_dict() for quest in self.agent.example.profile.journal_quests]
+        unstarted = [quest.as_unstarted_quest_dict() for quest in self.agent.example.profile.quests_unstarted]
+        journal.extend(unstarted)
         d.update(
-            quests=[quest.as_client_dict() for quest in self.agent.example.profile.quests],
+            quests=journal,
             notes=[note.as_client_dict() for note in self.agent.example.profile.notes],
         )
-        q = d['quests'] and d['quests'][0] or None
-        #if q and q['hirer'] is None:
-        #    log.error(
-        #        '============ %s:\n%r \n\nunstart: %r \n\nactive: %r \n\nend: %r',
-        #        self.__class__, q,
-        #        self.agent.example.profile.quests_unstarted,
-        #        self.agent.example.profile.quests_active,
-        #        self.agent.example.profile.quests_ended,
-        #    )
         return d
 
 

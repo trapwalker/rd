@@ -233,6 +233,13 @@ class AgentProfile(Node):
         """
         return chain(self.quests_unstarted or [], self.quests_active or [], self.quests_ended or [])
 
+    @property
+    def journal_quests(self):
+        """
+        :rtype: list[sublayers_server.model.registry_me.classes.quests.Quest]
+        """
+        return chain(self.quests_active or [], self.quests_ended or [])
+
     def __init__(self, **kw):
         super(AgentProfile, self).__init__(**kw)
         # todo: move '_agent_model' attribute to Agent
