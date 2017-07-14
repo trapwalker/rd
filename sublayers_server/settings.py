@@ -11,7 +11,8 @@ from tornado.options import define
 
 def load(filename, local_filename=None):
     if local_filename is None:
-        local_filename = 'local.{}'.format(filename)
+        filename_dir, filename_name = os.path.split(filename)
+        local_filename = os.path.join(filename_dir, 'local.{}'.format(filename_name))
 
     log.info('Try to load config file: %r', filename)
     tornado.options.parse_config_file(filename, final=False)
