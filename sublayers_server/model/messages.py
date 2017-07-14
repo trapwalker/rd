@@ -981,13 +981,21 @@ class UserChangePerkSkill(Message):
         d = super(UserChangePerkSkill, self).as_dict()
         agent_example = self.agent.example.profile
 
-        if not self.all_perks:
+        if not UserChangePerkSkill.all_perks:
             for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
-                self.all_perks.append(dict(
+                UserChangePerkSkill.all_perks.append(dict(
                     perk=perk,
                     perk_dict=perk.as_client_dict(),
                     perk_req=[p_req.node_hash() for p_req in perk.perks_req],
                 ))
+        perk_list = UserChangePerkSkill.all_perks
+
+        agent_perks = agent_example.perks
+        perks = [dict(
+            perk=perk_rec['perk_dict'],
+            active=perk_rec['perk'] in agent_perks,
+            perk_req=perk_rec['perk_req'],
+        ) for perk_rec in perk_list]
 
         d.update(
             rpg_info=dict(
@@ -1003,13 +1011,7 @@ class UserChangePerkSkill(Message):
                 buy_leading=agent_example.buy_leading.as_client_dict(),
                 buy_trading=agent_example.buy_trading.as_client_dict(),
                 buy_engineering=agent_example.buy_engineering.as_client_dict(),
-                perks=[
-                    dict(
-                        perk=perk_rec['perk_dict'],
-                        active=perk_rec['perk'] in agent_example.perks,
-                        perk_req=perk_rec['perk_req'],
-                    ) for perk_rec in self.all_perks
-                ],
+                perks=perks,
             ),
         )
         return d
