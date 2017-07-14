@@ -54,7 +54,7 @@
     {% end %}
     {% import datetime %}
     {% set i = 0 %}
-    {% for rec in messages_metrics.keys() %}
+    {% for rec in sorted(messages_metrics.keys(), key=lambda k: messages_metrics[k]['duration'] / messages_metrics[k]["count"], reverse=True)  %}
         <div class="messages-record {{ 'even' if i % 2 else ''  }}">
             <div class="name">{{ rec }}</div>
             <div class="count">{{ messages_metrics[rec]["count"] }}</div>

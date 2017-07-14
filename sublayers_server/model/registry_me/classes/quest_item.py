@@ -109,3 +109,13 @@ class QuestItem(Item):
 
     def is_actual(self, inventory, event):
         return (self.deadline == 0) or (self.starttime + self.deadline > event.time)
+
+    def get_agent_effect_dict(self):
+        if self.effect_title and self.effect_description:
+            return dict(
+                source=self.title,
+                title=self.effect_title,
+                description=self.effect_description,
+                deadline=0 if self.deadline == 0 else self.deadline + self.starttime
+            )
+        return None

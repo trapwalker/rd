@@ -52,7 +52,7 @@
     {% end %}
     {% import datetime %}
     {% set i = 0 %}
-    {% for rec in events_metrics %}
+    {% for rec in sorted(events_metrics, key=lambda k: k['duration'] / k["count"], reverse=True)  %}
         <div class="events-record {{ 'even' if i % 2 else ''  }}">
             <div class="name">{{ rec["name"] }}</div>
             <div class="count">{{ rec["count"] }}</div>

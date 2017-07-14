@@ -75,9 +75,6 @@ var LocationServiceBuilding = (function (_super) {
             this._set_carette(prc_hp);
             this._show_text_hp();
         }
-        else {
-            jq_repair_page.text('Отсутствует машинка');
-        }
 
         _super.prototype.update.call(this);
     };
@@ -101,9 +98,18 @@ var LocationServiceBuilding = (function (_super) {
         // заполнить в шапку стоимость ремонта
         var current_hp = hp - user.example_car.hp;
         if (current_hp < 0) current_hp = 0;
+        var max_hp = user.example_car.max_hp - user.example_car.hp;
+        if (max_hp < 0) max_hp = 0;
+
+        var npc = this.building_rec.head;
+        var hp_price = user.example_car.price * npc.repair_cost / user.example_car.max_hp;
+        var skill_effect = 1 - (user.actual_trading - npc.trading + 100) / 200;
+        var current_price = (current_hp * hp_price) * (1 + npc.margin_repair * skill_effect);
+        var max_price = (max_hp * hp_price) * (1 + npc.margin_repair * skill_effect);
+
         this.set_header_text(
-            'Ремонт: ' + Math.ceil(current_hp) + ' NC</br>' +
-            'Ремонт всего: ' + Math.ceil(user.example_car.max_hp - user.example_car.hp) + 'NC'
+            'Ремонт: ' + Math.ceil(current_price) + ' NC</br>' +
+            'Полный рамонт: ' + Math.ceil(max_price) + 'NC'
         );
     };
 
@@ -120,11 +126,6 @@ var LocationServiceBuilding = (function (_super) {
         this._show_text_hp();
         this.set_filler(this.jq_repair_fill_need, this.current_prc_hp);
     };
-
-    //LocationServiceBuilding.prototype.centralMenuReaction = function (page_id) {
-    //    _super.prototype.centralMenuReaction.call(this, page_id);
-    //    this.set_buttons();
-    //};
 
     LocationServiceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;

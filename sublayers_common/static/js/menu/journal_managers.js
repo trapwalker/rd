@@ -183,7 +183,7 @@ var QuestJournalManager = (function () {
             this.update_view_notes(quest);
         }
         else
-            console.error('Попытка повторного добавления существущего квеста.');
+            this.update(quest);
     };
 
     QuestJournalManager.prototype.delQuest = function(quest_id) {
@@ -388,12 +388,6 @@ var QuestJournalManager = (function () {
                     build.resizeInventory(jq_build_quest_list);
                 }
             }
-
-            // Обновление текста награды
-            quest.npc_reward_text = 'Награда: ' + quest.reward_money + 'NC';
-            for (var i=0; i < quest.reward_items.length; i++)
-                quest.npc_reward_text = quest.npc_reward_text + ', ' + quest.reward_items[i].title + ' &times; ' + quest.reward_items[i].amount;
-            quest.npc_reward_text += '.';
         }
 
         if (quest.node_hash == 'reg:///registry/quests/teaching')

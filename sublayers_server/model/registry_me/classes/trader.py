@@ -4,9 +4,9 @@ import logging
 log = logging.getLogger(__name__)
 
 import random
-from sublayers_common.ctx_timer import Timer
+from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.events import Event
-from sublayers_server.model.messages import TraderInfoMessage
+from sublayers_server.model.messages import TraderInfoMessage, TraderAgentAssortmentMessage
 from sublayers_server.model.registry_me.classes.poi import Institution
 from sublayers_server.model.registry_me.tree import (
     Subdoc, 
@@ -67,12 +67,16 @@ class Price(object):
         self.count = count  # количество в штуках (не стеки)
         self.item = item or price_option.item
         self.price_option = price_option
+        self._item_client_dict = self.item.as_assortment_dict()  # self.item.as_client_dict()
 
     # def is_match(self, item):
     #     return item and item.get_ancestor_level(self.item) >= 0
 
     def __str__(self):
         return 'Price[{}]<{} | {} : {}>'.format(self.price, self.count, self.item.node_hash(), self.price_option.chance)
+
+    def get_item_dict(self):
+        return self._item_client_dict
 
     def get_price(self, item, skill_effect):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         return dict(
@@ -108,10 +112,7 @@ class Price(object):
                 self.is_lot = True
 
 
-class Trader(Institution):    
-    # Навык торговли торговца 0..300
-    trading = IntField(caption=u"Навык торговли", root_default=0)
-
+class Trader(Institution):
     # Время полного обновление ассортимента торговца (сек.)
     refresh_time = IntField(caption=u"Интервал завоза (c, по умолчанию или 0 - никогда)")
 
@@ -235,28 +236,20 @@ class Trader(Institution):
         # log.debug('Trader {self!r}.on_refresh END'.format(**locals()))
 
     def send_prices(self, location, time):
+        h = self.node_hash()
         for visitor in location.visitors:
-            TraderInfoMessage(agent=visitor, time=time, npc_node_hash=self.node_hash()).post()
-
-    def send_change_price(self, price, time):
-        print('send_change_price')
-        # for visitor in location.visitors:
-        #     TraderInfoMessage(agent=visitor, time=time, npc_node_hash=self.node_hash()).post()
-
-    def get_agent_skill_effect(self, agent):
-        agent_trading = agent.example.profile.trading.calc_value() + \
-                        agent.example.profile.get_quest_skill_modifier().get('trading', 0)
-        return 1 - (agent_trading - self.trading + 100) / 200.
+            TraderInfoMessage(agent=visitor, time=time, npc_node_hash=h).post()
+            TraderAgentAssortmentMessage(agent=visitor, time=time, npc_node_hash=h).post()
 
     def get_trader_assortment(self, agent):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
-        skill_effect = self.get_agent_skill_effect(agent)
+        skill_effect = self.get_trading_effect(agent_example=agent.example)
         for price in self._current_list:
             if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
                     dict(
-                        item=price.item.as_client_dict(),
+                        item=price.get_item_dict(),
                         count=price.count,
                         infinity=price.is_infinity,
                         price=price.get_price(item=price.item, skill_effect=skill_effect),
@@ -271,17 +264,16 @@ class Trader(Institution):
 
     def get_agent_assortment(self, agent, car_items):
         res = []
-        skill_effect = self.get_agent_skill_effect(agent)
+        skill_effect = self.get_trading_effect(agent_example=agent.example)
         for item in car_items:
-            if not self.item_in_ignore_list(item):
-                price = self.get_item_price(item)
-                if price:
-                    res.append(
-                        dict(
-                            item=item.as_client_dict(),
-                            price=price.get_price(item=item, skill_effect=skill_effect),
-                            count=item.amount,
-                        ))
+            price = self.get_item_price2(item, for_agent=True)
+            if price:
+                res.append(
+                    dict(
+                        item=item.as_assortment_dict(),
+                        price=price.get_price(item=item, skill_effect=skill_effect),
+                        count=item.amount,
+                    ))
         return res
 
     def get_item_price(self, item):
@@ -298,15 +290,26 @@ class Trader(Institution):
 
         return current_price
 
-    def get_item_price2(self, item, price_record=None):
+    def get_item_price2(self, item, price_record=None, for_agent=False):
         # info: функция расширена для работы с несколькими правилами. Берёт самое близкое по родителям
         if not item or self.item_in_ignore_list(item):
             return None
 
         if not price_record:
-            for record in self._items_options:
-                if record['item'] == item:
-                    price_record = record['price_record']
+            if for_agent:
+                current_ancestor_lvl = None
+                for record in self._price_options:
+                    price_option = record['price_option']
+                    pr_opt_item = price_option.item
+                    ancestor_lvl = item.get_ancestor_level(pr_opt_item)
+                    if ancestor_lvl >= 0 and (current_ancestor_lvl is None or ancestor_lvl < current_ancestor_lvl):
+                        current_ancestor_lvl = ancestor_lvl
+                        price_record = record
+            else:
+                for record in self._items_options:
+                    if record['item'] == item:
+                        price_record = record['price_record']
+                        break
 
         assert price_record
 
@@ -321,21 +324,19 @@ class Trader(Institution):
         return current_price
 
     def change_price(self, item, count):
-        price = self.get_item_price(item)
+        price = self.get_item_price2(item, for_agent=True)
         if price:
             price.change(count, item)
 
     def add_price_option(self, base_price_object, count, item, new_price=False):
         price_option = base_price_object.price_option
         price = base_price_object.price if not new_price else (price_option.price_min + random.random() * (price_option.price_max - price_option.price_min))
-        self._current_list.append(
-            Price(
-                trader=self,
-                price=price,
-                count=count,
-                is_infinity=False,
-                is_lot=True,
-                price_option=price_option,
-                item=item,
-            )
-        )
+        self._current_list.append(Price(
+            trader=self,
+            price=price,
+            count=count,
+            is_infinity=False,
+            is_lot=True,
+            price_option=price_option,
+            item=item,
+        ))

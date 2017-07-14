@@ -157,6 +157,7 @@ class GasStation(Town):
 
 
 class Institution(Node):
+    trading = IntField(caption=u"Навык торговли NPC", root_default=0, tags={'client'})
     karma = FloatField(caption=u"Значение кармы NPC", tags={'client'})
     # Сумма следующих 3 коэффициентов должна давать 1
     koef_karma = FloatField(caption=u"Коэффициент влияния кармы на отношение данного NPC")
@@ -185,6 +186,15 @@ class Institution(Node):
     def karma_norm(self):
         return min(max(self.karma / 100, -1), 1)
 
+    def get_trading_effect(self, agent_example):
+        return 1 - (agent_example.profile.get_current_agent_trading() - self.trading + 100) / 200.0
+
+
+class SlotWorker(Institution):
+    clear_cost = FloatField(caption=u'Стоимость освобождения слота', root_default=0.025, tags={'client'})
+    setup_cost = FloatField(caption=u'Стоимость установки в слот', root_default=0.05, tags={'client'})
+    margin_slot = FloatField(caption=u'Маржа с которой работает NPC', root_default=0.2, tags={'client'})
+
 
 class Trainer(Institution):
     drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags={'client'})
@@ -192,11 +202,15 @@ class Trainer(Institution):
 
 class Hangar(Institution):
     margin = FloatField(caption=u'Маржа с которой торгует NPC', root_default=0.2)
-    trading = IntField(caption=u"Навык торговли NPC", root_default=0)
     car_list = ListField(
         caption=u"Список продаваемых машин",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
+
+
+class Mechanic(SlotWorker):
+    margin_repair = FloatField(caption=u'Маржа с которой ремонтирует NPC', root_default=0.2, tags={'client'})
+    repair_cost = FloatField(caption=u"Коэффициент стоимости ремонта от стоимости машины", root_default=0.5, tags={'client'})
 
 
 class Parking(Institution):

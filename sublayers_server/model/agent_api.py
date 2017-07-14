@@ -844,7 +844,9 @@ class AgentAPI(API):
     @basic_mode
     @public_method
     def get_trader_info(self, npc_node_hash):
-        messages.TraderInfoMessage(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
+        t = self.agent.server.get_time()
+        messages.TraderInfoMessage(time=t, agent=self.agent, npc_node_hash=npc_node_hash).post()
+        messages.TraderAgentAssortmentMessage(time=t, agent=self.agent, npc_node_hash=npc_node_hash).post()
 
     @basic_mode
     @public_method
