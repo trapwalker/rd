@@ -442,13 +442,9 @@ class AgentProfile(Node):
         effects = []  # каждый эффект должен иметь поля: source, title, description, deadline
         # эффекты от квестовых итемов
         for item in self.quest_inventory.items:
-            if item.effect_title and item.effect_description:
-                effects.append(dict(
-                    source=item.title,
-                    title=item.effect_title,
-                    description=item.effect_description,
-                    deadline=0 if item.deadline == 0 else item.deadline + item.starttime
-                ))
+            d = item.get_agent_effect_dict()
+            if d:
+                effects.append(d)
 
         return effects
 
