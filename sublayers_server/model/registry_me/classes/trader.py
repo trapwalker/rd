@@ -14,6 +14,8 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField,
 )
 
+from tornado.options import options
+
 
 class TraderRefreshEvent(Event):
     def __init__(self, trader, location, **kw):
@@ -264,6 +266,10 @@ class Trader(Institution):
 
     def get_agent_assortment(self, agent, car_items):
         res = []
+        if options.quick_debug:
+            log.warning('Trader get_agent_assortment DISABLED by options.quick_debug')
+            return res
+
         skill_effect = self.get_trading_effect(agent_example=agent.example)
         for item in car_items:
             price = self.get_item_price2(item, for_agent=True)

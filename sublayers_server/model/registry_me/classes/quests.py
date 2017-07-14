@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -105,74 +105,50 @@ class KillerQuestVictim(Subdoc):
     profile_id = FloatField(doc=u"profile_id жертвы", tags={'client'})
 
 
+class QuestState_(object):
+    status = 'active'
+    result = None
+
+    def __init__(self, id=None):
+        self.id = id or self.__class__.__name__
+
+    def on_enter_(self, quest, event):
+        pass
+
+    def on_exit_(self, quest, event):
+        pass
+
+    def on_event_(self, quest, event):
+        pass
+
+
+class FinalState(QuestState_):
+    status = 'end'
+
+
+class WinState(FinalState):
+    result = 'win'
+
+
+class FailState(FinalState):
+    result = 'fail'
+
+
+class FailByCancelState(FailState):
+    pass
+
+
+# todo: ##DEPRECATED
 class QuestState(Node):
     id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
     enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
     exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
     status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
     result = StringField(doc=u"Результат квеста данном текущем состоянии (None/win/fail)")
-    on_enter = StringField(
-        caption=u"Python скрипт, выполняемый при входе в состояние",
-        doc=u"""
-        В контекст получает:
-            - объекты: [agent, quest, state, event]
-            - функции-условия: ???
-            - функции-действия: [say, add_event, del_event, ...]
-        """
-    )
-    on_exit = StringField(
-        caption=u"Python скрипт, выполняемый при выходе из состояния",
-        doc=u"""
-        В контекст получает:
-            - объекты: [agent, quest, state, event]
-            - функции-условия: ???
-            - функции-действия: [say, add_event, del_event, ...]
-        """
-    )
-    on_event = StringField(
-        caption=u"Python скрипт, выполняемый по факту любого события",
-        doc=u"""
-            В контекст получает:
-                - объекты: [agent, quest, state, event]
-                - функции-условия: ???
-                - функции-действия:
-                    - go("new_state_name") - переход в состояние с именем new_state_name
-                    - say(state.exit_state_message) - произнести от имени NPC фразу по указанному шаблону
-                    - add_event(id="SomeTimerName", delay=60*60*3) - запустить именованный таймер на 3 часа
-                    - add_event(id="SomeActionName", caption=u"Сделай это!", action='reg://.../trader3') - создать
-                        для игрока кнопку действия с заданной надписью у указанного NPC
-                    - del_event(id="SomeActionName") - удалить запланированное событиеили экшн.
-                    - quest.log("some message about {quest.name}") - добавить запись в журнал квеста
 
-            Пример:
-                (
-                event.name is 'onDie'
-                and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
-                and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
-                and say(u"Boom!")
-                and bang(position=agent.car.position, power=1000)
-                and go("win")
-
-                or event.id is 'quest_fail_timer'
-                and say("I'm so sorry")
-                and go("fail")
-                )
-
-            Пример 2:
-                if (
-                    event.name is 'OnDie'
-                    and agent.inventory.has('reg:///registry/items/usable/tanks/tank_full')
-                    and agent.inventory.has('reg:///registry/items/slot_item/mechanic_item/engine/sparkplug')
-                ):
-                    say(u"Boom!")
-                    bang(position=agent.car.position, power=1000)
-                    go("win")
-
-                if (event.id is 'quest_fail_timer'):
-                    say("I'm so sorry")
-                    go("fail")
-        """,
-    )
+    on_enter = StringField(caption=u"Python скрипт, выполняемый при входе в состояние")
+    on_exit = StringField(caption=u"Python скрипт, выполняемый при выходе из состояния")
+    on_event = StringField(caption=u"Python скрипт, выполняемый по факту любого события")
 
     def _exec_event_handler(self, quest, handler, event):
         code_text = getattr(self, handler, None)
@@ -196,6 +172,27 @@ class QuestState(Node):
             #raise e
         finally:
             del quest.local_context
+
+    def on_enter_(self, quest, event):
+        # todo: ##DEPRECATED
+        quest.local_context.update(
+            go=partial(quest._go, event=event),
+            set_timer=partial(quest.set_timer, event=event),
+        )
+        self._exec_event_handler(quest=quest, handler='on_enter', event=event)
+
+    def on_exit_(self, quest, event):
+        # todo: ##DEPRECATED
+        self._exec_event_handler(quest=quest, handler='on_exit', event=event)
+
+    def on_event_(self, quest, event):
+        # todo: ##DEPRECATED
+        quest.local_context.update(
+            go=partial(quest._go, event=event),
+            set_timer=partial(quest.set_timer, event=event),
+        )
+        self._exec_event_handler(quest=quest, handler='on_event', event=event)
+
 
 # Условия:
 # - has([items], who=None)  # money too
@@ -333,32 +330,45 @@ class Quest(Node):
         self._local_context = None
         self._error = None
         self._agent = None
+        self._state = None
 
     def _set_error_status(self, handler, event, e):
         self._error = True
 
+    # todo: ##DEPRECATED
     @property
     def states_map(self):
         states_map = getattr(self, '_states_map', None)
+        states = self.states
         if not states_map:
-            states_map = {state.id: state for state in self.states}  # todo: optimize
+            states_map = states and {state.id: state for state in states} or {}  # todo: optimize
             self._states_map = states_map
 
         return states_map
 
     @property
     def state(self):
-        if self.current_state is None:
-            return
-        try:
-            return self.states_map[self.current_state]
-        except KeyError:
-            raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
+        state = self._state
+
+        # todo: ##DEPRECATED
+        if state is None:
+            current_state_name = self.current_state
+
+            if current_state_name is None:
+                return
+
+            state = self.states_map.get(current_state_name, None)
+            if state is None:
+                raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
+
+        return state
 
     @property
     def status(self):
-        if getattr(self, '_error', None):
-            return 'error'
+        st = self._error
+        if st:
+            return st
+
         state = self.state
         return state and state.status
 
@@ -394,11 +404,8 @@ class Quest(Node):
 
     # todo: QuestUpdateMessage(agent=self.agent, time=time, quest=self).post()
 
-    def generate(self, event, agent, **kw):
-        """
-        :param event: sublayers_server.model.events.Event
-        """
-        self._agent = agent
+    def on_generate_(self, event, **kw):
+        # todo: ##DEPRECATED Удалить устаревший вызов кода из текста
         code_text = self.on_generate
         if not code_text:
             return
@@ -421,24 +428,29 @@ class Quest(Node):
         )
         try:
             exec code in self.global_context, self.local_context
+        finally:
+            del self.local_context
+
+    def generate(self, event, agent, **kw):
+        """
+        :param event: sublayers_server.model.events.Event
+        """
+        self._agent = agent
+        #time = kw.pop('time', event and event.time)
+
+        try:
+            self.on_generate_(event=event, **kw)
         except Cancel as e:
-            log.debug('Quest {uri} is cancelled: {e.message}'.format(uri=fn, e=e))
-            return False
+            raise e
         except Exception as e:
             log.exception('Runtime error in quest handler `on_generate`.')
             self._set_error_status('on_generate', event, e)
             return False
-            #raise e
         else:
             return True
-        finally:
-            del self.local_context
 
-    @event_deco
-    def start(self, event, **kw):
-        """
-        :param event: sublayers_server.model.events.Event
-        """
+    def on_start_(self, event, **kw):
+        # todo: ##DEPRECATED Удалить устаревший вызов кода из текста
         assert not self.abstract
 
         code_text = self.on_start
@@ -461,25 +473,31 @@ class Quest(Node):
             )
             try:
                 exec code in self.global_context, self.local_context
-            except Cancel as e:
-                log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
-                return False
-            except Exception as e:
-                log.exception('Runtime error in quest handler `on_start`.')
-                self._set_error_status('on_start', event, e)
-                return False
-                #raise e
-            else:
-                # log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
-                if self.agent:
-                    self.agent.profile.quests_unstarted.remove(self)
-                    self.agent.profile.quests_active.append(self)
-
-                self.set_state(new_state=self.first_state, event=event)
-                return True
-
             finally:
                 del self.local_context
+
+    @event_deco
+    def start(self, event, **kw):
+        """
+        :param event: sublayers_server.model.events.Event
+        """
+        try:
+            self.on_start_(event, **kw)
+        except Cancel as e:
+            log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
+            return False
+        except Exception as e:
+            log.exception('Runtime error in quest handler `on_start`.')
+            self._set_error_status('on_start', event, e)
+            return False
+        else:
+            # log.debug('QUEST is started {self!r} by {self.agent!r}'.format(**locals()))
+            if self.agent:
+                self.agent.profile.quests_unstarted.remove(self)
+                self.agent.profile.quests_active.append(self)
+
+            self.set_state(new_state=self.first_state, event=event)
+            return True
 
     def set_state(self, new_state, event):
         assert new_state
@@ -487,11 +505,39 @@ class Quest(Node):
 
         old_status = self.status
 
-        if isinstance(new_state, QuestState):
-            new_state_id = new_state.id
-        elif isinstance(new_state, basestring):
-            new_state_id = new_state
-            new_state = self.states_map[new_state_id]
+        next_state = None
+
+        # if isinstance(new_state, QuestState_):
+        #     next_state = new_state
+        #     next_state_id = new_state.id
+
+        # elif isinstance(new_state, QuestState):
+        #     next_state_id = new_state.id
+
+        if isinstance(new_state, basestring):
+            next_state_id = new_state
+            next_state = self.states_map.get(next_state_id, None)
+            if next_state is None:
+                next_state = getattr(self, next_state_id, None)
+
+            assert (
+                isinstance(next_state, QuestState_) or
+                isinstance(next_state, type) and issubclass(next_state, QuestState_) or
+
+                # todo: ##DEPRECATED
+                isinstance(next_state, QuestState)
+            ), "New state type of quest {!r} is wrong: {!r}".format(self, next_state)
+
+            if isinstance(next_state, type):
+                next_state = next_state(id=next_state_id)
+
+            if next_state.id != next_state_id:
+                log.warning(
+                    'State id %r.id==%r is not match to required %r in quest %r',
+                    next_state, next_state.id, next_state_id, self
+                )
+
+            assert next_state is not None, "Can't to switch state to {!r} in quest {!r}".format(new_state, self)
         else:
             raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(**locals()))
 
@@ -499,13 +545,14 @@ class Quest(Node):
         old_state = self.state
 
         # Мы можем переходить в то же состояние в котором уже находимся. Это нормально. Все так делают.
-        # if new_state_id == old_state_id:
+        # if next_state_id == old_state_id:
         #     return
 
         if old_state:
             self.do_state_exit(old_state, event)
 
-        self.current_state = new_state_id
+        self.current_state = next_state_id
+        self._state = next_state
 
         agent_model = self.agent and self.agent.profile._agent_model
         if agent_model:
@@ -518,7 +565,7 @@ class Quest(Node):
                 self.endtime = event.time
                 self._on_end_quest(event)
 
-        self.do_state_enter(new_state, event)
+        self.do_state_enter(next_state, event)
 
     def _on_end_quest(self, event):
         agent_example = self.agent and self.agent.profile
@@ -530,6 +577,7 @@ class Quest(Node):
                 log.warning(u'Квеста (%r) не оказалось в списке активных по его окончании у агента %r', self, self.agent)
                 log.exception(e)
 
+    # todo: ##DEPRECATED
     def make_global_context(self):
         ctx = dict(
             quest=self,
@@ -541,9 +589,11 @@ class Quest(Node):
         ctx.update(notes.ALL)         # Вся коллекция note-классов подмешивается в глобальный контекст
         return ctx
 
+    # todo: ##DEPRECATED
     def make_local_context(self):
         return dict()
 
+    # todo: ##DEPRECATED
     @property
     def global_context(self):
         ctx = getattr(self, '_global_context', None)
@@ -553,6 +603,7 @@ class Quest(Node):
 
         return ctx
 
+    # todo: ##DEPRECATED
     @property
     def local_context(self):
         ctx = getattr(self, '_local_context', None)
@@ -562,10 +613,12 @@ class Quest(Node):
 
         return ctx
 
+    # todo: ##DEPRECATED
     @local_context.deleter
     def local_context(self):
         self._local_context = None
 
+    # todo: ##DEPRECATED
     def _template_render(self, template, **kw):
         try:
             context = dict(self.global_context, **self.local_context)
@@ -576,29 +629,32 @@ class Quest(Node):
             raise e
 
     def do_state_exit(self, state, event):
-        state._exec_event_handler(quest=self, handler='on_exit', event=event)
+        state.on_exit_(quest=self, event=event)
+        assert self._go_state_name is None, u'State switching cause into the state exit handler: {}, {}'.format(
+            state, self,
+        )
 
     def do_state_enter(self, state, event):
-        self._go_state_name = None
-        self.local_context.update(
-            go=partial(self._go, event=event),
-            set_timer=partial(self.set_timer, event=event),
+        assert self._go_state_name is None, u'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
+            st=state, self=self,
         )
-        state._exec_event_handler(quest=self, handler='on_enter', event=event)
-        new_state = getattr(self, '_go_state_name', None)
+        #self._go_state_name = None
+        state.on_enter_(quest=self, event=event)
+        new_state = self._go_state_name
+        self._go_state_name = None
         if new_state:
             self.set_state(new_state, event)
 
     def do_event(self, event):
         state = self.state
         assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
-        self._go_state_name = None
-        self.local_context.update(
-            go=partial(self._go, event=event),
-            set_timer=partial(self.set_timer, event=event),
+        assert self._go_state_name is None, u'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
+            st=state, self=self,
         )
-        state._exec_event_handler(quest=self, handler='on_event', event=event)
-        new_state = getattr(self, '_go_state_name', None)
+        #self._go_state_name = None
+        state.on_event_(quest=self, event=event)
+        new_state = self._go_state_name
+        self._go_state_name = None
         if new_state:
             self.set_state(new_state, event)
 
@@ -620,9 +676,12 @@ class Quest(Node):
         self.history.append(log_record)
         return True
 
-    def _go(self, new_state, event):
+
+    def go(self, new_state, event):
         self._go_state_name = new_state
         return True
+
+    _go = go  # todo: ##DEPRECATED
 
     def can_give_items(self, items, event):
         if not self.agent.profile.car:
@@ -1004,3 +1063,24 @@ class AIQuickQuest(Quest):
                 position = item_rec["position"]
         if position:
             ItemPreActivationEvent(agent=agent_model, owner_id=car.uid, position=position, target_id=car.uid, time=time).post()
+
+
+class MarkerMapObject(Subdoc):
+    position = PositionField(caption=u"Координаты объекта")
+    radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags={'client'})
+
+    def is_near(self, position):
+        if isinstance(position, PositionField):
+            position = position.as_point()
+        if isinstance(position, Point):
+            distance = self.position.as_point().distance(target=position)
+            return distance <= self.radius
+        return False
+
+    def generate_random_point(self):
+        return Point.random_point(p=self.position.as_point(), radius=self.radius)
+
+    def as_client_dict(self):
+        d = super(MarkerMapObject, self).as_client_dict()
+        d.update(position=self.position.as_point())
+        return d
