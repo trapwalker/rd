@@ -34,6 +34,25 @@ class Item(Node):
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
 
+    def __init__(self, *av, **kw):
+        super(Item, self).__init__(*av, **kw)
+        self._parent_list = []
+
+    # todo!!! Review! Убедиться, что это работает нормально! Больше тестов!
+    def get_ancestor_level(self, parent_candidate):
+        if not self._parent_list:
+            obj = self
+            ll = []
+            while obj:
+                obj_node_hash = obj.node_hash()
+                ll.append(obj_node_hash)
+                obj = obj.parent
+            self._parent_list = ll
+
+        h = parent_candidate.node_hash()
+        l = self._parent_list
+        return l.index(h) if h in l else -1
+
     def as_client_dict(self):
         d = super(Item, self).as_client_dict()
         d.update(ids=self.ids())
