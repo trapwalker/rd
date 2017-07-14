@@ -1160,6 +1160,8 @@ class UserActualTradingMessage(Message):
 
 # Вызывается тогда, когда нужна только RPG сотставляющая
 class UserExampleSelfRPGMessage(Message):
+    all_perks = []
+
     def as_dict(self):
         d = super(UserExampleSelfRPGMessage, self).as_dict()
         agent = self.agent
@@ -1175,7 +1177,25 @@ class UserExampleSelfRPGMessage(Message):
                 dd.update(title=u'{}: {}'.format(agent.print_login(), item.title))
             quest_inventory.append(dd)
 
-        rpg_info = dict(
+        rpg_info = dict()
+        # Кеширование списка перков
+        if not UserExampleSelfRPGMessage.all_perks:
+            for perk in self.agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
+                UserExampleSelfRPGMessage.all_perks.append(dict(
+                    perk=perk,
+                    perk_dict=perk.as_client_dict(),
+                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
+                ))
+        deep_perks = UserExampleSelfRPGMessage.all_perks
+
+        agent_perks = agent.example.profile.perks
+        perks = [dict(
+            perk=perk['perk_dict'],
+            active=perk['perk'] in agent_perks,
+            perk_req=perk['perk_req'],
+        ) for perk in deep_perks]
+
+        rpg_info.update(
             karma=agent.example.profile.karma,
             cur_lvl=math.floor(lvl / 10),
             cur_exp=cur_exp,
@@ -1197,15 +1217,9 @@ class UserExampleSelfRPGMessage(Message):
             buy_engineering=agent.example.profile.buy_engineering.as_client_dict(),
 
             all_perks_points=math.floor(lvl / 10) + agent.example.profile.role_class.start_free_point_perks,
-            perks=[
-                dict(
-                    perk=perk.as_client_dict(),
-                    active=perk in agent.example.profile.perks,
-                    perk_req=[p_req.node_hash() for p_req in perk.perks_req],
-                ) for perk in agent.server.reg.get('/registry/rpg_settings/perks').deep_iter()
-            ],
+            perks=perks,
             quest_inventory=quest_inventory,
-            agent_effects=agent.example.profile.get_agent_effects(time=self.time)
+            agent_effects=agent.example.profile.get_agent_effects(time=self.time),
         )
         d['rpg_info'] = rpg_info
         return d
