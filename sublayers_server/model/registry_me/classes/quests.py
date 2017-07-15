@@ -484,7 +484,7 @@ class Quest(Node):
         try:
             self.on_start_(event, **kw)
         except Cancel as e:
-            log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
+            # log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e)) # todo: не знаю что такое fn
             return False
         except Exception as e:
             log.exception('Runtime error in quest handler `on_start`.')
