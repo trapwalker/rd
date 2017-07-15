@@ -359,7 +359,13 @@ class Quest(Node):
 
             state = self.states_map.get(current_state_name, None)
             if state is None:
-                raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
+                print self.states_map.keys()
+                from sublayers_server.model.events import Event
+                agent = self.agent.profile._agent_model
+                server = agent.server
+                Event(server=server, time=server.get_time(), callback_after=self._on_end_quest).post()
+                return 'fail_fail'
+                # raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
 
         return state
 
@@ -368,13 +374,16 @@ class Quest(Node):
         st = self._error
         if st:
             return st
-
         state = self.state
+        if state == 'fail_fail':
+            return None
         return state and state.status
 
     @property
     def result(self):
         state = self.state
+        if state == 'fail_fail':
+            return 'fail_fail'
         return state and state.result
 
     def as_client_dict(self):
@@ -484,7 +493,7 @@ class Quest(Node):
         try:
             self.on_start_(event, **kw)
         except Cancel as e:
-            log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e))
+            # log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e)) # todo: не знаю что такое fn
             return False
         except Exception as e:
             log.exception('Runtime error in quest handler `on_start`.')
@@ -647,6 +656,8 @@ class Quest(Node):
 
     def do_event(self, event):
         state = self.state
+        if state is None or state == 'fail_fail': # todo: review
+            return
         assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
         assert self._go_state_name is None, u'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
             st=state, self=self,
