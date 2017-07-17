@@ -89,10 +89,11 @@ class DeliveryFromCache(DeliveryQuestSimple):
 
     def init_text(self):
         self.text_short = u"Найти пропавшую посылку."
-        self.text = u"Вернуть пропавшую посылку.{} Награда: {:.0f}nc и {:.0f} кармы.".format(
+        self.text = u"Вернуть пропавшую посылку.{} Награда: {:.0f}nc, {:.0f} кармы и {:.0f}ед. опыта.".format(
             u"." if not self.deadline else u" за {}.".format(self.deadline_to_str()),
             self.reward_money,
             self.reward_karma,
+            self.reward_exp,
         )
 
     def create_poi_container(self, event):
@@ -253,6 +254,7 @@ class MapActivateItemQuest(Quest):
                 position = self.agent.profile._agent_model.car.position(time=event.time)
                 if note.is_near(position=position):
                     self.log(text=u'Произведена активация.', event=event, position=position)
+                    self.agent.profile.set_exp(time=event.time, dvalue=self.reward_exp)
                     self.activate_notes.remove(note_uid)
                     self.agent.profile.del_note(uid=note_uid, time=event.time)
                     return # Если вдруг позиции рядом, чтобы не засчиталась одна активация нескольким нотам
@@ -275,9 +277,10 @@ class MapActivateRadarsQuest(MapActivateItemQuest):
 
     def init_text(self):
         self.text_short = u"Установить наблюдательные зонды."
-        self.text = u"Установите в заданных точках наблюдательные зонды в количестве: {}. Награда: {:.0f}nc.".format(
+        self.text = u"Установите в заданных точках наблюдательные зонды в количестве: {}. Награда: {:.0f}nc и {:.0f} ед. опыта".format(
             len(self.activate_points),
-            self.reward_money
+            self.reward_money,
+            self.reward_exp * len(self.activate_points),
         )
 
     def generate_reward(self):
@@ -343,10 +346,11 @@ class SearchCourier(DeliveryFromCache):
 
     def init_text(self):
         self.text_short = u"Найти пропавшего курьера."
-        self.text = u"Найти пропавшего курьера и вернуть важный предмет{} Награда: {:.0f}nc и {:.0f} кармы.".format(
+        self.text = u"Найти пропавшего курьера и вернуть важный предмет{} Награда: {:.0f}nc, {:.0f} кармы и {:.0f} ед. опыта.".format(
             u"." if not self.deadline else u" за {}.".format(self.deadline_to_str()),
             self.reward_money,
             self.reward_karma,
+            self.reward_exp,
         )
 
     def create_poi_container(self, event):

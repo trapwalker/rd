@@ -69,10 +69,11 @@ class DeliveryPassengerQuest(DeliveryQuestSimple):
 
     def init_text(self):
         self.text_short = u"Доставьте пассажиров в гороод {}.".format(self.destination.title)
-        self.text = u"Доставьте пассажиров: {} - в гороод {}. Награда: {:.0f}nc.".format(
+        self.text = u"Доставьте пассажиров: {} - в гороод {}. Награда: {:.0f}nc и {:.0f}ед. опыта.".format(
             ', '.join([item.title for item in self.delivery_set]),
             self.destination.title,
-            self.reward_money
+            self.reward_money,
+            self.reward_exp,
         )
 
     def give_passengers(self, event):

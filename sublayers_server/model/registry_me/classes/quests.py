@@ -285,6 +285,7 @@ class Quest(Node):
     reward_money = IntField(root_default=0, caption=u'Сумма денежной награды', tags={'client'})
     reward_karma = FloatField(root_default=0, caption=u'Величина кармической награды')
     reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
+    reward_exp = FloatField(root_default=0, caption=u'Награда в exp за квест')
     reward_items = ListField(
         root_default=[],
         caption=u"Список итемов награды",
@@ -942,13 +943,14 @@ class KillerQuest(Quest):
         self.text_short = u"Убейте {:.0f} игрока(ов).".format(
             self.count_to_kill
         )
-        self.text = u"Убейте {:.0f} игрока(ов) с минимальным уровнем {:.0f} и кармой хуже {}{}. Награда: {:.0f}nc и {:.0f} кармы.".format(
+        self.text = u"Убейте {:.0f} игрока(ов) с минимальным уровнем {:.0f} и кармой хуже {}{}. Награда: {:.0f}nc, {:.0f} кармы и {:.0f}ед. опыта.".format(
             self.count_to_kill,
             self.min_level_victims,
             getKarmaName(self.max_karma_victims / 100., 'ru'),
             u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
             self.reward_money,
             self.reward_karma,
+            self.reward_exp * self.count_to_kill,
         )
 
     def init_deadline(self):
@@ -1003,11 +1005,12 @@ class DeliveryQuest(Quest):
             )
             return
         self.text_short = u"Доставьте груз в гороод {}.".format(self.recipient.hometown.title)
-        self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc.".format(
+        self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc и {:.0f}ед. опыта.".format(
             ', '.join([item.title for item in self.delivery_set]),
             self.recipient.title,
             self.recipient.hometown.title,
-            self.reward_money
+            self.reward_money,
+            self.reward_exp,
         )
 
 
