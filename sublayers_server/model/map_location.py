@@ -161,7 +161,7 @@ class MapLocation(Observer):
 
 
 class Town(MapLocation):
-    __str_template__ = '<{self.classname} #{self.id}> => {self.town_name!r}'
+    __str_template__ = u'<{self.classname} #{self.id}> => {self.town_name}'
 
     def __init__(self, time, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(time=time, **kw)
