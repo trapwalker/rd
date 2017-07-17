@@ -53,6 +53,7 @@ var WSConnector = (function(_super){
     WSConnector.prototype.connect = function(){
         // создание коннекта и обвешивание евентами
         console.info('WSConnector connect to:', this.options.url);
+        if(this.isConnected) return;
         this.connection = new WebSocket(this.options.url);
         var self = this;
         this.connection.onopen = function() {
@@ -65,15 +66,23 @@ var WSConnector = (function(_super){
 
             self.connection.onerror = function (error) {
                 this.isConnected = false;
+                console.error('onerror ', error);
             };
 
             self.connection.onclose = function (event) {
+                //console.log('onclose ', event);
                 // websocket is closed.
                 self.isConnected = false;
+                timeManager.timerStop();
                 if (event.wasClean) {
-                    alert('Соединение закрыто чисто ', event);
-                    console.log('Соединение закрыто чисто ', event);
-                    timeManager.timerStop();
+                    //alert('Соединение закрыто сервером ', event);
+                    //console.log('Соединение закрыто чисто ', event);
+                    var reason = event.reason;
+                    if (reason.search('min_connection_time') >= 0) {
+                        alert('Попытка подключения раньше дедлайна! Нельзя так!');
+                        setTimeout(function(){ ws_connector.connect();}, 60000); // Сразу ставим максимальный таймаут
+                    }
+
                 } else {
                     //modalWindow.modalRestartShow();
                     modalWindow.modalDialogInfoShow({
@@ -92,6 +101,7 @@ var WSConnector = (function(_super){
                         $.ajax({
                             url: ping_link,
                             success: function() {
+                                clearInterval(reconnect_interval);
                                 window.location.reload();
                             },
                             error: function() {console.log('Сервер недоступен.');}

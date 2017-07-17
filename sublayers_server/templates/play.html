@@ -362,7 +362,8 @@
         <span id="settings_start_coord">{{ '{}_{}'.format(start_coord.x, start_coord.y) if start_coord else '' }}</span>
         <span id="settings_user_insurance_name">{{ insurance_name }}</span>
         <span id="settings_user_balance">{{ user_balance }}</span>
-        <span id="settings_user_position">Нет доступа</span>
+        <span id="settings_user_position">{{ '{}: {}'.format(start_coord.x, start_coord.y) if start_coord else 'Нет доступа' }}</span>
+        <span id="settings_connection_delay">{{ connection_delay }}</span>
     </div>
     <div id="textConsoleDivWrap" tabindex="0">
         <div id="textConsoleDiv" tabindex="0">

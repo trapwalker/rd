@@ -974,8 +974,6 @@ def _deep_import(path, reg_name='registry'):
         sys.path.append(apath)
 
     root_depth = len(apath.split(os.path.sep))
-    print(root_depth, apath.split(os.path.sep))
-
     imp_list = []
     for r, d, f in os.walk(os.path.join(apath, reg_name)):
         if '__init__.py' in f:

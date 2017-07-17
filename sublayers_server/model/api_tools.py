@@ -13,6 +13,7 @@ import functools
 #     from json import loads as json_decode
 
 import json
+from time import time
     
 
 from sublayers_server.model.utils import serialize
@@ -37,6 +38,10 @@ class EWrongMethodCallingFormat(EAPIError):
 
 
 class EUnexpectedError(EAPIError):
+    """Unexpected internal error while calling API-function"""
+
+
+class ECallFrequencyConstrain(EAPIError):
     """Unexpected internal error while calling API-function"""
 
 
@@ -81,6 +86,30 @@ def basic_mode(func):
     return cover
 
 
+def call_constrains(delay=0):
+    """ call frequency constraining decorator """
+    def deco(func):
+        def cover(self, *av, **kw):
+            t = time()
+            func_name = func.__name__
+            attr_name = '_call_constrains_{}'.format(func_name)
+            t0 = getattr(self, attr_name, None)
+            if t0 is None or t0 + delay < t:
+                setattr(self, attr_name, t)
+                return func(self, *av, **kw)
+            else:
+                # todo: если разница меньше, чем отработал интерфейс на клиенте, то записать агента в нарушители
+                raise ECallFrequencyConstrain('{agent} called <{func_name}> too early. Min delay={delay}, prev_call={prev_call}, time={time}'.format(
+                    agent=self.agent,
+                    func_name=func_name,
+                    delay=delay,
+                    prev_call=t0,
+                    time=t
+                ))
+        functools.update_wrapper(cover, func)
+        return cover
+    return deco
+
 class API(object):
     """Base API provider class"""
     def __call__(self, method, params):
@@ -111,6 +140,10 @@ class API(object):
         rpc_call_id = call_info.get('rpc_call_id')
         try:
             result = self(method, params)
+        except ECallFrequencyConstrain as e:
+            log.warning(e)
+            # info: говорим на клиент, что всё норм, а сами ничего не сделали
+            return self._make_respond(result=True, rpc_call_id=rpc_call_id)
         except EAPIError as e:
             return self._make_respond(error=e, rpc_call_id=rpc_call_id)
         else:

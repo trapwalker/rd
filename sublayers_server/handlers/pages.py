@@ -24,12 +24,8 @@ class PlayHandler(BaseHandler):
                 if not agent:
                     self.redirect(self.get_login_url())
                     return
-                if agent.car:
-                    coord = agent.car.position(time=self.application.srv.get_time())
-                elif agent.current_location:
-                    coord = agent.current_location.example.position
-                elif agent.example.profile.car:
-                    coord = agent.example.profile.car.position
+                time = self.application.srv.get_time()
+                coord = agent.get_loading_coord(time=time)
 
                 # todo: убрать все что касается is_tester
                 if not user.quick and not user.is_tester and user.registration_status == 'register':
@@ -38,7 +34,8 @@ class PlayHandler(BaseHandler):
                         self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
                                     server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
                                     first_enter=first_enter, start_coord=coord,
-                                    insurance_name=agent.example.profile.insurance.title, user_balance=agent.balance)
+                                    insurance_name=agent.example.profile.insurance.title, user_balance=agent.balance,
+                                    connection_delay=agent.get_connection_delay(time=time))
                     else:
                         log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
                         self.redirect('/quick/play')
@@ -61,7 +58,7 @@ class PlayHandler(BaseHandler):
                 self.render("play.html", ws_port=options.ws_port, map_link=options.map_link,
                             server_mode=options.mode, host_name=options.mobile_host, user_name=user.name,
                             first_enter=False, start_coord=coord, insurance_name='quick',
-                            user_balance=0)
+                            user_balance=0, connection_delay=agent.get_connection_delay(time=self.application.srv.get_time()))
         else:
             self.redirect(self.get_login_url())
 
