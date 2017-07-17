@@ -92,7 +92,8 @@ var LocationManager = (function () {
         );
         }, 50);
 
-    }
+        this._clicks_btn = {1: {t: 0, delay: 3000}, 2: {t: 0, delay: 3000}, 3: {t: 0, delay: 0}, 4: {t: 0, delay: 0}};
+    };
 
     // Активация отдельныхъ веток города (Чат, Локация, Журнал)
     LocationManager.prototype.activateScreen = function (screenName, btn_id) {
@@ -294,6 +295,10 @@ var LocationManager = (function () {
     LocationManager.prototype.setBtnState = function (btnIndex, btnText, active) {
         //console.log('LocationManager.prototype.setBtnState', btnIndex, btnText, active);
         $('#btn_' + btnIndex + '_text').html(btnText);
+
+        // Проверка по времени
+        if (active && this._clicks_btn[btnIndex].t > clock.getClientTime()) active=false;
+
         if (active) {
             $('#btn_' + btnIndex + '_noactive').css('display', 'none');
             $('#btn_' + btnIndex + '_active').css('display', 'block');
@@ -315,6 +320,23 @@ var LocationManager = (function () {
             return;
         }
 
+        if (this._clicks_btn.hasOwnProperty(btnIndex)) {
+            var t = clock.getClientTime();
+            if (t < this._clicks_btn[btnIndex].t) return;
+            if (btnIndex == 1 || btnIndex == 2) {  // Блокировка работает только на кнопки 1 и 2
+                this._clicks_btn[1].t = t + this._clicks_btn[btnIndex].delay;
+                this._clicks_btn[2].t = t + this._clicks_btn[btnIndex].delay;
+
+                if (this.screens[this.active_screen_name])
+                    this.screens[this.active_screen_name].set_buttons();
+                setTimeout(function () {
+                    if (locationManager.screens[locationManager.active_screen_name])
+                        locationManager.screens[locationManager.active_screen_name].set_buttons();
+                }, this._clicks_btn[btnIndex].delay);
+            }
+        } else
+            return;
+
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
             if (user.example_car)
@@ -326,7 +348,6 @@ var LocationManager = (function () {
                     body_text: 'Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный.'
                 });
             }
-
         }
         else {
             if (this.screens[this.active_screen_name])
