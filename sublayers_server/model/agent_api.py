@@ -8,10 +8,7 @@ log = logging.getLogger(__name__)
 from uuid import UUID
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.api_tools import API, public_method, basic_mode
-# from sublayers_server.model.weapon_objects.rocket import RocketStartEvent
-# from sublayers_server.model.slave_objects.scout_droid import ScoutDroidStartEvent
-# from sublayers_server.model.slave_objects.stationary_turret import StationaryTurretStartEvent
+from sublayers_server.model.api_tools import API, public_method, basic_mode, call_constrains
 from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGetAllInvitesEvent, \
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
@@ -649,12 +646,14 @@ class AgentAPI(API):
                                                   chat=chat,
                                                   time=self.agent.server.get_time()).post()
 
+    @call_constrains(2)
     @basic_mode
     @public_method
     def enter_to_location(self, location_id):
         self.agent.log.info('enter to location[%s]', location_id)
         EnterToMapLocation(agent=self.agent, obj_id=location_id, time=self.agent.server.get_time()).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def exit_from_location(self):
@@ -743,6 +742,7 @@ class AgentAPI(API):
                                 agent=self.agent,
                                 insurance_node_hash=insurance_node_hash).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def fuel_station_active(self, fuel, tank_list, npc_node_hash):
@@ -757,13 +757,14 @@ class AgentAPI(API):
         LootPickEvent(time=self.agent.server.get_time(), agent=self.agent, poi_stash_id=poi_id).post()
 
     # Ангар
-
+    @call_constrains(3)
     @basic_mode
     @public_method
     def sell_car_in_hangar(self, npc_node_hash):
         self.agent.log.info('agent %r sell car', self.agent)
         TransactionHangarSell(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(5)
     @basic_mode
     @public_method
     def buy_car_in_hangar(self, car_number, npc_node_hash):
@@ -777,12 +778,14 @@ class AgentAPI(API):
 
     # Стоянка
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def parking_leave_car(self, npc_node_hash):
         self.agent.log.info('agent %r sell car', self.agent)
         TransactionParkingLeave(time=self.agent.server.get_time(), agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(5)
     @basic_mode
     @public_method
     def parking_select_car(self, car_number, npc_node_hash):
@@ -802,6 +805,7 @@ class AgentAPI(API):
 
     # Оружейник
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def armorer_apply(self, armorer_slots, npc_node_hash):
@@ -810,12 +814,14 @@ class AgentAPI(API):
 
     # Механик
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def mechanic_apply(self, mechanic_slots, npc_node_hash):
         TransactionMechanicApply(time=self.agent.server.get_time(), agent=self.agent, mechanic_slots=mechanic_slots,
                                  npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def mechanic_repair_apply(self, hp, npc_node_hash):
@@ -824,12 +830,14 @@ class AgentAPI(API):
 
     # Тюнер
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def tuner_apply(self, tuner_slots, npc_node_hash):
         TransactionTunerApply(time=self.agent.server.get_time(), agent=self.agent, tuner_slots=tuner_slots,
                               npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def tuner_cancel(self):
@@ -844,12 +852,14 @@ class AgentAPI(API):
         messages.TraderInfoMessage(time=t, agent=self.agent, npc_node_hash=npc_node_hash).post()
         messages.TraderAgentAssortmentMessage(time=t, agent=self.agent, npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def trader_apply(self, player_table, trader_table, npc_node_hash):
         TransactionTraderApply(time=self.agent.server.get_time(), agent=self.agent, player_table=player_table,
                                trader_table=trader_table, npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def girl_apply(self, npc_node_hash, service_index):
@@ -918,6 +928,7 @@ class AgentAPI(API):
                                     agent=self.agent,
                                     npc_node_hash=npc_node_hash).post()
 
+    @call_constrains(3)
     @basic_mode
     @public_method
     def set_rpg_state(self, npc_node_hash, skills, buy_skills, perks):
@@ -937,7 +948,7 @@ class AgentAPI(API):
         messages.UserGetAboutSelf(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Квесты
-
+    @call_constrains(2)
     @public_method
     def quest_note_action(self, uid, result):
         self.agent.log.info('quest_note_action uid={} result={}'.format(uid, result))
@@ -955,6 +966,7 @@ class AgentAPI(API):
         for q in self.agent.example.profile.quests_active:
             OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result).post()
 
+    @call_constrains(3)
     @public_method
     def quest_activate(self, quest_uid):
         self.agent.log.info('quest_activate quest_uid={}'.format(quest_uid))
@@ -964,6 +976,7 @@ class AgentAPI(API):
             server = self.agent.server
             OnQuestChange(server=server, quest=q, time=server.get_time() + 0.5, target_quest_uid=quest_uid).post()
 
+    @call_constrains(3)
     @public_method
     def quest_cancel(self, quest_uid):
         self.agent.log.info('quest_cancel quest_uid={}'.format(quest_uid))
@@ -974,6 +987,7 @@ class AgentAPI(API):
         else:
             self.agent.log.error('Try cancel unavailable quest quest_uid={}'.format(quest_uid))
 
+    @call_constrains(2)
     @public_method
     def quest_active_notes_view(self, quest_uid, active):
         self.agent.log.info('quest_active_notes_view quest_uid={}'.format(quest_uid))
@@ -1032,6 +1046,7 @@ class AgentAPI(API):
             QuickConsumerPanelInfoMessage(owner=self.agent.car.quick_consumer_panel, time=self.agent.server.get_time()).post()
 
     # Запрос объектов в стратегическом режиме
+    @call_constrains(4)
     @basic_mode
     @public_method
     def get_strategy_mode_info_objects(self):
