@@ -12,6 +12,17 @@ var ResourceLoadManager = (function () {
         // todo: сделать setTimeout на несколько секунд вперёд, чтобы сообщить в консоль, какие объекты не загружены ещё.
         this.load_complete_called = false;
         this.load_complete_init = false;
+
+        // Если есть settings_connection_delay, то добавить себя в список ожидания и удалить после
+        setTimeout(function () {
+            var d = parseFloat($('#settings_connection_delay').text()) || 0;
+            if (d > 0) {
+                console.log('ws_connect_delay: ', d);
+                setTimeout(function () {resourceLoadManager.add(resourceLoadManager);}, 0);
+                setTimeout(function () {resourceLoadManager.del(resourceLoadManager);}, d * 1000);
+            }
+        }, 0);
+
     }
 
     ResourceLoadManager.prototype.add = function (obj) {

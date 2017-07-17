@@ -359,7 +359,7 @@ var ModalWindow = (function () {
         var img = this.modalItemDivision.find('.division-item-info-image').first();
 
         if (options.item) {
-            caption.text(options.item.title);
+            caption.html(options.item.title);
             img.css('background', 'transparent url(' + options.item.inv_icon_mid + ') no-repeat center');
         }
         else {

@@ -49,6 +49,11 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         if agent is None:
             log.warning('Agent not found in database')  # todo: ##fixit
             return
+
+        time = agent.server.get_time()
+        if time < agent.min_connection_time:
+            self.close(reason='min_connection_time')
+            return
         self.agent = agent
         agent.on_connect(connection=self)
         agent.log.info(self.request.headers["User-Agent"])

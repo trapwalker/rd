@@ -229,7 +229,7 @@ var LocationTraderNPC = (function (_super) {
                 if (!item) return;
 
                 // Выбираем минимум между "на сколько хватит денег" и "количеством товара у торговца"
-                var max_count = Math.floor(user.example_agent.balance / (item.price.sale / item.stack_size));
+                var max_count = Math.floor(user.balance / (item.price.sale / item.stack_size));
                 if (! item._trader_infinity) {
                     max_count = Math.min(max_count, item.count)
                 }

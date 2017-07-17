@@ -12,6 +12,15 @@ var MessageStream = (function () {
         //          cbFunc: func
         //          subject: chat | другой объект, повесивший евент }
         // todo: убедиться, что key может быть null - хорошая идея
+
+        for (var i = 0; i < this.eventList.length; i++) {
+            var old_event = this.eventList[i];
+            if (old_event.key == event.key && old_event.cbFunc == event.cbFunc && old_event.subject == event.subject) {
+                console.warn('MessageStream.prototype.addEvent: Повторное добавление: ', event);
+                return;
+            }
+        }
+
         if (typeof(event.subject[event.cbFunc]) === 'function')
             this.eventList.push(event);
     };
