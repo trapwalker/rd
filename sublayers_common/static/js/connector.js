@@ -73,10 +73,10 @@ var WSConnector = (function(_super){
                 //console.log('onclose ', event);
                 // websocket is closed.
                 self.isConnected = false;
+                timeManager.timerStop();
                 if (event.wasClean) {
                     //alert('Соединение закрыто сервером ', event);
                     //console.log('Соединение закрыто чисто ', event);
-                    timeManager.timerStop();
                     var reason = event.reason;
                     if (reason.search('min_connection_time') >= 0) {
                         alert('Попытка подключения раньше дедлайна! Нельзя так!');
@@ -101,6 +101,7 @@ var WSConnector = (function(_super){
                         $.ajax({
                             url: ping_link,
                             success: function() {
+                                clearInterval(reconnect_interval);
                                 window.location.reload();
                             },
                             error: function() {console.log('Сервер недоступен.');}
