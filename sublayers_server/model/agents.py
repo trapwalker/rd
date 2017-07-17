@@ -67,7 +67,6 @@ class Agent(Object):
             else:
                 raise Exception(text='Not uniq agent name')
 
-        self._logger_file_handler = None
         self._logger = self.setup_logger()
         self.car = None
         self.slave_objects = []  # дроиды
@@ -810,12 +809,12 @@ class User(Agent):
         # from sublayers_common.logging_tools import handler
         # l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
 
-        self._logger_file_handler = fileHandler
         return l
 
     def after_delete(self, time):
-        self._logger.removeHandler(self._logger_file_handler)
-        self._logger_file_handler = None
+        handlers = self._logger.handlers[:]
+        for h in handlers:
+            self._logger.removeHandler(h)
 
 
 class AI(Agent):
