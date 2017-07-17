@@ -347,8 +347,6 @@ class AgentAPI(API):
         super(AgentAPI, self).__init__()
         self.agent = agent
         self.car = None
-        agent.api = self  # todo: убрать
-        self.update_agent_api()
 
         agent_output_stream = StreamHub(
             LogStream(logger=log, level=logging.DEBUG),
@@ -423,11 +421,6 @@ class AgentAPI(API):
         # todo: review(svp)
         InitTimeEvent(time=self.agent.server.get_time(), agent=self.agent).post()
         UpdateAgentAPIEvent(api=self, time=time if time is not None else self.agent.server.get_time()).post()
-
-        # For ReInit Time
-        # t0 = self.agent.server.get_time()
-        # for add_mul in xrange(1, 6):
-        #     InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
 
     def on_update_agent_api(self, time):
         self.agent.log.info("on_update_agent_api")

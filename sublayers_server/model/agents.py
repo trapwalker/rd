@@ -99,6 +99,9 @@ class Agent(Object):
 
         self.log.info('Agent Created %s', self)
 
+        self.connection_times = []  # times connections for this agent
+        self.min_connection_time = 0  #
+
     def generate_fake_login(self):
         max_iterations = 500
         for i in xrange(0, max_iterations):
@@ -310,9 +313,20 @@ class Agent(Object):
                 self.inventory = None
             UserExampleCarInfo(agent=self, time=time).post()
 
+    def get_connection_delay(self, time):
+        # Оставляем историю коннектов за последние 3 минуты
+        self.connection_times = [t for t in self.connection_times if time - t < 180]
+        self.connection_times.append(time)
+        connection_count = max(0, len(self.connection_times) - 2)
+        connection_delay = min(connection_count * 15, 60)
+        # каждый connection_count = 15 секунд ожидания, но не больше 1 минуты
+        self.min_connection_time = time + connection_delay
+        return connection_delay
+
     def on_connect(self, connection):
         self.log.info('on_connect {}'.format(connection))
         self.connection = connection
+        time = self.server.get_time()
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
             self._disconnect_timeout_event = None
@@ -322,12 +336,13 @@ class Agent(Object):
 
         if self.api:
             connection.api = self.api
-            self.api.update_agent_api()
         else:
             self.api = AgentAPI(agent=self)
 
+        self.api.update_agent_api(time=time)
+
         # обновление статистики по онлайну агентов
-        self.server.stat_log.s_agents_on(time=self.server.get_time(), delta=1.0)
+        self.server.stat_log.s_agents_on(time=time, delta=1.0)
 
     def on_disconnect(self, connection):
         if self.connection is connection:
