@@ -792,6 +792,10 @@ class Quest(Node):
     def can_instantiate(self, event, agent, hirer):  # info: попытка сделать can_generate до инстанцирования квеста
         if agent is None:
             return False
+
+        if hirer is None:  # если hirer не указан, то можно генерировать
+            return True
+
         agent_all_quests = agent.profile.quests
         agent_quests_active_ended = chain(agent.profile.quests_ended, agent.profile.quests_active)
 
@@ -815,15 +819,23 @@ class Quest(Node):
 
         def last_taken_quest_from_npc(npc, quests):  # возвращает последний взятый у данного нпц квест
             res = None
+            res_starttime = None
+
             if npc is None:
                 return None
-            for q in quests:
-                if q.hirer and npc.node_hash() == q.hirer.node_hash() and (res is None or res.starttime and res.starttime < q.starttime):
-                    res = q
-            return res
 
-        if hirer is None:  # если hirer не указан, то можно генерировать
-            return True
+            npc_node_hash = npc.node_hash()
+
+            for q in quests:
+                if (
+                    q.hirer and
+                    npc_node_hash == q.hirer.node_hash() and
+                    (res is None or res_starttime and res_starttime < q.starttime)
+                ):
+                    res = q
+                    res_starttime = res.starttime
+
+            return res
 
         generation_count = get_count_quest(self, agent_all_quests, event.time)
         # log.debug('generation_count {}  >  {}'.format(generation_count, self.generation_max_count))
