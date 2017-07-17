@@ -791,9 +791,9 @@ class User(Agent):
         l.addHandler(fileHandler)
 
         # info: если нужно видеть логи агентов в скрине
-        import sys
-        from sublayers_common.logging_tools import handler
-        l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
+        # import sys
+        # from sublayers_common.logging_tools import handler
+        # l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
 
         self._logger_file_handler = fileHandler
         return l
