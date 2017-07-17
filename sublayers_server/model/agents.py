@@ -313,8 +313,8 @@ class Agent(Object):
             UserExampleCarInfo(agent=self, time=time).post()
 
     def get_connection_delay(self, time):
-        # Оставляем историю коннектов за последние 3 минуты
-        self.connection_times = [t for t in self.connection_times if time - t < 180]
+        # Оставляем историю коннектов за последние 1.5 минуты
+        self.connection_times = [t for t in self.connection_times if time - t < 90]
         self.connection_times.append(time)
         connection_count = max(0, len(self.connection_times) - 2)
         connection_delay = min(connection_count * 15, 60)
