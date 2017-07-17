@@ -343,12 +343,9 @@ class Agent(Object):
     @event_deco
     def on_disconnect_timeout(self, event):
         self._disconnect_timeout_event = None
-        self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
-        self.save(time=event.time)
-        # self.subscriptions.on_disconnect(agent=self, time=event.time)
+
         if self.car:
             self.car.displace(time=event.time)
-        log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
 
         if self.current_location:
             self.current_location.on_exit(agent=self, event=event, dc_agent=True)
@@ -364,6 +361,9 @@ class Agent(Object):
         else:
             log.warn("Agent %s with key %s not found in server.agents_by_name", self, self._login)
 
+        self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
+        log.info('Agent %s displaced by disconnect timeout. Agents left: %s', self, (len(self.server.agents) - 1))
+        self.save(time=event.time)
         self.after_delete(event.time)
 
     def after_delete(self, time):
