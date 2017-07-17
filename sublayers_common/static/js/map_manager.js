@@ -122,7 +122,7 @@ var MapManager = (function(_super) {
         });
 
         var pos = {
-            str: $('#settings_start_coord').text(),
+            str: $('#settings_start_coord').text() || '12482409_27045819',  // whitehill_coord default
             x: '',
             y: ''
         };

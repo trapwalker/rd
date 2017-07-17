@@ -745,6 +745,19 @@ class Agent(Object):
         # log.debug('{} on_get_damage from {} with damage_type: {}'.format(self, damager.main_agent, damage_type))
         self.example.profile.on_event(event=event, cls=OnGetDmg, obj=damager)
 
+    def get_loading_coord(self, time):
+        # Возвращает координаты для загрузки карты клиентом (вызывается в pages.py)
+        if self.car:
+            return self.car.position(time=time)
+        elif self.current_location is not None and self.example.profile.in_location_flag:
+            return self.current_location.example.position
+        elif self.example.profile.car:
+           return self.example.profile.car.position
+        elif self.example.profile.last_town:
+            return self.example.profile.last_town.position
+        self.log.warning('Agent position dont definded')
+        return None
+
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -778,9 +791,9 @@ class User(Agent):
         l.addHandler(fileHandler)
 
         # info: если нужно видеть логи агентов в скрине
-        # import sys
-        # from sublayers_common.logging_tools import handler
-        # l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
+        import sys
+        from sublayers_common.logging_tools import handler
+        l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
 
         self._logger_file_handler = fileHandler
         return l
