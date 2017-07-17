@@ -177,7 +177,6 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype.addQuest = function(quest) {
         //console.log('QuestManager.prototype.addQuest', quest);
-        if (quest.result == 'fail_fail') return;
         if (!this.quests.hasOwnProperty(quest.uid)) {
             this.quests[quest.uid] = quest;
             this.redraw_quest(quest.uid);

@@ -349,23 +349,16 @@ class Quest(Node):
     @property
     def state(self):
         state = self._state
+        current_state_name = self.current_state
+        if current_state_name is None:
+            return
 
         # todo: ##DEPRECATED
         if state is None:
-            current_state_name = self.current_state
-
-            if current_state_name is None:
-                return
-
             state = self.states_map.get(current_state_name, None)
-            if state is None:
-                print self.states_map.keys()
-                from sublayers_server.model.events import Event
-                agent = self.agent.profile._agent_model
-                server = agent.server
-                Event(server=server, time=server.get_time(), callback_after=self._on_end_quest).post()
-                return 'fail_fail'
-                # raise KeyError('Wrong state named {self.current_state!r} in quest {self!r}.'.format(self=self))
+
+        if state is None:
+            state = self.make_state(current_state_name)
 
         return state
 
@@ -375,15 +368,11 @@ class Quest(Node):
         if st:
             return st
         state = self.state
-        if state == 'fail_fail':
-            return None
         return state and state.status
 
     @property
     def result(self):
         state = self.state
-        if state == 'fail_fail':
-            return 'fail_fail'
         return state and state.result
 
     def as_client_dict(self):
@@ -508,59 +497,46 @@ class Quest(Node):
             self.set_state(new_state=self.first_state, event=event)
             return True
 
+    def make_state(self, state_name):
+        state = self.states_map.get(state_name, None)
+        if state is None:
+            state = getattr(self, state_name, None)
+
+        assert (
+            isinstance(state, QuestState_) or
+            isinstance(state, type) and issubclass(state, QuestState_) or
+            # todo: ##DEPRECATED
+            isinstance(state, QuestState)
+        ), "New state type of quest {!r} is wrong: {!r}".format(self, state)
+
+        if isinstance(state, type):
+            state = state(id=state_name)
+
+        if state.id != state_name:
+            log.warning(
+                'State id %r.id==%r is not match to required %r in quest %r',
+                state, state.id, state_name, self
+            )
+
+        assert state is not None, "Fail to make state named {!r} in quest {!r}".format(state_name, self)
+        return state
+
     def set_state(self, new_state, event):
         assert new_state
         assert not self.abstract
-
         old_status = self.status
-
         next_state = None
 
-        # if isinstance(new_state, QuestState_):
-        #     next_state = new_state
-        #     next_state_id = new_state.id
-
-        # elif isinstance(new_state, QuestState):
-        #     next_state_id = new_state.id
-
-        if isinstance(new_state, basestring):
-            next_state_id = new_state
-            next_state = self.states_map.get(next_state_id, None)
-            if next_state is None:
-                next_state = getattr(self, next_state_id, None)
-
-            assert (
-                isinstance(next_state, QuestState_) or
-                isinstance(next_state, type) and issubclass(next_state, QuestState_) or
-
-                # todo: ##DEPRECATED
-                isinstance(next_state, QuestState)
-            ), "New state type of quest {!r} is wrong: {!r}".format(self, next_state)
-
-            if isinstance(next_state, type):
-                next_state = next_state(id=next_state_id)
-
-            if next_state.id != next_state_id:
-                log.warning(
-                    'State id %r.id==%r is not match to required %r in quest %r',
-                    next_state, next_state.id, next_state_id, self
-                )
-
-            assert next_state is not None, "Can't to switch state to {!r} in quest {!r}".format(new_state, self)
-        else:
+        if not isinstance(new_state, basestring):
             raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(**locals()))
 
-        old_state_id = self.current_state
+        next_state = self.make_state(new_state)
         old_state = self.state
-
-        # Мы можем переходить в то же состояние в котором уже находимся. Это нормально. Все так делают.
-        # if next_state_id == old_state_id:
-        #     return
 
         if old_state:
             self.do_state_exit(old_state, event)
 
-        self.current_state = next_state_id
+        self.current_state = next_state.id
         self._state = next_state
 
         agent_model = self.agent and self.agent.profile._agent_model
@@ -656,8 +632,6 @@ class Quest(Node):
 
     def do_event(self, event):
         state = self.state
-        if state is None or state == 'fail_fail': # todo: review
-            return
         assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
         assert self._go_state_name is None, u'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
             st=state, self=self,

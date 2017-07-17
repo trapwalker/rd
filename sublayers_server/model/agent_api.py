@@ -442,7 +442,7 @@ class AgentAPI(API):
         messages.JournalParkingInfoMessage(agent=self.agent, time=time).post()
 
         if self.agent.current_location is not None and self.agent.example.profile.in_location_flag:
-            # log.debug('Need reenter to location')
+            self.agent.log.info("enter to location %s and in_location_flag=%s", self.agent.current_location, self.agent.example.profile.in_location_flag)
             ReEnterToLocation(agent=self.agent, location=self.agent.current_location, time=time).post()
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
@@ -455,11 +455,13 @@ class AgentAPI(API):
             self.car = self.agent.car
             self.send_init_car_map(time=time)
             self.agent.current_location = None
+            self.agent.log.info("Setup car<%s> to map", self.car)
             return
 
         # если мы дошли сюда, значит агент последний раз был не в городе и у него уже нет машинки. вернуть его в город
         last_town = self.agent.example.profile.last_town
         self.agent.current_location = last_town
+        self.agent.log.info("enter to last_town %r ", last_town)
         if self.agent.current_location is not None:
             # todo: Выяснить для чего это нужно (!!!)
             self.agent.example.profile.car = self.agent.example.profile.insurance.car  # Восстановление машинки из страховки
@@ -470,21 +472,22 @@ class AgentAPI(API):
             ChatRoom.resend_rooms_for_agent(agent=self.agent, time=time)
             return
 
-        log.watning('on_update_agent_api Agent placing error %s', self.agent)
+        log.warning('on_update_agent_api Agent placing error %s', self.agent)
+        self.agent.log.warning('on_update_agent_api Agent placing error  last_town=%r  curr_loc=%s', last_town, self.agent.current_location)
 
     @event_deco
     def on_simple_update_agent_api(self, event):
         self.agent.log.info("on_simple_update_agent_api")
-
         if self.agent.example.profile.car and not self.agent.car:
             self.make_car(time=event.time)
             assert not self.car.limbo and self.car.hp(time=event.time) > 0, 'Car HP <= 0 or limbo'
             self.car = self.agent.car
             self.send_init_car_map(time=event.time)
             self.agent.current_location = None
+            self.agent.log.info("Setup car<%s> to map", self.car)
             return
-
-        log.watning('on_simple_update_agent_api Agent placing error %s', self.agent)
+        log.warning('on_simple_update_agent_api Agent placing error %s', self.agent)
+        self.agent.log.warning('on_simple_update_agent_api Agent dont have car')
 
     def make_car(self, time):
         self.car = Bot(time=time, example=self.agent.example.profile.car, server=self.agent.server, owner=self.agent)

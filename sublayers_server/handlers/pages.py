@@ -24,12 +24,7 @@ class PlayHandler(BaseHandler):
                 if not agent:
                     self.redirect(self.get_login_url())
                     return
-                if agent.car:
-                    coord = agent.car.position(time=self.application.srv.get_time())
-                elif agent.current_location:
-                    coord = agent.current_location.example.position
-                elif agent.example.profile.car:
-                    coord = agent.example.profile.car.position
+                coord = agent.get_loading_coord(time=self.application.srv.get_time())
 
                 # todo: убрать все что касается is_tester
                 if not user.quick and not user.is_tester and user.registration_status == 'register':
