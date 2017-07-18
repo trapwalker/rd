@@ -314,7 +314,8 @@ var WCanvasCarMarker = (function (_super) {
         // Отображение стрелки иконки
         if (this.icon_arrow_obj) {
             ctx.save(); // для возврата от поворота
-            var speed_angle = mobj.getCurrentSpeed(time) >= 0 ? 0 : Math.PI;
+            var calc_time = Math.max(time, mobj._motion_state.t0);
+            var speed_angle = mobj.getCurrentSpeed(calc_time) >= 0 ? 0 : Math.PI;
             var car_direction_arrow_real = mobj.getCurrentDirection(time + 0.5) + Math.PI / 2. + speed_angle;
             var car_direction_arrow;
             var diff_angle_direction_arrow = car_direction_arrow_real - this._ps_last_direction_arrow;

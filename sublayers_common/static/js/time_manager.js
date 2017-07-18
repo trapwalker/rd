@@ -31,6 +31,8 @@ var Clock = (function () {
         this.edt = 0;     // Целевое dt
         this.t_move = 1;  // Время достижения целевого dt
 
+        this.last_time = 0;
+
         this.accum_array = [];
         this.accum_summ = 0.0;
         this.accum_count = 10;
@@ -44,7 +46,9 @@ var Clock = (function () {
 
     // Получение текущего времени с поправкой на сервер
     Clock.prototype.getCurrentTime = function () {
-        return new Date().getTime() / 1000. - this.getDt();
+        var time = new Date().getTime() / 1000. - this.getDt();
+        if (time > this.last_time) this.last_time = time;
+        return this.last_time;
     };
 
     // Получение текущего времени в миллисекундах - нельзя учитывать при расчёте движения
