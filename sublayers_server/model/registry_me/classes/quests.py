@@ -661,6 +661,8 @@ class Quest(Node):
         rendered_text = self._template_render(text, position=position, **kw)
         log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
         self.history.append(log_record)
+        if event and self.agent and self.agent.profile._agent_model:
+            QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
         return True
 
 
