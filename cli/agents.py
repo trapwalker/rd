@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
+from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_server.model.registry_me.classes.agents import Agent
 
 from mongoengine import connect
@@ -45,6 +46,13 @@ DEFAULT_CLEAN_WILDCARD = '*.yaml'
 def agents_export(ctx, logins, dest, fn_format, clean_wildcard, no_clean):
     """Export all agents to separate files"""
     import glob
+
+    world = ctx.obj['world']
+    try:
+        registry = get_global_registry(path=world, reload=False, save_loaded=False)
+    except Exception as e:
+        log.error(e)
+        return
 
     if dest:
         click.echo('Export agents to {dest}...'.format(**locals()))

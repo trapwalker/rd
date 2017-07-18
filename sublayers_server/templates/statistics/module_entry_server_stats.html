@@ -149,7 +149,7 @@
                 <div class="deaths">{{ bot._quick_bot_deaths }}</div>
                 <div class="time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time))) }}</div>
                 <div class="life-time">{{ str(datetime.timedelta(seconds=round(bot._quick_bot_time / (1 if bot._quick_bot_deaths == 0 else bot._quick_bot_deaths)))) }}</div>
-                <div class="bot-type">{{ bot.example.parent.uri.replace('reg:///registry/agents/user/', '') }}</div>
+                <div class="bot-type">{{ bot.example.profile.parent.uri.replace('reg:///registry/agents/user/', '') }}</div>
                 <div class="car">{{ bot._car_proto.name_car }}</div>
             </div>
             {% set i += 1 %}
