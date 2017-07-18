@@ -25,20 +25,26 @@
 
 var Clock = (function () {
     function Clock() {
-        this.dt = 0;
+        this.ddt = 0;     // Скорость изменения времени
+        this.t0dt = 0;    // Клиентское время начало изменения времени
+        this.sdt = 0;     // Стартовое dt
+        this.edt = 0;     // Целевое dt
+        this.t_move = 1;  // Время достижения целевого dt
+
+        this.accum_array = [];
+        this.accum_summ = 0.0;
+        this.accum_count = 10;
+
         message_stream.addInEvent({
             key: 'ws_message',
             cbFunc: 'receiveMessage',
             subject: this
         });
-        this._count_message = 0;
-        this._ddt = 0;
-        this._msg_count_correct = 20; // количество сообщений необходимое для корректировки dt
     }
 
     // Получение текущего времени с поправкой на сервер
     Clock.prototype.getCurrentTime = function () {
-        return new Date().getTime() / 1000. - this.dt;
+        return new Date().getTime() / 1000. - this.getDt();
     };
 
     // Получение текущего времени в миллисекундах - нельзя учитывать при расчёте движения
@@ -47,33 +53,44 @@ var Clock = (function () {
     };
 
     // Расчет серверной "поправки".
-    Clock.prototype.setDt = function (aDiffTime) {
-        this.dt = aDiffTime;
-        //console.log('Поправка времени = ', this.dt)
+    Clock.prototype.setDt = function () {
+        this.sdt = this.getDt();  // Стартовое dt
+        if (this.accum_array)
+            this.edt = this.accum_summ / this.accum_array.length;
+        this.ddt = (this.edt - this.sdt) / this.t_move;
+        this.t0dt = this.getClientTime() / 1000.;
+    };
+
+    Clock.prototype.getDt = function () {
+        var time = this.getClientTime() / 1000.;
+        if ((time - this.t0dt) >= this.sdt) return this.edt;
+        else return this.sdt + (time - this.t0dt) * this.ddt;
+    };
+
+    Clock.prototype.logDtInfo = function () {
+        console.log('Стартовое dt:', this.sdt);
+        console.log('Текущее dt:', this.getDt());
+        console.log('Целевое dt:', this.edt);
+        console.log('---------------------------------');
     };
 
     Clock.prototype.receiveMessage = function (params) {
         //console.log("Clock.prototype.receiveMessage", params);
         if (params.message_type == "push") {
-            if (params.events[0].cls == "InitTime") {
-                this.setDt((new Date().getTime() - params.events[0].time) / 1000.);
-            }
-            else {
-                this._ddt += (new Date().getTime() - params.events[0].time) / 1000.;
-                this._count_message++;
-                if (this._count_message >= this._msg_count_correct) {
-                    this.setDt(this._ddt / this._count_message);
-                    this._ddt = 0;
-                    this._count_message = 0;
-                }
-            }
+            var temp_dt = (new Date().getTime() - params.events[0].time) / 1000.;
+            this.accum_summ += temp_dt;
+            this.accum_array.push(temp_dt);
+            if (this.accum_array.length > this.accum_count)
+                this.accum_summ -= this.accum_array.shift();
+            this.setDt();
+            //console.log('Время на клиенте:', this.getClientTime() / 1000.);
+            //console.log('dt сообщения: ', temp_dt);
+            //this.logDtInfo();
         }
     };
 
     return Clock;
 })();
-
-// todo: подумать над синхронизацией
 
 var ConstTimerInterval = 30;   // Интервал таймера минимальный (мс)
 var ConstTimerIntervalMax = 75;   // Интервал таймера максимальный (мс)

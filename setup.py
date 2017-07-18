@@ -23,6 +23,8 @@ setup(
         'coloredlogs',
         'hgapi',
         'pillow',
+        'humanfriendly',
+        'colorama',
     ],
     entry_points='''
         [console_scripts]
