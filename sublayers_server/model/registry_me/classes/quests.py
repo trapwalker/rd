@@ -15,7 +15,6 @@ from sublayers_server.model.registry_me.tree import (
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
-from sublayers_server.model.utils import getKarmaName
 
 from functools import partial, wraps
 import random
@@ -97,12 +96,6 @@ class QuestRange(Subdoc):
     def get_random_int(self):
         int_max, int_min = int(self.max), int(self.min)
         return random.randint(int_min, int_max)
-
-
-class KillerQuestVictim(Subdoc):
-    login = FloatField(doc=u"Имя жертвы", tags={'client'})
-    photo = FloatField(doc=u"Ссылка на аватарку жертвы", tags={'client'})
-    profile_id = FloatField(doc=u"profile_id жертвы", tags={'client'})
 
 
 class QuestState_(object):
@@ -879,95 +872,6 @@ class QuestLogMessage(messages.Message):
             quest_event=self.event_record.as_dict(),
         )
         return d
-
-
-class KillerQuest(Quest):
-    unique_victims = BooleanField(caption=u'Должны ли быть жертвы уникальными')
-    price_victim = IntField(caption=u'Цена одной жертвы на первом уровне квеста в нукойнах')
-    count_to_kill_range = EmbeddedDocumentField(
-        document_type=QuestRange,
-        caption=u"Диапазон количетсва жертв",
-        reinst=True,
-    )
-    count_to_kill = IntField(caption=u'Количество убийств (вычислимый параметр)', tags={'client'})
-    max_karma_victims = IntField(caption=u'Максимальное значение кармы жертвы (вычислимый параметр)')
-    min_level_victims = IntField(caption=u'Минимальный уровень жертвы')
-    max_karma_victims_start = FloatField(caption=u'Максимальное значение кармы жертвы при 0 уровне квеста')
-    max_karma_victims_by_lvl = FloatField(caption=u'Сколько кармы от стартовой будет отнимать каждый лвл квеста')
-    deadline_koeff_by_lvl = FloatField(caption=u'На сколько больше времени будет выдаваться на каждую жертву в зависимости от уровня квеста')
-    price_victim_koeff_by_lvl = FloatField(caption=u'На сколько больше будет суммарная награда в зависимости от уровня квеста')
-
-    victims = ListField(
-        root_default=[],
-        field=EmbeddedDocumentField(
-            document_type='sublayers_server.model.registry_me.classes.quests.KillerQuestVictim',
-        ),
-        caption=u"Список жертв (заполняется динамически)",
-        reinst=True,
-    )
-
-    def as_client_dict(self):
-        d = super(KillerQuest, self).as_client_dict()
-        d.update(
-            victims=[victim.as_client_dict() for victim in self.victims],
-        )
-        return d
-
-    def get_available_lvl(self):
-        # Уровень квеста зависит от отношений, но не выше уровня игрока
-        relation = self.agent.profile.get_relationship(npc=self.hirer)
-        # lvl_table = [-0.8, -0.6, 0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1]
-        lvl_table = [-0.8, 0, 1]
-        max_relation_lvl = len(lvl_table)
-        for item in lvl_table:
-            if relation < item:
-                max_relation_lvl = lvl_table.index(item)
-        return min(self.agent.profile.get_lvl(), max_relation_lvl)
-
-    def append_victim(self, agent, event):
-        photo = "" if not agent.profile._agent_model else agent.profile._agent_model.avatar_link
-        login = agent.login if not agent.profile._agent_model else agent.profile._agent_model.print_login()
-        self.victims.append(KillerQuestVictim(login=login, photo=photo, profile_id=agent.user_id))
-
-    def in_victims(self, agent):
-        login = agent.login if not agent.profile._agent_model else agent.profile._agent_model.print_login()
-        for victim in self.victims:
-            if victim.login == login:
-                return True
-        return False
-
-    def init_level(self):
-        self.level = self.get_available_lvl()
-        # Этот код нужен чтобы всегда генерить хотябы самый слабый квест
-        if self.level == 0:
-            self.level = 1
-        self.level = random.randint(1, self.level)
-
-    def init_targets_info(self):
-        # чем выше уровень квеста, тем ниже максимальная карма жертвы
-        self.max_karma_victims = self.max_karma_victims_start - self.level * self.max_karma_victims_by_lvl
-        self.min_level_victims = self.level
-        self.count_to_kill = self.count_to_kill_range.get_random_int()  # Выбираем сколько человек нужно убить
-
-    def init_text(self):
-        self.text_short = u"Убейте {:.0f} игрока(ов).".format(
-            self.count_to_kill
-        )
-        self.text = u"Убейте {:.0f} игрока(ов) с минимальным уровнем {:.0f} и кармой хуже {}{}. Награда: {:.0f}nc, {:.0f} кармы и {:.0f}ед. опыта.".format(
-            self.count_to_kill,
-            self.min_level_victims,
-            getKarmaName(self.max_karma_victims / 100., 'ru'),
-            u"" if not self.deadline else u" за {}".format(self.deadline_to_str()),
-            self.reward_money,
-            self.reward_karma,
-            self.reward_exp * self.count_to_kill,
-        )
-
-    def init_deadline(self):
-        if self.deadline:
-            all_time = self.count_to_kill * self.deadline * (1 + self.level / self.deadline_koeff_by_lvl)
-            # Время выделенное на квест кратно 5 минутам
-            self.deadline = (all_time / 300) * 300 + (300 if (all_time % 300) > 0 else 0)
 
 
 class DeliveryQuest(Quest):
