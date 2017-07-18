@@ -345,6 +345,7 @@ class DynamicSubdoc(EmbeddedDocument, SubdocToolsMixin):
 class Subdoc(EmbeddedDocument, SubdocToolsMixin):
     __metaclass__ = NodeMetaclass
     _dynamic = False
+    STRICT = True
     meta = dict(
         allow_inheritance=True,
     )
