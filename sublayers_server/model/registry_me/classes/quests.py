@@ -223,8 +223,7 @@ class Quest(Node):
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states          = ListField(
         field=EmbeddedNodeField(document_type=QuestState),
-        # reinst=True,
-        readonly=True,
+        readonly=True,  # todo: ##DEPRECATED
         caption=u"Состояния квеста",
         doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
     )
@@ -273,7 +272,8 @@ class Quest(Node):
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     history     = ListField(
-        field=EmbeddedDocumentField(document_type=LogRecord, reinst=True),
+        field=EmbeddedDocumentField(document_type=LogRecord),
+        default=list,
         tags={'client'},
         reinst=True,
         caption=u"Журнал квеста",
@@ -287,31 +287,26 @@ class Quest(Node):
     reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
     reward_exp = FloatField(root_default=0, caption=u'Награда в exp за квест')
     reward_items = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Список итемов награды",
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Итем для награды",
-            reinst=True,
             tags={'client'},
         ),
-        reinst=True,
         tags={'client'},
     )
     reward_items_list = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Список возможных комплектов для награды",
         field=ListField(
-            default=[],
+            default=list,
             caption=u"Список возможных наборов итемов для награды",
             field=EmbeddedNodeField(
                 document_type='sublayers_server.model.registry_me.classes.item.Item',
                 caption=u"Необходимый итем",
-                reinst=True,
             ),
-            reinst=True,
         ),
-        reinst=True,
     )
     active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', root_default=True, tags={'client'})
 
@@ -978,7 +973,7 @@ class KillerQuest(Quest):
 class DeliveryQuest(Quest):
     distance_table = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.disttable.DistTable')
     recipient_list = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Список возможных получателей доставки",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
     )
@@ -990,7 +985,7 @@ class DeliveryQuest(Quest):
     total_delivery_money_coef = FloatField(
         caption=u'Множитель общей стоимости награды за квест от стоимости доставляемого товара')
     delivery_set_list = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Список возможных комплектов для доставки",
         field=ListField(
             caption=u"Список возможных наборов итемов для доставки",
@@ -999,7 +994,6 @@ class DeliveryQuest(Quest):
                 caption=u"Необходимый итем",
             ),
         ),
-        reinst=True,
     )
     delivery_set = ListField(
         caption=u"Список итемов для доставки",
@@ -1031,10 +1025,9 @@ class DeliveryQuest(Quest):
 
 class AIQuickQuest(Quest):
     route = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Маршрут патрулирования",
-        field=PositionField(caption=u"Точка патрулирования", reinst=True,),
-        reinst=True,
+        field=PositionField(caption=u"Точка патрулирования"),
     )
     route_index = IntField(caption=u'Индекс текущей точки патрулирования')
 

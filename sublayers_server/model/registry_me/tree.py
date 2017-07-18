@@ -593,7 +593,7 @@ class Node(Subdoc, SubdocToolsMixin):
             for k, v in proto._data.items():
                 field = proto_class._fields.get(k, None)
                 if field and not getattr(field, 'not_inherited', False):
-                    extra[k] = self._copy_field_value(field, v)
+                    extra[k] = self._copy_field_value(field, v)  # todo: ##OPTIMIZE
 
         _empty_overrided_fields = list(
             {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
