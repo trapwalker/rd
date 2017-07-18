@@ -593,7 +593,7 @@ class Node(Subdoc, SubdocToolsMixin):
             for k, v in proto._data.items():
                 field = proto_class._fields.get(k, None)
                 if field and not getattr(field, 'not_inherited', False):
-                    extra[k] = self._copy_field_value(field, v)
+                    extra[k] = self._copy_field_value(field, v)  # todo: ##OPTIMIZE
 
         _empty_overrided_fields = list(
             {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
@@ -852,7 +852,7 @@ class Registry(Document):
                     all_nodes.append(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
-                        if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
+                        if os.path.isdir(next_path) and not f.startswith('#'):  # and not f.startswith('_'):
                             stack.append((next_path, node))
 
             log.debug('    structure loaded {} nodes ({:.3f}s)'.format(len(all_nodes), timer.duration))
