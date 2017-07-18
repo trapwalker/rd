@@ -22,10 +22,10 @@ class DeliveryFromCache(DeliveryQuestSimple):
     cache_points_generator = ListField(
         root_default=[],
         caption=u"Список областей генерации мест для тайника",
-        field=EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True),
-        reinst=True,
+        field=EmbeddedDocumentField(document_type=MarkerMapObject),
+        reinst=False,
     )
-    cache_point = EmbeddedDocumentField(document_type=MarkerMapObject, reinst=True)
+    cache_point = EmbeddedDocumentField(document_type=MarkerMapObject, reinst=False)
 
     loot_set_list = ListField(
         root_default=[],
