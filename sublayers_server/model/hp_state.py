@@ -25,7 +25,10 @@ def assert_time_in_hpstate(f):
 
 class HPState(object):
     def __init__(self, owner, t, max_hp, hp, dps=0.0):
-        assert (max_hp > 0) and (max_hp >= hp), 'Wrong value hp={} max={}'.format(hp, max_hp)
+        if not (max_hp > 0 and max_hp >= hp):
+            log.warning('HPState of {}: Wrong value hp={} max={}. hp:=max_hp'.format(owner, hp, max_hp))
+            hp = max_hp
+
         self.owner = owner
         self.shooters = []
         self.weapons = []
