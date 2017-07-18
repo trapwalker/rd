@@ -517,7 +517,6 @@ var State = (function () {
         return this.v0 + this.a * (t - this.t0);
     };
 
-
     State.prototype.getCurrentDirection = function(t){
         if(! this.c) {
             return this.fi0;
@@ -525,7 +524,6 @@ var State = (function () {
         dt = t - this.t0;
         return this.fi0 + (0.5 * this.a * dt * dt + this.v0 * dt) / this._r;
     };
-
 
     State.prototype.getCurrentCoord = function(t) {
         if (this.c) {

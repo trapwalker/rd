@@ -10,6 +10,8 @@
     border-image: linear-gradient(to right, #30fc00, #30fc00, transparent);
     border-image-slice: 1;
     background-image: url('../img/quests/notes/delivery_note.png');
+    background-repeat: no-repeat no-repeat;
+    background-position: center;
 }
 .notes-npc-delivery-up.courier { background-image: url('../img/quests/notes/courier.png'); }
 

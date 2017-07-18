@@ -126,11 +126,15 @@ def test5(reload=True, save_loaded=True):
     from sublayers_server.model.registry_me.classes.agents import Agent
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
-    a = Agent.objects.filter(login='q'*13).first()
+    # with T('Agent load'):
+    #     a = Agent.objects.filter(login='q'*13).first()
     #
-    with T():
-        for i in xrange(100):
-            p = a.profile.instantiate()
+    # with T():
+    #     for i in xrange(100):
+    #         p = a.profile.instantiate()
+    c = reg.get(u'/registry/mobiles/cars/middle/vans/barkas_b1000kb')
+    print(c)
+    print(c.slot_CC)
 
     globals().update(locals())
 
@@ -141,8 +145,10 @@ if __name__ == '__main__':
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
 
-    rel = 0
+    rel = 1
+
     test5(reload=rel, save_loaded=True)
+
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
     print('DONE')
