@@ -852,7 +852,7 @@ class Registry(Document):
                     all_nodes.append(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
-                        if os.path.isdir(next_path) and not f.startswith('#') and not f.startswith('_'):
+                        if os.path.isdir(next_path) and not f.startswith('#'):  # and not f.startswith('_'):
                             stack.append((next_path, node))
 
             log.debug('    structure loaded {} nodes ({:.3f}s)'.format(len(all_nodes), timer.duration))

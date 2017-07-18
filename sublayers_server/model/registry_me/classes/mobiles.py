@@ -15,12 +15,16 @@ from sublayers_server.model.registry_me.tree import (
 
 from math import pi
 
+SLOT_LOCK = "reg:///registry/items/slot_item/_lock"
 
 class SlotField(EmbeddedNodeField):
-    LOCK = "reg:///registry/items/slot_item/_lock"
-
     def __init__(self, document_type='sublayers_server.model.registry_me.classes.item.SlotItem', reinst=True, **kw):
         super(SlotField, self).__init__(document_type=document_type, reinst=reinst, **kw)
+
+
+class ModuleSlotField(SlotField):
+    def __init__(self, root_default=SLOT_LOCK, **kw):
+        super(ModuleSlotField, self).__init__(root_default=root_default, **kw)
 
 
 class Mobile(Node):
@@ -130,26 +134,26 @@ class Mobile(Node):
     crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
     crit_power           = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={'param_aggregate'})
 
-    slot_FL   = SlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags={'armorer'})
-    slot_FL_f = StringField(caption=u'Флаги переднего левого слота [FBLR]', tags={'client', 'slot_limit'})
-    slot_CL   = SlotField(caption=u'LeftSlot', doc=u'Центральный левый слот', tags={'armorer'})
-    slot_CL_f = StringField(caption=u'Флаги центрального левого слота [FBLR]', tags={'client', 'slot_limit'})
-    slot_BL   = SlotField(caption=u'BackwardLeftSlot', doc=u'Задний левый слот', tags={'armorer'})
-    slot_BL_f = StringField(caption=u'Флаги залнего левого слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_FL   = ModuleSlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags={'armorer'})
+    slot_FL_f = StringField    (caption=u'Флаги переднего левого слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_CL   = ModuleSlotField(caption=u'LeftSlot', doc=u'Центральный левый слот', tags={'armorer'})
+    slot_CL_f = StringField    (caption=u'Флаги центрального левого слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_BL   = ModuleSlotField(caption=u'BackwardLeftSlot', doc=u'Задний левый слот', tags={'armorer'})
+    slot_BL_f = StringField    (caption=u'Флаги залнего левого слота [FBLR]', tags={'client', 'slot_limit'})
 
-    slot_FC   = SlotField(caption=u'ForwardSlot', doc=u'Передний средний слот', tags={'armorer'})
-    slot_FC_f = StringField(caption=u'Флаги переднего среднего слота [FBLR]', tags={'client', 'slot_limit'})
-    slot_CC   = SlotField(caption=u'CentralSlot', doc=u'Центральный средний слот', tags={'armorer'})
-    slot_CC_f = StringField(caption=u'Флаги центрального среднего слота [FBLR]', tags={'client', 'slot_limit'})
-    slot_BC   = SlotField(caption=u'BackwardSlot', doc=u'Задний средний слот', tags={'armorer'})
-    slot_BC_f = StringField(caption=u'Флаги заднего среднего слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_FC   = ModuleSlotField(caption=u'ForwardSlot', doc=u'Передний средний слот', tags={'armorer'})
+    slot_FC_f = StringField    (caption=u'Флаги переднего среднего слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_CC   = ModuleSlotField(caption=u'CentralSlot', doc=u'Центральный средний слот', tags={'armorer'})
+    slot_CC_f = StringField    (caption=u'Флаги центрального среднего слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_BC   = ModuleSlotField(caption=u'BackwardSlot', doc=u'Задний средний слот', tags={'armorer'})
+    slot_BC_f = StringField    (caption=u'Флаги заднего среднего слота [FBLR]', tags={'client', 'slot_limit'})
 
-    slot_FR   = SlotField(caption=u'ForwardRightSlot', doc=u'Передний правый слот', tags={'armorer'})
-    slot_FR_f = StringField(caption=u'Флаги переднего правого слота [FBLR]', tags={'client', 'slot_limit'})
-    slot_CR   = SlotField(caption=u'RightSlot', doc=u'Центральный правый слот', tags={'armorer'})
-    slot_CR_f = StringField(caption=u'Флаги центрального правого слота [FBLR]', tags={'client', 'slot_limit'})
-    slot_BR   = SlotField(caption=u'BackwardRightSlot', doc=u'Задний правый слот', tags={'armorer'})
-    slot_BR_f = StringField(caption=u'Флаги заднего правого слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_FR   = ModuleSlotField(caption=u'ForwardRightSlot', doc=u'Передний правый слот', tags={'armorer'})
+    slot_FR_f = StringField    (caption=u'Флаги переднего правого слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_CR   = ModuleSlotField(caption=u'RightSlot', doc=u'Центральный правый слот', tags={'armorer'})
+    slot_CR_f = StringField    (caption=u'Флаги центрального правого слота [FBLR]', tags={'client', 'slot_limit'})
+    slot_BR   = ModuleSlotField(caption=u'BackwardRightSlot', doc=u'Задний правый слот', tags={'armorer'})
+    slot_BR_f = StringField    (caption=u'Флаги заднего правого слота [FBLR]', tags={'client', 'slot_limit'})
 
     inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре ТС')
     # inventory_size = IntField(caption=u"Размер инвентаря")
