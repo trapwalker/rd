@@ -596,7 +596,8 @@ class Node(Subdoc, SubdocToolsMixin):
                     extra[k] = self._copy_field_value(field, v)  # todo: ##OPTIMIZE
 
         _empty_overrided_fields = list(
-            {k for k, v in extra.iteritems() if not v and k in _inheritable_fields}
+            {k for k, v in extra.iteritems() if not v and k in _inheritable_fields} |
+            set(_empty_overrided_fields or {})
         )  # todo: Make SetField
 
         # Формируем список имён полей блокирующий установку наследуемых полей в значения по умолчанию
@@ -799,7 +800,7 @@ class Registry(Document):
     def get(self, uri, *defaults):
         """
         :param uri: Registry node URI
-        :type uri: URI|str
+        :type uri: URI|basestring
         :param defaults:
         :return: Node or default if specified
         :rtype: Node|None
