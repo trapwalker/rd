@@ -23,8 +23,11 @@ def assert_time_in_fuelstate(f):
 
 
 class FuelState(object):
-    def __init__(self, t, max_fuel=100.0, fuel=100.0):
-        assert (max_fuel > 0) and (max_fuel >= fuel)
+    def __init__(self, t, max_fuel=100.0, fuel=100.0):  # todo: Сделать аргументы обязательными
+        if not (max_fuel > 0 and max_fuel >= fuel):
+            log.warning('FuelState: Wrong value fuel={} max={}. fuel:=max_fuel'.format(fuel, max_fuel))
+            fuel = max_fuel
+
         self.t0 = t
         self.t_fuel_empty = None
         self.max_fuel = max_fuel
