@@ -468,26 +468,31 @@ var State = (function () {
     }
 
     State.prototype.s = function (t) {
+        if (t < this.t0) t = this.t0;
         var dt = t - this.t0;
         return this.v0 * dt + 0.5 * this.a * (dt * dt);
     };
 
     State.prototype.v = function (t) {
+        if (t < this.t0) t = this.t0;
         var dt = t - this.t0;
         return this.v0 + this.a * dt;
     };
 
     State.prototype.r = function (t) {
+        if (t < this.t0) t = this.t0;
         if (this.a == 0)
             return Math.pow(this.v0, 2) / this.ac_max + this.r_min;
         return Math.pow(this.v(t), 2) / this.ac_max + this.r_min
     };
 
     State.prototype.sp_fi = function (t) {
+        if (t < this.t0) t = this.t0;
         return Math.log(this.r(t) / this.r_min) / this._sp_m
     };
 
     State.prototype.fi = function (t) {
+        if (t < this.t0) t = this.t0;
         if (!this._c) return this.fi0;
         if (this.a == 0.0)
             return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
@@ -495,6 +500,7 @@ var State = (function () {
     };
 
     State.prototype._fi = function (t) {
+        if (t < this.t0) t = this.t0;
         if (!this._c) return this._fi0;
         if (this.a == 0.0)
             return this._fi0 - this.s(t) / this.r(t) * this._turn_sign;
@@ -502,6 +508,7 @@ var State = (function () {
     };
 
     State.prototype.p = function (t) {
+        if (t < this.t0) t = this.t0;
         if (!this._c)
             return summVector(this.p0, polarPoint(this.s(t), this._fi0));
         return summVector(this._c, polarPoint(this.r(t), this._fi(t) + this._turn_sign * this._rv_fi));
