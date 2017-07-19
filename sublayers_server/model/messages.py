@@ -1404,7 +1404,7 @@ class HangarInfoMessage(NPCInfoMessage):
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
-            ) for car in npc.car_list]
+            ) for car in npc.car_list or []]
 
             HangarInfoMessage.npc_cars[npc.uri] = car_list
         return car_list
