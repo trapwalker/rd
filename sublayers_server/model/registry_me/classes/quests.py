@@ -15,10 +15,14 @@ from sublayers_server.model.registry_me.tree import (
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
+from sublayers_common.ctx_timer import Timer
 
 from functools import partial, wraps
 import random
 from itertools import chain
+
+
+instantiate_stat = dict()
 
 
 def unicode_args_substitution(func, template_renderer, **kw_dict):
@@ -321,6 +325,18 @@ class Quest(Node):
         self._agent = None
         self._state = None
 
+    def instantiate(self, **kw):
+        with Timer(name='quest_instantiate', log_start=None, logger=None, log_stop=None) as quest_instantiate_timer:
+            q = super(Quest, self).instantiate(**kw)
+
+        cl_name = 'inst_{}'.format(self.__class__.__name__)
+        if instantiate_stat.get(cl_name, None):
+            instantiate_stat[cl_name]["count"] += 1
+            instantiate_stat[cl_name]["duration"] += quest_instantiate_timer.duration
+        else:
+            instantiate_stat[cl_name] = {"count": 1, "duration": quest_instantiate_timer.duration, 'name': cl_name}
+        return q
+
     def _set_error_status(self, handler, event, e):
         self._error = True
 
@@ -427,7 +443,16 @@ class Quest(Node):
         #time = kw.pop('time', event and event.time)
 
         try:
-            self.on_generate_(event=event, **kw)
+            with Timer(name='quest_gen', log_start=None, logger=None, log_stop=None) as quest_gen:
+                self.on_generate_(event=event, **kw)
+
+            cl_name = 'gen_{}'.format(self.__class__.__name__)
+            if instantiate_stat.get(cl_name, None):
+                instantiate_stat[cl_name]["count"] += 1
+                instantiate_stat[cl_name]["duration"] += quest_gen.duration
+            else:
+                instantiate_stat[cl_name] = {"count": 1, "duration": quest_gen.duration, 'name': cl_name}
+
         except Cancel as e:
             raise e
         except Exception as e:

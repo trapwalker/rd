@@ -71,8 +71,9 @@ class AgentProfile(Node):
     )  # todo: test to prefix path like: /mobile/cars/*
     car_list = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car', reinst=True),
-        root_default=list, caption=u"Список всех машин, кроме активной",
+        root_default=list,
         reinst=True,
+        caption=u"Список всех машин, кроме активной",
     )
 
     position = PositionField(caption=u"Последние координаты агента", reinst=True)
@@ -186,6 +187,7 @@ class AgentProfile(Node):
 
     quests_unstarted = ListField(
         caption=u"Список доступных (невзятых) квестов",
+        root_default=list,
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
@@ -193,6 +195,7 @@ class AgentProfile(Node):
     )
     quests_active = ListField(
         caption=u"Список активных квестов",
+        root_default=list,
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
@@ -200,6 +203,7 @@ class AgentProfile(Node):
     )
     quests_ended = ListField(
         caption=u"Список законченных квестов (пройденных или проваленных)",
+        root_default=list,
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
@@ -208,8 +212,9 @@ class AgentProfile(Node):
 
     notes = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.notes.Note'),
-        root_default=list, caption=u"Список доступных нотесов",
+        root_default=list,
         reinst=True,
+        caption=u"Список доступных нотесов",
     )
 
     quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
