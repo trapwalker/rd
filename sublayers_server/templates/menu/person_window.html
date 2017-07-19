@@ -17,7 +17,7 @@
             </div>
             <div class="person-window-top-about-self">
                 <div class="person-window-about-self-label">О себе:</div>
-                <div class="person-window-about-self-text">{{ agent.example.profile.about_self }}</div>
+                <textarea class="person-window-about-self-text" readonly maxlength="400">{{ agent.example.profile.about_self }}</textarea>
             </div>
             <div class="person-window-top-person">
                 <div class="person-window-person-photo" style="background: url('{{ agent.avatar_link }}') 100% 100% no-repeat transparent; ">

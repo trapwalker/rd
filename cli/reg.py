@@ -34,8 +34,9 @@ def reg_clean(ctx):
 @click.option('--export' ,'-x', 'dest', type=click.File(mode='w'), help='Export registry tree to the file')
 @click.option('--no_db', is_flag=True, default=False, help='Do not store registry to DB')
 @click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
+@click.option('--reset_profiles', '-R', is_flag=True, default=False, help='Reset profile registration state to "nickname"')
 @click.pass_context
-def reg_reload(ctx, dest, no_db, clean_agents):
+def reg_reload(ctx, dest, no_db, clean_agents, reset_profiles):
     """Clean registry DB, load them from FS and save to DB"""
     world = ctx.obj['world']
     try:
@@ -47,6 +48,10 @@ def reg_reload(ctx, dest, no_db, clean_agents):
     if clean_agents:
         from cli._common import agents_clean
         agents_clean()
+
+    if reset_profiles:
+        from cli._common import profiles_reset
+        profiles_reset()
 
     if dest:
         save_to_file(registry, dest)

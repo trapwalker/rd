@@ -899,59 +899,6 @@ class QuestLogMessage(messages.Message):
         return d
 
 
-class DeliveryQuest(Quest):
-    distance_table = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.disttable.DistTable')
-    recipient_list = ListField(
-        root_default=list,
-        caption=u"Список возможных получателей доставки",
-        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
-    )
-    recipient = RegistryLinkField(
-        caption=u'Получатель доставки',
-        tags={'client'},
-        document_type='sublayers_server.model.registry_me.classes.poi.Institution',
-    )
-    total_delivery_money_coef = FloatField(
-        caption=u'Множитель общей стоимости награды за квест от стоимости доставляемого товара')
-    delivery_set_list = ListField(
-        root_default=list,
-        caption=u"Список возможных комплектов для доставки",
-        field=ListField(
-            caption=u"Список возможных наборов итемов для доставки",
-            field=EmbeddedNodeField(
-                document_type='sublayers_server.model.registry_me.classes.item.Item',
-                caption=u"Необходимый итем",
-            ),
-        ),
-    )
-    delivery_set = ListField(
-        caption=u"Список итемов для доставки",
-        tags={'client'},
-        field=EmbeddedNodeField(
-            document_type='sublayers_server.model.registry_me.classes.item.Item',
-            caption=u"Необходимый итем",
-        ),
-    )
-
-    def init_text(self, distance=None):
-        if distance == 0:
-            self.text_short = u"Доставьте груз в соседнее здание."
-            self.text = u"Доставьте груз: {} - к {}. Награда: {:.0f}nc.".format(
-                ', '.join([item.title for item in self.delivery_set]),
-                self.recipient.title,
-                self.reward_money
-            )
-            return
-        self.text_short = u"Доставьте груз в гороод {}.".format(self.recipient.hometown.title)
-        self.text = u"Доставьте груз: {} - к {} в гороод {}. Награда: {:.0f}nc и {:.0f}ед. опыта.".format(
-            ', '.join([item.title for item in self.delivery_set]),
-            self.recipient.title,
-            self.recipient.hometown.title,
-            self.reward_money,
-            self.reward_exp,
-        )
-
-
 class AIQuickQuest(Quest):
     route = ListField(
         root_default=list,
