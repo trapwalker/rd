@@ -28,7 +28,7 @@ class DeliveryFromCache(DeliveryQuestSimple):
     cache_point = EmbeddedDocumentField(document_type=MarkerMapObject, reinst=False)
 
     loot_set_list = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Список возможных комплектов ненужных вещей",
         field=ListField(
             caption=u"Комплект ненужных вещей",
@@ -148,106 +148,3 @@ class DeliveryFromCache(DeliveryQuestSimple):
         )
         return d
 
-
-class SearchCourier(DeliveryFromCache):
-    cache_radius = FloatField(caption=u'Радиус, в котором можно обнаружить тайник', root_default=50)
-
-    loot_set_list = ListField(
-        root_default=[],
-        caption=u"Список возможных комплектов ненужных вещей",
-        field=ListField(
-            caption=u"Комплект ненужных вещей",
-            field=EmbeddedNodeField(
-                document_type='sublayers_server.model.registry_me.classes.item.Item',
-                caption=u"Необходимый итем",
-            ),
-        ),
-        reinst=True,
-    )
-    loot_set = ListField(
-        caption=u"Список ненужных вещей",
-        field=EmbeddedNodeField(
-            document_type='sublayers_server.model.registry_me.classes.item.Item',
-            caption=u"Необходимый итем",
-        ),
-    )
-
-    courier_car_list = ListField(
-        caption=u"Список возможных машин курьера",
-        field=EmbeddedNodeField(
-            document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
-            caption=u"Машина курьера",
-        ),
-    )
-    courier_car = EmbeddedNodeField(
-        document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
-        caption=u"Машина курьера",
-    )
-
-    courier_medallion = EmbeddedNodeField(
-        document_type='sublayers_server.model.registry_me.classes.quest_item.QuestItem',
-        caption=u"Медальон курьера",
-        tags={'client'},
-    )
-
-    def init_delivery_set(self):
-        self.delivery_set = []
-
-        # Тут гененрация ненужных вещей
-        self.loot_set = []
-        for i in range(random.choice([3, 4])): # 3-4 предмета
-            # Выбор только по первому элементу списка (т.к. в простой реализации квеста естьтолько список итемов а не пресеты)
-            choice = random.choice(self.loot_set_list[0])
-            item = choice.instantiate(amount=choice.amount)
-            self.loot_set.append(item)
-
-        # Выбор машинки курьера
-        choice = random.choice(self.courier_car_list)
-        self.courier_car = choice.instantiate()
-
-    def init_text(self):
-        self.text_short = u"Найти пропавшего курьера."
-        self.text = u"Найти пропавшего курьера и вернуть важный предмет{} Награда: {:.0f}nc, {:.0f} кармы и {:.0f} ед. опыта.".format(
-            u"." if not self.deadline else u" за {}.".format(self.deadline_to_str()),
-            self.reward_money,
-            self.reward_karma,
-            self.reward_exp,
-        )
-
-    def create_poi_container(self, event):
-        if self.deadline:
-            life_time = self.starttime + self.deadline - event.time
-        else:
-            life_time = event.server.poi_loot_objects_life_time
-
-        items = []
-        for item_example in self.loot_set:
-            item = item_example.instantiate(amount=item_example.amount)
-            items.append(ItemState(server=event.server, time=event.time, example=item, count=item.amount))
-
-        medallion = self.courier_medallion.instantiate()
-        self.dc.medallion_uid = medallion.uid
-        self.agent.profile.quest_inventory.add_item(agent=self.agent, item=medallion, event=event)
-        self.log(text=u'Получена платиновая фишка.', event=event, position=self.cache_point.position)
-
-        CreatePOICorpseEvent(
-            server=event.server,
-            time=event.time,
-            example=None,
-            inventory_size=len(self.loot_set),
-            position=self.cache_point.position.as_point(),
-            life_time=life_time,
-            items=items,
-            sub_class_car=self.courier_car.sub_class_car,
-            car_direction=0,
-            donor_v=0,
-            donor_example=self.courier_car,
-            agent_viewer=None,
-        ).post()
-
-    def take_medallion(self, event):
-        medallion = self.agent.profile.quest_inventory.get_item_by_uid(self.dc.medallion_uid)
-        # todo: medallion не может не быть, если его нет то хз вообще как
-        if medallion:
-            self.agent.profile.quest_inventory.del_item(agent=self.agent, item=medallion, event=event)
-        return True
