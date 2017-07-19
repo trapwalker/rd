@@ -68,6 +68,14 @@ class ServerStatEventsHandler(BaseHandler):
         self.render("statistics/events_stats.html", events_metrics=events_metrics)
 
 
+class ServerStatQuestsHandler(BaseHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        from sublayers_server.model.registry_me.classes.quests import instantiate_stat
+        quests_metrics = sorted(instantiate_stat.values(), key=lambda rec: rec["count"], reverse=True)
+        self.render("statistics/quests_stats.html", quests_metrics=quests_metrics)
+
+
 class ServerStatHandlersHandler(BaseHandler):
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
