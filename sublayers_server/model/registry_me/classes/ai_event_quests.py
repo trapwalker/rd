@@ -13,7 +13,7 @@ import random
 
 
 class LootGenerateRec(Subdoc):
-    item = EmbeddedNodeField(
+    item = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.item.Item',
         caption=u"Итем который может попасть в инвентарь бота",
     )
@@ -33,7 +33,7 @@ class AIEventQuest(Quest):
     loot_rec_list = ListField(
         root_default=list,
         caption=u"Список для генерации инвентаря бота",
-        field=EmbeddedDocumentField(document_type=LootGenerateRec, reinst=True),
+        field=EmbeddedDocumentField(document_type=LootGenerateRec),
         reinst=True
     )
 
@@ -95,13 +95,11 @@ class AITrafficQuest(AIEventQuest):
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.routes.Route',
         ),
-        reinst=True,
     )
 
     towns_protect = ListField(
         root_default=list,
         caption=u"Список городов покровителей",
-        reinst=True,
         field=RegistryLinkField(
             document_type='sublayers_server.model.registry_me.classes.poi.Town',
         ),

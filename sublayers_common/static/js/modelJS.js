@@ -64,23 +64,23 @@ var DynamicObject = (function (_super) {
     }
 
     DynamicObject.prototype.getCurrentDirection = function (time) {
-        return this._motion_state.fi(time);
+        return this._motion_state && this._motion_state.fi(time) || 0;
     };
 
     DynamicObject.prototype.getCurrentCoord = function (time) {
-        return this._motion_state.p(time);
+        return this._motion_state && this._motion_state.p(time) || (new Point(0, 0));
     };
 
     DynamicObject.prototype.getCurrentSpeed = function (time) {
-        return this._motion_state.v(time);
+        return this._motion_state && this._motion_state.v(time) || 0;
     };
 
     DynamicObject.prototype.getCurrentHP = function (time) {
-        return this._hp_state.hp(time);
+        return this._hp_state && this._hp_state.hp(time) || 0;
     };
 
     DynamicObject.prototype.getCurrentFuel = function (time) {
-        return this._fuel_state.fuel(time);
+        return this._fuel_state && this._fuel_state.fuel(time) || 0;
     };
 
     DynamicObject.prototype._manage_tm = function () {
