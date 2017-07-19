@@ -137,7 +137,7 @@ class AgentConsoleNamespace(Namespace):
         self.agent.example.profile.quests_active = []
         self.agent.example.profile.notes = []
         t = self.agent.server.get_time()
-        self.agent.on_save(time=t)
+        # self.agent.on_save(time=t)
         messages.RefreshMessage(agent=self.agent, time=t + 1, comment='Quests cleared').post()
 
     def regenerate_quests(self):
