@@ -295,6 +295,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     left: 0;
     right: -50px;
     overflow-y: scroll;
+    overflow-x: hidden;
     font-family: Nouveau_IBM;
 }
 
