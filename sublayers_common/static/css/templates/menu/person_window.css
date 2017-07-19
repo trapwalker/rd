@@ -77,8 +77,13 @@
     position: relative;
     width: 100%;
     height: calc(100% - 20px);
-    padding-top: 10px;
     box-sizing: border-box;
+    background: transparent;
+    resize: none;
+    color: #31c811;
+    font: 11pt Nouveau_IBM;
+    border: none;
+    outline: none !important;
 }
 
 .person-window-top-person {

@@ -170,7 +170,7 @@
 .character-window-about-area {
     position: relative;
     width: 100%;
-    height: calc(100% - 17px * 4);
+    height: calc(100% - 17px * 5);
     border: 1px solid #0e4b00;
 }
 .character-window-about-area textarea {
