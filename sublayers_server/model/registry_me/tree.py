@@ -596,7 +596,7 @@ class Node(Subdoc, SubdocToolsMixin):
                     extra[k] = self._copy_field_value(field, v)  # todo: ##OPTIMIZE
 
         _empty_overrided_fields = list(
-            {k for k, v in extra.iteritems() if not v and k in _inheritable_fields} |
+            {k for k, v in extra.iteritems() if v is None and k in _inheritable_fields} |
             set(_empty_overrided_fields or {})
         )  # todo: Make SetField
 
@@ -734,7 +734,7 @@ class Node(Subdoc, SubdocToolsMixin):
                 self._empty_overrided_fields = []
                 _empty_overrided_fields = self._empty_overrided_fields
             _is_in = key in _empty_overrided_fields
-            _is_value = bool(value)
+            _is_value = value is not None
             if not _is_value and not _is_in:
                 _empty_overrided_fields.append(key)
             elif _is_value and _is_in:
