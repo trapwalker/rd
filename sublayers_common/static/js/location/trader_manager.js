@@ -274,6 +274,7 @@ var LocationTraderNPC = (function (_super) {
                         '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
                         '<div class="npcInventory-text name">' + example.title + '</div>' +
                         '<div class="npcInventory-text count">' + count_str + '</div>' +
+                        '<div class="npcInventory-text price">' + example.price.base + ' Nc</div>' +
                     '</div>' +
                 '</div>'
             );
@@ -298,18 +299,27 @@ var LocationTraderNPC = (function (_super) {
             itemDiv.mouseleave({}, function(event) { locationManager.panel_right.show({text: '' }, 'description'); });
 
             itemDiv.click({}, function(event) {
+                var src_list;
+                if (dropCls == self.playerInvCls) src_list = self.playerInv;
+                if (dropCls == self.playerTableCls) src_list = self.playerTable;
+                if (dropCls == self.traderInvCls) src_list = self.traderInv;
+                if (dropCls == self.traderTableCls) src_list = self.traderTable;
+
                 var item_pos = $(this).data('pos');
+                var item = src_list[item_pos];
+                var count = (item.count > 0) ? count = Math.min(item.count, item.stack_size) : count = item.stack_size;
+
                 if (dropCls == self.playerInvCls)
-                    self.changeItemDropable(item_pos, 1, self.playerInv, self.playerTable, self.playerInvDiv,
+                    self.changeItemDropable(item_pos, count, self.playerInv, self.playerTable, self.playerInvDiv,
                         self.playerTableDiv, self.playerInvCls, self.playerTableCls);
                 if (dropCls == self.playerTableCls)
-                    self.changeItemDropable(item_pos, 1, self.playerTable, self.playerInv, self.playerTableDiv,
+                    self.changeItemDropable(item_pos, count, self.playerTable, self.playerInv, self.playerTableDiv,
                         self.playerInvDiv, self.playerTableCls, self.playerInvCls);
                 if (dropCls == self.traderInvCls)
-                    self.changeItemDropable(item_pos, 1, self.traderInv, self.traderTable, self.traderInvDiv,
+                    self.changeItemDropable(item_pos, count, self.traderInv, self.traderTable, self.traderInvDiv,
                         self.traderTableDiv, self.traderInvCls, self.traderTableCls);
                 if (dropCls == self.traderTableCls)
-                    self.changeItemDropable(item_pos, 1, self.traderTable, self.traderInv, self.traderTableDiv,
+                    self.changeItemDropable(item_pos, count, self.traderTable, self.traderInv, self.traderTableDiv,
                         self.traderInvDiv, self.traderTableCls, self.traderInvCls);
             });
             
