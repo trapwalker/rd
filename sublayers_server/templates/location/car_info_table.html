@@ -24,6 +24,8 @@
         <div class="mainCarInfoWindow-body-right-menu-button" onclick="CarTableInfoMenuClick(this)" data-page="history">История</div>
     </div>
     <div class="car-info-block-body-right-list active model">
+        <div class="car-info-block-body-right-list-text name even">&nbspЦена:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ int(car.price) }} Nc</div>
         <div class="car-info-block-body-right-list-text name uneven">&nbspКласс:</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.class_car }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspПрочность:</div>
