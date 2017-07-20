@@ -352,8 +352,10 @@ var ModalWindow = (function () {
             this.division_max_count = options.max_count;
         else
             this.division_max_count = 0;
+        this.division_count = Math.min(options.item.stack_size, this.division_max_count);
+
         this.modalItemDivision.find('#divisionItemTotalSpan').text(this.division_max_count);
-        this.modalItemDivisionSetCount(0);
+        this.modalItemDivisionSetCount(this.division_count);
 
         var caption = this.modalItemDivision.find('.division-item-info-caption').first();
         var img = this.modalItemDivision.find('.division-item-info-image').first();

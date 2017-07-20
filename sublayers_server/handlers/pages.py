@@ -25,6 +25,11 @@ class PlayHandler(BaseHandler):
                     self.redirect(self.get_login_url())
                     return
                 time = self.application.srv.get_time()
+                connection_delay = agent.get_connection_delay(time=time)
+                if connection_delay is None:
+                    self.redirect('/static/connection_trouble.html')
+                    return
+
                 coord = agent.get_loading_coord(time=time)
 
                 # todo: убрать все что касается is_tester
@@ -42,7 +47,7 @@ class PlayHandler(BaseHandler):
                             start_coord=coord,
                             insurance_name=agent.example.profile.insurance.title,
                             user_balance=agent.balance,
-                            connection_delay=agent.get_connection_delay(time=time),
+                            connection_delay=connection_delay,
                         )
                     else:
                         log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
@@ -65,6 +70,13 @@ class PlayHandler(BaseHandler):
                     self.redirect('/play')
                     return
 
+                connection_delay = 0
+                if agent:
+                    connection_delay = agent and agent.get_connection_delay(time=self.application.srv.get_time())
+                    if connection_delay is None:
+                        self.redirect('/static/connection_trouble.html')
+                        return
+
                 self.render(
                     "play.html",
                     ws_port=options.ws_port,
@@ -76,7 +88,7 @@ class PlayHandler(BaseHandler):
                     start_coord=coord,
                     insurance_name='quick',
                     user_balance=0,
-                    connection_delay=agent and agent.get_connection_delay(time=self.application.srv.get_time()) or 0,
+                    connection_delay=connection_delay,
                 )
         else:
             self.redirect(self.get_login_url())
