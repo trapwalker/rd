@@ -136,10 +136,17 @@ def test5(reload=True, save_loaded=True):
     #print(c)
     #print(c.slot_CC)
 
-    ap = reg.get(r'\registry\agents\user')
-    print('ap :', ap._empty_overrided_fields, ap.quests_ended)
-    ap2 = ap.instantiate()
-    print('ap2:', ap2._empty_overrided_fields, ap2.quests_ended)
+    # ap = reg.get(r'\registry\agents\user')
+    # print('ap :', ap._empty_overrided_fields, ap.quests_ended)
+    # ap2 = ap.instantiate()
+    # print('ap2:', ap2._empty_overrided_fields, ap2.quests_ended)
+
+    t = reg.get(r'/registry/institutions/mayor/prior_donnie_alma')
+    q = t.quests[4]
+    print(q)
+    with T():
+        for i in xrange(10):
+            random.choice(q.recipient_list)
 
     globals().update(locals())
 

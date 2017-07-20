@@ -82,6 +82,7 @@ class Price(object):
 
     def get_price(self, item, skill_effect):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
         return dict(
+            base=item.base_price,
             buy=self.price * item.base_price * (1 - self.trader.margin * skill_effect),
             sale=self.price * item.base_price * (1 + self.trader.margin * skill_effect),
         )

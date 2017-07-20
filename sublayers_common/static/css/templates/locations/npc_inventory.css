@@ -61,6 +61,7 @@
 }
 .npcInventory-text.name { top: 0px; text-align: left; }
 .npcInventory-text.count { bottom: 0px; text-align: right; }
+.npcInventory-text.price { bottom: 0px; text-align: left; }
 
 .npcInventory-pictureWrap {
     position: absolute;
