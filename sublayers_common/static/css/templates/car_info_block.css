@@ -120,7 +120,7 @@
 .car-info-block-body-right-list-text {
     position: relative;
     float: left;
-    width: 150px;
+    width: 144px;
     color: #1e9604;
     margin-bottom: 2px;
     display: inline-block;
@@ -128,9 +128,9 @@
 }
 
 .car-info-block-body-right-list-text.value {
-    width: calc(100% - 150px);
+    width: calc(100% - 144px);
     color: #30fc00;
-    padding-right: 10px;
+    padding-right: 14px;
     text-align: right;
 }
 
