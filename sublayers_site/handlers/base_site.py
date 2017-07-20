@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import BaseHandler
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.creater_agent import create_agent
 
 import tornado.template
 #from tornado.httpclient import AsyncHTTPClient
@@ -23,23 +24,7 @@ class BaseSiteHandler(BaseHandler):
         agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
         if not agent_example:
             # info: создание пустого агента для отображения на сайте
-            agent_example = Agent(
-                login=user.name,
-                user_id=str(user.pk),
-                profile=dict(
-                    parent='/registry/agents/user',
-                    name=str(user.pk),
-                    role_class='/registry/rpg_settings/role_class/chosen_one',  # todo: Убрать как наследуемый?
-                ),
-            )
-
-            for class_skill in agent_example.profile.role_class.class_skills:
-                # todo: Перебирать объекты реестра
-                if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                    skill = getattr(agent_example.profile, class_skill.target)
-                    skill.mod = class_skill
-
-            agent_example.save()
+            agent_example = create_agent(registry=self.application.reg, user=user)
 
         ex_car = None
         if agent_example:

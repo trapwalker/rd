@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.creater_agent import create_agent
 
 from tornado.web import HTTPError
 #from tornado.httpclient import AsyncHTTPClient
@@ -88,16 +89,7 @@ class StandardLoginHandler(BaseSiteHandler):
 
         agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
         if agent_example is None:
-            agent_example = Agent(
-                #storage=self.application.reg_agents,
-                user_id=str(user.pk),
-                teaching_flag=False,
-                quick_flag=False,
-                profile=dict(
-                    name=str(user.pk),
-                    parent='/registry/agents/user',
-                ),
-            ).save(upsert=True)
+            agent_example = create_agent(registry=self.application.reg, user=user)
 
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -251,6 +243,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 return
 
             agent_ex.profile.set_role_class(role_class_ex=role_class_ex, registry=self.application.reg)
+            user.role_class_uri = role_class_ex.uri
 
             # Сброс всех перков
             agent_ex.profile.perks = []
