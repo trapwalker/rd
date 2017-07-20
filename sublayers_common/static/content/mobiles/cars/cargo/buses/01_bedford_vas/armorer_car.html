@@ -1,0 +1,78 @@
+<style>
+    {% if need_css_only is False %}
+    .armorer-car-main-top {
+        position: relative;
+        opacity: 0.5;
+        background: transparent url(static/content/mobiles/cars/cargo/buses/01_bedford_vas/top.png) no-repeat 100% 100%;
+        height: 158px;
+        width: 492px;
+        margin: 20px auto 0px auto;
+        overflow: hidden;
+    }
+
+    .armorer-car-main-side {
+        position: relative;
+        opacity: 0.5;
+        background: transparent url(static/content/mobiles/cars/cargo/buses/01_bedford_vas/side.png) no-repeat 100% 100%;
+        height: 170px;
+        width: 492px;
+        margin: 30px auto 0px auto;
+        overflow: hidden;
+    }
+    {% end %}
+
+    .car-info-block-armorer-margin_{{ car.node_html() }} { position: absolute; margin-top: -51px ; }
+
+    .shift-for-journal_{{ car.node_html() }} {margin: -158px 0 0 0;}
+
+    .top_slot_FL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_FL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_FC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_FC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_FR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_FR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_CC_{{ car.node_html() }} { top: 82px; left: 230px; }
+    .side_slot_CC_{{ car.node_html() }} { top: 216px; left: 230px; }
+
+    .top_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_BC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_BC_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+
+    .top_slot_BR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .side_slot_BR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+</style>
+
+{% if need_css_only is False %}
+<div class="armorer-car-main">
+    <div class="armorer-car-main-top"></div>
+    <div class="armorer-car-main-side"></div>
+    <div class="town-back-interlacing"></div>
+    <div id="top_slot_FL" class="armorer-slot top_slot_FL_{{ car.node_html() }}"></div>
+    <div id="top_slot_FR" class="armorer-slot top_slot_FR_{{ car.node_html() }}"></div>
+    <div id="top_slot_CL" class="armorer-slot top_slot_CL_{{ car.node_html() }}"></div>
+    <div id="top_slot_CC" class="armorer-slot top_slot_CC_{{ car.node_html() }}"></div>
+    <div id="top_slot_CR" class="armorer-slot top_slot_CR_{{ car.node_html() }}"></div>
+    <div id="top_slot_BL" class="armorer-slot top_slot_BL_{{ car.node_html() }}"></div>
+    <div id="top_slot_BC" class="armorer-slot top_slot_BC_{{ car.node_html() }}"></div>
+    <div id="top_slot_BR" class="armorer-slot top_slot_BR_{{ car.node_html() }}"></div>
+    <div id="side_slot_FL" class="armorer-slot side_slot_FL_{{ car.node_html() }}"></div>
+    <div id="side_slot_FR" class="armorer-slot side_slot_FR_{{ car.node_html() }}"></div>
+    <div id="side_slot_CL" class="armorer-slot side_slot_CL_{{ car.node_html() }}"></div>
+    <div id="side_slot_CC" class="armorer-slot side_slot_CC_{{ car.node_html() }}"></div>
+    <div id="side_slot_CR" class="armorer-slot side_slot_CR_{{ car.node_html() }}"></div>
+    <div id="side_slot_BL" class="armorer-slot side_slot_BL_{{ car.node_html() }}"></div>
+    <div id="side_slot_BC" class="armorer-slot side_slot_BC_{{ car.node_html() }}"></div>
+    <div id="side_slot_BR" class="armorer-slot side_slot_BR_{{ car.node_html() }}"></div>
+</div>
+{% end %}
