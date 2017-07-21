@@ -988,11 +988,14 @@ class QuickUser(User):
         SetMapCenterMessage(agent=self, time=event.time, center=self._next_respawn_point).post()  # send message to load map
 
     def print_login(self):
-        str_list = self._login.split('_')
-        if len(str_list) > 1:
-            return '_'.join(str_list[:-1])
+        if self.user.quick:
+            str_list = self._login.split('_')
+            if len(str_list) > 1:
+                return '_'.join(str_list[:-1])
+            else:
+                return self._login
         else:
-            return self._login
+            return super(QuickUser, self).print_login()
 
 
 class TeachingUser(QuickUser):
@@ -1001,7 +1004,7 @@ class TeachingUser(QuickUser):
         self.armory_shield_status = False
         self.quest_parent = None
         if not self.user.quick:
-            assert self.user.teaching_state == 'map'
+            assert self.user.teaching_state == 'map' or self.user.teaching_state == 'map_start'
             self.quest_parent = self.server.reg.get('/registry/quests/teaching_map')
             self.create_teaching_quest_map(time=time)
 

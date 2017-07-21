@@ -227,6 +227,7 @@ class StandardLoginHandler(BaseSiteHandler):
             agent_ex = Agent.objects.filter(user_id=str(user.pk)).first()
             if agent_ex is None:  # todo: Определить вероятность такой проблемы, рассмотреть пути решения
                 # todo: warning
+                log.warning('Agent not found registration_status={}'.format(user.registration_status))
                 self.send_error(status_code=404)
                 return
 
