@@ -32,8 +32,28 @@ class Cannon(Weapon):
     area_dmg = FloatField(caption=u'Урон за выстрел')
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
 
+    def html_description(self):
+        return (u'<div class="description-line left-align">Класс тяжести:</div><div class="description-line right-align">{}</div>'.format(self.weight_class) +
+                u'<div class="description-line left-align">Урон:</div><div class="description-line right-align">{}</div>'.format(self.dmg) +
+                u'<div class="description-line left-align">Дальность:</div><div class="description-line right-align">{}</div>'.format(int(self.radius)) +
+                u'<div class="description-line left-align">Сектор:</div><div class="description-line right-align">{}</div>'.format(int(self.width)) +
+                u'<div class="description-line left-align">Пробитие:</div><div class="description-line right-align">{}</div>'.format(int(self.power_penetration)) +
+                u'<div class="description-line left-align">Перезараядка:</div><div class="description-line right-align">{}</div>'.format(self.time_recharge) +
+                u'<div class="description-line left-align ammo">Снаряд:</div><div class="description-line right-align ammo">{}</div>'.format(self.ammo.doc)
+                )
+
 
 class MachineGun(Weapon):
     is_auto = True
     dps = FloatField(caption=u'Урон в секунду')
     animation_tracer_rate = FloatField(caption=u'Количество трассеров отрисовываемых в секунду')
+
+    def html_description(self):
+        return (u'<div class="description-line left-align">Класс тяжести:</div><div class="description-line right-align">{}</div>'.format(self.weight_class) +
+                u'<div class="description-line left-align">Урон:</div><div class="description-line right-align">{}</div>'.format(self.dps) +
+                u'<div class="description-line left-align">Дальность:</div><div class="description-line right-align">{}</div>'.format(int(self.radius)) +
+                u'<div class="description-line left-align">Сектор:</div><div class="description-line right-align">{}</div>'.format(int(self.width)) +
+                u'<div class="description-line left-align">Пробитие:</div><div class="description-line right-align">{}</div>'.format(int(self.power_penetration)) +
+                u'<div class="description-line left-align ammo">Снаряд:</div><div class="description-line right-align ammo">{}</div>'.format(self.ammo.doc)
+                )
+
