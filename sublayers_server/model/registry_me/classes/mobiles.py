@@ -13,8 +13,6 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField, EmbeddedNodeField, PositionField, BooleanField,
 )
 
-from math import pi
-
 SLOT_LOCK = "reg:///registry/items/slot_item/_lock"
 
 class SlotField(EmbeddedNodeField):
@@ -215,49 +213,63 @@ class Mobile(Node):
 
     def get_modify_value(self, param_name, example_agent=None):
         original_value = getattr(self, param_name)
+        modifier_value = 1.0  # собирающий коэффициент по перкам, квест_итемам и механик_итемам, НО НЕ ПО СКИЛАМ
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):
-                original_value += getattr(slot_value, param_name, 0.0)
+                modifier_value += getattr(slot_value, param_name, 0.0)
         if example_agent:
             quest_items_modifiers = example_agent.profile.get_quest_skill_modifier()
+
             for skill_name, skill_value in example_agent.profile.iter_skills():
                 skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
                 original_value += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+
             for perk in example_agent.profile.perks:
-                original_value += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
+                modifier_value += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
 
             if param_name == 'v_forward':
                 original_value *= example_agent.profile.exp_table.get_car_penalty(
                     dvalue=(self.needed_driving - example_agent.profile.driving.calc_value())
                 )
+
+        modifier_value = max(0, modifier_value)
+        original_value *= modifier_value
         # todo: проверить допустимость значения
         assert original_value is not None, '{} is not allowed {}'.format(param_name, original_value)
         return original_value
 
     def param_aggregate(self, example_agent):
-        d = dict()
+        d = dict()  # Здесь лежат оригинальные значения с учётом влияния скилов
+        modifier_dict = dict()  # собирающий коэффициент по перкам, квест_итемам и механик_итемам, НО НЕ ПО СКИЛАМ
         for param_name, attr, getter in self.iter_attrs(tags={'param_aggregate'}):
             d[param_name] = getattr(self, param_name)
+            modifier_dict[param_name] = 1.0
 
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):
-                for param_name in d.keys():
-                    d[param_name] = d[param_name] + getattr(slot_value, param_name, 0.0)
+                for param_name in modifier_dict.keys():
+                    modifier_dict[param_name] += getattr(slot_value, param_name, 0.0)
 
         if example_agent:
             quest_items_modifiers = example_agent.profile.get_quest_skill_modifier()
+
             for skill_name, skill_value in example_agent.profile.iter_skills():
                 skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
                 for param_name in d.keys():
-                    d[param_name] = d[param_name] + skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+                    d[param_name] += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
 
             for perk in example_agent.profile.perks:
-                for param_name in d.keys():
-                    d[param_name] = d[param_name] + getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
+                for param_name in modifier_dict.keys():
+                    modifier_dict[param_name] += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
 
             d['v_forward'] *= example_agent.profile.exp_table.get_car_penalty(
                 dvalue=(self.needed_driving - example_agent.profile.driving.calc_value())
             )
+
+        # перемножение значений
+        for param_name in d.keys():
+            # todo: проверить допустимость всех значений
+            d[param_name] *= max(modifier_dict[param_name], 0)
 
         return d
 
