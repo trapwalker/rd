@@ -84,8 +84,8 @@ class PerkPassive(Perk):
 
 
 class PerkRepairPassive(PerkPassive):
-    repair_rate = FloatField(caption=u"Скорость отхила в секунду")
-    repair_rate_on_stay = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении")
+    repair_rate = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду")
+    repair_rate_on_stay = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении")
 
 
 class PerkCritPassive(PerkPassive):

@@ -210,7 +210,7 @@ class Unit(Observer):
             if item:
                 weapon.set_item(item=item, time=event.time)
         # включить пассивный отхил  # todo: убедиться, что отрицательное значение здесь - правильное решение
-        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate'])
+        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate'] * self.max_hp)
 
     def on_zone_check(self, event):
         # зонирование
@@ -619,7 +619,7 @@ class Bot(Mobile):
         super(Bot, self).on_init(event=event)
         # если при инициализации машина не движется, то включить возможный пассивнх хил
         if not self.state.is_moving:
-            self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
+            self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'] * self.max_hp)
 
         # Включение стартовой неуязвимости:
         if self.example.start_shield_time > 0:
@@ -653,7 +653,7 @@ class Bot(Mobile):
         super(Bot, self).on_start(event=event)
 
         # Пассивный хил при остановке (от перков скилы и т.д.)
-        self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'])
+        self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'] * self.max_hp)
 
         # Снимаем щиты
         if self.start_shield_event:
@@ -667,7 +667,7 @@ class Bot(Mobile):
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)
         # todo: убедиться, что отрицательное значение получается путём подставления минуса - хорошо
-        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'])
+        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'] * self.max_hp)
 
 
 class ExtraMobile(Mobile):
