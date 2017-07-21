@@ -104,7 +104,9 @@ var WFuelRadial = (function (_super) {
     };
 
     WFuelRadial.prototype._drawRadialScale = function(){
-        $('#' + this.div_id).empty();
+        var jq_div = $('#' + this.div_id);
+        if (! jq_div.length) return;
+        jq_div.empty();
         var draw_main = SVG(this.div_id);
         this.draw_main = draw_main;
         var draw = draw_main.group();
@@ -277,7 +279,7 @@ var WFuelRadial = (function (_super) {
 
     WFuelRadial.prototype.change = function () {
         //console.log('WFuelRadial.prototype.change');
-        //return;
+        if(! user.userCar) return;
         var prc = this.car.getCurrentFuel(clock.getCurrentTime()) / (this.car._fuel_state && this.car._fuel_state.max_fuel || 1.0);
         if (prc < 0.0) prc = 0.0;
         if (Math.abs(this.value_prc - prc) > 0.005) {

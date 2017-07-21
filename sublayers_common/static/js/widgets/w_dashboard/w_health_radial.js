@@ -103,7 +103,9 @@ var WHPRadial = (function (_super) {
     };
 
     WHPRadial.prototype._drawRadialScale = function(){
-        $('#' + this.div_id).empty();
+        var jq_div = $('#' + this.div_id);
+        if (! jq_div.length) return;
+        jq_div.empty();
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -272,7 +274,7 @@ var WHPRadial = (function (_super) {
 
     WHPRadial.prototype.change = function () {
         //console.log('WHPRadial.prototype.change');
-        //return;
+        if(! user.userCar) return;
         var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
         if (Math.abs(this.value_prc - prc) > 0.005) {
