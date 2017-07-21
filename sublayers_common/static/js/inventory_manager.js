@@ -194,11 +194,12 @@ var Inventory = (function () {
                 var inventory = inventoryList.getInventory(owner_id);
                 if (! inventory) {console.log('Inventory not found: ', owner_id); return;}
                 if (inventory.items.hasOwnProperty(pos))
-                    locationManager.panel_right.show({text: inventory.items[pos].example.description }, 'description');
+                    locationManager.panel_right.show({text: inventory.items[pos].example.description,
+                                                      title: inventory.items[pos].example.title }, 'description');
                 })
             .mouseleave(function(event) {
                 if (!locationManager.in_location_flag) return;
-                locationManager.panel_right.show({text: ''}, 'description');
+                locationManager.panel_right.show({text: '', title: ''}, 'description');
             });
 
         $(inventoryDiv).append(emptyItemDiv);

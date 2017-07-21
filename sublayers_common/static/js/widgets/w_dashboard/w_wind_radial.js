@@ -103,7 +103,9 @@ var WWindRadial = (function (_super) {
     };
 
     WWindRadial.prototype._drawRadialScale = function(){
-        $('#' + this.div_id).empty();
+        var jq_div = $('#' + this.div_id);
+        if (! jq_div.length) return;
+        jq_div.empty();
         var draw_main = SVG(this.div_id);
         this.draw_main = draw_main;
         var draw = draw_main.group();
@@ -275,6 +277,7 @@ var WWindRadial = (function (_super) {
 
     WWindRadial.prototype.change = function () {
         //console.log('WWindRadial.prototype.change');
+        if(! user.userCar) return;
         //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
         //this.draw_fill_area(prc);

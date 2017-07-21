@@ -190,7 +190,7 @@ var LocationPlaceMenu = (function (_super) {
 
     LocationPlaceMenu.prototype.clearRightPanel = function() {
         //console.log('LocationArmorerNPC.prototype.clearRightPanel');
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     LocationPlaceMenu.prototype.select_inv_item = function(item, jq_selected_div) {
@@ -257,7 +257,7 @@ var LocationPlaceMenu = (function (_super) {
         if (page_id == "Settings")
             settingsManager.activate_in_city();
         else
-            locationManager.panel_right.show({text: ''}, 'description');
+            locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     return LocationPlaceMenu;

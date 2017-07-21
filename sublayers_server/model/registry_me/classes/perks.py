@@ -84,10 +84,15 @@ class PerkPassive(Perk):
 
 
 class PerkRepairPassive(PerkPassive):
-    repair_rate = FloatField(caption=u"Скорость отхила в секунду")
-    repair_rate_on_stay = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении")
+    repair_rate = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду")
+    repair_rate_on_stay = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении")
 
 
 class PerkCritPassive(PerkPassive):
     crit_rate = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
     crit_power = FloatField(caption=u"Сила крита [0 .. сколько угодно]")
+
+
+class PerkPartyPassive(PerkPassive):
+    additional_capacity = IntField(root_default=0, caption=u"Дополнительные слоты в пати")
+    # exp_modifier = FloatField(caption=u"процент увеличение экспы в пати")

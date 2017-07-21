@@ -15,8 +15,8 @@ sys.path.append(parent_folder(__file__))
 import logging
 
 if __name__ == '__main__':
-    import log_setup
-    log_setup.init(quick_mode=False)
+    from sublayers_server import log_setup
+    log_setup.init('basic')
 
 log = logging.getLogger()
 

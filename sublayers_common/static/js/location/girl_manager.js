@@ -71,7 +71,7 @@ var LocationGirlNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
         locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
-        locationManager.panel_right.show({text: '' }, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     LocationGirlNPC.prototype.clickBtn = function (btnIndex) {
@@ -99,9 +99,10 @@ var LocationGirlNPC = (function (_super) {
                 '</div>'
             );
             jq_item_div.mouseenter({example: items[i]}, function(event) {
-                locationManager.panel_right.show({text: event.data.example.description }, 'description');
+                locationManager.panel_right.show({text: event.data.example.description,
+                                                  title: event.data.example.title}, 'description');
             });
-            jq_item_div.mouseleave({}, function(event) { locationManager.panel_right.show({text: '' }, 'description'); });
+            jq_item_div.mouseleave({}, function(event) { locationManager.panel_right.show({text: '', title: ''}, 'description'); });
             jq_items_list.append(jq_item_div);
         }
         calc_width += items.length * 30;
