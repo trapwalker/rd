@@ -503,11 +503,7 @@ class Agent(Document):
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)
         assert isinstance(self.profile, AgentProfile)
-        for q in chain(
-            self.profile.quests_unstarted,
-            self.profile.quests_active,
-            self.profile.quests_ended,
-        ):
+        for q in self.profile.quests:
             q._agent = self
 
     def __nonzero__(self):
