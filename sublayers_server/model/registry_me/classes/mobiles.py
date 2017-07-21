@@ -127,8 +127,8 @@ class Mobile(Node):
     radius_rate          = FloatField(caption=u"Множитель модификации дальности стрельбы", tags={'param_aggregate'})
 
     # атрибуты, отвечающие за авто-ремонт машины.
-    repair_rate          = FloatField(caption=u"Скорость отхила в секунду", tags={'param_aggregate'})
-    repair_rate_on_stay  = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении", tags={'param_aggregate'})
+    repair_rate          = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду", tags={'param_aggregate'})
+    repair_rate_on_stay  = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={'param_aggregate'})
 
     # атрибуты, связанные с критами.
     crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
