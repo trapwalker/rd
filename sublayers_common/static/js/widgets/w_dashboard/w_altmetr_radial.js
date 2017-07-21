@@ -97,7 +97,10 @@ var WAltmetrRadial = (function (_super) {
     };
 
     WAltmetrRadial.prototype._drawRadialScale = function(){
-        $('#' + this.div_id).empty();
+        var jq_div = $('#' + this.div_id);
+        if (! jq_div.length) return;
+        jq_div.empty();
+
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -242,7 +245,7 @@ var WAltmetrRadial = (function (_super) {
 
     WAltmetrRadial.prototype.change = function () {
         //console.log('WAltmetrRadial.prototype.change');
-        //return;
+        if(! user.userCar) return;
         var prc = this.car.altitude / 255.;
         if (prc < 0.0) prc = 0.0;
         if (prc > 1.0) prc = 1.0;

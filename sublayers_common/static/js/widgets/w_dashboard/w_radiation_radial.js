@@ -104,7 +104,9 @@ var WRadiationRadial = (function (_super) {
     };
 
     WRadiationRadial.prototype._drawRadialScale = function(){
-        $('#' + this.div_id).empty();
+        var jq_div = $('#' + this.div_id);
+        if (! jq_div.length) return;
+        jq_div.empty();
         var draw = SVG(this.div_id);
         this.draw = draw;
 
@@ -276,6 +278,7 @@ var WRadiationRadial = (function (_super) {
 
     WRadiationRadial.prototype.change = function () {
         //console.log('WRadiationRadial.prototype.change');
+        if(! user.userCar) return;
         this.draw_fill_area(this.car.radiation_dps / this.max_radiation_dps);
 
         if (this.car.radiation_dps > 0) {

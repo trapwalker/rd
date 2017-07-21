@@ -6,12 +6,17 @@ log = logging.getLogger(__name__)
 from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.creater_agent import create_agent
 
 from tornado.web import HTTPError
 #from tornado.httpclient import AsyncHTTPClient
 import hashlib
 from tornado.options import options
 from random import randint
+import re
+
+
+LOGIN_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_-]{3,19}$')
 
 
 def clear_all_cookie(handler):
@@ -88,16 +93,7 @@ class StandardLoginHandler(BaseSiteHandler):
 
         agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
         if agent_example is None:
-            agent_example = Agent(
-                #storage=self.application.reg_agents,
-                user_id=str(user.pk),
-                teaching_flag=False,
-                quick_flag=False,
-                profile=dict(
-                    name=str(user.pk),
-                    parent='/registry/agents/user',
-                ),
-            ).save(upsert=True)
+            agent_example = create_agent(registry=self.application.reg, user=user)
 
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
@@ -208,6 +204,8 @@ class StandardLoginHandler(BaseSiteHandler):
             class_node_hash = self.get_argument('class_node_hash', None)
 
             # todo: проверить ник на допустимые символы
+            username_format_ok = LOGIN_RE.match(username)
+            log.debug('Username test %r: %s', username, 'OK' if username_format_ok else 'FAIL')
             if (
                 avatar_index is None or
                 class_index is None or
@@ -215,7 +213,8 @@ class StandardLoginHandler(BaseSiteHandler):
                 username is None or
                 not isinstance(username, basestring) or
                 username == '' or
-                len(username) > 100
+                len(username) > 100 or
+                not username_format_ok
             ):
                 self.finish({'status': 'fail_wrong_input'})
                 return
@@ -235,6 +234,7 @@ class StandardLoginHandler(BaseSiteHandler):
             agent_ex = Agent.objects.filter(user_id=str(user.pk)).first()
             if agent_ex is None:  # todo: Определить вероятность такой проблемы, рассмотреть пути решения
                 # todo: warning
+                log.warning('Agent not found registration_status={}'.format(user.registration_status))
                 self.send_error(status_code=404)
                 return
 
@@ -250,13 +250,11 @@ class StandardLoginHandler(BaseSiteHandler):
                 self.finish({'status': 'fail_wrong_input'})
                 return
 
-            agent_ex.profile.role_class = role_class_ex
-            # Установка классового навыка
-            for class_skill in role_class_ex.class_skills:
-                # todo: Перебирать объекты реестра
-                if class_skill.target in ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']:
-                    skill = getattr(agent_ex.profile, class_skill.target)
-                    skill.mod = class_skill
+            agent_ex.profile.set_role_class(role_class_ex=role_class_ex, registry=self.application.reg)
+            user.role_class_uri = role_class_ex.uri
+
+            # Сброс всех перков
+            agent_ex.profile.perks = []
 
             user.avatar_link = avatar_link
             user.name = username

@@ -454,7 +454,7 @@ var WCruiseControl = (function (_super) {
 
     WCruiseControl.prototype.change = function() {
         //console.log('WCruiseControl.prototype.change');
-        //return;
+        if(! user.userCar) return;
         var currentSpeed = user.userCar.getCurrentSpeed(clock.getCurrentTime());
         var cl_time = clock.getClientTime();
         if (Math.abs(currentSpeed - this.lastSpeed) > 0.1) {
