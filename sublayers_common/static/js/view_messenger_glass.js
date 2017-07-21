@@ -1160,6 +1160,10 @@ var ViewMessengerGlass = (function () {
             var dmessage = chat.mesList.shift();
             dmessage.mesDiv.remove();
         }
+
+
+        // Все сообщения лога дублировать в консоль
+        textConsoleManager.add_log_message(aText);
     };
 
     // ======== Добавление системной страницы (System)
