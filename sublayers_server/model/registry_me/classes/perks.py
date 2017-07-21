@@ -91,3 +91,8 @@ class PerkRepairPassive(PerkPassive):
 class PerkCritPassive(PerkPassive):
     crit_rate = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
     crit_power = FloatField(caption=u"Сила крита [0 .. сколько угодно]")
+
+
+class PerkPartyPassive(PerkPassive):
+    additional_capacity = IntField(root_default=0, caption=u"Дополнительные слоты в пати")
+    # exp_modifier = FloatField(caption=u"процент увеличение экспы в пати")
