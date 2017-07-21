@@ -22,7 +22,7 @@ var LocationVisitorsManager = (function () {
 
     LocationVisitorsManager.prototype.add_visitor_record = function (visitor) {
         var visitorDiv = $(
-            '<div id="visitorRecord_' + visitor + '" class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
+            '<div id="visitorRecord_' + hash_code(visitor) + '" class="visitor-record sublayers-clickable" data-visitor="' + visitor + '">' +
                 '<div class="visitor-record-label">' + visitor + '</div>'+
                 '<div class="visitor-record-button"></div>'+
             '</div>'
@@ -35,7 +35,7 @@ var LocationVisitorsManager = (function () {
     };
 
     LocationVisitorsManager.prototype.del_visitor_record = function (visitor) {
-        this.jq_main_div.find('#visitorRecord_' + visitor).remove();
+        this.jq_main_div.find('#visitorRecord_' + hash_code(visitor)).remove();
     };
 
     LocationVisitorsManager.prototype.add_visitor = function (visitor) {

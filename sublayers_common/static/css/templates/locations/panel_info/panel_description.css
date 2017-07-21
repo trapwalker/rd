@@ -46,3 +46,12 @@
     text-align: center;
     color: #c0ff00;  /*192, 255, 0*/
 }
+
+.description-line {
+    position: relative;
+    float: left;
+}
+.description-line.left-align { text-align: left; width: 130px; }
+.description-line.right-align { text-align: right; width: calc(100% - 130px); }
+.description-line.left-align.ammo { width: 80px; }
+.description-line.right-align.ammo { width: calc(100% - 80px); }
