@@ -152,14 +152,37 @@ class Agent(Object):
     def log(self):
         return self._logger
 
-    def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self._login)
-        log_file = 'log/agents/{}.log'.format(logger_name)
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        handler = logging.NullHandler()
-        l.setLevel(level)
-        l.addHandler(handler)
+    def setup_logger(self, level=logging.ERROR):
+        from sublayers_server.log_setup import (
+            logger, handler, formatter_simple, local_path, SUFFIX_BY_MODE, handler_errors_file, handler_screen,
+        )
+        import logging.handlers
+        user = self.user
+        d = dict(
+            mode=user and (user.quick and 'quick' or 'basic') or '_wrong_',
+            uid=user and user.pk,
+            login=self._login,
+            path_suffix=SUFFIX_BY_MODE[options.mode],
+        )
+        logger_name = 'agents.{mode}._{uid}_{login}'.format(**d)
+        log_file = 'log{path_suffix}/agents/agent_{uid}_[{login}].log'.format(**d)
+
+        l = logger(logger_name, level=level, propagate=0, handlers=[
+            handler_errors_file,
+            handler(
+                fmt=formatter_simple,
+                cls=logging.handlers.TimedRotatingFileHandler,
+                when='midnight',
+                backupCount=5,
+                encoding='utf-8',
+                filename=local_path(log_file),
+                level=level,
+                delay=True,
+            ),
+        ])
+        if options.show_agents_log:
+            l.add_handler(handler_screen)
+
         return l
 
     def __getstate__(self):
@@ -724,7 +747,7 @@ class Agent(Object):
         user.teaching_state = state
         user.save()
         self.log.info('teaching state for user <{!r}> changed: {!r}'.format(self._login, state))
-        
+
     def on_discharge_shoot(self, obj, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
@@ -802,23 +825,8 @@ class User(Agent):
         d['avatar_link'] = self.avatar_link
         return d
 
-    def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self._login)
-        log_file = 'log/agents/{}.log'.format(logger_name)
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        formatter = logging.Formatter('%(asctime)s : %(message)s')
-        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
-        fileHandler.setFormatter(formatter)
-        l.setLevel(level)
-        l.addHandler(fileHandler)
-
-        # info: если нужно видеть логи агентов в скрине
-        # import sys
-        # from sublayers_common.logging_tools import handler
-        # l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
-
-        return l
+    def setup_logger(self, level=logging.DEBUG):
+        return super(User, self).setup_logger(level=level)
 
     def after_delete(self, time):
         handlers = self._logger.handlers[:]

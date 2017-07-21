@@ -63,3 +63,5 @@ define("mode", default="basic", help="server mode. available values: basic, quic
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)
 define("reg_reload", default=False, help="Reload registry", type=bool)
 define("bot_reset", default=False, help="Reset bot state", type=bool)
+
+define("show_agents_log", default=False, help="Handle personal agent log to STDERR", type=bool)
