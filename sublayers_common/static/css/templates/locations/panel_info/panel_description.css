@@ -62,3 +62,12 @@
 .description-line.right-align { text-align: right; width: calc(100% - 135px); }
 .description-line.left-align.small { width: 80px; }
 .description-line.right-align.small { width: calc(100% - 80px); }
+.description-line.left-align.big { width: 200px; }
+.description-line.right-align.big { width: calc(100% - 200px); }
+
+.mechanic-description-line {
+    position: relative;
+    width: 100%;
+}
+.mechanic-description-line.left-align { text-align: left; }
+.mechanic-description-line.right-align { text-align: right; }

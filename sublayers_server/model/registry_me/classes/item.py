@@ -10,6 +10,8 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField, EmbeddedNodeField,
 )
 
+from collections import OrderedDict
+
 
 class Item(Node):
     icon = StringField(caption=u'Пиктограмма предмета')
@@ -254,6 +256,30 @@ class MechanicItem(SlotItem):
     max_fuel = FloatField(caption=u"Максимальное количество топлива")
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
 
+    def html_description(self):
+        result = '<br>'
+        attr_name_list = OrderedDict(
+            p_visibility_min=u'Мин. заметность',
+            p_visibility_max=u'Макс. заметность',
+            p_observing_range=u'Радиус обзора',
+            max_hp=u'HP',
+            r_min=u'Маневренность',
+            ac_max=u'Контроль',
+            v_forward=u'Макс. скорость',
+            v_backward=u'Макс. скорость назад',
+            a_forward=u'Динамика разгона',
+            a_backward=u'Динамика задн. хода',
+            a_braking=u'Торможение',
+            max_fuel=u'Бак',
+            p_fuel_rate=u'Расход топлива',
+        )
+        for attr_name in attr_name_list.keys():
+            attr_value = getattr(self, attr_name, None)
+            if attr_value:
+                attr_str = attr_name_list[attr_name]
+                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{}</div>'.format(attr_str, attr_value)
+        return result
+
 
 class TunerItem(SlotItem):
     class TunerImage(Subdoc):
@@ -287,7 +313,9 @@ class TunerItem(SlotItem):
         return None
 
     def html_description(self):
-        return (u'<div class="description-line left-align">Очки крутости:</div><div class="description-line right-align">{}</div>'.format(int(self.pont_points)))
+        car_str = ', '.join([car_rec.car.title for car_rec in self.images])
+        return (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
+                u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str))
 
 
 class ArmorerItem(SlotItem):
