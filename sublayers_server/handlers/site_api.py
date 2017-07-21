@@ -72,7 +72,7 @@ class APIGetUserInfoHandler(BaseHandler):
         log.info('APIGetUserInfoHandler: %r', username)
         agent = None
         if user.quick:
-            agent = self.application.srv.api.get_agent_quick_game(user)
+            pass  # тут раньше был вызов   agent = self.application.srv.api.get_agent_quick_game(user)
         else:
             agent = self.application.srv.api.get_agent(user, make=True)
         # agent = self.application.srv.api.get_agent(user, make=True) # todo: убрать это, в будущем брать из User example

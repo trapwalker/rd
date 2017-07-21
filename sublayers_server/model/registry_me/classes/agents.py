@@ -219,6 +219,25 @@ class AgentProfile(Node):
 
     quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
 
+    def set_role_class(self, role_class_ex, registry):
+        mod_0 = registry.get("reg:///registry/rpg_settings/class_skill/empty_0")
+        role_class_ex = role_class_ex or registry.get('reg:///registry/rpg_settings/role_class/chosen_one')
+        skill_names = ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']
+        # Сброс всех модификаций скилов
+        for skill_name in skill_names:
+            skill = getattr(self, skill_name)
+            skill.mod = mod_0
+
+        if role_class_ex:
+            # Установка классового навыка
+            for class_skill in role_class_ex.class_skills:
+                # todo: Перебирать объекты реестра
+                if class_skill.target in skill_names:
+                    skill = getattr(self, class_skill.target)
+                    skill.mod = class_skill
+
+            self.role_class = role_class_ex
+
     def get_lvl(self):
         lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
         return lvl
