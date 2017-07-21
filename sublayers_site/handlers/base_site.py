@@ -21,7 +21,7 @@ class BaseSiteHandler(BaseHandler):
         name_car = None
         html_agent = None
         # todo: Убедиться, что агент не берется из кеша, а грузится из базы заново
-        agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
+        agent_example = Agent.objects.filter(user_id=str(user.pk), quick_flag=False).first()
         if not agent_example:
             # info: создание пустого агента для отображения на сайте
             agent_example = create_agent(registry=self.application.reg, user=user)
@@ -58,6 +58,11 @@ class BaseSiteHandler(BaseHandler):
             ex_car = agent_example.profile.car
             if ex_car:
                 user_info['position'] = ex_car.position.as_point().as_tuple()
+            try:
+                user_info['insurance_name'] = agent_example.profile.insurance.title
+                user_info['active_quests_count'] = len(agent_example.profile.quests_active or [])
+            except:
+                pass
 
             template_img = tornado.template.Loader(
                 "../sublayers_server/templates/site",
