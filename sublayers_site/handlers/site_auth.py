@@ -204,6 +204,8 @@ class StandardLoginHandler(BaseSiteHandler):
             class_node_hash = self.get_argument('class_node_hash', None)
 
             # todo: проверить ник на допустимые символы
+            username_format_ok = LOGIN_RE.match(username)
+            log.debug('Username test %r: %s', username, 'OK' if username_format_ok else 'FAIL')
             if (
                 avatar_index is None or
                 class_index is None or
@@ -212,7 +214,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 not isinstance(username, basestring) or
                 username == '' or
                 len(username) > 100 or
-                not LOGIN_RE.match(username)
+                not username_format_ok
             ):
                 self.finish({'status': 'fail_wrong_input'})
                 return
