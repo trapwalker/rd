@@ -13,6 +13,10 @@ from tornado.web import HTTPError
 import hashlib
 from tornado.options import options
 from random import randint
+import re
+
+
+LOGIN_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_-]{3,19}$')
 
 
 def clear_all_cookie(handler):
@@ -207,7 +211,8 @@ class StandardLoginHandler(BaseSiteHandler):
                 username is None or
                 not isinstance(username, basestring) or
                 username == '' or
-                len(username) > 100
+                len(username) > 100 or
+                not LOGIN_RE.match(username)
             ):
                 self.finish({'status': 'fail_wrong_input'})
                 return
