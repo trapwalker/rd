@@ -35,7 +35,7 @@ class ServerAPI(API):
                 is_created = True
                 log.warning('Agent for user {} not found! Create new Agent'.format(user.name))
                 # todo: doit
-                agent_exemplar = create_agent(registry=self.server.reg, user=user, quick_flag=options.mode == 'quick')
+                agent_exemplar = create_agent(registry=self.server.reg, user=user)
 
                 log.warning('Make new agent for %r #%s: qf=%s, srv_mode=%s', user.name, user.pk, user.quick,
                             options.mode)

@@ -9,7 +9,7 @@ from tornado.options import options
 import random
 
 
-def create_agent(registry, user, quick_flag=False):
+def create_agent(registry, user):
     log.info('Try create Agent for {}'.format(user))
     try:
         agent_parent = registry.get('/registry/agents/user')
@@ -26,7 +26,7 @@ def create_agent(registry, user, quick_flag=False):
     agent_example = Agent(
         login=user.name,
         user_id=str(user.pk),
-        quick_flag=quick_flag,
+        quick_flag=False,
         profile=agent_parent.instantiate(name=str(user.pk)),
     ).save()
 
