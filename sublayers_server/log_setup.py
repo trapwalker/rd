@@ -10,9 +10,15 @@ from sublayers_common.logging_tools import handler, logger, Formatter
 BASE_PATH = os.path.dirname(__file__)
 local_path = lambda f: os.path.join(BASE_PATH, f)
 
+SUFFIX_BY_MODE = {
+    None: '__test',
+    'basic': '', 
+    'quick': '_quick',
+}
 
-def init(quick_mode=False):
-    log_path_suffix = '_quick' if quick_mode else ''
+
+def init(server_mode=None):
+    log_path_suffix = SUFFIX_BY_MODE[server_mode]
 
     formatter_simple  = Formatter(u'%(relativeCreated)08d %(levelname)-7s %(message)s')
     formatter_complex = Formatter(u'%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s')
