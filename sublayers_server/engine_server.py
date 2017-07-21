@@ -16,7 +16,7 @@ import logging
 
 if __name__ == '__main__':
     from sublayers_server import log_setup
-    log_setup.init(quick_mode=False)
+    log_setup.init('basic')
 
 log = logging.getLogger()
 
