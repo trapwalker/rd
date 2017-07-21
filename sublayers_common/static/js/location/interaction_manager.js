@@ -101,7 +101,7 @@ var InteractionManager = (function (_super) {
     InteractionManager.prototype.set_panels = function() {
         if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     InteractionManager.prototype.clickBtn = function (btnIndex) {

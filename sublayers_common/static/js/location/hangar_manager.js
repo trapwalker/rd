@@ -313,7 +313,7 @@ var LocationParkingBag = (function (_super) {
     LocationParkingBag.prototype.set_panels = function() {
         if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title:''}, 'description');
     };
 
     LocationParkingBag.prototype.clear = function () {

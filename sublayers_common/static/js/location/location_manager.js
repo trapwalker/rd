@@ -522,6 +522,8 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.panel-info-description').first();
         jq_panel.css('display', 'block');
         jq_panel.find('.panel-info-content').first().html(options.text);
+        if (!options.title) options.title = '';
+        jq_panel.find('.panel-info-item-title').first().html(options.title.replace("<br>", " ").toUpperCase());
     };
 
     LocationPanelInfo.prototype.show_location = function (options) {

@@ -68,15 +68,15 @@ function CarTableInfoMenuClick(target) {
     }
 }
 
-function CarInfoBlockAmmoInfoView(description) {
+function CarInfoBlockAmmoInfoView(description, title) {
     if (locationManager && locationManager.in_location_flag) {
-        locationManager.panel_right.show({text: description}, 'description');
+        locationManager.panel_right.show({text: description, title: title}, 'description');
     }
 }
 
 function CarInfoBlockAmmoInfoHide(descripion) {
     if (locationManager && locationManager.in_location_flag) {
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     }
 }
 

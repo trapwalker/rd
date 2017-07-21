@@ -34,6 +34,13 @@
 .panel-info-description ul {margin-top: 2px;}
 .panel-info-description li {}
 
+.panel-info-item-title {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+}
+
 /* Для внеэкранок обучения */
 
 /*.panel-info-teaching-left .panel-info-content-wrapper {*/
@@ -51,7 +58,7 @@
     position: relative;
     float: left;
 }
-.description-line.left-align { text-align: left; width: 130px; }
-.description-line.right-align { text-align: right; width: calc(100% - 130px); }
-.description-line.left-align.ammo { width: 80px; }
-.description-line.right-align.ammo { width: calc(100% - 80px); }
+.description-line.left-align { text-align: left; width: 135px; }
+.description-line.right-align { text-align: right; width: calc(100% - 135px); }
+.description-line.left-align.small { width: 80px; }
+.description-line.right-align.small { width: calc(100% - 80px); }

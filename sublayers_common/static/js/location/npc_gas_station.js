@@ -348,12 +348,13 @@ var LocationGasStationNPC = (function (_super) {
 
     LocationGasStationNPC.prototype.viewRightPanel = function(item) {
         //console.log('LocationArmorerNPC.prototype.viewRightPanel', slot_name);
-        locationManager.panel_right.show({text: item.example.description }, 'description');
+        locationManager.panel_right.show({text: item.example.description,
+                                          title: item.example.title}, 'description');
     };
 
     LocationGasStationNPC.prototype.clearRightPanel = function() {
         //console.log('LocationArmorerNPC.prototype.clearRightPanel');
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     /*  */
