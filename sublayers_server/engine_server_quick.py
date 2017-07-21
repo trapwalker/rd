@@ -14,7 +14,7 @@ sys.path.append(parent_folder(__file__))
 
 
 if __name__ == '__main__':
-    import log_setup
+    from sublayers_server import log_setup
     log_setup.init(quick_mode=True)
 
 
