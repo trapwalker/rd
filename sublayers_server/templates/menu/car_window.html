@@ -5,4 +5,11 @@
         <div class="car-window-picture town-interlacing"></div>
         <div class="car-window-table town-back-interlacing-nocontent"></div>
     </div>
+    {% if car %}
+    <div class="car_dynamic_value" style="display: none">
+        <div class="car_way">{{ '{:.1f}'.format(car.way/1000) }}</div>
+        <div class="car_frag">{{ car.frag }}</div>
+        <div class="car_lvl">{{ car.exp_table.car_lvl_by_exp(car.exp) }}</div>
+    </div>
+    {% end %}
 </div>

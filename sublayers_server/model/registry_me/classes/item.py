@@ -19,7 +19,7 @@ class Item(Node):
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
 
-    description = StringField(caption=u'Расширенное описание предмета', tags={'client'})
+    description = StringField(caption=u'Расширенное описание предмета')
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
@@ -53,15 +53,22 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
+    def html_description(self):
+        return self.description
+
     def as_client_dict(self):
         d = super(Item, self).as_client_dict()
-        d.update(ids=self.ids())
+        d.update(
+            ids=self.ids(),
+            description=self.html_description(),
+        )
+
         return d
 
     def as_assortment_dict(self):
         d = dict(
             title=self.title,
-            description=self.description,
+            description=self.html_description(),
             inv_icon_mid=self.inv_icon_mid,
             stack_size=self.stack_size,
             node_hash=self.node_hash(),
@@ -278,6 +285,9 @@ class TunerItem(SlotItem):
                 return tuner_image
         log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
+
+    def html_description(self):
+        return (u'<div class="description-line left-align">Очки крутости:</div><div class="description-line right-align">{}</div>'.format(int(self.pont_points)))
 
 
 class ArmorerItem(SlotItem):

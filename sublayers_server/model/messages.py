@@ -664,7 +664,7 @@ class EnterToLocation(Message):
                 location_html = tornado.template.Loader(
                     root_directory="templates/location",
                     namespace=self.agent.connection.get_template_namespace()
-                ).load("location.html").generate(location=location, svg_code=svg_code)
+                ).load("location.html").generate(location=location, svg_code=svg_code, car=None)
             else:
                 log.warn('Unknown type location: %s', location)
             self.locations_cache[location.example.uri] = location_html
