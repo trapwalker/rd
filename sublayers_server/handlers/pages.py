@@ -74,7 +74,7 @@ class PlayHandler(BaseHandler):
                 if agent and agent.car:
                     coord = agent.car.position(time=self.application.srv.get_time())
                 else:
-                    coord = Point.random_point(self.application.srv.quick_game_start_pos, self.application.srv.quick_game_respawn_bots_radius)
+                    coord = Point.random_point(self.application.srv.quick_game_respawn_bots_radius, self.application.srv.quick_game_start_pos)
 
                 user.start_position = Position(coord.x, coord.y)
                 user.save()

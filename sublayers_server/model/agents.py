@@ -985,14 +985,14 @@ class QuickUser(User):
             user.start_position = None
         else:
             # Радиус появления игроков в быстрой игре
-            self.example.profile.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
+            self.example.profile.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_respawn_bots_radius, self.server.quick_game_start_pos)
 
         self.example.profile.current_location = None
         self.current_location = None
 
     def on_die(self, event, **kw):
         super(QuickUser, self).on_die(event=event, **kw)
-        self._next_respawn_point = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
+        self._next_respawn_point = Point.random_point(self.server.quick_game_respawn_bots_radius, self.server.quick_game_start_pos)
         SetMapCenterMessage(agent=self, time=event.time, center=self._next_respawn_point).post()  # send message to load map
 
     def print_login(self):
