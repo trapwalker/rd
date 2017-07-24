@@ -16,6 +16,8 @@ from sublayers_server.model.registry_me.tree import (
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
+from sublayers_server.model.registry_me.classes.perks import PerkActivateItemsPassive
+
 from sublayers_server.model.utils import getKarmaName
 from sublayers_common import yaml_tools
 
@@ -325,6 +327,13 @@ class AgentProfile(Node):
             for name in d.keys():
                 d[name] += getattr(item, name, 0)
         return d
+
+    def get_repair_build_rate(self):
+        repair_build_rate = 1
+        for perk in self.perks:
+            if isinstance(perk, PerkActivateItemsPassive):
+                repair_build_rate += perk.repair_build_rate
+        return repair_build_rate
 
     def iter_perks(self):  # todo: need review
         for perk in self.perks:

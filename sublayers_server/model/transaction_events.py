@@ -153,7 +153,8 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
         item._div_item(count=1, time=self.time)
 
         # Починили машинку на нужное значение хп
-        obj.set_hp(dhp=-item.example.build_points, time=self.time)
+        repair_build_rate = self.agent.example.profile.get_repair_build_rate()
+        obj.set_hp(dhp=-item.example.build_points * repair_build_rate, time=self.time)
 
         # Отправить сообщение в игровой лог
         TransactionActivateRebuildSetLogMessage(agent=self.agent, time=self.time, item=item.example).post()
