@@ -76,7 +76,7 @@ class PerkPassive(Perk):
     a_braking          = FloatField(caption=u"Ускорение торможения")
     max_fuel           = FloatField(caption=u"Максимальное количество топлива")
     p_fuel_rate        = FloatField(caption=u"Расход топлива (л/с)")
-
+    p_armor            = FloatField(caption=u"Броня автомобиля")
     dps_rate           = FloatField(caption=u"Множитель модификации урона автоматического оружия")
     damage_rate        = FloatField(caption=u"Множитель модификации урона залпового оружия")
     time_recharge_rate = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия")
