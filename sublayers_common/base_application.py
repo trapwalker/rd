@@ -72,7 +72,17 @@ class BaseApplication(tornado.web.Application):
             **settings
         )
 
+        self.http_server_settings = dict(
+            xheaders=True,
+        )
+
     def stop(self):
         log.debug('====== ioloop before stop')
         tornado.ioloop.IOLoop.instance().stop()
         log.debug('====== ioloop after stop')
+
+    def listen(self, port, address="", **kwargs):
+        ext_settings = dict()
+        ext_settings.update(self.http_server_settings)
+        ext_settings.update(kwargs)
+        super(BaseApplication, self).listen(port=port, address=address, **ext_settings)
