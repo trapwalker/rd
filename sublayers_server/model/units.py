@@ -123,6 +123,23 @@ class Unit(Observer):
         time_recharge_rate = self._param_aggregate['time_recharge_rate']
         radius_rate = self._param_aggregate['radius_rate']
 
+        if dps_rate <= 0.0:
+            log.warning('dps_rate = {}    for {}. Reset to 1'.format(dps_rate, self))
+            dps_rate = 1
+
+        if damage_rate <= 0.0:
+            log.warning('damage_rate = {}    for {}. Reset to 1'.format(damage_rate, self))
+            damage_rate = 1
+
+        if time_recharge_rate <= 0.0:
+            log.warning('time_recharge_rate = {}    for {}. Reset to 1'.format(time_recharge_rate, self))
+            time_recharge_rate = 1
+
+        if radius_rate <= 0.0:
+            log.warning('radius_rate = {}    for {}. Reset to 1'.format(radius_rate, self))
+            radius_rate = 1
+
+
         for w_ex in self.example.iter_weapons():
             sector = FireSector(
                 owner=self,
@@ -210,7 +227,11 @@ class Unit(Observer):
             if item:
                 weapon.set_item(item=item, time=event.time)
         # включить пассивный отхил  # todo: убедиться, что отрицательное значение здесь - правильное решение
-        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate'] * self.max_hp)
+        repair_rate = self._param_aggregate['repair_rate'] - 1
+        if repair_rate < 0:
+            log.warning('repair_rate<{}> < 0 for <>'.format(repair_rate, self))
+            repair_rate = 0
+        self.set_hp(time=event.time, dps=-repair_rate * self.max_hp)
 
     def on_zone_check(self, event):
         # зонирование
@@ -507,6 +528,12 @@ class Mobile(Unit):
 class Bot(Mobile):
     def __init__(self, time, **kw):
         super(Bot, self).__init__(time=time, **kw)
+        self.repair_rate_on_stay = self._param_aggregate['repair_rate_on_stay'] - 1
+        if self.repair_rate_on_stay < 0:
+            log.warning('repair_rate_on_stay<{}> < 0 for <>'.format(self.repair_rate_on_stay, self))
+            self.repair_rate_on_stay = 0
+        self.repair_rate_on_stay = self.repair_rate_on_stay * self.max_hp
+
         # Панель быстрого доступа (колбэк нужен чтобы "перезаряжать" панель когда мы подбираем новые итемы)
         self.quick_consumer_panel = QuickConsumerPanel(owner=self, time=time)
         self.start_shield_event = None
@@ -619,7 +646,7 @@ class Bot(Mobile):
         super(Bot, self).on_init(event=event)
         # если при инициализации машина не движется, то включить возможный пассивнх хил
         if not self.state.is_moving:
-            self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'] * self.max_hp)
+            self.set_hp(time=event.time, dps=-self.repair_rate_on_stay)
 
         # Включение стартовой неуязвимости:
         if self.example.start_shield_time > 0:
@@ -653,7 +680,7 @@ class Bot(Mobile):
         super(Bot, self).on_start(event=event)
 
         # Пассивный хил при остановке (от перков скилы и т.д.)
-        self.set_hp(time=event.time, dps=self._param_aggregate['repair_rate_on_stay'] * self.max_hp)
+        self.set_hp(time=event.time, dps=self.repair_rate_on_stay)
 
         # Снимаем щиты
         if self.start_shield_event:
@@ -667,7 +694,7 @@ class Bot(Mobile):
     def on_stop(self, event):
         super(Bot, self).on_stop(event=event)
         # todo: убедиться, что отрицательное значение получается путём подставления минуса - хорошо
-        self.set_hp(time=event.time, dps=-self._param_aggregate['repair_rate_on_stay'] * self.max_hp)
+        self.set_hp(time=event.time, dps=-self.repair_rate_on_stay)
 
 
 class ExtraMobile(Mobile):

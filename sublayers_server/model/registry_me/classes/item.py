@@ -10,8 +10,6 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField, EmbeddedNodeField,
 )
 
-from collections import OrderedDict
-
 
 class Item(Node):
     icon = StringField(caption=u'Пиктограмма предмета')
@@ -258,7 +256,7 @@ class MechanicItem(SlotItem):
 
     def html_description(self):
         result = '<br>'
-        attr_name_list = OrderedDict(
+        attr_name_list = dict(
             p_visibility_min=u'Мин. заметность',
             p_visibility_max=u'Макс. заметность',
             p_observing_range=u'Радиус обзора',

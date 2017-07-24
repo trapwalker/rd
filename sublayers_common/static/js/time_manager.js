@@ -47,8 +47,10 @@ var Clock = (function () {
     // Получение текущего времени с поправкой на сервер
     Clock.prototype.getCurrentTime = function () {
         var time = new Date().getTime() / 1000. - this.getDt();
-        if (time > this.last_time) this.last_time = time;
-        return this.last_time;
+        return time;
+        // todo: разобраться здесь. Скорее всего часовые пояса выдавали фигню!
+        //if (time > this.last_time) this.last_time = time;
+        //return this.last_time;
     };
 
     // Получение текущего времени в миллисекундах - нельзя учитывать при расчёте движения

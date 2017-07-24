@@ -183,9 +183,10 @@ var LocationPlaceMenu = (function (_super) {
         _super.prototype.update.call(this, data);
     };
 
-    LocationPlaceMenu.prototype.viewRightPanel = function(description) {
+    LocationPlaceMenu.prototype.viewRightPanel = function(description, title) {
         //console.log('LocationArmorerNPC.prototype.viewRightPanel', slot_name);
-        locationManager.panel_right.show({text: description }, 'description');
+        if (!title) title = '';
+        locationManager.panel_right.show({text: description, title: title}, 'description');
     };
 
     LocationPlaceMenu.prototype.clearRightPanel = function() {
@@ -222,7 +223,7 @@ var LocationPlaceMenu = (function (_super) {
         //console.log('LocationPlaceMenu.perks_event_mouseenter');
         var perc_rec = user.example_agent.rpg_info.perks[$(event.currentTarget).data('index')];
         if(! perc_rec) return;
-        event.data.npc.viewRightPanel(perc_rec.perk.description);
+        event.data.npc.viewRightPanel(perc_rec.perk.description, perc_rec.perk.title);
     };
 
     LocationPlaceMenu.skills_event_mouseenter = function (event) {
