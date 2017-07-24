@@ -65,14 +65,14 @@ class Point(complex):
         return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
 
     @classmethod
-    def random_point(cls, p, radius):
+    def random_point(cls, radius, center=0):
         pp = Point.polar(radius * random(), 2*pi * random())
-        return pp + p
+        return pp + center
 
     @classmethod
     def random_in_segment(cls, r_max, center=0, r_min=0, fi=0, dfi=360):
         """
-        >> Point.random_point(center, r_max)
+        >> Point.random_point(r_max, center)
         is equivalent to
         >> Point.random_in_segment(r_max, center)
 

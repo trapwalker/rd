@@ -909,8 +909,10 @@ class AIQuickQuest(Quest):
 
     def get_next_route_point(self):
         if not self.route:
-            return Point.random_point(self.agent.profile._agent_model.server.quick_game_start_pos,
-                                      self.agent.profile._agent_model.server.quick_game_play_radius)
+            return Point.random_point(
+                self.agent.profile._agent_model.server.quick_game_play_radius,
+                self.agent.profile._agent_model.server.quick_game_start_pos
+            )
         if self.route_index + 1 >= len(self.route):
             self.route_index = 0
         else:
@@ -950,7 +952,7 @@ class MarkerMapObject(Subdoc):
         return False
 
     def generate_random_point(self):
-        return Point.random_point(p=self.position.as_point(), radius=self.radius)
+        return Point.random_point(radius=self.radius, center=self.position.as_point())
 
     def as_client_dict(self):
         d = super(MarkerMapObject, self).as_client_dict()
