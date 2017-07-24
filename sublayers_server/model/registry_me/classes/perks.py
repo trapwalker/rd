@@ -76,7 +76,7 @@ class PerkPassive(Perk):
     a_braking          = FloatField(caption=u"Ускорение торможения")
     max_fuel           = FloatField(caption=u"Максимальное количество топлива")
     p_fuel_rate        = FloatField(caption=u"Расход топлива (л/с)")
-
+    p_armor            = FloatField(caption=u"Броня автомобиля")
     dps_rate           = FloatField(caption=u"Множитель модификации урона автоматического оружия")
     damage_rate        = FloatField(caption=u"Множитель модификации урона залпового оружия")
     time_recharge_rate = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия")
@@ -84,8 +84,8 @@ class PerkPassive(Perk):
 
 
 class PerkRepairPassive(PerkPassive):
-    repair_rate = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду")
-    repair_rate_on_stay = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении")
+    repair_rate = FloatField(root_default=0, caption=u"Процент ХП восстанавливающийся каждую секунду")
+    repair_rate_on_stay = FloatField(root_default=0, caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении")
 
 
 class PerkCritPassive(PerkPassive):
@@ -95,4 +95,13 @@ class PerkCritPassive(PerkPassive):
 
 class PerkPartyPassive(PerkPassive):
     additional_capacity = IntField(root_default=0, caption=u"Дополнительные слоты в пати")
-    # exp_modifier = FloatField(caption=u"процент увеличение экспы в пати")
+    party_exp_modifier = FloatField(root_default=0, caption=u"Процент увеличение экспы в пати")
+
+
+class PerkActivateItemsPassive(PerkPassive):  # Перки, влияющие на активацию итемов
+    repair_build_rate = FloatField(root_default=0, caption=u"Коэффициент дополнительного хила от ремкомплектов")
+
+
+class PerkTraderPassive(PerkPassive):
+    trader_sell = FloatField(root_default=0, caption=u"Уменьшение маржи торговца при покупке у торговца")
+    trader_buy = FloatField(root_default=0, caption=u"Уменьшение маржи торговца при продаже торговцу")

@@ -276,9 +276,9 @@ class Observer(VisibleObject):
     def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
         obj_pos = obj_pos or self.position(time)
         subj_pos = subj_pos or subj.position(time)
-        # 1 - (1 - v) * (1 - z)
-        visibility = self.get_visibility(time=time)
-        vigilance = subj.params.get('p_vigilance').value
+        # 1 - (1 - v) * (1 - z) = 1 - (1 - z - v + v*z) = 1 - 1 + z + v - v*z = z + v + v*z
+        visibility = self.get_visibility(time=time)  # v - видимость
+        vigilance = subj.params.get('p_vigilance').value  # z - зоркость
         vis = visibility + vigilance - visibility * vigilance
         res = (subj.get_observing_range(time=time) * vis) >= abs(obj_pos - subj_pos)
         return res and super(Observer, self).can_see_me(subj=subj, time=time, obj_pos=None, subj_pos=None)

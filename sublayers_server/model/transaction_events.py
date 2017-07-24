@@ -153,7 +153,8 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
         item._div_item(count=1, time=self.time)
 
         # Починили машинку на нужное значение хп
-        obj.set_hp(dhp=-item.example.build_points, time=self.time)
+        repair_build_rate = self.agent.example.profile.get_repair_build_rate()
+        obj.set_hp(dhp=-item.example.build_points * repair_build_rate, time=self.time)
 
         # Отправить сообщение в игровой лог
         TransactionActivateRebuildSetLogMessage(agent=self.agent, time=self.time, item=item.example).post()
@@ -1099,6 +1100,7 @@ class TransactionTraderApply(TransactionTownNPC):
         sell_list = []
         agent = self.agent
         skill_effect = npc.get_trading_effect(agent_example=agent.example)
+        perk_trader_effect = agent.example.profile.get_perk_trader_margin_info()
         ex_car = agent.example.profile.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
@@ -1128,7 +1130,7 @@ class TransactionTraderApply(TransactionTownNPC):
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'{} не продаётся и не покупается!'.format(item_ex.title)).post()
                 return
-            item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
+            item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
             sell_list.append(item_ex)
 
@@ -1157,7 +1159,7 @@ class TransactionTraderApply(TransactionTownNPC):
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
 
-            item_buy_price = price.get_price(item=price.item, skill_effect=skill_effect)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
+            item_buy_price = price.get_price(item=price.item, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
             buy_price += item_buy_price
             buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
@@ -1359,7 +1361,7 @@ class TransactionSetRPGState(TransactionTownNPC):
         messages.UserChangePerkSkill(agent=agent, time=self.time).post()
         messages.UserActualTradingMessage(agent=agent, time=self.time).post()
 
-        self.agent.example.profile.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
+        self.agent.on_rpg_state_transaction(event=self)
 
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
