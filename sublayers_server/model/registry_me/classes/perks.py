@@ -101,3 +101,7 @@ class PerkPartyPassive(PerkPassive):
 class PerkActivateItemsPassive(PerkPassive):  # Перки, влияющие на активацию итемов
     repair_build_rate = FloatField(root_default=0, caption=u"Коэффициент дополнительного хила от ремкомплектов")
 
+
+class PerkTraderPassive(PerkPassive):
+    trader_sell = FloatField(root_default=0, caption=u"Уменьшение маржи торговца при покупке у торговца")
+    trader_buy = FloatField(root_default=0, caption=u"Уменьшение маржи торговца при продаже торговцу")

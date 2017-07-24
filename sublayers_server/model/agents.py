@@ -17,7 +17,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage, TraderAgentAssortmentMessage,
-    SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo
+    SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo, TraderInfoMessage,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -806,6 +806,15 @@ class Agent(Object):
 
     def on_rpg_state_transaction(self, event):
         self.example.profile.on_event(event=event, cls=quest_events.OnRPGSetTransaction)
+
+        # Отправить обновлённые цены на ассортимент торговца и на свой инвентарь
+        if self.current_location:
+            trader = self.current_location.example.get_npc_by_type(Trader)
+            if trader:
+                h = trader.node_hash()
+                TraderAgentAssortmentMessage(npc_node_hash=h, agent=self, time=event.time).post()
+                TraderInfoMessage(agent=self, time=event.time, npc_node_hash=h).post()
+
         if self.party and self.party.owner is self:
             self.party.change_exp_modifier()
 

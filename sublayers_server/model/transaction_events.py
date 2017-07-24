@@ -1100,6 +1100,7 @@ class TransactionTraderApply(TransactionTownNPC):
         sell_list = []
         agent = self.agent
         skill_effect = npc.get_trading_effect(agent_example=agent.example)
+        perk_trader_effect = agent.example.profile.get_perk_trader_margin_info()
         ex_car = agent.example.profile.car
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
@@ -1129,7 +1130,7 @@ class TransactionTraderApply(TransactionTownNPC):
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=u'{} не продаётся и не покупается!'.format(item_ex.title)).post()
                 return
-            item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
+            item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
             sell_list.append(item_ex)
 
@@ -1158,7 +1159,7 @@ class TransactionTraderApply(TransactionTownNPC):
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
 
-            item_buy_price = price.get_price(item=price.item, skill_effect=skill_effect)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
+            item_buy_price = price.get_price(item=price.item, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect)['sale'] * float(table_rec['count']) / float(price.item.stack_size)
             buy_price += item_buy_price
             buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает

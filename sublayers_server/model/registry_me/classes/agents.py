@@ -16,7 +16,8 @@ from sublayers_server.model.registry_me.tree import (
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
-from sublayers_server.model.registry_me.classes.perks import PerkActivateItemsPassive, PerkPartyPassive
+from sublayers_server.model.registry_me.classes.perks import (PerkActivateItemsPassive, PerkPartyPassive,
+                                                              PerkTraderPassive)
 
 from sublayers_server.model.utils import getKarmaName
 from sublayers_common import yaml_tools
@@ -314,6 +315,15 @@ class AgentProfile(Node):
 
     def get_current_agent_trading(self):
         return self.trading.calc_value() + self.get_quest_skill_modifier().get('trading', 0)
+
+    def get_perk_trader_margin_info(self):
+        trader_buy = 1.0
+        trader_sell = 1.0
+        for perk in self.perks:
+            if isinstance(perk, PerkTraderPassive):
+                trader_buy += perk.trader_buy
+                trader_sell += perk.trader_sell
+        return dict(trader_buy=trader_buy, trader_sell=trader_sell)
 
     def get_quest_skill_modifier(self):
         d = dict()
