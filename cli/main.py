@@ -5,6 +5,8 @@ import sys, os
 import logging
 log = logging.getLogger(__name__)
 
+from hgapi import Repo, HgException
+
 
 def main(args=None):
     if args is None:
@@ -29,7 +31,7 @@ def main(args=None):
     from cli.root import root
     from cli import (
         agents, reg,
-        # update,
+        update,
     )
 
     prog_path, prog_name = os.path.split(sys.argv[0])
