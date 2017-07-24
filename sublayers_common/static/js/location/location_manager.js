@@ -460,7 +460,26 @@ var LocationManager = (function () {
 var LocationPanelInfo = (function () {
     function LocationPanelInfo() {
         this.jq_main_div = null;
+
+        //this._cur_opacity = 0.0;
+        //this.anim_interval = null;
     }
+
+    LocationPanelInfo.prototype._anim_show = function (jq_panel) {
+        //clearInterval(this.anim_interval);
+        if (this.jq_main_div)
+            this.jq_main_div.find('.panel-info-item').css('display', 'none');
+
+        //var self = this;
+        //this._cur_opacity = 0.0;
+        //jq_panel.css('opacity', this._cur_opacity);
+        jq_panel.css('display', 'block');
+        //this.anim_interval = setInterval(function() {
+        //    if (self._cur_opacity <= 1) self._cur_opacity += 0.1;
+        //    else clearInterval(self.anim_interval);
+        //    jq_panel.css('opacity', self._cur_opacity);
+        //}, 20);
+    };
 
     LocationPanelInfo.prototype.init = function (jq_main_div) {
         //console.log('LocationPanelInfo.prototype.init');
@@ -478,56 +497,49 @@ var LocationPanelInfo = (function () {
         //console.log('LocationPanelInfo.prototype.show', options, window_name);
 
         // Если обучение активно, то включить панели обучения
-        if (teachingManager.is_active())
-            return;
+        if (teachingManager.is_active()) return;
 
-        // Выключить все панели в этом блоке
-        if (this.jq_main_div)
-            this.jq_main_div.find('.panel-info-item').css('display', 'none');
-
-        // Попытаться включить нужную
+        // Переключить панель
         var window_method = 'show_' + window_name;
-        if (this[window_method])
-            this[window_method](options);
+        if (this[window_method]) this[window_method](options);
     };
 
     LocationPanelInfo.prototype.show_self_car_info = function (options) {
-        //console.log('LocationPanelInfo.prototype.show_self_car_info', options);
+        //console.log('LocationPanelInfo.prototype.show_self_car_info');
         var jq_panel = this.jq_main_div.find('.panel-info-car-info').first();
-        jq_panel.css('display', 'block');
         jq_panel.find('.panel-info-car-info-car').empty();
         jq_panel.find('.panel-info-car-info-car-name').text('');
         if (user.example_car) {
             jq_panel.find('.panel-info-car-info-car-name').text(user.example_car.name_car);
             jq_panel.find('.panel-info-car-info-car').append(user.templates.html_car_img);
         }
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_npc_transaction_info = function (options) {
         //console.log('LocationPanelInfo.prototype.show_npc_transaction_info', options);
         var jq_panel = this.jq_main_div.find('.panel-info-npc-transaction-info').first();
-        jq_panel.css('display', 'block');
-
         clientManager._viewAgentBalance(jq_panel);
-
         var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
         jq_transaction_list.empty();
         if (options.hasOwnProperty('transactions'))
             for (var i = 0; i < options.transactions.length; i++)
                 jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> - ' + options.transactions[i] + '</div>');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_description = function (options) {
         //console.log('LocationPanelInfo.prototype.show_description', options);
         var jq_panel = this.jq_main_div.find('.panel-info-description').first();
-        jq_panel.css('display', 'block');
+        this.jq_last_panel = jq_panel;
         jq_panel.find('.panel-info-content').first().html(options.text);
         if (!options.title) options.title = '';
         jq_panel.find('.panel-info-item-title').first().html(options.title.replace("<br>", " ").toUpperCase());
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_location = function (options) {
-        //console.trace('LocationPanelInfo.prototype.show_location', options);
+        //console.log('LocationPanelInfo.prototype.show_location');
         var jq_panel = this.jq_main_div.find('.pi-location').first();
         jq_panel.find('.location').text(locationManager.example.title);
         jq_panel.find('.head').text('Нет');
@@ -536,7 +548,7 @@ var LocationPanelInfo = (function () {
                 jq_panel.find('.head').text(locationManager.npc[key].npc_rec.title);
                 break;
             }
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_building = function (options) {
@@ -546,7 +558,7 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.head').text(options.build.head.title);
         jq_panel.find('.karma').text(getKarmaName(options.build.head.karma));
         jq_panel.find('.skill').text(options.build.head.trading);
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_npc_inside_building = function (options) {
@@ -557,7 +569,7 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.location').text(build_example.title);
         jq_panel.find('.name').text(npc_example.title);
         jq_panel.find('.karma').text(getKarmaName(npc_example.karma));
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_nukeoil = function (options) {
@@ -578,9 +590,8 @@ var LocationPanelInfo = (function () {
             }
             else
                 jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'none');
-
         }
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_building_quest = function (options) {
@@ -591,7 +602,7 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.pi-building-quest-scale-carriage').first().css({left: (width - 1)});
         jq_panel.find('.pi-building-quest-scale-label').first().css({left: (width - 20)});
         jq_panel.find('.pi-building-quest-scale-label').first().text(Math.floor(options.respect));
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     return LocationPanelInfo;
