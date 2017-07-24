@@ -123,6 +123,23 @@ class Unit(Observer):
         time_recharge_rate = self._param_aggregate['time_recharge_rate']
         radius_rate = self._param_aggregate['radius_rate']
 
+        if dps_rate <= 0.0:
+            log.warning('dps_rate = {}    for {}. Reset to 1'.format(dps_rate, self))
+            dps_rate = 1
+
+        if damage_rate <= 0.0:
+            log.warning('damage_rate = {}    for {}. Reset to 1'.format(damage_rate, self))
+            damage_rate = 1
+
+        if time_recharge_rate <= 0.0:
+            log.warning('time_recharge_rate = {}    for {}. Reset to 1'.format(time_recharge_rate, self))
+            time_recharge_rate = 1
+
+        if radius_rate <= 0.0:
+            log.warning('radius_rate = {}    for {}. Reset to 1'.format(radius_rate, self))
+            radius_rate = 1
+
+
         for w_ex in self.example.iter_weapons():
             sector = FireSector(
                 owner=self,
