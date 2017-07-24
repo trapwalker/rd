@@ -16,7 +16,7 @@ class Perk(Node):
 
     title__en = StringField(caption=u"Название", tags={'client'})
     title__ru = StringField(caption=u"Название", tags={'client'})
-    description = StringField(caption=u'Расширенное описание перка', tags={'client'})
+    description = StringField(caption=u'Расширенное описание перка')
     description__en = StringField(caption=u'Расширенное описание перка', tags={'client'})
     description__ru = StringField(caption=u'Расширенное описание перка', tags={'client'})
 
@@ -57,8 +57,33 @@ class Perk(Node):
 
     def as_client_dict(self):
         d = super(Perk, self).as_client_dict()
-        d.update(uri=self.uri)
+        d.update(
+            uri=self.uri,
+            description=self.html_description(),
+        )
         return d
+
+    def html_description(self):
+        main_req_str = '<br>'
+        attr_name_list = dict(
+            shooting_req=u'Требование к Стрельбе',
+            masking_req=u'Требование к Маскировке',
+            leading_req=u'Требование к Лидерству',
+            trading_req=u'Требование к Торговле',
+            engineering_req=u'Требование к Механике',
+            level_req=u'Требование к уровню',
+            role_class_req=u'Требование к классу',
+        )
+        for attr_name in attr_name_list.keys():
+            attr_value = getattr(self, attr_name, None)
+            if attr_value:
+                attr_str = attr_name_list[attr_name]
+                main_req_str += u'<div class="mechanic-description-line left-align">{}: {}</div>'.format(attr_str, attr_value)
+        perks_req_str = ''
+        if self.perks_req:
+            perks_req_str = u'<div class="mechanic-description-line left-align">Необходимые перки: {}</div>'.format(', '.join([perk.title for perk in self.perks_req]))
+        return (main_req_str + perks_req_str +
+                u'<div class="mechanic-description-line left-align">Действие: {}</div>'.format(self.description))
 
 
 class PerkPassive(Perk):
