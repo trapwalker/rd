@@ -119,18 +119,18 @@ class Mobile(Node):
     p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)", tags={'param_aggregate'})
 
     # атрибуты влияющие на эффективность стрельбы
-    dps_rate             = FloatField(caption=u"Множитель модификации урона автоматического оружия", tags={'param_aggregate'})
-    damage_rate          = FloatField(caption=u"Множитель модификации урона залпового оружия", tags={'param_aggregate'})
-    time_recharge_rate   = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия", tags={'param_aggregate'})
-    radius_rate          = FloatField(caption=u"Множитель модификации дальности стрельбы", tags={'param_aggregate'})
+    dps_rate             = FloatField(root_default=1.0, caption=u"Множитель модификации урона автоматического оружия", tags={'param_aggregate'})
+    damage_rate          = FloatField(root_default=1.0, caption=u"Множитель модификации урона залпового оружия", tags={'param_aggregate'})
+    time_recharge_rate   = FloatField(root_default=1.0, caption=u"Множитель модификации времени перезарядки залпового оружия", tags={'param_aggregate'})
+    radius_rate          = FloatField(root_default=1.0, caption=u"Множитель модификации дальности стрельбы", tags={'param_aggregate'})
 
-    # атрибуты, отвечающие за авто-ремонт машины.
-    repair_rate          = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду", tags={'param_aggregate'})
-    repair_rate_on_stay  = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={'param_aggregate'})
+    # атрибуты, отвечающие за авто-ремонт машины. Равны 1, так как потом эти числа умножатся на значения от перков (%)
+    repair_rate          = FloatField(root_default=1.0, caption=u"Процент ХП восстанавливающийся каждую секунду", tags={'param_aggregate'})
+    repair_rate_on_stay  = FloatField(root_default=1.0, caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={'param_aggregate'})
 
     # атрибуты, связанные с критами.
-    crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
-    crit_power           = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={'param_aggregate'})
+    crit_rate            = FloatField(root_default=1.0, caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
+    crit_power           = FloatField(root_default=1.0, caption=u"Сила крита [0 .. сколько угодно]", tags={'param_aggregate'})
 
     slot_FL   = ModuleSlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags={'armorer'})
     slot_FL_f = StringField    (caption=u'Флаги переднего левого слота [FBLR]', tags={'client', 'slot_limit'})
