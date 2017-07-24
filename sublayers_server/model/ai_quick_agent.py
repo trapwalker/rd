@@ -56,7 +56,7 @@ class AIQuickAgent(AI):
             self.example.profile.car = self._car_proto.instantiate()
             self.example.profile.current_location = None
             self.current_location = None
-            self.example.profile.car.position = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius) # Радиус появления ботов в быстрой игре
+            self.example.profile.car.position = Point.random_point(self.server.quick_game_respawn_bots_radius, self.server.quick_game_start_pos) # Радиус появления ботов в быстрой игре
 
             car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
             self.append_car(car=car, time=event.time)
