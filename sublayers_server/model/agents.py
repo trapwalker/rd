@@ -804,6 +804,11 @@ class Agent(Object):
         self.log.warning('Agent position dont definded')
         return None
 
+    def on_rpg_state_transaction(self, event):
+        self.example.profile.on_event(event=event, cls=quest_events.OnRPGSetTransaction)
+        if self.party and self.party.owner is self:
+            self.party.change_exp_modifier()
+
 
 # todo: Переименовать в UserAgent
 class User(Agent):

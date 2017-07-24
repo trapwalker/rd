@@ -1360,7 +1360,7 @@ class TransactionSetRPGState(TransactionTownNPC):
         messages.UserChangePerkSkill(agent=agent, time=self.time).post()
         messages.UserActualTradingMessage(agent=agent, time=self.time).post()
 
-        self.agent.example.profile.on_event(event=self, cls=quest_events.OnRPGSetTransaction)
+        self.agent.on_rpg_state_transaction(event=self)
 
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)

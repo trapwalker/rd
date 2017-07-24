@@ -95,7 +95,7 @@ class PerkCritPassive(PerkPassive):
 
 class PerkPartyPassive(PerkPassive):
     additional_capacity = IntField(root_default=0, caption=u"Дополнительные слоты в пати")
-    # exp_modifier = FloatField(caption=u"процент увеличение экспы в пати")
+    party_exp_modifier = FloatField(root_default=0, caption=u"Процент увеличение экспы в пати")
 
 
 class PerkActivateItemsPassive(PerkPassive):  # Перки, влияющие на активацию итемов
