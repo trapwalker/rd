@@ -272,7 +272,8 @@ var LocationTrainerNPC = (function (_super) {
             self.setPerk($(this).data('node_hash'));
         });
         this.jq_main_div.find('.trainer-perk-item').mouseenter(function() {
-            locationManager.panel_right.show({text: self.perks[$(this).data('node_hash')].description}, 'description');
+            locationManager.panel_right.show({text: self.perks[$(this).data('node_hash')].description,
+                                             title: self.perks[$(this).data('node_hash')].title}, 'description');
         });
         this.jq_main_div.find('.trainer-perk-item').mouseleave(function() { locationManager.panel_right.show({text: '', title: ''}, 'description'); });
     };

@@ -33,6 +33,28 @@ def agents_clean(ctx):
     agents_clean()
 
 
+@agents.command(name='perks_reset')
+@click.pass_context
+def agents_perks_reset(ctx):
+    """Full cleaning agent perks"""
+    world = ctx.obj['world']
+    try:
+        registry = get_global_registry(path=world, reload=False, save_loaded=False)
+    except Exception as e:
+        log.error(e)
+        return
+    click.echo('Perks reset start')
+    count = 0
+    all_agents = Agent.objects.all()
+    for a in all_agents:
+        if a.profile.perks:
+            a.profile.perks = []
+            # todo: add balance for library transaction
+            a.save()
+            count += 1
+    click.echo('Perks reseted for {} agents'.format(count))
+
+
 DEFAULT_FN_TEMPLATE = '{agent.pk}.{agent.login}.yaml'
 DEFAULT_CLEAN_WILDCARD = '*.yaml'
 

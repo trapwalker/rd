@@ -276,6 +276,9 @@ class Party(object):
 
         self.capacity_table = self.owner.server.reg.get('/registry/rpg_settings/partytable')
 
+        self.party_exp_modifier = 1
+        self.change_exp_modifier()
+
         # создание чат-комнаты пати
         self.room = PartyChatRoom(time=time, name=name)
         self.include(owner, time=time)
@@ -552,6 +555,7 @@ class Party(object):
             PartyInfoMessage(agent=member.agent, time=time, party=self).post()
 
     def on_exp(self, agent, dvalue, event):
+        dvalue *= self.party_exp_modifier  # Будет свегда повышенный опыт, даже когда не шарится опыт
         if self.exp_share:
             val = dvalue / len(self.members)
             for member in self.members:
@@ -570,3 +574,5 @@ class Party(object):
         for member in self.members:
             PartyInfoMessage(agent=member.agent, time=event.time, party=self).post()
 
+    def change_exp_modifier(self):
+        self.party_exp_modifier = self.owner.example.profile.get_party_exp_modifier()
