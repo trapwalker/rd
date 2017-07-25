@@ -45,7 +45,6 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
 
         self.current_user = user
 
-
     def on_finish(self):
         # print("{} processing time {}s".format(self.classname, round(time() - self._handler_start_time, 4)))
         self.on_timer_for_stat()
@@ -104,7 +103,7 @@ class BaseHandler(AuthHandlerMixin):
         # укниальный среди быстрых игроков.
         login_free = False
         email = ''
-        password = str(randint(0,999999))
+        password = str(randint(0,999999))  # TODO: WTF?! remove fake password!
         username = nickname + str(randint(0,999999))
         while not login_free:
             email = username + '@' + username  # todo: Предотвратить заполнение email заведомо ложной информацией
