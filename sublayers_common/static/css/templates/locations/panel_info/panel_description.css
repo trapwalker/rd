@@ -13,13 +13,17 @@
     text-align: left;
     width: 100%;
     margin-bottom: 10px;
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 
 .panel-info-description .panel-info-content-wrapper {
     position: relative;
     max-height: 170px;
-    box-sizing: border-box;
     margin-bottom: 10px;
+    overflow: auto;
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 
 .panel-info-description .panel-info-content {
@@ -34,6 +38,8 @@
     width: 100%;
     text-align: left;
     text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 
 /* Для внеэкранок обучения */
