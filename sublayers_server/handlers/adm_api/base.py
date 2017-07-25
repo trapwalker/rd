@@ -12,7 +12,7 @@ from tornado.web import RequestHandler
 
 
 class AdmAPIHandler(AuthHandlerMixin):
-    __name = None
+    _name_ = None
 
     def check_xsrf_cookie(self):
         """Disable checking XSRF for Adm API handlers"""
@@ -23,7 +23,7 @@ class AdmAPIHandler(AuthHandlerMixin):
 
     @property
     def command_name(self):
-        return self.__name or self.classname
+        return self._name_ or self.classname
 
     def prepare(self):
         log.info('ADMIN:: %s', self.command_name)
