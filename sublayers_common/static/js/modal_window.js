@@ -39,7 +39,7 @@ var ModalWindow = (function () {
         this.modalDialogAnswerLoad();
         this.modalItemDivisionLoad();
         this.modalItemActivationLoad();
-        if ($('#settings_server_mode').text() == 'quick') {
+        if (!basic_server_mode) {
             this.modalQuickGamePointsPageLoad();
             this.modalQuickGameMapTeachingPageLoad();
         }

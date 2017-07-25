@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    basic_server_mode = $('#settings_server_mode').text() == "basic";
     initConsoles();
     if ($('#settings_first_enter').text() == 'True')
         textConsoleManager.start('first_enter');
@@ -33,7 +34,7 @@ $(document).ready(function () {
     ownerList = new OwnerList();
 
     ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
-    basic_server_mode = $('#settings_server_mode').text() == "basic";
+
 
     rpcCallList = new RPCCallList();
 
@@ -48,9 +49,6 @@ $(document).ready(function () {
         radioPlayer.save_setting_to_cookie(true);
     };
 
-    //if ($('#settings_server_mode').text() == 'quick')
-    //    chat.setActivePage(chat.page_log);
-    //else
     chat.setActivePage(chat.page_global);
 
     returnFocusToMap();
