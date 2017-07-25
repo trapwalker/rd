@@ -1,12 +1,11 @@
 .panel-info-npc-transaction-info {
     position: relative;
     width: 100%;
-    /*height: 200px;*/
     max-height: 200px;
-    padding-bottom: 10px;
     font: 16px Nouveau_IBM;
     color: #2ffa00;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .npc-transaction-info-text-shadow {
@@ -18,27 +17,44 @@
     float: left;
     text-align: left;
     width: 50%;
-    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
 }
+.npc-transaction-info-label.caption { margin-bottom: 5px; }
 
 .npc-transaction-info-value {
     position: relative;
     float: left;
     text-align: right;
     width: 50%;
-    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
 }
 
 .npc-transaction-info-transaction-list {
     position: relative;
-    width: 100%;
+    width: 103%;
     max-height: 150px;
-    padding-top: 10px;
     overflow-x: hidden;
     overflow-y: auto;
+    padding: 0 4px;
     box-sizing: border-box;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
-
-
+.npc-transaction-info-transaction-list-dark {
+    position: absolute;
+    height: 5px;
+    width: 100%;
+    z-index: 1;
+}
+.npc-transaction-info-transaction-list-dark.before {
+    top: 32px;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1.0), rgba(0, 0, 0, 0.0));
+}
+.npc-transaction-info-transaction-list-dark.after {
+    bottom: 5px;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 1.0), rgba(0, 0, 0, 0.0));
+}
