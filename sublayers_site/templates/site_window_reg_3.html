@@ -74,6 +74,10 @@
                 _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
+                // Google Analitics
+                try {ga('send', 'event', 'register', 'view', 'finish');}
+                catch(e){console.warn('GA not defined');}
+
                 window.location = '/play';
                 //if (data.status == 'success') {
                 //    GetUserInfo();

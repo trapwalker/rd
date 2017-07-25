@@ -64,7 +64,7 @@ class Perk(Node):
         return d
 
     def html_description(self):
-        main_req_str = '<br>'
+        main_req_str = ''
         attr_name_list = dict(
             shooting_req=u'Требование к Стрельбе',
             masking_req=u'Требование к Маскировке',

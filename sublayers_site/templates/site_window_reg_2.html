@@ -126,6 +126,10 @@
                 _xsrf: getCookie('_xsrf')
             },
             success: function(data) {
+                // Google Analitics
+                try {ga('send', 'event', 'register', 'view', 'skills');}
+                catch(e){console.warn('GA not defined');}
+
                 consoleWReg2.add_message('user', _('con_wreg_msg50'));
                 if (data.status == 'success') {
                     consoleWReg2.add_message('system', _('con_wreg_msg51'));
