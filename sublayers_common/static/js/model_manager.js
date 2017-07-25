@@ -563,6 +563,11 @@ var ClientManager = (function () {
                 controlManager.actions.toggle_auto_fire.up();
             }, 3000);
         }
+
+        // Google Analytics
+        if(basic_server_mode)
+            google_analytics_methods.main_init_car();
+
     };
 
     ClientManager.prototype.Update = function (event) {

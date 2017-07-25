@@ -58,6 +58,12 @@ var WSConnector = (function(_super){
         this.connection.onopen = function() {
             self.isConnected = true;
 
+            // Google Analytics
+            if(basic_server_mode)
+                google_analytics_methods.client_main_ws_connect();
+            else
+                google_analytics_methods.client_quick_ws_connect();
+
             self.connection.onmessage = function (event) {
                 //receiveMesFromServ(event.data);
                 self.receiveMessage(event.data);

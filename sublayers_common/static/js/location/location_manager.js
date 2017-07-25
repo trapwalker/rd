@@ -339,6 +339,9 @@ var LocationManager = (function () {
 
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
+            // Google Analytics
+            google_analytics_methods.try_exit_from_location();
+
             if (user.example_car)
                 clientManager.sendExitFromLocation();
             else {
