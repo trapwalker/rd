@@ -183,6 +183,9 @@ class Application(BaseApplication):
             print _message
         except Exception as e:
             log.exception(e)
+            log.debug('==== finally before stop')
+            self.stop()
+            log.debug('==== finally after stop')
         else:
             log.debug('==== IOLoop START ' + '=' * 32)
             try:
@@ -190,15 +193,14 @@ class Application(BaseApplication):
             except Exception as e:
                 log.exception(e)
             log.debug('==== IOLoop FINISHED ' + '=' * 29)
-        finally:
-            log.debug('==== finally before stop')
-            self.stop()
-            log.debug('==== finally after stop')
+        #finally:
 
     def stop(self):
         self.srv.flash_save()
         if self.srv.is_active:
             self.srv.stop()
+
+        super(Application, self).stop()
 
     def __getstate__(self):
         pass
