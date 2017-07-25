@@ -33,6 +33,7 @@ def main(args=None):
     from cli import (
         agents, reg,
         update,
+        control,
     )
 
     prog_path, prog_name = os.path.split(sys.argv[0])

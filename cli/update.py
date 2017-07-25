@@ -12,17 +12,23 @@ from sublayers_server.model.registry_me import classes  # Не удалять э
 from sublayers_server.model.registry_me.tree import Registry, get_global_registry
 from cli._common import save_to_file
 from cli.root import root
+from cli.reg import reg_reload
 
 import click
 from hgapi import HgException
 
 
 @root.group(name='update', invoke_without_command=True)
+@click.option('--export' ,'-x', 'dest', type=click.File(mode='w'), help='Export registry tree to the file')
+@click.option('--no_db', is_flag=True, default=False, help='Do not store registry to DB')
+@click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
+@click.option('--reset_profiles', '-R', is_flag=True, default=False, help='Reset profile registration state to "nickname"')
 @click.pass_context
-def update(ctx):
+def update(ctx, dest, no_db, clean_agents, reset_profiles):
     """Update version"""
     main_repo = ctx.obj['main_repo']
     world_repo = ctx.obj['world_repo']
+    world = ctx.obj['world']
 
     try:
         main_repo.hg_pull()
@@ -44,6 +50,7 @@ def update(ctx):
 
     if is_updated_world:
         log.info('Need to registry reload!')
+        reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
 
     if is_updated_main or is_updated_world:
         log.info('Need to restart!')

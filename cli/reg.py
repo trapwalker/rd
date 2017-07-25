@@ -23,7 +23,7 @@ def reg(ctx):
 
 @reg.command(name='clean')
 @click.pass_context
-def reg_clean(ctx):
+def reg_clean_command(ctx):
     """Full cleaning of game registry from DB"""
     click.echo('Full registry cleaning...')
     count = Registry.objects.delete()
@@ -36,9 +36,27 @@ def reg_clean(ctx):
 @click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
 @click.option('--reset_profiles', '-R', is_flag=True, default=False, help='Reset profile registration state to "nickname"')
 @click.pass_context
-def reg_reload(ctx, dest, no_db, clean_agents, reset_profiles):
+def reg_reload_command(ctx, dest, no_db, clean_agents, reset_profiles):
+    """Clean registry DB, load them from FS and save to DB"""
+    reg_reload(world=ctx.obj['world'], dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
+
+
+@reg.command(name='export', help='Export registry from DB to the file')
+@click.argument('dest', type=click.File(mode='w'))
+@click.pass_context
+def reg_export_command(ctx, dest):
     """Clean registry DB, load them from FS and save to DB"""
     world = ctx.obj['world']
+    try:
+        registry = get_global_registry(path=world, reload=False, save_loaded=False)
+    except Exception as e:
+        log.error(e)
+        return
+
+    save_to_file(registry, dest)
+
+
+def reg_reload(world, dest=None, no_db=False, clean_agents=False, reset_profiles=False):
     try:
         registry = get_global_registry(path=world, reload=True, save_loaded=not no_db)
     except Exception as e:
@@ -56,17 +74,3 @@ def reg_reload(ctx, dest, no_db, clean_agents, reset_profiles):
     if dest:
         save_to_file(registry, dest)
 
-
-@reg.command(name='export', help='Export registry from DB to the file')
-@click.argument('dest', type=click.File(mode='w'))
-@click.pass_context
-def reg_export(ctx, dest):
-    """Clean registry DB, load them from FS and save to DB"""
-    world = ctx.obj['world']
-    try:
-        registry = get_global_registry(path=world, reload=False, save_loaded=False)
-    except Exception as e:
-        log.error(e)
-        return
-
-    save_to_file(registry, dest)
