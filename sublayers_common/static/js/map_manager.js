@@ -78,7 +78,7 @@ var MapManager = (function(_super) {
     }
 
     MapManager.prototype._init = function () {
-        ConstMinMapZoom = $('#settings_server_mode').text() == 'quick' ? 15.01 : ConstMinMapZoom;
+        ConstMinMapZoom = !basic_server_mode ? 15.01 : ConstMinMapZoom;
 
         // Обработчики событий карты
         document.getElementById('map2div').onkeydown = onKeyDownMap;

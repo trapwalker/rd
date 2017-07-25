@@ -265,7 +265,8 @@
 
                   ga('create', 'UA-81052008-1', 'auto');
                   ga('send', 'pageview');
-
+                  // Чтобы не считались отказы для одностраничного сайта
+                  setTimeout("ga('send','event','Engaged users','More than 10 seconds')", 10000);
             </script>
             <!-- /Google analytics -->
         </div>

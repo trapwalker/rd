@@ -201,9 +201,7 @@ var LocationManager = (function () {
         this.setBtnState(2, '', false);
         this.setBtnState(3, '</br>Назад', false);
         this.setBtnState(4, '</br>Выход', true);
-
-        this.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-        this.panel_right.show({}, 'location');
+        this.set_panels_location_screen();
 
         // Локации меню
         this.location_menu = new LocationPlaceMenu(this.jq_town_div);
@@ -339,6 +337,9 @@ var LocationManager = (function () {
 
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
+            // Google Analytics
+            google_analytics_methods.try_exit_from_location();
+
             if (user.example_car)
                 clientManager.sendExitFromLocation();
             else {
@@ -437,7 +438,8 @@ var LocationManager = (function () {
             return;
         }
         locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50} , 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
+                                         npc_node_hash: npc_node_hash} , 'building_quest');
     };
 
     LocationManager.prototype.handler_mouseleave = function() {
@@ -447,11 +449,23 @@ var LocationManager = (function () {
     LocationManager.prototype.set_panels_location_screen = function() {
         //console.log('LocationManager.prototype.handler_mouseleave');
         if (this.active_screen_name = "location_screen") {
-            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+            var respect = 0;
+            var quest_info = { available_count: 0, active_count: 0 };
+            var count = 0;
+            for (var key in this.npc)
+                if (this.npc.hasOwnProperty(key)) {
+                    count++;
+                    var npc_rec = this.npc[key].npc_rec;
+                    var npc_quest_info = journalManager.quests.getCountQuestsByNPC(npc_rec.node_hash);
+                    respect += (1 + locationManager.get_relation(npc_rec.node_hash)) * 50;
+                    quest_info.available_count += npc_quest_info.available_count;
+                    quest_info.active_count += npc_quest_info.active_count;
+                }
+            respect /= count;
+            locationManager.panel_left.show({respect: respect, quest_info: quest_info}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
         }
     };
-
 
     return LocationManager;
 })();
@@ -525,6 +539,8 @@ var LocationPanelInfo = (function () {
         if (options.hasOwnProperty('transactions'))
             for (var i = 0; i < options.transactions.length; i++)
                 jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> - ' + options.transactions[i] + '</div>');
+        var height = jq_transaction_list[0].scrollHeight;
+        jq_transaction_list.scrollTop(height);
         this._anim_show(jq_panel);
     };
 
@@ -602,6 +618,18 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.pi-building-quest-scale-carriage').first().css({left: (width - 1)});
         jq_panel.find('.pi-building-quest-scale-label').first().css({left: (width - 20)});
         jq_panel.find('.pi-building-quest-scale-label').first().text(Math.floor(options.respect));
+        if (options.npc_node_hash) {
+            var quest_info = journalManager.quests.getCountQuestsByNPC(options.npc_node_hash);
+            jq_panel.find('.active_quest').html(quest_info.active_count);
+            jq_panel.find('.available_quest').html(quest_info.available_count);
+        } else {
+            jq_panel.find('.active_quest').html(0);
+            jq_panel.find('.available_quest').html(0);
+        }
+        if (options.quest_info) {
+            jq_panel.find('.active_quest').html(options.quest_info.active_count);
+            jq_panel.find('.available_quest').html(options.quest_info.available_count);
+        }
         this._anim_show(jq_panel);
     };
 
@@ -836,9 +864,7 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.setBtnState(2, '', false);
             locationManager.setBtnState(3, '</br>Назад', false);
             locationManager.setBtnState(4, '</br>Выход', true);
-
-            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-            locationManager.panel_right.show({}, 'location');
+            locationManager.set_panels_location_screen();
 
             // Выход на старт какого-то из скринов: нужно обновить teachingManager
             teachingManager.redraw();
@@ -988,7 +1014,8 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
         var head_example = this.building_rec.head;
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50} , 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50,
+                                         npc_node_hash: head_example.node_hash} , 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 

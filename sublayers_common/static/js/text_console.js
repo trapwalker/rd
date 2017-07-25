@@ -574,6 +574,11 @@ var ConsoleFirstEnter = (function (_super) {
                 if (data && data.length) {
                     window.location = data;
                 }
+                // Google Analytics
+                if (teach)
+                    google_analytics_methods.teaching_answer_yes();
+                else
+                    google_analytics_methods.teaching_answer_no();
             }
         });
     };

@@ -592,6 +592,11 @@ var Owner = (function () {
         this.cars = [];
         this.party = aParty;
         this.quick = quick;
+
+        if(!this.login) {
+            this.login = 'none_login' + generator_ID.getID();
+            clientManager.sendAgentLog('Error: View None login for uid:' + this.uid);
+        }
     }
 
     Owner.prototype.bindCar = function (aCar) {

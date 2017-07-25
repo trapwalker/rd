@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    basic_server_mode = $('#settings_server_mode').text() == "basic";
     initConsoles();
     if ($('#settings_first_enter').text() == 'True')
         textConsoleManager.start('first_enter');
@@ -33,7 +34,7 @@ $(document).ready(function () {
     ownerList = new OwnerList();
 
     ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
-    basic_server_mode = $('#settings_server_mode').text() == "basic";
+
 
     rpcCallList = new RPCCallList();
 
@@ -48,9 +49,6 @@ $(document).ready(function () {
         radioPlayer.save_setting_to_cookie(true);
     };
 
-    //if ($('#settings_server_mode').text() == 'quick')
-    //    chat.setActivePage(chat.page_log);
-    //else
     chat.setActivePage(chat.page_global);
 
     returnFocusToMap();
@@ -360,3 +358,45 @@ var modalWindow;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];
+
+
+var google_analytics_methods = {
+    teaching_answer_yes: function () {
+        try {ga('send', 'event', 'teaching_answer', 'view', 'yes');} catch(e){console.warn('GA not defined');}
+    },
+    teaching_answer_no: function () {
+        try {ga('send', 'event', 'teaching_answer', 'view', 'no');} catch(e){console.warn('GA not defined');}
+    },
+
+    client_main_ws_connect: function() {
+        try {ga('send', 'event', 'connect', 'connect', 'main');} catch(e){console.warn('GA not defined');}
+    },
+    client_quick_ws_connect: function() {
+        try {ga('send', 'event', 'connect', 'connect', 'quick');} catch(e){console.warn('GA not defined');}
+    },
+
+    teaching_map_start: function () {
+        try {ga('send', 'event', 'teaching', 'view', 'map_start');} catch(e){console.warn('GA not defined');}
+    },
+    teaching_map_finish: function () {
+        try {ga('send', 'event', 'teaching', 'view', 'map_finish');} catch(e){console.warn('GA not defined');}
+    },
+    teaching_city_start: function () {
+        try {ga('send', 'event', 'teaching', 'view', 'city_start');} catch(e){console.warn('GA not defined');}
+    },
+    teaching_ciry_quest_end: function () {
+        try {ga('send', 'event', 'teaching', 'view', 'city_quest_end');} catch(e){console.warn('GA not defined');}
+    },
+    teaching_city_finish: function () {
+        try {ga('send', 'event', 'teaching', 'view', 'city_finish');} catch(e){console.warn('GA not defined');}
+    },
+
+    main_init_car: function () {
+        try {ga('send', 'event', 'init_car', 'view');} catch(e){console.warn('GA not defined');}
+    },
+
+    try_exit_from_location: function () {
+        try {ga('send', 'event', 'location', 'view', 'exit');} catch(e){console.warn('GA not defined');}
+    },
+
+};
