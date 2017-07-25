@@ -18,7 +18,7 @@
     text-align: left;
     width: 50%;
     height: 16px;
-    padding: 0 4px;
+    padding: 5px 5px;
     box-sizing: border-box;
 }
 .npc-transaction-info-label.caption { margin-bottom: 5px; }
@@ -29,7 +29,7 @@
     text-align: right;
     width: 50%;
     height: 16px;
-    padding: 0 4px;
+    padding: 5px 5px;
     box-sizing: border-box;
 }
 
@@ -39,9 +39,8 @@
     max-height: 150px;
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 0 4px;
+    padding: 5px 5px;
     box-sizing: border-box;
-    margin-bottom: 5px;
 }
 
 .npc-transaction-info-transaction-list-dark {
