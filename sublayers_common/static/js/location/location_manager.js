@@ -437,7 +437,8 @@ var LocationManager = (function () {
             return;
         }
         locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50} , 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
+                                         npc_node_hash: npc_node_hash} , 'building_quest');
     };
 
     LocationManager.prototype.handler_mouseleave = function() {
@@ -451,7 +452,6 @@ var LocationManager = (function () {
             locationManager.panel_right.show({}, 'location');
         }
     };
-
 
     return LocationManager;
 })();
@@ -604,6 +604,14 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.pi-building-quest-scale-carriage').first().css({left: (width - 1)});
         jq_panel.find('.pi-building-quest-scale-label').first().css({left: (width - 20)});
         jq_panel.find('.pi-building-quest-scale-label').first().text(Math.floor(options.respect));
+        if (options.npc_node_hash) {
+            var quest_info = journalManager.quests.getCountQuestsByNPC(options.npc_node_hash);
+            jq_panel.find('.active_quest').html(quest_info.active_count);
+            jq_panel.find('.available_quest').html(quest_info.available_count);
+        } else {
+            jq_panel.find('.active_quest').html(0);
+            jq_panel.find('.available_quest').html(0);
+        }
         this._anim_show(jq_panel);
     };
 
@@ -990,7 +998,8 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
         var head_example = this.building_rec.head;
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50} , 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50,
+                                         npc_node_hash: head_example.node_hash} , 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 
