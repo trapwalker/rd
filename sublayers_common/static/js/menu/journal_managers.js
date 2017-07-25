@@ -178,7 +178,7 @@ var QuestJournalManager = (function () {
     QuestJournalManager.prototype.getCountQuestsByNPC = function(npc_node_hash) {
         var result = { available_count: 0, active_count: 0 };
         for (var key in this.quests)
-            if (this.quests.hasOwnProperty(key) && (this.quests[key].hirer.node_hash == npc_node_hash)) {
+            if (this.quests.hasOwnProperty(key) && this.quests[key].hirer && (this.quests[key].hirer.node_hash == npc_node_hash)) {
                 if (!this.quests[key].status) result.available_count++;
                 if (this.quests[key].status == 'active') result.active_count++;
             }
