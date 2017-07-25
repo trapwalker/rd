@@ -9,7 +9,7 @@ var CharacterManager = (function () {
         var self = characterManager;
         if (jq_main_div)
             self.jq_main_div = $(jq_main_div).first();
-        var quick_mode = $('#settings_server_mode').text() == 'quick';
+        var quick_mode = !basic_server_mode;
         // Заполняем верхнюю часть окна
         self.jq_main_div.find('.character-window-avatar').first()
             .css('background', 'transparent url(' + user.avatar_link + ') 100% 100% no-repeat');

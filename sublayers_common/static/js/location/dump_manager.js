@@ -46,9 +46,7 @@ var LocationDump = (function (_super) {
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
-
-                locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-                locationManager.panel_right.show({}, 'location');
+                locationManager.set_panels_location_screen();
                 break;
             default:
                 _super.prototype.clickBtn.call(this, btnIndex);

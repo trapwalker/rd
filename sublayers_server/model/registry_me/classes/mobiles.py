@@ -179,7 +179,9 @@ class Mobile(Node):
     shooting_time_recharge_rate = FloatField(caption=u"Влияние Стрельбы на Множитель модификации времени перезарядки залпового оружия")
     shooting_radius_rate        = FloatField(caption=u"Влияние Стрельбы на Множитель модификации дальности стрельбы")
 
-    masking_p_visibility        = FloatField(caption=u"Влияние Маскировки на Коэффициент заметности")
+    # masking_p_visibility        = FloatField(root_default=0, caption=u"Влияние Маскировки на Коэффициент заметности")  # Не используется
+    masking_p_visibility_min    = FloatField(root_default=0, caption=u"Влияние Маскировки на Коэффициент заметности")
+    masking_p_visibility_max    = FloatField(root_default=0, caption=u"Влияние Маскировки на Коэффициент заметности")
 
     exp_table = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.exptable.ExpTable',
@@ -222,7 +224,7 @@ class Mobile(Node):
 
             for skill_name, skill_value in example_agent.profile.iter_skills():
                 skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
-                original_value += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+                modifier_value += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
 
             for perk in example_agent.profile.perks:
                 modifier_value += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
@@ -256,7 +258,7 @@ class Mobile(Node):
             for skill_name, skill_value in example_agent.profile.iter_skills():
                 skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
                 for param_name in d.keys():
-                    d[param_name] += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+                    modifier_dict[param_name] += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
 
             for perk in example_agent.profile.perks:
                 for param_name in modifier_dict.keys():
