@@ -525,6 +525,8 @@ var LocationPanelInfo = (function () {
         if (options.hasOwnProperty('transactions'))
             for (var i = 0; i < options.transactions.length; i++)
                 jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> - ' + options.transactions[i] + '</div>');
+        var height = jq_transaction_list[0].scrollHeight;
+        jq_transaction_list.scrollTop(height);
         this._anim_show(jq_panel);
     };
 
