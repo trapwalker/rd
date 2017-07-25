@@ -232,7 +232,10 @@ var QuestJournalManager = (function () {
             quest.jq_journal_menu.click();
 
         if (locationManager.in_location_flag)
-            locationManager.screens[locationManager.active_screen_name].set_panels();
+            if (locationManager.screens[locationManager.active_screen_name])
+                locationManager.screens[locationManager.active_screen_name].set_panels();
+            else
+                locationManager.set_panels_location_screen();
     };
 
     QuestJournalManager.prototype.update_view_notes = function (quest) {
