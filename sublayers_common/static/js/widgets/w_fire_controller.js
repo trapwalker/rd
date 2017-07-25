@@ -595,8 +595,8 @@ var WFireController = (function (_super) {
         }
 
         // Анимация круга радара
-        this._reStartRadarCircle(time);
-        this._updateRadarCircles(time);
+        this._reStartRadarCircle(clock.getClientTime() / 1000.);
+        this._updateRadarCircles(clock.getClientTime() / 1000.);
 
         // Анимация точек радара
         this._updateCarPointCanvas();

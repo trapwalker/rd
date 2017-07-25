@@ -46,9 +46,8 @@ var WSConnector = (function(_super){
             self.max_time = 0;
             self.decode_time = 0;
             self.count = 0;
-        }, 10000)
-
-       }
+        }, 10000);
+    }
 
     WSConnector.prototype.connect = function(){
         // создание коннекта и обвешивание евентами
