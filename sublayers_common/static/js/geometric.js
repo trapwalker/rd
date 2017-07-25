@@ -336,6 +336,7 @@ function convertKeyCodeToString(keycode) {
 
 function hash_code(str) {
     var hash = 0, i, chr;
+    if (!str) str = '';
     if (str.length === 0) return hash;
     for (i = 0; i < str.length; i++) {
         chr = str.charCodeAt(i);
