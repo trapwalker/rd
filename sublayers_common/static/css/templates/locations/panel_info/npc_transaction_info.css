@@ -16,7 +16,7 @@
     position: relative;
     float: left;
     text-align: left;
-    width: 50%;
+    width: 60%;
     height: 16px;
     padding: 5px 5px;
     box-sizing: border-box;
@@ -27,7 +27,7 @@
     position: relative;
     float: left;
     text-align: right;
-    width: 50%;
+    width: 40%;
     height: 16px;
     padding: 5px 5px;
     box-sizing: border-box;

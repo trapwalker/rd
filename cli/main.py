@@ -5,6 +5,8 @@ import sys, os
 import logging
 log = logging.getLogger(__name__)
 
+from hgapi import Repo, HgException
+
 
 def main(args=None):
     if args is None:
@@ -16,20 +18,22 @@ def main(args=None):
     global log
     log = logging.getLogger()
     try:
-        raise ImportError
+        raise ImportError('Console colorization DISABLED')
         import coloredlogs
         coloredlogs.DEFAULT_FIELD_STYLES['levelname']['color'] = 'green'
         coloredlogs.install(level=logging.DEBUG, fmt='%(levelname)-8s| %(message)s', stream=sys.stderr)
-    except ImportError:
+    except ImportError as e:
         log.level = logging.DEBUG
         _hndl = logging.StreamHandler(sys.stderr)
         _hndl.setFormatter(logging.Formatter('%(levelname)-8s| %(message)s'))
         log.addHandler(_hndl)
+        log.log(logging.DEBUG if 'DISABLED' in e.message else logging.WARNING, e.message)
 
     from cli.root import root
     from cli import (
         agents, reg,
-        # update,
+        update,
+        control,
     )
 
     prog_path, prog_name = os.path.split(sys.argv[0])

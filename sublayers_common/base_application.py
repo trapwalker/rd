@@ -77,9 +77,8 @@ class BaseApplication(tornado.web.Application):
         )
 
     def stop(self):
-        log.debug('====== ioloop before stop')
+        log.debug('==== IOLoop stop')
         tornado.ioloop.IOLoop.instance().stop()
-        log.debug('====== ioloop after stop')
 
     def listen(self, port, address="", **kwargs):
         ext_settings = dict()
