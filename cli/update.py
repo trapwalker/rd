@@ -13,6 +13,7 @@ from sublayers_server.model.registry_me.tree import Registry, get_global_registr
 from cli._common import save_to_file
 from cli.root import root
 from cli.reg import reg_reload
+from cli.control import stop, start, save
 
 import click
 from hgapi import HgException
@@ -48,12 +49,16 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles):
     is_updated_main = upd('Main', main_repo)
     is_updated_world = upd('World', world_repo)
 
-    if is_updated_world:
-        log.info('Need to registry reload!')
-        reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
-
     if is_updated_main or is_updated_world:
-        log.info('Need to restart!')
+        if is_updated_world:
+            log.info('World updated')
+
+        if is_updated_main:
+            log.info('Source updated')
+
+        stop()
+        reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
+        start()
 
     if ctx.invoked_subcommand:
         return
