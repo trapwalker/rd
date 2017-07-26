@@ -39,7 +39,7 @@ class APIGetCarInfoHandler2(BaseHandler):
     def get(self):
         log.error('Error! Site API called!')
         #uri = self.get_argument('uri', None)
-        uri = 'reg:///registry/mobiles/cars/middle/sports/delorean_dmc12'  # todo: ##fix
+        uri = 'reg:///registry/mobiles/cars/middle/sports/04_delorean_dmc_12'  # todo: ##fix
         if not uri:
             self.send_error(404)
             return
