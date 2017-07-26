@@ -653,6 +653,12 @@ class EnterToLocation(Message):
         location = self.location
         location_html = self.locations_cache.get(location.example.uri, None)
         if location_html is None:
+            svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
+            svg_code_common = ''
+            with open(os.path.join(svg_link_common, 'location_back_big.svg')) as f:
+                svg_code_common = f.read()
+                svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
+
             svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
             svg_code = ''
             with open(os.path.join(svg_link, 'location.svg')) as f:
@@ -664,7 +670,7 @@ class EnterToLocation(Message):
                 location_html = tornado.template.Loader(
                     root_directory="templates/location",
                     namespace=self.agent.connection.get_template_namespace()
-                ).load("location.html").generate(location=location, svg_code=svg_code, car=None)
+                ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common, car=None)
             else:
                 log.warn('Unknown type location: %s', location)
             self.locations_cache[location.example.uri] = location_html

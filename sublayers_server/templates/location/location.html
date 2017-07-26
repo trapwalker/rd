@@ -1,4 +1,8 @@
 <style>
+    #svg_common, #svg2 { position: absolute }
+    #svg2 { pointer-events: none }
+    #svg2 #layer2 { pointer-events: auto }
+
     #btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area,
     #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area {
         cursor: url('/static/img/cursors/hyper.png'), pointer;
@@ -100,6 +104,7 @@
 </style>
 
 <div>
+    {% raw svg_code_common %}
     {% raw svg_code %}
 </div>
 
