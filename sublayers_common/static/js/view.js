@@ -315,6 +315,11 @@ function resizeWindowHandler() {
     }
     if (teachingMapManager) teachingMapManager.redraw();
     if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
+
+    if (interface_scale_big)
+        clientManager.sendResolutionScale('big');
+    else
+        clientManager.sendResolutionScale('small');
 }
 
 

@@ -651,11 +651,15 @@ class EnterToLocation(Message):
 
     def get_location_html(self):
         location = self.location
-        location_html = self.locations_cache.get(location.example.uri, None)
+        if self.agent.resolution_scale not in ['big', 'small']:
+            self.agent.resolution_scale = 'big'
+        cache_index = '{}_{}'.format(location.example.uri, self.agent.resolution_scale)
+        location_html = self.locations_cache.get(cache_index, None)
         if location_html is None:
             svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
             svg_code_common = ''
-            with open(os.path.join(svg_link_common, 'location_back_big.svg')) as f:
+            svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'
+            with open(os.path.join(svg_link_common, svg_code_common_file)) as f:
                 svg_code_common = f.read()
                 svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
 
@@ -673,8 +677,8 @@ class EnterToLocation(Message):
                 ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common, car=None)
             else:
                 log.warn('Unknown type location: %s', location)
-            self.locations_cache[location.example.uri] = location_html
-            log.debug('{}  added to cache '.format(location.example.uri))
+            self.locations_cache[cache_index] = location_html
+            log.debug('{}  added to cache '.format(cache_index))
         return location_html
 
     def as_dict(self):
