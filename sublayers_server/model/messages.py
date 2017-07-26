@@ -655,7 +655,7 @@ class EnterToLocation(Message):
         if location_html is None:
             svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
             svg_code_common = ''
-            with open(os.path.join(svg_link_common, 'location_back_big.svg')) as f:
+            with open(os.path.join(svg_link_common, 'location_back_small.svg')) as f:
                 svg_code_common = f.read()
                 svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
 
