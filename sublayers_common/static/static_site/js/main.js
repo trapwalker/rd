@@ -109,6 +109,16 @@ function main() {
         var data;
         if (this.id == 'RDbtn_start') {
             data = GetIDForStartRegistrationPage();
+
+            // Google Analytics
+            if (data == 'RDSiteWReg') {  // Для незарегистрированных пользователей
+                try {ga('send', 'event', 'btn', 'click', 'start_reg');}
+                catch(e){console.warn('GA not defined');}
+            }
+            else {
+                try {ga('send', 'event', 'btn', 'click', 'start');}
+                catch(e){console.warn('GA not defined');}
+            }
         }
         else {
             data = $(this).data('window_id');
