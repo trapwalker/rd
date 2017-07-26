@@ -101,6 +101,8 @@ class Agent(Object):
         self.connection_times = []  # times connections for this agent
         self.min_connection_time = 0  #
 
+        self.resolution_scale = 'big'  # Размер разрешения текущего клиента
+
     def generate_fake_login(self):
         max_iterations = 500
         for i in xrange(0, max_iterations):
