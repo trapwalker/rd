@@ -23,6 +23,11 @@
 {#        audioManager.play('error_1');#}
 {#        consoleWPI.add_message('system', _('con_wreg_msg7'));#}
 {#        return;#}
+
+        // Google Analytics
+        try {ga('send', 'event', 'btn', 'redirect', 'play');}
+        catch(e){console.warn('GA not defined');}
+
         window.location = '/play';
     }
 
