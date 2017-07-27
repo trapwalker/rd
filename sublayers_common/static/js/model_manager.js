@@ -1641,7 +1641,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        google_analytics_methods.teach_map_fire();
+        if (!basic_server_mode && teachingMapManager.is_active()) google_analytics_methods.teach_map_fire();
     };
 
     ClientManager.prototype.sendFireAutoEnable = function (enable) {
@@ -1658,7 +1658,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        google_analytics_methods.teach_map_fire();
+        if (!basic_server_mode && teachingMapManager.is_active()) google_analytics_methods.teach_map_fire();
     };
 
     ClientManager.prototype.sendSlowMine = function () {
