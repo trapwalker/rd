@@ -69,5 +69,13 @@ var NukoilTeachingNote = (function (_super) {
         }
     };
 
+
+    NukoilTeachingNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_city_nukeoil();
+
+        _super.prototype.delete.call(this);
+    };
+
     return NukoilTeachingNote;
 })(NavigateTeachingNote);

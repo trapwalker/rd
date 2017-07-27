@@ -77,6 +77,13 @@ var GetQuestTeachingNote = (function (_super) {
         }
     };
 
+    GetQuestTeachingNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_city_get_q();
+
+        _super.prototype.delete.call(this);
+    };
+
     return GetQuestTeachingNote;
 })(NavigateTeachingNote);
 
@@ -170,6 +177,13 @@ var FinishQuestTeachingNote = (function (_super) {
                 this.draw_line(this.start_point, this.third_note_btn);
             }
         }
+    };
+
+    FinishQuestTeachingNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_city_fin_q();
+
+        _super.prototype.delete.call(this);
     };
 
     return FinishQuestTeachingNote;

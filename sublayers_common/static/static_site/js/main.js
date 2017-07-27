@@ -112,11 +112,11 @@ function main() {
 
             // Google Analytics
             if (data == 'RDSiteWReg') {  // Для незарегистрированных пользователей
-                try {ga('send', 'event', 'btn', 'click', 'start_reg');}
+                try {ga('send', 'event', 'btn_site', 'click', 'start_reg');}
                 catch(e){console.warn('GA not defined');}
             }
             else {
-                try {ga('send', 'event', 'btn', 'click', 'start');}
+                try {ga('send', 'event', 'btn_site', 'click', 'start');}
                 catch(e){console.warn('GA not defined');}
             }
         }

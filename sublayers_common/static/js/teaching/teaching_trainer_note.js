@@ -64,6 +64,13 @@ var TrainerTeachingNote = (function (_super) {
         }
     };
 
+    TrainerTeachingNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_city_finish();
+
+        _super.prototype.delete.call(this);
+    };
+    
     return TrainerTeachingNote;
 })(NavigateTeachingNote);
 
