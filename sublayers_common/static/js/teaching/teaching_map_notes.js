@@ -73,6 +73,9 @@ var CruiseSpeedTeachingMapNote = (function (_super) {
         this.window_name = 'cruise_speed';
         this.window_uri = '/map_teaching';
         this.elem_id_str = 'cruiseControlMainDiv';
+
+        // Google Analytics
+        google_analytics_methods.teach_map_start();
     }
 
     CruiseSpeedTeachingMapNote.prototype.redraw = function() {
@@ -180,6 +183,13 @@ var DrivingControlTeachingMapNote = (function (_super) {
             this.draw_arrow(teachingMapManager.context, new Point(-90, -39), 0);
     };
 
+    DrivingControlTeachingMapNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_map_move();
+
+        _super.prototype.delete.call(this);
+    };
+
     return DrivingControlTeachingMapNote;
 })(NoActionTeachingMapNote);
 
@@ -248,7 +258,7 @@ var ZoomSliderTeachingMapNote = (function (_super) {
                 self._end_note_timer = null;
                 self.change_count = 2;
                 self.change();
-            }, 9000);
+            }, 3000);
         }
     };
 
@@ -271,6 +281,13 @@ var ZoomSliderTeachingMapNote = (function (_super) {
             clearTimeout(this._end_note_timer);
             this._end_note_timer = null;
         }
+        _super.prototype.delete.call(this);
+    };
+
+    ZoomSliderTeachingMapNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_map_zoom();
+
         _super.prototype.delete.call(this);
     };
 
@@ -348,6 +365,13 @@ var TryKillTeachingMapNote = (function (_super) {
         }
     };
 
+
+    TryKillTeachingMapNote.prototype.delete = function () {
+        // Google Analytics
+        google_analytics_methods.teach_map_damage();
+
+        _super.prototype.delete.call(this);
+    };
     return TryKillTeachingMapNote;
 })(NoActionTeachingMapNote);
 
@@ -365,6 +389,12 @@ var TryGameTeachingMapNote = (function (_super) {
         _super.prototype.send_activate_note.call(this, result);
         if (result) {
             setTimeout(function(){window.location = '/play'}, 2000);
+            // Google Analytics
+            google_analytics_methods.teach_map_finish();
+        }
+        else {
+            // Google Analytics
+            google_analytics_methods.teach_map_train();
         }
     };
 
