@@ -20,6 +20,10 @@ var HangarTeachingNote = (function (_super) {
         this.buy_btn = new Point(325, 608);
 
         chat.addMessageToLog('Вы находитесь в интерфейсе города. Покидание города без оборудованного транспорта обречет вас на смерть от холода и отравления. Купите свой первый транспорт.', true);
+    
+        
+        // Google Analytics
+        google_analytics_methods.teach_city_start();
     }
 
     HangarTeachingNote.prototype.on_enter_location = function() {
@@ -62,6 +66,14 @@ var HangarTeachingNote = (function (_super) {
                 this.draw_line(this.start_point, this.buy_btn);
         }
     };
+    
+    HangarTeachingNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_city_car();
+        
+        _super.prototype.delete.call(this);
+    };
+            
 
     return HangarTeachingNote;
 })(NavigateTeachingNote);
