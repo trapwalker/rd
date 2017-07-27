@@ -64,6 +64,9 @@ var WSConnector = (function(_super){
             else
                 google_analytics_methods.client_quick_ws_connect();
 
+            // Отправка на сервер разрешения экрана
+            setTimeout(resizeWindowHandler, 10);
+
             self.connection.onmessage = function (event) {
                 //receiveMesFromServ(event.data);
                 self.receiveMessage(event.data);

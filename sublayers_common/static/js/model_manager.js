@@ -2689,6 +2689,18 @@ var ClientManager = (function () {
     };
 
 
+    // Сообщить на сервер о разрешении клиента
+    ClientManager.prototype.sendResolutionScale = function (scale) {
+        //console.log('ClientManager.prototype.sendAgentLog');
+        var mes = {
+            call: "set_resolution_scale",
+            rpc_call_id: rpcCallList.getID(),
+            params: {resolution_scale: scale}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     return ClientManager;
 })();
 
