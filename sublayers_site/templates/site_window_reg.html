@@ -56,7 +56,7 @@
 
     function ga_try_social_auth() {
         // Google Analytics
-        try {ga('send', 'event', 'btn', 'click', 'socials');}
+        try {ga('send', 'event', 'btn_socials', 'try', 'socials');}
         catch(e){console.warn('GA not defined');}
     }
 
@@ -138,7 +138,7 @@
         var r_email = new RegExp(/[^@]+@[^@]+\.[a-zA-Z]{2,6}/);
 
         // Google Analytics
-        try {ga('send', 'event', 'btn', 'click', 'reg_try');}
+        try {ga('send', 'event', 'registration', 'click', 'reg_try');}
         catch(e){console.warn('GA not defined');}
 
         if(r_email.test(email))
@@ -159,7 +159,7 @@
                         audioManager.play('button_screen_press');
 
                         // Google Analytics
-                        try {ga('send', 'event', 'btn', 'click', 'reg_started');}
+                        try {ga('send', 'event', 'registration', 'click', 'reg_started');}
                         catch(e){console.warn('GA not defined');}
 
                         return;
@@ -191,7 +191,7 @@
         var r_email = new RegExp(/[^@]+@[^@]+\.[a-zA-Z]{2,6}/);
 
         // Google Analytics
-        try {ga('send', 'event', 'btn', 'click', 'auth_try');}
+        try {ga('send', 'event', 'authorization', 'click', 'try');}
         catch(e){console.warn('GA not defined');}
 
         if(r_email.test(email))
@@ -208,7 +208,7 @@
                     consoleWReg.add_message('user', _('con_wreg_msg28'), true);
 
                     // Google Analytics
-                    try {ga('send', 'event', 'btn', 'click', 'auth_finish');}
+                    try {ga('send', 'event', 'authorization', 'click', 'finish');}
                     catch(e){console.warn('GA not defined');}
 
                     if (data.status == 'success') {
@@ -239,7 +239,7 @@
         audioManager.play('error_1');
 
         // Google Analytics
-        try {ga('send', 'event', 'btn', 'click', 'password_restore');}
+        try {ga('send', 'event', 'btn_site', 'try', 'password_restore');}
         catch(e){console.warn('GA not defined');}
     }
 </script>
