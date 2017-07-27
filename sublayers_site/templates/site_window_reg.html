@@ -54,6 +54,12 @@
 <script>
     var reg_last_input_click;
 
+    function ga_try_social_auth() {
+        // Google Analytics
+        try {ga('send', 'event', 'btn_socials', 'try', 'socials');}
+        catch(e){console.warn('GA not defined');}
+    }
+
     function VKClick() {
         if ((reg_last_input_click != 'VKClick') && (consoleWReg)) {
             consoleWReg.add_message('user', _('con_wreg_msg6'), true);
@@ -61,6 +67,7 @@
             reg_last_input_click = 'VKClick';
         }
         audioManager.play('error_1');
+        ga_try_social_auth();
     }
 
     function FBClick() {
@@ -70,6 +77,7 @@
             reg_last_input_click = 'FBClick';
         }
         audioManager.play('error_1');
+        ga_try_social_auth();
     }
 
     function OKClick() {
@@ -79,6 +87,7 @@
             reg_last_input_click = 'OKClick';
         }
         audioManager.play('error_1');
+        ga_try_social_auth();
     }
 
     function GClick() {
@@ -88,6 +97,7 @@
             reg_last_input_click = 'GClick';
         }
         audioManager.play('error_1');
+        ga_try_social_auth();
     }
 
     function RegEmailClick() {
@@ -126,6 +136,11 @@
         var email = document.getElementById('reg_email').value;
         var password = document.getElementById('reg_password').value;
         var r_email = new RegExp(/[^@]+@[^@]+\.[a-zA-Z]{2,6}/);
+
+        // Google Analytics
+        try {ga('send', 'event', 'registration', 'click', 'reg_try');}
+        catch(e){console.warn('GA not defined');}
+
         if(r_email.test(email))
             $.ajax({
                 url: location.protocol + '//' + location.host + '/login',
@@ -142,6 +157,11 @@
                         consoleWReg.add_message('system', _('con_wreg_msg23'));
                         GetUserInfo();
                         audioManager.play('button_screen_press');
+
+                        // Google Analytics
+                        try {ga('send', 'event', 'registration', 'click', 'reg_started');}
+                        catch(e){console.warn('GA not defined');}
+
                         return;
                     }
                     audioManager.play('error_1');
@@ -169,6 +189,11 @@
         var email = document.getElementById('auth_email').value;
         var password = document.getElementById('auth_password').value;
         var r_email = new RegExp(/[^@]+@[^@]+\.[a-zA-Z]{2,6}/);
+
+        // Google Analytics
+        try {ga('send', 'event', 'authorization', 'click', 'try');}
+        catch(e){console.warn('GA not defined');}
+
         if(r_email.test(email))
             $.ajax({
                 url: location.protocol + '//' + location.host + '/login',
@@ -181,6 +206,11 @@
                 },
                 success: function(data) {
                     consoleWReg.add_message('user', _('con_wreg_msg28'), true);
+
+                    // Google Analytics
+                    try {ga('send', 'event', 'authorization', 'click', 'finish');}
+                    catch(e){console.warn('GA not defined');}
+
                     if (data.status == 'success') {
                         consoleWReg.add_message('system', _('con_wreg_msg29'));
                         GetUserInfo();
@@ -207,5 +237,9 @@
         consoleWReg.add_message('user', _('con_wreg_msg33'), true);
         consoleWReg.add_message('system', _('con_wreg_msg34'));
         audioManager.play('error_1');
+
+        // Google Analytics
+        try {ga('send', 'event', 'btn_site', 'try', 'password_restore');}
+        catch(e){console.warn('GA not defined');}
     }
 </script>

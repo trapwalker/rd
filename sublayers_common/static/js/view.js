@@ -415,36 +415,14 @@ var modalWindow;
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];
 
-
+// console.log(arguments.callee.name);   Имя вызванного метода
 var google_analytics_methods = {
-    teaching_answer_yes: function () {
-        try {ga('send', 'event', 'teaching_answer', 'view', 'yes');} catch(e){console.warn('GA not defined');}
-    },
-    teaching_answer_no: function () {
-        try {ga('send', 'event', 'teaching_answer', 'view', 'no');} catch(e){console.warn('GA not defined');}
-    },
 
     client_main_ws_connect: function() {
         try {ga('send', 'event', 'connect', 'connect', 'main');} catch(e){console.warn('GA not defined');}
     },
     client_quick_ws_connect: function() {
         try {ga('send', 'event', 'connect', 'connect', 'quick');} catch(e){console.warn('GA not defined');}
-    },
-
-    teaching_map_start: function () {
-        try {ga('send', 'event', 'teaching', 'view', 'map_start');} catch(e){console.warn('GA not defined');}
-    },
-    teaching_map_finish: function () {
-        try {ga('send', 'event', 'teaching', 'view', 'map_finish');} catch(e){console.warn('GA not defined');}
-    },
-    teaching_city_start: function () {
-        try {ga('send', 'event', 'teaching', 'view', 'city_start');} catch(e){console.warn('GA not defined');}
-    },
-    teaching_ciry_quest_end: function () {
-        try {ga('send', 'event', 'teaching', 'view', 'city_quest_end');} catch(e){console.warn('GA not defined');}
-    },
-    teaching_city_finish: function () {
-        try {ga('send', 'event', 'teaching', 'view', 'city_finish');} catch(e){console.warn('GA not defined');}
     },
 
     main_init_car: function () {
@@ -454,5 +432,43 @@ var google_analytics_methods = {
     try_exit_from_location: function () {
         try {ga('send', 'event', 'location', 'view', 'exit');} catch(e){console.warn('GA not defined');}
     },
+    
+    activate_quick_item: function () {
+        try {ga('send', 'event', 'quick_panel', 'activate');} catch(e){console.warn('GA not defined');}
+    },
+
+
+    // Обучение
+    teaching_answer_yes: function () {try {ga('send', 'event', 'teach_answer', 'answer', 'yes');} catch(e){console.warn('GA not defined');}},
+    teaching_answer_no:  function () {try {ga('send', 'event', 'teach_answer', 'answer', 'no');} catch(e){console.warn('GA not defined');}},
+
+    // Обучение карта
+    teach_map_start:  function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'map_start');} catch(e){console.warn('GA not defined');}},
+    teach_map_move:   function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'moving');} catch(e){console.warn('GA not defined');}},
+    teach_map_zoom:   function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'zoom');} catch(e){console.warn('GA not defined');}},
+    teach_map_damage: function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'damage');} catch(e){console.warn('GA not defined');}},
+    teach_map_fire: function () {
+        if (!google_analytics_methods.called_teach_map_fire) { console.log(arguments.callee.name);
+            google_analytics_methods.called_teach_map_fire = true;
+            try {
+                ga('send', 'event', 'teach_map', 'try_fire');
+            } catch (e) {
+                console.warn('GA not defined');
+            }
+        }
+    },
+    teach_map_finish: function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'finish');} catch(e){console.warn('GA not defined');}},
+    teach_map_train:  function () {try {ga('send', 'event', 'teach_map_train', 'train');} catch(e){console.warn('GA not defined');}},
+
+    // Обучение город
+    teach_city_start:   function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'city_start');} catch(e){console.warn('GA not defined');}},
+    teach_city_car:     function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'car');} catch(e){console.warn('GA not defined');}},
+    teach_city_nukeoil: function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'nukeoil');} catch(e){console.warn('GA not defined');}},
+    teach_city_trader:  function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'trader');} catch(e){console.warn('GA not defined');}},
+    teach_city_armorer: function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'armorer');} catch(e){console.warn('GA not defined');}},
+    teach_city_get_q:   function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'get_quest');} catch(e){console.warn('GA not defined');}},
+    teach_city_journal: function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'journal');} catch(e){console.warn('GA not defined');}},
+    teach_city_fin_q:   function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'finish_quest');} catch(e){console.warn('GA not defined');}},
+    teach_city_finish:  function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'city_finish');} catch(e){console.warn('GA not defined');}},
 
 };

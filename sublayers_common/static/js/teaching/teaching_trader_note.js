@@ -94,6 +94,9 @@ var TraderTeachingNote = (function (_super) {
             this.needed_npc.filters.splice(index, 1);
         }
         _super.prototype.delete.call(this);
+        
+        // Google Analytics
+        google_analytics_methods.teach_city_trader();   
     };
 
     return TraderTeachingNote;

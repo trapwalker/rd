@@ -109,6 +109,13 @@ var ArmorerTeachingNote = (function (_super) {
             if (deffered_call) setTimeout(function(){teachingManager.redraw();}, 10);
         }
     };
+    
+    ArmorerTeachingNote.prototype.delete = function() {
+        // Google Analytics
+        google_analytics_methods.teach_city_armorer();
+        
+        _super.prototype.delete.call(this);
+    };
 
     return ArmorerTeachingNote;
 })(NavigateTeachingNote);

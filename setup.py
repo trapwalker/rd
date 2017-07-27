@@ -25,6 +25,7 @@ setup(
         'pillow',
         'humanfriendly',
         'colorama',
+        'requests',
     ],
     entry_points='''
         [console_scripts]
