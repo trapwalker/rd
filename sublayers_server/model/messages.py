@@ -658,10 +658,15 @@ class EnterToLocation(Message):
         if location_html is None:
             svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
             svg_code_common = ''
+            svg_code_btn = ''
             svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'
+            svg_code_btn_file = 'location_btn_big.svg' if self.agent.resolution_scale == 'big' else 'location_btn_small.svg'
             with open(os.path.join(svg_link_common, svg_code_common_file)) as f:
                 svg_code_common = f.read()
                 svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
+            with open(os.path.join(svg_link_common, svg_code_btn_file)) as f:
+                svg_code_btn = f.read()
+                svg_code_btn = patch_svg_links(src=svg_code_btn, pth='static/content/locations/map_locations/common/')
 
             svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
             svg_code = ''
@@ -674,7 +679,8 @@ class EnterToLocation(Message):
                 location_html = tornado.template.Loader(
                     root_directory="templates/location",
                     namespace=self.agent.connection.get_template_namespace()
-                ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common, car=None)
+                ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common,
+                                                 svg_code_btn=svg_code_btn, is_big=(self.agent.resolution_scale == 'big'), car=None)
             else:
                 log.warn('Unknown type location: %s', location)
             self.locations_cache[cache_index] = location_html

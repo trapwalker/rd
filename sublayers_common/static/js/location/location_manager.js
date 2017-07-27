@@ -220,6 +220,7 @@ var LocationManager = (function () {
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         this.in_location_flag = true;
+        resizeWindowHandler();
 
         // Принудительно перерисовать все квесты
         journalManager.quests.redraw();

@@ -1119,6 +1119,5 @@ class AgentAPI(API):
         resolution_scale = str(resolution_scale)
         if isinstance(resolution_scale, str):
             self.agent.resolution_scale = resolution_scale
-            print resolution_scale
         else:
             log.warning('{} try set no str resolution_scale: {}'.format(self.agent, resolution_scale))
