@@ -60,9 +60,9 @@ var WSConnector = (function(_super){
 
             // Google Analytics
             if(basic_server_mode)
-                google_analytics_methods.client_main_ws_connect();
+                analytics.client_main_ws_connect();
             else
-                google_analytics_methods.client_quick_ws_connect();
+                analytics.client_quick_ws_connect();
 
             // Отправка на сервер разрешения экрана
             setTimeout(resizeWindowHandler, 10);

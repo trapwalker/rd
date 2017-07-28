@@ -96,7 +96,7 @@ var TraderTeachingNote = (function (_super) {
         _super.prototype.delete.call(this);
         
         // Google Analytics
-        google_analytics_methods.teach_city_trader();   
+        analytics.teach_city_trader();   
     };
 
     return TraderTeachingNote;

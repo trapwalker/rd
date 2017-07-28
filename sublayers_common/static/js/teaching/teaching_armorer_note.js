@@ -112,7 +112,7 @@ var ArmorerTeachingNote = (function (_super) {
     
     ArmorerTeachingNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_city_armorer();
+        analytics.teach_city_armorer();
         
         _super.prototype.delete.call(this);
     };

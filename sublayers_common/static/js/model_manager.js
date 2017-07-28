@@ -565,8 +565,7 @@ var ClientManager = (function () {
         }
 
         // Google Analytics
-        if(basic_server_mode)
-            google_analytics_methods.main_init_car();
+        analytics.main_init_car();
 
     };
 
@@ -1641,7 +1640,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        if (!basic_server_mode && teachingMapManager.is_active()) google_analytics_methods.teach_map_fire();
+        analytics.teach_map_fire();
     };
 
     ClientManager.prototype.sendFireAutoEnable = function (enable) {
@@ -1658,7 +1657,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        if (!basic_server_mode && teachingMapManager.is_active()) google_analytics_methods.teach_map_fire();
+        analytics.teach_map_fire();
     };
 
     ClientManager.prototype.sendSlowMine = function () {
@@ -2549,7 +2548,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        google_analytics_methods.activate_quick_item();
+        analytics.activate_quick_item();
     };
 
     ClientManager.prototype.sendGetQuickItemInfo = function() {

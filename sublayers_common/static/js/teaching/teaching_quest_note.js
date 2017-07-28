@@ -79,7 +79,7 @@ var GetQuestTeachingNote = (function (_super) {
 
     GetQuestTeachingNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_city_get_q();
+        analytics.teach_city_get_q();
 
         _super.prototype.delete.call(this);
     };
@@ -181,7 +181,7 @@ var FinishQuestTeachingNote = (function (_super) {
 
     FinishQuestTeachingNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_city_fin_q();
+        analytics.teach_city_fin_q();
 
         _super.prototype.delete.call(this);
     };

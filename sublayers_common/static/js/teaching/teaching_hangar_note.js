@@ -23,7 +23,7 @@ var HangarTeachingNote = (function (_super) {
     
         
         // Google Analytics
-        google_analytics_methods.teach_city_start();
+        analytics.teach_city_start();
     }
 
     HangarTeachingNote.prototype.on_enter_location = function() {
@@ -69,7 +69,7 @@ var HangarTeachingNote = (function (_super) {
     
     HangarTeachingNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_city_car();
+        analytics.teach_city_car();
         
         _super.prototype.delete.call(this);
     };

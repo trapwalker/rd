@@ -64,7 +64,7 @@ var JournalTeachingNote = (function (_super) {
 
     JournalTeachingNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_city_journal();
+        analytics.teach_city_journal();
 
         _super.prototype.delete.call(this);
     };
