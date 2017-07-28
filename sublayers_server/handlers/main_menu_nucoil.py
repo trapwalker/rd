@@ -16,4 +16,8 @@ class MainMenuNucoilHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        self.render("main_menu_nucoil_window.html", car_id=agent.api.car.uid)
+        if agent.car is None:
+            log.warning('Agent {} cheating!!! MainMenuNucoilHandler without car'.format(agent))
+            self.send_error(status_code=404)
+            return
+        self.render("main_menu_nucoil_window.html", car_id=agent.car.uid)
