@@ -576,9 +576,9 @@ var ConsoleFirstEnter = (function (_super) {
                 }
                 // Google Analytics
                 if (teach)
-                    google_analytics_methods.teaching_answer_yes();
+                    analytics.teaching_answer_yes();
                 else
-                    google_analytics_methods.teaching_answer_no();
+                    analytics.teaching_answer_no();
             }
         });
     };

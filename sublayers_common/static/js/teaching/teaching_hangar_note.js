@@ -13,17 +13,16 @@ var HangarTeachingNote = (function (_super) {
         this.needed_building = locationManager.get_building_by_node_hash(this.npc_node_hash);
         this.needed_npc = locationManager.get_npc_by_node_hash(this.npc_node_hash);
 
-        this.build_coord = new Point(958, 287);
-        this.npc_coord = new Point(848, 658);
+        this.build_coord = new Point(1006, 319);
+        this.npc_coord = new Point(772, 695);
 
-        this.inventory_coord = new Point(734, 701);
-        this.buy_btn = new Point(325, 608);
+        this.inventory_coord = new Point(791, 742);
+        this.buy_btn = new Point(402, 633);
 
         chat.addMessageToLog('Вы находитесь в интерфейсе города. Покидание города без оборудованного транспорта обречет вас на смерть от холода и отравления. Купите свой первый транспорт.', true);
-    
-        
+
         // Google Analytics
-        google_analytics_methods.teach_city_start();
+        analytics.teach_city_start();
     }
 
     HangarTeachingNote.prototype.on_enter_location = function() {
@@ -37,7 +36,7 @@ var HangarTeachingNote = (function (_super) {
         var active_place = locationManager.get_current_active_place();
         if (this.needed_screen_name != locationManager.active_screen_name || (active_place != this.needed_building && active_place != this.needed_npc && active_place != null)) {
             teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе города. Покидание города без оборудованного транспорта обречет вас на смерть от холода и отравления. Купите свой первый транспорт.');
-            teachingManager.jq_panel_right_content.text('Зайти к автодилеру чтобы купить ТС.');
+            teachingManager.jq_panel_right_content.text('Зайти к автодилеру, чтобы купить ТС.');
             _super.prototype.redraw.call(this);
             return;
         }
@@ -52,14 +51,14 @@ var HangarTeachingNote = (function (_super) {
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
             teachingManager.jq_panel_left_content.text('Вы в меню автодилера. Свяжитесь со специалистом, отвечающим за продажу, чтобы купить транспорт.');
-            teachingManager.jq_panel_right_content.text('Зайдите к продавцу машин.');
+            teachingManager.jq_panel_right_content.text('Зайти к продавцу машин.');
             this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
             // рисовать указатель на список машинок
             teachingManager.jq_panel_left_content.text('Нужно выбрать транспорт, цену за который сможет покрыть автокредит Нукойл.');
-            teachingManager.jq_panel_right_content.text('Выберите подходящий транспорт.');
+            teachingManager.jq_panel_right_content.text('Выбрать подходящий транспорт.');
             this.draw_line(this.start_point, this.inventory_coord);
             // рисовать указатель на покупку только тогда, когда есть на эту машинки деньги
             if (this.needed_npc.cars_list[this.needed_npc.current_car].car.price <= user.balance)
@@ -69,11 +68,10 @@ var HangarTeachingNote = (function (_super) {
     
     HangarTeachingNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_city_car();
+        analytics.teach_city_car();
         
         _super.prototype.delete.call(this);
     };
-            
 
     return HangarTeachingNote;
 })(NavigateTeachingNote);

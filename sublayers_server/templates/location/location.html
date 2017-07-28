@@ -1,4 +1,21 @@
 <style>
+    #svg_common, #svg_town, #svg_btn { position: absolute }
+    #svg_town, #svg_btn { pointer-events: none }
+    #svg_town #layer2 { pointer-events: auto }
+    #svg_btn #layer3 { pointer-events: auto }
+    #svg_btn #layer4 { pointer-events: auto }
+    #svg_btn #layer5 { pointer-events: auto }
+
+    .centered-town-container {
+        position: absolute;
+        width: 1920px;
+        height: 1080px;
+        margin-left: -960px;
+        margin-top: -510px;
+        left: 50%;
+        top: 50%;
+    }
+
     #btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area,
     #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area {
         cursor: url('/static/img/cursors/hyper.png'), pointer;
@@ -66,15 +83,20 @@
         letter-spacing: 2px;
         line-height: 20px;
     }
+    .town-btn-block.small { font-size: 14px; letter-spacing: 1px; }
     .town-btn-block.hover { text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00; }
     .town-btn-block.pressed { color: #082801; text-shadow: none; }
     .town-btn-block.right { text-align: right; }
     .town-btn-block.noactive {color: #0e4b00;}
 
     #btn_1_text{ top: 585px; left: 262px; transform: rotateZ(-23deg) skew(-9deg); }
+    #btn_1_text.small{ top: 645px; left: 362px; }
     #btn_2_text{ top: 780px; left: 313px; transform: rotateZ(-19deg) skew(-5deg); }
+    #btn_2_text.small{ top: 767px; left: 398px; }
     #btn_3_text{ top: 581px; right: 272px; transform: rotateZ(23deg) skew(9deg); }
+    #btn_3_text.small{ top: 642px; right: 373px; }
     #btn_4_text{ top: 776px; right: 323px; transform: rotateZ(19deg) skew(5deg); }
+    #btn_4_text.small{ top: 765px; right: 410px; }
 
     #townDumpTempButton {
         position: absolute;
@@ -99,64 +121,83 @@
     }
 </style>
 
-<div>
-    {% raw svg_code %}
-</div>
+<div class="centered-town-container">
+    <div id="townScaleState" style="display: none">{{ 'big' if is_big else 'small' }}</div>
+    <div>
+        {% raw svg_code_common %}
+        {% raw svg_code %}
+        {% raw svg_code_btn %}
+    </div>
 
-<div id="location-content">
-    {% for cur_build in location.example.buildings %}
-        {% set building = cur_build.name %}
-        <div id="building_{{ building }}" class="townPageWrap building-wrap" style="display: none">
-            {% include building_window.html %}
-        </div>
-        {% for npc in cur_build.instances %}
-        {% set cur_npc = npc %}
-        <div id="npc_{{ npc.node_html() }}" class="townPageWrap npc-wrap" style="display: none">
-            {% include npc_window.html %}
-        </div>
+    <div id="location-content">
+        {% for cur_build in location.example.buildings %}
+            {% set building = cur_build.name %}
+            <div id="building_{{ building }}" class="townPageWrap building-wrap" style="display: none">
+                {% include building_window.html %}
+            </div>
+            {% for npc in cur_build.instances %}
+            {% set cur_npc = npc %}
+            <div id="npc_{{ npc.node_html() }}" class="townPageWrap npc-wrap" style="display: none">
+                {% include npc_window.html %}
+            </div>
+            {% end %}
         {% end %}
+        <div id="townMenuLocation" class="townPageWrap menu-wrap" style="display: none">
+            {% include location_menu.html %}
+        </div>
+        <div id="townChatLocation" class="townPageWrap" style="display: none">
+            {% include location_chat.html %}
+        </div>
+        <div id="townChatInteraction" class="townPageWrap npc-wrap" style="display: none">
+            {% include chat_interaction.html %}
+        </div>
+        <div id="townParkingBagExchange" class="townPageWrap npc-wrap" style="display: none">
+            <div class="town-parking-bag-body-header">
+                <div class="town-parking-bag-body-header-text town-parking-bag-universal-wrap left">Ваш багажник</div>
+                <div id="townParkingBagExchangeBagText" class="town-parking-bag-body-header-text town-parking-bag-universal-wrap"></div>
+            </div>
+            <div class="town-parking-bag-body">
+                <div id="townParkingBagExchangeInventory" class="town-parking-bag-universal-wrap left"></div>
+                <div id="townParkingBagExchangeBag" class="town-parking-bag-universal-wrap"></div>
+            </div>
+        </div>
+
+        <div id="townDumpWrap" class="townPageWrap npc-wrap" style="display: none">
+            <div class="town-dump-header">
+                <div class="town-dump-header-text town-dump-universal-wrap left">Ваш багажник</div>
+                <div class="town-dump-header-text town-dump-universal-wrap">Свалка</div>
+            </div>
+            <div class="town-dump-body">
+                <div id="townDumpSelfInventory" class="town-dump-universal-wrap left"></div>
+                <div id="townDumpInventory" class="town-dump-universal-wrap"></div>
+            </div>
+        </div>
+        <div id="townDumpTempButton">Свалка</div>
+    </div>
+
+    <div class="town-btn-area">
+        <div id="btn_1_text" class="town-btn-block left{{ '' if is_big else ' small' }}">Завершить квест</div>
+        <div id="btn_2_text" class="town-btn-block left{{ '' if is_big else ' small' }}">Отказаться от квеста</div>
+        <div id="btn_3_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></br>Назад</div>
+        <div id="btn_4_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></br>Выход</div>
+    </div>
+
+    {% if is_big %}
+        <img class="town-img-mask" src="static/content/locations/map_locations/city_mask_1.png"/>
+    {% else %}
+        <img class="town-img-mask" src="static/content/locations/map_locations/768/city_mask_1.png"/>
     {% end %}
-    <div id="townMenuLocation" class="townPageWrap menu-wrap" style="display: none">
-        {% include location_menu.html %}
-    </div>
-    <div id="townChatLocation" class="townPageWrap" style="display: none">
-        {% include location_chat.html %}
-    </div>
-    <div id="townChatInteraction" class="townPageWrap npc-wrap" style="display: none">
-        {% include chat_interaction.html %}
-    </div>
-    <div id="townParkingBagExchange" class="townPageWrap npc-wrap" style="display: none">
-        <div class="town-parking-bag-body-header">
-            <div class="town-parking-bag-body-header-text town-parking-bag-universal-wrap left">Ваш багажник</div>
-            <div id="townParkingBagExchangeBagText" class="town-parking-bag-body-header-text town-parking-bag-universal-wrap"></div>
-        </div>
-        <div class="town-parking-bag-body">
-            <div id="townParkingBagExchangeInventory" class="town-parking-bag-universal-wrap left"></div>
-            <div id="townParkingBagExchangeBag" class="town-parking-bag-universal-wrap"></div>
-        </div>
-    </div>
 
-    <div id="townDumpWrap" class="townPageWrap npc-wrap" style="display: none">
-        <div class="town-dump-header">
-            <div class="town-dump-header-text town-dump-universal-wrap left">Ваш багажник</div>
-            <div class="town-dump-header-text town-dump-universal-wrap">Свалка</div>
-        </div>
-        <div class="town-dump-body">
-            <div id="townDumpSelfInventory" class="town-dump-universal-wrap left"></div>
-            <div id="townDumpInventory" class="town-dump-universal-wrap"></div>
-        </div>
+    {% if is_big %}
+        <img class="town-img-mask" src="static/content/locations/map_locations/city_mask_2.png"/>
+    {% else %}
+        <img class="town-img-mask" src="static/content/locations/map_locations/768/city_mask_2.png"/>
+    {% end %}
+
+    <div style="position: absolute; top:0; left:0; width: 100%; height: 100%; pointer-events: none;">
+        <canvas id="ctest_2" width="1920" height="1080" style="position: absolute; pointer-events: none;">City Canvas !!!</canvas>
     </div>
-    <div id="townDumpTempButton">Свалка</div>
 </div>
-
-<div class="town-btn-area">
-    <div id="btn_1_text" class="town-btn-block left">Завершить квест</div>
-    <div id="btn_2_text" class="town-btn-block left">Отказаться от квеста</div>
-    <div id="btn_3_text" class="town-btn-block right"></br>Назад</div>
-    <div id="btn_4_text" class="town-btn-block right"></br>Выход</div>
-</div>
-
-<img class="town-img-mask" src="static/content/locations/map_locations/city_mask_1.png"/>
 
 <div id="town-out-screen-area">
     <div id="townLeftPanel" class="town-panel left">
@@ -173,12 +214,6 @@
         {% include panel_info/pi_npc_inside_building.html %}
         {% include panel_info/panel_teaching_right.html %}
     </div>
-</div>
-
-<img class="town-img-mask" src="static/content/locations/map_locations/city_mask_2.png"/>
-
-<div style="position: absolute; top:0; left:0; width: 100%; height: 100%; pointer-events: none;">
-    <canvas id="ctest_2" width="1920" height="1080" style="position: absolute; pointer-events: none;">City Canvas !!!</canvas>
 </div>
 
 <script>

@@ -214,12 +214,8 @@ input:focus {
 
 #activeTownDiv {
     position: absolute;
-    width: 1920px;
-    height: 1080px;
-    margin-left: -960px;
-    margin-top: -540px;
-    left: 50%;
-    top: 50%;
+    width: 100%;
+    height: 100%;
 }
 
 #townTeachingCanvas {
@@ -254,12 +250,6 @@ input:focus {
 }
 
 .anti-click-class { pointer-events: auto; }
-
-@media screen and (max-width: 1367px) {
-    #activeTownDiv {
-
-    }
-}
 
 .my-effect-icon {
     background-color: transparent;

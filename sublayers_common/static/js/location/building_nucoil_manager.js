@@ -137,6 +137,5 @@ var LocationNucoilBuilding = (function (_super) {
         event.data.building.set_panels();
     };
 
-
     return LocationNucoilBuilding;
 })(LocationPlaceBuilding);

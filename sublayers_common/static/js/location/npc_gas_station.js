@@ -268,10 +268,10 @@ var LocationGasStationNPC = (function (_super) {
 
     LocationGasStationNPC.prototype.drag_handler = function (event, ui) {
         var original = ui.originalPosition;
-        ui.position = {
-            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc,
-            top: original.top / window_scaled_prc
-        };
+        //ui.position = {
+        //    left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc,
+        //    top: original.top / window_scaled_prc
+        //};
         if (ui.position.left < this.min_carette_x) ui.position.left = this.min_carette_x;
         if (ui.position.left > this.rail_width) ui.position.left = this.rail_width;
 

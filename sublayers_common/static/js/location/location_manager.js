@@ -220,6 +220,7 @@ var LocationManager = (function () {
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         this.in_location_flag = true;
+        resizeWindowHandler();
 
         // Принудительно перерисовать все квесты
         journalManager.quests.redraw();
@@ -338,7 +339,7 @@ var LocationManager = (function () {
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
             // Google Analytics
-            google_analytics_methods.try_exit_from_location();
+            analytics.try_exit_from_location();
 
             if (user.example_car)
                 clientManager.sendExitFromLocation();
@@ -768,21 +769,20 @@ var LocationPlace = (function () {
     // Классовые методы для работы draggable
 
     LocationPlace.drag_handler = function (event, ui) {
-        var original = ui.originalPosition;
-        ui.position = {
-            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc - location_draggable_click.half_helper_width,
-            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc - location_draggable_click.half_helper_height
-        };
+        //var original = ui.originalPosition;
+        //ui.position = {
+        //    left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc - location_draggable_click.half_helper_width,
+        //    top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc - location_draggable_click.half_helper_height
+        //};
     };
 
     LocationPlace.start_drag_handler = function (event, ui) {
-        var pos = event.target.getBoundingClientRect();
-        location_draggable_click.x = pos.left; // + pos.width / 4.;
-        location_draggable_click.y = pos.top; // + pos.height / 4.;
-
-        var size_helper = ui.helper[0].getBoundingClientRect();
-        location_draggable_click.half_helper_width = size_helper.width / 2.;
-        location_draggable_click.half_helper_height = size_helper.height / 2.;
+        //var pos = event.target.getBoundingClientRect();
+        //location_draggable_click.x = pos.left; // + pos.width / 4.;
+        //location_draggable_click.y = pos.top; // + pos.height / 4.;
+        //var size_helper = ui.helper[0].getBoundingClientRect();
+        //location_draggable_click.half_helper_width = size_helper.width / 2.;
+        //location_draggable_click.half_helper_height = size_helper.height / 2.;
     };
 
     return LocationPlace;

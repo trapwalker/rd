@@ -300,23 +300,79 @@ $(window).resize(resizeWindowHandler);
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
-    interface_scale_big = ($(window).width()) > 1550 && ($(window).height() > 880);
-    interface_scale_small = ($(window).width()) <= 1250 || ($(window).height() <= 670);
-    var scale_prc_w_width = $(window).width() / 1920;
-    var scale_prc_w_height = $(window).height() / 1080;
+    var w_height = $(window).height();
+    var w_width = $(window).width();
+    interface_scale_big = (w_width > 1550) && (w_height > 880);
+    interface_scale_small = (w_width <= 1250) || (w_height <= 670);
+    var scale_prc_w_width = w_width / 1920;
+    var scale_prc_w_height = w_height / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
     var unscale_prc = 1 / (1 - (1 - scale_prc) * 0.5);
     if (scale_prc > 0.3) {
-        $('#activeTownDiv').css('transform', 'scale(' + scale_prc + ')');
-        $('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
-        $('#townRightPanel').css('transform', 'scale(' + unscale_prc + ')');
-        $('#townLeftPanel').css('transform', 'scale(' + unscale_prc + ')');
         window_scaled_prc = scale_prc;
     }
     if (teachingMapManager) teachingMapManager.redraw();
-    if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
-}
+    if (mapManager) mapManager.on_new_map_size(w_width, w_height);
 
+     //$('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
+        //$('#townRightPanel').css('transform', 'scale(' + unscale_prc + ')');
+        //$('#townLeftPanel').css('transform', 'scale(' + unscale_prc + ')');
+
+    if ((w_height <= 930) || (w_width <= 1530))
+        clientManager.sendResolutionScale('small');
+    else {
+        clientManager.sendResolutionScale('big');
+    }
+
+    if (locationManager && locationManager.in_location_flag) {
+        if (w_width >= 1920) {
+            $('#townRightPanel').css('top', '40px');
+            $('#townRightPanel').css('right', '100px');
+            $('#townRightPanel').css('transform', 'scale(1.0)');
+            $('#townLeftPanel').css('top', '40px');
+            $('#townLeftPanel').css('left', '100px');
+            $('#townLeftPanel').css('transform', 'scale(1.0)');
+        }
+        if ((w_width <= 1920) && (w_width > 1620)) {
+            var scale = (w_width - 1620) / 300;
+            var scale_prc = 0.9 + 0.1 * scale;
+            $('#townRightPanel').css('top', 40 * scale + 'px');
+            $('#townRightPanel').css('right', 100 * scale + 'px');
+            $('#townRightPanel').css('scale(' + scale_prc + ')');
+            $('#townLeftPanel').css('top', 40 * scale + 'px');
+            $('#townLeftPanel').css('left', 100 * scale + 'px');
+            $('#townLeftPanel').css('scale(' + scale_prc + ')');
+        }
+        if ((w_width <= 1620) && (w_width > 1530)) {
+            var scale = (w_width - 1530) / 90;
+            var scale_prc = 0.8 + 0.1 * scale;
+            $('#townRightPanel').css('top', -20 + 20 * scale + 'px');
+            $('#townRightPanel').css('right', -25 + 25 * scale + 'px');
+            $('#townRightPanel').css('transform', 'scale(' + scale_prc + ')');
+            $('#townLeftPanel').css('top', -20 + 20 * scale + 'px');
+            $('#townLeftPanel').css('left', -25 + 25 * scale + 'px');
+            $('#townLeftPanel').css('transform', 'scale(' + scale_prc + ')');
+        }
+        if ((w_width <= 1530) && (w_width >= 1366)) {
+            var scale = (w_width - 1366) / 164;
+            var scale_prc = 0.7 + 0.1 * scale;
+            $('#townRightPanel').css('top', -30 + 10 * scale + 'px');
+            $('#townRightPanel').css('right', -50 + 25 * scale + 'px');
+            $('#townRightPanel').css('transform', 'scale(' + scale_prc + ')');
+            $('#townLeftPanel').css('top', -30 + 10 * scale + 'px');
+            $('#townLeftPanel').css('left', -50 + 25 * scale + 'px');
+            $('#townLeftPanel').css('transform', 'scale(' + scale_prc + ')');
+        }
+        if (w_width < 1366) {
+            $('#townRightPanel').css('top', '-30px');
+            $('#townRightPanel').css('right', '-50px');
+            $('#townRightPanel').css('transform', 'scale(0.7)');
+            $('#townLeftPanel').css('top', '-30px');
+            $('#townLeftPanel').css('left', '-50px');
+            $('#townLeftPanel').css('transform', 'scale(0.7)');
+        }
+    }
+}
 
 function ifBrowser () {
     var ua = navigator.userAgent;
@@ -358,61 +414,3 @@ var modalWindow;
 
 //Префиксы для подстановки к методам для работы полноэкранного режима в различных браузерах
 var pfx = ["webkit", "moz", "ms", "o", ""];
-
-// console.log(arguments.callee.name);   Имя вызванного метода
-var google_analytics_methods = {
-
-    client_main_ws_connect: function() {
-        try {ga('send', 'event', 'connect', 'connect', 'main');} catch(e){console.warn('GA not defined');}
-    },
-    client_quick_ws_connect: function() {
-        try {ga('send', 'event', 'connect', 'connect', 'quick');} catch(e){console.warn('GA not defined');}
-    },
-
-    main_init_car: function () {
-        try {ga('send', 'event', 'init_car', 'view');} catch(e){console.warn('GA not defined');}
-    },
-
-    try_exit_from_location: function () {
-        try {ga('send', 'event', 'location', 'view', 'exit');} catch(e){console.warn('GA not defined');}
-    },
-    
-    activate_quick_item: function () {
-        try {ga('send', 'event', 'quick_panel', 'activate');} catch(e){console.warn('GA not defined');}
-    },
-
-
-    // Обучение
-    teaching_answer_yes: function () {try {ga('send', 'event', 'teach_answer', 'answer', 'yes');} catch(e){console.warn('GA not defined');}},
-    teaching_answer_no:  function () {try {ga('send', 'event', 'teach_answer', 'answer', 'no');} catch(e){console.warn('GA not defined');}},
-
-    // Обучение карта
-    teach_map_start:  function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'map_start');} catch(e){console.warn('GA not defined');}},
-    teach_map_move:   function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'moving');} catch(e){console.warn('GA not defined');}},
-    teach_map_zoom:   function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'zoom');} catch(e){console.warn('GA not defined');}},
-    teach_map_damage: function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'damage');} catch(e){console.warn('GA not defined');}},
-    teach_map_fire: function () {
-        if (!google_analytics_methods.called_teach_map_fire) { console.log(arguments.callee.name);
-            google_analytics_methods.called_teach_map_fire = true;
-            try {
-                ga('send', 'event', 'teach_map', 'try_fire');
-            } catch (e) {
-                console.warn('GA not defined');
-            }
-        }
-    },
-    teach_map_finish: function () {try {ga('send', 'event', 'teach_map', 'teach_done', 'finish');} catch(e){console.warn('GA not defined');}},
-    teach_map_train:  function () {try {ga('send', 'event', 'teach_map_train', 'train');} catch(e){console.warn('GA not defined');}},
-
-    // Обучение город
-    teach_city_start:   function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'city_start');} catch(e){console.warn('GA not defined');}},
-    teach_city_car:     function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'car');} catch(e){console.warn('GA not defined');}},
-    teach_city_nukeoil: function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'nukeoil');} catch(e){console.warn('GA not defined');}},
-    teach_city_trader:  function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'trader');} catch(e){console.warn('GA not defined');}},
-    teach_city_armorer: function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'armorer');} catch(e){console.warn('GA not defined');}},
-    teach_city_get_q:   function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'get_quest');} catch(e){console.warn('GA not defined');}},
-    teach_city_journal: function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'journal');} catch(e){console.warn('GA not defined');}},
-    teach_city_fin_q:   function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'finish_quest');} catch(e){console.warn('GA not defined');}},
-    teach_city_finish:  function () {try {ga('send', 'event', 'teach_city', 'teach_done', 'city_finish');} catch(e){console.warn('GA not defined');}},
-
-};
