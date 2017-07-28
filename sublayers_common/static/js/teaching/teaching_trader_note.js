@@ -10,11 +10,11 @@ var TraderTeachingNote = (function (_super) {
         this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
         this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
 
-        this.build_coord = new Point(958, 372);
-        this.npc_coord = new Point(953, 658);
+        this.build_coord = new Point(1010, 414);
+        this.npc_coord = new Point(872, 695);
 
-        this.buy_area = new Point(1260, 330);
-        this.buy_btn = new Point(295, 608);
+        this.buy_area = new Point(1244, 351);
+        this.buy_btn = new Point(402, 633);
         this.filter = null;
 
         chat.addMessageToLog('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании рынка.', true);
@@ -42,29 +42,29 @@ var TraderTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
              (active_place != null))) {
-            teachingManager.jq_panel_left_content.text('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании магазина.');
-            teachingManager.jq_panel_right_content.text('Зайдите в магазин.');
+            teachingManager.jq_panel_left_content.text('Машина - не машина без вооружения. Но сначала его необходимо приобрести у торговца.');
+            teachingManager.jq_panel_right_content.text('Зайти к торговцу.');
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании магазина.');
-            teachingManager.jq_panel_right_content.text('Зайдите в магазин.');
+            teachingManager.jq_panel_left_content.text('Машина - не машина без вооружения. Но сначала его необходимо приобрести у торговца.');
+            teachingManager.jq_panel_right_content.text('Зайти к торговцу.');
             this.draw_line(this.start_point, this.build_coord);
             return;
         }
 
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            teachingManager.jq_panel_left_content.text('Вы находитесь в здании магазина. Тут находится торговец.');
-            teachingManager.jq_panel_right_content.text('Зайдите к торговцу.');
+            teachingManager.jq_panel_left_content.text('Вы находитесь в здании торговца. Чтобы открыть интерфейс торговли, нажмите на изображение торговца.');
+            teachingManager.jq_panel_right_content.text('Нажать на изображение торговца.');
             this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
-            teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе торговца. Тут можно приобрести различные полезные вещи и продать ненужные.');
+            teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе торговли. Тут можно приобрести различные полезные вещи и продать ненужные.');
 
             // Если не было добавлено обучающего списка, то добавить и переключить
             if (! this.filter) {
@@ -75,11 +75,11 @@ var TraderTeachingNote = (function (_super) {
             }
 
             if (this.check_table()) {
-                teachingManager.jq_panel_right_content.text('Нажмите кнопку <Подтвердить сделку>.');
+                teachingManager.jq_panel_right_content.text('Нажать кнопку <Подтвердить сделку>.');
                 this.draw_line(this.start_point, this.buy_btn);
             }
             else {
-                teachingManager.jq_panel_right_content.text('Выберите пулемет и патроны в колонке “Товары на продажу” и перекиньте их на столик обмена.');
+                teachingManager.jq_panel_right_content.text('Выбрать оружие и патроны в колонке “Товары на продажу” и перекинуть их на столик обмена.');
                 this.draw_line(this.start_point, this.buy_area);
             }
         }
