@@ -9,6 +9,7 @@ var Analytics = (function () {
     }
 
     Analytics.prototype.send = function(category, action, label) {
+        // console.log(category, action, label);
         if (label) {
             try {
                 ga('send', 'event', category, action, label);
@@ -24,20 +25,149 @@ var Analytics = (function () {
             }
         }
     };
-    
+
+    Analytics.prototype.active_teaching = function () {
+        return teachingMapManager.is_active() || teachingManager.is_active();
+    };
+
+    // Main Game Session
     Analytics.prototype.client_main_ws_connect = function() {
         if (!basic_server_mode) return;
         this.send('connect', 'connect', 'main');
     };
-    Analytics.prototype.client_quick_ws_connect = function() {
-        if (basic_server_mode) return;
-        this.send('connect', 'connect', 'quick');
+
+    Analytics.prototype.enter_to_location = function(town_name) {
+        if (!basic_server_mode) return;
+        if (! this.data['enter_to_location']) {
+            this.data['enter_to_location'] = {};
+            this.data['enter_to_location']['first_town'] = town_name;
+            this.send('location', 'enter', 'first');
+        }
+        else {
+            if (!this.data['enter_to_location']['second_sended']) {
+                this.data['enter_to_location']['second_sended'] = true;
+                this.send('location', 'enter', 'second');
+            }
+
+            if (!this.data['enter_to_location']['diffrent_sended'] && this.data['enter_to_location']['first_town'] != town_name) {
+                this.data['enter_to_location']['diffrent_sended'] = true;
+                this.send('location', 'enter', 'diffrent');
+            }
+        }
     };
 
     Analytics.prototype.main_init_car = function () {
         if (!basic_server_mode) return;
         this.send('init_car', 'view');
     };
+
+    Analytics.prototype.death = function () {
+        if (!basic_server_mode) return;
+        this.send('death', 'die');
+    };
+
+    Analytics.prototype.get_quest = function () {
+        if (this.active_teaching()) return;
+        if (!basic_server_mode) return;
+        if (! this.data['get_quest']) {
+            this.data['get_quest'] = 1;
+            this.send('quest', 'get', 'first');
+        }
+        else {
+            this.data['get_quest']++;
+            if (this.data['get_quest'] == 2)
+                this.send('quest', 'get', 'another');
+        }
+    };
+    
+    Analytics.prototype.end_quest = function () {
+        if (this.active_teaching()) return;
+        if (!basic_server_mode) return;
+        if(!this.data['end_quest']) {
+            this.data['end_quest'] = true;
+            this.send('quest', 'end');
+        }
+    };
+    
+    Analytics.prototype.fail_quest = function () {
+        if (!basic_server_mode) return;
+        if(!this.data['end_quest']) {
+            this.data['end_quest'] = true;
+            this.send('quest', 'fail');
+        }
+    };
+
+    Analytics.prototype.get_level = function (level) {
+        if (!basic_server_mode) return;
+        if(level == 1) this.send('level', 'get', '1');
+        if(level == 2) this.send('level', 'get', '2');
+        if(level != 1 && level != 2) this.send('level', 'get', 'another');
+    };
+
+    Analytics.prototype.transaction_hangar = function () {
+        if (!basic_server_mode) return;
+        this.send('town_transaction', 'apply', 'hangar');
+    };
+
+    Analytics.prototype.transaction_trader = function () {
+        if (!basic_server_mode) return;
+        this.send('town_transaction', 'apply', 'trader');
+    };
+
+    Analytics.prototype.transaction_library = function () {
+        if (!basic_server_mode) return;
+        this.send('town_transaction', 'apply', 'library');
+    };
+
+    Analytics.prototype.transaction_armorer = function () {
+        if (!basic_server_mode) return;
+        this.send('town_transaction', 'apply', 'armorer');
+    };
+
+    Analytics.prototype.transaction_npc = function () {
+        if (!basic_server_mode) return;
+        this.send('town_transaction', 'apply');
+    };
+
+    Analytics.prototype.party_enter = function () {
+        if (!basic_server_mode) return;
+        this.send('party', 'enter');
+    };
+
+    Analytics.prototype.sit_town_duration = function (action) {
+        if (!basic_server_mode) return;
+        if (action == 'on') { // Произошёл вход в город
+            this.data['sit_town_duration'] = clock.getClientTime();  // Запоминаем стартовое время
+        }
+        if (action == 'off') { // Выход на карту
+            if (this.data['sit_town_duration'])
+                if (clock.getClientTime() - this.data['sit_town_duration'] > 600000)
+                    this.send('duration', 'sit', 'town');
+            this.data['sit_town_duration'] = null;
+        }
+    };
+
+    Analytics.prototype.sit_map_duration = function (action) {
+        if (!basic_server_mode) return;
+        if (action == 'on') { // Произошёл выход на карту
+            this.data['sit_map_duration'] = clock.getClientTime();  // Запоминаем стартовое время
+        }
+        if (action == 'off') { // Произошёл вход в город
+            if (this.data['sit_map_duration'])
+                if (clock.getClientTime() - this.data['sit_map_duration'] > 600000)
+                    this.send('duration', 'sit', 'map');
+            this.data['sit_map_duration'] = null;
+        }
+    };
+
+
+
+    Analytics.prototype.client_quick_ws_connect = function() {
+        if (basic_server_mode) return;
+        this.send('connect', 'connect', 'quick');
+    };
+
+
     Analytics.prototype.try_exit_from_location = function () {
         this.send('location', 'view', 'exit');
     };

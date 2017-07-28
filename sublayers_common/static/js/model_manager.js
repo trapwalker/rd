@@ -566,7 +566,8 @@ var ClientManager = (function () {
 
         // Google Analytics
         analytics.main_init_car();
-
+        analytics.sit_town_duration('off');
+        analytics.sit_map_duration('on');
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -684,6 +685,9 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Die', event);
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
+        
+        // Google Analytics
+        analytics.death();
 
         if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/premium')
             textConsoleManager.start('die_premium', 3000, event);
@@ -968,7 +972,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.AgentPartyChangeMessage = function (event) {
-        //console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
+        // console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
         if(event.subj.uid == user.ID) return;
         var owner = this._getOwner(event.subj);
         for (var i = 0; i < owner.cars.length; i++) {
@@ -999,6 +1003,9 @@ var ClientManager = (function () {
 
         chat.party_info_message(event);
         partyManager.include_to_party(event.party);
+
+        // Google Analytics
+        analytics.party_enter();
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -1068,9 +1075,14 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.EnterToLocation', event);
+        // console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
         mapCanvasManager.is_canvas_render = false;
+
+        // Google Analytics
+        analytics.enter_to_location(event.location.uid);
+        analytics.sit_town_duration('on');
+        analytics.sit_map_duration('off');
     };
 
     ClientManager.prototype.ChangeAgentKarma = function (event) {
@@ -1275,6 +1287,19 @@ var ClientManager = (function () {
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
             // Звук успешного завершения транзакции
             audioManager.play({name: "npc_transaction_finish", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            
+            // Google Analytics
+            var npc = locationManager.npc[event.npc_html_hash];
+            if (npc instanceof LocationHangarNPC)
+                analytics.transaction_hangar();
+            else if (npc instanceof LocationTraderNPC)
+                analytics.transaction_trader();
+            else if (npc instanceof LocationTrainerNPC)
+                analytics.transaction_library();
+            else if (npc instanceof LocationArmorerNPC)
+                analytics.transaction_armorer();
+            else 
+                analytics.transaction_npc();
         }
     };
 
