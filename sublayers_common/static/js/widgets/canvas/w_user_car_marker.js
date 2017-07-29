@@ -818,6 +818,9 @@ var WCanvasNicknameMarker = (function (_super) {
                         });
                     }
                 );
+
+                // Google Analytics
+                analytics.user_window_info();                   
                 break;
         }
     };

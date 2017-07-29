@@ -66,6 +66,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
+        // Google Analytics
+        analytics.self_window_info();
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
@@ -76,6 +79,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        
+        // Google Analytics
+        analytics.self_car_info();        
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
@@ -87,6 +93,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
+        // Google Analytics
+        analytics.show_inventory();   
     };
 
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
@@ -97,6 +106,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        
+        // Google Analytics
+        analytics.journal_window();   
     };
 
     document.getElementById('divMainMenuBtnParty').onclick = function () {
