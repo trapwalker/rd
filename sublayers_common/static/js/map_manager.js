@@ -20,6 +20,10 @@ function onMouseUpMap(mouseEventObject) {
         //console.log('{x: ' + Math.floor(a.x) + ', y: ' + Math.floor(a.y) + '}');
         clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
                                           mulScalVector(click_point, mapManager.getZoomKoeff())));
+
+
+        // Google Analytics
+        analytics.drive_only_mouse(true);
     }
 }
 
@@ -275,7 +279,7 @@ var MapManager = (function(_super) {
     };
 
     MapManager.prototype.setZoom = function(zoom, need) {
-        //console.log('MapManager.prototype.setZoom', zoom, ConstMinMapZoom, ConstMaxMapZoom);
+        // console.log('MapManager.prototype.setZoom', zoom, ConstMinMapZoom, ConstMaxMapZoom);
         if (zoom < ConstMinMapZoom) zoom = ConstMinMapZoom;
         if (zoom > ConstMaxMapZoom) zoom = ConstMaxMapZoom;
         if ((zoom == this.getZoom()) && !need) return;
@@ -293,6 +297,8 @@ var MapManager = (function(_super) {
                 mapManager.strategy_mode_timer = setInterval(function () {
                     clientManager.sendGetStrategyModeObjects();
                 }, 5000);
+                // Google Analytics
+                analytics.strategy_mode('on');
             }
         }
         else {
@@ -302,10 +308,14 @@ var MapManager = (function(_super) {
             if ((mapManager.widget_fire_sectors) && (wFireController))
                 mapManager.widget_fire_sectors.setVisible(wFireController.visible);
             if (mapManager.strategy_mode_timer) {
-                 clearInterval(mapManager.strategy_mode_timer);
-                 mapManager.strategy_mode_timer = null;
+                clearInterval(mapManager.strategy_mode_timer);
+                mapManager.strategy_mode_timer = null;
+                // Google Analytics
+                analytics.strategy_mode('off');
             }
         }
+        // Google Analytics
+        analytics.use_zoom();
     };
 
     MapManager.prototype.onZoomStart = function () {
