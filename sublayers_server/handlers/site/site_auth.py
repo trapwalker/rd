@@ -101,7 +101,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #
 #         if self.get_argument('code', False):
 #             user = yield self.get_authenticated_user(
-#                 redirect_uri='http://localhost/login/google',
+#                 redirect_uri='localhost/login/google',
 #                 code=self.get_argument('code'))
 #             http = HTTPClient()
 #             path = u"https://www.googleapis.com/plus/v1/people/me?access_token=" + user[u'access_token']
@@ -116,7 +116,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 self.redirect("/login?msg=Ошибка%20авторизации")
 #         else:
 #             yield self.authorize_redirect(
-#                 redirect_uri='http://localhost/login/google',
+#                 redirect_uri='localhost/login/google',
 #                 client_id=self.settings['google_oauth']['key'],
 #                 scope=['profile'],
 #                 response_type='code',
@@ -143,7 +143,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #
 #
 # class OKLoginHandler(RequestHandler, OAuth2Mixin):
-#     _OAUTH_AUTHORIZE_URL = "http://www.odnoklassniki.ru/oauth/authorize"
+#     _OAUTH_AUTHORIZE_URL = "www.odnoklassniki.ru/oauth/authorize"
 #     _OAUTH_ACCESS_TOKEN_URL = "https://api.odnoklassniki.ru/oauth/token.do"
 #     _OAUTH_SETTINGS_KEY = "ok_oauth"
 #
@@ -154,7 +154,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #         if self.get_argument('code', False):
 #             http = HTTPClient()
 #             body = urllib.urlencode({
-#                 "redirect_uri": "http://localhost/login/ok",
+#                 "redirect_uri": "localhost/login/ok",
 #                 "code": self.get_argument('code'),
 #                 "client_id": self.settings[self._OAUTH_SETTINGS_KEY]['key'],
 #                 "client_secret": self.settings[self._OAUTH_SETTINGS_KEY]['secret'],
@@ -189,7 +189,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 self.redirect("/login?msg=Ошибка%20авторизации")
 #         else:
 #             yield self.authorize_redirect(
-#                 redirect_uri='http://localhost/login/ok',
+#                 redirect_uri='localhost/login/ok',
 #                 client_id=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
 #                 scope=['VALUABLE_ACCESS'],
 #                 response_type='code',
@@ -227,7 +227,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #         if self.get_argument('code', False):
 #             http = HTTPClient()
 #             body = urllib.urlencode({
-#                 "redirect_uri": "http://localhost/login/vk",
+#                 "redirect_uri": "localhost/login/vk",
 #                 "code": self.get_argument('code'),
 #                 "client_id": self.settings[self._OAUTH_SETTINGS_KEY]['key'],
 #                 "client_secret": self.settings[self._OAUTH_SETTINGS_KEY]['secret'],
@@ -256,7 +256,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 self.redirect("/login?msg=Ошибка%20авторизации")
 #         else:
 #             yield self.authorize_redirect(
-#                 redirect_uri='http://localhost/login/vk',
+#                 redirect_uri='localhost/login/vk',
 #                 client_id=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
 #                 scope=['email'],
 #                 response_type='code',
