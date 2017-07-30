@@ -1,7 +1,7 @@
 // класс WSJSON - необходим для отправки и приёма сообщений от сервера
 WSJSON = (function () {
     function WSJSON() {
-        var url = "ws://" + location.host + "/ws";
+        var url = location.host + "/ws";
         this.socket = new WebSocket(url);
         this.isConnected = false;
         this.timeDelay = 5000; // 5 ескунд
