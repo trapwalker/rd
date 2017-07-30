@@ -66,3 +66,4 @@ bson/
 .backup
 _stat_quick
 roaddogs.egg-info
+nginx_conf/ssl.conf
