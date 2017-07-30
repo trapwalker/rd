@@ -651,8 +651,23 @@ class EnterToLocation(Message):
 
     def get_location_html(self):
         location = self.location
-        location_html = self.locations_cache.get(location.example.uri, None)
+        if self.agent.resolution_scale not in ['big', 'small']:
+            self.agent.resolution_scale = 'big'
+        cache_index = '{}_{}'.format(location.example.uri, self.agent.resolution_scale)
+        location_html = self.locations_cache.get(cache_index, None)
         if location_html is None:
+            svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
+            svg_code_common = ''
+            svg_code_btn = ''
+            svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'
+            svg_code_btn_file = 'location_btn_big.svg' if self.agent.resolution_scale == 'big' else 'location_btn_small.svg'
+            with open(os.path.join(svg_link_common, svg_code_common_file)) as f:
+                svg_code_common = f.read()
+                svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
+            with open(os.path.join(svg_link_common, svg_code_btn_file)) as f:
+                svg_code_btn = f.read()
+                svg_code_btn = patch_svg_links(src=svg_code_btn, pth='static/content/locations/map_locations/common/')
+
             svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
             svg_code = ''
             with open(os.path.join(svg_link, 'location.svg')) as f:
@@ -664,11 +679,12 @@ class EnterToLocation(Message):
                 location_html = tornado.template.Loader(
                     root_directory="templates/location",
                     namespace=self.agent.connection.get_template_namespace()
-                ).load("location.html").generate(location=location, svg_code=svg_code, car=None)
+                ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common,
+                                                 svg_code_btn=svg_code_btn, is_big=(self.agent.resolution_scale == 'big'), car=None)
             else:
                 log.warn('Unknown type location: %s', location)
-            self.locations_cache[location.example.uri] = location_html
-            log.debug('{}  added to cache '.format(location.example.uri))
+            self.locations_cache[cache_index] = location_html
+            log.debug('{}  added to cache '.format(cache_index))
         return location_html
 
     def as_dict(self):

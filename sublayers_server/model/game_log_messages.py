@@ -51,6 +51,7 @@ class QuestStartStopLogMessage(Message):
         d.update(
             action=self.action,
             quest_caption=self.quest.caption,
+            result=self.quest.result,
         )
         return d
 

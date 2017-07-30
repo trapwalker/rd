@@ -565,9 +565,10 @@ var ClientManager = (function () {
         }
 
         // Google Analytics
-        if(basic_server_mode)
-            google_analytics_methods.main_init_car();
-
+        analytics.main_init_car();
+        analytics.sit_town_duration('off');
+        analytics.sit_map_duration('on');
+        analytics.drive_only_mouse(false);
     };
 
     ClientManager.prototype.Update = function (event) {
@@ -685,6 +686,9 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.Die', event);
         modalWindow.closeAllWindows();
         windowTemplateManager.closeAllWindows();
+        
+        // Google Analytics
+        analytics.death();
 
         if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/premium')
             textConsoleManager.start('die_premium', 3000, event);
@@ -950,8 +954,15 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ZoneMessage = function (event) {
-//        console.log('ClientManager.prototype.ZoneMessage', event);
+        // console.log('ClientManager.prototype.ZoneMessage', event);
         wCruiseControl.setZoneState(event.in_zone, event.is_start);
+
+        // Google Analytics
+        if (event.in_zone == 'road')
+            if (event.is_start)
+                analytics.drive_on_road('on');
+            else
+                analytics.drive_on_road('off');
     };
 
     ClientManager.prototype.PartyInfoMessage = function (event) {
@@ -969,7 +980,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.AgentPartyChangeMessage = function (event) {
-        //console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
+        // console.log('ClientManager.prototype.AgentPartyChangeMessage', event);
         if(event.subj.uid == user.ID) return;
         var owner = this._getOwner(event.subj);
         for (var i = 0; i < owner.cars.length; i++) {
@@ -1000,6 +1011,9 @@ var ClientManager = (function () {
 
         chat.party_info_message(event);
         partyManager.include_to_party(event.party);
+
+        // Google Analytics
+        analytics.party_enter();
     };
 
     ClientManager.prototype.PartyExcludeMessageForExcluded = function (event) {
@@ -1069,9 +1083,15 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.EnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.EnterToLocation', event);
+        // console.log('ClientManager.prototype.EnterToLocation', event);
         locationManager.onEnter(event);
         mapCanvasManager.is_canvas_render = false;
+
+        // Google Analytics
+        analytics.enter_to_location(event.location.uid);
+        analytics.sit_town_duration('on');
+        analytics.sit_map_duration('off');
+        analytics.drive_on_road('off');
     };
 
     ClientManager.prototype.ChangeAgentKarma = function (event) {
@@ -1276,6 +1296,19 @@ var ClientManager = (function () {
             locationManager.npc[event.npc_html_hash].add_transaction(event.info_string);
             // Звук успешного завершения транзакции
             audioManager.play({name: "npc_transaction_finish", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            
+            // Google Analytics
+            var npc = locationManager.npc[event.npc_html_hash];
+            if (npc instanceof LocationHangarNPC)
+                analytics.transaction_hangar();
+            else if (npc instanceof LocationTraderNPC)
+                analytics.transaction_trader();
+            else if (npc instanceof LocationTrainerNPC)
+                analytics.transaction_library();
+            else if (npc instanceof LocationArmorerNPC)
+                analytics.transaction_armorer();
+            else 
+                analytics.transaction_npc();
         }
     };
 
@@ -1567,7 +1600,10 @@ var ClientManager = (function () {
     ClientManager.prototype.sendSetSpeed = function (newSpeed) {
         //console.log('ClientManager.prototype.sendSetSpeed');
         if (!user.userCar) return;
-        this.sendMotion(null, newSpeed, null)
+        this.sendMotion(null, newSpeed, null);
+
+        // Google Analytics
+        analytics.drive_only_mouse(false);
     };
 
     ClientManager.prototype.sendStopCar = function () {
@@ -1579,7 +1615,10 @@ var ClientManager = (function () {
     ClientManager.prototype.sendTurn = function (turn) {
         //console.log('ClientManager.prototype.sendTurn');
         if (!user.userCar) return;
-        this.sendMotion(null, null, turn)
+        this.sendMotion(null, null, turn);        
+        
+        // Google Analytics
+        analytics.drive_only_mouse(false);
     };
 
     ClientManager.prototype.sendGoto = function (target) {
@@ -1641,7 +1680,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        if (!basic_server_mode && teachingMapManager.is_active()) google_analytics_methods.teach_map_fire();
+        analytics.teach_map_fire();
     };
 
     ClientManager.prototype.sendFireAutoEnable = function (enable) {
@@ -1658,7 +1697,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        if (!basic_server_mode && teachingMapManager.is_active()) google_analytics_methods.teach_map_fire();
+        analytics.teach_map_fire();
     };
 
     ClientManager.prototype.sendSlowMine = function () {
@@ -2006,6 +2045,9 @@ var ClientManager = (function () {
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
+
+        // Google Analytics
+        analytics.activate_inventory_item();
     };
 
     ClientManager.prototype.sendFuelStationActive = function (fuel, tank_list, npc) {
@@ -2519,6 +2561,9 @@ var ClientManager = (function () {
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
+
+        // Google Analytics
+        analytics.set_quick_item();
     };
 
     ClientManager.prototype.sendSwapQuickItems = function(index1, index2) {
@@ -2533,10 +2578,13 @@ var ClientManager = (function () {
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
+
+        // Google Analytics
+        analytics.set_quick_item();
     };
 
     ClientManager.prototype.sendActivateQuickItem = function(index, target_id) {
-        //console.log('ClientManager.prototype.sendActivateQuickItem');
+        // console.log('ClientManager.prototype.sendActivateQuickItem', index, target_id);
         var mes = {
             call: "activate_quick_item",
             rpc_call_id: rpcCallList.getID(),
@@ -2549,7 +2597,7 @@ var ClientManager = (function () {
         this._sendMessage(mes);
 
         // Google Analytics
-        google_analytics_methods.activate_quick_item();
+        analytics.activate_quick_item();
     };
 
     ClientManager.prototype.sendGetQuickItemInfo = function() {
@@ -2688,6 +2736,18 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+
+    // Сообщить на сервер о разрешении клиента
+    ClientManager.prototype.sendResolutionScale = function (scale) {
+        //console.log('ClientManager.prototype.sendAgentLog');
+        var mes = {
+            call: "set_resolution_scale",
+            rpc_call_id: rpcCallList.getID(),
+            params: {resolution_scale: scale}
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
 
     return ClientManager;
 })();

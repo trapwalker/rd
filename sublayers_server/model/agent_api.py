@@ -1112,3 +1112,12 @@ class AgentAPI(API):
         self.agent.example.profile.insurance.set_last_town(agent=self.agent.example, time=t, town_node_hash=town_node_hash)
         self.update_agent_api(time=t)
 
+    @basic_mode
+    @public_method
+    def set_resolution_scale(self, resolution_scale='big'):
+        self.agent.log.info('set_resolution_scale : %s', resolution_scale)
+        resolution_scale = str(resolution_scale)
+        if isinstance(resolution_scale, str):
+            self.agent.resolution_scale = resolution_scale
+        else:
+            log.warning('{} try set no str resolution_scale: {}'.format(self.agent, resolution_scale))

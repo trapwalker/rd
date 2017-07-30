@@ -17,8 +17,12 @@ class MainInventoryHandler(BaseHandler):
             log.warning('Agent not found in database')
             self.send_error(status_code=404)
             return
-        agent.log.info('open inventory_info_window car_id={}'.format(agent.api.car.uid))
-        self.render("inventory_info_window.html", car_id=agent.api.car.uid, car=agent.api.car)
+        if agent.car is None:
+            log.warning('Agent {} cheating!!! MainInventoryHandler without car'.format(agent))
+            self.send_error(status_code=404)
+            return
+        agent.log.info('open inventory_info_window car_id={}'.format(agent.car.uid))
+        self.render("inventory_info_window.html", car_id=agent.car.uid, car=agent.car)
 
 
 class ContainerInventoryHandler(BaseHandler):
@@ -34,7 +38,7 @@ class ContainerInventoryHandler(BaseHandler):
             container = self.application.srv.objects.get(long(container_id))
         agent.log.info('open container container_id={}'.format(container_id))
         if isinstance(container, POIContainer) and container.is_available(agent=agent, time=agent.server.get_time()):
-            self.render("inventory_container_window.html", car_id=agent.api.car.uid, container_id=container_id)
+            self.render("inventory_container_window.html", car_id=agent.car.uid, container_id=container_id)
 
 
 class BarterInventoryHandler(BaseHandler):

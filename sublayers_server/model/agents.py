@@ -101,6 +101,8 @@ class Agent(Object):
         self.connection_times = []  # times connections for this agent
         self.min_connection_time = 0  #
 
+        self.resolution_scale = 'big'  # Размер разрешения текущего клиента
+
     def generate_fake_login(self):
         max_iterations = 500
         for i in xrange(0, max_iterations):
@@ -345,6 +347,7 @@ class Agent(Object):
         connection_delay = min(connection_count * 15, 60)
         # каждый connection_count = 15 секунд ожидания, но не больше 1 минуты
         self.min_connection_time = time + connection_delay
+        self.log.info('Connection Delay is {}'.format(connection_delay))
         return connection_delay
 
     def on_connect(self, connection):

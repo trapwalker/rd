@@ -50,7 +50,8 @@
 
 .panel-info-teaching-left .panel-info-content, .panel-info-teaching-right .panel-info-content {
     text-align: center;
-    color: #c0ff00;  /*192, 255, 0*/
+    color: #2ffa00;
+    text-shadow: 0 0 1px #2ffa00, 0 0 10px #2ffa00;
 }
 
 .description-line {

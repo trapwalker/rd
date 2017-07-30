@@ -75,7 +75,7 @@ var CruiseSpeedTeachingMapNote = (function (_super) {
         this.elem_id_str = 'cruiseControlMainDiv';
 
         // Google Analytics
-        google_analytics_methods.teach_map_start();
+        analytics.teach_map_start();
     }
 
     CruiseSpeedTeachingMapNote.prototype.redraw = function() {
@@ -185,7 +185,7 @@ var DrivingControlTeachingMapNote = (function (_super) {
 
     DrivingControlTeachingMapNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_map_move();
+        analytics.teach_map_move();
 
         _super.prototype.delete.call(this);
     };
@@ -286,7 +286,7 @@ var ZoomSliderTeachingMapNote = (function (_super) {
 
     ZoomSliderTeachingMapNote.prototype.delete = function() {
         // Google Analytics
-        google_analytics_methods.teach_map_zoom();
+        analytics.teach_map_zoom();
 
         _super.prototype.delete.call(this);
     };
@@ -368,7 +368,7 @@ var TryKillTeachingMapNote = (function (_super) {
 
     TryKillTeachingMapNote.prototype.delete = function () {
         // Google Analytics
-        google_analytics_methods.teach_map_damage();
+        analytics.teach_map_damage();
 
         _super.prototype.delete.call(this);
     };
@@ -390,11 +390,11 @@ var TryGameTeachingMapNote = (function (_super) {
         if (result) {
             setTimeout(function(){window.location = '/play'}, 2000);
             // Google Analytics
-            google_analytics_methods.teach_map_finish();
+            analytics.teach_map_finish();
         }
         else {
             // Google Analytics
-            google_analytics_methods.teach_map_train();
+            analytics.teach_map_train();
         }
     };
 

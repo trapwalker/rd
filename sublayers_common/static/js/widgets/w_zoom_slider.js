@@ -212,6 +212,9 @@ var WZoomSlider = (function () {
 
         // Звук на кнопку fullscr
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        
+        // Google Analytics
+        analytics.btn_full_screen();
     };
 
     WZoomSlider.prototype.sverAll = function (event) {
@@ -220,6 +223,9 @@ var WZoomSlider = (function () {
         chat.changeVisible(false);
         if (mapManager && mapManager.zoomSlider) mapManager.zoomSlider.changeVisible(false);
         returnFocusToMap();
+        
+        // Google Analytics
+        analytics.btn_hide_widgets();
     };
 
     WZoomSlider.prototype.razverAll = function (event) {
