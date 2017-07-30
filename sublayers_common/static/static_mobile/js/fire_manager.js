@@ -18,7 +18,7 @@ var EffectPNGLoader = (function(){
         this.count_loading_img = 0;
         resourceLoadManager.add(this);
 
-        this.host_addr = 'http://' + $('#settings_host_name').text();
+        this.host_addr = $('#settings_host_name').text();
         this.load_new_image('effect-fire-discharge-png-1', this.host_addr + '/static/img/fire_effects/shoots/heavygunfireright000_001_stripe_5frames.png', [40, 40], 5);
         this.load_new_image('effect-fire-discharge-png-2', this.host_addr + '/static/img/fire_effects/shoots/heavygunfireright000_002_resized_stripe_12frames.png', [57, 75], 12);
         this.load_new_image('effect-fire-auto-png', this.host_addr + '/static/img/fire_effects/shoots/light_fire_right_stripe_2frames.png', [32, 20], 2);

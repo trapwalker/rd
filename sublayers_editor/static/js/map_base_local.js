@@ -1,1 +1,1 @@
-mapBasePathLocal = 'http://localhost/static/map/{z}/{x}/{y}.jpg';
+mapBasePathLocal = 'localhost/static/map/{z}/{x}/{y}.jpg';

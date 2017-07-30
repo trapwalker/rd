@@ -9,7 +9,7 @@ var LeafletIconManager = (function(){
         this.count_loading_img = 0;
         resourceLoadManager.add(this);
 
-        var host_name = 'http://' + $('#settings_host_name').text();
+        var host_name = $('#settings_host_name').text();
 
         this.load_new_icon('icon_party_car', host_name + '/static/img/char_icons/party/car.png', [53, 53], this.max_id++);
         this.load_new_icon('icon_neutral_car', host_name + '/static/img/char_icons/neutral/car.png', [53, 53], this.max_id++);
