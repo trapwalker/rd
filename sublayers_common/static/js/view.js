@@ -33,7 +33,7 @@ $(document).ready(function () {
     user = new User(1);
     ownerList = new OwnerList();
 
-    ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
+    ws_connector = new WSConnector({url: 'wss://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
 
 
     rpcCallList = new RPCCallList();
