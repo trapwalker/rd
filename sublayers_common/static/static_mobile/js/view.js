@@ -16,7 +16,7 @@ function client_ready() {
 
     // todo: считать URL с сервера или откуда нужно!
 
-    ws_connector = new WSConnector({url: 'ws://'+ $('#settings_host_name').text() + ':'+ $('#settings_ws_port').text() + '/ws'});
+    ws_connector = new WSConnector({url: $('#settings_host_name').text() + ':'+ $('#settings_ws_port').text() + '/ws'});
 
     clientManager = new ClientManager();
 
