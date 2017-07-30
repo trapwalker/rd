@@ -15,7 +15,10 @@ from sublayers_common.user_profile import User
 
 
 def static_mobile_link_repr(link):
-    return '{}{}'.format(options.mobile_host, link)
+    return '{}'.format(
+        #options.mobile_host, 
+        link,
+    )
 
 
 def static_world_link_repr(link):
