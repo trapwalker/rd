@@ -15,6 +15,7 @@ from sublayers_common.service_tools import run
 
 import click
 import requests
+import subprocess
 
 
 def service_start(project_path, service_command, stdout_show_timeout=None):
@@ -91,15 +92,20 @@ def restart_command(ctx):
 
 def start():
     log.info('Service START')
-    log.debug(run('screen -S rd -c ~/rd/deploy/screen.conf -d -m'.split()))
-
+    try:
+        log.debug(run('screen -S rd -c ~/rd/deploy/screen.conf -d -m'.split()))
+    except subprocess.CalledProcessError as e:
+        log.error(e)
 
 def stop(host='localhost'):
-    log.info('Service STOP')
+    log.info('Service STOP (host: %r)', host)
     log.info(requests.post('http://{host}/adm/api/shutdown'.format(host=host)))
-    log.debug(run('screen -S rd -X quit'.split()))
+    try:
+        log.debug(run('screen -S rd -X quit'.split()))
+    except subprocess.CalledProcessError as e:
+        log.error(e)
 
 
 def save(host='localhost'):
-    log.info('Server SAVE')
+    log.info('Server SAVE (host: %r)', host)
     log.info(requests.post('http://{host}/adm/api/save'.format(host=host)))
