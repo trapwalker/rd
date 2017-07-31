@@ -56,7 +56,7 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles):
         if is_updated_main:
             log.info('Source updated')
 
-        stop()
+        stop(host='roaddogs.ru')  # todo: configure server host
         reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
         start()
 

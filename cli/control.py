@@ -29,7 +29,7 @@ def save_command(ctx):
     if ctx.invoked_subcommand:
         return
 
-    save()
+    save(host='roaddogs.ru')  # todo: configure server host
 
 
 @root.group(name='start', invoke_without_command=True)
@@ -51,7 +51,7 @@ def stop_command(ctx):
     if ctx.invoked_subcommand:
         return
 
-    stop()
+    stop(host='roaddogs.ru')  # todo: configure server host
 
 
 @root.group(name='restart', invoke_without_command=True)
@@ -62,7 +62,7 @@ def restart_command(ctx):
     if ctx.invoked_subcommand:
         return
 
-    stop()
+    stop(host='roaddogs.ru')  # todo: configure server host
     start()
 
 
@@ -94,12 +94,12 @@ def start():
     log.debug(run('screen -S rd -c ~/rd/deploy/screen.conf -d -m'.split()))
 
 
-def stop():
+def stop(host='localhost'):
     log.info('Service STOP')
-    log.info(requests.post('http://localhost/adm/api/shutdown'))
+    log.info(requests.post('http://{host}/adm/api/shutdown'.format(host=host)))
     log.debug(run('screen -S rd -X quit'.split()))
 
 
-def save():
+def save(host='localhost'):
     log.info('Server SAVE')
-    log.info(requests.post('http://localhost/adm/api/save'))
+    log.info(requests.post('http://{host}/adm/api/save'.format(host=host)))
