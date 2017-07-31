@@ -11,7 +11,7 @@ from sublayers_server import engine_server
 from tornado.web import RequestHandler, HTTPError
 
 
-LOCALHOST = frozenset(['localhost', '127.0.0.1', '::1'])
+LOCALHOST = frozenset(['localhost', '127.0.0.1', '::1', '185.58.205.29'])
 
 
 class AdmAPIHandler(AuthHandlerMixin):
