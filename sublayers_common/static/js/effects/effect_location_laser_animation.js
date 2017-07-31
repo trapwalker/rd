@@ -44,13 +44,12 @@ var ECanvasLocationLaserAnimation = (function () {
         this.start_time = 0;
     };
 
-    ECanvasLocationLaserAnimation.prototype.redraw = function (ctx, time) {
+    ECanvasLocationLaserAnimation.prototype.redraw = function (ctx, time, client_time) {
         //console.log('ECanvasLocationLaserAnimation.prototype.redraw', time);
         if (! this.start_time) return;
-        time *= 1000;
 
         ctx.save();
-        var frame = this._get_frame_num(time);
+        var frame = this._get_frame_num(client_time);
         ctx.drawImage(this.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
             this.offset_x, this.offset_y, this.frame_width, this.frame_height);
 
