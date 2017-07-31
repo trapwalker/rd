@@ -28,7 +28,7 @@ var WSConnector = (function(_super){
     function WSConnector(options){
         _super.call(this);
         this.options = {
-            url: "wss://" + location.host + "/ws"
+            url: (location.protocol == "https:" ? "wss://" : "ws://")  + location.host + "/ws"
         };
         if (options) setOptions(options, this.options);
 
