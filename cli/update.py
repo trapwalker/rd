@@ -24,8 +24,9 @@ from hgapi import HgException
 @click.option('--no_db', is_flag=True, default=False, help='Do not store registry to DB')
 @click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
 @click.option('--reset_profiles', '-R', is_flag=True, default=False, help='Reset profile registration state to "nickname"')
+@click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command')
 @click.pass_context
-def update(ctx, dest, no_db, clean_agents, reset_profiles):
+def update(ctx, dest, no_db, clean_agents, reset_profiles, host):
     """Update version"""
     main_repo = ctx.obj['main_repo']
     world_repo = ctx.obj['world_repo']
@@ -56,7 +57,7 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles):
         if is_updated_main:
             log.info('Source updated')
 
-        stop(host='roaddogs.ru')  # todo: configure server host
+        stop(host=host)  # todo: configure server host
         reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
         start()
 

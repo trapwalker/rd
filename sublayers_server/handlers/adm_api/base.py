@@ -11,7 +11,7 @@ from sublayers_server import engine_server
 from tornado.web import RequestHandler, HTTPError
 
 
-LOCALHOST = frozenset(['localhost', '127.0.0.1', '::1'])
+LOCALHOST = frozenset(['localhost', '127.0.0.1', '::1', '185.58.205.29'])
 
 
 class AdmAPIHandler(AuthHandlerMixin):
@@ -19,6 +19,7 @@ class AdmAPIHandler(AuthHandlerMixin):
 
     def is_local_request(self):
         remote_ip = self.request.remote_ip
+        log.debug('Test host to local: %r is %sin %s', remote_ip, '' if remote_ip in LOCALHOST else 'not ', LOCALHOST)
         return remote_ip in LOCALHOST  # or remote_ip == self.request.host
 
     def check_xsrf_cookie(self):
