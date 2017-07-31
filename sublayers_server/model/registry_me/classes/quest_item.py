@@ -90,8 +90,8 @@ class QuestItem(Item):
     time_recharge_rate = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия", tags={"aggregate"})
     radius_rate        = FloatField(caption=u"Множитель модификации дальности стрельбы", tags={"aggregate"})
 
-    repair_rate         = FloatField(caption=u"Скорость отхила в секунду", tags={"aggregate"})
-    repair_rate_on_stay = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении", tags={"aggregate"})
+    repair_rate         = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду", tags={"aggregate"})
+    repair_rate_on_stay = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={"aggregate"})
 
     crit_rate           = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={"aggregate"})
     crit_power          = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={"aggregate"})

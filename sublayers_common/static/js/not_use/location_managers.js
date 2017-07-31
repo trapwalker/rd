@@ -51,7 +51,7 @@ var LocationVisitorsManager = (function () {
 
         // Делаем Ajax запрос на информацию по пользователю
         $.ajax({
-            url: "http://" + location.host + '/api/person_info',
+            url: location.host + '/api/person_info',
             data: {person: person},
             success: function(data) {
                 //console.log(data);

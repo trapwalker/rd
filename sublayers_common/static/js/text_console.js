@@ -81,6 +81,14 @@ var TextConsoleManager = (function(){
         setTimeout(function(){self.stop();}, 10);
     };
 
+    TextConsoleManager.prototype.add_log_message = function(message) {
+        var jq_old_text = this.jq_main_div.find('.console-old-text');
+        var old_text = jq_old_text.text();
+        old_text = old_text.substr(old_text.length - 2000, 2000); // хранить последение 2000 символов
+        old_text = old_text + '\n> ' + message;
+        jq_old_text.text(old_text);
+    };
+
     return TextConsoleManager;
 })();
 
@@ -560,12 +568,17 @@ var ConsoleFirstEnter = (function (_super) {
 
     ConsoleFirstEnter.prototype.teaching_answer = function(teach) {
         $.ajax({
-            url: "http://" + location.hostname + $('#settings_server_mode_link_path').text() + '/api/tca',
+            url: $('#settings_server_mode_link_path').text() + '/api/tca',
             data: {answer: teach},
             success: function(data) {
                 if (data && data.length) {
                     window.location = data;
                 }
+                // Google Analytics
+                if (teach)
+                    analytics.teaching_answer_yes();
+                else
+                    analytics.teaching_answer_no();
             }
         });
     };

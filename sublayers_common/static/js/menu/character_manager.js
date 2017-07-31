@@ -9,7 +9,7 @@ var CharacterManager = (function () {
         var self = characterManager;
         if (jq_main_div)
             self.jq_main_div = $(jq_main_div).first();
-        var quick_mode = $('#settings_server_mode').text() == 'quick';
+        var quick_mode = !basic_server_mode;
         // Заполняем верхнюю часть окна
         self.jq_main_div.find('.character-window-avatar').first()
             .css('background', 'transparent url(' + user.avatar_link + ') 100% 100% no-repeat');
@@ -110,7 +110,7 @@ var CharacterManager = (function () {
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap town-interlacing" data-index="' + i + '">' +
                     '<div class="mainCarInfoWindow-body-trunk-body-right-item">' +
                         '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + item.title + '</div>' +
-                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty" style="background: transparent url(http://' + location.hostname + '/' + item.inv_icon_mid + ') no-repeat 100% 100%; "></div>' +
+                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty" style="background: transparent url(/' + item.inv_icon_mid + ') no-repeat 100% 100%; "></div>' +
                     '</div>' +
                 '</div>'
 
@@ -157,7 +157,7 @@ var CharacterManager = (function () {
         //console.log('CharacterManager.perks_event_mouseenter');
         var perc_rec = user.example_agent.rpg_info.perks[$(event.currentTarget).data('index')];
         if(! perc_rec) return;
-        event.data.mng.jq_main_div.find('.character-window-hint-text').text(perc_rec.perk.description);
+        event.data.mng.jq_main_div.find('.character-window-hint-text').html(perc_rec.perk.description);
     };
 
     CharacterManager.skills_event_mouseenter = function (event) {

@@ -13,8 +13,6 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField, EmbeddedNodeField, PositionField, BooleanField,
 )
 
-from math import pi
-
 SLOT_LOCK = "reg:///registry/items/slot_item/_lock"
 
 class SlotField(EmbeddedNodeField):
@@ -121,18 +119,18 @@ class Mobile(Node):
     p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)", tags={'param_aggregate'})
 
     # атрибуты влияющие на эффективность стрельбы
-    dps_rate             = FloatField(caption=u"Множитель модификации урона автоматического оружия", tags={'param_aggregate'})
-    damage_rate          = FloatField(caption=u"Множитель модификации урона залпового оружия", tags={'param_aggregate'})
-    time_recharge_rate   = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия", tags={'param_aggregate'})
-    radius_rate          = FloatField(caption=u"Множитель модификации дальности стрельбы", tags={'param_aggregate'})
+    dps_rate             = FloatField(root_default=1.0, caption=u"Множитель модификации урона автоматического оружия", tags={'param_aggregate'})
+    damage_rate          = FloatField(root_default=1.0, caption=u"Множитель модификации урона залпового оружия", tags={'param_aggregate'})
+    time_recharge_rate   = FloatField(root_default=1.0, caption=u"Множитель модификации времени перезарядки залпового оружия", tags={'param_aggregate'})
+    radius_rate          = FloatField(root_default=1.0, caption=u"Множитель модификации дальности стрельбы", tags={'param_aggregate'})
 
-    # атрибуты, отвечающие за авто-ремонт машины.
-    repair_rate          = FloatField(caption=u"Скорость отхила в секунду", tags={'param_aggregate'})
-    repair_rate_on_stay  = FloatField(caption=u"Дополнительная скорость отхила в стоячем положении", tags={'param_aggregate'})
+    # атрибуты, отвечающие за авто-ремонт машины. Равны 1, так как потом эти числа умножатся на значения от перков (%)
+    repair_rate          = FloatField(root_default=1.0, caption=u"Процент ХП восстанавливающийся каждую секунду", tags={'param_aggregate'})
+    repair_rate_on_stay  = FloatField(root_default=1.0, caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={'param_aggregate'})
 
     # атрибуты, связанные с критами.
-    crit_rate            = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
-    crit_power           = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={'param_aggregate'})
+    crit_rate            = FloatField(root_default=1.0, caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
+    crit_power           = FloatField(root_default=1.0, caption=u"Сила крита [0 .. сколько угодно]", tags={'param_aggregate'})
 
     slot_FL   = ModuleSlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags={'armorer'})
     slot_FL_f = StringField    (caption=u'Флаги переднего левого слота [FBLR]', tags={'client', 'slot_limit'})
@@ -181,7 +179,9 @@ class Mobile(Node):
     shooting_time_recharge_rate = FloatField(caption=u"Влияние Стрельбы на Множитель модификации времени перезарядки залпового оружия")
     shooting_radius_rate        = FloatField(caption=u"Влияние Стрельбы на Множитель модификации дальности стрельбы")
 
-    masking_p_visibility        = FloatField(caption=u"Влияние Маскировки на Коэффициент заметности")
+    # masking_p_visibility        = FloatField(root_default=0, caption=u"Влияние Маскировки на Коэффициент заметности")  # Не используется
+    masking_p_visibility_min    = FloatField(root_default=0, caption=u"Влияние Маскировки на Коэффициент заметности")
+    masking_p_visibility_max    = FloatField(root_default=0, caption=u"Влияние Маскировки на Коэффициент заметности")
 
     exp_table = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.exptable.ExpTable',
@@ -215,49 +215,63 @@ class Mobile(Node):
 
     def get_modify_value(self, param_name, example_agent=None):
         original_value = getattr(self, param_name)
+        modifier_value = 1.0  # собирающий коэффициент по перкам, квест_итемам и механик_итемам, НО НЕ ПО СКИЛАМ
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):
-                original_value += getattr(slot_value, param_name, 0.0)
+                modifier_value += getattr(slot_value, param_name, 0.0)
         if example_agent:
             quest_items_modifiers = example_agent.profile.get_quest_skill_modifier()
+
             for skill_name, skill_value in example_agent.profile.iter_skills():
                 skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
-                original_value += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+                modifier_value += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+
             for perk in example_agent.profile.perks:
-                original_value += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
+                modifier_value += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
 
             if param_name == 'v_forward':
                 original_value *= example_agent.profile.exp_table.get_car_penalty(
                     dvalue=(self.needed_driving - example_agent.profile.driving.calc_value())
                 )
+
+        modifier_value = max(0, modifier_value)
+        original_value *= modifier_value
         # todo: проверить допустимость значения
         assert original_value is not None, '{} is not allowed {}'.format(param_name, original_value)
         return original_value
 
     def param_aggregate(self, example_agent):
-        d = dict()
+        d = dict()  # Здесь лежат оригинальные значения с учётом влияния скилов
+        modifier_dict = dict()  # собирающий коэффициент по перкам, квест_итемам и механик_итемам, НО НЕ ПО СКИЛАМ
         for param_name, attr, getter in self.iter_attrs(tags={'param_aggregate'}):
             d[param_name] = getattr(self, param_name)
+            modifier_dict[param_name] = 1.0
 
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):
-                for param_name in d.keys():
-                    d[param_name] = d[param_name] + getattr(slot_value, param_name, 0.0)
+                for param_name in modifier_dict.keys():
+                    modifier_dict[param_name] += getattr(slot_value, param_name, 0.0)
 
         if example_agent:
             quest_items_modifiers = example_agent.profile.get_quest_skill_modifier()
+
             for skill_name, skill_value in example_agent.profile.iter_skills():
                 skill_value = max(0.0, skill_value + quest_items_modifiers.get(skill_name, 0.0))
                 for param_name in d.keys():
-                    d[param_name] = d[param_name] + skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
+                    modifier_dict[param_name] += skill_value * getattr(self, '{}_{}'.format(skill_name, param_name), 0.0)
 
             for perk in example_agent.profile.perks:
-                for param_name in d.keys():
-                    d[param_name] = d[param_name] + getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
+                for param_name in modifier_dict.keys():
+                    modifier_dict[param_name] += getattr(perk, param_name, 0.0) + getattr(quest_items_modifiers, param_name, 0.0)
 
             d['v_forward'] *= example_agent.profile.exp_table.get_car_penalty(
                 dvalue=(self.needed_driving - example_agent.profile.driving.calc_value())
             )
+
+        # перемножение значений
+        for param_name in d.keys():
+            # todo: проверить допустимость всех значений
+            d[param_name] *= max(modifier_dict[param_name], 0)
 
         return d
 

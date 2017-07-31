@@ -16,6 +16,9 @@ from sublayers_server.model.registry_me.tree import (
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
+from sublayers_server.model.registry_me.classes.perks import (PerkActivateItemsPassive, PerkPartyPassive,
+                                                              PerkTraderPassive)
+
 from sublayers_server.model.utils import getKarmaName
 from sublayers_common import yaml_tools
 
@@ -219,6 +222,25 @@ class AgentProfile(Node):
 
     quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
 
+    def set_role_class(self, role_class_ex, registry):
+        mod_0 = registry.get("reg:///registry/rpg_settings/class_skill/empty_0")
+        role_class_ex = role_class_ex or registry.get('reg:///registry/rpg_settings/role_class/chosen_one')
+        skill_names = ['driving', 'shooting', 'masking', 'leading', 'trading', 'engineering']
+        # Сброс всех модификаций скилов
+        for skill_name in skill_names:
+            skill = getattr(self, skill_name)
+            skill.mod = mod_0
+
+        if role_class_ex:
+            # Установка классового навыка
+            for class_skill in role_class_ex.class_skills:
+                # todo: Перебирать объекты реестра
+                if class_skill.target in skill_names:
+                    skill = getattr(self, class_skill.target)
+                    skill.mod = class_skill
+
+            self.role_class = role_class_ex
+
     def get_lvl(self):
         lvl, (next_lvl, next_lvl_exp), rest_exp = self.exp_table.by_exp(exp=self.exp)
         return lvl
@@ -294,6 +316,15 @@ class AgentProfile(Node):
     def get_current_agent_trading(self):
         return self.trading.calc_value() + self.get_quest_skill_modifier().get('trading', 0)
 
+    def get_perk_trader_margin_info(self):
+        trader_buy = 1.0
+        trader_sell = 1.0
+        for perk in self.perks:
+            if isinstance(perk, PerkTraderPassive):
+                trader_buy += perk.trader_buy
+                trader_sell += perk.trader_sell
+        return dict(trader_buy=trader_buy, trader_sell=trader_sell)
+
     def get_quest_skill_modifier(self):
         d = dict()
         if len(self.quest_inventory.items) == 0:
@@ -306,6 +337,20 @@ class AgentProfile(Node):
             for name in d.keys():
                 d[name] += getattr(item, name, 0)
         return d
+
+    def get_repair_build_rate(self):
+        repair_build_rate = 1
+        for perk in self.perks:
+            if isinstance(perk, PerkActivateItemsPassive):
+                repair_build_rate += perk.repair_build_rate
+        return repair_build_rate
+
+    def get_party_exp_modifier(self):
+        party_exp_modifier = 1
+        for perk in self.perks:
+            if isinstance(perk, PerkPartyPassive):
+                party_exp_modifier += perk.party_exp_modifier
+        return party_exp_modifier
 
     def iter_perks(self):  # todo: need review
         for perk in self.perks:
@@ -484,11 +529,7 @@ class Agent(Document):
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)
         assert isinstance(self.profile, AgentProfile)
-        for q in chain(
-            self.profile.quests_unstarted,
-            self.profile.quests_active,
-            self.profile.quests_ended,
-        ):
+        for q in self.profile.quests:
             q._agent = self
 
     def __nonzero__(self):

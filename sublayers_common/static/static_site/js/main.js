@@ -109,6 +109,16 @@ function main() {
         var data;
         if (this.id == 'RDbtn_start') {
             data = GetIDForStartRegistrationPage();
+
+            // Google Analytics
+            if (data == 'RDSiteWReg') {  // Для незарегистрированных пользователей
+                try {ga('send', 'event', 'btn_site', 'click', 'start_reg');}
+                catch(e){console.warn('GA not defined');}
+            }
+            else {
+                try {ga('send', 'event', 'btn_site', 'click', 'start');}
+                catch(e){console.warn('GA not defined');}
+            }
         }
         else {
             data = $(this).data('window_id');
@@ -542,10 +552,17 @@ function GetUserInfo() {
             if (registration_status == 'register') {
                 var pos_x = '';
                 var pos_y = '';
+                var insurance_name = '_';
+                var active_quests = '_';
                 if (data.hasOwnProperty('position') && data.position && (data.position.length == 2)) {
                     pos_x = data.position[0].toFixed(0);
                     pos_y = data.position[1].toFixed(0);
                 }
+                if (data.hasOwnProperty('insurance_name'))
+                    insurance_name = data.insurance_name;
+                if (data.hasOwnProperty('active_quests_count'))
+                    active_quests  = data.active_quests_count;
+
                 consoleWPI.clear();
                 consoleWPI.add_message('user', _('con_wpi_1'));
                 consoleWPI.add_message(
@@ -555,8 +572,8 @@ function GetUserInfo() {
                     _('con_wpi_2_2') + data.user_name + '!\n' +
                     _('con_wpi_2_3') + data.user_balance + ' NC\n' +
                     _('con_wpi_2_4') + 'x' + pos_x + ':y' + pos_y + '\n' +
-                    _('con_wpi_2_5')+ '_\n' +
-                    _('con_wpi_2_6') + '_\n' +
+                    _('con_wpi_2_5') + insurance_name + '\n' +
+                    _('con_wpi_2_6') + active_quests + '\n' +
                     '-----------------------------'
                 );
 

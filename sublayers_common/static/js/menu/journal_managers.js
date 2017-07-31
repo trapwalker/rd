@@ -175,6 +175,16 @@ var QuestJournalManager = (function () {
         this._refresh_timer = null;
     }
 
+    QuestJournalManager.prototype.getCountQuestsByNPC = function(npc_node_hash) {
+        var result = { available_count: 0, active_count: 0 };
+        for (var key in this.quests)
+            if (this.quests.hasOwnProperty(key) && this.quests[key].hirer && (this.quests[key].hirer.node_hash == npc_node_hash)) {
+                if (!this.quests[key].status) result.available_count++;
+                if (this.quests[key].status == 'active') result.active_count++;
+            }
+        return result;
+    };
+
     QuestJournalManager.prototype.addQuest = function(quest) {
         //console.log('QuestManager.prototype.addQuest', quest);
         if (!this.quests.hasOwnProperty(quest.uid)) {
@@ -220,6 +230,12 @@ var QuestJournalManager = (function () {
 
         if (is_view_quest_in_journal)
             quest.jq_journal_menu.click();
+
+        if (locationManager.in_location_flag)
+            if (locationManager.screens[locationManager.active_screen_name])
+                locationManager.screens[locationManager.active_screen_name].set_panels();
+            else
+                locationManager.set_panels_location_screen();
     };
 
     QuestJournalManager.prototype.update_view_notes = function (quest) {

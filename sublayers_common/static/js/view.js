@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    basic_server_mode = $('#settings_server_mode').text() == "basic";
     initConsoles();
     if ($('#settings_first_enter').text() == 'True')
         textConsoleManager.start('first_enter');
@@ -32,8 +33,8 @@ $(document).ready(function () {
     user = new User(1);
     ownerList = new OwnerList();
 
-    ws_connector = new WSConnector({url: 'ws://'+ location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
-    basic_server_mode = $('#settings_server_mode').text() == "basic";
+    ws_connector = new WSConnector({url: (location.protocol == "https:" ? "wss://" : "ws://") + location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
+
 
     rpcCallList = new RPCCallList();
 
@@ -48,9 +49,6 @@ $(document).ready(function () {
         radioPlayer.save_setting_to_cookie(true);
     };
 
-    //if ($('#settings_server_mode').text() == 'quick')
-    //    chat.setActivePage(chat.page_log);
-    //else
     chat.setActivePage(chat.page_global);
 
     returnFocusToMap();
@@ -68,6 +66,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
+        // Google Analytics
+        analytics.self_window_info();
     };
 
     document.getElementById('divMainMenuBtnCar').onclick = function () {
@@ -78,6 +79,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        
+        // Google Analytics
+        analytics.self_car_info();        
     };
 
     document.getElementById('divMainMenuBtnInventory').onclick = function () {
@@ -89,6 +93,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+
+        // Google Analytics
+        analytics.show_inventory();   
     };
 
     document.getElementById('divMainMenuBtnJournal').onclick = function () {
@@ -99,6 +106,9 @@ $(document).ready(function () {
         returnFocusToMap();
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        
+        // Google Analytics
+        analytics.journal_window();   
     };
 
     document.getElementById('divMainMenuBtnParty').onclick = function () {
@@ -302,23 +312,79 @@ $(window).resize(resizeWindowHandler);
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());
-    interface_scale_big = ($(window).width()) > 1550 && ($(window).height() > 880);
-    interface_scale_small = ($(window).width()) <= 1250 || ($(window).height() <= 670);
-    var scale_prc_w_width = $(window).width() / 1920;
-    var scale_prc_w_height = $(window).height() / 1080;
+    var w_height = $(window).height();
+    var w_width = $(window).width();
+    interface_scale_big = (w_width > 1550) && (w_height > 880);
+    interface_scale_small = (w_width <= 1250) || (w_height <= 670);
+    var scale_prc_w_width = w_width / 1920;
+    var scale_prc_w_height = w_height / 1080;
     var scale_prc = scale_prc_w_width < scale_prc_w_height ? scale_prc_w_width : scale_prc_w_height;
     var unscale_prc = 1 / (1 - (1 - scale_prc) * 0.5);
     if (scale_prc > 0.3) {
-        $('#activeTownDiv').css('transform', 'scale(' + scale_prc + ')');
-        $('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
-        $('#townRightPanel').css('transform', 'scale(' + unscale_prc + ')');
-        $('#townLeftPanel').css('transform', 'scale(' + unscale_prc + ')');
         window_scaled_prc = scale_prc;
     }
     if (teachingMapManager) teachingMapManager.redraw();
-    if (mapManager) mapManager.on_new_map_size($(window).width(), $(window).height());
-}
+    if (mapManager) mapManager.on_new_map_size(w_width, w_height);
 
+     //$('#townTeachingCanvas').css('transform', 'scale(' + scale_prc + ')');
+        //$('#townRightPanel').css('transform', 'scale(' + unscale_prc + ')');
+        //$('#townLeftPanel').css('transform', 'scale(' + unscale_prc + ')');
+
+    if ((w_height <= 930) || (w_width <= 1530))
+        clientManager.sendResolutionScale('small');
+    else {
+        clientManager.sendResolutionScale('big');
+    }
+
+    if (locationManager && locationManager.in_location_flag) {
+        if (w_width >= 1920) {
+            $('#townRightPanel').css('top', '40px');
+            $('#townRightPanel').css('right', '100px');
+            $('#townRightPanel').css('transform', 'scale(1.0)');
+            $('#townLeftPanel').css('top', '40px');
+            $('#townLeftPanel').css('left', '100px');
+            $('#townLeftPanel').css('transform', 'scale(1.0)');
+        }
+        if ((w_width <= 1920) && (w_width > 1620)) {
+            var scale = (w_width - 1620) / 300;
+            var scale_prc = 0.9 + 0.1 * scale;
+            $('#townRightPanel').css('top', 40 * scale + 'px');
+            $('#townRightPanel').css('right', 100 * scale + 'px');
+            $('#townRightPanel').css('scale(' + scale_prc + ')');
+            $('#townLeftPanel').css('top', 40 * scale + 'px');
+            $('#townLeftPanel').css('left', 100 * scale + 'px');
+            $('#townLeftPanel').css('scale(' + scale_prc + ')');
+        }
+        if ((w_width <= 1620) && (w_width > 1530)) {
+            var scale = (w_width - 1530) / 90;
+            var scale_prc = 0.8 + 0.1 * scale;
+            $('#townRightPanel').css('top', -20 + 20 * scale + 'px');
+            $('#townRightPanel').css('right', -25 + 25 * scale + 'px');
+            $('#townRightPanel').css('transform', 'scale(' + scale_prc + ')');
+            $('#townLeftPanel').css('top', -20 + 20 * scale + 'px');
+            $('#townLeftPanel').css('left', -25 + 25 * scale + 'px');
+            $('#townLeftPanel').css('transform', 'scale(' + scale_prc + ')');
+        }
+        if ((w_width <= 1530) && (w_width >= 1366)) {
+            var scale = (w_width - 1366) / 164;
+            var scale_prc = 0.7 + 0.1 * scale;
+            $('#townRightPanel').css('top', -30 + 10 * scale + 'px');
+            $('#townRightPanel').css('right', -50 + 25 * scale + 'px');
+            $('#townRightPanel').css('transform', 'scale(' + scale_prc + ')');
+            $('#townLeftPanel').css('top', -30 + 10 * scale + 'px');
+            $('#townLeftPanel').css('left', -50 + 25 * scale + 'px');
+            $('#townLeftPanel').css('transform', 'scale(' + scale_prc + ')');
+        }
+        if (w_width < 1366) {
+            $('#townRightPanel').css('top', '-30px');
+            $('#townRightPanel').css('right', '-50px');
+            $('#townRightPanel').css('transform', 'scale(0.7)');
+            $('#townLeftPanel').css('top', '-30px');
+            $('#townLeftPanel').css('left', '-50px');
+            $('#townLeftPanel').css('transform', 'scale(0.7)');
+        }
+    }
+}
 
 function ifBrowser () {
     var ua = navigator.userAgent;

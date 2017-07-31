@@ -19,7 +19,7 @@ class Item(Node):
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
 
-    description = StringField(caption=u'Расширенное описание предмета', tags={'client'})
+    description = StringField(caption=u'Расширенное описание предмета')
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
@@ -53,15 +53,22 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
+    def html_description(self):
+        return self.description
+
     def as_client_dict(self):
         d = super(Item, self).as_client_dict()
-        d.update(ids=self.ids())
+        d.update(
+            ids=self.ids(),
+            description=self.html_description(),
+        )
+
         return d
 
     def as_assortment_dict(self):
         d = dict(
             title=self.title,
-            description=self.description,
+            description=self.html_description(),
             inv_icon_mid=self.inv_icon_mid,
             stack_size=self.stack_size,
             node_hash=self.node_hash(),
@@ -247,6 +254,30 @@ class MechanicItem(SlotItem):
     max_fuel = FloatField(caption=u"Максимальное количество топлива")
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
 
+    def html_description(self):
+        result = '<br>'
+        attr_name_list = dict(
+            p_visibility_min=u'Мин. заметность',
+            p_visibility_max=u'Макс. заметность',
+            p_observing_range=u'Радиус обзора',
+            max_hp=u'HP',
+            r_min=u'Маневренность',
+            ac_max=u'Контроль',
+            v_forward=u'Макс. скорость',
+            v_backward=u'Макс. скорость назад',
+            a_forward=u'Динамика разгона',
+            a_backward=u'Динамика задн. хода',
+            a_braking=u'Торможение',
+            max_fuel=u'Бак',
+            p_fuel_rate=u'Расход топлива',
+        )
+        for attr_name in attr_name_list.keys():
+            attr_value = getattr(self, attr_name, None)
+            if attr_value:
+                attr_str = attr_name_list[attr_name]
+                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{}</div>'.format(attr_str, attr_value)
+        return result
+
 
 class TunerItem(SlotItem):
     class TunerImage(Subdoc):
@@ -278,6 +309,11 @@ class TunerItem(SlotItem):
                 return tuner_image
         log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
+
+    def html_description(self):
+        car_str = ', '.join([car_rec.car.title for car_rec in self.images])
+        return (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
+                u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str))
 
 
 class ArmorerItem(SlotItem):

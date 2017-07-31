@@ -35,7 +35,7 @@ class PlayHandler(BaseHandler):
                 # todo: убрать все что касается is_tester
                 if not user.quick and not user.is_tester and user.registration_status == 'register':
                     first_enter = user.teaching_state == ""  # Значит он не отвечал на вопрос про обучение
-                    if user.teaching_state != "map":
+                    if user.teaching_state != "map" and user.teaching_state != "map_start":
                         self.render(
                             "play.html",
                             ws_port=options.ws_port,
@@ -56,19 +56,28 @@ class PlayHandler(BaseHandler):
                     self.redirect(self.get_login_url())
 
             if options.mode == 'quick':
+                if not user.quick and user.teaching_state != "map" and user.teaching_state != "map_start":
+                    log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
+                    self.redirect('/play')
+                    return
+
+                if not user.quick and user.teaching_state == "map_start":
+                    # Значит уже была попытка начать квест обучения, но его не закончили. попробовать найти агента, и если его нет, то вернуться на /play
+                    agent = self.application.srv.agents.get(str(user.pk), None)
+                    if not agent:
+                        log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
+                        self.redirect('/play')
+                        return
+
                 coord = None
                 agent = self.application.srv.agents.get(str(user.pk), None)
                 if agent and agent.car:
                     coord = agent.car.position(time=self.application.srv.get_time())
                 else:
-                    coord = Point.random_point(self.application.srv.quick_game_start_pos, self.application.srv.quick_game_respawn_bots_radius)
+                    coord = Point.random_point(self.application.srv.quick_game_respawn_bots_radius, self.application.srv.quick_game_start_pos)
 
                 user.start_position = Position(coord.x, coord.y)
                 user.save()
-                if (not user.quick) and (user.teaching_state != "map"):
-                    log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
-                    self.redirect('/play')
-                    return
 
                 connection_delay = 0
                 if agent:

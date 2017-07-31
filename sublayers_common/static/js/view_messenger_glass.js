@@ -691,16 +691,31 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog('Получено ' + msg.d_exp + ' очков опыта.');
                     break;
                 case "LvlLogMessage":
-                    this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.', true);
+                    this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.', true);                    
+                    // Google Analytics
+                    analytics.get_level(msg.lvl);
                     break;
                 case "SkillLogMessage":
                     this.addMessageToLog('Очков навыка получено: ' + msg.skill, true);
                     break;
                 case 'QuestStartStopLogMessage':
-                    if (msg.action)
+                    if (msg.action) {
                         this.addMessageToLog('Получен квест: ' + msg.quest_caption + '.');
-                    else
-                        this.addMessageToLog('Выполнен квест: ' + msg.quest_caption + '.', true);
+                        // Google Analytics
+                        analytics.get_quest();
+                    }
+                    else {
+                        if (msg.result == 'fail') {
+                            this.addMessageToLog('Провален квест: ' + msg.quest_caption + '.', true);
+                            // Google Analytics
+                            analytics.fail_quest();
+                        }
+                        else {
+                            this.addMessageToLog('Выполнен квест: ' + msg.quest_caption + '.', true);
+                            // Google Analytics
+                            analytics.end_quest();
+                        }
+                    }
                     break;
                 case 'InventoryChangeLogMessage':
                     // console.log('InventoryChangeLogMessage', msg);
@@ -1160,6 +1175,10 @@ var ViewMessengerGlass = (function () {
             var dmessage = chat.mesList.shift();
             dmessage.mesDiv.remove();
         }
+
+
+        // Все сообщения лога дублировать в консоль
+        textConsoleManager.add_log_message(aText);
     };
 
     // ======== Добавление системной страницы (System)

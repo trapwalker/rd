@@ -13,9 +13,9 @@
    width="1920"
    height="1080"
    viewBox="0 0 1920 1080"
-   id="svg2"
+   id="svg_town"
    version="1.1"
-   inkscape:version="0.92.1 r15371"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="location.svg">
   <defs
      id="defs4">
@@ -189,14 +189,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.0040916"
-     inkscape:cx="944.87826"
-     inkscape:cy="575.84266"
+     inkscape:cx="959.4946"
+     inkscape:cy="773.05365"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1027"
+     inkscape:window-width="1280"
+     inkscape:window-height="961"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -213,22 +213,13 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <image
-     sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../city_bg1.png"
-     xlink:href="../city_bg1.png"
-     y="0"
-     x="0"
-     id="img_back_0"
-     preserveAspectRatio="none"
-     height="1080"
-     width="1920" />
   <g
      inkscape:label="background"
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-2.362448)">
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\ground+circle.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\ground+circle.png"
        xlink:href="ground+circle.png"
        width="943"
        height="752"
@@ -237,7 +228,7 @@
        x="485"
        y="138.36244" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\market_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\market_bg.png"
        xlink:href="market_bg.png"
        y="138.36244"
        x="485"
@@ -248,7 +239,7 @@
        style="display:none"
        class="building-back" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\library_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\library_bg.png"
        xlink:href="library_bg.png"
        class="building-back"
        style="display:none"
@@ -259,7 +250,7 @@
        x="485"
        y="138.36244" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\nukeoil_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\nukeoil_bg.png"
        xlink:href="nukeoil_bg.png"
        class="building-back"
        style="display:none"
@@ -270,7 +261,7 @@
        x="485"
        y="138.36244" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\parking_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\parking_bg.png"
        xlink:href="parking_bg.png"
        class="building-back"
        y="138.36244"
@@ -281,7 +272,7 @@
        width="943"
        style="display:none" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\service_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\service_bg.png"
        xlink:href="service_bg.png"
        class="building-back"
        y="138.36244"
@@ -292,7 +283,7 @@
        width="943"
        style="display:none" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\bar_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\bar_bg.png"
        xlink:href="bar_bg.png"
        class="building-back"
        y="138.36244"
@@ -303,7 +294,7 @@
        width="943"
        style="display:none" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\radio_bg.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\radio_bg.png"
        xlink:href="radio_bg.png"
        class="building-back"
        y="138.36244"
@@ -321,7 +312,7 @@
      class="townPageWrap"
      transform="translate(0,2.3339844e-4)">
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\city_logo.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\city_logo.png"
        xlink:href="city_logo.png"
        class="highlight-logo"
        y="458"
@@ -331,7 +322,7 @@
        height="120"
        width="120" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\city_logo_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\city_logo_hover.png"
        xlink:href="city_logo_hover.png"
        class="highlight-logo"
        y="458"
@@ -342,7 +333,7 @@
        width="120"
        style="display:none" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\market.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\market.png"
        xlink:href="market.png"
        class="highlight-buildings"
        y="599"
@@ -352,7 +343,7 @@
        height="110"
        width="154" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\market_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\market_hover.png"
        xlink:href="market_hover.png"
        style="display:none"
        data-building="market"
@@ -364,7 +355,7 @@
        height="110"
        width="154" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\library.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\library.png"
        xlink:href="library.png"
        class="highlight-buildings"
        width="130"
@@ -374,7 +365,7 @@
        x="595"
        y="472" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\library_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\library_hover.png"
        xlink:href="library_hover.png"
        data-building="library"
        class="highlight-buildings"
@@ -386,7 +377,7 @@
        x="595"
        y="472" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\nukeoil.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\nukeoil.png"
        xlink:href="nukeoil.png"
        width="222"
        height="160"
@@ -396,7 +387,7 @@
        y="644"
        class="highlight-buildings" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\nukeoil_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\nukeoil_hover.png"
        xlink:href="nukeoil_hover.png"
        style="display:none"
        width="222"
@@ -408,7 +399,7 @@
        class="highlight-buildings"
        data-building="nukeoil" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\parking.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\parking.png"
        xlink:href="parking.png"
        y="619"
        x="589"
@@ -418,7 +409,7 @@
        width="270"
        class="highlight-buildings" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\parking_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\parking_hover.png"
        xlink:href="parking_hover.png"
        y="619"
        x="589"
@@ -430,7 +421,7 @@
        class="highlight-buildings"
        data-building="parking" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\service.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\service.png"
        xlink:href="service.png"
        width="370"
        height="110"
@@ -440,7 +431,7 @@
        y="435"
        class="highlight-buildings" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\service_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\service_hover.png"
        xlink:href="service_hover.png"
        style="display:none"
        width="370"
@@ -452,7 +443,7 @@
        class="highlight-buildings"
        data-building="service" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\bar.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\bar.png"
        xlink:href="bar.png"
        y="461"
        x="697"
@@ -462,7 +453,7 @@
        width="220"
        class="highlight-buildings" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\bar_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\bar_hover.png"
        xlink:href="bar_hover.png"
        y="461"
        x="697"
@@ -474,7 +465,7 @@
        class="highlight-buildings"
        data-building="bar" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\radio.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\radio.png"
        xlink:href="radio.png"
        width="209"
        height="166"
@@ -484,7 +475,7 @@
        y="521"
        class="highlight-buildings" />
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\radio_hover.png"
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\paloma\radio_hover.png"
        xlink:href="radio_hover.png"
        style="display:none"
        width="209"
@@ -501,49 +492,49 @@
        inkscape:label="build_path">
       <path
          style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 h -43 a 374,374 0 1 1 680.363,214.518 z"
+         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 l -43,0 a 374,374 0 1 1 680.363,214.518 z"
          id="path_h1"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
          data-building="market" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5972);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-         d="m 670.5,518 a 288,288 0 0 1 576,0 h 43 a 331,331 0 0 0 -662,0 z"
+         d="m 670.5,518 a 288,288 0 0 1 576,0 l 43,0 a 331,331 0 0 0 -662,0 z"
          id="path_h2"
          inkscape:connector-curvature="0"
          data-building="library"
          class="highlight-buildings" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5970);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="m 1203.5,518 a 245,245 0 0 0 -490,0 h -43 a 288,288 0 0 1 576,0 z"
+         d="m 1203.5,518 a 245,245 0 0 0 -490,0 l -43,0 a 288,288 0 0 1 576,0 z"
          id="path_h3"
          inkscape:connector-curvature="0"
          data-building="nukeoil"
          class="highlight-buildings" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5962);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 783.563,619 A 202,202 0 1 1 1160.5,518 h 43 A 245,245 0 1 0 746.324,640.5 Z"
+         d="M 783.563,619 A 202,202 0 1 1 1160.5,518 l 43,0 A 245,245 0 1 0 746.324,640.5 Z"
          id="path_h4"
          inkscape:connector-curvature="0"
          data-building="parking"
          class="highlight-buildings" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5954);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-         d="M 1070.93,630.43 A 159,159 0 1 0 799.5,518 h -43 a 202,202 0 1 1 344.836,142.836 z"
+         d="M 1070.93,630.43 A 159,159 0 1 0 799.5,518 l -43,0 a 202,202 0 1 1 344.836,142.836 z"
          id="path_h5"
          inkscape:connector-curvature="0"
          data-building="service"
          class="highlight-buildings" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5944);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-         d="m 841.5,518 a 117,117 0 0 1 234,0 h 42 a 159,159 0 0 0 -318,0 z"
+         d="m 841.5,518 a 117,117 0 0 1 234,0 l 42,0 a 159,159 0 0 0 -318,0 z"
          id="path_h6"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
          data-building="bar" />
       <path
          style="opacity:0.2;fill:url(#radialGradient5952);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-         d="m 958.5,592 a 74,74 0 1 0 -74,-74 h -43 a 117,117 0 1 1 117,117 z"
+         d="m 958.5,592 a 74,74 0 1 0 -74,-74 l -43,0 a 117,117 0 1 1 117,117 z"
          id="path_h7"
          inkscape:connector-curvature="0"
          data-building="radio"
@@ -551,34 +542,37 @@
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="922"
+         x="916"
          y="174"
          id="path_text_h1"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-9-7"
-           x="922"
+           x="916"
            y="174"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Магазин</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Торговец</tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="906"
+         x="925"
          y="216"
          id="path_text_h2"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-9"
-           x="906"
+           x="925"
            y="216"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Библиотека</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Тренер</tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="928"
          y="258"
          id="path_text_h3"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-4-2"
            x="928"
@@ -590,7 +584,8 @@
          x="913"
          y="305"
          id="path_text_h4"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-4"
            x="913"
@@ -599,22 +594,24 @@
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="907"
+         x="927"
          y="348"
          id="path_text_h5"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204"
-           x="907"
+           x="927"
            y="348"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Автосервис</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Сервис</tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="946"
          y="390"
          id="path_text_h6"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-4-9-0"
            x="946"
@@ -626,317 +623,13 @@
          x="911"
          y="435"
          id="path_text_h7"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-4-9"
            x="911"
            y="435"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Радиовышка</tspan></text>
     </g>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="bottom_menu"
-     transform="translate(0,-3.7646484e-4)">
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../loc_active.png"
-       xlink:href="../loc_active.png"
-       style="display:block"
-       width="157"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_location"
-       x="1087"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../loc_hover.png"
-       xlink:href="../loc_hover.png"
-       y="896.00037"
-       x="1087"
-       id="btn_screen_location_hover"
-       preserveAspectRatio="none"
-       height="93"
-       width="157"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../loc_press.png"
-       xlink:href="../loc_press.png"
-       y="896.00037"
-       x="1087"
-       id="btn_screen_location_pressed"
-       preserveAspectRatio="none"
-       height="93"
-       width="157"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../chat_active.png"
-       xlink:href="../chat_active.png"
-       style="display:block"
-       width="168"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_chat"
-       x="1223"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../chat_hover.png"
-       xlink:href="../chat_hover.png"
-       width="168"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_chat_hover"
-       x="1223"
-       y="896.00037"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../chat_press.png"
-       xlink:href="../chat_press.png"
-       style="display:none"
-       width="168"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_chat_pressed"
-       x="1223"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../menu_active.png"
-       xlink:href="../menu_active.png"
-       y="896.00037"
-       x="1360"
-       id="btn_screen_menu"
-       preserveAspectRatio="none"
-       height="93"
-       width="178"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../menu_hover.png"
-       xlink:href="../menu_hover.png"
-       y="896.00037"
-       x="1360"
-       id="btn_screen_menu_hover"
-       preserveAspectRatio="none"
-       height="93"
-       width="178"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../menu_press.png"
-       xlink:href="../menu_press.png"
-       y="896.00037"
-       x="1360"
-       id="btn_screen_menu_pressed"
-       preserveAspectRatio="none"
-       height="93"
-       width="178"
-       style="display:none" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1086.0714,895.28608 14.6429,92.2143 140.7142,0 -22.5248,-91.30444 z"
-       id="btn_screen_location_area"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1223.9285,897.50038 22.5001,90.35714 141.0714,-0.35714 -32.1428,-90.35715 z"
-       id="btn_screen_chat_area"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1360,897.50038 32.5,90.35714 142.5,-0.35714 -45,-89.64286 z"
-       id="btn_screen_menu_area"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="right_menu"
-     transform="translate(0,4.621582e-4)">
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbup_noactive.png"
-       xlink:href="../rbup_noactive.png"
-       style="display:block"
-       width="316"
-       height="271"
-       preserveAspectRatio="none"
-       id="btn_3_noactive"
-       x="1442.0406"
-       y="416.21066" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbup_active.png"
-       xlink:href="../rbup_active.png"
-       y="405.38281"
-       x="1443.0508"
-       id="btn_3_active"
-       preserveAspectRatio="none"
-       height="299"
-       width="291"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbup_hover.png"
-       xlink:href="../rbup_hover.png"
-       style="display:none"
-       width="291"
-       height="299"
-       preserveAspectRatio="none"
-       id="btn_3_hover"
-       x="1443.0508"
-       y="405.38281" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbup_press.png"
-       xlink:href="../rbup_press.png"
-       style="display:none"
-       width="291"
-       height="299"
-       preserveAspectRatio="none"
-       id="btn_3_pressed"
-       x="1443.0508"
-       y="405.38281" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbdown_noactive.png"
-       xlink:href="../rbdown_noactive.png"
-       y="635.25079"
-       x="1392.0911"
-       id="btn_4_noactive"
-       preserveAspectRatio="none"
-       height="238"
-       width="327"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbdown_active.png"
-       xlink:href="../rbdown_active.png"
-       y="623.99951"
-       x="1391"
-       id="btn_4_active"
-       preserveAspectRatio="none"
-       height="268"
-       width="299"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbdown_hover.png"
-       xlink:href="../rbdown_hover.png"
-       y="623.99951"
-       x="1391"
-       id="btn_4_hover"
-       preserveAspectRatio="none"
-       height="268"
-       width="299"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../rbdown_press.png"
-       xlink:href="../rbdown_press.png"
-       y="623.99951"
-       x="1391"
-       id="btn_4_pressed"
-       preserveAspectRatio="none"
-       height="268"
-       width="299"
-       style="display:none" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1710.7143,543.57097 -242.1429,-120 -40,173.57143 244.2857,101.42857 z"
-       id="btn_3_area"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1664.2857,736.42811 -242.1429,-94.28571 -22.8571,160.71428 227.1429,77.14286 z"
-       id="btn_4_area"
-       inkscape:connector-curvature="0" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer5"
-     inkscape:label="left_menu">
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbup_noactive.png"
-       xlink:href="../lbup_noactive.png"
-       style="display:block"
-       width="316"
-       height="267"
-       preserveAspectRatio="none"
-       id="btn_1_noactive"
-       x="158.02081"
-       y="420.72586" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbup_active.png"
-       xlink:href="../lbup_active.png"
-       style="display:none"
-       width="291"
-       height="299"
-       preserveAspectRatio="none"
-       id="btn_1_active"
-       x="186.81015"
-       y="405.89847" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbup_hover.png"
-       xlink:href="../lbup_hover.png"
-       style="display:none"
-       width="291"
-       height="299"
-       preserveAspectRatio="none"
-       id="btn_1_hover"
-       x="186.81015"
-       y="405.89847" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbup_press.png"
-       xlink:href="../lbup_press.png"
-       style="display:none"
-       width="291"
-       height="299"
-       preserveAspectRatio="none"
-       id="btn_1_pressed"
-       x="186.81015"
-       y="405.89847" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbdown_noactive.png"
-       xlink:href="../lbdown_noactive.png"
-       y="637.07117"
-       x="199.5594"
-       id="btn_2_noactive"
-       preserveAspectRatio="none"
-       height="238"
-       width="326"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbdown_active.png"
-       xlink:href="../lbdown_active.png"
-       y="625.45428"
-       x="227.95938"
-       id="btn_2_active"
-       preserveAspectRatio="none"
-       height="268"
-       width="299"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbdown_hover.png"
-       xlink:href="../lbdown_hover.png"
-       y="625.45428"
-       x="227.95938"
-       id="btn_2_hover"
-       preserveAspectRatio="none"
-       height="268"
-       width="299"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\paloma\../lbdown_press.png"
-       xlink:href="../lbdown_press.png"
-       y="625.45428"
-       x="227.95938"
-       id="btn_2_pressed"
-       preserveAspectRatio="none"
-       height="268"
-       width="299"
-       style="display:none" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="M 201.42857,542.85714 450,421.42857 491.42857,595 239.28571,698.57143 Z"
-       id="btn_1_area"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 247.85714,736.42857 240.71429,-93.57143 32.14286,156.42857 -237.14286,81.42858 z"
-       id="btn_2_area"
-       inkscape:connector-curvature="0" />
   </g>
 </svg>

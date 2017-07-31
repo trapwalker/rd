@@ -32,8 +32,36 @@ class Cannon(Weapon):
     area_dmg = FloatField(caption=u'Урон за выстрел')
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
 
+    def html_description(self):
+        weight = u'Не указан'
+        if self.weight_class == 1: weight = u'Легкий'
+        elif self.weight_class == 2: weight = u'Срений'
+        elif self.weight_class == 3: weight = u'Тяжелый'
+        return (u'<div class="description-line left-align small">Класс:</div><div class="description-line right-align small">{}</div>'.format(weight) +
+                u'<div class="description-line left-align">Урон:</div><div class="description-line right-align">{}</div>'.format(self.dmg) +
+                u'<div class="description-line left-align">Перезараядка:</div><div class="description-line right-align">{} с</div>'.format(self.time_recharge) +
+                u'<div class="description-line left-align small">Дальность:</div><div class="description-line right-align small">{} м</div>'.format(int(self.radius)) +
+                u'<div class="description-line left-align small">Сектор:</div><div class="description-line right-align small">{}°</div>'.format(int(self.width)) +
+                u'<div class="description-line left-align">Пробитие:</div><div class="description-line right-align">{}</div>'.format(int(self.power_penetration)) +
+                u'<div class="description-line left-align small">Снаряд:</div><div class="description-line right-align small">{}</div>'.format(self.ammo.doc)
+                )
+
 
 class MachineGun(Weapon):
     is_auto = True
     dps = FloatField(caption=u'Урон в секунду')
     animation_tracer_rate = FloatField(caption=u'Количество трассеров отрисовываемых в секунду')
+
+    def html_description(self):
+        weight = u'Не указан'
+        if self.weight_class == 1: weight = u'Легкий'
+        elif self.weight_class == 2: weight = u'Срений'
+        elif self.weight_class == 3: weight = u'Тяжелый'
+        return (u'<div class="description-line left-align small">Класс:</div><div class="description-line right-align small">{}</div>'.format(weight) +
+                u'<div class="description-line left-align">Урон в секунду:</div><div class="description-line right-align">{}</div>'.format(self.dps) +
+                u'<div class="description-line left-align small">Дальность:</div><div class="description-line right-align small">{} м</div>'.format(int(self.radius)) +
+                u'<div class="description-line left-align small">Сектор:</div><div class="description-line right-align small">{}°</div>'.format(int(self.width)) +
+                u'<div class="description-line left-align">Пробитие:</div><div class="description-line right-align">{}</div>'.format(int(self.power_penetration)) +
+                u'<div class="description-line left-align small">Снаряд:</div><div class="description-line right-align small">{}</div>'.format(self.ammo.doc)
+                )
+

@@ -29,6 +29,21 @@ var CarManager = (function () {
             jq_car_block_pic.append('<div class="car-window-name">' + user.example_car.title + '</div>');
             jq_car_block_table.append(user.templates['html_car_table']);
         }
+
+        var jq_dynamic_value = jq_main_div.find('.car_dynamic_value');
+        if (jq_dynamic_value.length !== 0) {
+            jq_dynamic_value = jq_dynamic_value.first();
+            var car_way = jq_dynamic_value.find('.car_way').first().text();
+            var car_frag = jq_dynamic_value.find('.car_frag').first().text();
+            var car_lvl = jq_dynamic_value.find('.car_lvl').first().text();
+
+            jq_main_div.find('.dynamic_car_way').html(car_way);
+            jq_main_div.find('.dynamic_car_frag').html(car_frag);
+            var jq_start_list = jq_main_div.find('.car-info-block-body-right-exp-icon');
+            jq_start_list.removeClass('active');
+            for (var i = 0; i < car_lvl; i++)
+                $(jq_start_list[i]).addClass('active');
+        }
     };
 
     return CarManager;
@@ -53,15 +68,15 @@ function CarTableInfoMenuClick(target) {
     }
 }
 
-function CarInfoBlockAmmoInfoView(description) {
+function CarInfoBlockAmmoInfoView(description, title) {
     if (locationManager && locationManager.in_location_flag) {
-        locationManager.panel_right.show({text: description}, 'description');
+        locationManager.panel_right.show({text: description, title: title}, 'description');
     }
 }
 
 function CarInfoBlockAmmoInfoHide(descripion) {
     if (locationManager && locationManager.in_location_flag) {
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     }
 }
 

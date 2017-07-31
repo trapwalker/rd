@@ -197,7 +197,7 @@ var WindowTemplateManager = (function () {
         // todo: возможно стоит передавать уникальное имя в сам объект-окно, чтобы когда окно закрывается само, оно закрывалось через этот менеджер
         this.unique[win_name] = 'waiting';
         $.ajax({
-            url: "http://" + location.hostname + $('#settings_server_mode_link_path').text() + '/api' + win_url,
+            url: $('#settings_server_mode_link_path').text() + '/api' + win_url,
             data: win_data,
             success: function(data) {
                 if (self.unique[win_name] != 'waiting') return;
@@ -228,7 +228,7 @@ var WindowTemplateManager = (function () {
     WindowTemplateManager.prototype.openWindow = function (win_url, win_data, is_modal) {
         //console.log('WindowTemplateManager.prototype.openWindow');
         $.ajax({
-            url: "http://" + location.host + win_url,
+            url: location.host + win_url,
             data: win_data,
             success: function(data){
                 var temp_window = new TemplateWindow({

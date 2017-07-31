@@ -17,7 +17,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 # from sublayers_server.model.utils import SubscriptionList
 from sublayers_server.model.messages import (
     PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage, TraderAgentAssortmentMessage,
-    SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo
+    SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo, TraderInfoMessage,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -101,6 +101,8 @@ class Agent(Object):
         self.connection_times = []  # times connections for this agent
         self.min_connection_time = 0  #
 
+        self.resolution_scale = 'big'  # Размер разрешения текущего клиента
+
     def generate_fake_login(self):
         max_iterations = 500
         for i in xrange(0, max_iterations):
@@ -152,14 +154,37 @@ class Agent(Object):
     def log(self):
         return self._logger
 
-    def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self._login)
-        log_file = 'log/agents/{}.log'.format(logger_name)
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        handler = logging.NullHandler()
-        l.setLevel(level)
-        l.addHandler(handler)
+    def setup_logger(self, level=logging.ERROR):
+        from sublayers_server.log_setup import (
+            logger, handler, formatter_simple, local_path, SUFFIX_BY_MODE, handler_errors_file, handler_screen,
+        )
+        import logging.handlers
+        user = self.user
+        d = dict(
+            mode=user and (user.quick and 'quick' or 'basic') or '_wrong_',
+            uid=user and user.pk,
+            login=self._login,
+            path_suffix=SUFFIX_BY_MODE[options.mode],
+        )
+        logger_name = 'agents.{mode}._{uid}_{login}'.format(**d)
+        log_file = 'log{path_suffix}/agents/agent_{uid}_[{login}].log'.format(**d)
+
+        l = logger(logger_name, level=level, propagate=0, handlers=[
+            handler_errors_file,
+            handler(
+                fmt=formatter_simple,
+                cls=logging.handlers.TimedRotatingFileHandler,
+                when='midnight',
+                backupCount=5,
+                encoding='utf-8',
+                filename=local_path(log_file),
+                level=level,
+                delay=True,
+            ),
+        ])
+        if options.show_agents_log:
+            l.add_handler(handler_screen)
+
         return l
 
     def __getstate__(self):
@@ -314,14 +339,15 @@ class Agent(Object):
 
     def get_connection_delay(self, time):
         # Оставляем историю коннектов за последние 1.5 минуты
+        self.connection_times = [t for t in self.connection_times if time - t < 90]
         if len(self.connection_times) > 10:
             return None
-        self.connection_times = [t for t in self.connection_times if time - t < 90]
         self.connection_times.append(time)
         connection_count = max(0, len(self.connection_times) - 2)
         connection_delay = min(connection_count * 15, 60)
         # каждый connection_count = 15 секунд ожидания, но не больше 1 минуты
         self.min_connection_time = time + connection_delay
+        self.log.info('Connection Delay is {}'.format(connection_delay))
         return connection_delay
 
     def on_connect(self, connection):
@@ -340,7 +366,7 @@ class Agent(Object):
         else:
             self.api = AgentAPI(agent=self)
 
-        self.api.update_agent_api(time=time)
+        self.api.update_agent_api(time=time + 0.2)  # info: чтобы с клиента успело придти разрешение экрана
 
         # обновление статистики по онлайну агентов
         self.server.stat_log.s_agents_on(time=time, delta=1.0)
@@ -542,8 +568,15 @@ class Agent(Object):
         self.example.profile.set_frag(dvalue=1)  # начисляем фраг агенту
 
         if self.car is killer:  # Если убийство сделано текущей машинкой агента
-            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp * \
-                         self.car.example.exp_table.car_m_exp_by_exp(exp=self.car.example.exp))
+            self_car_exp = self.car.example.exp
+            target_car_exp = target.example.exp
+            m = self.car.example.exp_table.car_m_exp_by_exp(exp=self_car_exp)
+            target_car_exp_price = target.example.exp_table.car_exp_price_by_exp(exp=target_car_exp)
+            d_user_exp = target_car_exp_price * m
+            self.log.info('Self_car_killer::{killer} and target::{target}. self_car_exp={self_car_exp}, target_car_exp={target_car_exp}, modifier={m}, target_car_exp_price={target_car_exp_price}, d_user_exp={d_user_exp}'.format(
+                killer=killer, target=target, self_car_exp=self_car_exp,
+                target_car_exp=target_car_exp, m=m, target_car_exp_price=target_car_exp_price, d_user_exp=d_user_exp))
+
         else:
             d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp)
             self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}'.format(self.car, target, killer))
@@ -717,7 +750,7 @@ class Agent(Object):
         user.teaching_state = state
         user.save()
         self.log.info('teaching state for user <{!r}> changed: {!r}'.format(self._login, state))
-        
+
     def on_discharge_shoot(self, obj, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
@@ -774,6 +807,20 @@ class Agent(Object):
         self.log.warning('Agent position dont definded')
         return None
 
+    def on_rpg_state_transaction(self, event):
+        self.example.profile.on_event(event=event, cls=quest_events.OnRPGSetTransaction)
+
+        # Отправить обновлённые цены на ассортимент торговца и на свой инвентарь
+        if self.current_location:
+            trader = self.current_location.example.get_npc_by_type(Trader)
+            if trader:
+                h = trader.node_hash()
+                TraderAgentAssortmentMessage(npc_node_hash=h, agent=self, time=event.time).post()
+                TraderInfoMessage(agent=self, time=event.time, npc_node_hash=h).post()
+
+        if self.party and self.party.owner is self:
+            self.party.change_exp_modifier()
+
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -795,23 +842,8 @@ class User(Agent):
         d['avatar_link'] = self.avatar_link
         return d
 
-    def setup_logger(self, level=logging.INFO):
-        logger_name = 'agent_{}'.format(self._login)
-        log_file = 'log/agents/{}.log'.format(logger_name)
-        l = logging.getLogger(logger_name)
-        l.propagate = 0
-        formatter = logging.Formatter('%(asctime)s : %(message)s')
-        fileHandler = logging.handlers.TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=5)
-        fileHandler.setFormatter(formatter)
-        l.setLevel(level)
-        l.addHandler(fileHandler)
-
-        # info: если нужно видеть логи агентов в скрине
-        # import sys
-        # from sublayers_common.logging_tools import handler
-        # l.addHandler(handler(fmt=logging.Formatter(u'{} : %(asctime)s : %(message)s'.format(self._login)), stream=sys.stderr))
-
-        return l
+    def setup_logger(self, level=logging.DEBUG):
+        return super(User, self).setup_logger(level=level)
 
     def after_delete(self, time):
         handlers = self._logger.handlers[:]
@@ -970,22 +1002,25 @@ class QuickUser(User):
             user.start_position = None
         else:
             # Радиус появления игроков в быстрой игре
-            self.example.profile.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
+            self.example.profile.car.position = self._next_respawn_point or Point.random_point(self.server.quick_game_respawn_bots_radius, self.server.quick_game_start_pos)
 
         self.example.profile.current_location = None
         self.current_location = None
 
     def on_die(self, event, **kw):
         super(QuickUser, self).on_die(event=event, **kw)
-        self._next_respawn_point = Point.random_point(self.server.quick_game_start_pos, self.server.quick_game_respawn_bots_radius)
+        self._next_respawn_point = Point.random_point(self.server.quick_game_respawn_bots_radius, self.server.quick_game_start_pos)
         SetMapCenterMessage(agent=self, time=event.time, center=self._next_respawn_point).post()  # send message to load map
 
     def print_login(self):
-        str_list = self._login.split('_')
-        if len(str_list) > 1:
-            return '_'.join(str_list[:-1])
+        if self.user.quick:
+            str_list = self._login.split('_')
+            if len(str_list) > 1:
+                return '_'.join(str_list[:-1])
+            else:
+                return self._login
         else:
-            return self._login
+            return super(QuickUser, self).print_login()
 
 
 class TeachingUser(QuickUser):
@@ -994,7 +1029,7 @@ class TeachingUser(QuickUser):
         self.armory_shield_status = False
         self.quest_parent = None
         if not self.user.quick:
-            assert self.user.teaching_state == 'map'
+            assert self.user.teaching_state == 'map' or self.user.teaching_state == 'map_start'
             self.quest_parent = self.server.reg.get('/registry/quests/teaching_map')
             self.create_teaching_quest_map(time=time)
 

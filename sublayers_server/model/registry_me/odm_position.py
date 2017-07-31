@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.vectors import Point
 
-from mongoengine import EmbeddedDocument, EmbeddedDocumentField, FloatField
+from mongoengine import EmbeddedDocument, EmbeddedDocumentField, FloatField, StringField
 
 
 class PositionField(EmbeddedDocumentField):
@@ -24,11 +24,6 @@ class PositionField(EmbeddedDocumentField):
             value = self.to_python(value)
 
         super(PositionField, self).__set__(instance, value)
-
-    def set_value(self, value):
-        if value is None or isinstance(value, Position):
-            return value
-        return Position(value)
 
 
 class Position(EmbeddedDocument):
@@ -68,3 +63,47 @@ class Position(EmbeddedDocument):
 
     def __str__(self):
         return '<{self.x!r}, {self.y!r}>'.format(self=self)
+
+
+class RandomPosition(EmbeddedDocument):
+    # todo: gaussian distribution support
+    distribution = StringField(caption="Type of distribution of random value ('uniform' by default)", default='uniform')
+    center = PositionField(caption="Center of segment radius [0, 0] by default")
+    r_max  = FloatField(caption="Big radius of segment")
+    r_min  = FloatField(caption="Small radius of segment (0 by default)", default=0)
+    fi     = FloatField(caption="Azimuth to center of segment in degree (0-north by default)", default=0)
+    dfi    = FloatField(caption="Angle width of segment in degree (360 degree by default)", default=360)
+    comment = StringField(caption="Description of random point")
+
+    def generate(self):
+        distribution = self.distribution
+        r_max = self.r_max
+        assert distribution == 'uniform', 'Unsupported type of random point distribution: {!r}'.format(distribution)
+        assert r_max is not None, "r_max is None. It's impossible (uniform distribution)"
+        center = self.center
+        center = center and center.as_point() or 0
+        return Point.random_in_segment(
+            r_max=r_max,
+            center=center,
+            r_min=self.r_min,
+            fi=self.fi,
+            dfi=self.dfi,
+        )
+
+
+class RandomPositionField(EmbeddedDocumentField):
+    def __init__(self, reinst=True, **kw):
+        super(RandomPositionField, self).__init__(document_type=RandomPosition, **kw)
+
+    def to_python(self, value):
+        # todo: string position format support (qrts, etc.)
+        if isinstance(value, list):
+            return RandomPosition(**dict(zip(value, ('r_max', 'center', 'r_min', 'fi', 'dfi', 'comment'))))
+
+        return super(RandomPositionField, self).to_python(value)
+
+    def __set__(self, instance, value):
+        if value is not None and not isinstance(value, RandomPosition):
+            value = self.to_python(value)
+
+        super(RandomPositionField, self).__set__(instance, value)

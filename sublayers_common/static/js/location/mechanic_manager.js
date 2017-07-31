@@ -363,7 +363,8 @@ var LocationMechanicNPC = (function (_super) {
         var item_rec = this.items[slot_name];
         if (item_rec && item_rec.example) {
             // Вывод информации об итеме
-            locationManager.panel_right.show({text: item_rec.example.description }, 'description');
+            locationManager.panel_right.show({text: item_rec.example.description,
+                                              title: item_rec.example.title}, 'description');
         }
         else {
             if (slot_name.toString().indexOf('slot') >= 0) {
@@ -375,7 +376,7 @@ var LocationMechanicNPC = (function (_super) {
 
     LocationMechanicNPC.prototype.clearRightPanel = function() {
         //console.log('LocationMechanicNPC.prototype.clearRightPanel');
-        locationManager.panel_right.show({text: ''}, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     LocationMechanicNPC.prototype.viewSubsystem = function (subsystem, flag) {

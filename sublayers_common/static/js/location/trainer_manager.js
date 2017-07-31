@@ -43,10 +43,10 @@ var LocationTrainerNPC = (function (_super) {
         this.jq_main_div.find('.trainer-skill-item-main').mouseenter(function() {
             var skill_name = $(this).data('skill_name');
             if (self.skills.hasOwnProperty(skill_name))
-                locationManager.panel_right.show({text: self.skills[skill_name].description }, 'description');
+                locationManager.panel_right.show({text: self.skills[skill_name].description}, 'description');
         });
         this.jq_main_div.find('.trainer-skill-item-main').mouseleave(function() {
-            locationManager.panel_right.show({text: '' }, 'description');
+            locationManager.panel_right.show({text: '', title: ''}, 'description');
         });
 
         // Кнопка сброса
@@ -100,7 +100,7 @@ var LocationTrainerNPC = (function (_super) {
             if (self.buy_skills.hasOwnProperty(skill_name))
                 locationManager.panel_right.show({text: self.buy_skills[skill_name].description }, 'description');
         });
-        this.jq_main_div.find('.trainer-center-updates-block').mouseleave(function() { locationManager.panel_right.show({text: '' }, 'description'); });
+        this.jq_main_div.find('.trainer-center-updates-block').mouseleave(function() { locationManager.panel_right.show({text: '', title: ''}, 'description'); });
 
         this.update();
     }
@@ -272,9 +272,10 @@ var LocationTrainerNPC = (function (_super) {
             self.setPerk($(this).data('node_hash'));
         });
         this.jq_main_div.find('.trainer-perk-item').mouseenter(function() {
-            locationManager.panel_right.show({text: self.perks[$(this).data('node_hash')].description }, 'description');
+            locationManager.panel_right.show({text: self.perks[$(this).data('node_hash')].description,
+                                             title: self.perks[$(this).data('node_hash')].title}, 'description');
         });
-        this.jq_main_div.find('.trainer-perk-item').mouseleave(function() { locationManager.panel_right.show({text: '' }, 'description'); });
+        this.jq_main_div.find('.trainer-perk-item').mouseleave(function() { locationManager.panel_right.show({text: '', title: ''}, 'description'); });
     };
 
     LocationTrainerNPC.prototype.append_div_perk = function (state) {
@@ -462,7 +463,7 @@ var LocationTrainerNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
         locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
-        locationManager.panel_right.show({text: '' }, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     LocationTrainerNPC.prototype.set_header_text = function(html_text) {

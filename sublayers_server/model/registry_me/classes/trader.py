@@ -80,11 +80,13 @@ class Price(object):
     def get_item_dict(self):
         return self._item_client_dict
 
-    def get_price(self, item, skill_effect):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
+    def get_price(self, item, skill_effect, perk_trader_effect):  # Возвращает цены (покупки/продажи) итема, рассчитанную по данному правилу
+        perk_trader_buy = perk_trader_effect.get('trader_buy', 1.0)
+        perk_trader_sell = perk_trader_effect.get('trader_sell', 1.0)
         return dict(
             base=item.base_price,
-            buy=self.price * item.base_price * (1 - self.trader.margin * skill_effect),
-            sale=self.price * item.base_price * (1 + self.trader.margin * skill_effect),
+            buy=self.price * item.base_price * (1 - self.trader.margin * skill_effect * perk_trader_buy),  # Торговец покупает у игрока
+            sale=self.price * item.base_price * (1 + self.trader.margin * skill_effect * perk_trader_sell), # Торговец продаёт игроку
         )
 
     def change(self, count, item):  # Вызывается в случае изменения количества итемов
@@ -248,6 +250,7 @@ class Trader(Institution):
         # todo: учитывать ли здесь игнор лист? по идее да, ведь предмет при покупке "просто исчезнет"
         res = []
         skill_effect = self.get_trading_effect(agent_example=agent.example)
+        perk_trader_effect = agent.example.profile.get_perk_trader_margin_info()
         for price in self._current_list:
             if price.is_lot and (price.count > 0 or price.is_infinity): # and not self.item_in_ignore_list(price.item):
                 res.append(
@@ -255,7 +258,7 @@ class Trader(Institution):
                         item=price.get_item_dict(),
                         count=price.count,
                         infinity=price.is_infinity,
-                        price=price.get_price(item=price.item, skill_effect=skill_effect),
+                        price=price.get_price(item=price.item, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect),
                     ))
         return res
 
@@ -272,13 +275,14 @@ class Trader(Institution):
             return res
 
         skill_effect = self.get_trading_effect(agent_example=agent.example)
+        perk_trader_effect = agent.example.profile.get_perk_trader_margin_info()
         for item in car_items:
             price = self.get_item_price2(item, for_agent=True)
             if price:
                 res.append(
                     dict(
                         item=item.as_assortment_dict(),
-                        price=price.get_price(item=item, skill_effect=skill_effect),
+                        price=price.get_price(item=item, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect),
                         count=item.amount,
                     ))
         return res

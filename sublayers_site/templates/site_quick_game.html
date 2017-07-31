@@ -73,6 +73,11 @@
             },
             success: function() {
                 audioManager.play('button_screen_press');
+
+                // Google Analytics
+                try {ga('send', 'event', 'btn_site', 'redirect', 'quick');}
+                catch(e){console.warn('GA not defined');}
+
                 window.location = '/quick/play';
             },
             error: function() {

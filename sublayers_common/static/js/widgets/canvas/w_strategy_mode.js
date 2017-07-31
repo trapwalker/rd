@@ -27,7 +27,7 @@ var WStrategyModeManager = (function () {
         return normalizeAngleRad2((time - this.start_time) * this._radial_speed);
     };
 
-    WStrategyModeManager.prototype.redraw = function(ctx, time){
+    WStrategyModeManager.prototype.redraw = function(ctx, time, client_time){
         //console.log('WStrategyModeManager.prototype.redraw');
 
         if (mapCanvasManager.real_zoom >= 14) return;
@@ -40,7 +40,7 @@ var WStrategyModeManager = (function () {
         if(mapCanvasManager.real_zoom > 13) alpha = 14.0 - mapCanvasManager.real_zoom;
 
         var map_top_left = mapCanvasManager.map_tl;
-        var radar_direction = this.getRadarLineDirection(time);
+        var radar_direction = this.getRadarLineDirection(client_time / 1000.);
         var radar_fake_dir = radar_direction + this.radar_width;
         var car_pos = user.userCar.getCurrentCoord(time);
 

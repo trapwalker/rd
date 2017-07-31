@@ -28,7 +28,7 @@ var WSConnector = (function(_super){
     function WSConnector(options){
         _super.call(this);
         this.options = {
-            url: "ws://" + location.host + "/ws"
+            url: (location.protocol == "https:" ? "wss://" : "ws://")  + location.host + "/ws"
         };
         if (options) setOptions(options, this.options);
 
@@ -46,9 +46,8 @@ var WSConnector = (function(_super){
             self.max_time = 0;
             self.decode_time = 0;
             self.count = 0;
-        }, 10000)
-
-       }
+        }, 10000);
+    }
 
     WSConnector.prototype.connect = function(){
         // создание коннекта и обвешивание евентами
@@ -58,6 +57,15 @@ var WSConnector = (function(_super){
         var self = this;
         this.connection.onopen = function() {
             self.isConnected = true;
+
+            // Google Analytics
+            if(basic_server_mode)
+                analytics.client_main_ws_connect();
+            else
+                analytics.client_quick_ws_connect();
+
+            // Отправка на сервер разрешения экрана
+            setTimeout(resizeWindowHandler, 10);
 
             self.connection.onmessage = function (event) {
                 //receiveMesFromServ(event.data);

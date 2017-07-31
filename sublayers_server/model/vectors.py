@@ -65,9 +65,27 @@ class Point(complex):
         return Point(gauss(mu.x, sigma.x), gauss(mu.y, sigma.y))
 
     @classmethod
-    def random_point(cls, p, radius):
+    def random_point(cls, radius, center=0):
         pp = Point.polar(radius * random(), 2*pi * random())
-        return pp + p
+        return pp + center
+
+    @classmethod
+    def random_in_segment(cls, r_max, center=0, r_min=0, fi=0, dfi=360):
+        """
+        >> Point.random_point(r_max, center)
+        is equivalent to
+        >> Point.random_in_segment(r_max, center)
+
+        :param center: Center of segment radius [0, 0] by default
+        :param r_max: Big radius of segment
+        :param r_min: Small radius of segment (0 by default)
+        :param fi: Azimuth to center of segment in degree (0-north by default)
+        :param dfi: Angle width of segment in degree
+        :return: Uniform distributed randomize point in segment
+        """
+        alpha = random() * dfi - dfi / 2.0 + fi
+        dist = random() * (r_max - r_min) + r_min
+        return Point.polar(dist, alpha / 180.0 * pi) + center
 
     @classmethod
     def scalar_mul(cls, p1, p2):

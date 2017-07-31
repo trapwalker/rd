@@ -201,9 +201,7 @@ var LocationManager = (function () {
         this.setBtnState(2, '', false);
         this.setBtnState(3, '</br>Назад', false);
         this.setBtnState(4, '</br>Выход', true);
-
-        this.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-        this.panel_right.show({}, 'location');
+        this.set_panels_location_screen();
 
         // Локации меню
         this.location_menu = new LocationPlaceMenu(this.jq_town_div);
@@ -222,6 +220,7 @@ var LocationManager = (function () {
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
         this.in_location_flag = true;
+        resizeWindowHandler();
 
         // Принудительно перерисовать все квесты
         journalManager.quests.redraw();
@@ -339,6 +338,9 @@ var LocationManager = (function () {
 
         if (btnIndex == 4) { // Попытка выйти из города
             //console.log('Попытка выйти из города');
+            // Google Analytics
+            analytics.try_exit_from_location();
+
             if (user.example_car)
                 clientManager.sendExitFromLocation();
             else {
@@ -437,7 +439,8 @@ var LocationManager = (function () {
             return;
         }
         locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50} , 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
+                                         npc_node_hash: npc_node_hash} , 'building_quest');
     };
 
     LocationManager.prototype.handler_mouseleave = function() {
@@ -447,11 +450,23 @@ var LocationManager = (function () {
     LocationManager.prototype.set_panels_location_screen = function() {
         //console.log('LocationManager.prototype.handler_mouseleave');
         if (this.active_screen_name = "location_screen") {
-            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
+            var respect = 0;
+            var quest_info = { available_count: 0, active_count: 0 };
+            var count = 0;
+            for (var key in this.npc)
+                if (this.npc.hasOwnProperty(key)) {
+                    count++;
+                    var npc_rec = this.npc[key].npc_rec;
+                    var npc_quest_info = journalManager.quests.getCountQuestsByNPC(npc_rec.node_hash);
+                    respect += (1 + locationManager.get_relation(npc_rec.node_hash)) * 50;
+                    quest_info.available_count += npc_quest_info.available_count;
+                    quest_info.active_count += npc_quest_info.active_count;
+                }
+            respect /= count;
+            locationManager.panel_left.show({respect: respect, quest_info: quest_info}, 'building_quest');
             locationManager.panel_right.show({}, 'location');
         }
     };
-
 
     return LocationManager;
 })();
@@ -460,7 +475,26 @@ var LocationManager = (function () {
 var LocationPanelInfo = (function () {
     function LocationPanelInfo() {
         this.jq_main_div = null;
+
+        //this._cur_opacity = 0.0;
+        //this.anim_interval = null;
     }
+
+    LocationPanelInfo.prototype._anim_show = function (jq_panel) {
+        //clearInterval(this.anim_interval);
+        if (this.jq_main_div)
+            this.jq_main_div.find('.panel-info-item').css('display', 'none');
+
+        //var self = this;
+        //this._cur_opacity = 0.0;
+        //jq_panel.css('opacity', this._cur_opacity);
+        jq_panel.css('display', 'block');
+        //this.anim_interval = setInterval(function() {
+        //    if (self._cur_opacity <= 1) self._cur_opacity += 0.1;
+        //    else clearInterval(self.anim_interval);
+        //    jq_panel.css('opacity', self._cur_opacity);
+        //}, 20);
+    };
 
     LocationPanelInfo.prototype.init = function (jq_main_div) {
         //console.log('LocationPanelInfo.prototype.init');
@@ -478,54 +512,51 @@ var LocationPanelInfo = (function () {
         //console.log('LocationPanelInfo.prototype.show', options, window_name);
 
         // Если обучение активно, то включить панели обучения
-        if (teachingManager.is_active())
-            return;
+        if (teachingManager.is_active()) return;
 
-        // Выключить все панели в этом блоке
-        if (this.jq_main_div)
-            this.jq_main_div.find('.panel-info-item').css('display', 'none');
-
-        // Попытаться включить нужную
+        // Переключить панель
         var window_method = 'show_' + window_name;
-        if (this[window_method])
-            this[window_method](options);
+        if (this[window_method]) this[window_method](options);
     };
 
     LocationPanelInfo.prototype.show_self_car_info = function (options) {
-        //console.log('LocationPanelInfo.prototype.show_self_car_info', options);
+        //console.log('LocationPanelInfo.prototype.show_self_car_info');
         var jq_panel = this.jq_main_div.find('.panel-info-car-info').first();
-        jq_panel.css('display', 'block');
         jq_panel.find('.panel-info-car-info-car').empty();
         jq_panel.find('.panel-info-car-info-car-name').text('');
         if (user.example_car) {
             jq_panel.find('.panel-info-car-info-car-name').text(user.example_car.name_car);
             jq_panel.find('.panel-info-car-info-car').append(user.templates.html_car_img);
         }
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_npc_transaction_info = function (options) {
         //console.log('LocationPanelInfo.prototype.show_npc_transaction_info', options);
         var jq_panel = this.jq_main_div.find('.panel-info-npc-transaction-info').first();
-        jq_panel.css('display', 'block');
-
         clientManager._viewAgentBalance(jq_panel);
-
         var jq_transaction_list = jq_panel.find('.npc-transaction-info-transaction-list');
         jq_transaction_list.empty();
         if (options.hasOwnProperty('transactions'))
             for (var i = 0; i < options.transactions.length; i++)
                 jq_transaction_list.append('<div class="npc-transaction-info-text-shadow"> - ' + options.transactions[i] + '</div>');
+        var height = jq_transaction_list[0].scrollHeight;
+        jq_transaction_list.scrollTop(height);
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_description = function (options) {
         //console.log('LocationPanelInfo.prototype.show_description', options);
         var jq_panel = this.jq_main_div.find('.panel-info-description').first();
-        jq_panel.css('display', 'block');
+        this.jq_last_panel = jq_panel;
         jq_panel.find('.panel-info-content').first().html(options.text);
+        if (!options.title) options.title = '';
+        jq_panel.find('.panel-info-item-title').first().html(options.title.replace("<br>", " ").toUpperCase());
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_location = function (options) {
-        //console.trace('LocationPanelInfo.prototype.show_location', options);
+        //console.log('LocationPanelInfo.prototype.show_location');
         var jq_panel = this.jq_main_div.find('.pi-location').first();
         jq_panel.find('.location').text(locationManager.example.title);
         jq_panel.find('.head').text('Нет');
@@ -534,7 +565,7 @@ var LocationPanelInfo = (function () {
                 jq_panel.find('.head').text(locationManager.npc[key].npc_rec.title);
                 break;
             }
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_building = function (options) {
@@ -544,7 +575,7 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.head').text(options.build.head.title);
         jq_panel.find('.karma').text(getKarmaName(options.build.head.karma));
         jq_panel.find('.skill').text(options.build.head.trading);
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_npc_inside_building = function (options) {
@@ -555,7 +586,7 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.location').text(build_example.title);
         jq_panel.find('.name').text(npc_example.title);
         jq_panel.find('.karma').text(getKarmaName(npc_example.karma));
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_nukeoil = function (options) {
@@ -576,9 +607,8 @@ var LocationPanelInfo = (function () {
             }
             else
                 jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'none');
-
         }
-        jq_panel.css('display', 'block');
+        this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_building_quest = function (options) {
@@ -589,7 +619,19 @@ var LocationPanelInfo = (function () {
         jq_panel.find('.pi-building-quest-scale-carriage').first().css({left: (width - 1)});
         jq_panel.find('.pi-building-quest-scale-label').first().css({left: (width - 20)});
         jq_panel.find('.pi-building-quest-scale-label').first().text(Math.floor(options.respect));
-        jq_panel.css('display', 'block');
+        if (options.npc_node_hash) {
+            var quest_info = journalManager.quests.getCountQuestsByNPC(options.npc_node_hash);
+            jq_panel.find('.active_quest').html(quest_info.active_count);
+            jq_panel.find('.available_quest').html(quest_info.available_count);
+        } else {
+            jq_panel.find('.active_quest').html(0);
+            jq_panel.find('.available_quest').html(0);
+        }
+        if (options.quest_info) {
+            jq_panel.find('.active_quest').html(options.quest_info.active_count);
+            jq_panel.find('.available_quest').html(options.quest_info.available_count);
+        }
+        this._anim_show(jq_panel);
     };
 
     return LocationPanelInfo;
@@ -727,21 +769,20 @@ var LocationPlace = (function () {
     // Классовые методы для работы draggable
 
     LocationPlace.drag_handler = function (event, ui) {
-        var original = ui.originalPosition;
-        ui.position = {
-            left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc - location_draggable_click.half_helper_width,
-            top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc - location_draggable_click.half_helper_height
-        };
+        //var original = ui.originalPosition;
+        //ui.position = {
+        //    left: (event.clientX - location_draggable_click.x + original.left) / window_scaled_prc - location_draggable_click.half_helper_width,
+        //    top: (event.clientY - location_draggable_click.y + original.top) / window_scaled_prc - location_draggable_click.half_helper_height
+        //};
     };
 
     LocationPlace.start_drag_handler = function (event, ui) {
-        var pos = event.target.getBoundingClientRect();
-        location_draggable_click.x = pos.left; // + pos.width / 4.;
-        location_draggable_click.y = pos.top; // + pos.height / 4.;
-
-        var size_helper = ui.helper[0].getBoundingClientRect();
-        location_draggable_click.half_helper_width = size_helper.width / 2.;
-        location_draggable_click.half_helper_height = size_helper.height / 2.;
+        //var pos = event.target.getBoundingClientRect();
+        //location_draggable_click.x = pos.left; // + pos.width / 4.;
+        //location_draggable_click.y = pos.top; // + pos.height / 4.;
+        //var size_helper = ui.helper[0].getBoundingClientRect();
+        //location_draggable_click.half_helper_width = size_helper.width / 2.;
+        //location_draggable_click.half_helper_height = size_helper.height / 2.;
     };
 
     return LocationPlace;
@@ -823,9 +864,7 @@ var LocationPlaceBuilding = (function (_super) {
             locationManager.setBtnState(2, '', false);
             locationManager.setBtnState(3, '</br>Назад', false);
             locationManager.setBtnState(4, '</br>Выход', true);
-
-            locationManager.panel_left.show({respect: Math.random() * 100}, 'building_quest');
-            locationManager.panel_right.show({}, 'location');
+            locationManager.set_panels_location_screen();
 
             // Выход на старт какого-то из скринов: нужно обновить teachingManager
             teachingManager.redraw();
@@ -975,7 +1014,8 @@ var LocationPlaceBuilding = (function (_super) {
         //console.log('LocationPlaceBuilding.prototype.set_panels', !make, !locationManager.isActivePlace(this));
         if (!make && !locationManager.isActivePlace(this)) return;
         var head_example = this.building_rec.head;
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50} , 'building_quest');
+        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(head_example.node_hash)) * 50,
+                                         npc_node_hash: head_example.node_hash} , 'building_quest');
         locationManager.panel_right.show({build: this.building_rec}, 'building');
     };
 

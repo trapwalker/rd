@@ -368,10 +368,13 @@ var WFireController = (function (_super) {
             audioManager.play({name: "widget_motion_battle_show", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         else // Звук сворачивания
             audioManager.play({name: "widget_motion_battle_hide", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+        
+        // Google Analytics
+        analytics.btn_attack_mode();
     };
 
     WFireController.prototype.setVisible = function (aVisible) {
-        if (this.visible !== aVisible) this.changeVisible()
+        if (this.visible !== aVisible) this.changeVisible();
     };
 
     WFireController.prototype.getVisible = function () {
@@ -595,8 +598,8 @@ var WFireController = (function (_super) {
         }
 
         // Анимация круга радара
-        this._reStartRadarCircle(time);
-        this._updateRadarCircles(time);
+        this._reStartRadarCircle(clock.getClientTime() / 1000.);
+        this._updateRadarCircles(clock.getClientTime() / 1000.);
 
         // Анимация точек радара
         this._updateCarPointCanvas();

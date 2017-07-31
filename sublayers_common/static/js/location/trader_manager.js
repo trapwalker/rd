@@ -294,9 +294,10 @@ var LocationTraderNPC = (function (_super) {
             });
 
             itemDiv.mouseenter({example: itemList[i]}, function(event) {
-                locationManager.panel_right.show({text: event.data.example.description }, 'description');
+                locationManager.panel_right.show({text: event.data.example.description,
+                                                  title: event.data.example.title}, 'description');
             });
-            itemDiv.mouseleave({}, function(event) { locationManager.panel_right.show({text: '' }, 'description'); });
+            itemDiv.mouseleave({}, function(event) { locationManager.panel_right.show({text: '', title: ''}, 'description'); });
 
             itemDiv.click({}, function(event) {
                 var src_list;
@@ -454,7 +455,7 @@ var LocationTraderNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         _super.prototype.set_panels.call(this);
         locationManager.panel_left.show({transactions: this.transactions}, 'npc_transaction_info');
-        locationManager.panel_right.show({text: '' }, 'description');
+        locationManager.panel_right.show({text: '', title: ''}, 'description');
     };
 
     LocationTraderNPC.prototype.clickBtn = function (btnIndex) {

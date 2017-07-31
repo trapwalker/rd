@@ -767,7 +767,7 @@ var ClientManager = (function () {
     //    console.log('ClientManager.prototype.GetStashWindow', event);
     //    // POST запрос на получение города и вывод его на экран.
     //    $.ajax({
-    //        url: "http://" + location.host + '/api/stash',
+    //        url: location.host + '/api/stash',
     //        data:  { stash_id: event.stash_id },
     //        success: function(data) {
     //            console.log('ClientManager.prototype.GetStashWindow Answer');

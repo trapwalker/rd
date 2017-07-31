@@ -15,7 +15,10 @@ from sublayers_common.user_profile import User
 
 
 def static_mobile_link_repr(link):
-    return 'http://{}{}'.format(options.mobile_host, link)
+    return '{}'.format(
+        #options.mobile_host, 
+        link,
+    )
 
 
 def static_world_link_repr(link):
@@ -44,7 +47,6 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
                 log.warning('User not found by ID %r: %r', user_id, e)
 
         self.current_user = user
-
 
     def on_finish(self):
         # print("{} processing time {}s".format(self.classname, round(time() - self._handler_start_time, 4)))
@@ -104,7 +106,7 @@ class BaseHandler(AuthHandlerMixin):
         # укниальный среди быстрых игроков.
         login_free = False
         email = ''
-        password = str(randint(0,999999))
+        password = str(randint(0,999999))  # TODO: WTF?! remove fake password!
         username = nickname + str(randint(0,999999))
         while not login_free:
             email = username + '@' + username  # todo: Предотвратить заполнение email заведомо ложной информацией

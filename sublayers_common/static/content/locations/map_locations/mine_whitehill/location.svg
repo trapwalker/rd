@@ -13,9 +13,9 @@
    width="1920"
    height="1080"
    viewBox="0 0 1920 1080"
-   id="svg2"
+   id="svg_town"
    version="1.1"
-   inkscape:version="0.92.1 r15371"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="location.svg">
   <defs
      id="defs4">
@@ -51,14 +51,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.0040916"
-     inkscape:cx="944.87826"
-     inkscape:cy="575.84266"
+     inkscape:cx="770.09341"
+     inkscape:cy="655.51667"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="svg_town"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
-     inkscape:window-height="1027"
+     inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -75,40 +75,31 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <image
-     sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../city_bg1.png"
-     xlink:href="../city_bg1.png"
-     width="1920"
-     height="1080"
-     preserveAspectRatio="none"
-     id="img_back_0"
-     x="0"
-     y="0" />
   <g
      inkscape:label="background"
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-2.362448)">
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\ground+circle.png"
+       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\ground+circle.png"
        xlink:href="ground+circle.png"
-       y="138.36244"
-       x="485"
-       id="landscape"
-       preserveAspectRatio="none"
-       height="752"
-       width="943" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_bg.png"
-       xlink:href="mine_bg.png"
-       class="building-back"
-       style="display:none"
        width="943"
        height="752"
        preserveAspectRatio="none"
-       id="mine-back"
+       id="landscape"
        x="485"
        y="138.36244" />
+    <image
+       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_bg.png"
+       xlink:href="mine_bg.png"
+       y="138.36244"
+       x="485"
+       id="mine-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none"
+       class="building-back" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -117,34 +108,34 @@
      class="townPageWrap"
      transform="translate(0,2.3339844e-4)">
     <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine.png"
+       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine.png"
        xlink:href="mine.png"
-       width="840"
-       height="430"
-       preserveAspectRatio="none"
-       id="img_house1_off"
-       x="571"
-       y="333"
-       class="highlight-buildings" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_hover.png"
-       xlink:href="mine_hover.png"
-       width="840"
-       height="430"
-       preserveAspectRatio="none"
-       id="img_house1_on"
-       x="571"
-       y="333"
        class="highlight-buildings"
+       y="333"
+       x="571"
+       id="img_house1_off"
+       preserveAspectRatio="none"
+       height="430"
+       width="840" />
+    <image
+       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_hover.png"
+       xlink:href="mine_hover.png"
+       style="display:none"
        data-building="mine"
-       style="display:none" />
+       class="highlight-buildings"
+       y="333"
+       x="571"
+       id="img_house1_on"
+       preserveAspectRatio="none"
+       height="430"
+       width="840" />
     <g
        inkscape:groupmode="layer"
        id="layer6"
        inkscape:label="build_path">
       <path
          style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 h -43 a 374,374 0 1 1 680.363,214.518 z"
+         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 l -43,0 a 374,374 0 1 1 680.363,214.518 z"
          id="path_h1"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
@@ -155,317 +146,13 @@
          x="930"
          y="174"
          id="path_text_h1"
-         class="town-build-path-text"><tspan
+         class="town-build-path-text"
+         sodipodi:linespacing="0%"><tspan
            sodipodi:role="line"
            id="tspan4204-9-7"
            x="930"
            y="174"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Шахта</tspan></text>
     </g>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="bottom_menu"
-     transform="translate(0,-3.7646484e-4)">
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../loc_active.png"
-       xlink:href="../loc_active.png"
-       y="896.00037"
-       x="1087"
-       id="btn_screen_location"
-       preserveAspectRatio="none"
-       height="93"
-       width="157"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../loc_hover.png"
-       xlink:href="../loc_hover.png"
-       style="display:none"
-       width="157"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_location_hover"
-       x="1087"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../loc_press.png"
-       xlink:href="../loc_press.png"
-       style="display:none"
-       width="157"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_location_pressed"
-       x="1087"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../chat_active.png"
-       xlink:href="../chat_active.png"
-       y="896.00037"
-       x="1223"
-       id="btn_screen_chat"
-       preserveAspectRatio="none"
-       height="93"
-       width="168"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../chat_hover.png"
-       xlink:href="../chat_hover.png"
-       style="display:none"
-       y="896.00037"
-       x="1223"
-       id="btn_screen_chat_hover"
-       preserveAspectRatio="none"
-       height="93"
-       width="168" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../chat_press.png"
-       xlink:href="../chat_press.png"
-       y="896.00037"
-       x="1223"
-       id="btn_screen_chat_pressed"
-       preserveAspectRatio="none"
-       height="93"
-       width="168"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../menu_active.png"
-       xlink:href="../menu_active.png"
-       style="display:block"
-       width="178"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_menu"
-       x="1360"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../menu_hover.png"
-       xlink:href="../menu_hover.png"
-       style="display:none"
-       width="178"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_menu_hover"
-       x="1360"
-       y="896.00037" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../menu_press.png"
-       xlink:href="../menu_press.png"
-       style="display:none"
-       width="178"
-       height="93"
-       preserveAspectRatio="none"
-       id="btn_screen_menu_pressed"
-       x="1360"
-       y="896.00037" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1086.0714,895.28608 14.6429,92.2143 140.7142,0 -22.5248,-91.30444 z"
-       id="btn_screen_location_area"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1223.9285,897.50038 22.5001,90.35714 141.0714,-0.35714 -32.1428,-90.35715 z"
-       id="btn_screen_chat_area"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1360,897.50038 32.5,90.35714 142.5,-0.35714 -45,-89.64286 z"
-       id="btn_screen_menu_area"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="right_menu"
-     transform="translate(0,4.621582e-4)">
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbup_noactive.png"
-       xlink:href="../rbup_noactive.png"
-       y="416.21066"
-       x="1442.0406"
-       id="btn_3_noactive"
-       preserveAspectRatio="none"
-       height="271"
-       width="316"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbup_active.png"
-       xlink:href="../rbup_active.png"
-       style="display:none"
-       width="291"
-       height="299"
-       preserveAspectRatio="none"
-       id="btn_3_active"
-       x="1443.0508"
-       y="405.38281" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbup_hover.png"
-       xlink:href="../rbup_hover.png"
-       y="405.38281"
-       x="1443.0508"
-       id="btn_3_hover"
-       preserveAspectRatio="none"
-       height="299"
-       width="291"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbup_press.png"
-       xlink:href="../rbup_press.png"
-       y="405.38281"
-       x="1443.0508"
-       id="btn_3_pressed"
-       preserveAspectRatio="none"
-       height="299"
-       width="291"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbdown_noactive.png"
-       xlink:href="../rbdown_noactive.png"
-       style="display:block"
-       width="327"
-       height="238"
-       preserveAspectRatio="none"
-       id="btn_4_noactive"
-       x="1392.0911"
-       y="635.25079" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbdown_active.png"
-       xlink:href="../rbdown_active.png"
-       style="display:none"
-       width="299"
-       height="268"
-       preserveAspectRatio="none"
-       id="btn_4_active"
-       x="1391"
-       y="623.99951" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbdown_hover.png"
-       xlink:href="../rbdown_hover.png"
-       style="display:none"
-       width="299"
-       height="268"
-       preserveAspectRatio="none"
-       id="btn_4_hover"
-       x="1391"
-       y="623.99951" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../rbdown_press.png"
-       xlink:href="../rbdown_press.png"
-       style="display:none"
-       width="299"
-       height="268"
-       preserveAspectRatio="none"
-       id="btn_4_pressed"
-       x="1391"
-       y="623.99951" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1710.7143,543.57097 -242.1429,-120 -40,173.57143 244.2857,101.42857 z"
-       id="btn_3_area"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 1664.2857,736.42811 -242.1429,-94.28571 -22.8571,160.71428 227.1429,77.14286 z"
-       id="btn_4_area"
-       inkscape:connector-curvature="0" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer5"
-     inkscape:label="left_menu">
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbup_noactive.png"
-       xlink:href="../lbup_noactive.png"
-       y="420.72586"
-       x="158.02081"
-       id="btn_1_noactive"
-       preserveAspectRatio="none"
-       height="267"
-       width="316"
-       style="display:block" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbup_active.png"
-       xlink:href="../lbup_active.png"
-       y="405.89847"
-       x="186.81015"
-       id="btn_1_active"
-       preserveAspectRatio="none"
-       height="299"
-       width="291"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbup_hover.png"
-       xlink:href="../lbup_hover.png"
-       y="405.89847"
-       x="186.81015"
-       id="btn_1_hover"
-       preserveAspectRatio="none"
-       height="299"
-       width="291"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbup_press.png"
-       xlink:href="../lbup_press.png"
-       y="405.89847"
-       x="186.81015"
-       id="btn_1_pressed"
-       preserveAspectRatio="none"
-       height="299"
-       width="291"
-       style="display:none" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbdown_noactive.png"
-       xlink:href="../lbdown_noactive.png"
-       style="display:block"
-       width="326"
-       height="238"
-       preserveAspectRatio="none"
-       id="btn_2_noactive"
-       x="199.5594"
-       y="637.07117" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbdown_active.png"
-       xlink:href="../lbdown_active.png"
-       style="display:none"
-       width="299"
-       height="268"
-       preserveAspectRatio="none"
-       id="btn_2_active"
-       x="227.95938"
-       y="625.45428" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbdown_hover.png"
-       xlink:href="../lbdown_hover.png"
-       style="display:none"
-       width="299"
-       height="268"
-       preserveAspectRatio="none"
-       id="btn_2_hover"
-       x="227.95938"
-       y="625.45428" />
-    <image
-       sodipodi:absref="D:\reps\road_dogs\sublayers_common\static\content\locations\map_locations\mine_whitehill\../lbdown_press.png"
-       xlink:href="../lbdown_press.png"
-       style="display:none"
-       width="299"
-       height="268"
-       preserveAspectRatio="none"
-       id="btn_2_pressed"
-       x="227.95938"
-       y="625.45428" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="M 201.42857,542.85714 450,421.42857 491.42857,595 239.28571,698.57143 Z"
-       id="btn_1_area"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
-       d="m 247.85714,736.42857 240.71429,-93.57143 32.14286,156.42857 -237.14286,81.42858 z"
-       id="btn_2_area"
-       inkscape:connector-curvature="0" />
   </g>
 </svg>

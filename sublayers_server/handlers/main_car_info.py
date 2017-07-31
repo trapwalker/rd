@@ -13,10 +13,14 @@ class MenuCarHandler(BaseHandler):
     def get(self):
         if self.current_user:
             agent = self.application.srv.agents.get(str(self.current_user.pk), None)
-            if agent:
+            if not agent or not agent.example.profile.car:
+                return
+            else:
                 agent.log.info('open car_window')
+        else:
+            return
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.render("menu/car_window.html")
+        self.render("menu/car_window.html", car=agent.example.profile.car)
 
 
 # todo: скорее всего не используется

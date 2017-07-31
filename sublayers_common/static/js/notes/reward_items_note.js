@@ -42,9 +42,10 @@ var QuestNoteNPCRewardItems = (function (_super) {
 
             // повесить события мышки на итемы, чтобы выводить информацию на внеэкранки
             jq_item.mouseenter({item_example: item}, function(event) {
-                locationManager.panel_right.show({text: event.data.item_example.description}, 'description');
+                locationManager.panel_right.show({text: event.data.item_example.description,
+                                                  title: event.data.item_example.title}, 'description');
             });
-            jq_item.mouseleave(function () {locationManager.panel_right.show({text: ''}, 'description');});
+            jq_item.mouseleave(function () {locationManager.panel_right.show({text: '', title: ''}, 'description');});
         }
 
 

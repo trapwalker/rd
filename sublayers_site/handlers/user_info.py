@@ -45,6 +45,8 @@ class GetUserInfoHandler(BaseSiteHandler):
             'created': created,
             'avatar_link': user.avatar_link,
             'is_tester': user.is_tester,
+            'insurance_name': agent_info.get('insurance_name', ''),
+            'active_quests_count': agent_info.get('active_quests_count', ''),
         })
 
 

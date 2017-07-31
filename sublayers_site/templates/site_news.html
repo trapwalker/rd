@@ -33,7 +33,7 @@
             <div class="news-content-before fading-content-before"></div>
             {% set news_id = 0 %}
             {% for news in news_list %}
-                <div id="news_content_{{ news_id }}_block" class="window-news-news-content-block" itemscope itemtype="http://schema.org/Article">
+                <div id="news_content_{{ news_id }}_block" class="window-news-news-content-block" itemscope itemtype="https://schema.org/Article">
                     <div style="display: none;" itemprop="name">{% raw news['header'] %}</div>
                     <div style="display: none;" itemprop="dateModified">{% raw news['iso_date_str'] %}</div>
                     <div style="display: none;" itemprop="datePublished">{% raw news['iso_date_str'] %}</div>

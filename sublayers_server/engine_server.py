@@ -15,8 +15,8 @@ sys.path.append(parent_folder(__file__))
 import logging
 
 if __name__ == '__main__':
-    import log_setup
-    log_setup.init(quick_mode=False)
+    from sublayers_server import log_setup
+    log_setup.init('basic')
 
 log = logging.getLogger()
 
@@ -71,7 +71,6 @@ from sublayers_server.handlers.site_api import (
 )
 from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
 
-
 class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
         settings.setdefault('static_path', options.static_path)
@@ -105,6 +104,8 @@ class Application(BaseApplication):
             log.info('World loading DONE ({:.3f}s).'.format(t.duration))
 
     def init_handlers(self):
+        from sublayers_server.handlers.adm_api import handlers as adm_api_handlers
+
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/", tornado.web.RedirectHandler, dict(url="/play", permanent=False)),  # Редирект при запуске без сайта
             (r"/edit", tornado.web.RedirectHandler, dict(url="/static/editor.html", permanent=False)),
@@ -161,7 +162,7 @@ class Application(BaseApplication):
             (r"/api/get_quick_game_cars", APIGetQuickGameCarsHandler),
 
             (r"/interlacing", TestInterlacingHandler),
-        ])
+        ] + adm_api_handlers)
 
     def start(self):
         self.srv.start()
@@ -182,6 +183,9 @@ class Application(BaseApplication):
             print _message
         except Exception as e:
             log.exception(e)
+            log.debug('==== finally before stop')
+            self.stop()
+            log.debug('==== finally after stop')
         else:
             log.debug('==== IOLoop START ' + '=' * 32)
             try:
@@ -189,15 +193,14 @@ class Application(BaseApplication):
             except Exception as e:
                 log.exception(e)
             log.debug('==== IOLoop FINISHED ' + '=' * 29)
-        finally:
-            log.debug('==== finally before stop')
-            self.stop()
-            log.debug('==== finally after stop')
+        #finally:
 
     def stop(self):
         self.srv.flash_save()
         if self.srv.is_active:
             self.srv.stop()
+
+        super(Application, self).stop()
 
     def __getstate__(self):
         pass
