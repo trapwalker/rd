@@ -55,3 +55,5 @@ define("join_news_group_link", default="https://t.me/joinchat/AAAAAD_pGB7aHkah39
 define("auth_google_key", default=None, help="Auth Google Client ID", type=str)
 define("auth_google_secret", default=None, help="Auth Google Secret Client", type=str)
 
+define("auth_vk_key", default=None, help="Auth Google Client ID", type=str)
+define("auth_vk_secret", default=None, help="Auth Google Secret Client", type=str)
