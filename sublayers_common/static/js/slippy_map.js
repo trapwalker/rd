@@ -17,7 +17,7 @@
                     {
                         name: "back",
                         url: function (x, y, z) {
-                            return "/map/back/" + z + "/" + x + "/" + y + ".png";
+                            return "https://roaddogs.ru/map/back/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
@@ -26,7 +26,7 @@
                     {
                         name: "front",
                         url: function (x, y, z) {
-                            return "/map/front/" + z + "/" + x + "/" + y + ".png";
+                            return "https://roaddogs.ru/map/front/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
@@ -35,7 +35,7 @@
                     {
                         name: "merged",
                         url: function (x, y, z) {
-                            return "/map/merged/" + z + "/" + x + "/" + y + ".png";
+                            return "https://roaddogs.ru/map/merged/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
