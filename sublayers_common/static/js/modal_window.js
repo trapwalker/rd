@@ -503,7 +503,7 @@ var ModalWindow = (function () {
         // Загрузить информацию из документа в див
         this.modalQuickGamePoints.load('/static/modal_window/quickGamePointsPage.html', function(){
             $.ajax({
-                url: location.hostname + $('#settings_server_mode_link_path').text() + '/api/quick_game_cars',
+                url: $('#settings_server_mode_link_path').text() + '/api/quick_game_cars',
                 success: function (data_str) {
                     modalWindow.modalQuickGamePoints.find(".window-records-qg-all-cars").append(data_str);
 
