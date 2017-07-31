@@ -366,7 +366,7 @@ class Agent(Object):
         else:
             self.api = AgentAPI(agent=self)
 
-        self.api.update_agent_api(time=time)
+        self.api.update_agent_api(time=time + 0.2)  # info: чтобы с клиента успело придти разрешение экрана
 
         # обновление статистики по онлайну агентов
         self.server.stat_log.s_agents_on(time=time, delta=1.0)
