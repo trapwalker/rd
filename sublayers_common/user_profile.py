@@ -38,7 +38,12 @@ class User(Document):
             def set_password(self, new_password):
                 self.password = hash_pass(new_password)
 
+        class AuthSocial(EmbeddedDocument):
+            social_id = StringField()
+
         standard = EmbeddedDocumentField(AuthStandard, default=AuthStandard)
+        google = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
+        vk = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
         # todo: add social auth attributes
 
 
@@ -59,13 +64,19 @@ class User(Document):
 
 
 
-    def __init__(self, raw_password=None, email=None, **kw):
+    def __init__(self, raw_password=None, email=None, google_id=None, vk_id=None, **kw):
         super(User, self).__init__(**kw)
         if raw_password:
             self.auth.standard.set_password(raw_password)
 
         if email:
             self.auth.standard.email = email
+
+        if google_id:
+            self.auth.google.social_id = google_id
+
+        if vk_id:
+            self.auth.vk.social_id = vk_id
 
     def __nonzero__(self):
         return True
@@ -89,6 +100,14 @@ class User(Document):
     @classmethod
     def get_by_email(cls, email):
         return cls.objects.filter(auth__standard__email=email).first()
+
+    @classmethod
+    def get_by_google_id(cls, uid):
+        return cls.objects.filter(auth__google__social_id=uid).first()
+
+    @classmethod
+    def get_by_vk_id(cls, uid):
+        return cls.objects.filter(auth__vk__social_id=uid).first()
 
     def as_document(self):
         d = self.__dict__.copy()

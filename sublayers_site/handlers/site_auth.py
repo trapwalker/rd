@@ -8,9 +8,15 @@ from sublayers_common.user_profile import User
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.creater_agent import create_agent
 
-from tornado.web import HTTPError
-#from tornado.httpclient import AsyncHTTPClient
+
+import tornado.gen
+from tornado.web import RequestHandler, HTTPError
+from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin
+from tornado.httputil import url_concat
+from tornado.httpclient import HTTPClient, AsyncHTTPClient
+import json
 import hashlib
+import urllib
 from tornado.options import options
 from random import randint
 import re
@@ -350,3 +356,125 @@ class SetForumUserAuth(StandardLoginHandler):
             self.finish("OK")
         else:
             self.finish("Not auth")
+
+
+class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
+    @tornado.gen.coroutine
+    def get(self):
+        code = self.get_argument('code', False)
+        req = self.request
+        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/google")
+
+        if not self.settings.get('google_oauth', None):
+            self.send_error(status_code=501)
+            return
+
+        if code:
+            access = yield self.get_authenticated_user(
+                redirect_uri=redirect_uri,
+                code=code)
+            user = yield self.oauth2_request(
+                "https://www.googleapis.com/oauth2/v1/userinfo",
+                access_token=access["access_token"])
+
+            cookie = self._on_get_user_info(user)
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/#start")
+            else:
+                self.redirect("/login?msg=Ошибка%20авторизации")
+        else:
+            yield self.authorize_redirect(
+                redirect_uri=redirect_uri,
+                client_id=self.settings['google_oauth']['key'],
+                scope=['profile'],
+                response_type='code',
+                extra_params={'approval_prompt': 'auto'})
+
+    def _on_get_user_info(self, user):
+        if user:
+            body_id = str(user.get(u'id', ''))
+            if not body_id:
+                return None
+            profile_user = User.get_by_google_id(uid=body_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(google_id=body_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with GoogleID: {}'.format(body_id))
+
+            # Авторизация
+            return str(profile_user.pk)
+
+
+
+class VKLoginHandler(RequestHandler, OAuth2Mixin):
+    _OAUTH_AUTHORIZE_URL = "https://oauth.vk.com/authorize"
+    _OAUTH_ACCESS_TOKEN_URL = "https://oauth.vk.com/access_token"
+    _OAUTH_SETTINGS_KEY = "vk_oauth"
+
+    @tornado.gen.coroutine
+    def get(self):
+        code = self.get_argument('code', False)
+        req = self.request
+        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/vk")
+
+        if not self.settings.get(self._OAUTH_SETTINGS_KEY, None):
+            self.send_error(status_code=501)
+            return
+
+        if code:
+            http = HTTPClient()
+            body = urllib.urlencode({
+                "redirect_uri": redirect_uri,
+                "code": code,
+                "client_id": self.settings[self._OAUTH_SETTINGS_KEY]['key'],
+                "client_secret": self.settings[self._OAUTH_SETTINGS_KEY]['secret'],
+                "grant_type": "authorization_code",
+            })
+
+            response = http.fetch(request=self._OAUTH_ACCESS_TOKEN_URL, method="POST",
+                                  headers={'Content-Type': 'application/x-www-form-urlencoded'}, body=body)
+
+            acc_token = json.loads(response.body)['access_token']
+
+            args = {"access_token": acc_token}
+
+            path = url_concat('https://api.vk.com/method/users.get', args)
+            response = http.fetch(request=path,
+                                  method="GET", headers={'Content-Type': 'application/x-www-form-urlencoded'})
+
+            cookie = self._on_get_user_info(response)
+            self.clear_cookie("action")
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/#start")
+            else:
+                self.redirect("/login?msg=Ошибка%20авторизации")
+        else:
+            yield self.authorize_redirect(
+                redirect_uri=redirect_uri,
+                client_id=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
+                scope=[],
+                response_type='code',
+            )
+
+    def _on_get_user_info(self, response):
+        if (response.code == 200) and (response.error is None):
+            body_id = str(json.loads(response.body)['response'][0]['uid'])
+            if not body_id:
+                return None
+            profile_user = User.get_by_vk_id(uid=body_id)
+            if not profile_user:
+                print body_id
+                # Регистрация
+                profile_user = User(vk_id=body_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with VK ID: {}'.format(body_id))
+
+            # Авторизация
+            return str(profile_user.pk)
