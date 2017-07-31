@@ -61,11 +61,6 @@
     }
 
     function VKClick() {
-        if ((reg_last_input_click != 'VKClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', _('con_wreg_msg6'), true);
-            consoleWReg.add_message('system', _('con_wreg_msg7'));
-            reg_last_input_click = 'VKClick';
-        }
         audioManager.play('button_screen_press');
         ga_try_social_auth();
 
@@ -93,14 +88,8 @@
     }
 
     function GClick() {
-        // if ((reg_last_input_click != 'GClick') && (consoleWReg)) {
-        //     consoleWReg.add_message('user', _('con_wreg_msg12'), true);
-        //     consoleWReg.add_message('system', _('con_wreg_msg13'));
-        //     reg_last_input_click = 'GClick';
-        // }
         audioManager.play('button_screen_press');
         ga_try_social_auth();
-
         window.location = "/site_api/auth/google";
     }
 
