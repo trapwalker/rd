@@ -52,3 +52,6 @@ define("reg_reload", default=False, help="Reload registry", type=bool)
 
 define("join_news_group_link", default="https://t.me/joinchat/AAAAAD_pGB7aHkah39E2-Q", help="path to static files", type=str)
 
+define("auth_google_key", default=None, help="Auth Google Client ID", type=str)
+define("auth_google_secret", default=None, help="Auth Google Secret Client", type=str)
+

@@ -8,8 +8,13 @@ from sublayers_common.user_profile import User
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.creater_agent import create_agent
 
-from tornado.web import HTTPError
-#from tornado.httpclient import AsyncHTTPClient
+
+import tornado.gen
+from tornado.web import RequestHandler, HTTPError
+from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin
+from tornado.httputil import url_concat
+from tornado.httpclient import HTTPClient, AsyncHTTPClient
+import json
 import hashlib
 from tornado.options import options
 from random import randint
@@ -350,3 +355,54 @@ class SetForumUserAuth(StandardLoginHandler):
             self.finish("OK")
         else:
             self.finish("Not auth")
+
+
+class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
+    @tornado.gen.coroutine
+    def get(self):
+        code = self.get_argument('code', False)
+        req = self.request
+        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/google")
+
+        if not self.settings.get('google_oauth', None):
+            self.send_error(status_code=501)
+            return
+
+        if code:
+            access = yield self.get_authenticated_user(
+                redirect_uri=redirect_uri,
+                code=code)
+            user = yield self.oauth2_request(
+                "https://www.googleapis.com/oauth2/v1/userinfo",
+                access_token=access["access_token"])
+
+            cookie = self._on_get_user_info(user)
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/#start")
+            else:
+                self.redirect("/login?msg=Ошибка%20авторизации")
+        else:
+            yield self.authorize_redirect(
+                redirect_uri=redirect_uri,
+                client_id=self.settings['google_oauth']['key'],
+                scope=['profile'],
+                response_type='code',
+                extra_params={'approval_prompt': 'auto'})
+
+    def _on_get_user_info(self, user):
+        if user:
+            body_id = user.get(u'id', None)
+            if not body_id:
+                return None
+            profile_user = User.get_by_google_id(uid=body_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(google_id=body_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with GoogleID: {}'.format(body_id))
+
+            # Авторизация
+            return str(profile_user.pk)

@@ -29,7 +29,7 @@ from tornado.options import options
 from sublayers_site import settings
 
 import sublayers_site.handlers.site_auth
-from sublayers_site.handlers.site_auth import StandardLoginHandler, LogoutHandler  #, RegisterOldUsersOnForum, SetForumUserAuth
+from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler)
 from sublayers_site.handlers.site import SiteMainHandler, GetUserLocaleJSONHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
@@ -49,6 +49,12 @@ class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):
         settings.setdefault('static_path', options.static_path)
         settings.setdefault('login_url', '/login')
+
+        # Добавление полей для OAuth
+        if options.auth_google_key and options.auth_google_secret:
+            settings["google_oauth"] = {"key": options.auth_google_key, "secret": options.auth_google_secret}
+        else:
+            log.warning('[Social Auth] Google OAuth params not found in options. Google Auth not work.')
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
@@ -70,6 +76,9 @@ class Application(BaseApplication):
             (r"/site_api/get_rating_info", GetRatingInfo),
             (r"/site_api/get_user_info_by_id", GetUserInfoByIDHandler),
             (r"/site_api/audio1", GetAudioTest),
+
+            (r"/site_api/auth/google", GoogleLoginHandler)
+
             #(r"/site_api/forum_reg", RegisterOldUsersOnForum),
             #(r"/site_api/forum_auth", SetForumUserAuth),
         ])
