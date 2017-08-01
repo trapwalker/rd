@@ -2542,7 +2542,7 @@ var ClientManager = (function () {
         var mes = {
             call: "get_tiles_admin",
             rpc_call_id: rpcCallList.getID(),
-            params: { x: x, y: y }
+            params: { x: x, y: y , tile_name: settingsManager.options.map_tile_draw_back.currentValue}
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
