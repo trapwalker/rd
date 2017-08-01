@@ -45,7 +45,7 @@
         <div class="window-reg-footer">
             <div class="reg-btn buttons-and-headers" onclick="VKClick()">{{ _('swr_1. enter_with_VK') }}</div>
             <div class="reg-btn buttons-and-headers" onclick="FBClick()">{{ _('swr_2. enter_with_FB') }}</div>
-            <div class="reg-btn buttons-and-headers" onclick="OKClick()">{{ _('swr_3. enter_with_OK') }}</div>
+            <div class="reg-btn buttons-and-headers" onclick="TWitterClick()">{{ _('swr_3. enter_with_OK') }}</div>
             <div class="reg-btn buttons-and-headers" onclick="GClick()">{{ _('swr_4. enter_with_G+') }}</div>
         </div>
     </div>
@@ -77,14 +77,11 @@
         ga_try_social_auth();
     }
 
-    function OKClick() {
-        if ((reg_last_input_click != 'OKClick') && (consoleWReg)) {
-            consoleWReg.add_message('user', _('con_wreg_msg10'), true);
-            consoleWReg.add_message('system', _('con_wreg_msg11'));
-            reg_last_input_click = 'OKClick';
-        }
-        audioManager.play('error_1');
+    function TWitterClick() {
+        audioManager.play('button_screen_press');
         ga_try_social_auth();
+
+        window.location = "/site_api/auth/twitter";
     }
 
     function GClick() {

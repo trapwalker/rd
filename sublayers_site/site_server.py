@@ -29,7 +29,8 @@ from tornado.options import options
 from sublayers_site import settings
 
 import sublayers_site.handlers.site_auth
-from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler, VKLoginHandler)
+from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler, VKLoginHandler,
+                                               TwitterLoginHandler)
 from sublayers_site.handlers.site import SiteMainHandler, GetUserLocaleJSONHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
@@ -61,6 +62,12 @@ class Application(BaseApplication):
         else:
             log.warning('[Social Auth] VK OAuth params not found in options. VK Auth not work.')
 
+        if options.auth_twitter_key and options.auth_twitter_secret:
+            settings["twitter_consumer_key"] = options.auth_twitter_key
+            settings["twitter_consumer_secret"] = options.auth_twitter_secret
+        else:
+            log.warning('[Social Auth] Twitter OAuth params not found in options. VK Auth not work.')
+
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
@@ -85,6 +92,7 @@ class Application(BaseApplication):
 
             (r"/site_api/auth/google", GoogleLoginHandler),
             (r"/site_api/auth/vk", VKLoginHandler),
+            (r"/site_api/auth/twitter", TwitterLoginHandler),
 
             #(r"/site_api/forum_reg", RegisterOldUsersOnForum),
             #(r"/site_api/forum_auth", SetForumUserAuth),
