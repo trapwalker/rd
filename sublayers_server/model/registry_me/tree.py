@@ -1096,6 +1096,9 @@ def get_global_registry(path, reload=False, save_loaded=True):
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
             log.debug('Registry {}fetched from DB ({:.3f}s)'.format('is NOT ' if REGISTRY is None else '', t.duration))
+        with Timer() as t:
+            REGISTRY.root.rl_resolve()
+            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
 
     if REGISTRY is None:
         if save_loaded:
@@ -1105,6 +1108,10 @@ def get_global_registry(path, reload=False, save_loaded=True):
 
         REGISTRY = Registry()
         REGISTRY.load(path)
+        with Timer() as t:
+            REGISTRY.root.rl_resolve()
+            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
+
         if save_loaded:
             with Timer(logger=None) as t:
                 REGISTRY.save()
