@@ -13,7 +13,7 @@ var HangarTeachingNote = (function (_super) {
         this.needed_building = locationManager.get_building_by_node_hash(this.npc_node_hash);
         this.needed_npc = locationManager.get_npc_by_node_hash(this.npc_node_hash);
 
-        this.build_coord = new Point(1006, 319);
+        this.build_coord = new Point(803, 674);
         this.npc_coord = new Point(772, 695);
 
         this.inventory_coord = new Point(791, 742);

@@ -17,7 +17,7 @@ swr_Log_In_2: "в систему"
 swr_Repair Password: "Восстановить пароль"
 swr_1. enter_with_VK : 1. Вход через VK
 swr_2. enter_with_FB : 2. Вход через FB
-swr_3. enter_with_OK : 3. Вход через OK
+swr_3. enter_with_TWitter : 3. Вход через Twitter
 swr_4. enter_with_G+ : 4. Вход через G+
 
 
@@ -174,7 +174,7 @@ con_wreg_msg5: |
 
   Нажмите <1> для vk.com
   Нажмите <2> для facebook.com
-  Нажмите <3> для ok.ru
+  Нажмите <3> для twitter.com
   Нажмите <4> для plus.google.com
   --------------------------------------------------------------
 con_wreg_msg6: |

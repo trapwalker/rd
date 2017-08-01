@@ -7,7 +7,7 @@ var ArmorerTeachingNote = (function (_super) {
         this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/mechanic/whitehill_raul_alon');
         this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/armorer/whitehill_martin_arioso');
 
-        this.build_coord = new Point(926, 372);
+        this.build_coord = new Point(1077, 668);
         this.npc_coord = new Point(1121, 695);
 
         this.inventory_coord = new Point(775, 742);

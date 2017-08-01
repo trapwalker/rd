@@ -17,7 +17,7 @@ swr_Log_In_2: ""
 swr_Repair Password: "Restore password"
 swr_1. enter_with_VK : 1. VK
 swr_2. enter_with_FB : 2. FACEBOOK
-swr_3. enter_with_OK : 3. TWITTER
+swr_3. enter_with_TWitter : 3. TWITTER
 swr_4. enter_with_G+ : 4. GOOGLE+
 
 
@@ -171,9 +171,9 @@ con_wreg_msg5: |
 
   If you are a registered driver, log in the system using the log-in menu or connect via one of the external networks.
 
-  Press <1> for sign in with steam.com
+  Press <1> for sign in with vk.com
   Press <2> for sign in with facebook.com
-  Press <3> for sign in with ok.ru
+  Press <3> for sign in with twitter.com
   Press <4> for sign in with plus.google.com
   --------------------------------------------------------------
 con_wreg_msg6: |
