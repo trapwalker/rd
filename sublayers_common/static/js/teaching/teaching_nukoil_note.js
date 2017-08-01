@@ -11,7 +11,7 @@ var NukoilTeachingNote = (function (_super) {
         this.needed_building = locationManager.buildings.nukeoil;
         this.needed_npc = locationManager.npc['reg--registry-institutions-gas_station'];
 
-        this.build_coord = new Point(984, 188);
+        this.build_coord = new Point(1253, 708);
         this.npc_coord = new Point(772, 695);
 
         this.gas_coord = new Point(992, 424);

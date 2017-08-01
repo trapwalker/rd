@@ -9,7 +9,7 @@ var GetQuestTeachingNote = (function (_super) {
         this.needed_building = locationManager.buildings.mayor;
         this.quest_uid = options.target_quest_uid;
 
-        this.build_coord = new Point(979, 241);
+        this.build_coord = new Point(650, 516);
         this.active_quests_page = new Point(708, 363);
         this.first_quest = new Point(831, 524);
         this.buy_btn = new Point(402, 633);
