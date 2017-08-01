@@ -148,7 +148,7 @@ def test5(reload=True, save_loaded=True):
 
     t = reg.get(r'/registry/institutions/mayor/prior_donnie_alma')
     q = t.quests[4]
-    print(q)
+    # print(q)
     len(q.recipient_list)
     len(q.recipient_list)
     with T('len*1000'):
