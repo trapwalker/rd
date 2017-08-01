@@ -253,6 +253,10 @@ class MechanicItem(SlotItem):
     a_braking = FloatField(caption=u"Ускорение торможения")
     max_fuel = FloatField(caption=u"Максимальное количество топлива")
     p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
+    r_cc_dirt = FloatField(caption=u"Резист к модификатору CC на бездорожье")
+    r_cc_wood = FloatField(caption=u"Резист к модификатору CC в лесу")
+    r_cc_slope = FloatField(caption=u"Резист к модификатору CC в горах")
+    r_cc_water = FloatField(caption=u"Резист к модификатору CC в воде")
 
     def html_description(self):
         result = '<br>'
