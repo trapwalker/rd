@@ -11,7 +11,7 @@ from sublayers_common.creater_agent import create_agent
 
 import tornado.gen
 from tornado.web import RequestHandler, HTTPError
-from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin
+from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPClient, AsyncHTTPClient
 import json
@@ -475,6 +475,45 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
                 profile_user.save()
 
                 log.info('Register new Profile with VK ID: {}'.format(body_id))
+
+            # Авторизация
+            return str(profile_user.pk)
+
+
+class TwitterLoginHandler(RequestHandler, TwitterMixin):
+    @tornado.gen.coroutine
+    def get(self):
+        req = self.request
+        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/twitter")
+
+        if not self.settings.get('twitter_consumer_key', None) or not self.settings.get('twitter_consumer_secret', None):
+            self.send_error(status_code=501)
+            return
+
+        if self.get_argument("oauth_token", None):
+            user = yield self.get_authenticated_user()
+            cookie = self._on_get_user_info(user)
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/#start")
+            else:
+                self.redirect("/login?msg=Ошибка%20авторизации")
+        else:
+            yield self.authorize_redirect(callback_uri=redirect_uri)
+
+    def _on_get_user_info(self, user):
+        if user:
+            body_id = str(user.get(u'id', ''))
+            if not body_id:
+                return None
+            profile_user = User.get_by_twitter_id(uid=body_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(twitter_id=body_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with twitter_id: {}'.format(body_id))
 
             # Авторизация
             return str(profile_user.pk)
