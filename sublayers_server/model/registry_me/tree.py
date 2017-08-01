@@ -50,7 +50,7 @@ from sublayers_server.model.registry_me.odm_position import PositionField, Posit
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
 
-IGNORE_WRONG_LINKS = True  # False
+IGNORE_WRONG_LINKS = False  # False
 CACHE_INHERITED_FIELDS = True  # Локальное кэширование унаследованных значений нода
 
 
