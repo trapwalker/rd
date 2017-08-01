@@ -18,7 +18,7 @@ var CharacterManager = (function () {
         else
             self.jq_main_div.find('.character-window-name').first().text(user.login);
         self.jq_main_div.find('.character-window-about-line.lvl span').text(user.example_agent.rpg_info.cur_lvl);
-        self.jq_main_div.find('.character-window-about-line.role-class span').text(user.example_agent.role_class);
+        self.jq_main_div.find('.character-window-about-line.role-class span').last().text(user.example_agent.role_class);
         self.jq_main_div.find('.character-window-about-line.karma span').text(getKarmaNameWithoutNorm(user.example_agent.rpg_info.karma));
         self.jq_main_div.find('.character-window-about-line.balance span').text(user.balance.toFixed(0) + " Nc");
         self.jq_main_div.find('.character-window-about-area').first().find('textarea').first().text(user.example_agent.about_self);
@@ -168,7 +168,7 @@ var CharacterManager = (function () {
     };
 
     CharacterManager.quest_item_event_mouseenter = function (event) {
-        //console.log('CharacterManager.skills_event_mouseenter');
+        //console.log('CharacterManager.quest_item_event_mouseenter');
         var index = $(event.currentTarget).data('index');
         if (user.example_agent.rpg_info.quest_inventory.length > index)
             event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info.quest_inventory[index].description);
@@ -183,7 +183,155 @@ var CharacterManager = (function () {
 
     CharacterManager.event_mouseleave = function (event) {
         //console.log('CharacterManager.event_mouseleave');
-        event.data.mng.jq_main_div.find('.character-window-hint-text').text('');
+        var mng = event && event.data && event.data.mng || characterManager;
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel("");
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text('');
+    };
+
+
+    CharacterManager.event_mouseover_level = function (event) {
+        //console.log('CharacterManager.event_mouseover_level');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = "Это уровень персонажа. Чем больше очков навыка он заработал, тем выше уровень. Уровень повышается каждые 10 очков навыка.";
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_roleclass = function (event) {
+        //console.log('CharacterManager.event_mouseover_roleclass');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = "Это класс персонажа. От класса зависит профильный навык, который растет быстрее – за каждые 5 очков – 1 бонусное. Кроме этого от класса зависит врожденный классовый квест и классовые перки.";
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_roleclass_cur = function (event) {
+        //console.log('CharacterManager.event_mouseover_roleclass_cur');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = user.example_agent.role_class_description_char_window || user.example_agent.role_class;
+        //tt = tt.replace("\\", '').split('n').join('<br>');  // info: сработает только для русского языка
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
+    };
+
+    CharacterManager.event_mouseover_karma = function (event) {
+        //console.log('CharacterManager.event_mouseover_karma');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это Карма персонажа. В зависимости от поступков – добрых или злых, она улучшается или ухудшается. Чем ближе карма персонажа к карме городских жителей, тем лучше их отношение. Карма падает, если персонаж занимается мошенничеством или уничтожает других персонажей уровнем ниже себя.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_about_self = function (event) {
+        //console.log('CharacterManager.event_mouseover_about_self');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Введите сюда любой текст, который отображается в окне персонажа и виден другим.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_stats_btn = function (event) {
+        //console.log('CharacterManager.event_mouseover_stats_btn');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Список перков и навыков персонажа.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_exp = function (event) {
+        //console.log('CharacterManager.event_mouseover_exp');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это опыт до получения следующего очка навыка. Опыт получается выполнением заданий и уничтожением транспорта других персонажей. Опыт за уничтожение транспорта получается в зависимости от пробега уничтоженного транспорта.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_all_perks = function (event) {
+        //console.log('CharacterManager.event_mouseover_all_perks');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это список перков персонажа.  Что бы получить новый перк – нужно выбрать его у тренера в Библиотеке, имея при этом свободное очко перка.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_free_perks = function (event) {
+        //console.log('CharacterManager.event_mouseover_free_perks');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это очки перков. 1 очко перка получается за каждый новый уровень персонажа.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_all_skills = function (event) {
+        //console.log('CharacterManager.event_mouseover_all_skills');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это навыки персонажа. Навыки увеличиваются у тренера в Библиотеке, имея при этом свободные очки навыков.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_free_skills = function (event) {
+        //console.log('CharacterManager.event_mouseover_free_skills');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это очки навыков. По мере роста опыта персонаж зарабатывает очки навыка, 10 за один уровень.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+
+    CharacterManager.event_mouseover_inventory_btn = function (event) {
+        //console.log('CharacterManager.event_mouseover_inventory_btn');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это рюкзак персонажа. Вещи в инвентаре сохраняются даже если был потерян транспорт. Сюда помещаются квестовые предметы и другие уникальные предметы, влияющие на персонажа.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+
+    CharacterManager.event_mouseover_effects_btn = function (event) {
+        //console.log('CharacterManager.event_mouseover_effects_btn');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Это список положительных и отрицательных эффектов, влияющих на персонажа в данный момент.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+    };
+
+    CharacterManager.event_mouseover_balance = function (event) {
+        //console.log('CharacterManager.event_mouseover_balance');
+        var mng = event && event.data && event.data.mng || characterManager;
+        var tt = 'Ваш электронный счет в системе Нукойл: 1 нукойн равен 1 литру топлива.';
+        if(locationManager && locationManager.in_location_flag)
+            locationManager.location_menu.viewRightPanel(tt);
+        else
+            mng.jq_main_div.find('.character-window-hint-text').text(tt);
     };
 
     return CharacterManager;

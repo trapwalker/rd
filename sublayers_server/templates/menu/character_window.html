@@ -13,40 +13,40 @@
                     <div class="character-window-name-block">
                         <span class="character-window-name"></span>
                     </div>
-                    <div class="character-window-exp-block">
+                    <div class="character-window-exp-block"  onmouseover="CharacterManager.event_mouseover_exp()" onmouseout="CharacterManager.event_mouseleave()">
                         <div class="character-window-exp"></div>
                         <div class="character-window-exp-label"><span class="cur-exp"></span> / <span class="total-exp"></span></div>
                     </div>
                 </div>
                 <div class="character-window-about-block">
-                    <div class="character-window-about-line lvl">Уровень: <span></span></div>
-                    <div class="character-window-about-line role-class">Класс: <span></span></div>
-                    <div class="character-window-about-line karma">Карма: <span></span></div>
-                    <div class="character-window-about-line balance">Баланс: <span></span></div>
-                    <div class="character-window-about-line">О себе:</div>
-                    <div class="character-window-about-area">
+                    <div class="character-window-about-line lvl" onmouseover="CharacterManager.event_mouseover_level()" onmouseout="CharacterManager.event_mouseleave()">Уровень: <span></span></div>
+                    <div class="character-window-about-line role-class"><span onmouseover="CharacterManager.event_mouseover_roleclass()" onmouseout="CharacterManager.event_mouseleave()">Класс: </span><span  onmouseover="CharacterManager.event_mouseover_roleclass_cur()" onmouseout="CharacterManager.event_mouseleave()"></span></div>
+                    <div class="character-window-about-line karma" onmouseover="CharacterManager.event_mouseover_karma()" onmouseout="CharacterManager.event_mouseleave()">Карма: <span></span></div>
+                    <div class="character-window-about-line balance" onmouseover="CharacterManager.event_mouseover_balance()" onmouseout="CharacterManager.event_mouseleave()">Баланс: <span></span></div>
+                    <div class="character-window-about-line" onmouseover="CharacterManager.event_mouseover_about_self()" onmouseout="CharacterManager.event_mouseleave()">О себе:</div>
+                    <div class="character-window-about-area"  onmouseover="CharacterManager.event_mouseover_about_self()" onmouseout="CharacterManager.event_mouseleave()">
                         <textarea maxlength="400"></textarea>
                     </div>
                 </div>
             </div>
             <div class="character-window-down-block">
                 <div class="character-window-bottom-menu">
-                    <div class="character-window-bottom-menu-item" data-page="pers_info">Характеристики</div>
-                    <div class="character-window-bottom-menu-item" data-page="pers_inventory">Инвентарь</div>
-                    <div class="character-window-bottom-menu-item" data-page="pers_effects">Эффекты</div>
+                    <div class="character-window-bottom-menu-item" data-page="pers_info" onmouseover="CharacterManager.event_mouseover_stats_btn()" onmouseout="CharacterManager.event_mouseleave()">Характеристики</div>
+                    <div class="character-window-bottom-menu-item" data-page="pers_inventory" onmouseover="CharacterManager.event_mouseover_inventory_btn()" onmouseout="CharacterManager.event_mouseleave()">Инвентарь</div>
+                    <div class="character-window-bottom-menu-item" data-page="pers_effects" onmouseover="CharacterManager.event_mouseover_effects_btn()" onmouseout="CharacterManager.event_mouseleave()">Эффекты</div>
                 </div>
                 <div class="character-window-page-list">
                     <div class="character-window-page pers_info">
                         <div class="character-window-perks-block">
-                            <div class="character-window-ttx-header">Перки</div>
+                            <div class="character-window-ttx-header"  onmouseover="CharacterManager.event_mouseover_all_perks()" onmouseout="CharacterManager.event_mouseleave()">Перки</div>
                             <div class="character-window-ttx-center perks"></div>
-                            <div class="character-window-ttx-footer">
+                            <div class="character-window-ttx-footer" onmouseover="CharacterManager.event_mouseover_free_perks()" onmouseout="CharacterManager.event_mouseleave()">
                                 <div class="character-window-ttx-footer-text">Свободные очки</div>
                                 <div class="character-window-ttx-footer-text right free-perks">0</div>
                             </div>
                         </div>
                         <div class="character-window-skills-block">
-                            <div class="character-window-ttx-header">Навыки</div>
+                            <div class="character-window-ttx-header"  onmouseover="CharacterManager.event_mouseover_all_skills()" onmouseout="CharacterManager.event_mouseleave()">Навыки</div>
                             <div class="character-window-ttx-center skills">
                                 <div class="character-window-ttx-item" data-skill="driving">
                                     <div class="character-window-ttx-skill trainer-light-back">Вождение:</div>
@@ -73,7 +73,7 @@
                                     <div class="character-window-ttx-value trainer-dark-back leading"></div>
                                 </div>
                             </div>
-                            <div class="character-window-ttx-footer">
+                            <div class="character-window-ttx-footer"  onmouseover="CharacterManager.event_mouseover_free_skills()" onmouseout="CharacterManager.event_mouseleave()">
                                 <div class="character-window-ttx-footer-text">Свободные очки</div>
                                 <div class="character-window-ttx-footer-text right free-skills">0</div>
                             </div>
