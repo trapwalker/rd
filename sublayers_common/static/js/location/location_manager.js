@@ -84,10 +84,11 @@ var LocationManager = (function () {
         var lasers_img = new Image();
         lasers_img.src = '/static/content/locations/map_locations/all_frames.png';
 
-        setTimeout(function(){
+        setTimeout(function() {
             SetImageOnLoad(lasers_img, function (img) {
                 locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
                 locationManager.locations_canvas_effects['laser'].start();
+                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationTeachingLineBlink();
             }
         );
         }, 50);

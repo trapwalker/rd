@@ -122,6 +122,7 @@ def test4(reload=True, save_loaded=True):
 
 
 def test5(reload=True, save_loaded=True):
+    import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
@@ -141,12 +142,27 @@ def test5(reload=True, save_loaded=True):
     # ap2 = ap.instantiate()
     # print('ap2:', ap2._empty_overrided_fields, ap2.quests_ended)
 
+    log.debug('Start expanding reg')
+    # with T('reg Expand_links'):
+    #     reg.root.rl_resolve()
+
     t = reg.get(r'/registry/institutions/mayor/prior_donnie_alma')
     q = t.quests[4]
-    print(q)
-    with T():
-        for i in xrange(10):
-            random.choice(q.recipient_list)
+    # print(q)
+    len(q.recipient_list)
+    len(q.recipient_list)
+    with T('len*1000'):
+        for i in xrange(1000):
+            len(q.recipient_list)
+
+    with T('q.instantiate*100'):
+        for i in xrange(100):
+            qq = q.instantiate()
+
+    # with T('aload'):
+    #     a = Agent.objects.filter().first()
+    #     with T('reg_l'):
+    #         a.
 
     globals().update(locals())
 
