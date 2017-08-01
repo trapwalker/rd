@@ -151,9 +151,13 @@ def test5(reload=True, save_loaded=True):
     print(q)
     len(q.recipient_list)
     len(q.recipient_list)
-    with T('len*10'):
-        for i in xrange(10):
+    with T('len*1000'):
+        for i in xrange(1000):
             len(q.recipient_list)
+
+    with T('q.instantiate*100'):
+        for i in xrange(100):
+            q = q.instantiate()
 
     # with T('aload'):
     #     a = Agent.objects.filter().first()

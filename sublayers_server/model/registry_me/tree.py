@@ -365,7 +365,7 @@ class RLResolveMixin(object):
             value = self._data.get(field_name, None)
             if value is not None:
                 value = self._resolve_field_value(field, value)
-                self._dict[field_name] = value
+                self._data[field_name] = value
 
 
 class SubdocToolsMixin(object):
