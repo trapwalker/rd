@@ -167,6 +167,8 @@
     line-height: 17px;
 }
 
+.character-window-about-line:hover {color: #2ffa00;}
+
 .character-window-about-area {
     position: relative;
     width: 100%;
@@ -314,6 +316,10 @@
     box-sizing: border-box;
 }
 #townMenuLocation .character-window-ttx-footer { padding: 0 4px; }
+
+
+.character-window-ttx-header:hover, .character-window-ttx-footer:hover {color: #2ffa00;}
+
 
 .character-window-ttx-footer-text {
     position: relative;

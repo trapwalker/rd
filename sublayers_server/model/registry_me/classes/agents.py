@@ -369,6 +369,7 @@ class AgentProfile(Node):
     def as_client_dict(self):
         d = super(AgentProfile, self).as_client_dict()
         d['role_class'] = '' if self.role_class is None else self.role_class.description
+        d['role_class_description_char_window'] = '' if self.role_class is None else self.role_class.description_char_window
         d['insurance'] = self.insurance.as_client_dict()
         return d
 
