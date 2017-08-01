@@ -117,9 +117,10 @@ def field_getter_decorator(getter):
     return new_getter
 
 field_getter_decorator._debug = False
+RECURSIVE_REFERENCE_CONSTANT = 'self'
 
 
-class RegistryLinkField(ReferenceField):
+class RegistryLinkField(BaseField):
     def __init__(self, document_type='Node', **kwargs):
         if (
             not isinstance(document_type, six.string_types) and
@@ -132,6 +133,15 @@ class RegistryLinkField(ReferenceField):
         self.document_type_obj = document_type
         self.reverse_delete_rule = DO_NOTHING
         BaseField.__init__(self, **kwargs)
+
+    @property
+    def document_type(self):
+        if isinstance(self.document_type_obj, six.string_types):
+            if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
+                self.document_type_obj = self.owner_document
+            else:
+                self.document_type_obj = get_document(self.document_type_obj)
+        return self.document_type_obj
 
     @field_getter_decorator
     def __get__(self, instance, owner):
@@ -157,7 +167,7 @@ class RegistryLinkField(ReferenceField):
             else:
                 instance._data[self.name] = dereferenced
 
-        return super(ReferenceField, self).__get__(instance, owner)
+        return super(RegistryLinkField, self).__get__(instance, owner)
 
     def to_mongo(self, document):
         if document is None:
@@ -205,6 +215,18 @@ class RegistryLinkField(ReferenceField):
 
         if isinstance(value, Node) and value.uri is None:
             self.error('You can only reference nodes once they has an URI')
+
+    def prepare_query_value(self, op, value):
+        if value is None:
+            return None
+        super(ReferenceField, self).prepare_query_value(op, value)
+        return self.to_mongo(value)
+
+    def lookup_member(self, member_name):
+        return self.document_type._fields.get(member_name)
+
+
+CONTAINER_OR_RL_FIELD_TYPES = CONTAINER_FIELD_TYPES + (RegistryLinkField,)
 
 
 class EmbeddedNodeField(EmbeddedDocumentField):
@@ -288,6 +310,64 @@ class NodeMetaclass(DocumentMetaclass):
         return new_cls
 
 
+class RLResolveMixin(object):
+    def is_field_inherited(self, name):
+        return False
+
+    def _resolve_field_value(self, field, value):
+        if value is None:
+            return
+        elif isinstance(field, RegistryLinkField) and isinstance(value, basestring):
+            return field.to_python(value)
+        elif not isinstance(field, CONTAINER_FIELD_TYPES):
+            return value  # todo: optimize
+
+        if isinstance(field, EmbeddedDocumentField):
+            if hasattr(type(value), 'rl_resolve'):
+                value.rl_resolve()
+            expanded_value = value
+        elif isinstance(field, ListField):
+            # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
+            expanded_value = value
+            skip_count = 0
+            for i, v in enumerate(value):
+                if v is not None:
+                    new_v = self._resolve_field_value(field.field, v)
+                    if new_v is None:
+                        assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
+                            v, IGNORE_WRONG_LINKS
+                        )
+                        skip_count += 1
+                    else:
+                        expanded_value[i - skip_count] = new_v
+            if skip_count:
+                expanded_value = expanded_value[:len(expanded_value) - skip_count]
+        elif isinstance(field, DictField):
+            expanded_value = value
+            for k, v in value.iteritems():
+                if v is not None:
+                    new_v = self._resolve_field_value(field.field, v)
+                    if new_v is None:
+                        assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
+                            v, IGNORE_WRONG_LINKS
+                        )
+                        del expanded_value[k]
+                    else:
+                        expanded_value[k] = new_v
+        else:
+            return value
+
+        return expanded_value
+
+    def rl_resolve(self):
+        cls = type(self)
+        for field_name, field in cls._fields.iteritems():
+            value = self._data.get(field_name, None)
+            if value is not None:
+                value = self._resolve_field_value(field, value)
+                self._data[field_name] = value
+
+
 class SubdocToolsMixin(object):
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
@@ -342,7 +422,7 @@ class DynamicSubdoc(EmbeddedDocument, SubdocToolsMixin):
         return self.to_string()
 
 
-class Subdoc(EmbeddedDocument, SubdocToolsMixin):
+class Subdoc(EmbeddedDocument, SubdocToolsMixin, RLResolveMixin):
     __metaclass__ = NodeMetaclass
     _dynamic = False
     STRICT = True
@@ -425,7 +505,7 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
     def __setattr__(self, key, value):
         if key != '_initialised' and getattr(self, '_initialised', None):
             field = type(self)._fields.get(key)  # todo: support dynamic fields too
-            if value is not None and isinstance(field, CONTAINER_FIELD_TYPES):
+            if value is not None and isinstance(field, CONTAINER_OR_RL_FIELD_TYPES):
                 value = self._expand_field_value(field, value)
 
         super(Subdoc, self).__setattr__(key, value)
@@ -517,10 +597,9 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
         if _exp_cnt:
             return self
 
-
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
         for field_name, field in type(self)._fields.items():
-            if isinstance(field, CONTAINER_FIELD_TYPES):
+            if isinstance(field, CONTAINER_OR_RL_FIELD_TYPES):
                 if not self.is_field_inherited(field_name) or getattr(field, 'reinst', False):
                     value = getattr(self, field_name)
                     setattr(self, field_name, value)
@@ -535,7 +614,7 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin):
 
 
 ########################################################################################################################
-class Node(Subdoc, SubdocToolsMixin):
+class Node(Subdoc, SubdocToolsMixin, RLResolveMixin):
     #__slots__ = ('_uri',)
     #__metaclass__ = NodeMetaclass
     _dynamic = False
@@ -1017,6 +1096,9 @@ def get_global_registry(path, reload=False, save_loaded=True):
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
             log.debug('Registry {}fetched from DB ({:.3f}s)'.format('is NOT ' if REGISTRY is None else '', t.duration))
+        with Timer() as t:
+            REGISTRY.root.rl_resolve()
+            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
 
     if REGISTRY is None:
         if save_loaded:
@@ -1026,6 +1108,10 @@ def get_global_registry(path, reload=False, save_loaded=True):
 
         REGISTRY = Registry()
         REGISTRY.load(path)
+        with Timer() as t:
+            REGISTRY.root.rl_resolve()
+            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
+
         if save_loaded:
             with Timer(logger=None) as t:
                 REGISTRY.save()
