@@ -57,3 +57,9 @@ define("auth_google_secret", default=None, help="Auth Google Secret Client", typ
 
 define("auth_vk_key", default=None, help="Auth Google Client ID", type=str)
 define("auth_vk_secret", default=None, help="Auth Google Secret Client", type=str)
+
+define("auth_twitter_key", default=None, help="Auth Google Client ID", type=str)
+define("auth_twitter_secret", default=None, help="Auth Google Secret Client", type=str)
+
+define("auth_facebook_key", default=None, help="Auth Google Client ID", type=str)
+define("auth_facebook_secret", default=None, help="Auth Google Secret Client", type=str)

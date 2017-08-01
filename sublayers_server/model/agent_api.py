@@ -1016,10 +1016,10 @@ class AgentAPI(API):
 
     # Административные методы
     @public_method
-    def get_tiles_admin(self, x, y):
-        self.agent.log.info('get_tiles_admin for coord: {} : {}'.format(x, y))
+    def get_tiles_admin(self, tile_name, x, y):
+        log.info('{} get_tiles_admin for: {} / {} : {}'.format(self.agent, tile_name, x, y))
         from sublayers_server.model.tile_archive import get_tiles_admin
-        get_tiles_admin(long(x), long(y))
+        get_tiles_admin(long(x), long(y), tile_name=tile_name)
         messages.AdminArchiveCompleteMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Панель быстрого доступа

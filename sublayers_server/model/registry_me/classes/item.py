@@ -279,7 +279,8 @@ class MechanicItem(SlotItem):
             attr_value = getattr(self, attr_name, None)
             if attr_value:
                 attr_str = attr_name_list[attr_name]
-                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{}</div>'.format(attr_str, attr_value)
+                attr_value *= 100
+                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{:.1f}%</div>'.format(attr_str, attr_value)
         return result
 
 
