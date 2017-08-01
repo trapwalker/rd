@@ -15,13 +15,15 @@ var TeachingNote = (function (_super) {
 
     TeachingNote.prototype.draw_polyline = function(ctx, points, stroke_style, line_width, alpha) {
         ctx.beginPath();
-        ctx.globalAlpha = alpha;
+        var old_alpha = ctx.globalAlpha;
+        ctx.globalAlpha = alpha * old_alpha;
         ctx.strokeStyle = stroke_style;
         ctx.lineWidth=line_width;
         ctx.moveTo(points[0].x, points[0].y);
         for (var i = 1; i < points.length; i++)
              ctx.lineTo(points[i].x, points[i].y);
         ctx.stroke();
+        ctx.globalAlpha = old_alpha;
     };
 
     TeachingNote.prototype.draw_stroke_line = function(ctx, points, stroke_style) {
