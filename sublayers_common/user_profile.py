@@ -45,7 +45,7 @@ class User(Document):
         google = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
         vk = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
         twitter = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
-        # todo: add social auth attributes
+        fb = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
 
 
     __collection__ = 'profiles'
@@ -65,7 +65,7 @@ class User(Document):
 
 
 
-    def __init__(self, raw_password=None, email=None, google_id=None, vk_id=None, twitter_id=None, **kw):
+    def __init__(self, raw_password=None, email=None, google_id=None, vk_id=None, twitter_id=None, fb_id=None, **kw):
         super(User, self).__init__(**kw)
         if raw_password:
             self.auth.standard.set_password(raw_password)
@@ -81,6 +81,9 @@ class User(Document):
 
         if twitter_id:
             self.auth.twitter.social_id = twitter_id
+
+        if fb_id:
+            self.auth.fb.social_id = fb_id
 
 
     def __nonzero__(self):
@@ -117,6 +120,10 @@ class User(Document):
     @classmethod
     def get_by_twitter_id(cls, uid):
         return cls.objects.filter(auth__twitter__social_id=uid).first()
+
+    @classmethod
+    def get_by_fb_id(cls, uid):
+        return cls.objects.filter(auth__fb__social_id=uid).first()
 
     def as_document(self):
         d = self.__dict__.copy()

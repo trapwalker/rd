@@ -10,7 +10,7 @@ var TraderTeachingNote = (function (_super) {
         this.needed_building = locationManager.get_building_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
         this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/trader/whitehill_bob_ferolito');
 
-        this.build_coord = new Point(1010, 414);
+        this.build_coord = new Point(821, 517);
         this.npc_coord = new Point(872, 695);
 
         this.buy_area = new Point(1244, 351);
