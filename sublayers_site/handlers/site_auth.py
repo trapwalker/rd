@@ -11,15 +11,18 @@ from sublayers_common.creater_agent import create_agent
 
 import tornado.gen
 from tornado.web import RequestHandler, HTTPError
-from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin
+from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin, FacebookGraphMixin, AuthError
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPClient, AsyncHTTPClient
+from tornado.httpclient import HTTPClient
 import json
 import hashlib
 import urllib
 from tornado.options import options
 from random import randint
 import re
+
+import functools
+import hmac
 
 
 LOGIN_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_-]{3,19}$')
@@ -409,7 +412,6 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             return str(profile_user.pk)
 
 
-
 class VKLoginHandler(RequestHandler, OAuth2Mixin):
     _OAUTH_AUTHORIZE_URL = "https://oauth.vk.com/authorize"
     _OAUTH_ACCESS_TOKEN_URL = "https://oauth.vk.com/access_token"
@@ -517,3 +519,73 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
 
             # Авторизация
             return str(profile_user.pk)
+
+
+class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
+    @tornado.gen.coroutine
+    def get(self):
+        if not self.settings.get('facebook_api_key', None) or not self.settings.get('facebook_secret', None):
+            self.send_error(status_code=501)
+            return
+        req = self.request
+        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/facebook")
+
+        code = self.get_argument("code", False)
+        if code:
+            user = yield self.get_authenticated_user(
+                redirect_uri=redirect_uri,
+                client_id=self.settings["facebook_api_key"],
+                client_secret=self.settings["facebook_secret"],
+                code=code)
+            cookie = self._on_get_user_info_fb(user)
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/#start")
+            else:
+                self.redirect("/login?msg=Ошибка%20авторизации")
+
+        else:
+            yield self.authorize_redirect(
+                redirect_uri=redirect_uri,
+                client_id=self.settings["facebook_api_key"],
+                extra_params={"scope": "public_profile"})
+
+    def _on_get_user_info_fb(self, user):
+        if user:
+            body_id = str(user.get(u'id', ''))
+            if not body_id:
+                return None
+            profile_user = User.get_by_fb_id(uid=body_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(fb_id=body_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with Facebook: {}'.format(body_id))
+
+            # Авторизация
+            return str(profile_user.pk)
+
+    # Перекрытый метод, так как у них там использовались другие функции для получения args из response.body
+    def _on_access_token(self, redirect_uri, client_id, client_secret,
+                         future, fields, response):
+        if response.error:
+            future.set_exception(AuthError('Facebook auth error: %s' % str(response)))
+            return
+        args = json.loads(response.body)
+        session = {
+            "access_token": args["access_token"],
+            "expires": args.get("expires")
+        }
+
+        self.facebook_request(
+            path="/me",
+            callback=functools.partial(
+                self._on_get_user_info, future, session, fields),
+            access_token=session["access_token"],
+            appsecret_proof=hmac.new(key=client_secret.encode('utf8'),
+                                     msg=session["access_token"].encode('utf8'),
+                                     digestmod=hashlib.sha256).hexdigest(),
+            fields=",".join(fields)
+        )
