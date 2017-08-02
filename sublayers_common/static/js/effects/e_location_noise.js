@@ -51,6 +51,7 @@ var ECanvasLocationNoise = (function () {
     };
 
     ECanvasLocationNoise.prototype.redraw = function(ctx, time) {
+        if (!settingsManager.options.location_effects.currentValue) return;
         this._generate_img();
         var shift_x = Math.round(Math.random() * locationManager.location_canvas_effect_manager.width * 0.2);
         var shift_y = Math.round(Math.random() * locationManager.location_canvas_effect_manager.height * 0.2);

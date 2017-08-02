@@ -262,6 +262,19 @@ var SettingsManager = (function() {
                 if (mapManager) mapManager.set_pyramid_size("tiles", new_value);
             },
         },
+        location_effects: {
+            name: "location_effects",
+            page: "graphics",
+            text_name: "Эффекты в городе",
+            text_description: "Эффекты в городе",
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
+            set_callback: function(new_value) {},
+        },
         /* Настройка управления */
         move_forvard: {
             name: "move_forvard",

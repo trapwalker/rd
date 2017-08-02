@@ -15,6 +15,7 @@ var ECanvasLocationLine = (function(){
     }
 
     ECanvasLocationLine.prototype.redraw = function(ctx, time, client_time) {
+        if (!settingsManager.options.location_effects.currentValue) return;
         if (this.is_init) {
             var d_time = client_time - this.last_time;
             if (this.delay <= 0)

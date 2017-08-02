@@ -47,6 +47,7 @@ var ECanvasLocationLaserAnimation = (function () {
 
     ECanvasLocationLaserAnimation.prototype.redraw = function (ctx, time, client_time) {
         //console.log('ECanvasLocationLaserAnimation.prototype.redraw', time);
+        if (!settingsManager.options.location_effects.currentValue) return;
         if (! this.start_time) return;
         ctx.save();
         var frame = this._get_frame_num(client_time);

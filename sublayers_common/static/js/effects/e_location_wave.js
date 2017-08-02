@@ -15,6 +15,7 @@ var ECanvasLocationWave = (function() {
     }
 
     ECanvasLocationWave.prototype.redraw = function(ctx, time, client_time) {
+        if (!settingsManager.options.location_effects.currentValue) return;
         if (this.is_init) {
             var shift = (client_time - this.last_time) * constDisplayRipplingSpeed;
             for (var i = 0; i < this.lines.length; i++) {
