@@ -903,18 +903,20 @@ var LocationPlaceBuilding = (function (_super) {
 
         if (!html_text) {
             var quest_info = journalManager.quests.getCountQuestsByNPC(this.building_rec.head.node_hash);
+            var npc = this.building_rec.head;
             switch (this.building_rec.name) {
                 case 'bar':
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
                     break;
                 case 'dealer':
                     var r = locationManager.get_npc_by_type(LocationHangarNPC);
                     var npc_hangar = r ? r[0] : null;
                     r = locationManager.get_npc_by_type(LocationParkingNPC);
                     var npc_parking = r ? r[0] : null;
-
                     var hangar_npc_str = "";
                     var parking_npc_str = "";
-
                     if (npc_hangar)
                         hangar_npc_str = "<li>" + npc_hangar.npc_rec.title +": Продавец машин" +
                             ". Транспорт от " + npc_hangar.get_min_price() + " за ТС.</li>";
@@ -926,13 +928,14 @@ var LocationPlaceBuilding = (function (_super) {
                         + hangar_npc_str + parking_npc_str +
                         "<li>Доступные задания: " + quest_info.available_count + "</li>" +
                         "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
-
-
                     break;
                 case 'library':
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<ul><li>Тренер: " + npc.title + ".Повышение навыков и получение новых способностей.</li>" +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
                     break;
                 case 'market':
-                    var npc = this.building_rec.head;
                     // todo: выбрать товары для экспорта и импорта
                     html_text = "Вас приветствует " + this.building_rec.title + "." +
                         "<ul><li>Торговец: " + npc.title + "</li>" +
