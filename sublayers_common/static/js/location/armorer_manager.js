@@ -8,6 +8,8 @@ var LocationArmorerNPC = (function (_super) {
         this.start_items = {};
         this.items = {};
 
+        this.last_price_info = {on: 0, off: 0};
+
         this.inv_show_div = null;
         this.armorer_slots = [];
         this.armorer_slots_flags = {};
@@ -77,6 +79,7 @@ var LocationArmorerNPC = (function (_super) {
 
     LocationArmorerNPC.prototype.getPrice = function() {
         var all_price = 0;
+        this.last_price_info = {on: 0, off: 0};
         for (var slot_name in this.items)
             if (this.items.hasOwnProperty(slot_name) && this.start_items.hasOwnProperty(slot_name) && (slot_name.toString().indexOf('slot') >= 0)) {
                 var old_item_rec = this.start_items[slot_name];
@@ -86,6 +89,7 @@ var LocationArmorerNPC = (function (_super) {
                                             (old_item_rec.example.uid != new_item_rec.example.uid))) {
                     //console.log('1 ', slot_name, old_item_rec, new_item_rec);
                     all_price += this.clear_cost;
+                    this.last_price_info.off ++;
                 }
 
                 if (new_item_rec.example && (!old_item_rec.example ||
@@ -93,6 +97,7 @@ var LocationArmorerNPC = (function (_super) {
                                             (old_item_rec.direction != new_item_rec.direction))) {
                     //console.log('2 ', slot_name, old_item_rec, new_item_rec);
                     all_price += this.setup_cost;
+                    this.last_price_info.on ++;
                 }
             }
         return all_price;
@@ -537,11 +542,16 @@ var LocationArmorerNPC = (function (_super) {
         if (!html_text) {
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                var price = this.getPrice();
-                jq_text_div.append('<div>Стоимость всех изменений ' + price + 'NC.</div>');
+                var price = Math.ceil(this.getPrice());
+                if (price)
+                    jq_text_div.append('Установлено: ' + this.last_price_info.on + ' модулей.<br>Снято: ' +
+                        this.last_price_info.off + ' модулей.<br>Цена: ' + price + ' NC<br>Установить?');
+                else
+                    jq_text_div.append('<div>Монтировать модуль: ' + Math.ceil(this.setup_cost) +
+                        ' NC.<br>Демонтировать модуль: ' + Math.ceil(this.clear_cost) + ' NC. </div>');
             }
             else
-                jq_text_div.append('<div>А машина где? Угнали?</div>');
+                jq_text_div.append('<div>Услуги предоставляются только владельцам собственного транспорта.</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);
