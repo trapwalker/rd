@@ -274,6 +274,7 @@ var SettingsManager = (function() {
             currentValue: 0,
             list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
             set_callback: function(new_value) {},
+            init: function() {settingsManager.options.location_effects.value = settingsManager.options.location_effects.currentValue = parseInt(settingsManager.options.location_effects.currentValue);}
         },
         /* Настройка управления */
         move_forvard: {
@@ -1031,6 +1032,7 @@ var SettingsManager = (function() {
                 if (server_obj.hasOwnProperty(opt_name)) value = server_obj[opt_name];
                 if (cookie_obj.hasOwnProperty(opt_name)) value = cookie_obj[opt_name];
                 option.value = option.currentValue = value;
+                if (typeof(option.init) === 'function') setTimeout(option.init, 0);
             }
 
         return false;
