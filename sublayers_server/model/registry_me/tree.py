@@ -120,7 +120,7 @@ field_getter_decorator._debug = False
 
 
 class RegistryLinkField(ReferenceField):
-    def __init__(self, document_type='Node', **kwargs):
+    def __init__(self, document_type='Node', raise_error=False, **kwargs):
         if (
             not isinstance(document_type, six.string_types) and
             not issubclass(document_type, Node)
@@ -131,6 +131,7 @@ class RegistryLinkField(ReferenceField):
         self.dbref = False
         self.document_type_obj = document_type
         self.reverse_delete_rule = DO_NOTHING
+        self.raise_error = raise_error
         BaseField.__init__(self, **kwargs)
 
     @field_getter_decorator
@@ -149,11 +150,11 @@ class RegistryLinkField(ReferenceField):
             try:
                 dereferenced = self.to_python(value)
             except RegistryNodeIsNotFound as e:
-                if not IGNORE_WRONG_LINKS:
-                    raise DoesNotExist('Trying to dereference unknown document %s' % value)
+                if self.raise_error:
+                    return None
 
             if dereferenced is None:
-                assert IGNORE_WRONG_LINKS
+                assert not self.raise_error
             else:
                 instance._data[self.name] = dereferenced
 
@@ -191,7 +192,7 @@ class RegistryLinkField(ReferenceField):
             log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
                 fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
             )
-            if not IGNORE_WRONG_LINKS:
+            if self.raise_error:
                 raise e
 
     def validate(self, value, **kw):
@@ -209,8 +210,10 @@ class RegistryLinkField(ReferenceField):
 
 class EmbeddedNodeField(EmbeddedDocumentField):
 
-    def __init__(self, document_type='Node', **kwargs):
+    def __init__(self, document_type='Node', raise_error=False, **kwargs):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
+        self.raise_error = raise_error
+        self.raise_error = raise_error
 
     def to_python(self, value):
         if isinstance(value, basestring):
@@ -224,10 +227,10 @@ class EmbeddedNodeField(EmbeddedDocumentField):
                 log.warning("URI resolve fail to MAKE {value!r}{fieldname}".format(
                     fieldname=self.name and '(field: {})'.format(self.name) or '', **locals())
                 )
-                if IGNORE_WRONG_LINKS:
-                    return
-                else:
+                if self.raise_error:
                     raise e
+                else:
+                    return None
 
         elif value is None:
             return
@@ -545,7 +548,7 @@ class Node(Subdoc, SubdocToolsMixin):
     _empty_overrided_fields = ListField(field=StringField(), not_inherited=True)
     uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
-    parent = RegistryLinkField(document_type='self', not_inherited=True)
+    parent = RegistryLinkField(document_type='self', not_inherited=True, raise_error=True)
     owner = RegistryLinkField(document_type='self', not_inherited=True)
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
