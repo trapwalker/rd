@@ -110,8 +110,10 @@ class ItemUsable(Item):
         field=RegistryLinkField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Итем который упадет в инвентарь",
+            raise_error=True,  # todo: сделать третье состояние: спрашивать о райзе у объекта
         ),
         caption=u'Список итемов которые упадут в инвентарь после активации',
+        raise_error=True,
     )
     activate_success_audio = StringField(caption=u'Имя звука, сигнализизирующего об успешной активации итема', tags={'client'})
 

@@ -679,7 +679,7 @@ class Node(Subdoc, SubdocToolsMixin):
         if defaults:
             return defaults[0]
 
-        raise RegistryNodeIsNotFound('Node {!r} has no subnode {}'.format(self, path))
+        raise RegistryNodeIsNotFound('Node {}/[{}] is not found'.format(self.uri, '/'.join(path)))
 
     def deep_iter(self, reject_abstract=True):
         queue = [self]
@@ -1049,6 +1049,68 @@ def _patch_all_fields_to_inheritance_support():
     for k, v in globals().items():
         if isinstance(v, type) and issubclass(v, BaseField):
             patch_field_getter(v)
+
+
+def _patch_complex_field():
+    from mongoengine.common import _import_class
+    from mongoengine.fields import ComplexBaseField
+    from bson import DBRef
+    import operator
+
+    def to_python(self, value):
+        """Convert a MongoDB-compatible type to a Python type."""
+        if isinstance(value, six.string_types):
+            return value
+
+        if hasattr(value, 'to_python'):
+            return value.to_python()
+
+        is_list = False
+        _skiped_items = set()
+        if not hasattr(value, 'items'):
+            try:
+                is_list = True
+                value = {k: v for k, v in enumerate(value)}
+            except TypeError:  # Not iterable return the value
+                return value
+
+        if self.field:
+            self.field._auto_dereference = self._auto_dereference
+            value_dict = {}
+            for key, item in value.items():
+                try:
+                    value_dict[key] = self.field.to_python(item)
+                except RegistryNodeIsNotFound as e:
+                    if getattr(self, 'raise_error', False):
+                        raise e
+                    # todo: Решить нужно ли оставлять null в словарях
+                    value_dict[key] = None
+                    _skiped_items.add(key)
+                    log.warning('Skiped corrupted item {self}[{key}]'.format(self=self, key=key))
+        else:
+            Document = _import_class('Document')
+            value_dict = {}
+            for k, v in value.items():
+                if isinstance(v, Document):
+                    # We need the id from the saved object to create the DBRef
+                    if v.pk is None:
+                        self.error('You can only reference documents once they'
+                                   ' have been saved to the database')
+                    collection = v._get_collection_name()
+                    value_dict[k] = DBRef(collection, v.pk)
+                elif hasattr(v, 'to_python'):
+                    value_dict[k] = v.to_python()
+                else:
+                    value_dict[k] = self.to_python(v)
+
+        if is_list:  # Convert back to a list
+            return [v for k, v in sorted(value_dict.items(), key=operator.itemgetter(0)) if not k in _skiped_items]
+        return value_dict
+
+    ComplexBaseField.to_python = to_python
+
+
+_patch_complex_field()
 
 
 map(patch_field_getter, [
