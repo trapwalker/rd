@@ -41,6 +41,15 @@
         pointer-events: none;
     }
 
+    .location-noise-canvas-wrap {
+        position: absolute;
+        width: 1540px;
+        height: 900px;
+        top: 120px;
+        left: 190px;
+        pointer-events: none;
+    }
+
     .npc-wrap {
         position: relative;
         pointer-events: auto;
@@ -180,6 +189,10 @@
         <div id="btn_2_text" class="town-btn-block left{{ '' if is_big else ' small' }}">Отказаться от квеста</div>
         <div id="btn_3_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></br>Назад</div>
         <div id="btn_4_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></br>Выход</div>
+    </div>
+
+    <div class="location-noise-canvas-wrap">
+        <canvas id="ctest_3" width="1540" height="900" style="position: absolute; pointer-events: none;"></canvas>
     </div>
 
     {% if is_big %}

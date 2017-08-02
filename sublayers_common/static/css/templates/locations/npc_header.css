@@ -50,8 +50,13 @@
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    font: 14px FreePixel;
 }
 
-#building_nukeoil .npc-info {  width: 253px; }
+#building_nukeoil .npc-info { width: 253px; margin: 14px 0 0 0;}
 
-#building_nukeoil .npc-text-block {  width: 320px;  float: right; }
+#building_nukeoil .npc-text-block { width: 355px;  float: right; }
+
+#building_nukeoil .npc-text-block .npc-text { height: 100%;}
+
+.npc-text ul {margin: 3px 0;  padding-left: 18px; }

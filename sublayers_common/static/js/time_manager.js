@@ -194,7 +194,8 @@ var TimeManager = (function () {
 
         //CanvasTestStart();
         mapCanvasManager.redraw(time);
-        locationManager.location_canvas_manager.redraw(time);
+        locationManager.location_canvas_laser_manager.redraw(time);
+        locationManager.location_canvas_effect_manager.redraw(time);
 
         if (timeManager._need_fps <= 0)
             timeManager._timer = requestAnimationFrame(timeManager._interval_perform);

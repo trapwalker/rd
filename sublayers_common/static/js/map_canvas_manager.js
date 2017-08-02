@@ -4,7 +4,6 @@
 * Чем выше приоритет добавляемого объекта, тем раньше он отрисуется на канвас!
 * */
 
-
 var ParentCanvasManager = (function(_super){
     __extends(ParentCanvasManager, _super);
 
@@ -19,22 +18,28 @@ var ParentCanvasManager = (function(_super){
 
         this.dom_canvas = null;
         this.dom_context = null;
+
+        this.width = 0;
+        this.height = 0;
     }
 
     ParentCanvasManager.prototype.init_canvas = function() {
         this.canvas = this.canvas || document.createElement("canvas");
         this.context = this.canvas.getContext("2d");
         var a = mapManager.getMapSize();
-        this.canvas.width = a.x;
-        this.canvas.height = a.y;
+        this.width = a.x;
+        this.height = a.y;
+
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
         //smap.renderer.canvas = this.canvas;
         //smap.renderer.context = this.context;
 
         this.dom_canvas = document.getElementById(this.canvas_id);
         this.dom_context = this.dom_canvas.getContext("2d");
-        this.dom_canvas.width = a.x;
-        this.dom_canvas.height = a.y;
+        this.dom_canvas.width = this.width;
+        this.dom_canvas.height = this.height;
 
         this.jq_for_cursor = $("#bodydiv");
     };
@@ -73,11 +78,9 @@ var ParentCanvasManager = (function(_super){
 
     ParentCanvasManager.prototype.redraw = function(time) {
         var client_time = clock.getClientTime();
-        //var client_time = clock.getCurrentTime() * 1000;
-
+        this.context.clearRect(0, 0, 1920, 1080);
         for (var i = 0; i < this.vobj_list.length; i++)
             this.vobj_list[i].obj.redraw(this.context, time, client_time);
-
         this.dom_context.clearRect(0, 0, this.dom_canvas.width, this.dom_canvas.height);
         this.dom_context.drawImage(this.canvas, 0, 0);
     };
@@ -174,7 +177,6 @@ var MapCanvasManager = (function(_super){
             setTimeout(function(){ mapCanvasManager.init_canvas(); mapCanvasManager.called_reinit_canvas = false;}, 50);
         }
     };
-
 
     return MapCanvasManager;
 })(ParentCanvasManager);
