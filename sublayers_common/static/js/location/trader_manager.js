@@ -11,6 +11,8 @@ var LocationTraderNPC = (function (_super) {
 
         this.trader_assortment = [];
         this.agent_assortment = [];
+        this.price_player = 0;
+        this.price_trader = 0;
 
         this.playerInv = [];
         this.playerTable = [];
@@ -344,6 +346,9 @@ var LocationTraderNPC = (function (_super) {
         this.jq_main_div.find('.trader-player-exchange-total').text(price_trader + 'NC');
         this.jq_main_div.find('.trader-trader-exchange-total').text(price_player + 'NC');
 
+        this.price_player = price_player;
+        this.price_trader = price_trader;
+
         // Вызвать обновление teachingManager
         teachingManager.redraw();
     };
@@ -377,6 +382,7 @@ var LocationTraderNPC = (function (_super) {
         this._reDrawItemList(srcDiv, srcList, srcCls);
 
         this.calcPriceTables();
+        this.set_header_text();
     };
 
     LocationTraderNPC.prototype.updatePrice = function(event) {
@@ -505,6 +511,32 @@ var LocationTraderNPC = (function (_super) {
             var new_filter = this.filters[this[str_name_of_index]];
             this.filter_apply(target_inv, new_filter);
         }
+    };
+
+    LocationTraderNPC.prototype.set_header_text = function(html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
+            if (!user.example_car)
+                jq_text_div.append('<div>Подгоните ваш транспорт к складу.</div>');
+            else if ((this.playerTable.length == 0) && (this.traderTable.length == 0))
+                jq_text_div.append('<div>Стол обмена пуст. Выберите товар для начала торговли.</div>');
+            else if ((user.balance + this.price_player - this.price_trader) < 0)
+                jq_text_div.append('<div>Недостаточно средств.</div>');
+            else {
+                jq_text_div.append(
+                    '<div>Продаю на ' + this.price_trader + ' NC.</div>' +
+                    '<div>Покупаю на ' + this.price_player + ' NC.</div>'
+                );
+                var d_price = this.price_player - this.price_trader;
+                if (d_price >= 0)
+                    jq_text_div.append('<div>Итого с меня ' + d_price + ' NC.</div>');
+                else
+                    jq_text_div.append('<div>Итого с тебя ' + -d_price + ' NC.</div>');
+            }
+            html_text = jq_text_div;
+        }
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     return LocationTraderNPC;

@@ -10,7 +10,8 @@ var ECanvasLocationLaserAnimation = (function () {
         this.offset_x = 409;
         this.offset_y = 52;
 
-        if (locationManager.location_canvas_manager) locationManager.location_canvas_manager.add_vobj(this, 80);
+        if (locationManager.location_canvas_laser_manager)
+            locationManager.location_canvas_laser_manager.add_vobj(this, 80);
     }
 
     ECanvasLocationLaserAnimation.prototype._get_frame_num = function (time) {
@@ -46,13 +47,12 @@ var ECanvasLocationLaserAnimation = (function () {
 
     ECanvasLocationLaserAnimation.prototype.redraw = function (ctx, time, client_time) {
         //console.log('ECanvasLocationLaserAnimation.prototype.redraw', time);
+        if (!settingsManager.options.location_effects.currentValue) return;
         if (! this.start_time) return;
-
         ctx.save();
         var frame = this._get_frame_num(client_time);
         ctx.drawImage(this.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
-            this.offset_x, this.offset_y, this.frame_width, this.frame_height);
-
+                      this.offset_x, this.offset_y, this.frame_width, this.frame_height);
         ctx.restore();
     };
 

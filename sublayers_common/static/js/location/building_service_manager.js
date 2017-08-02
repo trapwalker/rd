@@ -139,6 +139,37 @@ var LocationServiceBuilding = (function (_super) {
             _super.prototype.set_buttons.call(this);
     };
 
+    LocationServiceBuilding.prototype.set_header_text = function (html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+        if (!html_text) {
+            var quest_info = journalManager.quests.getCountQuestsByNPC(this.building_rec.head.node_hash);
+            var r = locationManager.get_npc_by_type(LocationArmorerNPC);
+            var npc_armorer = r ? r[0] : null;
+            r = locationManager.get_npc_by_type(LocationTunerNPC);
+            var npc_tuner = r ? r[0] : null;
+            r = locationManager.get_npc_by_type(LocationMechanicNPC);
+            var npc_mechanic = r ? r[0] : null;
+            var armorer_npc_str = "";
+            var tuner_npc_str = "";
+            var mechanic_npc_str = "";
+
+            if (npc_armorer)
+                armorer_npc_str = "<li>" + npc_armorer.npc_rec.title + ": оружейник. Установка орудий и модулей на кузов транспорта.</li>";
+            if (npc_tuner)
+                tuner_npc_str = "<li>" + npc_tuner.npc_rec.title + ": стилист. Стайлинг транспорта.</li>";
+            if (npc_mechanic)
+                mechanic_npc_str = "<li>" + npc_mechanic.npc_rec.title + ": механик. Тюнинг внутренних компонентов транспорта.</li>";
+            html_text = "Вас приветствует " + this.building_rec.title + "." +
+                "<ul>" +
+                "<li>Ремонт транспорта.</li>" +
+                armorer_npc_str + tuner_npc_str + mechanic_npc_str +
+                "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+        }
+
+        _super.prototype.set_header_text.call(this, html_text);
+    };
+
     LocationServiceBuilding.prototype.clickBtn = function (btnIndex) {
         //console.log('LocationServiceBuilding.prototype.clickBtn', btnIndex);
         if (this.active_central_page == 'buildingPageRepair_service') {
