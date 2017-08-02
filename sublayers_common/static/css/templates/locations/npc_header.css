@@ -4,7 +4,7 @@
     margin: 0 auto 0 auto;
     width: 620px;
     height: 163px;
-    font: 16px Nouveau_IBM
+    font: 16px Nouveau_IBM;
     color: #2ffa00;
 }
 
@@ -50,7 +50,7 @@
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    font: 14px FreePixel; 
+    font: 14px FreePixel;
 }
 
 #building_nukeoil .npc-info { width: 253px; margin: 14px 0 0 0;}
