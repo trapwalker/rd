@@ -261,7 +261,7 @@ var LocationGasStationNPC = (function (_super) {
             current_gas += this._get_selected_volume();
             html_text =
                 'Заправить: ' + Math.ceil(current_gas) + ' NC</br>' +
-                'Заправить всё: ' + Math.ceil(user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) + 'NC';
+                'Заправить полный бак и канистры: ' + Math.ceil(user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) + 'NC';
         }
         _super.prototype.set_header_text.call(this, html_text);
     };
