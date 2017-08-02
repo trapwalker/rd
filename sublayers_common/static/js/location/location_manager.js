@@ -77,7 +77,8 @@ var LocationManager = (function () {
         this.dump = null;
 
         // Для различных эффектов в городе
-        this.location_canvas_manager = new LocationCanvasManager();
+        this.location_canvas_laser_manager = new LocationCanvasManager("ctest_2");
+        this.location_canvas_effect_manager = new LocationCanvasManager("ctest_3");
 
         // todo: Придумать куда это перенести!
         this.locations_canvas_effects = {};
@@ -88,7 +89,10 @@ var LocationManager = (function () {
             SetImageOnLoad(lasers_img, function (img) {
                 locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
                 locationManager.locations_canvas_effects['laser'].start();
-                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationTeachingLineBlink();
+                locationManager.locations_canvas_effects['teaching_blink'] = new ECanvasLocationTeachingLineBlink();
+                locationManager.locations_canvas_effects['line'] = new ECanvasLocationLine();
+                locationManager.locations_canvas_effects['wave'] = new ECanvasLocationWave();
+                locationManager.locations_canvas_effects['noise'] = new ECanvasLocationNoise();
             }
         );
         }, 50);
@@ -215,8 +219,12 @@ var LocationManager = (function () {
         this.visitor_manager.update_visitors();
 
         // Разрешаем отрисовку эффектов на канвас
-        this.location_canvas_manager.init_canvas();
-        this.location_canvas_manager.is_canvas_render = true;
+        this.location_canvas_laser_manager.init_canvas();
+        this.location_canvas_effect_manager.init_canvas();
+        this.location_canvas_laser_manager.is_canvas_render = true;
+        this.location_canvas_effect_manager.is_canvas_render = true;
+        locationManager.locations_canvas_effects['line'].init();
+        locationManager.locations_canvas_effects['wave'].init();
 
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
@@ -270,7 +278,8 @@ var LocationManager = (function () {
         this.npc = {};
 
         // Запрещаем отрисовку эффектов на канвас
-        this.location_canvas_manager.is_canvas_render = false;
+        this.location_canvas_laser_manager.is_canvas_render = false;
+        this.location_canvas_effect_manager.is_canvas_render = false;
 
         // Очистка локаций меню
         if (this.location_menu) {
