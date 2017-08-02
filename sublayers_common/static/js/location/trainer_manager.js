@@ -470,8 +470,7 @@ var LocationTrainerNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         if (! html_text) {
             var jq_text_div = $('<div></div>');
-            jq_text_div.append('<div>Применить: ' + this._getPrice() + 'NC</div>');
-            jq_text_div.append('<div>Отмена: 0NC</div>');
+            jq_text_div.append('<div>Применить изменения характеристик: ' + this._getPrice() + 'NC.</div>');
             html_text = jq_text_div
         }
         _super.prototype.set_header_text.call(this, html_text);
