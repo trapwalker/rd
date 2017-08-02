@@ -439,9 +439,11 @@ var LocationManager = (function () {
             console.log(npc_node_hash, build_type, npc, build);
             return;
         }
+
         locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
-                                         npc_node_hash: npc_node_hash} , 'building_quest');
+        if (build_type != 'nukeoil')  // чтоб не отображать инфу для одинаковых везде NPC
+            locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
+                                             npc_node_hash: npc_node_hash} , 'building_quest');
     };
 
     LocationManager.prototype.handler_mouseleave = function() {

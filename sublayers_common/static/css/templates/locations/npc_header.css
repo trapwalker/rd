@@ -4,7 +4,7 @@
     margin: 0 auto 0 auto;
     width: 620px;
     height: 163px;
-    font: 16px Nouveau_IBM;
+    font: 14px FreePixel;
     color: #2ffa00;
 }
 
@@ -52,6 +52,10 @@
     overflow-x: hidden;
 }
 
-#building_nukeoil .npc-info {  width: 253px; }
+#building_nukeoil .npc-info { width: 253px; margin: 14px 0 0 0;}
 
-#building_nukeoil .npc-text-block {  width: 320px;  float: right; }
+#building_nukeoil .npc-text-block { width: 355px;  float: right; }
+
+#building_nukeoil .npc-text-block .npc-text { height: 100%;}
+
+#building_nukeoil .npc-text ul {margin: 3px 0;  padding-left: 18px; }
