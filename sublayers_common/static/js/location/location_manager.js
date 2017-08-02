@@ -901,9 +901,57 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.set_header_text = function (html_text) {
         if (!locationManager.isActivePlace(this)) return;
 
-        //if (!html_text)
-        //    if (this.selected_quest)
-        //        html_text = $('<div>Цена отмены квеста</div>');
+        if (!html_text) {
+            var quest_info = journalManager.quests.getCountQuestsByNPC(this.building_rec.head.node_hash);
+            switch (this.building_rec.name) {
+                case 'bar':
+                    break;
+                case 'dealer':
+                    var r = locationManager.get_npc_by_type(LocationHangarNPC);
+                    var npc_hangar = r ? r[0] : null;
+                    r = locationManager.get_npc_by_type(LocationParkingNPC);
+                    var npc_parking = r ? r[0] : null;
+
+                    var hangar_npc_str = "";
+                    var parking_npc_str = "";
+
+                    if (npc_hangar)
+                        hangar_npc_str = "<li>" + npc_hangar.npc_rec.title +": Продавец машин" +
+                            ". Транспорт от " + npc_hangar.get_min_price() + " за ТС.</li>";
+                    if (npc_parking)
+                        parking_npc_str = "<li>" + npc_parking.npc_rec.title +": Парковщик</li>";
+
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<ul>"
+                        + hangar_npc_str + parking_npc_str +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+
+
+                    break;
+                case 'library':
+                    break;
+                case 'market':
+                    var npc = this.building_rec.head;
+                    // todo: выбрать товары для экспорта и импорта
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<ul><li>Торговец: " + npc.title + "</li>" +
+                        "<li>Экспорт: " + 0 + "</li>" +
+                        "<li>Импорт: " + 0 + "</li>" +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+                case 'mayor':
+                    html_text = "Вас приветствует мэрия города " + locationManager.example.title + "." +
+                        "<ul><li>Пожертвование городу. Цена: 5000 Nc (+10 в отношение, +5 в карму)</li>" +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+
+                default:
+                    console.warn('Not found description for ', this.building_rec.name)
+            }
+        }
 
         _super.prototype.set_header_text.call(this, html_text);
     };
