@@ -6,7 +6,7 @@ var ECanvasLocationTeachingLineBlink = (function () {
         this.target_opacity = Math.random();
         this.d_opacity = 0.7;
         this.lag = 0;
-        if (locationManager.location_canvas_manager) locationManager.location_canvas_manager.add_vobj(this, 80);
+        if (locationManager.location_canvas_laser_manager) locationManager.location_canvas_laser_manager.add_vobj(this, 80);
     }
 
     ECanvasLocationTeachingLineBlink.prototype.redraw = function (ctx, time, client_time) {
