@@ -809,7 +809,8 @@ class Registry(Document):
         self._cache = {}
         self.loading = None
         self.aliases = {}
-        self.update_aliases(self.root)
+        if self.root is not None:
+            self.update_aliases(self.root)
 
     def update_aliases(self, node):
         aliases = self.aliases
