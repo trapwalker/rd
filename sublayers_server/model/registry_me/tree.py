@@ -571,6 +571,7 @@ class Node(Subdoc, SubdocToolsMixin):
     subnodes = MapField(field=EmbeddedNodeField(), not_inherited=True)
     # todo: make `owner` property
     filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
+    aliases = ListField(field=StringField(), not_inherited=True, caption=u"Алиасы узла", doc=u"Линки могут резолвиться по алиасам")
 
     def __init__(self, parent=None, _uri=None, _empty_overrided_fields=None, _reg_init=False, **kw):
         cls = type(self)
@@ -803,6 +804,24 @@ class Registry(Document):
         super(Registry, self).__init__(**kw)
         self._cache = {}
         self.loading = None
+        self.aliases = {}
+        self.update_aliases(self.root)
+
+    def update_aliases(self, node):
+        aliases = self.aliases
+        node_aliases = node.aliases
+        if node_aliases:
+            for alias in node_aliases:
+                already_aliased = aliases.get(alias, None)
+                if already_aliased is None:
+                    aliases[alias] = node
+                else:
+                    log.warning('Node aliases conflict: {alias} -> {node}, {already_aliased}'.format(
+                        alias=alias, node=node, already_aliased=already_aliased,
+                    ))
+
+        for subnode in node.subnodes.values():
+            self.update_aliases(subnode)
 
     @warn_calling()
     def __nonzero__(self):
@@ -827,16 +846,37 @@ class Registry(Document):
             return result
 
         root_name, rest_path = path[0], path[1:]
-        if self.root.name == root_name:
-            result = self.root.get(rest_path, *defaults)
-            self._cache[path] = result
-            return result
+
+        # todo: ## OPTIMIZE deep node link resolving to ~O(1)
+
+        try:
+            if self.root.name == root_name:
+                result = self.root.get(rest_path, *defaults)
+                self._cache[path] = result
+                return result
+        except RegistryNodeIsNotFound as e:
+            alternative = self.get_by_alias(uri)
+            if alternative is not None:
+                log.info('Link replaced by alias: {} -> {}'.format(uri, alternative.uri))
+                return alternative
+            else:
+                raise e
+
+        alternative = self.get_by_alias(uri)
+        if alternative is not None:
+            log.info('Link replaced by alias: {} -> {}'.format(uri, alternative.uri))
+            return alternative
 
         if defaults:
             return defaults[0]
 
         # todo: try to replace by alias
         raise RegistryNodeIsNotFound('Registry has no root named {!r}'.format(self, root_name), base_uri='', rest_path=uri)
+
+    def get_by_alias(self, uri):
+        aliases = self.aliases
+        uri = str(uri)
+        return aliases.get(uri, None) or aliases.get(uri[6:] if uri.startswith('reg://') else ('reg://' + uri), None)
 
     def make_node_by_uri(self, uri, **kw):
         uri = URI.ensure(uri)
@@ -851,6 +891,7 @@ class Registry(Document):
         :return: self
         :rtype: Registry
         """
+        aliases = self.aliases
         self.loading = 'preloading'
         path = os.path.join(path, 'registry')
         log.debug('Registry FS loading start from: %r', path)
@@ -861,6 +902,18 @@ class Registry(Document):
                 pth, owner = stack.pop()
                 node = self._load_node_from_fs(pth, owner)
                 if node is not None:
+
+                    node_aliases = node.aliases
+                    if node_aliases:
+                        for alias in node_aliases:
+                            already_aliased = aliases.get(alias, None)
+                            if already_aliased is None:
+                                aliases[alias] = node
+                            else:
+                                log.warning('Node aliases conflict: {alias} -> {node}, {already_aliased}'.format(
+                                    alias=alias, node=node, already_aliased=already_aliased,
+                                ))
+
                     if owner is None:
                         self.root = node
                         # log.debug('Setup root: {!r}'.format(node))
