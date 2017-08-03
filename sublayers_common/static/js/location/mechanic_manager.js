@@ -11,6 +11,9 @@ var LocationMechanicNPC = (function (_super) {
         this.inventory_tag = null;
         this._some_in_draggable = null; // Имя слота, который сейчас таскается (slot_m12 или 0...N от размера инвентаря)
 
+         this.setup_cost = 0;
+         this.clear_cost = 0;
+
         this.mechanic_systems_names = ["engine", "transmission", "suspension", "brakes", "cooling"];
         this.mechanic_systems_names_rus = ["Двигатель", "Трансмиссия", "Подвеска", "Тормоза", "Охлаждение"];
 
@@ -109,11 +112,14 @@ var LocationMechanicNPC = (function (_super) {
         this.clear_user_info();
         if (user.example_car && user.car_npc_info) {
             var self = this;
+            var npc = this.npc_rec;
+            var skill_effect = 1 - (user.actual_trading - npc.trading + 100) / 200;
+            this.setup_cost = user.example_car.price * npc.setup_cost * (1 + npc.margin_slot * skill_effect);
+            this.clear_cost = user.example_car.price * npc.clear_cost * (1 + npc.margin_slot * skill_effect);
 
             this.mechanic_slots = user.car_npc_info.mechanic_slots;
 
             var jq_buttons_list = $('<div class="mechanic-center-page-control"></div>');
-
             this.jq_center_main_block.append(jq_buttons_list);
 
             // Подготовка вёрстки - проходим по системам и добавляем их
@@ -137,7 +143,6 @@ var LocationMechanicNPC = (function (_super) {
             this.jq_main_div.find('.mechanic-center-page-control-page-button').click({mechanic: this}, LocationMechanicNPC.system_event_click);
 
             // todo: Переделать все системы на классы, убрав ID-шники
-
             var jq_slots = this.jq_main_div.find('.mechanic-slot');
             jq_slots.mouseenter({mechanic: self}, LocationMechanicNPC.slot_event_mouseenter);
             jq_slots.mouseleave({mechanic: self}, LocationMechanicNPC.slot_event_mouseleave);
@@ -422,9 +427,9 @@ var LocationMechanicNPC = (function (_super) {
             if (user.example_car) {
                 var cti = this.current_transaction_info();
                 if (cti.on == 0 && cti.off == 0)
-                    jq_text_div.append('<div>Установить деталь: 100 NC. <br>Снять деталь: 100 NC. </div>');
+                    jq_text_div.append('<div>Установить деталь: ' + this.setup_cost + ' NC. <br>Снять деталь: ' + this.clear_cost +' NC. </div>');
                 else {
-                    var price = (cti.on + cti.off) * 100;
+                    var price = Math.ceil(cti.on * this.setup_cost + cti.off * this.clear_cost);
                     jq_text_div.append('Установлено: ' + cti.on + ' деталей.<br>Снято: ' + cti.off + ' деталей.<br>Цена: ' + price + ' NC<br>Установить?');
                 }
             }
