@@ -37,13 +37,20 @@ def agents_clean(ctx):
 @click.option('--fixup', '-f', 'fixup', is_flag=True, default=False, help='Fixup problems')
 @click.option('--wipe_unsolved', '-w', 'wipe_unsolved', is_flag=True, default=False, help='Delete agents with unsolved problems')
 @click.option('--reg_reload', '-r', 'reg_reload', is_flag=True, default=False, help='Reload registry from filesystem')
-@click.option('--skip', '-s', 'skip', default=None, help='Reload registry from filesystem')
+@click.option('--skip', '-s', 'skip', default=None, type=click.STRING, help='Count records to skip')
+@click.option('--limit', '-l', 'limit', default=None, type=click.STRING, help='Count records to limit')
 @click.pass_context
-def agents_check(ctx, fixup, wipe_unsolved, reg_reload):
-    from sublayers_server.model.registry_me.tree import GRLPC
+def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit):
+    from sublayers_server.model.registry_me.tree import GRLPC, RegistryNodeIsNotFound
 
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reg_reload, save_loaded=fixup)
-    agents = Agent.objects.skip(50).limit(50).as_pymongo()
+    agents = Agent.objects.as_pymongo()
+    if skip:
+        agents = agents.skip(50)
+
+    if limit:
+        agents = agents.limit(50)
+
     repeat = True
     a, i = None, 0
     di = {}
