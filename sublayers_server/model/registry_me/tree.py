@@ -63,8 +63,27 @@ class RegistryNodeFormatError(RegistryError):
 
 
 class RegistryNodeIsNotFound(RegistryError):
-    pass
+    def __init__(self, message, base_uri, rest_path, *av, **kw):
+        super(RegistryNodeIsNotFound, self).__init__(*av, **kw)
+        self.message = message
+        self.usage_path = []
+        self.base_uri = base_uri
+        self.rest_path = rest_path
 
+    def usage_push(self, s):
+        self.usage_path.append(s)
+
+    @property
+    def usage(self):
+        return ''.join(reversed(self.usage_path))
+
+    @property
+    def uri(self):
+        return '{self.base_uri}/[{rest}]'.format(self=self, rest='/'.join(self.rest_path))
+
+    def __str__(self):
+        # todo: do it unicode safe by message
+        return '{self.message} # {self.usage}=={self.uri}'.format(self=self)
 
 class Nil:
     """Impossible value of field"""
@@ -120,7 +139,7 @@ field_getter_decorator._debug = False
 
 
 class RegistryLinkField(ReferenceField):
-    def __init__(self, document_type='Node', raise_error=False, **kwargs):
+    def __init__(self, document_type='Node', errors='strict', **kwargs):
         if (
             not isinstance(document_type, six.string_types) and
             not issubclass(document_type, Node)
@@ -131,7 +150,7 @@ class RegistryLinkField(ReferenceField):
         self.dbref = False
         self.document_type_obj = document_type
         self.reverse_delete_rule = DO_NOTHING
-        self.raise_error = raise_error
+        self.errors = errors
         BaseField.__init__(self, **kwargs)
 
     @field_getter_decorator
@@ -146,17 +165,12 @@ class RegistryLinkField(ReferenceField):
         global REGISTRY
 
         if value is not None and self._auto_dereference and isinstance(value, basestring) and REGISTRY is not None:
-            dereferenced = None
             try:
                 dereferenced = self.to_python(value)
-            except RegistryNodeIsNotFound as e:
-                if self.raise_error:
-                    return None
-
-            if dereferenced is None:
-                assert not self.raise_error
-            else:
                 instance._data[self.name] = dereferenced
+            except RegistryNodeIsNotFound as e:
+                e.usage_push('->{!r}'.format(instance))
+                raise e
 
         return super(ReferenceField, self).__get__(instance, owner)
 
@@ -189,11 +203,13 @@ class RegistryLinkField(ReferenceField):
         try:
             return REGISTRY.get(value)
         except RegistryNodeIsNotFound as e:
-            log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
-                fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
-            )
-            if self.raise_error:
+            if self.name:
+                e.usage_push('.{self.name}'.format(self=self))
+            if self.errors == 'strict':
                 raise e
+            # todo: try to replace by alias
+            log.warning('Corrupted link ignored: {e}'.format(e=e))
+            return None
 
     def validate(self, value, **kw):
 
@@ -210,46 +226,39 @@ class RegistryLinkField(ReferenceField):
 
 class EmbeddedNodeField(EmbeddedDocumentField):
 
-    def __init__(self, document_type='Node', raise_error=False, **kwargs):
+    def __init__(self, document_type='Node', errors='strict', **kwargs):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
-        self.raise_error = raise_error
-        self.raise_error = raise_error
+        self.errors = errors
 
     def to_python(self, value):
-        if isinstance(value, basestring):
-            global REGISTRY
-            if REGISTRY is None:
-                return value
-
-            try:
-                return REGISTRY.make_node_by_uri(value)
-            except RegistryNodeIsNotFound as e:
-                log.warning("URI resolve fail to MAKE {value!r}{fieldname}".format(
-                    fieldname=self.name and '(field: {})'.format(self.name) or '', **locals())
-                )
-                if self.raise_error:
-                    raise e
-                else:
-                    return None
-
-        elif value is None:
+        if value is None:
             return
 
-        # elif isinstance(value, dict):
-        #     parent = value.pop('parent', None)
-        #     if isinstance(parent, basestring):
-        #         parent = REGISTRY.get(parent)
-        #     cls = self.document_type if parent is None else type(parent)
-        #     return cls(parent=parent, **value)
+        try:
+            if isinstance(value, basestring):
+                global REGISTRY
+                if REGISTRY is None:
+                    return value
 
-        # Устанавливаем класс от родителя, если не указан явно. Если родителя нет, класс будет взят из описания поля
-        if isinstance(value, dict) and '_cls' not in value:
-            parent = value.get('parent', None)
-            if parent is not None and not isinstance(parent, Node):
-                parent = REGISTRY.get(parent)
-                value.setdefault('_cls', parent._cls)
+                return REGISTRY.make_node_by_uri(value)
 
-        return super(EmbeddedNodeField, self).to_python(value)
+            # Устанавливаем класс от родителя, если не указан явно. Если родителя нет, класс будет взят из описания поля
+            if isinstance(value, dict) and '_cls' not in value:
+                parent = value.get('parent', None)
+                if parent is not None and not isinstance(parent, Node):
+                    parent = REGISTRY.get(parent)
+                    value.setdefault('_cls', parent._cls)
+
+            return super(EmbeddedNodeField, self).to_python(value)
+
+        except RegistryNodeIsNotFound as e:
+            if self.name:
+                e.usage_push('.{self.name}'.format(self=self))
+            if self.errors == 'strict':
+                raise e
+            # todo: try to replace by alias
+            log.warning('Corrupted embedded parent link ignored ({self.name}): {e}'.format(self=self, e=e))
+            return None
 
     def __set__(self, instance, value):
         if instance._initialised:
@@ -548,7 +557,7 @@ class Node(Subdoc, SubdocToolsMixin):
     _empty_overrided_fields = ListField(field=StringField(), not_inherited=True)
     uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
     name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
-    parent = RegistryLinkField(document_type='self', not_inherited=True, raise_error=True)
+    parent = RegistryLinkField(document_type='self', not_inherited=True)
     owner = RegistryLinkField(document_type='self', not_inherited=True)
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
@@ -679,7 +688,8 @@ class Node(Subdoc, SubdocToolsMixin):
         if defaults:
             return defaults[0]
 
-        raise RegistryNodeIsNotFound('Node {}/[{}] is not found'.format(self.uri, '/'.join(path)))
+        # todo: try to replace by alias
+        raise RegistryNodeIsNotFound('Node is not found', base_uri=self.uri, rest_path=path)
 
     def deep_iter(self, reject_abstract=True):
         queue = [self]
@@ -825,7 +835,8 @@ class Registry(Document):
         if defaults:
             return defaults[0]
 
-        raise RegistryNodeIsNotFound('Registry has no root named {!r}'.format(self, root_name))
+        # todo: try to replace by alias
+        raise RegistryNodeIsNotFound('Registry has no root named {!r}'.format(self, root_name), base_uri='', rest_path=uri)
 
     def make_node_by_uri(self, uri, **kw):
         uri = URI.ensure(uri)
@@ -1066,7 +1077,6 @@ def _patch_complex_field():
             return value.to_python()
 
         is_list = False
-        _skiped_items = set()
         if not hasattr(value, 'items'):
             try:
                 is_list = True
@@ -1081,12 +1091,16 @@ def _patch_complex_field():
                 try:
                     value_dict[key] = self.field.to_python(item)
                 except RegistryNodeIsNotFound as e:
-                    if getattr(self, 'raise_error', False):
+                    e.usage_push('[{key}]'.format(key=key))
+                    if self.name:
+                        e.usage_push('.{self.name}'.format(self=self))
+
+                    if getattr(self, 'errors', 'strict') == 'strict':
                         raise e
-                    # todo: Решить нужно ли оставлять null в словарях
-                    value_dict[key] = None
-                    _skiped_items.add(key)
-                    log.warning('Skiped corrupted item {self}[{key}]'.format(self=self, key=key))
+                    # todo: Try to replace by alias
+                    # В словарях при неудачном резолве по соответствующему ключу ничего не записывается
+                    # value_dict[key] = None
+                    log.warning('Skiped corrupted item: {e}'.format(e=e))
         else:
             Document = _import_class('Document')
             value_dict = {}
@@ -1104,7 +1118,7 @@ def _patch_complex_field():
                     value_dict[k] = self.to_python(v)
 
         if is_list:  # Convert back to a list
-            return [v for k, v in sorted(value_dict.items(), key=operator.itemgetter(0)) if not k in _skiped_items]
+            return [v for k, v in sorted(value_dict.items(), key=operator.itemgetter(0))]
         return value_dict
 
     ComplexBaseField.to_python = to_python

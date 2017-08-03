@@ -21,6 +21,7 @@ from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_server.model.registry_me import classes
 from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.registry_me.tree import (
+    RegistryNodeIsNotFound,
     connect,
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
     GenericEmbeddedDocumentField,
@@ -35,20 +36,22 @@ import os
 
 def test1(reload, save_loaded):
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
-    agents = Agent.objects.limit(30)
+    agents = Agent.objects.limit(100)
     repeat = True
     a, i = None, 0
     while repeat:
         a = None
-        print('{:5}: '.format(i), end='')
+
         try:
             a = agents.next()
+            print('{:5}: '.format(i), end='')
             print(a.login)
 
         except StopIteration:
             repeat = False
-        except Exception as e:
-            print('ERROR({e.__class__.__name__}): {e}'.format(e=e))
+        except RegistryNodeIsNotFound as e:
+            print('{:5}: '.format(i), end='')
+            print(e)
         finally:
             i += 1
 
