@@ -44,7 +44,7 @@ def get_tiles_admin(ax, ay, tile_name='merged'):
                     for y in range(py-2, py+3):
                         img_source = http.fetch(request=download_str(tile_name, zoom, x, y), method="GET").body
                         file_like = cStringIO.StringIO(img_source)
-                        with open(os.path.join(os.path.join(os.path.join(temp_dir, str(zoom)), str(x)), '{}.jpg'.format(y)), 'wb') as fdest:
+                        with open(os.path.join(os.path.join(os.path.join(temp_dir, str(zoom)), str(x)), '{}.png'.format(y)), 'wb') as fdest:
                             shutil.copyfileobj(file_like, fdest)
         except Exception as e:
             log.info('Tile Archive Error: {}  {}: {}'.format(tile_name, ax, ay))
