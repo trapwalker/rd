@@ -168,6 +168,8 @@ class RegistryLinkField(ReferenceField):
             try:
                 dereferenced = self.to_python(value)
                 instance._data[self.name] = dereferenced
+                if dereferenced is None or dereferenced.uri != value:
+                    instance._mark_as_changed(self.name)
             except RegistryNodeIsNotFound as e:
                 e.usage_push('->{!r}'.format(instance))
                 raise e
@@ -208,6 +210,7 @@ class RegistryLinkField(ReferenceField):
             if self.errors == 'strict':
                 raise e
             # todo: try to replace by alias
+            GRLPC.inc()
             log.warning('Corrupted link ignored: {e}'.format(e=e))
             return None
 
@@ -257,6 +260,7 @@ class EmbeddedNodeField(EmbeddedDocumentField):
             if self.errors == 'strict':
                 raise e
             # todo: try to replace by alias
+            GRLPC.inc()
             log.warning('Corrupted embedded parent link ignored ({self.name}): {e}'.format(self=self, e=e))
             return None
 
@@ -857,6 +861,7 @@ class Registry(Document):
         except RegistryNodeIsNotFound as e:
             alternative = self.get_by_alias(uri)
             if alternative is not None:
+                GRLPC.inc()
                 log.info('Link replaced by alias: {} -> {}'.format(uri, alternative.uri))
                 return alternative
             else:
@@ -864,6 +869,7 @@ class Registry(Document):
 
         alternative = self.get_by_alias(uri)
         if alternative is not None:
+            GRLPC.inc()
             log.info('Link replaced by alias: {} -> {}'.format(uri, alternative.uri))
             return alternative
 
@@ -1144,7 +1150,7 @@ def _patch_complex_field():
                 try:
                     value_dict[key] = self.field.to_python(item)
                 except RegistryNodeIsNotFound as e:
-                    e.usage_push('[{key}]'.format(key=key))
+                    e.usage_push('.{key}'.format(key=key))
                     if self.name:
                         e.usage_push('.{self.name}'.format(self=self))
 
@@ -1153,6 +1159,7 @@ def _patch_complex_field():
                     # todo: Try to replace by alias
                     # В словарях при неудачном резолве по соответствующему ключу ничего не записывается
                     # value_dict[key] = None
+                    GRLPC.inc()
                     log.warning('Skiped corrupted item: {e}'.format(e=e))
         else:
             Document = _import_class('Document')
@@ -1193,6 +1200,36 @@ map(patch_field_getter, [
     MapField,
     EmbeddedDocumentField,
 ])
+
+
+class GRLPC(object):
+    """Global Registry Link Problems Counter"""
+    total = 0
+
+    class __metaclass__(type):
+        def __enter__(self):
+            return self()
+
+        def __exit__(self, t, v, tb):
+            pass
+
+    def __init__(self):
+        self.count = self.total
+
+    @classmethod
+    def inc(cls, n=1):
+        cls.total += n
+
+    def __int__(self):
+        return self.total - self.count
+
+    def __nonzero__(self):
+        return bool(int(self))
+
+    def __str__(self):
+        return '<GRLPC:%d/%d>' % (self, self.total)
+
+
 #_patch_all_fields_to_inheritance_support()
 ########################################################################################################################
 ########################################################################################################################
