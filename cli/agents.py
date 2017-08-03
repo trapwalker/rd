@@ -46,41 +46,36 @@ def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit):
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reg_reload, save_loaded=fixup)
     agents = Agent.objects.as_pymongo()
     if skip:
-        agents = agents.skip(50)
+        agents = agents.skip(skip)
 
     if limit:
-        agents = agents.limit(50)
+        agents = agents.limit(limit)
 
-    repeat = True
     a, i = None, 0
-    di = {}
-    dn = {}
-    while repeat:
-        a = None
+    while True:
+        try:
+            a_raw = agents.next()
+        except StopIteration:
+            break
+
+        a, problems, e = None, None, None
 
         try:
             with GRLPC as problems:
-                a_raw= agents.next()
                 a = Agent._from_son(a_raw)
-            print('{:5}: '.format(i), end='')
-            print('{:32} {}'.format(a.login, problems))
 
-            di[i] = a
-            dn[a.login] = a
+            if problems:
+                if fixup:
+                    a._created = True
+                    with T('We have %d problems. SAVE' % problems):
+                        a.save()
 
-            # if problems:
-            #     a._created = True
-            #     with T('We have %d problems. SAVE' % problems):
-            #         a.save()
-
-        except StopIteration:
-            repeat = False
         except RegistryNodeIsNotFound as e:
-            print('{:5}: '.format(i), end='')
-            print(a_raw['login'], e)
-        finally:
-            i += 1
+            pass
 
+        click.echo('{i:5}: {a_raw[login]}'.format(**locals()))
+
+        i += 1
 
 
 @agents.command(name='perks_reset')
