@@ -1,19 +1,20 @@
 .map-teaching-window-main {
     position: relative;
-    background-color: rgba(0, 0, 0, 0.9);
     color: #31c811;
+    background-color: rgba(0, 0, 0, 0.9);
     font: 11pt Nouveau_IBM;
 }
 .map-teaching-window-main.cruise_speed         { height: 242px; width: 460px; }
 .map-teaching-window-main.cruise_zone          { height: 247px; width: 460px; }
 .map-teaching-window-main.cruise_speed_control { height: 290px; width: 460px; }
 .map-teaching-window-main.cruise_speed_btn     { height: 327px; width: 460px; }
-.map-teaching-window-main.driving_control      { height: 307px; width: 460px; }
+.map-teaching-window-main.driving_control      { height: 312px; width: 460px; }
 .map-teaching-window-main.cruise_radial        { height: 350px; width: 460px; }
 .map-teaching-window-main.zoom_slider          { height: 256px; width: 460px; }
 .map-teaching-window-main.discharge_shooting   { height: 307px; width: 460px; }
-.map-teaching-window-main.auto_shooting        { height: 307px; width: 460px; }
-.map-teaching-window-main.try_kill             { height: 156px; width: 460px; }
+.map-teaching-window-main.auto_shooting        { height: 312px; width: 460px; }
+.map-teaching-window-main.try_kill             { height: 358px; width: 460px; }
+.map-teaching-window-main.final                { height: 156px; width: 460px; }
 
 .map-teaching-content-wrap {
     position: relative;
@@ -42,11 +43,11 @@
 .map-teaching-text-block.cruise_zone { height: 115px; }
 .map-teaching-text-block.cruise_speed_control { height: 98px; }
 .map-teaching-text-block.cruise_speed_btn { height: 150px; }
-.map-teaching-text-block.driving_control { height: 115px; }
+.map-teaching-text-block.driving_control { height: 120px; }
 .map-teaching-text-block.cruise_radial { height: 133px; }
 .map-teaching-text-block.zoom_slider { height: 117px; }
 .map-teaching-text-block.discharge_shooting { height: 115px; }
-.map-teaching-text-block.auto_shooting { height: 115px; }
+.map-teaching-text-block.auto_shooting { height: 120px; }
 .map-teaching-text-block.try_kill { height: 132px; }
 
 .map-teaching-btn-block {
@@ -224,7 +225,7 @@
     background-image: url('/static/img/teaching/s10.png');
     height: 142px;
 }
-
+.map-teaching-bold-text { font-weight: bold; background-color: rgba(14, 75, 0, 0.4); }
 
 
 

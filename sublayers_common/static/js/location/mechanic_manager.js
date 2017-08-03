@@ -11,10 +11,15 @@ var LocationMechanicNPC = (function (_super) {
         this.inventory_tag = null;
         this._some_in_draggable = null; // Имя слота, который сейчас таскается (slot_m12 или 0...N от размера инвентаря)
 
+         this.setup_cost = 0;
+         this.clear_cost = 0;
+
         this.mechanic_systems_names = ["engine", "transmission", "suspension", "brakes", "cooling"];
         this.mechanic_systems_names_rus = ["Двигатель", "Трансмиссия", "Подвеска", "Тормоза", "Охлаждение"];
 
         this.jq_center_main_block = this.jq_main_div.find('.mechanic-center-main-block').first();
+
+        this.start_slot_state = null;
 
         this.update();
     }
@@ -107,11 +112,14 @@ var LocationMechanicNPC = (function (_super) {
         this.clear_user_info();
         if (user.example_car && user.car_npc_info) {
             var self = this;
+            var npc = this.npc_rec;
+            var skill_effect = 1 - (user.actual_trading - npc.trading + 100) / 200;
+            this.setup_cost = user.example_car.price * npc.setup_cost * (1 + npc.margin_slot * skill_effect);
+            this.clear_cost = user.example_car.price * npc.clear_cost * (1 + npc.margin_slot * skill_effect);
 
             this.mechanic_slots = user.car_npc_info.mechanic_slots;
 
             var jq_buttons_list = $('<div class="mechanic-center-page-control"></div>');
-
             this.jq_center_main_block.append(jq_buttons_list);
 
             // Подготовка вёрстки - проходим по системам и добавляем их
@@ -135,7 +143,6 @@ var LocationMechanicNPC = (function (_super) {
             this.jq_main_div.find('.mechanic-center-page-control-page-button').click({mechanic: this}, LocationMechanicNPC.system_event_click);
 
             // todo: Переделать все системы на классы, убрав ID-шники
-
             var jq_slots = this.jq_main_div.find('.mechanic-slot');
             jq_slots.mouseenter({mechanic: self}, LocationMechanicNPC.slot_event_mouseenter);
             jq_slots.mouseleave({mechanic: self}, LocationMechanicNPC.slot_event_mouseleave);
@@ -204,6 +211,8 @@ var LocationMechanicNPC = (function (_super) {
             // Выбрать первую систему
             this.jq_main_div.find('.mechanic-center-page-control-page-button').first().click();
         }
+
+        this.start_slot_state = this.exportSlotState();
         _super.prototype.update.call(this, data); // Обновятся кнопки и панели
     };
 
@@ -348,6 +357,8 @@ var LocationMechanicNPC = (function (_super) {
 
         this.reDrawItem(src);
         this.reDrawItem(dest);
+
+        this.set_header_text();
     };
 
     LocationMechanicNPC.prototype.set_panels = function () {
@@ -414,10 +425,16 @@ var LocationMechanicNPC = (function (_super) {
         if (!html_text) {
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                jq_text_div.append('<div>Выбирай, что ставить.</div>');
+                var cti = this.current_transaction_info();
+                if (cti.on == 0 && cti.off == 0)
+                    jq_text_div.append('<div>Установить деталь: ' + this.setup_cost + ' NC. <br>Снять деталь: ' + this.clear_cost +' NC. </div>');
+                else {
+                    var price = Math.ceil(cti.on * this.setup_cost + cti.off * this.clear_cost);
+                    jq_text_div.append('Установлено: ' + cti.on + ' деталей.<br>Снято: ' + cti.off + ' деталей.<br>Цена: ' + price + ' NC<br>Установить?');
+                }
             }
             else
-                jq_text_div.append('<div>Иди отсюда! И без машины не возвращайся!</div>');
+                jq_text_div.append('<div>Услуги предоставляются только владельцам собственного транспорта.</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);
@@ -444,6 +461,25 @@ var LocationMechanicNPC = (function (_super) {
             this.jq_main_div.find('#mechanic_' + this._some_in_draggable).find('img').css('display', 'block');
         }
         this._some_in_draggable = null;
+    };
+
+    LocationMechanicNPC.prototype.current_transaction_info = function() {
+        var cur_slots = this.exportSlotState();
+        var start_slots = this.start_slot_state;
+        var off_item = 0;
+        var on_item = 0;
+        for (var key in cur_slots)
+            if (cur_slots.hasOwnProperty(key) && start_slots.hasOwnProperty(key)) {
+                if(start_slots[key].example == null && cur_slots[key].example != null)
+                    on_item++;
+                if(start_slots[key].example != null && cur_slots[key].example == null)
+                    off_item++;
+                if (start_slots[key].example && cur_slots[key].example && cur_slots[key].example.uid != start_slots[key].example.uid) {
+                    on_item++;
+                    off_item++;
+                }
+            }
+        return {on: on_item, off: off_item};
     };
 
     // Классовые методы !!!! Без прототипов, чтобы было удобнее вызывать!

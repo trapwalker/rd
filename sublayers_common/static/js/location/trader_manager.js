@@ -36,6 +36,34 @@ var LocationTraderNPC = (function (_super) {
         this.update();
     }
 
+    LocationTraderNPC.prototype.getExportList = function() {
+        //console.log('LocationTraderNPC.prototype.getExportList');
+        var item_rec_list = [];
+        var res_str = '';
+        for (var i = 0; i < this.trader_assortment.length; i++)
+            if (this.trader_assortment[i].item.tags.indexOf("cargo") >= 0)
+                item_rec_list.push({ item_title: this.trader_assortment[i].item.title,
+                                     export_val: this.trader_assortment[i].price.sale / this.trader_assortment[i].price.base });
+        item_rec_list = item_rec_list.sort(function (a, b) { return (a.export_val > b.export_val) });
+        for (var i = 0; i < Math.min(item_rec_list.length, 3); i++)
+            res_str += item_rec_list[i].item_title + ', ';
+        return res_str.slice(0, -2) + '.';
+    };
+
+    LocationTraderNPC.prototype.getImportList = function() {
+        //console.log('LocationTraderNPC.prototype.getImportList');
+        var item_rec_list = [];
+        var res_str = '';
+        for (var i = 0; i < this.trader_assortment.length; i++)
+            if (this.trader_assortment[i].item.tags.indexOf("cargo") >= 0)
+                item_rec_list.push({ item_title: this.trader_assortment[i].item.title,
+                                     export_val: this.trader_assortment[i].price.buy / this.trader_assortment[i].price.base });
+        item_rec_list = item_rec_list.sort(function (a, b) { return (a.export_val < b.export_val) });
+        for (var i = 0; i < Math.min(item_rec_list.length, 3); i++)
+            res_str += item_rec_list[i].item_title + ', ';
+        return res_str.slice(0, -2) + '.';
+    };
+
     LocationTraderNPC.prototype._clearPlayerInv = function() {
         //console.log('LocationTraderNPC.prototype._clearPlayerInv');
         if (this.playerInvDiv) {

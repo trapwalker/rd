@@ -937,10 +937,11 @@ var LocationPlaceBuilding = (function (_super) {
                     break;
                 case 'market':
                     // todo: выбрать товары для экспорта и импорта
+                    var npc_manager = locationManager.npc[npc.html_hash];
                     html_text = "Вас приветствует " + this.building_rec.title + "." +
                         "<ul><li>Торговец: " + npc.title + "</li>" +
-                        "<li>Экспорт: " + 0 + "</li>" +
-                        "<li>Импорт: " + 0 + "</li>" +
+                        "<li>Экспорт: " + npc_manager.getExportList() + "</li>" +
+                        "<li>Импорт: " + npc_manager.getImportList() + "</li>" +
                         "<li>Доступные задания: " + quest_info.available_count + "</li>" +
                         "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
                     break;

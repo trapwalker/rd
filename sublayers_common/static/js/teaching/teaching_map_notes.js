@@ -18,12 +18,15 @@ var NoActionTeachingMapNote = (function (_super) {
                     window.setupCloseElement(jq_window.find('.btn-back'));
                     jq_window.find('.btn-next').click(function() {
                         note.send_activate_note(true);
+                        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     });
                     jq_window.find('.btn-back').click(function() {
                         note.send_activate_note(false);
+                        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     });
                     jq_window.find('.windowDragCloseHeader-close').click(function() {
                         note.send_activate_note(true);
+                        audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     });
                 }
                 note.on_open_note_window(window);
@@ -332,11 +335,11 @@ var AutoShootingTeachingMapNote = (function (_super) {
 
     AutoShootingTeachingMapNote.prototype.redraw = function() {
         if (interface_scale_big) {
-            var x = Math.round($('#bodydiv').width() / 2.0) - 100;
+            var x = Math.round($('#bodydiv').width() / 2.0) - 30;
             this.draw_arrow(teachingMapManager.context, new Point(x, -115), 0);
         }
         else {
-            var x = Math.round($('#bodydiv').width() / 2.0) - 70;
+            var x = Math.round($('#bodydiv').width() / 2.0) - 20;
             this.draw_arrow(teachingMapManager.context, new Point(x, -90), 0);
         }
     };
