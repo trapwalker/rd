@@ -37,7 +37,7 @@ import os
 
 def test1(reload, save_loaded):
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
-    agents = Agent.objects.limit(50)
+    agents = Agent.objects.skip(50).limit(50).as_pymongo()
     repeat = True
     a, i = None, 0
     di = {}
@@ -47,23 +47,24 @@ def test1(reload, save_loaded):
 
         try:
             with GRLPC as problems:
-                a = agents.next()
+                a_raw= agents.next()
+                a = Agent._from_son(a_raw)
             print('{:5}: '.format(i), end='')
             print('{:32} {}'.format(a.login, problems))
 
             di[i] = a
             dn[a.login] = a
 
-            if problems:
-                a._created = True
-                with T('We have %d problems. SAVE' % problems):
-                    a.save()
+            # if problems:
+            #     a._created = True
+            #     with T('We have %d problems. SAVE' % problems):
+            #         a.save()
 
         except StopIteration:
             repeat = False
         except RegistryNodeIsNotFound as e:
             print('{:5}: '.format(i), end='')
-            print(e)
+            print(a_raw['login'], e)
         finally:
             i += 1
 

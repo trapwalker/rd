@@ -33,6 +33,49 @@ def agents_clean(ctx):
     agents_clean()
 
 
+@agents.command(name='check')
+@click.option('--fixup', '-f', 'fixup', is_flag=True, default=False, help='Fixup problems')
+@click.option('--wipe_unsolved', '-w', 'wipe_unsolved', is_flag=True, default=False, help='Delete agents with unsolved problems')
+@click.option('--reg_reload', '-r', 'reg_reload', is_flag=True, default=False, help='Reload registry from filesystem')
+@click.option('--skip', '-s', 'skip', default=None, help='Reload registry from filesystem')
+@click.pass_context
+def agents_check(ctx, fixup, wipe_unsolved, reg_reload):
+    from sublayers_server.model.registry_me.tree import GRLPC
+
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reg_reload, save_loaded=fixup)
+    agents = Agent.objects.skip(50).limit(50).as_pymongo()
+    repeat = True
+    a, i = None, 0
+    di = {}
+    dn = {}
+    while repeat:
+        a = None
+
+        try:
+            with GRLPC as problems:
+                a_raw= agents.next()
+                a = Agent._from_son(a_raw)
+            print('{:5}: '.format(i), end='')
+            print('{:32} {}'.format(a.login, problems))
+
+            di[i] = a
+            dn[a.login] = a
+
+            # if problems:
+            #     a._created = True
+            #     with T('We have %d problems. SAVE' % problems):
+            #         a.save()
+
+        except StopIteration:
+            repeat = False
+        except RegistryNodeIsNotFound as e:
+            print('{:5}: '.format(i), end='')
+            print(a_raw['login'], e)
+        finally:
+            i += 1
+
+
+
 @agents.command(name='perks_reset')
 @click.pass_context
 def agents_perks_reset(ctx):
