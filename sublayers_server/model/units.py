@@ -173,10 +173,6 @@ class Unit(Observer):
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
 
-    def takeoff_weapon(self, weapon):
-        # todo: продумать меанизм снятия оружия
-        pass
-
     def fire_discharge(self, side, time):
         if self.limbo or not self.is_alive:
             log.debug('Error! {} try fire_discharge in limbo'.format(self))
@@ -366,6 +362,15 @@ class Unit(Observer):
         for sector in self.fire_sectors:
             for w in sector.weapon_list:
                 yield w
+
+    def get_total_dps(self):
+        dps = 0
+        for w in self.weapon_list():
+            if isinstance(w, WeaponAuto):
+                dps += dps
+            if isinstance(w, WeaponDischarge):
+                dps += w.dmg / w.t_rch
+        return dps
 
     def on_kill(self, event, obj):
         # Начисление опыта и фрага машинке

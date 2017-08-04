@@ -26,6 +26,11 @@ class Route(Node):
     def get_start_point(self):
         return self.points[-1] if self.reverse else self.points[0]
 
+    def get_current_point(self):
+        if self.current_index < 0 or self.current_index >= len(self.points):
+            return self.get_start_point()
+        return self.points[self.current_index].as_point()
+
     def nearest_point(self, position):  # Вызывать при возвращении на маршрут (или при старте маршрута)
         index = self.current_index
         current_distance = None

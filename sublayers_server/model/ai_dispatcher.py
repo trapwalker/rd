@@ -31,7 +31,7 @@ class AIAgent(AI):
     def __init__(self, time, **kw):
         super(AIAgent, self).__init__(time=time, **kw)
         self.action_quest = None
-        self.target_uid_list = []  # uid модельных машинок, которые считаются врагами
+        self.event_quest = None  # ссылка на квест-эвент, чтобы можно было получить доступ из action_quest
 
     def print_login(self):
         str_list = self._login.split('_')
@@ -90,6 +90,12 @@ class AIAgent(AI):
     def on_get_damage(self, damager, **kw):
         super(AIAgent, self).on_get_damage(damager=damager, **kw)
         damager_uid = damager.uid
-        if damager_uid not in self.target_uid_list:
-            self.target_uid_list.append(damager_uid)
+        target_uid_list = self.event_quest.dc.target_uid_list
+        if damager_uid not in target_uid_list:
+            target_uid_list.append(damager_uid)
 
+    def on_see(self, time, subj, obj):
+        super(AIAgent, self).on_see(time=time, subj=subj, obj=obj)
+
+    def on_out(self, time, subj, obj):
+        super(AIAgent, self).on_out(time=time, subj=subj, obj=obj)
