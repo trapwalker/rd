@@ -367,7 +367,7 @@ class Unit(Observer):
         dps = 0
         for w in self.weapon_list():
             if isinstance(w, WeaponAuto):
-                dps += dps
+                dps += w.dps
             if isinstance(w, WeaponDischarge):
                 dps += w.dmg / w.t_rch
         return dps
