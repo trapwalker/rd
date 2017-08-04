@@ -119,9 +119,10 @@ class Inventory(Subdoc):
         self.placing()
         inventory = ModelInventory(max_size=self.size, owner=owner, example=self)
         for item_example in self.items:
-            ItemState(
-                server=server, time=time, example=item_example, count=item_example.amount,
-            ).set_inventory(time=time, inventory=inventory, position=item_example.position)
+            if item_example.amount > 0:
+                ItemState(
+                    server=server, time=time, example=item_example, count=item_example.amount,
+                ).set_inventory(time=time, inventory=inventory, position=item_example.position)
         return inventory
 
     def items_by_node_hash(self):
