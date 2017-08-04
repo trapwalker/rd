@@ -77,7 +77,8 @@ var LocationManager = (function () {
         this.dump = null;
 
         // Для различных эффектов в городе
-        this.location_canvas_manager = new LocationCanvasManager();
+        this.location_canvas_laser_manager = new LocationCanvasManager("ctest_2");
+        this.location_canvas_effect_manager = new LocationCanvasManager("ctest_3");
 
         // todo: Придумать куда это перенести!
         this.locations_canvas_effects = {};
@@ -88,7 +89,10 @@ var LocationManager = (function () {
             SetImageOnLoad(lasers_img, function (img) {
                 locationManager.locations_canvas_effects['laser'] = new ECanvasLocationLaserAnimation(img);
                 locationManager.locations_canvas_effects['laser'].start();
-                locationManager.locations_canvas_effects['laser'] = new ECanvasLocationTeachingLineBlink();
+                locationManager.locations_canvas_effects['teaching_blink'] = new ECanvasLocationTeachingLineBlink();
+                locationManager.locations_canvas_effects['line'] = new ECanvasLocationLine();
+                locationManager.locations_canvas_effects['wave'] = new ECanvasLocationWave();
+                locationManager.locations_canvas_effects['noise'] = new ECanvasLocationNoise();
             }
         );
         }, 50);
@@ -215,8 +219,12 @@ var LocationManager = (function () {
         this.visitor_manager.update_visitors();
 
         // Разрешаем отрисовку эффектов на канвас
-        this.location_canvas_manager.init_canvas();
-        this.location_canvas_manager.is_canvas_render = true;
+        this.location_canvas_laser_manager.init_canvas();
+        this.location_canvas_effect_manager.init_canvas();
+        this.location_canvas_laser_manager.is_canvas_render = true;
+        this.location_canvas_effect_manager.is_canvas_render = true;
+        locationManager.locations_canvas_effects['line'].init();
+        locationManager.locations_canvas_effects['wave'].init();
 
         this.activateScreen('location_screen', 'btn_screen_location_pressed');
 
@@ -270,7 +278,8 @@ var LocationManager = (function () {
         this.npc = {};
 
         // Запрещаем отрисовку эффектов на канвас
-        this.location_canvas_manager.is_canvas_render = false;
+        this.location_canvas_laser_manager.is_canvas_render = false;
+        this.location_canvas_effect_manager.is_canvas_render = false;
 
         // Очистка локаций меню
         if (this.location_menu) {
@@ -439,9 +448,11 @@ var LocationManager = (function () {
             console.log(npc_node_hash, build_type, npc, build);
             return;
         }
+
         locationManager.panel_right.show({npc_example: npc.npc_rec, build_example: build.building_rec}, 'npc_inside_building');
-        locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
-                                         npc_node_hash: npc_node_hash} , 'building_quest');
+        if (build_type != 'nukeoil')  // чтоб не отображать инфу для одинаковых везде NPC
+            locationManager.panel_left.show({respect: (1 + locationManager.get_relation(npc_node_hash)) * 50,
+                                             npc_node_hash: npc_node_hash} , 'building_quest');
     };
 
     LocationManager.prototype.handler_mouseleave = function() {
@@ -890,9 +901,61 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.set_header_text = function (html_text) {
         if (!locationManager.isActivePlace(this)) return;
 
-        //if (!html_text)
-        //    if (this.selected_quest)
-        //        html_text = $('<div>Цена отмены квеста</div>');
+        if (!html_text) {
+            var quest_info = journalManager.quests.getCountQuestsByNPC(this.building_rec.head.node_hash);
+            var npc = this.building_rec.head;
+            switch (this.building_rec.name) {
+                case 'bar':
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+                case 'dealer':
+                    var r = locationManager.get_npc_by_type(LocationHangarNPC);
+                    var npc_hangar = r ? r[0] : null;
+                    r = locationManager.get_npc_by_type(LocationParkingNPC);
+                    var npc_parking = r ? r[0] : null;
+                    var hangar_npc_str = "";
+                    var parking_npc_str = "";
+                    if (npc_hangar)
+                        hangar_npc_str = "<li>" + npc_hangar.npc_rec.title +": Продавец машин" +
+                            ". Транспорт от " + npc_hangar.get_min_price() + " за ТС.</li>";
+                    if (npc_parking)
+                        parking_npc_str = "<li>" + npc_parking.npc_rec.title +": Парковщик</li>";
+
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<ul>"
+                        + hangar_npc_str + parking_npc_str +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+                case 'library':
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<ul><li>Тренер: " + npc.title + ".Повышение навыков и получение новых способностей.</li>" +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+                case 'market':
+                    // todo: выбрать товары для экспорта и импорта
+                    var npc_manager = locationManager.npc[npc.html_hash];
+                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                        "<ul><li>Торговец: " + npc.title + "</li>" +
+                        "<li>Экспорт: " + npc_manager.getExportList() + "</li>" +
+                        "<li>Импорт: " + npc_manager.getImportList() + "</li>" +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+                case 'mayor':
+                    html_text = "Вас приветствует мэрия города " + locationManager.example.title + "." +
+                        "<ul><li>Пожертвование городу. Цена: 5000 Nc (+10 в отношение, +5 в карму)</li>" +
+                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
+                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    break;
+
+                default:
+                    console.warn('Not found description for ', this.building_rec.name)
+            }
+        }
 
         _super.prototype.set_header_text.call(this, html_text);
     };

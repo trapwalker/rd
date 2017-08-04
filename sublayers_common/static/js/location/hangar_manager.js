@@ -28,7 +28,7 @@ var LocationHangarNPC = (function (_super) {
                 this.npc_margin = data.npc_margin;
                 this.skill_effect = 1 - (user.actual_trading - data.npc_trading + 100) / 200;
                 for (var i = 0; i < this.cars_list.length; i++)
-                    this.cars_list[i].car.price = Math.floor(this.cars_list[i].car.price * (1 + data.npc_margin * this.skill_effect));
+                    this.cars_list[i].car.price = this.get_trading_effect_price_sale(this.cars_list[i].car.price);
             }
 
             for (var i = 0; i < this.cars_list.length; i++) {
@@ -110,14 +110,20 @@ var LocationHangarNPC = (function (_super) {
     LocationHangarNPC.prototype.set_header_text = function(html_text) {
         if (!locationManager.isActivePlace(this)) return;
         if (!html_text) {
+            var cur_car = this.cars_list[this.current_car].car;
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                var user_car_price = Math.floor(user.example_car.price * (1 - this.npc_margin * this.skill_effect));
-                jq_text_div.append('<div>Обменять ТС: ' + (user_car_price - this.cars_list[this.current_car].car.price) + 'NC</div>');
-                jq_text_div.append('<div>Продать ТС: ' + user_car_price + 'NC</div>');
+                var u_title = user.example_car.title;
+                var user_car_price = this.get_trading_effect_price_buy(user.example_car.price);
+                if (user_car_price > cur_car.price)
+                    jq_text_div.append('<div>Обменять ' + u_title + ' на ' + cur_car.title + ' с моей доплатой: ' + (user_car_price - cur_car.price) + 'NC</div>');
+                else
+                    jq_text_div.append('<div>Обменять ' + u_title + ' на ' + cur_car.title + ' с Вашей доплатой: ' + (cur_car.price - user_car_price) + 'NC</div>');
+
+                jq_text_div.append('<div>Продать ' + u_title + ': ' + user_car_price + 'NC</div>');
             }
             else
-                jq_text_div.append('<div>Купить ТС: -' + this.cars_list[this.current_car].car.price + 'NC</div>');
+                jq_text_div.append('<div>Купить ' + cur_car.title + ': ' + cur_car.price + 'NC</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);
@@ -137,6 +143,22 @@ var LocationHangarNPC = (function (_super) {
                 _super.prototype.clickBtn.call(this, btnIndex);
         }
     };
+
+    LocationHangarNPC.prototype.get_trading_effect_price_buy = function (price) {
+        return Math.floor(price * (1 - this.npc_margin * this.skill_effect));
+    };
+
+    LocationHangarNPC.prototype.get_trading_effect_price_sale = function (price) {
+        return Math.floor(price * (1 + this.npc_margin * this.skill_effect));
+    };
+
+    LocationHangarNPC.prototype.get_min_price = function() {
+        var p = this.cars_list && this.cars_list[0].car.price || 0;
+        for (var i = 1; i < this.cars_list.length; i++)
+            p = Math.min(p, this.cars_list[i].car.price);
+        return p;
+    };
+
 
     return LocationHangarNPC;
 })(LocationPlaceNPC);
@@ -167,6 +189,7 @@ var LocationParkingNPC = (function (_super) {
             var car_uid = $(this).data('uid');
             clientManager.sendParkingBagExchange(car_uid, self.npc_rec.node_hash);
         });
+
     };
 
     LocationParkingNPC.prototype.get_self_info = function () {
@@ -216,15 +239,15 @@ var LocationParkingNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         if (!html_text) {
             var jq_text_div = $('<div></div>');
-
-            if (this.cars_list.length)
+            if (this.cars_list.length) {
+                var cur_car = this.cars_list[this.current_car];
                 if (user.example_car)
-                    jq_text_div.append('<div>Обменять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
+                    jq_text_div.append('<div>Обменять ' + user.example_car.title + ' на ' + cur_car.car.title + ': ' + (cur_car.car_parking_price) + 'NC</div>');
                 else
-                    jq_text_div.append('<div>Взять ТС: -' + (this.cars_list[this.current_car].car_parking_price) + 'NC</div>');
-
+                    jq_text_div.append('<div>Взять ' + cur_car.car.title + ': ' + (cur_car.car_parking_price) + 'NC</div>');
+            }
             if (user.example_car)
-                jq_text_div.append('<div>Поставить ТС: 0NC</div>');
+                jq_text_div.append('<div>Поставить ' + user.example_car.title + ': 0NC</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);

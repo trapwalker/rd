@@ -33,6 +33,90 @@ def agents_clean(ctx):
     agents_clean()
 
 
+@agents.command(name='check')
+@click.option('--fixup', '-f', 'fixup', is_flag=True, default=False, help='Fixup problems')
+@click.option('--wipe_unsolved', '-w', 'wipe_unsolved', is_flag=True, default=False, help='Delete agents with unsolved problems')
+@click.option('--reg_reload', '-r', 'reg_reload', is_flag=True, default=False, help='Reload registry from filesystem')
+@click.option('--skip', '-s', 'skip', default=None, type=click.INT, help='Count records to skip')
+@click.option('--limit', '-l', 'limit', default=None, type=click.INT, help='Count records to limit')
+@click.option('--details', '-d', 'details', is_flag=True, default=False, help='Fixup problems')
+@click.pass_context
+def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, details):
+    from sublayers_server.model.registry_me.tree import GRLPC, RegistryNodeIsNotFound
+    from collections import Counter
+
+    world = ctx.obj['world']
+
+    counter = Counter()
+    reg = get_global_registry(path=world, reload=reg_reload, save_loaded=fixup)
+    counter['1. TOTAL'] = Agent.objects.count()
+    agents = Agent.objects.as_pymongo()
+    if skip:
+        agents = agents.skip(skip)
+
+    if limit:
+        agents = agents.limit(limit)
+
+    i = skip or 0
+    while True:
+        try:
+            a_raw = agents.next()
+            counter['2. Processed'] += 1
+        except StopIteration:
+            break
+
+        flags = 'Q' if a_raw['quick_flag'] else 'B'
+        login = a_raw.get('login', '--- UNDEFINED --- ' + str(a_raw.get('_id')))
+
+        a, problems, e = None, None, None
+        t_save = None
+        fixed = False
+        deleted_count = 0
+        wipe_try = False
+
+        try:
+            with GRLPC as problems:
+                a = Agent._from_son(a_raw)
+                counter['3. Loaded'] += 1
+
+            if problems:
+                counter['4. Need to FIX'] += 1
+                if fixup:
+                    a._created = True
+                    with Timer() as t_save:
+                        a.save()
+                        fixed = True
+                        counter['5. FIXED'] += 1
+
+        except RegistryNodeIsNotFound as e:
+            counter['6. Need to delete'] += 1
+            if wipe_unsolved:
+                wipe_try = True
+                deleted_count = Agent.objects.filter(pk=a_raw['_id']).delete()
+                counter['7. Delete try'] += 1
+                counter['8. Deleted'] += deleted_count
+
+        if e:
+            wipe_res = '{deleted_count:3}'.format(**locals()) if wipe_try else '---'
+            res = 'WIPE: {wipe_res}: {e}'.format(**locals())
+        else:
+            if problems:
+                problems_count = int(problems) if problems is not None else '--'
+                res = 'FIX {problems_count:2} {fix_text}'.format(fix_text='DONE' if fixed else 'need', **locals())
+            else:
+                res = ''
+
+        if details:
+            click.echo('{i:5}: [{flags}] {login:32} {res}'.format(**locals()))
+
+        i += 1
+
+    click.echo('\n== STAT ====================')
+    k_max = max(map(len, counter.keys()))
+    for k, v in sorted(counter.items()):
+        click.echo('{k:{k_max}}: {v:6}'.format(**locals()))
+
+
 @agents.command(name='perks_reset')
 @click.pass_context
 def agents_perks_reset(ctx):

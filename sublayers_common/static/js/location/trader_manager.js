@@ -11,6 +11,8 @@ var LocationTraderNPC = (function (_super) {
 
         this.trader_assortment = [];
         this.agent_assortment = [];
+        this.price_player = 0;
+        this.price_trader = 0;
 
         this.playerInv = [];
         this.playerTable = [];
@@ -33,6 +35,34 @@ var LocationTraderNPC = (function (_super) {
 
         this.update();
     }
+
+    LocationTraderNPC.prototype.getExportList = function() {
+        //console.log('LocationTraderNPC.prototype.getExportList');
+        var item_rec_list = [];
+        var res_str = '';
+        for (var i = 0; i < this.trader_assortment.length; i++)
+            if (this.trader_assortment[i].item.tags.indexOf("cargo") >= 0)
+                item_rec_list.push({ item_title: this.trader_assortment[i].item.title,
+                                     export_val: this.trader_assortment[i].price.sale / this.trader_assortment[i].price.base });
+        item_rec_list = item_rec_list.sort(function (a, b) { return (a.export_val > b.export_val) });
+        for (var i = 0; i < Math.min(item_rec_list.length, 3); i++)
+            res_str += item_rec_list[i].item_title + ', ';
+        return res_str.slice(0, -2) + '.';
+    };
+
+    LocationTraderNPC.prototype.getImportList = function() {
+        //console.log('LocationTraderNPC.prototype.getImportList');
+        var item_rec_list = [];
+        var res_str = '';
+        for (var i = 0; i < this.trader_assortment.length; i++)
+            if (this.trader_assortment[i].item.tags.indexOf("cargo") >= 0)
+                item_rec_list.push({ item_title: this.trader_assortment[i].item.title,
+                                     export_val: this.trader_assortment[i].price.buy / this.trader_assortment[i].price.base });
+        item_rec_list = item_rec_list.sort(function (a, b) { return (a.export_val < b.export_val) });
+        for (var i = 0; i < Math.min(item_rec_list.length, 3); i++)
+            res_str += item_rec_list[i].item_title + ', ';
+        return res_str.slice(0, -2) + '.';
+    };
 
     LocationTraderNPC.prototype._clearPlayerInv = function() {
         //console.log('LocationTraderNPC.prototype._clearPlayerInv');
@@ -344,6 +374,9 @@ var LocationTraderNPC = (function (_super) {
         this.jq_main_div.find('.trader-player-exchange-total').text(price_trader + 'NC');
         this.jq_main_div.find('.trader-trader-exchange-total').text(price_player + 'NC');
 
+        this.price_player = price_player;
+        this.price_trader = price_trader;
+
         // Вызвать обновление teachingManager
         teachingManager.redraw();
     };
@@ -377,6 +410,7 @@ var LocationTraderNPC = (function (_super) {
         this._reDrawItemList(srcDiv, srcList, srcCls);
 
         this.calcPriceTables();
+        this.set_header_text();
     };
 
     LocationTraderNPC.prototype.updatePrice = function(event) {
@@ -505,6 +539,32 @@ var LocationTraderNPC = (function (_super) {
             var new_filter = this.filters[this[str_name_of_index]];
             this.filter_apply(target_inv, new_filter);
         }
+    };
+
+    LocationTraderNPC.prototype.set_header_text = function(html_text) {
+        if (!locationManager.isActivePlace(this)) return;
+        if (!html_text) {
+            var jq_text_div = $('<div></div>');
+            if (!user.example_car)
+                jq_text_div.append('<div>Подгоните ваш транспорт к складу.</div>');
+            else if ((this.playerTable.length == 0) && (this.traderTable.length == 0))
+                jq_text_div.append('<div>Стол обмена пуст. Выберите товар для начала торговли.</div>');
+            else if ((user.balance + this.price_player - this.price_trader) < 0)
+                jq_text_div.append('<div>Недостаточно средств.</div>');
+            else {
+                jq_text_div.append(
+                    '<div>Продаю на ' + this.price_trader + ' NC.</div>' +
+                    '<div>Покупаю на ' + this.price_player + ' NC.</div>'
+                );
+                var d_price = this.price_player - this.price_trader;
+                if (d_price >= 0)
+                    jq_text_div.append('<div>Итого с меня ' + d_price + ' NC.</div>');
+                else
+                    jq_text_div.append('<div>Итого с тебя ' + -d_price + ' NC.</div>');
+            }
+            html_text = jq_text_div;
+        }
+        _super.prototype.set_header_text.call(this, html_text);
     };
 
     return LocationTraderNPC;

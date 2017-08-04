@@ -13,6 +13,7 @@
     box-sizing: border-box;
     width: calc(100% - 4px);
     height: calc(100% - 30px);
+    overflow: hidden;
 }
 
 #locationMenuItem_Radio .radio-window-wrap {

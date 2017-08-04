@@ -25,8 +25,10 @@ from hgapi import HgException
 @click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
 @click.option('--reset_profiles', '-R', is_flag=True, default=False, help='Reset profile registration state to "nickname"')
 @click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command')
+@click.option('--no_reload', is_flag=True, default=False, help='Do not reload registry')
+@click.option('--no_restart', is_flag=True, default=False, help='Do not restart services')
 @click.pass_context
-def update(ctx, dest, no_db, clean_agents, reset_profiles, host):
+def update(ctx, dest, no_db, clean_agents, reset_profiles, host, no_reload, no_restart):
     """Update version"""
     main_repo = ctx.obj['main_repo']
     world_repo = ctx.obj['world_repo']
@@ -41,10 +43,11 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles, host):
 
     def upd(title, repo):
         old_id = repo.hg_id()
-        upd_res = repo.hg_command('update')
+        br = repo.hg_command('branch').strip()
+        upd_res = repo.hg_command('update', br)
         new_id = repo.hg_id()
         is_updated = old_id != new_id
-        log.info(u'{:8} repo: {} UPDATED: {}'.format(title, 'IS    ' if is_updated else 'IS NOT', upd_res.strip()))
+        log.info(u'{:8} repo: {} UPDATED({}): {}'.format(title, 'IS    ' if is_updated else 'IS NOT', br, upd_res.strip()))
         return is_updated
 
     is_updated_main = upd('Main', main_repo)
@@ -57,9 +60,13 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles, host):
         if is_updated_main:
             log.info('Source updated')
 
-        stop(host=host)  # todo: configure server host
-        reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
-        start()
+        if not no_restart:
+            stop(host=host)  # todo: configure server host
+        if not no_reload:
+            reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
+        if not no_restart:
+            start()
+        # todo: Сохранять версии реестров в файле на момент запуска, чтоьы понимать требуется ли перезагрузка
 
     if ctx.invoked_subcommand:
         return

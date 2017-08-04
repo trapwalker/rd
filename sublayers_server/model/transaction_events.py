@@ -758,8 +758,8 @@ class TransactionArmorerApply(TransactionTownNPC):
 
             if (old_item is not None) and (old_item.uid == UUID(new_item['uid'])):
                 self.armorer_slots[slot_name]['example'] = old_item
-                setup_list.append(old_item)
                 if old_item.direction != self.armorer_slots[slot_name]['direction']:
+                    setup_list.append(old_item)
                     all_price += setup_slot_price  # добавить стоимость монтажа итема
                 continue
 
@@ -852,7 +852,7 @@ class TransactionMechanicApply(TransactionTownNPC):
         # Сохраняем текущий инвентарь в экзампл
         agent.inventory.save_to_example(time=self.time)
 
-        # todo: здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
+        # здесь можно сделать проход по self.mechanic_slots для проверки по тегам.
         for slot_name in self.mechanic_slots.keys():
             new_item_in_slot = self.mechanic_slots[slot_name]['example']
             slot = getattr(agent.example.profile.car.__class__, slot_name)
@@ -878,15 +878,22 @@ class TransactionMechanicApply(TransactionTownNPC):
         for item in agent.example.profile.car.inventory.items:
             mechanic_buffer.append(item)
 
+        # Подготавливаем константы расчета стоимости
+        all_price = 0
+        skill_effect = npc.get_trading_effect(agent_example=agent.example)
+        clear_slot_price = ex_car.price * npc.clear_cost * (1 + npc.margin_slot * skill_effect)
+        setup_slot_price = ex_car.price * npc.setup_cost * (1 + npc.margin_slot * skill_effect)
+
         # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в mechanic_buffer)
         for slot_name, slot_value in ex_car.iter_slots(tags='mechanic'):
             old_item = slot_value
             new_item = self.mechanic_slots[slot_name]['example']
-            if (old_item is not None) and ((new_item is None) or (old_item.node_hash() != new_item['node_hash'])):
+            if (old_item is not None) and (new_item is None or old_item.node_hash() != new_item['node_hash'] or str(old_item.uid) != new_item.get('uid', None)):
                 # todo: добавить стоимость демонтажа итема
                 mechanic_buffer.append(slot_value)
                 remove_list.append(slot_value)
-                setattr(ex_car, slot_name, None)
+                all_price += clear_slot_price
+                # setattr(ex_car, slot_name, None)
 
         # Проход 2: устанавливаем новые итемы (проход по mechanic_slots и обработка всех ситуаций)
         for slot_name in self.mechanic_slots.keys():
@@ -896,31 +903,49 @@ class TransactionMechanicApply(TransactionTownNPC):
             if new_item is None:  # если в данном слоте должно быть пусто
                 continue  # то идём к следующему шагу цикла
 
-            if old_item is not None:  # поворот итема или отсутствие действия  # todo: возможно убрать
-                pass
-            else:  # установка итема в слот из mechanic_buffer
+            if (old_item is not None) and (str(old_item.uid) == new_item['uid']):
+                self.mechanic_slots[slot_name]['example'] = old_item  # положили реальный итем, вместо дикта
+            else:
                 search_item = None
                 for item in mechanic_buffer:
-                    if item.node_hash() == new_item['node_hash']:
+                    if str(item.uid) == new_item['uid']:
                         search_item = item
                         break
                 if search_item is not None:
                     # todo: добавить стоимость монтажа итема
                     mechanic_buffer.remove(search_item)
-                    setattr(ex_car, slot_name, search_item)
+                    self.mechanic_slots[slot_name]['example'] = search_item
                     setup_list.append(search_item)
+                    all_price += setup_slot_price
+                else:
+                    # Нас пытаются обмануть. Откатить транзакцию
+                    log.warning('Alarm: Try to set unknown Item in Slot<%s>', slot_name)
+                    messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+                                               replica=u'Не удалось завершить транзакцию.').post()
+                    return
 
-        # Закидываем буффер в инвентарь
+        # Проверка на достаточность денег
+        all_price = math.ceil(all_price)
+        if agent.balance < all_price:
+            messages.NPCTransactionMessage(agent=agent, time=self.time, npc_html_hash=npc.node_html(),
+                                           info_string=u"Не хватет денег.").post()
+            return
+
+        # Закидываем буффер в инвентарь, применяем слоты, вычитаем деньги
         position = 0
         agent.example.profile.car.inventory.items = []
         for item in mechanic_buffer:
             item.position = position
             agent.example.profile.car.inventory.items.append(item)
             position += 1
+        for slot_name in self.mechanic_slots.keys():
+            new_item = self.mechanic_slots[slot_name]['example']
+            setattr(ex_car, slot_name, new_item)
+
+        agent.example.profile.set_balance(time=self.time, delta=-all_price)
 
         messages.UserExampleCarSlots(agent=agent, time=self.time).post()
         messages.UserExampleCarView(agent=agent, time=self.time).post()
-
         agent.reload_inventory(time=self.time, save=False, total_inventory=total_inventory_list)
 
         # Информация о транзакции
@@ -928,7 +953,7 @@ class TransactionMechanicApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
+        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(all_price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
@@ -1318,7 +1343,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         # Проверка факта покупки очков навыков
         for buy_skill_name in self.buy_skills:
-            if hasattr(agent.example, buy_skill_name):
+            if hasattr(agent.example.profile, buy_skill_name):
                 buy_skill = getattr(agent.example.profile, buy_skill_name, None)
                 for val in xrange(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
                     price += buy_skill.price[val].price
