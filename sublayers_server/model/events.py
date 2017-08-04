@@ -663,7 +663,8 @@ class ItemPreActivationEvent(Event):
         super(ItemPreActivationEvent, self).on_perform()
         # пытаемся получить инвентарь и итем
         obj = self.server.objects.get(self.owner_id)
-        if obj is None:
+        from sublayers_server.model.units import Bot
+        if obj is None or not isinstance(obj, Bot):
             return
         inventory = obj.inventory
         if not (inventory is self.agent.inventory) or (self.agent.inventory is None):
