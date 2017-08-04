@@ -28,7 +28,7 @@ var LocationHangarNPC = (function (_super) {
                 this.npc_margin = data.npc_margin;
                 this.skill_effect = 1 - (user.actual_trading - data.npc_trading + 100) / 200;
                 for (var i = 0; i < this.cars_list.length; i++)
-                    this.cars_list[i].car.price = this.get_trading_effect_price(this.cars_list[i].car.price);
+                    this.cars_list[i].car.price = this.get_trading_effect_price_sale(this.cars_list[i].car.price);
             }
 
             for (var i = 0; i < this.cars_list.length; i++) {
@@ -114,7 +114,7 @@ var LocationHangarNPC = (function (_super) {
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
                 var u_title = user.example_car.title;
-                var user_car_price = this.get_trading_effect_price(user.example_car.price);
+                var user_car_price = this.get_trading_effect_price_buy(user.example_car.price);
                 if (user_car_price > cur_car.price)
                     jq_text_div.append('<div>Обменять ' + u_title + ' на ' + cur_car.title + ' с моей доплатой: ' + (user_car_price - cur_car.price) + 'NC</div>');
                 else
@@ -144,8 +144,12 @@ var LocationHangarNPC = (function (_super) {
         }
     };
 
-    LocationHangarNPC.prototype.get_trading_effect_price = function (price) {
+    LocationHangarNPC.prototype.get_trading_effect_price_buy = function (price) {
         return Math.floor(price * (1 - this.npc_margin * this.skill_effect));
+    };
+
+    LocationHangarNPC.prototype.get_trading_effect_price_sale = function (price) {
+        return Math.floor(price * (1 + this.npc_margin * this.skill_effect));
     };
 
     LocationHangarNPC.prototype.get_min_price = function() {
@@ -185,6 +189,7 @@ var LocationParkingNPC = (function (_super) {
             var car_uid = $(this).data('uid');
             clientManager.sendParkingBagExchange(car_uid, self.npc_rec.node_hash);
         });
+
     };
 
     LocationParkingNPC.prototype.get_self_info = function () {
