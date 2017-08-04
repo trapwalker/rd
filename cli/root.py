@@ -8,13 +8,6 @@ from mongoengine import connect
 import click
 from hgapi import Repo
 
-context_settings = dict(
-    default_map={
-        'db': 'rd',
-        'verbose': True,
-        # 'reload': dict(),
-    },
-)
 
 @click.group()
 @click.option('--db', default='test_database', show_default=True, help='Database name')
@@ -27,7 +20,7 @@ context_settings = dict(
 @click.pass_context
 def root(ctx, db, verbose, project, world):
     if not verbose:
-        log.setLevel('INFO')
+        logging.getLogger().setLevel('INFO')
 
     if not world:
         world = os.path.join(project, u'sublayers_world')
@@ -44,4 +37,4 @@ def root(ctx, db, verbose, project, world):
         world_repo=world_repo,
     )
     db = connect(db=db)
-    log.debug('Use project root: %r', ctx.obj['project'])
+    log.info('Use project root: %r', ctx.obj['project'])
