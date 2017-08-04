@@ -110,6 +110,7 @@ class ItemUsable(Item):
         field=RegistryLinkField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
             caption=u"Итем который упадет в инвентарь",
+            # todo: спрашивать о райзе у объекта?
         ),
         caption=u'Список итемов которые упадут в инвентарь после активации',
     )

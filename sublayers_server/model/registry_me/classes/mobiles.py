@@ -16,8 +16,8 @@ from sublayers_server.model.registry_me.tree import (
 SLOT_LOCK = "reg:///registry/items/slot_item/_lock"
 
 class SlotField(EmbeddedNodeField):
-    def __init__(self, document_type='sublayers_server.model.registry_me.classes.item.SlotItem', reinst=True, **kw):
-        super(SlotField, self).__init__(document_type=document_type, reinst=reinst, **kw)
+    def __init__(self, document_type='sublayers_server.model.registry_me.classes.item.SlotItem', reinst=True, errors='ignore', **kw):
+        super(SlotField, self).__init__(document_type=document_type, reinst=reinst, errors=errors, **kw)
 
 
 class ModuleSlotField(SlotField):
