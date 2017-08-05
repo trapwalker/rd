@@ -35,11 +35,12 @@ class RandomizeExamples(object):
         for lvl_rec in randomize_cars_by_lvl:
             cars = [car for car in lvl_rec.cars]
             weapons = [weapon for weapon in lvl_rec.weapons]
-            cls.cache_car_level[lvl_rec.level] = dict(level=lvl_rec.level, cars=cars, weapons=weapons)
+            tuner_items = [item for item in lvl_rec.tuner_items]
+            cls.cache_car_level[lvl_rec.level] = dict(level=lvl_rec.level, cars=cars, weapons=weapons, tuner_items=tuner_items)
             log.debug('RandomizeCarExample: %s added to cache: cars=%s, weapons=%s', lvl_rec.level, len(cars), len(weapons))
 
     @classmethod
-    def get_random_car(cls, cars, weapons, car_params=None):
+    def get_random_car(cls, cars, weapons, tuner_items=None, car_params=None):
         if cls.registry is None:
             raise Exception('RandomizeCarExample: registry not init')
 
@@ -59,6 +60,18 @@ class RandomizeExamples(object):
                 weapons = [cls.registry.get(w) for w in weapons]
         if not weapons or not isinstance(weapons[0], Weapon):
             raise RandomizeCarWeaponException('Weapons list empty.')
+
+        # Подготовка айтемов тюнинга
+        if tuner_items:
+            if isinstance(tuner_items[0], basestring) or isinstance(tuner_items[0], StringField):
+                tuner_items = [cls.registry.get(item) for item in tuner_items]
+            # Поиск подходящих для данной машинки тюнинг айтемов
+            car_node_hash = car_proto.node_hash()
+            tuner_items = [item for item in tuner_items if item.get_view(car_node_hash)]
+        else:
+            tuner_items = []
+        # todo: пройтись по слотам и установить нескольок айтемов из тех, что есть в tuner_items
+
 
         # Формирование карты оружия
         one_front_direcrion = False  # Установлен ли хоть один слот вперед
@@ -123,7 +136,8 @@ class RandomizeExamples(object):
         cache = cls.cache_car_level
         level_recod = cache.get(level, None)
         if level_recod and level_recod['cars'] and level_recod['weapons']:
-            return cls.get_random_car(cars=level_recod['cars'], weapons=level_recod['weapons'], car_params=car_params)
+            return cls.get_random_car(cars=level_recod['cars'], weapons=level_recod['weapons'],
+                                      tuner_items=level_recod['tuner_items'], car_params=car_params)
         else:
             log.warning('RandomizeCarExample: not found cache for level: %s. Try prev level.', level)
             return cls.get_random_car_level(level=level-1, car_params=car_params)

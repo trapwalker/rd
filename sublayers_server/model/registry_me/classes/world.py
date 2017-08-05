@@ -20,6 +20,9 @@ class RandomizeCarParamsByLvl(Subdoc):
     weapons = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.weapons.Weapon'),
     )
+    tuner_items = ListField(
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.TunerItem'),
+    )
 
 
 class WorldSettings(Node):
