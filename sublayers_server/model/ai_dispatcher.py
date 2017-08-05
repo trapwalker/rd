@@ -7,7 +7,9 @@ from sublayers_server.model.agents import AI
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
+from sublayers_server.model.base import Observer
 from sublayers_common.ctx_timer import T
+import traceback
 
 
 class AIDispatcher(AI):
@@ -91,6 +93,10 @@ class AIAgent(AI):
         super(AIAgent, self).on_get_damage(damager=damager, **kw)
         damager_uid = damager.uid
         target_uid_list = self.event_quest.dc.target_uid_list
+        if not isinstance(damager, Observer):
+            log.debug('on_get_damage: damager not observer: %s', damager)
+            log.debug(''.join(traceback.format_stack()))
+            return
         if damager_uid not in target_uid_list:
             target_uid_list.append(damager_uid)
 

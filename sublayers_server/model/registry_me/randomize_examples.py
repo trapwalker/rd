@@ -139,9 +139,53 @@ class RandomizeExamples(object):
             return cls.get_random_car(cars=level_recod['cars'], weapons=level_recod['weapons'],
                                       tuner_items=level_recod['tuner_items'], car_params=car_params)
         else:
-            log.warning('RandomizeCarExample: not found cache for level: %s. Try prev level.', level)
+            # log.warning('RandomizeCarExample: not found cache for level: %s. Try prev level.', level)
             return cls.get_random_car_level(level=level-1, car_params=car_params)
 
+    @classmethod
+    def get_random_agent(cls, level, time, karma_min=0, karma_max=0):
+        agent_proto = cls.registry.get('/registry/agents/user/ai_quest')
+        example_profile = agent_proto.instantiate(name='', role_class=None)
+
+        role_class = random.choice(cls.registry.get('/registry/world_settings').role_class_order or [
+                '/registry/rpg_settings/role_class/chosen_one'])
+
+        example_profile.set_karma(time=time, value=random.randint(karma_min, karma_max))
+
+        need_points = level * 10 + random.randint(0, 9)
+        exp = example_profile.exp_table.get_need_exp_by_points(need_points)
+        example_profile.set_exp(time=time, value=exp)
+
+        total_sum = need_points + role_class.start_free_point_perks
+
+        # Выбор скила, куда уйдёт бОльшая часть очков
+        skills_dict = dict(driving=0, shooting=0, masking=0, leading=0, trading=0, engineering=0)
+        skill_dict_keys = skills_dict.keys()
+        if role_class.class_skills:
+            class_target_skill = role_class.class_skills[0].target
+            example_profile.set_role_class(role_class_ex=role_class, registry=cls.registry)
+            # 20-40% сразу в целевое
+            if class_target_skill in skill_dict_keys:
+                skill_count = int(round(total_sum * random.randint(20, 40) / 100.))
+                total_sum -= skill_count
+                skills_dict[class_target_skill] += skill_count
+
+        # Распределение очков
+        while total_sum > 0:
+            skills_dict[random.choice(skill_dict_keys)] += 1
+            total_sum -= 1
+
+        # Установка очков
+        for skill in skill_dict_keys:
+            attr = getattr(example_profile, skill)
+            attr.value += skills_dict[skill]
+
+        # log.debug('role_class = %s  need_points = %s  total_sum = %s', role_class.uri, need_points, total_sum)
+        # log.debug('skills_dict = %s', skills_dict)
+
+        # todo: прокачать перки. Из списка скорее всего
+
+        return example_profile
 
 if __name__ == '__main__':
     sys.path.append('../../..')
