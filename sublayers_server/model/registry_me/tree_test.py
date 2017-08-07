@@ -26,6 +26,7 @@ from sublayers_server.model.registry_me.tree import (
     DynamicSubdoc,
     STAT,
     field_getter_decorator,
+    Subdoc,
 )
 
 from pprint import pprint as pp
@@ -121,6 +122,35 @@ def test4(reload=True, save_loaded=True):
     globals().update(locals())
 
 
+def test_deep_reg_perfomance(node, deep=0, _tested=set()):
+    _tested.add(id(node))
+    s = 1
+    d = deep
+    if isinstance(node, Subdoc):
+        for name, attr, getter in node.iter_attrs():
+            v = getter()
+            if isinstance(v, (Subdoc, list, dict)) and id(v) not in _tested:
+                ss, dd = test_deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
+                s += ss
+                d = max(d, dd)
+    elif isinstance(node, list):
+        for it, v in enumerate(node):
+            v = node[it]
+            if id(v) not in _tested:
+                ss, dd = test_deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
+                s += ss
+                d = max(d, dd)
+    elif isinstance(node, dict):
+        for it in node:
+            v = node[it]
+            if id(v) not in _tested:
+                ss, dd = test_deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
+                s += ss
+                d = max(d, dd)
+
+    return s, d
+
+
 def test5(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
@@ -149,20 +179,32 @@ def test5(reload=True, save_loaded=True):
     t = reg.get(r'/registry/institutions/mayor/prior_donnie_alma')
     q = t.quests[4]
     # print(q)
-    len(q.recipient_list)
-    len(q.recipient_list)
-    with T('len*1000'):
-        for i in xrange(1000):
-            len(q.recipient_list)
 
     with T('q.instantiate*100'):
         for i in xrange(100):
             qq = q.instantiate()
+            len(qq.recipient_list)
+
 
     # with T('aload'):
     #     a = Agent.objects.filter().first()
     #     with T('reg_l'):
     #         a.
+
+    globals().update(locals())
+
+
+def test_perf(reload=True, save_loaded=True):
+    import random
+    import sublayers_server.model.registry_me.classes
+    from sublayers_server.model.registry_me.classes.agents import Agent
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+
+    _tested = set()
+    with T('deep_read_test'):
+        n, deep = test_deep_reg_perfomance(reg.root, _tested=_tested)
+    print('N={}, D={}'.format(n, deep))
+    assert n == len(_tested)
 
     globals().update(locals())
 
@@ -175,7 +217,7 @@ if __name__ == '__main__':
 
     rel = 0
 
-    test5(reload=rel, save_loaded=True)
+    test_perf(reload=rel, save_loaded=True)
 
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
