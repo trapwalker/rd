@@ -6,10 +6,23 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.tree import (
-    Node,
+    Node, Subdoc, EmbeddedDocumentField,
     StringField, ListField, IntField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
+
+
+class RandomizeCarParamsByLvl(Subdoc):
+    level = IntField()
+    cars = ListField(
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
+    )
+    weapons = ListField(
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.weapons.Weapon'),
+    )
+    tuner_items = ListField(
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.TunerItem'),
+    )
 
 
 class WorldSettings(Node):
@@ -33,3 +46,8 @@ class WorldSettings(Node):
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.agents.AIQuickAgentProfile'),
     )
     quick_game_bots_nick = ListField(field=StringField())
+
+
+
+    # Настройки рандомизации по-умолчанию
+    randomize_cars_by_lvl = ListField(field=EmbeddedDocumentField(document_type=RandomizeCarParamsByLvl))

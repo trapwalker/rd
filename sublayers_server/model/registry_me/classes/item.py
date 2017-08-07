@@ -309,11 +309,12 @@ class TunerItem(SlotItem):
         field=EmbeddedDocumentField(document_type=TunerImage),
     )
 
+    # todo: is_ascentor
     def get_view(self, car_node_hash):
         for tuner_image in self.images:
             if tuner_image.car.node_hash() == car_node_hash:
                 return tuner_image
-        log.warning('{} not found in item: {}'.format(car_node_hash, self))
+        # log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
 
     def html_description(self):
