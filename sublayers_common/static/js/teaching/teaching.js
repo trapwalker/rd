@@ -49,10 +49,10 @@ var TeachingManager = (function(){
         if(this.jq_panel_right) this.jq_panel_right.css('display', 'none');
 
         // Нота должна удалиться
-        if (this.active_note) {
-            this.active_note.delete();
-            this.active_note = null;
-        }
+        //if (this.active_note) {
+        //    this.active_note.delete();
+        //    this.active_note = null;
+        //}
     };
 
     TeachingManager.prototype.update = function(note) {
@@ -63,7 +63,7 @@ var TeachingManager = (function(){
     };
 
     TeachingManager.prototype.redraw = function() {
-        if (!this.is_active() || !this.active_note) return;
+        if (!this.is_active() || !this.active_note || !locationManager.example || locationManager.example.node_hash != "reg:///registry/poi/locations/towns/whitehill") return;
         this.context.clearRect(0, 0, 1920, 1080);
 
         this.active_note.first_call_draw_line_on_redraw = true;  // Чтобы нота подчёркивала внеэкранку только 1 раз
@@ -71,7 +71,7 @@ var TeachingManager = (function(){
     };
 
     TeachingManager.prototype.on_enter_location = function() {
-        if (this.active_note) {
+        if (this.active_note && locationManager.example.node_hash == "reg:///registry/poi/locations/towns/whitehill") {
             this.activate();
             this.active_note.on_enter_location();
         }
@@ -154,12 +154,6 @@ var TeachingMapManager = (function(){
     return TeachingMapManager;
 })();
 
-
-function teachTest() {
-    teachingManager.activate();
-    var note = new FinishQuestTeachingNote({uid: 5555});
-    teachingManager.update(note);
-}
 
 var teachingManager;
 var teachingMapManager;
