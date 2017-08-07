@@ -484,6 +484,10 @@ class Mobile(Unit):
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
 
+    def get_cc_by_speed(self, speed):
+        p_cc = self.params.get('p_cc')
+        return min(max(speed / self._param_aggregate['max_control_speed'], p_cc.min_value), p_cc.max_value)
+
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)
             # todo: fix it for df < 0 #fixit
