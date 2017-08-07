@@ -135,6 +135,11 @@ var FinishQuestTeachingNote = (function (_super) {
     FinishQuestTeachingNote.prototype.move_note_to_third = function () {
         var self = this;
         var jq_menu_notes_wrap = this.needed_building.jq_main_div.find('.building-center-menu-block-wrap').first();
+
+        // Если нота итак находится после второго элемента, то не двишать ничего
+        if($(jq_menu_notes_wrap.find('.building-center-menu-item')[2]).data('page_id').indexOf('building_note_' + self.note_uid) >= 0)
+            return;
+        // Иначе передвинуть ноту на третье место в менюшке
         if (jq_menu_notes_wrap)
             jq_menu_notes_wrap.find('.building-center-menu-item').each(function () {
                 var element = $(this);
