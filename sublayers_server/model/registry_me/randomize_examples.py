@@ -155,8 +155,7 @@ class RandomizeExamples(object):
         need_points = level * 10 + random.randint(0, 9)
         exp = example_profile.exp_table.get_need_exp_by_points(need_points)
         example_profile.set_exp(time=time, value=exp)
-
-        total_sum = need_points + role_class.start_free_point_perks
+        total_sum = need_points + role_class.start_free_point_skills
 
         # Выбор скила, куда уйдёт бОльшая часть очков
         skills_dict = dict(driving=0, shooting=0, masking=0, leading=0, trading=0, engineering=0)
@@ -212,24 +211,18 @@ def test5(reload=True, save_loaded=True):
     #     reg.root.rl_resolve()
 
     RandomizeExamples.init_cache(registry=reg)
-    with T("RandomizeCarExample"):
-        RandomizeExamples.get_random_car(
-            cars=[
-                "reg:///registry/mobiles/cars/middle/offroad/ford_f_150",
-                "reg:///registry/mobiles/cars/middle/offroad/ford_econoline",
-                "reg:///registry/mobiles/cars/middle/cars/04_bmw_320i_e21",
-                "reg:///registry/mobiles/cars/cargo/buses/04_gmc_pd_4501_scenicruiser",
-            ],
-            weapons=[
-                "reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/light/00_oc_14",
-                "reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/light/00_rpk",
-                "reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/medium/00_fg_42",
-                "reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/light/04_mt",
-                "reg:///registry/items/slot_item/armorer_item/weapons/cannons/medium/01_bofors_m_45",
-                "reg:///registry/items/slot_item/armorer_item/weapons/cannons/light/02_rg_6",
-                "reg:///registry/items/slot_item/armorer_item/weapons/cannons/medium/02_mauser_mg_213",
-            ],
-        )
+    agent = RandomizeExamples.get_random_agent(level=3, time=1)
+
+
+    log.debug('driving = %s', agent.driving.calc_value())
+    log.debug('shooting = %s', agent.shooting.calc_value())
+    log.debug('masking = %s', agent.masking.calc_value())
+    log.debug('leading = %s', agent.leading.calc_value())
+    log.debug('trading = %s', agent.trading.calc_value())
+    log.debug('engineering = %s', agent.engineering.calc_value())
+
+    log.debug('level = %s', agent.get_lvl())
+
 
     globals().update(locals())
 
