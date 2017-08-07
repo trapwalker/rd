@@ -39,7 +39,6 @@ class PersonInfoHandler(BaseHandler):
         # Параметр mode: 'map' окно на карте, 'city' окно в городе
         mode = self.get_argument('mode', 'city')
         person_name = self.get_argument('person', default=None)
-        print self.current_user
         agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         person = None
         if person_name:
