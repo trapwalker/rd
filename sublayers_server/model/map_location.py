@@ -83,7 +83,8 @@ class MapLocation(Observer):
         agent.on_enter_location(location=self, event=event)  # todo: (!)
         UserActualTradingMessage(agent=agent, time=event.time).post()
         PreEnterToLocation(agent=agent, location=self, time=event.time).post()
-        self.generate_quests(event=event, agent=agent)
+        with T('generate_quests by on_enter!!!'):
+            self.generate_quests(event=event, agent=agent)
         ActivateLocationChats(agent=agent, location=self, time=event.time + 0.1).post()
 
         # Добавить агента в список менеджеров мусорки

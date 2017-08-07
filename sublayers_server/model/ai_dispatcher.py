@@ -53,8 +53,8 @@ class AIAgent(AI):
     @event_deco
     def generate_car(self, event, car_example):
         # Добавить свою машинку на карту
-        # with T(name='car_example'):  # long
-        self.example.profile.car = car_example
+        with T(name='car_example:='):  # long
+            self.example.profile.car = car_example
         self.current_location = None
         car = Bot(time=event.time, example=self.example.profile.car, server=self.server, owner=self)
         self.append_car(car=car, time=event.time)
