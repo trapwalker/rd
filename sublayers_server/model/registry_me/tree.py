@@ -31,6 +31,7 @@ from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset import DO_NOTHING
 from mongoengine.fields import BaseField, ReferenceField
+from mongoengine.common import _import_class
 from mongoengine import (
     BooleanField,
     IntField,
@@ -382,6 +383,58 @@ class RLResolveMixin(object):
             if value is not None:
                 value = self._resolve_field_value(field, value)
                 self._data[field_name] = value
+
+    def _get_changed_fields(self, inspected=None):
+        """Return a list of all fields that have explicitly been changed.
+        """
+        EmbeddedDocument = _import_class('EmbeddedDocument')
+        DynamicEmbeddedDocument = _import_class('DynamicEmbeddedDocument')
+        ReferenceField = _import_class('ReferenceField')
+        SortedListField = _import_class('SortedListField')
+
+        changed_fields = []
+        changed_fields += getattr(self, '_changed_fields', [])
+
+        inspected = inspected or set()
+        if hasattr(self, 'id') and isinstance(self.id, Hashable):
+            if self.id in inspected:
+                return changed_fields
+            inspected.add(self.id)
+
+        for field_name in self._fields_ordered:
+            db_field_name = self._db_field_map.get(field_name, field_name)
+            key = '%s.' % db_field_name
+            data = self._data.get(field_name, None)
+            field = self._fields.get(field_name)
+
+            if hasattr(data, 'id'):
+                if data.id in inspected:
+                    continue
+            if isinstance(field, (ReferenceField, RegistryLinkField)):
+                continue
+            elif (
+                isinstance(data, (EmbeddedDocument, DynamicEmbeddedDocument)) and
+                db_field_name not in changed_fields
+            ):
+                # Find all embedded fields that have been changed
+                changed = data._get_changed_fields(inspected)
+                changed_fields += ['%s%s' % (key, k) for k in changed if k]
+            elif (isinstance(data, (list, tuple, dict)) and
+                    db_field_name not in changed_fields):
+                if (hasattr(field, 'field') and
+                        isinstance(field.field, ReferenceField)):
+                    continue
+                elif isinstance(field, SortedListField) and field._ordering:
+                    # if ordering is affected whole list is changed
+                    if any(map(lambda d: field._ordering in d._changed_fields, data)):
+                        changed_fields.append(db_field_name)
+                        continue
+
+                self._nestable_types_changed_fields(
+                    changed_fields, key, data, inspected)
+        return changed_fields
+
+
 
 
 class SubdocToolsMixin(object):
