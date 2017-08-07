@@ -21,7 +21,6 @@ import girl
 import quests
 import teaching_quest
 import ai_dispatcher_quest
-import ai_event_quests
 import routes
 
 import notes

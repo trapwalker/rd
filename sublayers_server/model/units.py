@@ -173,10 +173,6 @@ class Unit(Observer):
     def is_target(self, target):
         return self.main_agent.is_target(target=target)
 
-    def takeoff_weapon(self, weapon):
-        # todo: продумать меанизм снятия оружия
-        pass
-
     def fire_discharge(self, side, time):
         if self.limbo or not self.is_alive:
             log.debug('Error! {} try fire_discharge in limbo'.format(self))
@@ -367,6 +363,15 @@ class Unit(Observer):
             for w in sector.weapon_list:
                 yield w
 
+    def get_total_dps(self):
+        dps = 0
+        for w in self.weapon_list():
+            if isinstance(w, WeaponAuto):
+                dps += w.dps
+            if isinstance(w, WeaponDischarge):
+                dps += w.dmg / w.t_rch
+        return dps
+
     def on_kill(self, event, obj):
         # Начисление опыта и фрага машинке
         self.example.set_frag(dvalue=1)  # начисляем фраг машинке
@@ -478,6 +483,10 @@ class Mobile(Unit):
             log.warning('{} try set_motion in limbo main_agent={}'.format(self, self.main_agent))
         assert (turn is None) or (target_point is None)
         MotionTask(owner=self, target_point=target_point, cc=cc, turn=turn, comment=comment).start(time=time)
+
+    def get_cc_by_speed(self, speed):
+        p_cc = self.params.get('p_cc')
+        return min(max(speed / self._param_aggregate['max_control_speed'], p_cc.min_value), p_cc.max_value)
 
     def set_fuel(self, time, df=None):
         if df:  # значит хотим залить (пока нет дамага, снимающего литры)

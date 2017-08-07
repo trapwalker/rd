@@ -12,7 +12,7 @@ from sublayers_server.model.registry_me.tree import (
 
 class Route(Node):
     points = ListField(
-        root_default=[],
+        root_default=list,
         caption=u"Маршрут патрулирования",
         field=PositionField(caption=u"Точка патрулирования", reinst=True,),
         reinst=True,
@@ -25,6 +25,11 @@ class Route(Node):
 
     def get_start_point(self):
         return self.points[-1] if self.reverse else self.points[0]
+
+    def get_current_point(self):
+        if self.current_index < 0 or self.current_index >= len(self.points):
+            return self.get_start_point()
+        return self.points[self.current_index].as_point()
 
     def nearest_point(self, position):  # Вызывать при возвращении на маршрут (или при старте маршрута)
         index = self.current_index
@@ -39,6 +44,8 @@ class Route(Node):
         return self.points[self.current_index].as_point()
 
     def need_next_point(self, position):
+        if not self.cyclic and (self.current_index < 0 or self.current_index >= len(self.points)):  # Значит маршрут завершён
+            return True  # Чтобы next_point потом вернул None
         return position.distance(self.points[self.current_index].as_point()) < self.route_accuracy
 
     def next_point(self):

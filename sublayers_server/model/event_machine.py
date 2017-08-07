@@ -17,6 +17,7 @@ from sublayers_server.model.async_tools import async_deco2
 import sublayers_server.model.registry_me.classes  # todo: autoregistry classes
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.tree import get_global_registry, ValidationError
+from sublayers_server.model.registry_me.randomize_examples import RandomizeExamples
 from sublayers_common.user_profile import User as UserProfile
 from sublayers_common.ctx_timer import Timer
 from sublayers_common.handlers.base import BaseHandler
@@ -468,6 +469,9 @@ class BasicLocalServer(LocalServer):
         gs_root = self.reg.get('/registry/poi/locations/gas_stations')
         for gs_exm in gs_root.subnodes.values():
             GasStation(time=t, server=self, example=gs_exm)
+
+        # подготовка рандомайзера машиок
+        RandomizeExamples.init_cache(registry=self.reg)
 
         # создание диспетчера ботов
         dispatcher_name = 'bot_dispatcher'
