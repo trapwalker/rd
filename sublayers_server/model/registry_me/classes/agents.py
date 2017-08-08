@@ -252,11 +252,11 @@ class AgentProfile(Node):
         return lvl
 
     def get_real_lvl(self):
-        return self.get_lvl() // 10
+        return int(self.get_lvl() // 10)
 
     @property
     def karma_norm(self):
-        return min(max(self.karma / 100, -1), 1)
+        return min(max(self.karma / 100., -1), 1)
 
     def karma_name(self, lang='ru'):
         return getKarmaName(self.karma_norm, lang)

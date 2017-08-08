@@ -1530,7 +1530,7 @@ class InteractionInfoMessage(Message):
             d.update(
                 avatar=player.user.avatar_link,
                 about_self=player_profile.about_self,
-                lvl=math.floor(player_profile.get_lvl() / 10),
+                lvl=player_profile.get_real_lvl(),
                 role_class=player_profile.role_class.description,
                 karma=player_profile.karma_name(),
                 driving=player_profile.driving.calc_value(),
@@ -1572,7 +1572,7 @@ class PartyUserInfoMessage(Message):
             d.update(
                 name=self.player_nick,
                 avatar=player.user.avatar_link,
-                lvl=math.floor(player_profile.get_lvl() / 10),
+                lvl=player_profile.get_real_lvl(),
                 role_class=player_profile.role_class.description,
                 karma=player_profile.karma_name(),
                 driving=player_profile.driving.calc_value(),
