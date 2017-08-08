@@ -22,6 +22,9 @@ from copy import copy
 
 
 class SimpleTimer(object):
+    STOP_SIGN = '!'
+    RUN_SIGN = '...'
+
     def __init__(self, name=None, owner=None):
         self.name = name
         self.timestamp_start = None
@@ -76,12 +79,14 @@ class SimpleTimer(object):
         return "<{name}:{self.duration:.3f}{runing_sign}>".format(
             name=self.name or self.__class__.__name__,
             self=self,
-            runing_sign='...' if self.is_active else '!',
+            runing_sign=seld.RUN_SIGN if self.is_active else self.STOP_SIGN,
         )
 
 
 # todo: Progress tracking feature (estimate, stage, progress bar, stage comment)
 class Timer(SimpleTimer):
+    STOP_SIGN = '||'
+    RUN_SIGN = '...'
     def __init__(
             self,
             logger=None,
@@ -169,14 +174,12 @@ class Timer(SimpleTimer):
     def is_stopped(self):
         return self.lap_timer is None
 
+    is_active = is_started
+
     @property
     def duration(self):
-        if not self.is_started:
-            return 0
-
-        at_time = self.timestamp_stop or time.time()
-        return at_time - self.timestamp_start
-
+        lap_timer = self.lap_timer
+        return self.duration_sum + (lap_timer.duration if lap_timer else 0)
 
     # todo: cumulative_duration of multiple start/stop laps
 
@@ -226,13 +229,14 @@ class T(Timer):
 
 if __name__ == '__main__':
     import sys
+    from time import sleep
 
     tm = Timer()
     for i in xrange(3):
         with tm as t:
-            print('lap', tm.lap_count, t)
-            all(range(1, 1000000))
-        all(range(1, 1000000))
+            sleep(1)
+        print('lap', tm.lap_count, tm, t)
+        sleep(0.2)
     # # simple usage:
     # with Timer('simple', logger='stderr'):
     #     pass
