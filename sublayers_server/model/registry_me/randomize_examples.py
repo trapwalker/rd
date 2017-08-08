@@ -9,7 +9,7 @@ from sublayers_server.model.registry_me import classes  # Не удалять э
 from sublayers_server.model.registry_me.classes.weapons import Weapon
 from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.registry_me.tree import (
-    connect, get_global_registry, ListField, RegistryLinkField, StringField, STAT,
+    connect, get_global_registry, RegistryLinkField, StringField, STAT,
 )
 
 import random
@@ -26,6 +26,7 @@ class RandomizeCarWeaponException(Exception):
 class RandomizeExamples(object):
     registry = None
     cache_car_level = None
+    agent_role_class_list = None
 
     @classmethod
     def init_cache(cls, registry):
@@ -38,6 +39,10 @@ class RandomizeExamples(object):
             tuner_items = [item for item in lvl_rec.tuner_items]
             cls.cache_car_level[lvl_rec.level] = dict(level=lvl_rec.level, cars=cars, weapons=weapons, tuner_items=tuner_items)
             log.debug('RandomizeCarExample: %s added to cache: cars=%s, weapons=%s', lvl_rec.level, len(cars), len(weapons))
+
+        cls.agent_role_class_list = [k for k in registry.get('/registry/world_settings').role_class_order]
+        assert cls.agent_role_class_list, 'RandomizeExamples: init_cache: role class list is empty'
+
 
     @classmethod
     def get_random_car(cls, cars, weapons, tuner_items=None, car_params=None):
@@ -146,9 +151,7 @@ class RandomizeExamples(object):
     def get_random_agent(cls, level, time, karma_min=0, karma_max=0):
         agent_proto = cls.registry.get('/registry/agents/user/ai_quest')
         example_profile = agent_proto.instantiate(name='', role_class=None)
-
-        role_class = random.choice(cls.registry.get('/registry/world_settings').role_class_order or [
-                '/registry/rpg_settings/role_class/chosen_one'])
+        role_class = random.choice(cls.agent_role_class_list)
 
         example_profile.set_karma(time=time, value=random.randint(karma_min, karma_max))
 
