@@ -29,6 +29,9 @@ var LeafletIconManager = (function(){
         // Иконки шахты
         this.load_new_icon('icon_mine_whitehill_full', '/static/content/locations/map_locations/mine_whitehill/map_icons/full.png', [80, 66]);
         this.load_new_icon('icon_mine_whitehill_circle', '/static/content/locations/map_locations/mine_whitehill/map_icons/circle.png', [80, 66]);
+        // Иконки базы злых мобов
+        this.load_new_icon('icon_los_jetas_full', '/static/content/locations/map_locations/los_jetas/map_icons/full.png', [80, 66]);
+        this.load_new_icon('icon_los_jetas_circle', '/static/content/locations/map_locations/los_jetas/map_icons/circle.png', [80, 66]);
 
         // Создание иконки движущейся машинки V 1
         this.load_new_icon('icon_moving_V1', '/static/img/map_icons/map_icon_player_v1_moving.png', [51, 28]);

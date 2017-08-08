@@ -526,6 +526,9 @@ var WCanvasStaticTownMarker = (function (_super) {
                     case 'reg:///registry/poi/locations/towns/mine_whitehill':
                         icon_name = 'mine_whitehill';
                         break;
+                    case 'reg:///registry/poi/locations/towns/los_jetas':
+                        icon_name = 'los_jetas';
+                        break;
                     default:
                         console.log('Не найдена иконка. Установлена стандартная. ', mobj.example.node_hash);
                         icon_name = 'city';
