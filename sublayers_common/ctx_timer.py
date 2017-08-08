@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
+from __future__ import print_function, division
 
 import sys
 import logging
@@ -79,7 +79,7 @@ class SimpleTimer(object):
         return "<{name}:{self.duration:.3f}{runing_sign}>".format(
             name=self.name or self.__class__.__name__,
             self=self,
-            runing_sign=seld.RUN_SIGN if self.is_active else self.STOP_SIGN,
+            runing_sign=self.RUN_SIGN if self.is_active else self.STOP_SIGN,
         )
 
 
@@ -94,7 +94,7 @@ class Timer(SimpleTimer):
             log_stop='Timer {timer.name!r} stopped at {timer.time_stop}. Duration is {timer.duration}s',
             log_level=logging.DEBUG,
             log_name=None,
-            laps_store=False,
+            laps_store=0,
             **kw
         ):
         super(Timer, self).__init__()
@@ -119,7 +119,10 @@ class Timer(SimpleTimer):
 
         self.log_start = log_start
         self.log_stop = log_stop
+        self.duration_sum_last = 0
         self.duration_sum = 0
+        self.duration_min = None
+        self.duration_max = None
         self.lap_count = 0
         self.lap_timer = None
         self.laps = []
@@ -157,14 +160,39 @@ class Timer(SimpleTimer):
         r = lap_timer.stop(t, owner_stop=False)
         self.lap_timer = None
         self.lap_count += 1
-        self.duration_sum += lap_timer.duration
-        # todo: min/max/avg calculate
-        if self.laps_store:
-            self.laps.append(lap_timer)
+        last_lap_duration = lap_timer.duration
+        self.duration_sum += last_lap_duration
+        self.duration_sum_last += last_lap_duration
+        duration_min = self.duration_min
+        duration_max = self.duration_max
+
+        if duration_min is None or last_lap_duration < duration_min:
+            self.duration_min = duration_min = last_lap_duration
+
+        if duration_max is None or last_lap_duration > duration_max:
+            self.duration_max = duration_max = last_lap_duration
+
+        laps_store = self.laps_store
+        if laps_store:
+            laps = self.laps
+            laps.append(lap_timer)
+            while len(laps) > laps_store > 0:
+                poped = laps.pop(0)
+                self.duration_sum_last -= poped.duration
 
         if self.log_stop:
             self._log(self.log_stop.format(timer=self))
         return r
+
+    @property
+    def duration_avg(self):
+        n = self.lap_count
+        return self.duration_sum / n if n > 0 else 0
+
+    @property
+    def duration_avg_last(self):
+        n = len(self.laps)
+        return self.duration_sum_last / n if n > 0 else 0
 
     @property
     def is_started(self):
@@ -230,11 +258,12 @@ class T(Timer):
 if __name__ == '__main__':
     import sys
     from time import sleep
+    import random
 
     tm = Timer()
-    for i in xrange(3):
+    for i in xrange(30):
         with tm as t:
-            sleep(1)
+            sleep(random.randint(1, 3)/10)
         print('lap', tm.lap_count, tm, t)
         sleep(0.2)
     # # simple usage:
