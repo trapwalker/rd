@@ -669,10 +669,12 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
 
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
         for field_name, field in type(self)._fields.items():
-            if isinstance(field, CONTAINER_OR_RL_FIELD_TYPES):
+            if isinstance(field, CONTAINER_FIELD_TYPES):#CONTAINER_OR_RL_FIELD_TYPES):
                 if not self.is_field_inherited(field_name) or getattr(field, 'reinst', False):
                     value = getattr(self, field_name)
-                    setattr(self, field_name, value)
+                    if value is not None:
+                        value = self._expand_field_value(field, value)
+                        setattr(self, field_name, value)
 
         if isinstance(self, Node) and self._need_reinst:
             self._reinst()
