@@ -422,7 +422,7 @@ class RLResolveMixin(object):
             elif (isinstance(data, (list, tuple, dict)) and
                     db_field_name not in changed_fields):
                 if (hasattr(field, 'field') and
-                        isinstance(field.field, ReferenceField)):
+                        isinstance(field.field, (ReferenceField, RegistryLinkField))):
                     continue
                 elif isinstance(field, SortedListField) and field._ordering:
                     # if ordering is affected whole list is changed
@@ -474,7 +474,7 @@ class SubdocToolsMixin(object):
         )
 
 
-class DynamicSubdoc(EmbeddedDocument, SubdocToolsMixin):
+class DynamicSubdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     _dynamic = True
     meta = dict(
         allow_inheritance=True,
