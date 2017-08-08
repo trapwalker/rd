@@ -491,7 +491,7 @@ class DynamicSubdoc(EmbeddedDocument, SubdocToolsMixin):
         return self.to_string()
 
 
-class Subdoc(EmbeddedDocument, SubdocToolsMixin, RLResolveMixin):
+class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     __metaclass__ = NodeMetaclass
     _dynamic = False
     STRICT = True
@@ -683,7 +683,7 @@ class Subdoc(EmbeddedDocument, SubdocToolsMixin, RLResolveMixin):
 
 
 ########################################################################################################################
-class Node(Subdoc, SubdocToolsMixin, RLResolveMixin):
+class Node(Subdoc, SubdocToolsMixin):
     #__slots__ = ('_uri',)
     #__metaclass__ = NodeMetaclass
     _dynamic = False
