@@ -14,6 +14,7 @@ setup(
     include_package_data=True,
     install_requires=[
         #'virtualenv',
+        'ctx_timer',
         'tornado',
         'cachetools',
         'PyYAML',
@@ -26,6 +27,9 @@ setup(
         'humanfriendly',
         'colorama',
         'requests',
+    ],
+    dependency_links=[
+        "https://github.com/sergyp/ctx_timer/tarball/master#egg=ctx_timer-0.0.1",
     ],
     entry_points='''
         [console_scripts]
