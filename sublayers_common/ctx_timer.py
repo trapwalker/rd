@@ -21,8 +21,54 @@ import collections
 from copy import copy
 
 
+class SimpleTimer(object):
+    def __init__(self):
+        self.timestamp_start = None
+        self.timestamp_stop = None
+
+    @property
+    def time_start(self):
+        return None if self.timestamp_start is None else datetime.fromtimestamp(self.timestamp_start)
+
+    @property
+    def time_stop(self):
+        return None if self.timestamp_stop is None else datetime.fromtimestamp(self.timestamp_stop)
+
+    def start(self, t=None):
+        if t is None:
+            t = time.time()
+        self.timestamp_start = t
+        return t
+
+    def stop(self, t=None):
+        if t is None:
+            t = time.time()
+        self.timestamp_stop = t
+        return t
+
+    @property
+    def is_started(self):
+        return self.timestamp_start is not None
+
+    @property
+    def is_stopped(self):
+        return self.timestamp_stop is not None
+
+    @property
+    def is_active(self):
+        return self.is_started and not self.is_stopped
+
+    @property
+    def duration(self):
+        if not self.is_started:
+            return 0
+
+        at_time = self.timestamp_stop or time.time()
+        return at_time - self.timestamp_start
+
+
 # todo: Progress tracking feature (estimate, stage, progress bar, stage comment)
-class Timer(object):
+class Timer(SimpleTimer):
     def __init__(
             self,
             name=None,
@@ -31,8 +77,10 @@ class Timer(object):
             log_stop='Timer {timer.name!r} stopped at {timer.time_stop}. Duration is {timer.duration}s',
             log_level=logging.DEBUG,
             log_name=None,
+            laps_store=False,
             **kw
         ):
+        super(Timer, self).__init__()
         self.name = name
         self.log_level = log_level and logging._checkLevel(log_level) or logging.NOTSET
         _stream = None
@@ -54,8 +102,9 @@ class Timer(object):
 
         self.log_start = log_start
         self.log_stop = log_stop
-        self.timestamp_start = None
-        self.timestamp_stop = None
+        self.summary_duration = None
+        self.lap_timer = None
+
         self._it_is_decorator = False
         self.__dict__.update(kw)
 
@@ -64,48 +113,18 @@ class Timer(object):
         if logger:
             logger.log(self.log_level, message, *av, **kw)
 
-    @property
-    def time_start(self):
-        return None if self.timestamp_start is None else datetime.fromtimestamp(self.timestamp_start)
-        
-    @property
-    def time_stop(self):
-        return None if self.timestamp_stop is None else datetime.fromtimestamp(self.timestamp_stop)
-
-    def start(self):
+    def start(self, t=None):
         assert not self._it_is_decorator, "You can't start Timer instance used as decorator."
-        t = time.time()
-        self.timestamp_start = t
+        t = super(Timer, self).start(t)
         if self.log_start:
             self._log(self.log_start.format(timer=self))
         return t
 
-    def stop(self):
-        t = time.time()
-        self.timestamp_stop = t
+    def stop(self, t=None):
+        t = super(Timer, self).stop(t)
         if self.log_stop:
             self._log(self.log_stop.format(timer=self))
         return t
-
-    @property
-    def is_started(self):
-        return self.timestamp_start is not None
-
-    @property
-    def is_stopped(self):
-        return self.timestamp_stop is not None
-
-    @property
-    def is_active(self):
-        return self.is_started and not self.is_stopped
-    
-    @property
-    def duration(self):
-        if not self.is_started:
-            return 0
-
-        at_time = self.timestamp_stop or time.time()
-        return at_time - self.timestamp_start
 
     # todo: cumulative_duration of multiple start/stop laps
 
@@ -157,20 +176,21 @@ if __name__ == '__main__':
     import sys
 
     # simple usage:
-    with Timer():
+    with Timer('simple', logger='stderr'):
         pass
 
     # normal usage:
-    with Timer(name='test', logger=log) as timer:
+    tm = Timer(name='test', logger=log)
+    with tm as timer:
         task_size = 100000000 / 16
         for i in xrange(task_size):
             if i % (task_size / 10) == 0:
-                print(timer.duration)
+                print('{:.4f}'.format(timer.duration))
 
     # functions decoration usage:
-    @Timer(name='test2', logger=sys.stdout)
-    def test_routine2():
-        print('test_routine2')
+    # @Timer(name='test2', logger=sys.stdout)
+    # def test_routine2():
+    #     print('test_routine2')
 
-    test_routine2()
-    test_routine2()
+    # test_routine2()
+    # test_routine2()
