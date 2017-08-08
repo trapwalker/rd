@@ -159,7 +159,11 @@ def test5(reload=True, save_loaded=True):
 
     # with T('Agent load'):
     #     a = Agent.objects.filter(login='q'*13).first()
-    #
+
+    a = reg.get('/registry/agents/user')
+    a1 = a.instantiate()
+    a2 = a.instantiate()
+
     # with T():
     #     for i in xrange(100):
     #         p = a.profile.instantiate()
@@ -176,14 +180,14 @@ def test5(reload=True, save_loaded=True):
     # with T('reg Expand_links'):
     #     reg.root.rl_resolve()
 
-    t = reg.get(r'/registry/institutions/mayor/prior_donnie_alma')
-    q = t.quests[4]
+    # t = reg.get(r'/registry/institutions/mayor/prior_donnie_alma')
+    # q = t.quests[4]
     # print(q)
 
-    with T('q.instantiate*100'):
-        for i in xrange(100):
-            qq = q.instantiate()
-            len(qq.recipient_list)
+    # with T('q.instantiate*100'):
+    #     for i in xrange(100):
+    #         qq = q.instantiate()
+    #         len(qq.recipient_list)
 
 
     # with T('aload'):
