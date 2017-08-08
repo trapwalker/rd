@@ -221,7 +221,7 @@ if __name__ == '__main__':
 
     rel = 0
 
-    test_perf(reload=rel, save_loaded=True)
+    test5(reload=rel, save_loaded=True)
 
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

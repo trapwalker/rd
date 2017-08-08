@@ -47,6 +47,7 @@ from mongoengine import (
     #GenericReferenceField,
 )
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
+from sublayers_common.ctx_timer import Timer, T
 
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
@@ -571,13 +572,13 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     #
     #     return last_instance
 
-    def __setattr__(self, key, value):
-        if key != '_initialised' and getattr(self, '_initialised', None):
-            field = type(self)._fields.get(key)  # todo: support dynamic fields too
-            if value is not None and isinstance(field, CONTAINER_OR_RL_FIELD_TYPES):
-                value = self._expand_field_value(field, value)
-
-        super(Subdoc, self).__setattr__(key, value)
+    # def __setattr__(self, key, value):
+    #     if key != '_initialised' and getattr(self, '_initialised', None):
+    #         field = type(self)._fields.get(key)  # todo: support dynamic fields too
+    #         if value is not None and isinstance(field, CONTAINER_OR_RL_FIELD_TYPES):
+    #             value = self._expand_field_value(field, value)
+    #
+    #     super(Subdoc, self).__setattr__(key, value)
 
     def instantiate(self, _only_fields=None, **kw):
         data = {}
