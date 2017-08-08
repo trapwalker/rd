@@ -56,8 +56,7 @@ class AIAgent(AI):
     def generate_car(self, event, car_example):
         # Добавить свою машинку на карту
         profile = self.example.profile
-        with T(name='car_example:='):  # long
-            profile.car = car_example
+        profile.car = car_example
         self.current_location = None
         car = Bot(time=event.time, example=car_example, server=self.server, owner=self)
         self.append_car(car=car, time=event.time)
