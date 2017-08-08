@@ -22,9 +22,11 @@ from copy import copy
 
 
 class SimpleTimer(object):
-    def __init__(self):
+    def __init__(self, name=None, owner=None):
+        self.name = name
         self.timestamp_start = None
         self.timestamp_stop = None
+        self.owner = owner
 
     @property
     def time_start(self):
@@ -40,11 +42,15 @@ class SimpleTimer(object):
         self.timestamp_start = t
         return t
 
-    def stop(self, t=None):
-        if t is None:
-            t = time.time()
-        self.timestamp_stop = t
-        return t
+    def stop(self, t=None, owner_stop=True):
+        owner = self.owner
+        if owner_stop and owner is not None:
+            return owner.stop(t)
+        else:
+            if t is None:
+                t = time.time()
+            self.timestamp_stop = t
+            return t
 
     @property
     def is_started(self):
@@ -66,12 +72,18 @@ class SimpleTimer(object):
         at_time = self.timestamp_stop or time.time()
         return at_time - self.timestamp_start
 
+    def __repr__(self):
+        return "<{name}:{self.duration:.3f}{runing_sign}>".format(
+            name=self.name or self.__class__.__name__,
+            self=self,
+            runing_sign='...' if self.is_active else '!',
+        )
+
 
 # todo: Progress tracking feature (estimate, stage, progress bar, stage comment)
 class Timer(SimpleTimer):
     def __init__(
             self,
-            name=None,
             logger=None,
             log_start='Timer {timer.name!r} started at {timer.time_start}',
             log_stop='Timer {timer.name!r} stopped at {timer.time_stop}. Duration is {timer.duration}s',
@@ -81,7 +93,7 @@ class Timer(SimpleTimer):
             **kw
         ):
         super(Timer, self).__init__()
-        self.name = name
+        self.laps_store = laps_store
         self.log_level = log_level and logging._checkLevel(log_level) or logging.NOTSET
         _stream = None
         if logger is None or isinstance(logger, logging.Logger):
@@ -102,8 +114,10 @@ class Timer(SimpleTimer):
 
         self.log_start = log_start
         self.log_stop = log_stop
-        self.summary_duration = None
+        self.duration_sum = 0
+        self.lap_count = 0
         self.lap_timer = None
+        self.laps = []
 
         self._it_is_decorator = False
         self.__dict__.update(kw)
@@ -113,24 +127,62 @@ class Timer(SimpleTimer):
         if logger:
             logger.log(self.log_level, message, *av, **kw)
 
-    def start(self, t=None):
+    def start(self, t=None, lap_name=None):
+        # todo: lock to thread save support
         assert not self._it_is_decorator, "You can't start Timer instance used as decorator."
+        assert self.lap_timer is None, "You can't start timer twice successively without stopping"
+        lap_timer = self.lap_timer = SimpleTimer(
+            name=lap_name or '{name}:lap#{self.lap_count}'.format(
+                self=self,
+                name=self.name or self.__class__.__name__,
+            )
+        )
         t = super(Timer, self).start(t)
+        lap_timer.start(t)
+
         if self.log_start:
             self._log(self.log_start.format(timer=self))
         return t
 
     def stop(self, t=None):
-        t = super(Timer, self).stop(t)
+        # todo: lock to thread save support
+        lap_timer = self.lap_timer
+        assert lap_timer is not None, "Timer is not running, you can't stop them"
+        #t = super(Timer, self).stop(t)  # info: Будучи запущеным такой таймер уже не останавливается сам, только круги
+        r = lap_timer.stop(t, owner_stop=False)
+        self.lap_timer = None
+        self.lap_count += 1
+        self.duration_sum += lap_timer.duration
+        # todo: min/max/avg calculate
+        if self.laps_store:
+            self.laps.append(lap_timer)
+
         if self.log_stop:
             self._log(self.log_stop.format(timer=self))
-        return t
+        return r
+
+    @property
+    def is_started(self):
+        return self.lap_timer is not None
+
+    @property
+    def is_stopped(self):
+        return self.lap_timer is None
+
+    @property
+    def duration(self):
+        if not self.is_started:
+            return 0
+
+        at_time = self.timestamp_stop or time.time()
+        return at_time - self.timestamp_start
+
 
     # todo: cumulative_duration of multiple start/stop laps
 
     def __enter__(self):
         self.start()
-        return self
+        return self.lap_timer
 
     def __exit__(self, ex_type, ex_value, traceback):
         self.stop()
@@ -175,17 +227,23 @@ class T(Timer):
 if __name__ == '__main__':
     import sys
 
-    # simple usage:
-    with Timer('simple', logger='stderr'):
-        pass
-
-    # normal usage:
-    tm = Timer(name='test', logger=log)
-    with tm as timer:
-        task_size = 100000000 / 16
-        for i in xrange(task_size):
-            if i % (task_size / 10) == 0:
-                print('{:.4f}'.format(timer.duration))
+    tm = Timer()
+    for i in xrange(3):
+        with tm as t:
+            print('lap', tm.lap_count, t)
+            all(range(1, 1000000))
+        all(range(1, 1000000))
+    # # simple usage:
+    # with Timer('simple', logger='stderr'):
+    #     pass
+    #
+    # # normal usage:
+    # tm = Timer(name='test', logger=log)
+    # with tm as timer:
+    #     task_size = 100000000 / 16
+    #     for i in xrange(task_size):
+    #         if i % (task_size / 10) == 0:
+    #             print('{:.4f}'.format(timer.duration))
 
     # functions decoration usage:
     # @Timer(name='test2', logger=sys.stdout)
