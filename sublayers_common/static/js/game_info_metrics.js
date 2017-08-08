@@ -67,7 +67,6 @@ var Analytics = (function () {
     };
 
     Analytics.prototype.get_quest = function () {
-        if (this.active_teaching()) return;
         if (!basic_server_mode) return;
         if (! this.data['get_quest']) {
             this.data['get_quest'] = 1;
@@ -81,7 +80,6 @@ var Analytics = (function () {
     };
     
     Analytics.prototype.end_quest = function () {
-        if (this.active_teaching()) return;
         if (!basic_server_mode) return;
         if(!this.data['end_quest']) {
             this.data['end_quest'] = true;

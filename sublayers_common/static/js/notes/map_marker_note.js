@@ -25,7 +25,7 @@ var QuestMapMarkerNote = (function (_super) {
         mapCanvasManager.add_vobj(this, 8);
 
         // Для рассчёта клика по ноте
-        this._last_ctx_pos = null;  // Последняя ctx позиция
+        this._last_ctx_pos = new Point(0, 0);  // Последняя ctx позиция
         this.icon_size_min_div_2 = Math.min(this.img_width, this.img_height) >> 2; // Размеры иконки
         this.icon_size_min_div_2 *= this.icon_size_min_div_2;
     }

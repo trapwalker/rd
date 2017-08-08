@@ -1526,24 +1526,23 @@ class InteractionInfoMessage(Message):
         d = super(InteractionInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
         if player:
-            lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.profile.exp_table.by_exp(exp=player.example.profile.exp)
+            player_profile = player.example.profile
             d.update(
                 avatar=player.user.avatar_link,
-                about_self=player.example.profile.about_self,
-                lvl=lvl,
-                role_class=player.example.profile.role_class.title,
-                karma=0,  # todo: убрать заглушку
-                # todo: ##REFACTORING
-                driving=player.example.profile.driving.calc_value(),
-                shooting=player.example.profile.shooting.calc_value(),
-                masking=player.example.profile.masking.calc_value(),
-                leading=player.example.profile.leading.calc_value(),
-                trading=player.example.profile.trading.calc_value(),
-                engineering=player.example.profile.engineering.calc_value(),
+                about_self=player_profile.about_self,
+                lvl=math.floor(player_profile.get_lvl() / 10),
+                role_class=player_profile.role_class.description,
+                karma=player_profile.karma_name(),
+                driving=player_profile.driving.calc_value(),
+                shooting=player_profile.shooting.calc_value(),
+                masking=player_profile.masking.calc_value(),
+                leading=player_profile.leading.calc_value(),
+                trading=player_profile.trading.calc_value(),
+                engineering=player_profile.engineering.calc_value(),
             )
 
             # Еслли есть машинка то отправить ее шаблоны и имя
-            if player.example.profile.car:
+            if player_profile.car:
                 template_table = tornado.template.Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
@@ -1553,9 +1552,9 @@ class InteractionInfoMessage(Message):
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")
                 d.update(
-                    car_name = player.example.profile.car.title,
-                    html_car_table=template_table.generate(car=player.example.profile.car, agent=player),
-                    html_car_img=template_img.generate(car=player.example.profile.car)
+                    car_name=player_profile.car.title,
+                    html_car_table=template_table.generate(car=player_profile.car, agent=player),
+                    html_car_img=template_img.generate(car=player_profile.car)
                 )
         return d
 
@@ -1568,25 +1567,24 @@ class PartyUserInfoMessage(Message):
     def as_dict(self):
         d = super(PartyUserInfoMessage, self).as_dict()
         player = self.agent.server.agents_by_name.get(str(self.player_nick), None)
-        lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = player.example.profile.exp_table.by_exp(exp=player.example.profile.exp)
         if player:
+            player_profile = player.example.profile
             d.update(
                 name=self.player_nick,
                 avatar=player.user.avatar_link,
-                lvl=lvl,
-                role_class=player.example.profile.role_class.title,
-                karma=0,  # todo: убрать заглушку
-                # todo: ##REFACTORING
-                driving=player.example.profile.driving.calc_value(),
-                shooting=player.example.profile.shooting.calc_value(),
-                masking=player.example.profile.masking.calc_value(),
-                leading=player.example.profile.leading.calc_value(),
-                trading=player.example.profile.trading.calc_value(),
-                engineering=player.example.profile.engineering.calc_value(),
+                lvl=math.floor(player_profile.get_lvl() / 10),
+                role_class=player_profile.role_class.description,
+                karma=player_profile.karma_name(),
+                driving=player_profile.driving.calc_value(),
+                shooting=player_profile.shooting.calc_value(),
+                masking=player_profile.masking.calc_value(),
+                leading=player_profile.leading.calc_value(),
+                trading=player_profile.trading.calc_value(),
+                engineering=player_profile.engineering.calc_value(),
             )
 
             # Еслли есть машинка то отправить ее шаблоны и имя
-            if player.example.profile.car:
+            if player_profile.car:
                 template_img = tornado.template.Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
