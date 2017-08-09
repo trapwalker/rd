@@ -124,22 +124,29 @@ class CompositeRoute(AbstractRoute):
         return self.routes[self.current_route_index].get_start_point()
 
     def get_current_point(self):
+        if self.current_route_index >= len(self.routes):
+            return None
         return self.routes[self.current_route_index].get_current_point()
 
     def nearest_point(self, position):
         return self.routes[self.current_route_index].nearest_point(position)
 
     def need_next_point(self, position, route_accuracy=None):
+        if self.current_route_index >= len(self.routes):
+            return True
         route_accuracy = route_accuracy or self.route_accuracy
         return self.routes[self.current_route_index].need_next_point(position, route_accuracy=route_accuracy)
 
     def next_point(self):
+        routes_len = len(self.routes)
+        if self.current_route_index >= routes_len:
+            return None
         current_point = self.get_current_point()
         next_p = self.routes[self.current_route_index].next_point()
         if not next_p:
             # Взять следующий маршрут
             self.current_route_index += 1
-            if self.current_route_index >= len(self.routes):
+            if self.current_route_index >= routes_len:
                 return None  # Значит мы закончили последний маршрут
             # Инициализация следующего маршрута
             return self.nearest_point(current_point)
