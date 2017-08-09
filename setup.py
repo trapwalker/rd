@@ -14,6 +14,7 @@ setup(
     include_package_data=True,
     install_requires=[
         #'virtualenv',
+        'ctx_timer',
         'tornado',
         'cachetools',
         'PyYAML',

@@ -6,12 +6,11 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.agents import User, QuickUser, TeachingUser
 from sublayers_server.model.api_tools import API
 from sublayers_server.model.registry_me.classes.agents import Agent
-from sublayers_common.ctx_timer import Timer
-
 from sublayers_common.creater_agent import create_agent, create_agent_quick_game
 
 import random
 from tornado.options import options
+from ctx_timer import Timer
 
 
 class ServerAPI(API):

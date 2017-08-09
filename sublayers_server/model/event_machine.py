@@ -19,7 +19,6 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.tree import get_global_registry, ValidationError
 from sublayers_server.model.registry_me.randomize_examples import RandomizeExamples
 from sublayers_common.user_profile import User as UserProfile
-from sublayers_common.ctx_timer import Timer
 from sublayers_common.handlers.base import BaseHandler
 
 import os
@@ -29,6 +28,7 @@ import tornado.ioloop
 from collections import deque
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 from functools import partial, wraps
+from ctx_timer import Timer
 
 MAX_SERVER_SLEEP_TIME = 0.1
 

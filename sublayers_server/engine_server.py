@@ -34,7 +34,6 @@ from sublayers_server import uimodules
 
 from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
-from sublayers_common.ctx_timer import Timer
 
 from sublayers_server.handlers.static import StaticFileHandlerPub
 from sublayers_server.handlers.client_connector import AgentSocketHandler
@@ -70,6 +69,9 @@ from sublayers_server.handlers.site_api import (
     APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
 )
 from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
+
+from ctx_timer import Timer
+
 
 class Application(BaseApplication):
     def __init__(self, handlers=None, default_host="", transforms=None, **settings):

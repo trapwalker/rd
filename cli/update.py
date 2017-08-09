@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_common.service_tools import run
 
-from sublayers_common.ctx_timer import Timer
+from ctx_timer import Timer
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry_me.tree import Registry, get_global_registry
 from cli._common import save_to_file

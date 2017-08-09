@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 log = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField
 from sublayers_server.model.registry_me.tree import (
-    Node, Document, Subdoc,
+    Node, Document, Subdoc, RLResolveMixin,
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, BooleanField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
 )
@@ -525,7 +525,7 @@ class AIAgentProfile(AgentProfile):
 class AIQuickAgentProfile(AIAgentProfile):pass
 
 
-class Agent(Document):
+class Agent(RLResolveMixin, Document):
     '''Agent account in database'''
     user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
     login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)

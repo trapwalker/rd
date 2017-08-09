@@ -7,12 +7,12 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 
 from sublayers_server.model.registry_me.classes.weapons import Weapon
-from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.registry_me.tree import (
     connect, get_global_registry, RegistryLinkField, StringField, STAT,
 )
 
 import random
+from ctx_timer import Timer, T
 
 
 class RandomizeCarException(Exception):

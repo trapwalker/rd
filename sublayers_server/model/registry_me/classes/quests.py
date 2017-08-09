@@ -15,8 +15,8 @@ from sublayers_server.model.registry_me.tree import (
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
-from sublayers_common.ctx_timer import Timer
 
+from ctx_timer import Timer
 from functools import partial, wraps
 import random
 from itertools import chain
@@ -220,6 +220,7 @@ class Quest(Node):
     current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
     states          = ListField(
         field=EmbeddedNodeField(document_type=QuestState),
+        root_default=list,
         readonly=True,  # todo: ##DEPRECATED
         caption=u"Состояния квеста",
         doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
@@ -229,6 +230,7 @@ class Quest(Node):
     # todo: restart timers by load
     timers      = MapField(
         field=EmbeddedDocumentField(document_type=quest_events.QuestTimer),
+        root_default=dict,
         reinst=True,
         caption=u"Установленные таймеры",
         doc=u"Список установленных квестом таймеров",
@@ -270,7 +272,7 @@ class Quest(Node):
     )
     history     = ListField(
         field=EmbeddedDocumentField(document_type=LogRecord),
-        default=list,
+        root_default=list,
         tags={'client'},
         reinst=True,
         caption=u"Журнал квеста",
@@ -297,7 +299,6 @@ class Quest(Node):
         root_default=list,
         caption=u"Список возможных комплектов для награды",
         field=ListField(
-            default=list,
             caption=u"Список возможных наборов итемов для награды",
             field=EmbeddedNodeField(
                 document_type='sublayers_server.model.registry_me.classes.item.Item',
