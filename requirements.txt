@@ -1,0 +1,4 @@
+--index-url https://pypi.python.org/simple/
+
+-e git+https://github.com/sergyp/ctx_timer#egg=ctx_timer
+-e .

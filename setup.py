@@ -28,9 +28,6 @@ setup(
         'colorama',
         'requests',
     ],
-    dependency_links=[
-        "https://github.com/sergyp/ctx_timer/tarball/master#egg=ctx_timer-0.0.1",
-    ],
     entry_points='''
         [console_scripts]
         {cli_tool_name}=cli.main:main
