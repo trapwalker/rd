@@ -13,10 +13,10 @@ if __name__ == '__main__':
 
 
 from sublayers_common import yaml_tools
-from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.uri import URI
 from sublayers_common.debug_tools import warn_calling
 
+from ctx_timer import Timer, T
 import six
 import codecs
 import copy
@@ -47,7 +47,6 @@ from mongoengine import (
     #GenericReferenceField,
 )
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
-from sublayers_common.ctx_timer import Timer, T
 
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)

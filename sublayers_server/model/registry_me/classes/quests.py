@@ -15,8 +15,8 @@ from sublayers_server.model.registry_me.tree import (
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
-from sublayers_common.ctx_timer import Timer
 
+from ctx_timer import Timer
 from functools import partial, wraps
 import random
 from itertools import chain

@@ -18,7 +18,6 @@ if __name__ == '__main__':
         log.addHandler(_hndl)
 
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
-from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.registry_me.tree import (
     connect,
     Node, get_global_registry, ListField, EmbeddedNodeField, Registry, RegistryLinkField, StringField,
@@ -29,6 +28,7 @@ from sublayers_server.model.registry_me.tree import (
     Subdoc,
 )
 
+from ctx_timer import Timer, T
 from pprint import pprint as pp
 import os
 

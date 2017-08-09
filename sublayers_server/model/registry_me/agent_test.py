@@ -19,7 +19,6 @@ if __name__ == '__main__':
 
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_server.model.registry_me import classes
-from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.registry_me.tree import (
     GRLPC,
     RegistryNodeIsNotFound,
@@ -31,6 +30,7 @@ from sublayers_server.model.registry_me.tree import (
     field_getter_decorator,
 )
 
+from ctx_timer import Timer, T
 from pprint import pprint as pp
 import os
 

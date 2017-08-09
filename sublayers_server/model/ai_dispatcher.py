@@ -8,7 +8,8 @@ from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
 from sublayers_server.model.base import Observer
-from sublayers_common.ctx_timer import T
+
+from ctx_timer import T
 import traceback
 
 

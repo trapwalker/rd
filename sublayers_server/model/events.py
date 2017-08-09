@@ -10,7 +10,8 @@ from sublayers_server.model.messages import (FireDischargeEffect, StrategyModeIn
 from sublayers_server.model.game_log_messages import (TransactionCancelActivateItemLogMessage,
                                                       TransactionDisableActivateItemLogMessage,
                                                       TransactionDisableActivateItemTimeoutLogMessage)
-from sublayers_common.ctx_timer import Timer
+
+from ctx_timer import Timer
 from functools import total_ordering, wraps, partial
 
 
