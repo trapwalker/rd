@@ -6,13 +6,13 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_server.model.registry_me.classes.agents import Agent
 
 from mongoengine import connect
 import click
+from ctx_timer import Timer
 
 from cli.root import root
 

@@ -26,10 +26,10 @@ from sublayers_server.model.events import event_deco, Event, AgentTestEvent
 from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
-from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.utils import NameGenerator
 
 
+from ctx_timer import Timer
 from tornado.options import options
 from itertools import chain
 from random import randint, choice
