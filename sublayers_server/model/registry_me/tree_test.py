@@ -219,9 +219,10 @@ if __name__ == '__main__':
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
 
-    rel = 0
+    rel = 1
+    save = 0 #True
 
-    test5(reload=rel, save_loaded=True)
+    test5(reload=rel, save_loaded=save)
 
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 
