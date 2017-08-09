@@ -28,6 +28,15 @@ class AIDispatcher(AI):
                 log.debug('AIDispatcher not started!!!')
                 del new_quest
 
+    def get_quest_by_uid(self, uid):
+        s_uid = str(uid)
+        for q in self.example.profile.quests_active:
+            if str(q.uid) == s_uid:
+                return q
+
+
+
+
 
 class AIAgent(AI):
     def __init__(self, time, **kw):
