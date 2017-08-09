@@ -158,6 +158,7 @@ class Mobile(Node):
 
     # todo: реализовать предынициализацию инвентаря абстрактным в конструкторе
     price = FloatField(caption=u"Цена", tags={'client'})
+    base_exp_price = FloatField(root_default=1, caption=u"Цена")
 
     # Косметика
     class_car     = StringField(caption=u"Класс автомобиля", tags={'client'})

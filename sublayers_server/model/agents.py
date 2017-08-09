@@ -563,23 +563,24 @@ class Agent(Object):
     def on_kill(self, event, target, killer):
         # log.debug('%s:: on_kill(%s)', self, obj)
         self.log.info('{}:: on_kill {} killer={} time={}'.format(self, target, killer, event.time))
-        # todo: party
         # todo: registry fix?
         self.example.profile.set_frag(dvalue=1)  # начисляем фраг агенту
 
+        car_base_price = getattr(target.example, 'base_exp_price', 1.0)
         if self.car is killer:  # Если убийство сделано текущей машинкой агента
             self_car_exp = self.car.example.exp
             target_car_exp = target.example.exp
             m = self.car.example.exp_table.car_m_exp_by_exp(exp=self_car_exp)
             target_car_exp_price = target.example.exp_table.car_exp_price_by_exp(exp=target_car_exp)
-            d_user_exp = target_car_exp_price * m
-            self.log.info('Self_car_killer::{killer} and target::{target}. self_car_exp={self_car_exp}, target_car_exp={target_car_exp}, modifier={m}, target_car_exp_price={target_car_exp_price}, d_user_exp={d_user_exp}'.format(
+
+            d_user_exp = target_car_exp_price * m * car_base_price
+            self.log.info('Self_car_killer::{killer} and target::{target}. self_car_exp={self_car_exp}, target_car_exp={target_car_exp}, car_base_price={car_base_price},  modifier={m}, target_car_exp_price={target_car_exp_price}, d_user_exp={d_user_exp}'.format(
                 killer=killer, target=target, self_car_exp=self_car_exp,
-                target_car_exp=target_car_exp, m=m, target_car_exp_price=target_car_exp_price, d_user_exp=d_user_exp))
+                target_car_exp=target_car_exp, m=m, target_car_exp_price=target_car_exp_price, car_base_price=car_base_price, d_user_exp=d_user_exp))
 
         else:
-            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp)
-            self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}'.format(self.car, target, killer))
+            d_user_exp = target.example.exp_table.car_exp_price_by_exp(exp=target.example.exp) * car_base_price
+            self.log.warning('Warning on_kill self.car::{} and target::{} and killer::{}   car_base_price={}'.format(self.car, target, killer, car_base_price))
 
         if self.party:
             self.party.on_exp(agent=self, dvalue=d_user_exp, event=event)
@@ -588,8 +589,8 @@ class Agent(Object):
 
 
         if target.owner_example:
-            self_lvl = self.example.profile.get_lvl()
-            killed_lvl = target.owner_example.profile.get_lvl()
+            self_lvl = self.example.profile.get_real_lvl()
+            killed_lvl = target.owner_example.profile.get_real_lvl()
 
             # todo: определиться куда вынести все эти магические числа (разница в лвл, граница определения антогонистов,
             # изменение кармы)
