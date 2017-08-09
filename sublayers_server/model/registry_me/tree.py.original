@@ -13,15 +13,15 @@ if __name__ == '__main__':
 
 
 from sublayers_common import yaml_tools
+from sublayers_common.ctx_timer import Timer
 from sublayers_server.model.registry_me.uri import URI
 from sublayers_common.debug_tools import warn_calling
 
-from ctx_timer import Timer, T
 import six
 import codecs
 import copy
 from uuid import uuid1 as get_uuid
-from collections import deque, Counter, Hashable
+from collections import deque, Counter
 from fnmatch import fnmatch
 
 from mongoengine import connect, Document, EmbeddedDocument, ValidationError
@@ -31,7 +31,6 @@ from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.errors import DoesNotExist
 from mongoengine.queryset import DO_NOTHING
 from mongoengine.fields import BaseField, ReferenceField
-from mongoengine.common import _import_class
 from mongoengine import (
     BooleanField,
     IntField,
@@ -51,7 +50,7 @@ from sublayers_server.model.registry_me.odm_position import PositionField, Posit
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
 CONTAINER_FIELD_TYPES = CONTAINER_FIELD_TYPES_SIMPLE + (EmbeddedDocumentField,)
 
-IGNORE_WRONG_LINKS = False  # False
+IGNORE_WRONG_LINKS = True  # False
 CACHE_INHERITED_FIELDS = True  # Локальное кэширование унаследованных значений нода
 
 
@@ -64,27 +63,8 @@ class RegistryNodeFormatError(RegistryError):
 
 
 class RegistryNodeIsNotFound(RegistryError):
-    def __init__(self, message, base_uri, rest_path, *av, **kw):
-        super(RegistryNodeIsNotFound, self).__init__(*av, **kw)
-        self.message = message
-        self.usage_path = []
-        self.base_uri = base_uri
-        self.rest_path = rest_path
+    pass
 
-    def usage_push(self, s):
-        self.usage_path.append(s)
-
-    @property
-    def usage(self):
-        return ''.join(reversed(self.usage_path))
-
-    @property
-    def uri(self):
-        return '{self.base_uri}/[{rest}]'.format(self=self, rest='/'.join(self.rest_path))
-
-    def __str__(self):
-        # todo: do it unicode safe by message
-        return '{self.message} # {self.usage}=={self.uri}'.format(self=self)
 
 class Nil:
     """Impossible value of field"""
@@ -137,11 +117,10 @@ def field_getter_decorator(getter):
     return new_getter
 
 field_getter_decorator._debug = False
-RECURSIVE_REFERENCE_CONSTANT = 'self'
 
 
-class RegistryLinkField(BaseField):
-    def __init__(self, document_type='Node', errors='strict', **kwargs):
+class RegistryLinkField(ReferenceField):
+    def __init__(self, document_type='Node', **kwargs):
         if (
             not isinstance(document_type, six.string_types) and
             not issubclass(document_type, Node)
@@ -152,17 +131,7 @@ class RegistryLinkField(BaseField):
         self.dbref = False
         self.document_type_obj = document_type
         self.reverse_delete_rule = DO_NOTHING
-        self.errors = errors
         BaseField.__init__(self, **kwargs)
-
-    @property
-    def document_type(self):
-        if isinstance(self.document_type_obj, six.string_types):
-            if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
-                self.document_type_obj = self.owner_document
-            else:
-                self.document_type_obj = get_document(self.document_type_obj)
-        return self.document_type_obj
 
     @field_getter_decorator
     def __get__(self, instance, owner):
@@ -176,16 +145,19 @@ class RegistryLinkField(BaseField):
         global REGISTRY
 
         if value is not None and self._auto_dereference and isinstance(value, basestring) and REGISTRY is not None:
+            dereferenced = None
             try:
                 dereferenced = self.to_python(value)
-                instance._data[self.name] = dereferenced
-                if dereferenced is None or dereferenced.uri != value:
-                    instance._mark_as_changed(self.name)
             except RegistryNodeIsNotFound as e:
-                e.usage_push('->{!r}'.format(instance))
-                raise e
+                if not IGNORE_WRONG_LINKS:
+                    raise DoesNotExist('Trying to dereference unknown document %s' % value)
 
-        return super(RegistryLinkField, self).__get__(instance, owner)
+            if dereferenced is None:
+                assert IGNORE_WRONG_LINKS
+            else:
+                instance._data[self.name] = dereferenced
+
+        return super(ReferenceField, self).__get__(instance, owner)
 
     def to_mongo(self, document):
         if document is None:
@@ -216,14 +188,11 @@ class RegistryLinkField(BaseField):
         try:
             return REGISTRY.get(value)
         except RegistryNodeIsNotFound as e:
-            if self.name:
-                e.usage_push('.{self.name}'.format(self=self))
-            if self.errors == 'strict':
+            log.warning("URI resolve fail to LINK {value!r}{fieldname}".format(
+                fieldname=self.name and ' (field: {})'.format(self.name) or '', **locals())
+            )
+            if not IGNORE_WRONG_LINKS:
                 raise e
-            # todo: try to replace by alias
-            GRLPC.inc()
-            log.warning('Corrupted link ignored: {e}'.format(e=e))
-            return None
 
     def validate(self, value, **kw):
 
@@ -237,55 +206,47 @@ class RegistryLinkField(BaseField):
         if isinstance(value, Node) and value.uri is None:
             self.error('You can only reference nodes once they has an URI')
 
-    def prepare_query_value(self, op, value):
-        if value is None:
-            return None
-        super(ReferenceField, self).prepare_query_value(op, value)
-        return self.to_mongo(value)
-
-    def lookup_member(self, member_name):
-        return self.document_type._fields.get(member_name)
-
-
-CONTAINER_OR_RL_FIELD_TYPES = CONTAINER_FIELD_TYPES + (RegistryLinkField,)
-
 
 class EmbeddedNodeField(EmbeddedDocumentField):
 
-    def __init__(self, document_type='Node', errors='strict', **kwargs):
+    def __init__(self, document_type='Node', **kwargs):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
-        self.errors = errors
 
     def to_python(self, value):
-        if value is None:
+        if isinstance(value, basestring):
+            global REGISTRY
+            if REGISTRY is None:
+                return value
+
+            try:
+                return REGISTRY.make_node_by_uri(value)
+            except RegistryNodeIsNotFound as e:
+                log.warning("URI resolve fail to MAKE {value!r}{fieldname}".format(
+                    fieldname=self.name and '(field: {})'.format(self.name) or '', **locals())
+                )
+                if IGNORE_WRONG_LINKS:
+                    return
+                else:
+                    raise e
+
+        elif value is None:
             return
 
-        try:
-            if isinstance(value, basestring):
-                global REGISTRY
-                if REGISTRY is None:
-                    return value
+        # elif isinstance(value, dict):
+        #     parent = value.pop('parent', None)
+        #     if isinstance(parent, basestring):
+        #         parent = REGISTRY.get(parent)
+        #     cls = self.document_type if parent is None else type(parent)
+        #     return cls(parent=parent, **value)
 
-                return REGISTRY.make_node_by_uri(value)
+        # Устанавливаем класс от родителя, если не указан явно. Если родителя нет, класс будет взят из описания поля
+        if isinstance(value, dict) and '_cls' not in value:
+            parent = value.get('parent', None)
+            if parent is not None and not isinstance(parent, Node):
+                parent = REGISTRY.get(parent)
+                value.setdefault('_cls', parent._cls)
 
-            # Устанавливаем класс от родителя, если не указан явно. Если родителя нет, класс будет взят из описания поля
-            if isinstance(value, dict) and '_cls' not in value:
-                parent = value.get('parent', None)
-                if parent is not None and not isinstance(parent, Node):
-                    parent = REGISTRY.get(parent)
-                    value.setdefault('_cls', parent._cls)
-
-            return super(EmbeddedNodeField, self).to_python(value)
-
-        except RegistryNodeIsNotFound as e:
-            if self.name:
-                e.usage_push('.{self.name}'.format(self=self))
-            if self.errors == 'strict':
-                raise e
-            # todo: try to replace by alias
-            GRLPC.inc()
-            log.warning('Corrupted embedded parent link ignored ({self.name}): {e}'.format(self=self, e=e))
-            return None
+        return super(EmbeddedNodeField, self).to_python(value)
 
     def __set__(self, instance, value):
         if instance._initialised:
@@ -327,116 +288,6 @@ class NodeMetaclass(DocumentMetaclass):
         return new_cls
 
 
-class RLResolveMixin(object):
-    def is_field_inherited(self, name):
-        return False
-
-    def _resolve_field_value(self, field, value):
-        if value is None:
-            return
-        elif isinstance(field, RegistryLinkField) and isinstance(value, basestring):
-            return field.to_python(value)
-        elif not isinstance(field, CONTAINER_FIELD_TYPES):
-            return value  # todo: optimize
-
-        if isinstance(field, EmbeddedDocumentField):
-            if hasattr(type(value), 'rl_resolve'):
-                value.rl_resolve()
-            expanded_value = value
-        elif isinstance(field, ListField):
-            # TODO: Может быть нужо пересоздавать и переприсваивать контейнеры? Чтобы прописался _instance
-            expanded_value = value
-            skip_count = 0
-            for i, v in enumerate(value):
-                if v is not None:
-                    new_v = self._resolve_field_value(field.field, v)
-                    if new_v is None:
-                        assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
-                            v, IGNORE_WRONG_LINKS
-                        )
-                        skip_count += 1
-                    else:
-                        expanded_value[i - skip_count] = new_v
-            if skip_count:
-                expanded_value = expanded_value[:len(expanded_value) - skip_count]
-        elif isinstance(field, DictField):
-            expanded_value = value
-            for k, v in value.iteritems():
-                if v is not None:
-                    new_v = self._resolve_field_value(field.field, v)
-                    if new_v is None:
-                        assert IGNORE_WRONG_LINKS, 'Link {} is not expanded well, But IGNORE_WRONG_LINKS={}'.format(
-                            v, IGNORE_WRONG_LINKS
-                        )
-                        del expanded_value[k]
-                    else:
-                        expanded_value[k] = new_v
-        else:
-            return value
-
-        return expanded_value
-
-    def rl_resolve(self):
-        cls = type(self)
-        for field_name, field in cls._fields.iteritems():
-            value = self._data.get(field_name, None)
-            if value is not None:
-                value = self._resolve_field_value(field, value)
-                self._data[field_name] = value
-
-    def _get_changed_fields(self, inspected=None):
-        """Return a list of all fields that have explicitly been changed.
-        """
-        EmbeddedDocument = _import_class('EmbeddedDocument')
-        DynamicEmbeddedDocument = _import_class('DynamicEmbeddedDocument')
-        ReferenceField = _import_class('ReferenceField')
-        SortedListField = _import_class('SortedListField')
-
-        changed_fields = []
-        changed_fields += getattr(self, '_changed_fields', [])
-
-        inspected = inspected or set()
-        if hasattr(self, 'id') and isinstance(self.id, Hashable):
-            if self.id in inspected:
-                return changed_fields
-            inspected.add(self.id)
-
-        for field_name in self._fields_ordered:
-            db_field_name = self._db_field_map.get(field_name, field_name)
-            key = '%s.' % db_field_name
-            data = self._data.get(field_name, None)
-            field = self._fields.get(field_name)
-
-            if hasattr(data, 'id'):
-                if data.id in inspected:
-                    continue
-            if isinstance(field, (ReferenceField, RegistryLinkField)):
-                continue
-            elif (
-                isinstance(data, (EmbeddedDocument, DynamicEmbeddedDocument)) and
-                db_field_name not in changed_fields
-            ):
-                # Find all embedded fields that have been changed
-                changed = data._get_changed_fields(inspected)
-                changed_fields += ['%s%s' % (key, k) for k in changed if k]
-            elif (isinstance(data, (list, tuple, dict)) and
-                    db_field_name not in changed_fields):
-                if (hasattr(field, 'field') and
-                        isinstance(field.field, (ReferenceField, RegistryLinkField))):
-                    continue
-                elif isinstance(field, SortedListField) and field._ordering:
-                    # if ordering is affected whole list is changed
-                    if any(map(lambda d: field._ordering in d._changed_fields, data)):
-                        changed_fields.append(db_field_name)
-                        continue
-
-                self._nestable_types_changed_fields(
-                    changed_fields, key, data, inspected)
-        return changed_fields
-
-
-
-
 class SubdocToolsMixin(object):
     def to_string(self, indent=0, indent_size=4, keys_alignment=True):
         d = self.to_mongo()
@@ -474,7 +325,7 @@ class SubdocToolsMixin(object):
         )
 
 
-class DynamicSubdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
+class DynamicSubdoc(EmbeddedDocument, SubdocToolsMixin):
     _dynamic = True
     meta = dict(
         allow_inheritance=True,
@@ -491,7 +342,7 @@ class DynamicSubdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
         return self.to_string()
 
 
-class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
+class Subdoc(EmbeddedDocument, SubdocToolsMixin):
     __metaclass__ = NodeMetaclass
     _dynamic = False
     STRICT = True
@@ -571,13 +422,13 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     #
     #     return last_instance
 
-    # def __setattr__(self, key, value):
-    #     if key != '_initialised' and getattr(self, '_initialised', None):
-    #         field = type(self)._fields.get(key)  # todo: support dynamic fields too
-    #         if value is not None and isinstance(field, CONTAINER_OR_RL_FIELD_TYPES):
-    #             value = self._expand_field_value(field, value)
-    #
-    #     super(Subdoc, self).__setattr__(key, value)
+    def __setattr__(self, key, value):
+        if key != '_initialised' and getattr(self, '_initialised', None):
+            field = type(self)._fields.get(key)  # todo: support dynamic fields too
+            if value is not None and isinstance(field, CONTAINER_FIELD_TYPES):
+                value = self._expand_field_value(field, value)
+
+        super(Subdoc, self).__setattr__(key, value)
 
     def instantiate(self, _only_fields=None, **kw):
         data = {}
@@ -666,14 +517,13 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
         if _exp_cnt:
             return self
 
+
         #print('{:30}::{}'.format(self.__class__.__name__, getattr(self, 'uri', '---')))
         for field_name, field in type(self)._fields.items():
-            if isinstance(field, CONTAINER_FIELD_TYPES):#CONTAINER_OR_RL_FIELD_TYPES):
+            if isinstance(field, CONTAINER_FIELD_TYPES):
                 if not self.is_field_inherited(field_name) or getattr(field, 'reinst', False):
                     value = getattr(self, field_name)
-                    if value is not None:
-                        value = self._expand_field_value(field, value)
-                        setattr(self, field_name, value)
+                    setattr(self, field_name, value)
 
         if isinstance(self, Node) and self._need_reinst:
             self._reinst()
@@ -709,7 +559,6 @@ class Node(Subdoc, SubdocToolsMixin):
     subnodes = MapField(field=EmbeddedNodeField(), not_inherited=True)
     # todo: make `owner` property
     filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
-    aliases = ListField(field=StringField(), not_inherited=True, caption=u"Алиасы узла", doc=u"Линки могут резолвиться по алиасам")
 
     def __init__(self, parent=None, _uri=None, _empty_overrided_fields=None, _reg_init=False, **kw):
         cls = type(self)
@@ -827,8 +676,7 @@ class Node(Subdoc, SubdocToolsMixin):
         if defaults:
             return defaults[0]
 
-        # todo: try to replace by alias
-        raise RegistryNodeIsNotFound('Node is not found', base_uri=self.uri, rest_path=path)
+        raise RegistryNodeIsNotFound('Node {!r} has no subnode {}'.format(self, path))
 
     def deep_iter(self, reject_abstract=True):
         queue = [self]
@@ -942,25 +790,6 @@ class Registry(Document):
         super(Registry, self).__init__(**kw)
         self._cache = {}
         self.loading = None
-        self.aliases = {}
-        if self.root is not None:
-            self.update_aliases(self.root)
-
-    def update_aliases(self, node):
-        aliases = self.aliases
-        node_aliases = node.aliases
-        if node_aliases:
-            for alias in node_aliases:
-                already_aliased = aliases.get(alias, None)
-                if already_aliased is None:
-                    aliases[alias] = node
-                else:
-                    log.warning('Node aliases conflict: {alias} -> {node}, {already_aliased}'.format(
-                        alias=alias, node=node, already_aliased=already_aliased,
-                    ))
-
-        for subnode in node.subnodes.values():
-            self.update_aliases(subnode)
 
     @warn_calling()
     def __nonzero__(self):
@@ -985,39 +814,15 @@ class Registry(Document):
             return result
 
         root_name, rest_path = path[0], path[1:]
-
-        # todo: ## OPTIMIZE deep node link resolving to ~O(1)
-
-        try:
-            if self.root.name == root_name:
-                result = self.root.get(rest_path, *defaults)
-                self._cache[path] = result
-                return result
-        except RegistryNodeIsNotFound as e:
-            alternative = self.get_by_alias(uri)
-            if alternative is not None:
-                GRLPC.inc()
-                log.info('Link replaced by alias: {} -> {}'.format(uri, alternative.uri))
-                return alternative
-            else:
-                raise e
-
-        alternative = self.get_by_alias(uri)
-        if alternative is not None:
-            GRLPC.inc()
-            log.info('Link replaced by alias: {} -> {}'.format(uri, alternative.uri))
-            return alternative
+        if self.root.name == root_name:
+            result = self.root.get(rest_path, *defaults)
+            self._cache[path] = result
+            return result
 
         if defaults:
             return defaults[0]
 
-        # todo: try to replace by alias
-        raise RegistryNodeIsNotFound('Registry has no root named {!r}'.format(self, root_name), base_uri='', rest_path=uri)
-
-    def get_by_alias(self, uri):
-        aliases = self.aliases
-        uri = str(uri)
-        return aliases.get(uri, None) or aliases.get(uri[6:] if uri.startswith('reg://') else ('reg://' + uri), None)
+        raise RegistryNodeIsNotFound('Registry has no root named {!r}'.format(self, root_name))
 
     def make_node_by_uri(self, uri, **kw):
         uri = URI.ensure(uri)
@@ -1032,7 +837,6 @@ class Registry(Document):
         :return: self
         :rtype: Registry
         """
-        aliases = self.aliases
         self.loading = 'preloading'
         path = os.path.join(path, 'registry')
         log.debug('Registry FS loading start from: %r', path)
@@ -1043,18 +847,6 @@ class Registry(Document):
                 pth, owner = stack.pop()
                 node = self._load_node_from_fs(pth, owner)
                 if node is not None:
-
-                    node_aliases = node.aliases
-                    if node_aliases:
-                        for alias in node_aliases:
-                            already_aliased = aliases.get(alias, None)
-                            if already_aliased is None:
-                                aliases[alias] = node
-                            else:
-                                log.warning('Node aliases conflict: {alias} -> {node}, {already_aliased}'.format(
-                                    alias=alias, node=node, already_aliased=already_aliased,
-                                ))
-
                     if owner is None:
                         self.root = node
                         # log.debug('Setup root: {!r}'.format(node))
@@ -1225,9 +1017,6 @@ def get_global_registry(path, reload=False, save_loaded=True):
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
             log.debug('Registry {}fetched from DB ({:.3f}s)'.format('is NOT ' if REGISTRY is None else '', t.duration))
-        with Timer() as t:
-            REGISTRY.root.rl_resolve()
-            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
 
     if REGISTRY is None:
         if save_loaded:
@@ -1237,10 +1026,6 @@ def get_global_registry(path, reload=False, save_loaded=True):
 
         REGISTRY = Registry()
         REGISTRY.load(path)
-        with Timer() as t:
-            REGISTRY.root.rl_resolve()
-            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
-
         if save_loaded:
             with Timer(logger=None) as t:
                 REGISTRY.save()
@@ -1263,72 +1048,6 @@ def _patch_all_fields_to_inheritance_support():
             patch_field_getter(v)
 
 
-def _patch_complex_field():
-    from mongoengine.common import _import_class
-    from mongoengine.fields import ComplexBaseField
-    from bson import DBRef
-    import operator
-
-    def to_python(self, value):
-        """Convert a MongoDB-compatible type to a Python type."""
-        if isinstance(value, six.string_types):
-            return value
-
-        if hasattr(value, 'to_python'):
-            return value.to_python()
-
-        is_list = False
-        if not hasattr(value, 'items'):
-            try:
-                is_list = True
-                value = {k: v for k, v in enumerate(value)}
-            except TypeError:  # Not iterable return the value
-                return value
-
-        if self.field:
-            self.field._auto_dereference = self._auto_dereference
-            value_dict = {}
-            for key, item in value.items():
-                try:
-                    value_dict[key] = self.field.to_python(item)
-                except RegistryNodeIsNotFound as e:
-                    e.usage_push('.{key}'.format(key=key))
-                    if self.name:
-                        e.usage_push('.{self.name}'.format(self=self))
-
-                    if getattr(self, 'errors', 'strict') == 'strict':
-                        raise e
-                    # todo: Try to replace by alias
-                    # В словарях при неудачном резолве по соответствующему ключу ничего не записывается
-                    # value_dict[key] = None
-                    GRLPC.inc()
-                    log.warning('Skiped corrupted item: {e}'.format(e=e))
-        else:
-            Document = _import_class('Document')
-            value_dict = {}
-            for k, v in value.items():
-                if isinstance(v, Document):
-                    # We need the id from the saved object to create the DBRef
-                    if v.pk is None:
-                        self.error('You can only reference documents once they'
-                                   ' have been saved to the database')
-                    collection = v._get_collection_name()
-                    value_dict[k] = DBRef(collection, v.pk)
-                elif hasattr(v, 'to_python'):
-                    value_dict[k] = v.to_python()
-                else:
-                    value_dict[k] = self.to_python(v)
-
-        if is_list:  # Convert back to a list
-            return [v for k, v in sorted(value_dict.items(), key=operator.itemgetter(0))]
-        return value_dict
-
-    ComplexBaseField.to_python = to_python
-
-
-_patch_complex_field()
-
-
 map(patch_field_getter, [
     #BaseField,
     BooleanField,
@@ -1342,36 +1061,6 @@ map(patch_field_getter, [
     MapField,
     EmbeddedDocumentField,
 ])
-
-
-class GRLPC(object):
-    """Global Registry Link Problems Counter"""
-    total = 0
-
-    class __metaclass__(type):
-        def __enter__(self):
-            return self()
-
-        def __exit__(self, t, v, tb):
-            pass
-
-    def __init__(self):
-        self.count = self.total
-
-    @classmethod
-    def inc(cls, n=1):
-        cls.total += n
-
-    def __int__(self):
-        return self.total - self.count
-
-    def __nonzero__(self):
-        return bool(int(self))
-
-    def __str__(self):
-        return '<GRLPC:%d/%d>' % (self, self.total)
-
-
 #_patch_all_fields_to_inheritance_support()
 ########################################################################################################################
 ########################################################################################################################

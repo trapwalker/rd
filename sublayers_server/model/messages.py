@@ -5,12 +5,12 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.utils import time_log_format, serialize
 from sublayers_server.model.balance import BALANCE
-from sublayers_common.ctx_timer import Timer, T
 
 import math
 import os.path
 import tornado.template
 from tornado.options import options
+from ctx_timer import Timer, T
 
 
 def make_push_package(events):

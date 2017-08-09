@@ -4,7 +4,6 @@ import logging
 log = logging.getLogger(__name__)
 
 import random
-from sublayers_common.ctx_timer import Timer, T
 from sublayers_server.model.events import Event
 from sublayers_server.model.messages import TraderInfoMessage, TraderAgentAssortmentMessage
 from sublayers_server.model.registry_me.classes.poi import Institution
@@ -14,6 +13,7 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField,
 )
 
+from ctx_timer import Timer, T
 from tornado.options import options
 
 

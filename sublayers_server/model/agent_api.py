@@ -145,7 +145,8 @@ class AgentConsoleNamespace(Namespace):
         location = agent.current_location
 
         def ttt(event):
-            location.generate_quests(event=event, agent=agent)
+            with T('generate_quests by regenerate!!!'):
+                location.generate_quests(event=event, agent=agent)
 
         if location:
             Event(server=agent.server, time=agent.server.get_time(), callback_after=ttt).post()

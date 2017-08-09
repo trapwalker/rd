@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.user_profile import User
 
-from sublayers_common.ctx_timer import Timer
+from ctx_timer import Timer
 
 
 def agents_clean():
