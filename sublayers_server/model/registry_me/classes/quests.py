@@ -892,6 +892,19 @@ class QuestAddMessage(QuestUpdateMessage):
     pass
 
 
+class QuestDelMessage(messages.Message):
+    def __init__(self, quest, **kw):
+        super(QuestDelMessage, self).__init__(**kw)
+        self.quest = quest  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestDelMessage, self).as_dict()
+        d.update(
+            quest_uid=self.quest.uid,
+        )
+        return d
+
+
 class QuestLogMessage(messages.Message):
     def __init__(self, event_record, **kw):
         super(QuestLogMessage, self).__init__(**kw)

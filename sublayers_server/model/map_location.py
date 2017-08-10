@@ -75,11 +75,13 @@ class MapLocation(Observer):
     def generate_quests(self, event, agent):
         # удалить сгенерированные, но не взятые квесты у агента
         for_del_quests = []
-        for q in agent.example.profile.quests_unstarted:
+        agent_profile = agent.example.profile
+        for q in agent_profile.quests_unstarted:
             if q.shelf_life_time and q.shelf_life_time + q.generate_time < event.time:
                 for_del_quests.append(q)
         while for_del_quests:
-            agent.example.profile.del_quest(quest=for_del_quests.pop(), time=event.time)
+            agent_profile.del_quest(quest=for_del_quests.pop(), time=event.time)
+
         # Сгенерировать квесты для этого города
         for head, quests in self._cache_head_quests.iteritems():
             for quest in quests:
@@ -97,8 +99,8 @@ class MapLocation(Observer):
         agent.on_enter_location(location=self, event=event)  # todo: (!)
         UserActualTradingMessage(agent=agent, time=event.time).post()
         PreEnterToLocation(agent=agent, location=self, time=event.time).post()
-        with T('generate_quests by on_enter!!!'):
-            self.generate_quests(event=event, agent=agent)
+        # with T('generate_quests by on_enter!!!'):
+        self.generate_quests(event=event, agent=agent)
         ActivateLocationChats(agent=agent, location=self, time=event.time + 0.1).post()
 
         # Добавить агента в список менеджеров мусорки

@@ -8,7 +8,7 @@ from sublayers_server.model.messages import (
     ChangeAgentKarma, ChangeAgentBalance, UserChangeEXP, UserChangeQuestInventory, UserActualTradingMessage
 )
 from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage, SkillLogMessage
-from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
+from sublayers_server.model.registry_me.classes.quests import QuestAddMessage, QuestDelMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField
 from sublayers_server.model.registry_me.tree import (
@@ -460,7 +460,7 @@ class AgentProfile(Node):
             return
         model = self._agent_model
         if model:
-            QuestAddMessage(agent=model, time=time, quest=quest).post()
+            QuestDelMessage(agent=model, time=time, quest=quest).post()
 
     def start_quest(self, quest_uid, server, time):
         quest = None
