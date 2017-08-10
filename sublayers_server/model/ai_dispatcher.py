@@ -49,7 +49,7 @@ class AIDispatcher(AI):
     def on_event_quest(self, quest, time):
         log.debug('%r call on_event_quest', quest)
         for t in Town.get_towns():
-            t.regenerate_quests(time=time)
+            t.regenerate_quests(time=time + 0.02)
 
 
 
@@ -79,6 +79,8 @@ class AIAgent(AI):
     @event_deco
     def generate_car(self, event, car_example):
         # Добавить свою машинку на карту
+        if not car_example:
+            return
         profile = self.example.profile
         profile.car = car_example
         self.current_location = None
