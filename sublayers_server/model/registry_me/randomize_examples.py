@@ -131,7 +131,7 @@ class RandomizeExamples(object):
         return car
 
     @classmethod
-    def get_random_car_level(cls, level, car_params=None):
+    def get_random_car_level(cls, level, cars=None, weapons=None, car_params=None):
         if cls.registry is None:
             raise Exception('RandomizeCarExample: registry not init')
         level = int(level)
@@ -140,12 +140,15 @@ class RandomizeExamples(object):
 
         cache = cls.cache_car_level
         level_recod = cache.get(level, None)
-        if level_recod and level_recod['cars'] and level_recod['weapons']:
-            return cls.get_random_car(cars=level_recod['cars'], weapons=level_recod['weapons'],
+        candidate_cars = cars or level_recod['cars']
+        candidate_weapons = weapons or level_recod['weapons']
+
+        if level_recod and candidate_cars and candidate_weapons:
+            return cls.get_random_car(cars=candidate_cars, weapons=candidate_weapons,
                                       tuner_items=level_recod['tuner_items'], car_params=car_params)
         else:
             # log.warning('RandomizeCarExample: not found cache for level: %s. Try prev level.', level)
-            return cls.get_random_car_level(level=level-1, car_params=car_params)
+            return cls.get_random_car_level(level=level-1, cars=cars, weapons=weapons, car_params=car_params)
 
     @classmethod
     def get_random_agent(cls, level, time, karma_min=0, karma_max=0):
