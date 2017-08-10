@@ -261,6 +261,10 @@ class Quest(Node):
     generation_cooldown = IntField(root_default=0, caption=u'Cooldown после завершения', doc=u'Время, которое должно пройти после завершения квеста для следующей генерации')
     deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
     design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
+    generate_time = IntField(root_default=0, caption=u"Время генерации квеста")
+    shelf_life_time = IntField(root_default=0, caption=u"Время срока годности сгенерированного, но не взятого квеста")
+
+
 
     hirer       = RegistryLinkField(
         tags={'client'}, caption=u'Заказчик', doc=u'NPC-заказчик квеста',
@@ -461,6 +465,7 @@ class Quest(Node):
             self._set_error_status('on_generate', event, e)
             return False
         else:
+            self.generate_time = event.time  # Запоминаем время генерации каждого квеста
             return True
 
     def on_start_(self, event, **kw):

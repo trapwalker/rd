@@ -8,6 +8,7 @@ from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
 from sublayers_server.model.base import Observer
+from sublayers_server.model.map_location import Town
 
 from ctx_timer import T
 import traceback
@@ -35,7 +36,20 @@ class AIDispatcher(AI):
             if str(q.uid) == s_uid:
                 return q
 
+    def get_quest_by_tags(self, tags):
+        tag_set = set(tags or [])
+        if not tag_set:
+            return None
+        r = []
+        for q in self.example.profile.quests_active:
+            if tag_set in q.tag_set:
+                r.append(q)
+        return r
 
+    def on_event_quest(self, quest, time):
+        log.debug('%r call on_event_quest', quest)
+        for t in Town.get_towns():
+            t.regenerate_quests(time=time)
 
 
 

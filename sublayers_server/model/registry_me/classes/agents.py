@@ -275,6 +275,13 @@ class AgentProfile(Node):
         """
         return chain(self.quests_active or [], self.quests_ended or [])
 
+    @property
+    def npc_view_quests(self):
+        """
+        :rtype: list[sublayers_server.model.registry_me.classes.quests.Quest]
+        """
+        return chain(self.quests_active or [], self.quests_unstarted or [])
+
     def __init__(self, **kw):
         super(AgentProfile, self).__init__(**kw)
         # todo: move '_agent_model' attribute to Agent
@@ -444,6 +451,16 @@ class AgentProfile(Node):
             QuestAddMessage(agent=model, time=time, quest=quest).post()
         else:
             log.warning("Can't send message: agent %s is offline", self)
+
+    def del_quest(self, quest, time):  # todo: Пробросить event
+        if quest in self.quests_unstarted:
+            self.quests_unstarted.remove(quest)
+        else:
+            log.warning('<%s> try del quest<%s>, but quest not in quests_unstarted', self, quest)
+            return
+        model = self._agent_model
+        if model:
+            QuestAddMessage(agent=model, time=time, quest=quest).post()
 
     def start_quest(self, quest_uid, server, time):
         quest = None

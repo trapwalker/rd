@@ -67,7 +67,20 @@ class MapLocation(Observer):
         for chat in self.radio_points:
             chat.room.include(agent=agent, time=event.time)
 
+    @event_deco
+    def regenerate_quests(self, event):
+        for agent in self.visitors:
+            self.generate_quests(event=event, agent=agent)
+
     def generate_quests(self, event, agent):
+        # удалить сгенерированные, но не взятые квесты у агента
+        for_del_quests = []
+        for q in agent.example.profile.quests_unstarted:
+            if q.shelf_life_time and q.shelf_life_time + q.generate_time < event.time:
+                for_del_quests.append(q)
+        while for_del_quests:
+            agent.example.profile.del_quest(quest=for_del_quests.pop(), time=event.time)
+        # Сгенерировать квесты для этого города
         for head, quests in self._cache_head_quests.iteritems():
             for quest in quests:
                 for x in xrange(0, quest.generation_max_count):
