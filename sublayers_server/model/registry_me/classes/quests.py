@@ -459,7 +459,8 @@ class Quest(Node):
                 instantiate_stat[cl_name] = {"count": 1, "duration": quest_gen.duration, 'name': cl_name}
 
         except Cancel as e:
-            raise e
+            log.debug('Quest %r generation canceled: %s', self, e)
+            return False
         except Exception as e:
             log.exception('Runtime error in quest handler `on_generate`.')
             self._set_error_status('on_generate', event, e)
