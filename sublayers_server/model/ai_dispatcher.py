@@ -42,7 +42,7 @@ class AIDispatcher(AI):
             return None
         r = []
         for q in self.example.profile.quests_active:
-            if tag_set in q.tag_set:
+            if tag_set.issubset(q.tag_set):
                 r.append(q)
         return r
 
