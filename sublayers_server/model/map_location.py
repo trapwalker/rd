@@ -77,7 +77,7 @@ class MapLocation(Observer):
         for_del_quests = []
         agent_profile = agent.example.profile
         for q in agent_profile.quests_unstarted:
-            if q.shelf_life_time and q.shelf_life_time + q.generate_time < event.time:
+            if q.check_unstarted(event=event):
                 for_del_quests.append(q)
         while for_del_quests:
             agent_profile.del_quest(quest=for_del_quests.pop(), time=event.time)

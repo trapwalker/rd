@@ -342,6 +342,9 @@ var ClientManager = (function () {
             case 'NPCWantedNote':
                 new QuestNoteNPCBtnKiller(note);
                 break;
+            case 'NPCWantedBossNote':
+                new QuestNoteNPCBtnBossKiller(note);
+                break;
             case 'NPCRewardItemsNote':
                 new QuestNoteNPCRewardItems(note);
                 break;

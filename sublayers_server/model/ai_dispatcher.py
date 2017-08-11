@@ -52,7 +52,6 @@ class AIDispatcher(AI):
             t.regenerate_quests(time=time + 0.02)
 
 
-
 class AIAgent(AI):
     def __init__(self, time, **kw):
         super(AIAgent, self).__init__(time=time, **kw)
