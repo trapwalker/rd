@@ -5,6 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+    from sublayers_common.logging_tools import handler, logger, Formatter
     sys.path.append('../../..')
     log = logging.getLogger()
     try:
@@ -16,6 +17,14 @@ if __name__ == '__main__':
         _hndl = logging.StreamHandler(sys.stderr)
         _hndl.setFormatter(logging.Formatter('%(levelname)-8s| %(message)s'))
         log.addHandler(_hndl)
+    log.addHandler(handler(
+        cls=logging.FileHandler,
+        level='DEBUG',
+        fmt=u'%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s',
+        filename='tree_test.log',
+        encoding='utf-8',
+    ))
+
 
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry_me.tree import (
@@ -215,6 +224,8 @@ def test_perf(reload=True, save_loaded=True):
 
 if __name__ == '__main__':
     import math
+    log.info('{:=<80}'.format('=== tree_test START '))
+
     db_name = 'rd' #+ 't'
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
@@ -222,7 +233,7 @@ if __name__ == '__main__':
     rel = 1
     save = 0 #True
 
-    test5(reload=rel, save_loaded=save)
+    test_perf(reload=rel, save_loaded=save)
 
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

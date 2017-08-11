@@ -18,7 +18,7 @@ def handler(cls=logging.StreamHandler, fmt=None, level=None, **kw):
 
     if fmt:
         if isinstance(fmt, basestring):
-            fmtr=logging.Formatter(fmt)
+            fmt = logging.Formatter(fmt)
         elif isinstance(fmt, tuple):
             fmt = logging.Formatter(*fmt)
         elif isinstance(fmt, dict):
