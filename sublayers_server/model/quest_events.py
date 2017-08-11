@@ -80,15 +80,15 @@ class OnGetDmg(QuestEvent):
         self.obj = obj
 
 
-class OnAISee(QuestEvent):
+class OnQuestSee(QuestEvent):
     def __init__(self, obj, **kw):
-        super(OnAISee, self).__init__(**kw)
+        super(OnQuestSee, self).__init__(**kw)
         self.obj = obj
 
 
-class OnAIOut(QuestEvent):
+class OnQuestOut(QuestEvent):
     def __init__(self, obj, **kw):
-        super(OnAIOut, self).__init__(**kw)
+        super(OnQuestOut, self).__init__(**kw)
         self.obj = obj
 
 

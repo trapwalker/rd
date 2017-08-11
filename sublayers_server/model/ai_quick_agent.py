@@ -7,7 +7,6 @@ from sublayers_server.model.agents import AI
 from sublayers_server.model.events import Event, event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
-from sublayers_server.model.quest_events import OnAISee, OnAIOut
 
 
 class InitAIQuickCar(Event):
