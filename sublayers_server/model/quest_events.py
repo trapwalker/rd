@@ -80,15 +80,15 @@ class OnGetDmg(QuestEvent):
         self.obj = obj
 
 
-class OnAISee(QuestEvent):
+class OnQuestSee(QuestEvent):
     def __init__(self, obj, **kw):
-        super(OnAISee, self).__init__(**kw)
+        super(OnQuestSee, self).__init__(**kw)
         self.obj = obj
 
 
-class OnAIOut(QuestEvent):
+class OnQuestOut(QuestEvent):
     def __init__(self, obj, **kw):
-        super(OnAIOut, self).__init__(**kw)
+        super(OnQuestOut, self).__init__(**kw)
         self.obj = obj
 
 
@@ -137,6 +137,16 @@ class OnKill(QuestEvent):
         super(OnKill, self).__init__(**kw)
         self.unit = unit  # todo: weakref?
         self.agent = agent  # todo: weakref?
+
+
+class OnPartyInclude(QuestEvent):
+    def __init__(self, agent, **kw):
+        server = kw.pop('server', None) or agent.server
+        super(OnPartyInclude, self).__init__(server=server, **kw)
+        self.agent = agent
+
+
+class OnPartyExclude(OnPartyInclude): pass
 
 
 # todo: Сделать регистрацию квестовых событий через метакласс

@@ -342,6 +342,9 @@ var ClientManager = (function () {
             case 'NPCWantedNote':
                 new QuestNoteNPCBtnKiller(note);
                 break;
+            case 'NPCWantedBossNote':
+                new QuestNoteNPCBtnBossKiller(note);
+                break;
             case 'NPCRewardItemsNote':
                 new QuestNoteNPCRewardItems(note);
                 break;
@@ -1510,7 +1513,8 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.QuestDelMessage = function (event) {
-        console.log('ClientManager.prototype.QuestDelMessage', event);
+        //console.log('ClientManager.prototype.QuestDelMessage', event);
+        journalManager.quests.delQuest(event.quest_uid);
     };
 
     ClientManager.prototype.QuestUpdateMessage = function (event) {
