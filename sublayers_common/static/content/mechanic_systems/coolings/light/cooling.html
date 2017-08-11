@@ -1,0 +1,62 @@
+<style>
+    .mechanic-cooling-img-list {
+        position: absolute;
+        margin: 103px 0px 0px 207px;
+    }
+
+    .mechanic-cooling-img-background {
+        background: transparent url(static/content/mechanic_systems/coolings/light/cooling_bg.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-coolant {
+        background: transparent url(static/content/mechanic_systems/coolings/light/cooling_coolant.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-exp_tank {
+        background: transparent url(static/content/mechanic_systems/coolings/light/cooling_exp_tank.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-main_radiator {
+        background: transparent url(static/content/mechanic_systems/coolings/light/cooling_main_radiator.png) no-repeat 100% 100%;
+    }
+
+    #mechanic-img-pump {
+        background: transparent url(static/content/mechanic_systems/coolings/light/cooling_pump.png) no-repeat 100% 100%;
+    }
+
+    #mechanic_slot_m81 {top:  88px; left: 150px;}
+    #mechanic_slot_m82 {top: 270px; left: 270px;}
+    #mechanic_slot_m83 {top: 270px; left: 400px;}
+
+</style>
+
+<div class="mechanic-main">
+    <div class="mechanic-img mechanic-cooling-img-list">
+        <div class="mechanic-img town-interlacing mechanic-cooling-img-background"></div>
+        <div id="mechanic-img-coolant" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-exp_tank" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-main_radiator" class="mechanic-img-subsystem mechanic-img"></div>
+        <div id="mechanic-img-pump" class="mechanic-img-subsystem mechanic-img"></div>
+    </div>
+
+    <div id="mechanic_slot_m83" class="mechanic-slot mechanic-big-slot-main" data-subsystem="coolant">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Охлаждающая<br/>жидкость</div>
+    </div>
+
+    <div id="mechanic_slot_m81" class="mechanic-slot mechanic-big-slot-main" data-subsystem="main_radiator">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Основной<br/>радиатор</div>
+    </div>
+
+    <div id="mechanic_slot_m82" class="mechanic-slot mechanic-big-slot-main" data-subsystem="pump">
+        <div class="mechanic-big-slot-img">
+            <div class="mechanic-big-slot-img-item mechanic-slot-img"></div>
+        </div>
+        <div class="mechanic-big-slot-caption">Помпа</div>
+    </div>
+</div>
