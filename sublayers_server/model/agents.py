@@ -542,6 +542,7 @@ class Agent(Object):
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=True, time=time)
         # self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnQuestSee, obj=obj)
 
     def on_out(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
@@ -558,6 +559,7 @@ class Agent(Object):
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=False, time=time)
         # self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnQuestOut, obj=obj)
 
     def on_message(self, connection, message):
         # todo: delivery for subscribers ##quest
@@ -868,16 +870,6 @@ class AI(Agent):
     #     l.setLevel(level)
     #     l.addHandler(fileHandler)
     #     return l
-
-    # todo: пробросить сюда Ивент
-    def on_see(self, time, subj, obj):
-        super(AI, self).on_see(time=time, subj=subj, obj=obj)
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAISee, obj=obj)
-
-    # todo: пробросить сюда Ивент
-    def on_out(self, time, subj, obj):
-        super(AI, self).on_out(time=time, subj=subj, obj=obj)
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAIOut, obj=obj)
 
     def on_save(self, time):
         pass
