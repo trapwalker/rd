@@ -364,7 +364,7 @@ class Party(object):
         PartyMember(agent=agent, party=self, category=(0 if self.owner == agent else 2), time=time)
         agent.party = self
         # todo: проблемы с русским языком ##review(svp)
-        # log.info('Agent %s included to party %s. Cars=%s', agent, self, agent.cars)
+        # log.info('Agent %s included to party %s. Car=%s', agent, self, agent.car)
 
         # after include for members
         for member in self.members:
@@ -410,7 +410,7 @@ class Party(object):
             self.delete_event = PartyDeleteEvent(server=self.owner.server, time=time, party=self)
             self.delete_event.post()
         self._on_exclude(agent=agent, time=time)
-        log.info('Agent %s excluded from party %s', agent, self)
+        # log.info('Agent %s excluded from party %s', agent, self)
 
         # Если ушёл создатель пати, то назначить другого
         if len(self.members) > 0 and agent is self.owner:  # Если есть ещё мембы
@@ -550,7 +550,7 @@ class Party(object):
         candidate = sorted_members[0]
         candidate.category = 0
         self.owner = candidate.agent
-        log.info('Agent %s now new owner for party %s', self.owner, self)
+        # log.info('Agent %s now new owner for party %s', self.owner, self)
         for member in self.members:
             PartyInfoMessage(agent=member.agent, time=time, party=self).post()
 

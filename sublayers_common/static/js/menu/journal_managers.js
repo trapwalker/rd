@@ -379,6 +379,19 @@ var QuestJournalManager = (function () {
         }
 
         if (this._selected_quest == quest) this._selected_quest = null;
+
+        // Подправить скролл
+        var build = locationManager.get_building_by_node_hash(quest.hirer.node_hash);
+        if (build) {
+            var jq_build_quest_list = null;
+            if (quest.status == null)
+                jq_build_quest_list = build.jq_main_div.find('#buildingPageAvailableTasks_' + build.building_rec.name).find('.building-quest-list').first();
+            if (quest.status == 'active')
+                jq_build_quest_list = build.jq_main_div.find('#buildingPageActiveTasks_' + build.building_rec.name).find('.building-quest-list').first();
+            if (jq_build_quest_list)
+                build.resizeInventory(jq_build_quest_list);
+        }
+
     };
 
     QuestJournalManager.prototype.redraw_quest = function(quest_id) {

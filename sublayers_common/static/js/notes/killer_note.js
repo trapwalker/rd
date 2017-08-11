@@ -56,3 +56,45 @@ var QuestNoteNPCBtnKiller = (function (_super) {
 
     return QuestNoteNPCBtnKiller;
 })(QuestNoteNPCBtn);
+
+
+var QuestNoteNPCBtnBossKiller = (function (_super) {
+    __extends(QuestNoteNPCBtnKiller, _super);
+
+    function QuestNoteNPCBtnKiller(options) {
+        _super.call(this, options);
+        this.availability_test = false;
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    QuestNoteNPCBtnKiller.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="notes-npc-kill-boss">' +
+                '<div class="notes-npc-kill-label">WANTED</div>' +
+                '<div class="notes-npc-kill-boss-avatar" style=" background: url(' + quest.boss_avatar + ') no-repeat center; ">' +
+                    '<div class="notes-npc-kill-boss-name"><span class="notes-npc-kill-boss-name-span">' + quest.boss_name + '</span></div>' +
+                '</div>' +
+                '<div class="notes-npc-kill-boss-reward">' + quest.boss_reward + 'NC</div>' +
+            '</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+
+        this.availability_test = quest.is_kill;
+    };
+
+    QuestNoteNPCBtnKiller.prototype.set_buttons = function(){
+        locationManager.setBtnState(1, this.btn1_caption, this.availability_test);
+        locationManager.setBtnState(2, '', false);
+    };
+
+    return QuestNoteNPCBtnKiller;
+})(QuestNoteNPCBtn);

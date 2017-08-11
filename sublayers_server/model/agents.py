@@ -122,7 +122,6 @@ class Agent(Object):
             self._avatar_link = choice(self.server.reg.get('/registry/world_settings').avatar_list)
         return self._avatar_link
 
-
     def tp(self, time, location, radius=None):
         self.current_location = location
         # todo: Реализовать телепортацию в заданную точку карты по координатам ##realize ##quest
@@ -439,7 +438,9 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
-        # todo: Пробросить событие в квест ##quest
+        # Пробросить событие в квест ##quest
+        if new_member is self:  # Если исключили себя
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyInclude, agent=self)
 
     def party_before_exclude(self, party, old_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on ##refactor
@@ -470,7 +471,10 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
-        # todo: Пробросить событие в квест ##quest
+        # Пробросить событие в квест ##quest
+        if old_member is self:  # Если исключили себя
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyExclude, agent=self)
+
 
     def _invite_by_id(self, invite_id):
         for invite in self.invites:
@@ -492,6 +496,10 @@ class Agent(Object):
                 agent=self, time=time,
                 comment="You not have access for this invite {}".format(invite_id),
             ).post()
+
+    def clear_invites(self, time):
+        for invite in self.invites:
+            self.delete_invite(invite_id=invite.id, time=time)
 
     def is_target(self, target):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
@@ -539,6 +547,7 @@ class Agent(Object):
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=True, time=time)
         # self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnQuestSee, obj=obj)
 
     def on_out(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
@@ -555,6 +564,7 @@ class Agent(Object):
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=False, time=time)
         # self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnQuestOut, obj=obj)
 
     def on_message(self, connection, message):
         # todo: delivery for subscribers ##quest
@@ -865,16 +875,6 @@ class AI(Agent):
     #     l.setLevel(level)
     #     l.addHandler(fileHandler)
     #     return l
-
-    # todo: пробросить сюда Ивент
-    def on_see(self, time, subj, obj):
-        super(AI, self).on_see(time=time, subj=subj, obj=obj)
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAISee, obj=obj)
-
-    # todo: пробросить сюда Ивент
-    def on_out(self, time, subj, obj):
-        super(AI, self).on_out(time=time, subj=subj, obj=obj)
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnAIOut, obj=obj)
 
     def on_save(self, time):
         pass

@@ -93,3 +93,48 @@
     color: #2ffa00;
 }
 
+/* Нота для убийства босса */
+
+.notes-npc-kill-boss {
+    position: relative;
+    width: 558px;
+    height: 306px;
+    background: url(../img/quests/notes/kill_boss_note.png) no-repeat center;
+}
+
+.notes-npc-kill-label {
+    position: absolute;
+    top: 35px;
+    left: 100px;
+    font-family: wanted;
+    font-size: 40px;
+}
+
+.notes-npc-kill-boss-avatar {
+    position: absolute;
+    top: 83px;
+    left: 87px;
+    width: 170px;
+    height: 146px;
+}
+
+.notes-npc-kill-boss-name {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+.notes-npc-kill-boss-name-span { background-color: #14320d; }
+
+.notes-npc-kill-boss-reward {
+    position: absolute;
+    height: 46px;
+    width: 200px;
+    top: 222px;
+    left: 74px;
+    font-family: wanted;
+    font-size: 35px;
+    text-align: center;
+}
+
+

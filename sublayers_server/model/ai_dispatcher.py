@@ -8,6 +8,7 @@ from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.units import Bot
 from sublayers_server.model.base import Observer
+from sublayers_server.model.map_location import Town
 
 from ctx_timer import T
 import traceback
@@ -35,8 +36,20 @@ class AIDispatcher(AI):
             if str(q.uid) == s_uid:
                 return q
 
+    def get_quest_by_tags(self, tags):
+        tag_set = set(tags or [])
+        if not tag_set:
+            return None
+        r = []
+        for q in self.example.profile.quests_active:
+            if tag_set.issubset(q.tag_set):
+                r.append(q)
+        return r
 
-
+    def on_event_quest(self, quest, time):
+        # log.debug('%r call on_event_quest', quest)
+        for t in Town.get_towns():
+            t.regenerate_quests(time=time + 0.02)
 
 
 class AIAgent(AI):
@@ -65,6 +78,8 @@ class AIAgent(AI):
     @event_deco
     def generate_car(self, event, car_example):
         # Добавить свою машинку на карту
+        if not car_example:
+            return
         profile = self.example.profile
         profile.car = car_example
         self.current_location = None
@@ -82,6 +97,12 @@ class AIAgent(AI):
         if self.car:
             self.car.displace(time=event.time)
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
+
+        self.clear_invites(time=event.time)
+
+        if self.party:
+            self.party.on_exclude(agent=self, time=event.time)
+
         if self.server.agents_by_name.get(self._login, None):
             del self.server.agents_by_name[self._login]
         else:

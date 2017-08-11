@@ -8,7 +8,7 @@ from sublayers_server.model.messages import (
     ChangeAgentKarma, ChangeAgentBalance, UserChangeEXP, UserChangeQuestInventory, UserActualTradingMessage
 )
 from sublayers_server.model.game_log_messages import ExpLogMessage, LvlLogMessage, SkillLogMessage
-from sublayers_server.model.registry_me.classes.quests import QuestAddMessage
+from sublayers_server.model.registry_me.classes.quests import QuestAddMessage, QuestDelMessage
 from sublayers_server.model.registry_me.classes.notes import AddNoteMessage, DelNoteMessage
 from sublayers_server.model.registry_me.classes.quest_item import QuestInventoryField
 from sublayers_server.model.registry_me.tree import (
@@ -227,6 +227,7 @@ class AgentProfile(Node):
     )
 
     quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
+    party_capacity_count = IntField(root_default=0, caption=u"Стартовое значение количества человек в пати")
 
     def set_role_class(self, role_class_ex, registry):
         mod_0 = registry.get("reg:///registry/rpg_settings/class_skill/empty_0")
@@ -274,6 +275,13 @@ class AgentProfile(Node):
         :rtype: list[sublayers_server.model.registry_me.classes.quests.Quest]
         """
         return chain(self.quests_active or [], self.quests_ended or [])
+
+    @property
+    def npc_view_quests(self):
+        """
+        :rtype: list[sublayers_server.model.registry_me.classes.quests.Quest]
+        """
+        return chain(self.quests_active or [], self.quests_unstarted or [])
 
     def __init__(self, **kw):
         super(AgentProfile, self).__init__(**kw)
@@ -445,6 +453,16 @@ class AgentProfile(Node):
         else:
             log.warning("Can't send message: agent %s is offline", self)
 
+    def del_quest(self, quest, time):  # todo: Пробросить event
+        if quest in self.quests_unstarted:
+            self.quests_unstarted.remove(quest)
+        else:
+            log.warning('<%s> try del quest<%s>, but quest not in quests_unstarted', self, quest)
+            return
+        model = self._agent_model
+        if model:
+            QuestDelMessage(agent=model, time=time, quest=quest).post()
+
     def start_quest(self, quest_uid, server, time):
         quest = None
         for q in self.quests_unstarted:
@@ -452,7 +470,7 @@ class AgentProfile(Node):
                 quest = q
 
         if quest is None:
-            log.error('Trying to start unknown quest by uid %r. Agent: %s', quest_uid, self)
+            log.error('Trying to start unknown quest by uid %r. Agent: %r', quest_uid, self)
             return
 
         quest.start(server=server, time=time)

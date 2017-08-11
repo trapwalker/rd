@@ -78,13 +78,10 @@ class NPCDeliveryNotePackage(NPCPageNote): pass
 class NPCDeliveryNoteCourier(NPCPageNote):  pass
 
 
-class NPCRewardItemsNote(NPCPageNote):
-    pass
+class NPCRewardItemsNote(NPCPageNote):  pass
 
-
-class NPCWantedNote(NPCPageNote):
-    pass
-
+class NPCWantedNote(NPCPageNote):  pass
+class NPCWantedBossNote(NPCPageNote):  pass
 
 class QuestRadiationNPCFinish(NPCPageNote): pass
 class MapActivationNoteFinish(NPCPageNote): pass

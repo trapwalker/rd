@@ -5,6 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 if __name__ == '__main__':
+    from sublayers_common.logging_tools import handler, logger, Formatter
     sys.path.append('../../..')
     log = logging.getLogger()
     try:
@@ -16,6 +17,14 @@ if __name__ == '__main__':
         _hndl = logging.StreamHandler(sys.stderr)
         _hndl.setFormatter(logging.Formatter('%(levelname)-8s| %(message)s'))
         log.addHandler(_hndl)
+    log.addHandler(handler(
+        cls=logging.FileHandler,
+        level='DEBUG',
+        fmt=u'%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s',
+        filename='tree_test.log',
+        encoding='utf-8',
+    ))
+
 
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry_me.tree import (
@@ -197,7 +206,7 @@ def test5(reload=True, save_loaded=True):
 
     globals().update(locals())
 
-
+@T(logger=log)
 def test_perf(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
@@ -205,9 +214,9 @@ def test_perf(reload=True, save_loaded=True):
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     _tested = set()
-    with T('deep_read_test'):
+    with T('deep_read_test', logger=log):
         n, deep = test_deep_reg_perfomance(reg.root, _tested=_tested)
-    print('N={}, D={}'.format(n, deep))
+    log.info('N={}, D={}'.format(n, deep))
     assert n == len(_tested)
 
     globals().update(locals())
@@ -215,14 +224,16 @@ def test_perf(reload=True, save_loaded=True):
 
 if __name__ == '__main__':
     import math
+    log.info('{:=<80}'.format('=== tree_test START '))
+
     db_name = 'rd' #+ 't'
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
 
-    rel = 1
+    rel = 0
     save = 0 #True
 
-    test5(reload=rel, save_loaded=save)
+    test_perf(reload=rel, save_loaded=save)
 
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

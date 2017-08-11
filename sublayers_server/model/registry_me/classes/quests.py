@@ -256,12 +256,13 @@ class Quest(Node):
     level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
     starttime   = FloatField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
     endtime     = FloatField(root_default=0, caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
-    generation_group = StringField(caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
-    generation_max_count = IntField(root_default=1, caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
+    generation_group = StringField(caption=u'Тэг семейство квеста')
+    generation_max_count = IntField(root_default=1, caption=u'Максимально еколичество квестов данного типа у агента')
     generation_cooldown = IntField(root_default=0, caption=u'Cooldown после завершения', doc=u'Время, которое должно пройти после завершения квеста для следующей генерации')
     deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
     design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
-
+    generate_time = IntField(root_default=0, caption=u"Время генерации квеста")
+    shelf_life_time = IntField(root_default=0, caption=u"Время срока годности сгенерированного, но не взятого квеста")
     hirer       = RegistryLinkField(
         tags={'client'}, caption=u'Заказчик', doc=u'NPC-заказчик квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
@@ -462,6 +463,7 @@ class Quest(Node):
             self._set_error_status('on_generate', event, e)
             return False
         else:
+            self.generate_time = event.time  # Запоминаем время генерации каждого квеста
             return True
 
     def on_start_(self, event, **kw):
@@ -680,7 +682,6 @@ class Quest(Node):
             QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
         return True
 
-
     def go(self, new_state, event):
         self._go_state_name = new_state
         return True
@@ -868,6 +869,9 @@ class Quest(Node):
 
         return True
 
+    def check_unstarted(self, event):
+        return self.shelf_life_time and ((self.shelf_life_time + self.generate_time) < event.time)
+
 
 class QuestUpdateMessage(messages.Message):
     def __init__(self, quest, **kw):
@@ -886,6 +890,19 @@ class QuestUpdateMessage(messages.Message):
 
 class QuestAddMessage(QuestUpdateMessage):
     pass
+
+
+class QuestDelMessage(messages.Message):
+    def __init__(self, quest, **kw):
+        super(QuestDelMessage, self).__init__(**kw)
+        self.quest = quest  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestDelMessage, self).as_dict()
+        d.update(
+            quest_uid=self.quest.uid,
+        )
+        return d
 
 
 class QuestLogMessage(messages.Message):
