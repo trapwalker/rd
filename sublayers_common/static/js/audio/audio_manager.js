@@ -202,9 +202,9 @@ function init_sound() {
 
     // engines
 
-    audioManager.load('engine_heavy_001', {url: '/static/audio/engines/engine_heavy_001.m4a'}, 0.075);
-    audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.m4a'}, 0.075);
-    audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.m4a'}, 0.075);
+    audioManager.load('engine_heavy_001', {url: '/static/audio/engines/engine_heavy_001.ogg'}, 0.075);
+    audioManager.load('engine_light_001', {url: '/static/audio/engines/engine_light_001.ogg'}, 0.075);
+    audioManager.load('engine_05', {url: '/static/audio/engines/engine_05.ogg'}, 0.075);
 
     // interface
 
