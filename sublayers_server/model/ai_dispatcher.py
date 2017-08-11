@@ -47,10 +47,9 @@ class AIDispatcher(AI):
         return r
 
     def on_event_quest(self, quest, time):
-        log.debug('%r call on_event_quest', quest)
+        # log.debug('%r call on_event_quest', quest)
         for t in Town.get_towns():
             t.regenerate_quests(time=time + 0.02)
-
 
 
 class AIAgent(AI):

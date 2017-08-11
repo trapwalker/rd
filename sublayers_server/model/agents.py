@@ -122,7 +122,6 @@ class Agent(Object):
             self._avatar_link = choice(self.server.reg.get('/registry/world_settings').avatar_list)
         return self._avatar_link
 
-
     def tp(self, time, location, radius=None):
         self.current_location = location
         # todo: Реализовать телепортацию в заданную точку карты по координатам ##realize ##quest
