@@ -206,7 +206,7 @@ def test5(reload=True, save_loaded=True):
 
     globals().update(locals())
 
-
+@T(logger=log)
 def test_perf(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
@@ -214,9 +214,9 @@ def test_perf(reload=True, save_loaded=True):
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     _tested = set()
-    with T('deep_read_test'):
+    with T('deep_read_test', logger=log):
         n, deep = test_deep_reg_perfomance(reg.root, _tested=_tested)
-    print('N={}, D={}'.format(n, deep))
+    log.info('N={}, D={}'.format(n, deep))
     assert n == len(_tested)
 
     globals().update(locals())
@@ -230,7 +230,7 @@ if __name__ == '__main__':
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
 
-    rel = 1
+    rel = 0
     save = 0 #True
 
     test_perf(reload=rel, save_loaded=save)
