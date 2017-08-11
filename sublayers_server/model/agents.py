@@ -438,7 +438,9 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
-        # todo: Пробросить событие в квест ##quest
+        # Пробросить событие в квест ##quest
+        if new_member is self:  # Если исключили себя
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyInclude, agent=self)
 
     def party_before_exclude(self, party, old_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on ##refactor
@@ -469,7 +471,10 @@ class Agent(Object):
         for obj in self.slave_objects:
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
-        # todo: Пробросить событие в квест ##quest
+        # Пробросить событие в квест ##quest
+        if old_member is self:  # Если исключили себя
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyExclude, agent=self)
+
 
     def _invite_by_id(self, invite_id):
         for invite in self.invites:

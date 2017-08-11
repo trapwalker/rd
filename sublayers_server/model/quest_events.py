@@ -139,5 +139,15 @@ class OnKill(QuestEvent):
         self.agent = agent  # todo: weakref?
 
 
+class OnPartyInclude(QuestEvent):
+    def __init__(self, agent, **kw):
+        server = kw.pop('server', None) or agent.server
+        super(OnPartyInclude, self).__init__(server=server, **kw)
+        self.agent = agent
+
+
+class OnPartyExclude(OnPartyInclude): pass
+
+
 # todo: Сделать регистрацию квестовых событий через метакласс
 ALL = {name: value for name, value in locals().items() if isinstance(value, type) and issubclass(value, QuestEvent)}
