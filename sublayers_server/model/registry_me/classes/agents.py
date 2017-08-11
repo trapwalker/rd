@@ -470,7 +470,7 @@ class AgentProfile(Node):
                 quest = q
 
         if quest is None:
-            log.error('Trying to start unknown quest by uid %r. Agent: %s', quest_uid, self)
+            log.error('Trying to start unknown quest by uid %r. Agent: %r', quest_uid, self)
             return
 
         quest.start(server=server, time=time)
