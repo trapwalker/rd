@@ -493,6 +493,10 @@ class Agent(Object):
                 comment="You not have access for this invite {}".format(invite_id),
             ).post()
 
+    def clear_invites(self, time):
+        for invite in self.invites:
+            self.delete_invite(invite_id=invite.id, time=time)
+
     def is_target(self, target):
         if not isinstance(target, Unit):  # если у объекта есть ХП и по нему можно стрелять
             return False

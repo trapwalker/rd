@@ -151,9 +151,9 @@ class RandomizeExamples(object):
             return cls.get_random_car_level(level=level-1, cars=cars, weapons=weapons, car_params=car_params)
 
     @classmethod
-    def get_random_agent(cls, level, time, karma_min=0, karma_max=0):
+    def get_random_agent(cls, level, time, karma_min=0, karma_max=0, agent_params=None):
         agent_proto = cls.registry.get('/registry/agents/user/ai_quest')
-        example_profile = agent_proto.instantiate(name='', role_class=None)
+        example_profile = agent_proto.instantiate(name='', role_class=None, **(agent_params or dict()))
         role_class = random.choice(cls.agent_role_class_list)
 
         example_profile.set_karma(time=time, value=random.randint(karma_min, karma_max))

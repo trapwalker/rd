@@ -47,7 +47,7 @@ class AIDispatcher(AI):
         return r
 
     def on_event_quest(self, quest, time):
-        log.debug('%r call on_event_quest', quest)
+        # log.debug('%r call on_event_quest', quest)
         for t in Town.get_towns():
             t.regenerate_quests(time=time + 0.02)
 
@@ -98,6 +98,12 @@ class AIAgent(AI):
         if self.car:
             self.car.displace(time=event.time)
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
+
+        self.clear_invites(time=event.time)
+
+        if self.party:
+            self.party.on_exclude(agent=self, time=event.time)
+
         if self.server.agents_by_name.get(self._login, None):
             del self.server.agents_by_name[self._login]
         else:
