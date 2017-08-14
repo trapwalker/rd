@@ -11,6 +11,7 @@ from sublayers_server.model.parameters import Parameter
 import sys
 from abc import ABCMeta
 from counterset import CounterSet
+from uuid import uuid1 as get_uid
 
 # todo: GEO-index
 # todo: fix side effect on edge of tile
@@ -27,14 +28,14 @@ class Object(object):
         super(Object, self).__init__()
         self.server = server
         """@type: sublayers_server.model.event_machine.Server"""
-        self.uid = id(self)
+        self.uid = self.id = get_uid()
         self.server.objects[self.uid] = self
         self.events = []  # all events about this object
         self.is_alive = True
         self.limbo = False
 
     def __hash__(self):
-        return self.uid
+        return hash(self.uid)
 
     def __str__(self):
         return self.__str_template__.format(self=self)
@@ -63,7 +64,7 @@ class Object(object):
     def delete(self, time):
         Delete(obj=self, time=time).post()
 
-    id = property(id)
+    #id = property(id)
     memsize = sys.getsizeof
 
     @property
