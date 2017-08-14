@@ -55,7 +55,7 @@ def test3(reload=True, save_loaded=True):
     from sublayers_server.model.registry_me.classes.agents import Agent
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
-    #a = reg.get('/registry/mobiles/cars/heavy/btrs/m113a1/quick')
+    #a = reg.get('/registry/mobiles/cars/heavy/btrs/05_m113a1/quick')
     #q = reg.get('/registry/agents/user/quick')
 
     # deleted_agents_count = Agent.objects.all().delete()
