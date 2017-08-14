@@ -872,6 +872,9 @@ class Quest(Node):
     def check_unstarted(self, event):
         return self.shelf_life_time and ((self.shelf_life_time + self.generate_time) < event.time)
 
+    def get_distance_cost(self, distance):
+        return round(distance / 1000)
+
 
 class QuestUpdateMessage(messages.Message):
     def __init__(self, quest, **kw):
