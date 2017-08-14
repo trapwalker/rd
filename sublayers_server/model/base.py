@@ -28,7 +28,7 @@ class Object(object):
         super(Object, self).__init__()
         self.server = server
         """@type: sublayers_server.model.event_machine.Server"""
-        self.uid = self.id = get_uid()
+        self.uid = self.id = str(get_uid())
         self.server.objects[self.uid] = self
         self.events = []  # all events about this object
         self.is_alive = True
