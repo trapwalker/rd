@@ -889,7 +889,12 @@ class QuestUpdateMessage(messages.Message):
 
 
 class QuestAddMessage(QuestUpdateMessage):
-    pass
+    def as_dict(self):
+        d = super(QuestUpdateMessage, self).as_dict()
+        d.update(
+            quest=self.quest.as_unstarted_quest_dict(),
+        )
+        return d
 
 
 class QuestDelMessage(messages.Message):
