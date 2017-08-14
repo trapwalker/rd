@@ -76,7 +76,7 @@ class NPCPageNote(Note):
 class NPCDeliveryNote(NPCPageNote): pass
 class NPCDeliveryNotePackage(NPCPageNote): pass
 class NPCDeliveryNoteCourier(NPCPageNote):  pass
-
+class NPCDeliveryCarNote(NPCPageNote): pass
 
 class NPCRewardItemsNote(NPCPageNote):  pass
 
@@ -93,12 +93,10 @@ class MapActivationRadarsNoteFinish(NPCPageNote): pass
 class GetQuestTeachingNote(Note):
     target_quest_uid = UUIDField(tags={'client'})
 
-
 class FinishQuestTeachingNote(GetQuestTeachingNote):
     target_note_uid = UUIDField(tags={'client'})
     target_build_name = StringField(tags={'client'})
     target_build_coord = StringField(tags={'client'})
-
 
 class HangarTeachingNote(Note): pass
 class NukoilTeachingNote(Note): pass

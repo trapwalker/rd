@@ -328,6 +328,9 @@ var ClientManager = (function () {
     ClientManager.prototype._createNote = function (note) {
         //console.log('ClientManager.prototype._createNote', note);
         switch (note.cls) {
+            case 'NPCDeliveryCarNote':
+                new QuestNoteNPCBtnDeliveryCar(note);
+                break;
             case 'NPCDeliveryNote':
                 new QuestNoteNPCBtnDelivery(note);
                 break;

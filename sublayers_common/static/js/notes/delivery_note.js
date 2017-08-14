@@ -9,7 +9,7 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
     // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
     QuestNoteNPCBtnDelivery.prototype.redraw = function() {
         this.clear();
-        if (! this.jq_main_div || ! this.jq_menu_div || ! this.build) return;
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
         if (this.quest_uid == null) return;
         var quest = journalManager.quests.getQuest(this.quest_uid);
         if (! quest) {
