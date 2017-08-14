@@ -343,13 +343,20 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype._create_building_quest_block = function(quest) {
+        var deadline_str = toHHMMSS(quest.deadline * 1000);
+        if (quest.start_quest_time) {
+            // info: возможно будет плохо работать с другими часовыми поясами
+            var d = new Date(new Date((quest.start_quest_time + clock.getDt()) * 1000).setSeconds(0, 0));
+            deadline_str = 'Отправление: ' + d.toLocaleTimeString();
+        }
+
         var jq_quest_block = $(
             '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
                 '<div class="building-quest-list-item-caption">' +
                     '<img src="' + quest.list_icon + '" class="building-quest-list-item-img">' + quest.caption + '</br>Уровень: ' + quest.level +
                 '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text_short + '</div>' +
-                '<div class="building-quest-list-item-time">' + toHHMMSS(quest.deadline * 1000) + '</div>' +
+                '<div class="building-quest-list-item-time">' + deadline_str + '</div>' +
             '</div>');
         return jq_quest_block;
     };

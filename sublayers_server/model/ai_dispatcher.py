@@ -18,6 +18,7 @@ class AIDispatcher(AI):
     def __init__(self, time, quest_example, **kw):
         super(AIDispatcher, self).__init__(time=time, **kw)
         self.create_ai_dispatcher_quest(time=time, quest_example=quest_example)
+        self.tempd = dict()  # хранилище чего угодно
 
     @event_deco
     def create_ai_dispatcher_quest(self, event, quest_example):

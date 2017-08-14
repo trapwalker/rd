@@ -391,6 +391,9 @@ class Agent(Object):
         if self.current_location:
             self.current_location.on_exit(agent=self, event=event, dc_agent=True)
 
+        if self.party:
+            self.party.on_exclude(agent=self, time=event.time)
+
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
         if self.server.agents.get(str(self.user.pk), None):
             del self.server.agents[str(self.user.pk)]

@@ -276,6 +276,22 @@ var SettingsManager = (function() {
             set_callback: function(new_value) {},
             init: function() {settingsManager.options.location_effects.value = settingsManager.options.location_effects.currentValue = parseInt(settingsManager.options.location_effects.currentValue);}
         },
+        show_nickname: {
+            name: "show_nickname",
+            page: "graphics",
+            text_name: "Отображение ников машиок",
+            text_description: "Отображение ников машиок на карте.",
+            jq_div: null,
+            type: "list",
+            default: 750,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Всегда", value: 0}, {text: "По наведению", value: 750}],
+            set_callback: function(new_value) {
+                WCanvasNicknameMarker.prototype.light_time = new_value;
+            },
+            init: function() {WCanvasNicknameMarker.prototype.light_time = settingsManager.options.show_nickname.value = settingsManager.options.show_nickname.currentValue = parseInt(settingsManager.options.show_nickname.currentValue);}
+        },
         /* Настройка управления */
         move_forvard: {
             name: "move_forvard",

@@ -730,11 +730,16 @@ var WCanvasLootMarker = (function (_super) {
 var WCanvasNicknameMarker = (function (_super) {
     __extends(WCanvasNicknameMarker, _super);
 
+    WCanvasNicknameMarker.prototype.light_time = 500;
+
     function WCanvasNicknameMarker(mobj, w_car_marker, nickname) {
         _super.call(this, mobj, w_car_marker);
         this.obj_id = mobj.ID;
         this.w_car_marker = w_car_marker;
         this.set_nickname(nickname);
+
+        this.last_draw = false;
+        this.last_focused_marker_time = 0;  // Время, когда в фокусе последний раз был маркер или ник
     }
 
     WCanvasNicknameMarker.prototype.set_nickname = function (nickname) {
@@ -745,10 +750,23 @@ var WCanvasNicknameMarker = (function (_super) {
         this._text_width = 8 * this._nickname.length; // Ширина также зависит от размера шрифта
     };
 
-    WCanvasNicknameMarker.prototype.redraw = function(ctx, time){
+    WCanvasNicknameMarker.prototype.redraw = function(ctx, time, client_time){
         //console.log('WCanvasNicknameMarker.prototype.redraw', time);
         if (!this._nickname) return;
         var focused = mapCanvasManager._mouse_focus_widget == this;
+        var focused_marker = mapCanvasManager._mouse_focus_widget == this.w_car_marker;
+        if (this.light_time)
+            if (focused || focused_marker) {
+                this.last_focused_marker_time = client_time;
+            }
+            else {
+                this.last_draw = false;
+                if (client_time - this.last_focused_marker_time > this.light_time)
+                    return;  // Не рисуем так как давно не фокусили
+            }
+        this.last_draw = true;
+
+
         ctx.save();
         var ctx_car_pos = summVector(this.w_car_marker._last_car_ctx_pos || this.w_car_marker._last_mobj_ctx_pos, this._offset);
         ctx.translate(ctx_car_pos.x, ctx_car_pos.y - 3);
@@ -765,6 +783,7 @@ var WCanvasNicknameMarker = (function (_super) {
 
     WCanvasNicknameMarker.prototype.mouse_test = function(time) {
         //console.log('WCanvasMarker.prototype.mouse_test');
+        if(! this.last_draw) return false;
         var distance = subVector(this._last_mobj_ctx_pos, mapCanvasManager._mouse_client);
         return Math.abs(distance.x) < this._text_width && Math.abs(distance.y) < this._text_height;
     };
