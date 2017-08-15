@@ -8,6 +8,7 @@ from smtplib import SMTP, SMTPRecipientsRefused
 from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
 from tornado import options
+from ctx_timer import T
 
 import sys
 from copy import copy
@@ -58,6 +59,7 @@ class Sender(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
+    @T()
     def send(self, message):
         smtp = self._smtp
         opened = False
