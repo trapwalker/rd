@@ -398,7 +398,7 @@ class Quest(Node):
             uid=self.uid,
             status=self.status,
             result=self.result,
-            hirer=dict(node_hash=self.hirer.node_hash()),
+            hirer=dict(node_hash=self.hirer and self.hirer.node_hash()),
             caption=self.caption,
             text=self.text,
             text_short=self.text_short,
