@@ -32,7 +32,7 @@ class Object(object):
         uid = self.uid = self.id = id(self) #str(get_uid())
         _all_ids_ever = Object._all_ids_ever
         if uid in _all_ids_ever:
-            log.warning('Reuse Object.UID %s in %d', uid, self.__class__.__name__)
+            log.warning('Reuse Object.UID %s in %s', uid, self.__class__.__name__)
         _all_ids_ever.add(uid)
         self.server.objects[self.uid] = self
         self.events = []  # all events about this object
