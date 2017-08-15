@@ -20,6 +20,7 @@ from uuid import uuid1 as get_uid
 class Object(object):
     __metaclass__ = ABCMeta
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
+    _all_ids_ever = set()
 
     def __init__(self, server, time):
         """
@@ -28,7 +29,11 @@ class Object(object):
         super(Object, self).__init__()
         self.server = server
         """@type: sublayers_server.model.event_machine.Server"""
-        self.uid = self.id = id(self) #str(get_uid())
+        uid = self.uid = self.id = id(self) #str(get_uid())
+        _all_ids_ever = Object._all_ids_ever
+        if uid in _all_ids_ever:
+            log.warning('Reuse Object.UID %s in %d', uid, self.__class__.__name__)
+        _all_ids_ever.add(uid)
         self.server.objects[self.uid] = self
         self.events = []  # all events about this object
         self.is_alive = True
