@@ -55,6 +55,7 @@ class Sender(object):
 
     def __enter__(self):
         self.open()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -128,18 +129,12 @@ class Email(object):
         msg['Message-Id'] = make_msgid(Email.unique)
         return msg
 
-    def send(self, adr_to=None, sender=None):
-        sender = sender or get_sender()
+    def send(self, sender=None):
         if sender is None:
-            raise EmailSendingError("Can't send email")
-
-        if adr_to:
-            message = copy(self)
-            message.adr_to = adr_to
-        else:
-            message = self
-
-        return sender.send(message)
+            log.wanring(u"FAIL to send {self} because sender is not defined".format(self))
+            return
+            #raise EmailSendingError("Can't send email")
+        return sender.send(self)
 
 
 class EmailTemplate(object):
@@ -236,20 +231,29 @@ def get_sender(server=None, login=None, password=None):
         password = password or options.email_password
     except AttributeError as e:
         log.error('Cant get email credentals: {}'.format(e))
-        raise e
+        #raise e
     else:
-        SENDER = Sender(host=server, login=login, password=password)
-        return SENDER
+        if server:
+            SENDER = Sender(host=server, login=login, password=password)
+            return SENDER
+
+    if SENDER is None:
+        log.warning('Mailing subsystem DISABLEED because service is not configured')
 
 
 if __name__ == '__main__':
+    log = logging.getLogger()
+    log.level = logging.DEBUG
+    log.addHandler(logging.StreamHandler(sys.stderr))
+
     from pprint import pprint as pp
     from uuid import uuid4
     import datetime
     et = email_confirmation_template_ru
+    get_sender()
 
-    with get_sender(server='smtp.yandex.ru:587', login='info@roaddogs.ru', password='gdvyaavuccekawoj'):
-        print(et(adr_to="svpmailbox@gmail.com", token=uuid4().hex).send())
+    with get_sender(server='smtp.yandex.ru:587', login='info@roaddogs.ru', password='gdvyaavuccekawoj') as sender:
+        print(et(adr_to="svpmailbox@gmail.com", token=uuid4().hex).send(sender))
         #print(e.send("SergyP@yandex.ru"))
         #print(e.send("was73r@gmail.com"))
 
