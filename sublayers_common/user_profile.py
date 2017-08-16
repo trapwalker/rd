@@ -4,12 +4,14 @@ import logging
 log = logging.getLogger(__name__)
 
 from bson.objectid import ObjectId
+from uuid import uuid4
 import hashlib
 import datetime
 import random
 import re
 from mongoengine import (
     Document, EmbeddedDocument, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField,
+    UUIDField,
 )
 
 from sublayers_server.model.registry_me.odm_position import PositionField
@@ -26,6 +28,8 @@ class User(Document):
         class AuthStandard(EmbeddedDocument):
             email = StringField()
             password = StringField()
+            email_confirmed = BooleanField(default=False)
+            email_confirmation_token = UUIDField(default=uuid4)
 
             def __init__(self, raw_password=None, **kw):
                 EmbeddedDocument.__init__(self, **kw)
