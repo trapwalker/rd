@@ -36,6 +36,7 @@ from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByI
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
 from sublayers_site.handlers.audio_test import GetAudioTest
+from sublayers_site.handlers.email_confirm import EmailConfirmHandler
 
 from sublayers_common import mailing
 from sublayers_common import service_tools
@@ -92,6 +93,7 @@ class Application(BaseApplication):
         load_locale_objects()  # Загрузка всех локализаций
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
+            (r"/email_confirm", EmailConfirmHandler),
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
