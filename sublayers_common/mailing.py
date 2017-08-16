@@ -131,7 +131,7 @@ class Email(object):
 
     def send(self, sender=None):
         if sender is None:
-            log.wanring(u"FAIL to send {self} because sender is not defined".format(self))
+            log.warning(u"FAIL to send {self} because sender is not defined".format(self))
             return
             #raise EmailSendingError("Can't send email")
         return sender.send(self)
@@ -238,7 +238,7 @@ def get_sender(server=None, login=None, password=None):
             return SENDER
 
     if SENDER is None:
-        log.warning('Mailing subsystem DISABLEED because service is not configured')
+        log.warning('Mailing subsystem DISABLED because service is not configured')
 
 
 if __name__ == '__main__':
