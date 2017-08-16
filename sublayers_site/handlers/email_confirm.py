@@ -15,6 +15,7 @@ import uuid
 class EmailConfirmHandler(TimeMeasuredHandler):
     SUPPORTED_METHODS = ("GET",)
     _checked_tokens = set()
+    # TODO: Проверять авторизацию пользователя, перенаправлять на авторизацию с возвратом на этот хендлер по окончанию
     def get(self, *args, **kwargs):
         token = self.request.query_arguments.get('token', None)
         if not token:
