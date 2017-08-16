@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 from smtplib import SMTP, SMTPRecipientsRefused
 from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
-from tornado import options
+from tornado.options import options
 from ctx_timer import T
 
 import sys
@@ -55,6 +55,7 @@ class Sender(object):
 
     def __enter__(self):
         self.open()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
@@ -128,18 +129,12 @@ class Email(object):
         msg['Message-Id'] = make_msgid(Email.unique)
         return msg
 
-    def send(self, adr_to=None, sender=None):
-        sender = sender or get_sender()
+    def send(self, sender=None):
         if sender is None:
-            raise EmailSendingError("Can't send email")
-
-        if adr_to:
-            message = copy(self)
-            message.adr_to = adr_to
-        else:
-            message = self
-
-        return sender.send(message)
+            log.warning(u"FAIL to send {self} because sender is not defined".format(self))
+            return
+            #raise EmailSendingError("Can't send email")
+        return sender.send(self)
 
 
 class EmailTemplate(object):
@@ -181,23 +176,45 @@ class EmailTemplate(object):
         return self.render(**kw)
 
 
-email_confirmation_template = EmailTemplate(
+email_confirmation_template_ru = EmailTemplate(
     mime_type='html',
     subject=u"Road Dogs - подтвержение регистрации",
     template=u"""
         <body>
             <p>Вас приветствует <a href="{site_proto}://{site}"><b>Road Dogs</b></a> – 
                постъядерная MMORPG в жанре Грабитель/Торговец.</p>
-            <p>Ваш адрес ({adr_to}) почты был указан при создании персонажа в нашей игре.</p>
-            <p>Для подтверждения привязки этой почты к персонажу пройдите по ссылке: <a href="{url}">{url}</a></p>
+            <p>Ваш адрес {adr_to} был указан при создании персонажа в нашей игре.</p>
+            <p>Для подтверждения привязки этой почты к персонажу пройдите по ссылке:
+               <a href="{site_proto}://{site}/email_confirm?token={token}">
+                        {site_proto}://{site}/email_confirm?token={token}</a></p>
             <p>Если Вы не регистрировались на сайте <a href="{site_proto}://{site}">{site}</a> – 
                проигнорируйте это письмо.</p>
-            <p>{dt}</p>
         </body>
     """,
+    adr_from='info@roaddogs.ru',
     site_proto='https',
     site='roaddogs.ru',
-    url='https://roaddogs.ru/confirm-email?token=3417236318763484',
+    confirm_uri='email_confirm?token=',
+)
+
+email_confirmation_template_en = EmailTemplate(
+    mime_type='html',
+    subject=u"Road Dogs - confirmation of registration",
+    template=u"""
+        <body>
+            <p>Welcome to <a href="{site_proto}://{site}"><b>Road Dogs</b></a> - 
+               post-nuclear MMORPG in the Privateer/Trader genre.</p>
+            <p>Your email address ({adr_to}) was specified when creating a character in our game.</p>            
+            <p>To confirm the binding of this email adress to the game character go to: 
+               <a href="{site_proto}://{site}/{confirm_uri}{token}">
+                        {site_proto}://{site}/{confirm_uri}{token}</a></p>
+            <p>If you didn't register on <a href="{site_proto}://{site}">{site}</a>, please ignore this email.</p>
+        </body>
+    """,
+    adr_from='info@roaddogs.ru',
+    site_proto='https',
+    site='roaddogs.online',
+    confirm_uri='email_confirm?token=',
 )
 
 
@@ -210,28 +227,33 @@ def get_sender(server=None, login=None, password=None):
 
     try:
         server = server or options.email_server
-        login = login or options.email_from
+        login = login or options.email_login or options.email_from
         password = password or options.email_password
-    except Exception as e:
+    except AttributeError as e:
         log.error('Cant get email credentals: {}'.format(e))
-        raise e
+        #raise e
     else:
-        SENDER = Sender(host=server, login=login, password=password)
-        return SENDER
+        if server:
+            SENDER = Sender(host=server, login=login, password=password)
+            return SENDER
+
+    if SENDER is None:
+        log.warning('Mailing subsystem DISABLED because service is not configured')
 
 
 if __name__ == '__main__':
+    log = logging.getLogger()
+    log.level = logging.DEBUG
+    log.addHandler(logging.StreamHandler(sys.stderr))
+
+    from pprint import pprint as pp
+    from uuid import uuid4
     import datetime
-    e = email_confirmation_template(
-        adr_from='info@roaddogs.ru',
-        #adr_to="was73r@gmail.com",
-        adr_to="svpmailbox@gmail.com",
-        # adr_to="SergyP@yandex.ru",
-        # adr_to="megabyteam@yandex.ru",
-        dt=datetime.datetime.now().isoformat(),
-    )
+    et = email_confirmation_template_ru
+    get_sender()
 
-    get_sender(server='smtp.yandex.ru:587', login='info@roaddogs.ru', password='gdvyaavuccekawoj')
+    with get_sender(server='smtp.yandex.ru:587', login='info@roaddogs.ru', password='gdvyaavuccekawoj') as sender:
+        print(et(adr_to="svpmailbox@gmail.com", token=uuid4().hex).send(sender))
+        #print(e.send("SergyP@yandex.ru"))
+        #print(e.send("was73r@gmail.com"))
 
-    print(e.send("svpmailbox@gmail.com"))
-    print(e.send("SergyP@yandex.ru"))

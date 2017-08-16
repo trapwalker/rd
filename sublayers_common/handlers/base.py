@@ -30,23 +30,18 @@ def static_world_link_repr(link):
         return ''
 
 
-class AuthHandlerMixin(tornado.web.RequestHandler):
+class TimeMeasuredHandler(tornado.web.RequestHandler):
+    handlers_metrics = dict()
+
+    @property
+    def classname(self):
+        return self.__class__.__name__
+
     def initialize(self):
         self._handler_start_time = None
 
     def prepare(self):
         self._handler_start_time = time()
-        user = None
-        user_id = self.get_secure_cookie("user")
-        if user_id:
-            try:
-                user = User.objects.get(id=ObjectId(user_id))
-            except InvalidId as e:
-                log.warning('Invalid user ID format: %r', e)
-            except DoesNotExist as e:
-                log.warning('User not found by ID %r: %r', user_id, e)
-
-        self.current_user = user
 
     def on_finish(self):
         # print("{} processing time {}s".format(self.classname, round(time() - self._handler_start_time, 4)))
@@ -58,31 +53,42 @@ class AuthHandlerMixin(tornado.web.RequestHandler):
         current_time = time()
         duration = round(current_time - self._handler_start_time, 4)
         cl_name = self.classname
-        if self.handlers_metrics.get(cl_name, None):
-            self.handlers_metrics[cl_name]["count"] += 1
-            self.handlers_metrics[cl_name]["duration"] += duration
-            if self.handlers_metrics[cl_name]["duration_max"] < duration or current_time - self.handlers_metrics[cl_name]["duration_max_last_upd"] > 20.0:
-                self.handlers_metrics[cl_name]["duration_max"] = duration
-                self.handlers_metrics[cl_name]["duration_max_last_upd"] = current_time
+        handlers_metrics = self.handlers_metrics
+        metric = handlers_metrics.get(cl_name, None)
 
-                self.handlers_metrics[cl_name]["event_perf_time_interval"].append(duration)
+        if metric:
+            metric["count"] += 1
+            metric["duration"] += duration
+            if metric["duration_max"] < duration or current_time - metric["duration_max_last_upd"] > 20.0:
+                metric["duration_max"] = duration
+                metric["duration_max_last_upd"] = current_time
+                metric["event_perf_time_interval"].append(duration)
         else:
-            self.handlers_metrics[cl_name] = {
+            handlers_metrics[cl_name] = {
                 "name": cl_name,
                 "count": 1,
                 "duration": duration,
                 "duration_max": duration,
                 "duration_max_last_upd": current_time,
-
                 "event_perf_time_interval": [duration]
             }
         self._handler_start_time = None
 
-    @property
-    def classname(self):
-        return self.__class__.__name__
 
-    handlers_metrics = dict()
+class AuthHandlerMixin(TimeMeasuredHandler):
+    def prepare(self):
+        super(AuthHandlerMixin, self).prepare()
+        user = None
+        user_id = self.get_secure_cookie("user")
+        if user_id:
+            try:
+                user = User.objects.get(id=ObjectId(user_id))
+            except InvalidId as e:
+                log.warning('Invalid user ID format: %r', e)
+            except DoesNotExist as e:
+                log.warning('User not found by ID %r: %r', user_id, e)
+
+        self.current_user = user
 
 
 class BaseHandler(AuthHandlerMixin):

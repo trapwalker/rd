@@ -63,3 +63,8 @@ define("auth_twitter_secret", default=None, help="Auth Google Secret Client", ty
 
 define("auth_facebook_key", default=None, help="Auth Google Client ID", type=str)
 define("auth_facebook_secret", default=None, help="Auth Google Secret Client", type=str)
+
+define("email_server",   default=None, help="Email sending SMTP server", type=str)
+define("email_login",    default=None, help="Email sending login (email_from used by default)", type=str)
+define("email_from",     default=None, help="Email sending address from", type=str)
+define("email_password", default=None, help="Email sending password", type=str)
