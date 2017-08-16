@@ -34,6 +34,7 @@ def main(args=None):
         agents, reg,
         update,
         control,
+        backup,
     )
 
     prog_path, prog_name = os.path.split(sys.argv[0])
