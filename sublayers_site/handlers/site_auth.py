@@ -7,7 +7,7 @@ from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_common.user_profile import User
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.creater_agent import create_agent
-
+from sublayers_common import mailing
 
 import tornado.gen
 from tornado.web import RequestHandler, HTTPError
@@ -99,6 +99,17 @@ class StandardLoginHandler(BaseSiteHandler):
         user = User(email=email, raw_password=password)
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         user.save()
+        try:
+            msg = mailing.email_confirmation_template_ru(
+                adr_to=email,
+                token=user.auth.standard.email_confirmation_token.hex,
+            )
+            log.debug(u'Confirmation email with token {user.auth.standard.email_confirmation_token.hex}: {msg}'.format(
+                **locals()))
+            msg.send(self.application.email_sender)
+        except Exception as e:
+            log.exception('Error where confitmation email sending: %s', e)
+        # todo: Вывести в консоль уведомление об отправке письма для подтверждания
 
         agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
         if agent_example is None:
