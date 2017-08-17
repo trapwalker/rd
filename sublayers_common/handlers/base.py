@@ -76,19 +76,19 @@ class TimeMeasuredHandler(tornado.web.RequestHandler):
 
 
 class AuthHandlerMixin(TimeMeasuredHandler):
-    def prepare(self):
-        super(AuthHandlerMixin, self).prepare()
-        user = None
+    def get_current_user(self):
         user_id = self.get_secure_cookie("user")
-        if user_id:
-            try:
-                user = User.objects.get(id=ObjectId(user_id))
-            except InvalidId as e:
-                log.warning('Invalid user ID format: %r', e)
-            except DoesNotExist as e:
-                log.warning('User not found by ID %r: %r', user_id, e)
+        if not user_id:
+            return
 
-        self.current_user = user
+        # todo: cache users; invalidate cache by changes from site and quick server in teaching mode
+        # todo: or isolate changes of site and teaching mode to separate documents
+        try:
+            return User.objects.get(id=ObjectId(user_id))
+        except InvalidId as e:
+            log.warning('Invalid user ID format %r: %s', user_id, e)
+        except DoesNotExist as e:
+            log.warning('User not found by ID %r: %s', user_id, e)
 
 
 class BaseHandler(AuthHandlerMixin):
