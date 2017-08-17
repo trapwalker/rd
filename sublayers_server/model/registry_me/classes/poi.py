@@ -100,7 +100,7 @@ class Building(Subdoc):
     title = StringField(caption=u'Заголовок', tags={'client'})
     head = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution', tags={'client'})
     instances = ListField(
-        field=RegistryLinkField(document_type='sublayers_server.model.registry+me.classes.poi.Institution'),
+        field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
         tags={'client'},
     )
 
