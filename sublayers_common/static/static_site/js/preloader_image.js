@@ -82,9 +82,8 @@ var PreloaderImage = (function(){
 
 
     PreloaderImage.prototype.all_image_loaded = function() {
-        console.log('PreloaderImage.prototype.all_image_loaded: ', this.count_image);
+        //console.log('PreloaderImage.prototype.all_image_loaded: ', this.count_image);
         this.ready_images = true;
-
         after_preload_load_images();
     };
 

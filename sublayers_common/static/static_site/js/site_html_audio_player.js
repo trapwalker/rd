@@ -1,4 +1,4 @@
-var lastRadioVolume = 1.0;
+var lastRadioVolume = 0.0;
 
 var constHtmlSize = {
     1080: {
