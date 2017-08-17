@@ -39,10 +39,8 @@ var LocationDump = (function (_super) {
                 else // если нет, то записаться в последний активный
                     locationManager.screens[locationManager.active_screen_name] = null;
 
-                // Показать кнопку Свалка
-                $('#townDumpTempButton').css('display', 'block');
-
-                locationManager.setBtnState(1, '', false);
+                console.log(0);
+                locationManager.setBtnState(1, '</br>Обыскать', true);
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
@@ -61,6 +59,7 @@ var LocationDump = (function (_super) {
 
     LocationDump.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
+        console.log(1);
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
         locationManager.setBtnState(3, '</br>Назад', true);

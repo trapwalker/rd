@@ -131,10 +131,7 @@ var LocationManager = (function () {
                 $('#layer2').css('display', 'block');
                 $('#landscape').css('display', 'block');
 
-                // Показать кнопку Свалка
-                $('#townDumpTempButton').css('display', 'block');
-
-                locationManager.setBtnState(1, '', false);
+                locationManager.setBtnState(1, '</br>Обыскать', true);
                 locationManager.setBtnState(2, '', false);
                 locationManager.setBtnState(3, '</br>Назад', false);
                 locationManager.setBtnState(4, '</br>Выход', true);
@@ -181,9 +178,6 @@ var LocationManager = (function () {
 
         // Свалка
         this.dump = new LocationDump(this.jq_town_div);
-        this.jq_town_div.find('#townDumpTempButton').click(function() {
-            if (locationManager.dump) locationManager.dump.activate();
-        });
 
         // Установить дивы панелей
         this.panel_left.init(this.jq_town_div.find('#townLeftPanel'));
@@ -338,9 +332,13 @@ var LocationManager = (function () {
 
                 if (this.screens[this.active_screen_name])
                     this.screens[this.active_screen_name].set_buttons();
+                else
+                    locationManager.setBtnState(1, '</br>Обыскать', true);
                 setTimeout(function () {
                     if (locationManager.screens[locationManager.active_screen_name])
                         locationManager.screens[locationManager.active_screen_name].set_buttons();
+                    else
+                        locationManager.setBtnState(1, '</br>Обыскать', true);
                 }, this._clicks_btn[btnIndex].delay);
             }
         } else
@@ -350,7 +348,6 @@ var LocationManager = (function () {
             //console.log('Попытка выйти из города');
             // Google Analytics
             analytics.try_exit_from_location();
-
             if (user.example_car)
                 clientManager.sendExitFromLocation();
             else {
@@ -361,10 +358,10 @@ var LocationManager = (function () {
                 });
             }
         }
-        else {
-            if (this.screens[this.active_screen_name])
-                this.screens[this.active_screen_name].clickBtn(btnIndex);
-        }
+        if (this.screens[this.active_screen_name])
+            this.screens[this.active_screen_name].clickBtn(btnIndex);
+        else if ((btnIndex == 1) && (locationManager.dump)) locationManager.dump.activate();
+
     };
 
     LocationManager.prototype.update = function () {
@@ -669,9 +666,6 @@ var LocationPlace = (function () {
         $('.building-back').css('display', 'none');
         $('.townPageWrap').css('display', 'none');
 
-        // Спрятать кнопку Свалка
-        $('#townDumpTempButton').css('display', 'none');
-
         // Включить своё окно
         this.jq_main_div.css('display', 'block');
         if (this.screen_name) // если для локации указан конкретный скрин, то записаться в него
@@ -870,9 +864,7 @@ var LocationPlaceBuilding = (function (_super) {
                 locationManager.screens[locationManager.active_screen_name] = null;
 
             // Показать кнопку Свалка
-            $('#townDumpTempButton').css('display', 'block');
-
-            locationManager.setBtnState(1, '', false);
+            locationManager.setBtnState(1, '</br>Обыскать', true);
             locationManager.setBtnState(2, '', false);
             locationManager.setBtnState(3, '</br>Назад', false);
             locationManager.setBtnState(4, '</br>Выход', true);

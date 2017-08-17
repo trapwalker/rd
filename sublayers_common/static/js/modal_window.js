@@ -706,6 +706,7 @@ var ModalWindow = (function () {
         this.modalClassQuestFirstOut.load('/static/modal_window/classQuestFirstOut.html', function(){
             var btn = self.modalClassQuestFirstOut.find('#classQuestFirstOutBtnOk');
             btn.on('click', function(event) { self.modalClassQuestFirstOutHide(); });
+            self.modalClassQuestFirstOut.find(".windowDragCloseHeader-close").first().click(function() {btn.click()});
         });
         this.modalClassQuestFirstOut.draggable({ containment: "parent" });
     };
