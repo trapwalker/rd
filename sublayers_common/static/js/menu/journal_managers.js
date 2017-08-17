@@ -215,7 +215,7 @@ var QuestJournalManager = (function () {
     };
 
     QuestJournalManager.prototype.update = function(quest) {
-        //console.log('QuestJournalManager.prototype.update', quests);
+        //console.log('QuestJournalManager.prototype.update', quest);
         if (!this.quests.hasOwnProperty(quest.uid)) {
             console.error('Апдейт несуществущего квеста.');
             return;
@@ -277,8 +277,8 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
         //console.log('QuestJournalManager.prototype._create_quest_info_block', quest.uid);
-        var hirer_photo = quest.hirer ?  quest.hirer.photo : '';
-        var hirer_name = quest.hirer ?  quest.hirer.title : '';
+        var hirer_photo = quest.hirer ? quest.hirer.photo : '/static/img/journal/dices.png';
+        var hirer_name = quest.hirer ? quest.hirer.title : '';
 
         // Время старта квеста, плюс 100 лет
         var start_quest_date = new Date(quest.starttime * 1000);
@@ -388,17 +388,18 @@ var QuestJournalManager = (function () {
         if (this._selected_quest == quest) this._selected_quest = null;
 
         // Подправить скролл
-        var build = locationManager.get_building_by_node_hash(quest.hirer.node_hash);
-        if (build) {
-            var jq_build_quest_list = null;
-            if (quest.status == null)
-                jq_build_quest_list = build.jq_main_div.find('#buildingPageAvailableTasks_' + build.building_rec.name).find('.building-quest-list').first();
-            if (quest.status == 'active')
-                jq_build_quest_list = build.jq_main_div.find('#buildingPageActiveTasks_' + build.building_rec.name).find('.building-quest-list').first();
-            if (jq_build_quest_list)
-                build.resizeInventory(jq_build_quest_list);
+        if (quest.hirer) {
+            var build = locationManager.get_building_by_node_hash(quest.hirer.node_hash);
+            if (build) {
+                var jq_build_quest_list = null;
+                if (quest.status == null)
+                    jq_build_quest_list = build.jq_main_div.find('#buildingPageAvailableTasks_' + build.building_rec.name).find('.building-quest-list').first();
+                if (quest.status == 'active')
+                    jq_build_quest_list = build.jq_main_div.find('#buildingPageActiveTasks_' + build.building_rec.name).find('.building-quest-list').first();
+                if (jq_build_quest_list)
+                    build.resizeInventory(jq_build_quest_list);
+            }
         }
-
     };
 
     QuestJournalManager.prototype.redraw_quest = function(quest_id) {
@@ -420,7 +421,6 @@ var QuestJournalManager = (function () {
                     quest.jq_npc_block.click({quest_id: quest.uid, build: build}, function(event) {
                         event.data.build.set_selected_quest(event.data.quest_id);
                     });
-
                     build.resizeInventory(jq_build_quest_list);
                 }
             }
@@ -507,7 +507,6 @@ var QuestJournalManager = (function () {
         this._selected_quest = null;
         // Запустить таймер, если ещё не запущен
         if (!this._refresh_timer) this._refresh_timer = setInterval(function(){journalManager.quests.on_refresh_selected()}, 1000);
-
 
         // Добавляем "Активные" "Выполненные" "Проваленные"
         this.active_count = 0;

@@ -328,6 +328,15 @@ var ClientManager = (function () {
     ClientManager.prototype._createNote = function (note) {
         //console.log('ClientManager.prototype._createNote', note);
         switch (note.cls) {
+            case 'FirstOutNote':
+                new QuestNoteFirstOut(note);
+                break;
+            case 'VisitTrainerNote':
+                new QuestNoteVisitTrainer(note);
+                break;
+            case 'SelectTeacherNote':
+                new QuestNoteSelectTeacher(note);
+                break;
             case 'NPCDeliveryCarNote':
                 new QuestNoteNPCBtnDeliveryCar(note);
                 break;
@@ -832,7 +841,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.AgentConsoleEchoMessage = function (event){
-        console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
+        //console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
         chat.addMessageToSys(event.comment);
     };
 
@@ -2668,15 +2677,14 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
-    ClientManager.prototype.SendQuestNoteAction = function (note_uid, note_result) {
+    ClientManager.prototype.SendQuestNoteAction = function (note_uid, note_result, options) {
         //console.log('ClientManager.prototype.QuestUpdateMessage', note_uid, note_result);
+        var note_params = { uid: note_uid, result: note_result };
+        if (options) setOptions(options, note_params);
         var mes = {
             call: "quest_note_action",
             rpc_call_id: rpcCallList.getID(),
-            params: {
-                uid: note_uid,
-                result: note_result
-            }
+            params: note_params,
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);

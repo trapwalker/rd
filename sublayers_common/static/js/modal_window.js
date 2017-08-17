@@ -17,6 +17,7 @@ var ModalWindow = (function () {
         this.modalItemActivation = $('#modalItemActivationPage');
         this.modalQuickGamePoints = $('#modalQuickGamePointsPage');
         this.modalQuickGameMapTeaching = $('#modalQuickGameMapTeachingPage');
+        this.modalClassQuestFirstOut = $('#modalClassQuestFirstOutPage');
 
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
@@ -29,7 +30,7 @@ var ModalWindow = (function () {
         this.modalItemDivision.addClass('modal-window-hide');
         this.modalItemActivation.addClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-hide');
-        this.modalQuickGameMapTeaching.addClass('modal-window-hide');
+        this.modalClassQuestFirstOut.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
@@ -43,7 +44,11 @@ var ModalWindow = (function () {
             this.modalQuickGamePointsPageLoad();
             this.modalQuickGameMapTeachingPageLoad();
         }
+        else {
+            this.modalClassQuestFirstOutLoad();
+        }
     }
+
 
     ModalWindow.prototype._modalBackShow = function () {
         this.back.removeClass('modal-window-hide');
@@ -140,7 +145,6 @@ var ModalWindow = (function () {
                 // Затем закрыть текущее модельное окно
                 event.data.modal.modalWelcomeHide();
             });
-
         });
     };
 
@@ -208,7 +212,6 @@ var ModalWindow = (function () {
                 // И теперь сделать рестарт
                 window.location.reload();
             });
-
         });
 
     };
@@ -696,6 +699,75 @@ var ModalWindow = (function () {
         this.modalQuickGameMapTeaching.addClass('modal-window-hide');
         returnFocusToMap();
     };
+
+
+    ModalWindow.prototype.modalClassQuestFirstOutLoad = function () {
+        var self = this;
+        this.modalClassQuestFirstOut.load('/static/modal_window/classQuestFirstOut.html', function(){
+            var btn = self.modalClassQuestFirstOut.find('#classQuestFirstOutBtnOk');
+            btn.on('click', function(event) { self.modalClassQuestFirstOutHide(); });
+        });
+        this.modalClassQuestFirstOut.draggable({ containment: "parent" });
+    };
+
+    ModalWindow.prototype.modalClassQuestFirstOutShow = function (options) {
+        var self = this;
+        //this._modalBackShow();
+        options = options || {};
+        //// включить модальное окно modalOptions
+        this.modalClassQuestFirstOut.removeClass('modal-window-hide');
+        this.modalClassQuestFirstOut.addClass('modal-window-show');
+        this.setupWindowAtScreenCenter(this.modalClassQuestFirstOut);
+
+        var class_icon = '';
+        var text = '';
+        var text1 = 'Получено задание: ';
+        var text2 = 'Смотрите Журнал для подробностей.';
+        var add_class = '';
+        if (user.example_agent.role_class == "Избранный") {
+            text = text1 + 'Основать поселение.</br>' + text2;
+            class_icon = '/static/content/class-icons/co.png';
+            add_class = 'two_line';
+        }
+        else if (user.example_agent.role_class == "Альфа-волк") {
+            text = text1 + 'Создать клан.</br>' + text2;
+            class_icon = '/static/content/class-icons/aw.png';
+            add_class = 'two_line';
+        }
+        else if (user.example_agent.role_class == "Ночной ездок") {
+            text = text1 + 'Получить стелс-технологию.</br>' + text2;
+            class_icon = '/static/content/class-icons/nr.png';
+        }
+        else if (user.example_agent.role_class == "Нефтяной магнат") {
+            text = text1 + 'Открыть магазин.</br>' + text2;
+            class_icon = '/static/content/class-icons/om.png';
+            add_class = 'two_line';
+        }
+        else if (user.example_agent.role_class == "Воин дорог") {
+            text = text1 + 'Получить суперкар.</br>' + text2;
+            class_icon = '/static/content/class-icons/rw.png';
+            add_class = 'two_line';
+        }
+        else if (user.example_agent.role_class == "Технокинетик") {
+            text = text1 + 'Открыть сервисный центр.</br>' + text2;
+            class_icon = '/static/content/class-icons/tk.png';
+        }
+
+        this.modalClassQuestFirstOut.find('.mw_cqfo_up_block').css('background', 'transparent url("' + class_icon + '") no-repeat center');
+        this.modalClassQuestFirstOut.find('.mw_cqfo_text_block').html(text);
+        if (add_class)
+            this.modalClassQuestFirstOut.find('.mw_cqfo_text_block').css('line-height', '16px');
+        else
+            this.modalClassQuestFirstOut.find('.mw_cqfo_text_block').css('line-height', '');
+    };
+
+    ModalWindow.prototype.modalClassQuestFirstOutHide = function() {
+        this._modalBackHide();
+        this.modalClassQuestFirstOut.removeClass('modal-window-show');
+        this.modalClassQuestFirstOut.addClass('modal-window-hide');
+        returnFocusToMap();
+    };
+
 
     return ModalWindow;
 })();

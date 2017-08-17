@@ -402,13 +402,6 @@ var LocationManager = (function () {
         return this.screens[this.active_screen_name];
     };
 
-    LocationManager.prototype.get_npc_by_node_hash = function(npc_node_hash){
-        for(var key in this.npc)
-            if (this.npc.hasOwnProperty(key) && this.npc[key].npc_rec.node_hash == npc_node_hash)
-                return this.npc[key];
-        return null;
-    };
-
     LocationManager.prototype.get_building_by_node_hash = function(npc_node_hash){
         for(var key in this.buildings)
             if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head.node_hash == npc_node_hash)
@@ -420,6 +413,13 @@ var LocationManager = (function () {
         for(var key in this.buildings)
             if (this.buildings.hasOwnProperty(key) && this.buildings[key].building_rec.head[field] == value)
                 return this.buildings[key];
+        return null;
+    };
+
+    LocationManager.prototype.get_npc_by_node_hash = function(npc_node_hash){
+        for(var key in this.npc)
+            if (this.npc.hasOwnProperty(key) && this.npc[key].npc_rec.node_hash == npc_node_hash)
+                return this.npc[key];
         return null;
     };
 
@@ -985,10 +985,10 @@ var LocationPlaceBuilding = (function (_super) {
     LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
         // взять все ноты для данного нпц и вывести их сюда
         var notes = notesManager.get_notes_by_type(QuestNoteNPCBtn);
-        for (var i = 0; i < notes.length; i++) {
-            if (notes[i].npc_html_hash == this.building_rec.head.html_hash)
+        notes = notes.concat(notesManager.get_notes_by_type(QuestNoteNPCTypeBtn));
+        for (var i = 0; i < notes.length; i++)
+            if (notes[i].is_target_build(this))
                 notes[i].set_div(this, jq_center_menu, jq_center_pages);
-        }
     };
 
     // Это обработчик клика! здесь this - это не здание
