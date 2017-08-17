@@ -318,7 +318,7 @@ var LocationManager = (function () {
     };
 
     LocationManager.prototype.clickBtn = function (btnIndex) {
-        console.log('LocationManager.prototype.clickBtn', btnIndex);
+        //console.log('LocationManager.prototype.clickBtn', btnIndex);
         if($('#btn_' + btnIndex + '_noactive').css('display') == 'block') {
             return;
         }

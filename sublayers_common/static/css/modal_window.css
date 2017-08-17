@@ -1,3 +1,19 @@
+.windowDragCloseHeader-close {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    height: 14px;
+    width: 14px;
+    background: transparent url(/static/img/windows/close_cross/cross.png) 50% 50% no-repeat;
+    box-sizing: border-box;
+}
+.windowDragCloseHeader-close:hover {
+background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
+}
+.windowDragCloseHeader-close:active {
+background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
+}
+
 .modal-window-parent {
     position: absolute;
     pointer-events: none;
@@ -824,24 +840,6 @@
     border-right: 5px solid #2ffa00;
     border-bottom: 5px solid transparent;
 }
-
-.qg-pp-graphic-wrap .windowDragCloseHeader-close, .qg-mt-graphic-wrap .windowDragCloseHeader-close {
-    position: absolute;
-    right: 6px;
-    top: 6px;
-    height: 14px;
-    width: 14px;
-    background: transparent url(/static/img/windows/close_cross/cross.png) 50% 50% no-repeat;
-    box-sizing: border-box;
-}
-
-.qg-pp-graphic-wrap .windowDragCloseHeader-close:hover, .qg-mt-graphic-wrap .windowDragCloseHeader-close:hover {
-background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
-}
-.qg-pp-graphic-wrap .windowDragCloseHeader-close:active, .qg-mt-graphic-wrap .windowDragCloseHeader-close:active {
-background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
-}
-
 
 .window-records-qg-context {
     position: relative;
