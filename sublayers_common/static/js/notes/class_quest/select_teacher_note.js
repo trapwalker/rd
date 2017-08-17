@@ -6,8 +6,9 @@ var QuestNoteSelectTeacher = (function (_super) {
         else if (user.example_agent.role_class == "Альфа-волк") options.npc_type = 'mayor';
         else if (user.example_agent.role_class == "Ночной ездок") options.npc_type = 'barman';
         else if (user.example_agent.role_class == "Нефтяной магнат") options.npc_type = 'trader';
-        else if (user.example_agent.role_class == "Воин дорог") options.npc_type = 'dealer';
+        else if (user.example_agent.role_class == "Воин дорог") options.npc_type = 'hangar';
         else if (user.example_agent.role_class == "Технокинетик") options.npc_type = 'mechanic';
+        //console.log(options.npc_type);
         _super.call(this, options);
     }
 
