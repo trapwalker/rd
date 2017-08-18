@@ -278,6 +278,7 @@
         </div>
 
     </header>
+    <div class="site-sound-switch"></div>
     <div id="siteBlock">
         <div class="site-main-back"></div>
         <div class="site-main-block">
@@ -378,7 +379,6 @@
                 </div>
             </div>
         </div>
-        <div class="site-sound-switch"></div>
         {% if user_lang == 'ru' %}
         <div class="copyright-block">Все права защищены. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('en');">English version</span>.</div>
         {% else %}
@@ -393,7 +393,7 @@
 <script>
     var version = '{{ version }}';
     var all_users_registered = '{{ all_users_registered }}';
-    var GlobalGeneralSiteGain = 1.0;
+    var GlobalGeneralSiteGain = 0.0;
 
     $(document).ready(function () {
         loadLocale(main);

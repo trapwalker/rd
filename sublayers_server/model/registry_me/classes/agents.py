@@ -217,6 +217,11 @@ class AgentProfile(Node):
         ),
         errors='ignore',
     )
+    class_quest = RegistryLinkField(
+        caption=u"Прототип классового квеста",
+        document_type='sublayers_server.model.registry_me.classes.quests.class_quest.ClassQuest',
+        root_default='reg:///registry/quests/class_quest'
+    )
 
     notes = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.notes.Note'),

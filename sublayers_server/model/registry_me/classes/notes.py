@@ -72,7 +72,6 @@ class NPCPageNote(Note):
         caption=u"Целевой NPC ноты",
     )
 
-
 class NPCDeliveryNote(NPCPageNote): pass
 class NPCDeliveryNotePackage(NPCPageNote): pass
 class NPCDeliveryNoteCourier(NPCPageNote):  pass
@@ -87,9 +86,17 @@ class QuestRadiationNPCFinish(NPCPageNote): pass
 class MapActivationNoteFinish(NPCPageNote): pass
 class MapActivationRadarsNoteFinish(NPCPageNote): pass
 
+# Классовые ноты
+class FirstOutNote(Note): pass
+class NPCTypePageNote(Note):
+    page_caption = StringField(caption=u'Название кнопки у нпц', tags={'client'})
+    btn1_caption = StringField(default=u'<br>Сдать', caption=u'Текст для кнопки btn1', tags={'client'})
+    npc_type = StringField(caption=u'Тип NPC', tags={'client'})
+
+class VisitTrainerNote(NPCTypePageNote): pass
+class SelectTeacherNote(NPCTypePageNote): pass
 
 # Ноты обучения
-
 class GetQuestTeachingNote(Note):
     target_quest_uid = UUIDField(tags={'client'})
 

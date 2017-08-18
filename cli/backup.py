@@ -20,7 +20,7 @@ import shutil
 @root.group(name='backup', invoke_without_command=True)
 @click.option('--dest', '-d', 'dest', default=None, type=click.Path(file_okay=False, writable=True))
 @click.option('--save' ,'-s', 'save_server', is_flag=True, default=False, help='Backup server database')
-@click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command save')
 @click.pass_context
 def backup_command(ctx, dest, save_server, host):
     """Start service"""
@@ -45,12 +45,9 @@ def backup(db, dest, save_server, host):
     except subprocess.CalledProcessError as e:
         log.error(e)
     else:
-        try:
-            with zipfile.ZipFile(zf, 'w') as z:
-                for root, dirs, files in os.walk(fn):
-                    for file in files:
-                        z.write(os.path.join(root, file))
-        finally:
-            pass
+        with zipfile.ZipFile(zf, 'w') as z:
+            for root, dirs, files in os.walk(fn):
+                for file in files:
+                    z.write(os.path.join(root, file))
     finally:
         shutil.rmtree(fn, ignore_errors=True)

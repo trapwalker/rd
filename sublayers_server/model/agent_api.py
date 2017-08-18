@@ -955,7 +955,7 @@ class AgentAPI(API):
     # Квесты
     @call_constrains(2)
     @public_method
-    def quest_note_action(self, uid, result):
+    def quest_note_action(self, uid, result, **kw):
         self.agent.log.info('quest_note_action uid={} result={}'.format(uid, result))
         # log.info('Agent[%s] Quest Note <%s> Action: %s', self.agent, uid, result)
         # todo: найти ноту с этим ID и вызвать какую-то реакцию
@@ -969,7 +969,7 @@ class AgentAPI(API):
         server = self.agent.server
 
         for q in self.agent.example.profile.quests_active:
-            OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result).post()
+            OnNote(server=server, time=server.get_time(), quest=q, note_uid=uid, result=result, **kw).post()
 
     @call_constrains(3)
     @public_method

@@ -51,6 +51,10 @@ var QuestNoteNPCBtn = (function (_super) {
         }
     }
 
+    QuestNoteNPCBtn.prototype.is_target_build = function(build) {
+        return this.npc_html_hash == build.building_rec.head.html_hash;
+    };
+
     // вызываются тольо когда нота пришла когда клиент уже был в городе
     QuestNoteNPCBtn.prototype.bind_with_build = function (build) {
         this.set_div(

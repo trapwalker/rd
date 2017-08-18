@@ -645,6 +645,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     top: 20px;
     background: transparent url(/static/static_site/img/site_sound_btn/sound_on_normal.png) no-repeat 100% 100%;
     cursor: url('/static/img/cursors/hyper.png'), pointer;
+    z-index: 1000;
 }
 
 .site-sound-switch:hover {

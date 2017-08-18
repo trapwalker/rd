@@ -82,6 +82,16 @@ class MapLocation(Observer):
         while for_del_quests:
             agent_profile.del_quest(quest=for_del_quests.pop(), time=event.time)
 
+        # Генерация классового квеста
+        if agent_profile.class_quest:
+            new_quest = agent_profile.class_quest.instantiate(abstract=False)
+            if new_quest.generate(event=event, agent=agent.example):
+                agent.example.profile.add_quest(quest=new_quest, time=event.time)
+                new_quest.start(server=event.server, time=event.time + 0.1)
+                agent_profile.class_quest = None
+            else:
+                del new_quest
+
         # Сгенерировать квесты для этого города
         for head, quests in self._cache_head_quests.iteritems():
             for quest in quests:

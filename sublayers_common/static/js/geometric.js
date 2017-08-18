@@ -281,7 +281,6 @@ function getQuickUserLogin(login) {
     return parts.join('_');
 }
 
-
 function convertKeyCodeToString(keycode) {
     if (keycode == 0 || keycode == 8)  // Сброс || Backspace
         return "";
@@ -332,7 +331,6 @@ function convertKeyCodeToString(keycode) {
 
     return null;
 }
-
 
 function hash_code(str) {
     var hash = 0, i, chr;

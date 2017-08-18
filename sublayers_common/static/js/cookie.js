@@ -290,7 +290,13 @@ var SettingsManager = (function() {
             set_callback: function(new_value) {
                 WCanvasNicknameMarker.prototype.light_time = new_value;
             },
-            init: function() {WCanvasNicknameMarker.prototype.light_time = settingsManager.options.show_nickname.value = settingsManager.options.show_nickname.currentValue = parseInt(settingsManager.options.show_nickname.currentValue);}
+            init: function() {
+                if (window.WCanvasNicknameMarker)
+                    WCanvasNicknameMarker.prototype.light_time = settingsManager.options.show_nickname.value = settingsManager.options.show_nickname.currentValue = parseInt(settingsManager.options.show_nickname.currentValue);
+                else
+                    setTimeout(settingsManager.options.show_nickname.init, 10);
+
+            }
         },
         /* Настройка управления */
         move_forvard: {

@@ -444,7 +444,7 @@ var WCanvasCarMarker = (function (_super) {
 
         this.icon_obj_focused = iconsLeaflet.getIcon("icon_car_focused");
 
-        this.icon_size_min_div_2 = Math.min(this.icon_obj.iconSize[0], this.icon_obj.iconSize[1]) >> 1;
+        this.icon_size_min_div_2 = (Math.min(this.icon_obj.iconSize[0], this.icon_obj.iconSize[1]) >> 1) * 0.6;
 
         // Обновить никнейм
         this.update_nickname();
@@ -673,14 +673,17 @@ var WCanvasLootMarker = (function (_super) {
         //console.log('WCanvasStaticTownMarker.prototype.updateIcon');
         // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
         this.cm_z_index = 10;
+        var corpse_radiance_koeff = 1.0;  // Если это будет труп машинки, а не лут, то радиус клика нужно уменьшить
         if (this.mobj.cls == "POICorpse") {
             var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
             this.icon_backlight = iconsLeaflet.getIcon("icon_corpse_backlight");
+            corpse_radiance_koeff = 0.6;
         }
         else {
             this.icon_obj = iconsLeaflet.getIcon("icon_loot");
             this.icon_backlight = iconsLeaflet.getIcon("icon_loot_backlight");
+            corpse_radiance_koeff = 1.3;
         }
         if (! this.icon_obj) return;
         this.duration = 1000;
@@ -691,7 +694,7 @@ var WCanvasLootMarker = (function (_super) {
         this.offset_x = -0.5; // Множитель сдвига кадра по оси Х (размер кадра умножается на это число)
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
-        this.icon_size_min_div_2 = Math.min(this.frame_width, this.frame_height) >> 1;
+        this.icon_size_min_div_2 = (Math.min(this.frame_width, this.frame_height) >> 1) * corpse_radiance_koeff;
 
 
     };
@@ -736,6 +739,21 @@ var WCanvasNicknameMarker = (function (_super) {
         _super.call(this, mobj, w_car_marker);
         this.obj_id = mobj.ID;
         this.w_car_marker = w_car_marker;
+
+        this.def_font_height_px = 6;
+        this._nickname = "";
+        this.def_info_label = ' @';
+
+        // Инициализация параметров отрисовки текста и расчёта клика
+        this._text_height = this.def_font_height_px; // Высота зависит от размера шрифта
+        this._text_width_half = 0;  // Половина от полной ширины текста (так удобнее считать)
+
+        this._offset = new Point(0, -15);
+        this._font = "8pt MICRADI";
+
+        this._text_width_x_path = 0;  // Максимальный (левый! имено левый) Х при mouse_test
+        this.ctx_text_params = false;
+
         this.set_nickname(nickname);
 
         this.last_draw = false;
@@ -744,10 +762,18 @@ var WCanvasNicknameMarker = (function (_super) {
 
     WCanvasNicknameMarker.prototype.set_nickname = function (nickname) {
         this._nickname = nickname || this.mobj._agent_login || "";
+        this._nickname = this._nickname + this.def_info_label;
         this._offset = new Point(0, -15);
         this._font = "8pt MICRADI";
-        this._text_height = 8; // Высота зависит от размера шрифта
-        this._text_width = 8 * this._nickname.length; // Ширина также зависит от размера шрифта
+        this._text_height = this.def_font_height_px; // Высота зависит от размера шрифта
+        this.ctx_text_params = false;
+    };
+
+    WCanvasNicknameMarker.prototype.set_clickable_params = function (width, info_width) {
+        // console.log('WCanvasNicknameMarker.prototype.set_clickable_params', width, info_width);
+        this._text_width_half = width / 2.; // Ширина также зависит от размера шрифта
+        this._text_width_x_path = -this._text_width_half + info_width;
+        this.ctx_text_params = true;
     };
 
     WCanvasNicknameMarker.prototype.redraw = function(ctx, time, client_time){
@@ -776,16 +802,22 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = this._font;
-        ctx.fillStyle = focused ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
+        ctx.fillStyle = (focused || focused_marker) ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
         ctx.fillText(this._nickname, 0, 0);
+        if (!this.ctx_text_params) {  // Если ещё не измеряли длину текста
+            this.set_clickable_params(ctx.measureText(this._nickname).width, ctx.measureText(this.def_info_label).width);
+        }
+
         ctx.restore();
     };
 
     WCanvasNicknameMarker.prototype.mouse_test = function(time) {
         //console.log('WCanvasMarker.prototype.mouse_test');
-        if(! this.last_draw) return false;
+        if(! this.last_draw || !this.ctx_text_params) return false;
         var distance = subVector(this._last_mobj_ctx_pos, mapCanvasManager._mouse_client);
-        return Math.abs(distance.x) < this._text_width && Math.abs(distance.y) < this._text_height;
+        var y_path = Math.abs(distance.y) < this._text_height;
+        var x_path = Math.abs(distance.x) < this._text_width_half && distance.x < this._text_width_x_path;
+        return x_path && y_path;
     };
 
     WCanvasNicknameMarker.prototype.updateIcon = function () {
