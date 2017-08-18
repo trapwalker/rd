@@ -694,6 +694,17 @@ var SettingsManager = (function() {
             currentValue: 0,
             list_values: [{text: "Медленно", value: 0.2}, {text: "Нормально", value: 0.5}, {text: "Быстро", value: 1}, {text: "Очень быстро", value: 2}],
             set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
+            init: function() {
+                if (window.mapManager)
+                    mapManager.zoom_wheel_step =
+                        settingsManager.options.zoom_step_value.value =
+                        settingsManager.options.zoom_step_value.currentValue =
+                        parseFloat(settingsManager.options.zoom_step_value.currentValue) ||
+                        settingsManager.options.zoom_step_value.default;
+                else
+                    setTimeout(settingsManager.options.zoom_step_value.init, 10);
+
+            }
         },
         rotate_fire_sectors: {
             name: "rotate_fire_sectors",
