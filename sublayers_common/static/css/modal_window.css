@@ -1,3 +1,19 @@
+.windowDragCloseHeader-close {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    height: 14px;
+    width: 14px;
+    background: transparent url(/static/img/windows/close_cross/cross.png) 50% 50% no-repeat;
+    box-sizing: border-box;
+}
+.windowDragCloseHeader-close:hover {
+background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
+}
+.windowDragCloseHeader-close:active {
+background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
+}
+
 .modal-window-parent {
     position: absolute;
     pointer-events: none;
@@ -825,24 +841,6 @@
     border-bottom: 5px solid transparent;
 }
 
-.qg-pp-graphic-wrap .windowDragCloseHeader-close, .qg-mt-graphic-wrap .windowDragCloseHeader-close {
-    position: absolute;
-    right: 6px;
-    top: 6px;
-    height: 14px;
-    width: 14px;
-    background: transparent url(/static/img/windows/close_cross/cross.png) 50% 50% no-repeat;
-    box-sizing: border-box;
-}
-
-.qg-pp-graphic-wrap .windowDragCloseHeader-close:hover, .qg-mt-graphic-wrap .windowDragCloseHeader-close:hover {
-background: transparent url('/static/img/windows/close_cross/cross_over.png') 50% 50% no-repeat;
-}
-.qg-pp-graphic-wrap .windowDragCloseHeader-close:active, .qg-mt-graphic-wrap .windowDragCloseHeader-close:active {
-background: transparent url('/static/img/windows/close_cross/cross_pressed.png') 50% 50% no-repeat;
-}
-
-
 .window-records-qg-context {
     position: relative;
     float: left;
@@ -1043,7 +1041,6 @@ background: transparent url('/static/img/windows/close_cross/cross_pressed.png')
 }
 #quickGameMapTeachingPageBtnOK:hover, #quickGameMapTeachingPageBtnCancel:hover { background-color: #0c4b00; color: #2ffa00; border-color: #31c811; }
 
-
 /* Окно активации итемов */
 
 #modalItemActivationPage {
@@ -1096,3 +1093,47 @@ background: transparent url('/static/img/windows/close_cross/cross_pressed.png')
     box-sizing: border-box;
 }
 
+/* Окно начала классового квеста */
+
+#modalClassQuestFirstOutPage {
+    position: absolute;
+    width: 294px;
+    height: 314px;
+}
+#modalClassQuestFirstOutPage .modal-window-wrap { padding: 0; height: calc(100% - 26px - 6px); }
+
+.mw_cqfo_up_block_wrap {
+    position: relative;
+    width: 282px;
+    height: 177px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
+    border-image-slice: 1;
+    box-sizing: border-box;
+}
+
+.mw_cqfo_up_block {
+    position: absolute;
+    top: 2px;
+    width: 100%;
+    height: 170px;
+}
+
+.mw_cqfo_text_block {
+    position: relative;
+    width: 100%;
+    height: 55px;
+    padding-top: 10px;
+    box-sizing: border-box;
+    font-size: 13px;
+}
+.mw_cqfo_text_block.two-line { line-height: 16px; }
+
+.mw_cqfo_bottom_block {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    padding-top: 6px;
+    box-sizing: border-box;
+}
