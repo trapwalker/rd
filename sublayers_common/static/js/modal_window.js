@@ -31,6 +31,7 @@ var ModalWindow = (function () {
         this.modalItemActivation.addClass('modal-window-hide');
         this.modalQuickGamePoints.addClass('modal-window-hide');
         this.modalClassQuestFirstOut.addClass('modal-window-hide');
+        this.modalQuickGameMapTeaching.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
         this.modalWelcomeLoad();
