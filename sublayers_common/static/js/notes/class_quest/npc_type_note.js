@@ -125,5 +125,9 @@ var QuestNoteNPCTypeBtn = (function (_super) {
         _super.prototype.delete.call(this);
     };
 
+    QuestNoteNPCTypeBtn.prototype.get_head_text = function() {
+        return null;
+    };
+
     return QuestNoteNPCTypeBtn;
 })(SimpleNote);

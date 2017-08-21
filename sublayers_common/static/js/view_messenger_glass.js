@@ -449,12 +449,13 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype._resizePageControl = function(jq_list) {
-        //console.log('ViewMessengerGlass.prototype._resizePageControl');
+        //console.log('ViewMessengerGlass.prototype._resizePageControl', jq_list);
         var width = 10;
         if (jq_list) {
             jq_list.children().each(function (index, element) {
                 if ($(element).css('display') == 'block')
                     width += $(element).outerWidth(true);
+                console.log($(element).text());
             });
             var jq_parent = jq_list.parent();
             var jq_parent_parent = jq_parent.parent();
@@ -504,6 +505,8 @@ var ViewMessengerGlass = (function () {
         this.page_global.chatArea.append(chat.chatArea);
         this.page_global.pageControl.append(chat.pageButton);
 
+        // Вот такая вот хуйня малята
+        this._resizePageControl(this.page_global.pageControl);
         this._resizePageControl(this.page_global.pageControl);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
@@ -584,6 +587,9 @@ var ViewMessengerGlass = (function () {
         // отключить клик, удалить вкладку
         chat.pageButton.off('click', this.clickForPageButton);
         chat.pageButton.remove();
+
+        // Вот такая вот хуйня малята
+        this._resizePageControl(this.page_global.pageControl);
         this._resizePageControl(this.page_global.pageControl);
 
         // сделать сплайс по данному chat
