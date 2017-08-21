@@ -131,7 +131,7 @@ class Email(object):
 
     def send(self, sender=None):
         if sender is None:
-            log.warning(u"FAIL to send {self} because sender is not defined".format(self))
+            log.warning(u"FAIL to send {self} because sender is not defined".format(self=self))
             return
             #raise EmailSendingError("Can't send email")
         return sender.send(self)

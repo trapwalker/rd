@@ -38,7 +38,7 @@
         $(this).find('.inventoryFilterChecker').text('[x]');
         $(this).addClass('activateFilter');
         // вызов фильтрации
-        inventoryList.showInvByFilter({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
+        inventoryList.showInvByFilter("{{ car_id }}", $('#mainCarInfoWindow-body-trunk_id'), $(this).data('filter'));
     });
 
     // Обработка нажатия на крестик (закрытие окна)
@@ -49,5 +49,5 @@
 {#    });#}
 
     // Запрашиваем инвентарь
-    inventoryList.showInventory({{ car_id }}, $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
+    inventoryList.showInventory("{{ car_id }}", $('#mainCarInfoWindow-body-trunk_id').find('.inventory-{{ car_id }}').first())
 </script>
