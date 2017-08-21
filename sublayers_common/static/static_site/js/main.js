@@ -657,6 +657,10 @@ function GetRPGInfo() {
                 role_class_container.append(d);
                 d.css('background-image', 'url(' + role_class_list_info[i].icon + ')');
             }
+
+            // Вызов функций установки классов и аватаров
+            SetCurrentAvatar();
+            SetCurrentClass();
         }
     });
 }
