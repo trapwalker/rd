@@ -358,10 +358,11 @@ var LocationManager = (function () {
                 });
             }
         }
-        if (this.screens[this.active_screen_name])
-            this.screens[this.active_screen_name].clickBtn(btnIndex);
-        else if ((btnIndex == 1) && (locationManager.dump)) locationManager.dump.activate();
-
+        else {
+            if (this.screens[this.active_screen_name])
+                this.screens[this.active_screen_name].clickBtn(btnIndex);
+            else if ((btnIndex == 1) && (locationManager.dump)) locationManager.dump.activate();
+        }
     };
 
     LocationManager.prototype.update = function () {

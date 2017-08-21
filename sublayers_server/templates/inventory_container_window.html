@@ -11,7 +11,7 @@
             <div class="containerInventoryWindow-inventory-header">Контейнер</div>
             <div class="containerInventoryWindow-inventory-body other inventory-{{ container_id }}" data-other_id="{{ car_id }}"></div>
             <div class="containerInventoryWindow-inventory-footer">
-                <div class="take-all-btn" onclick="clientManager.sendTakeAllInventory({{ container_id }})">Взять всё</div>
+                <div class="take-all-btn" onclick="clientManager.sendTakeAllInventory("{{ container_id }}")">Взять всё</div>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
 <script>
     // Запрашиваем инвентарь
     var jq_inventory_1 = $('#containerInventoryWindow-id-car-{{ car_id }}-{{ container_id }}').find('.inventory-{{ car_id }}').first();
-    inventoryList.showInventory({{ car_id }}, jq_inventory_1);
+    inventoryList.showInventory("{{ car_id }}", jq_inventory_1);
     var jq_inventory_2 = $('#containerInventoryWindow-id-container-{{ container_id }}').find('.inventory-{{ container_id }}').first();
-    inventoryList.showInventory({{ container_id }}, jq_inventory_2);
+    inventoryList.showInventory("{{ container_id }}", jq_inventory_2);
 </script>
