@@ -13,6 +13,8 @@ var LocationPlaceChat = (function (_super) {
         //console.log('LocationPlaceChat.prototype.activate', this.jq_main_div);
         _super.prototype.activate.call(this);
         $('#landscape').css('display', 'block');
+
+        // Вот такая вот хуйня малята
         chat._resizePageControl(chat.page_global.pageControl);
         chat._resizePageControl(chat.page_global.pageControl);
     };
