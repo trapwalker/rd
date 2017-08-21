@@ -29,7 +29,7 @@ class Object(object):
         super(Object, self).__init__()
         self.server = server
         """@type: sublayers_server.model.event_machine.Server"""
-        uid = self.uid = self.id = id(self) #str(get_uid())
+        uid = self.uid = self.id = get_uid().hex  # id(self) #
         _all_ids_ever = Object._all_ids_ever
         if uid in _all_ids_ever:
             log.warning('Reuse Object.UID %s in %s', uid, self.__class__.__name__)
