@@ -123,6 +123,10 @@ var QuestNoteNPCBtn = (function (_super) {
         _super.prototype.delete.call(this);
     };
 
+    QuestNoteNPCBtn.prototype.get_head_text = function() {
+        return null;
+    };
+
     return QuestNoteNPCBtn;
 })(SimpleNote);
 
