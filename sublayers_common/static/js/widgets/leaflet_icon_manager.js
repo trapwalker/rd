@@ -105,6 +105,8 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_dead_van', '/static/img/char_icons/dead/van.png', [53, 53]);
 
         this.load_new_icon('icon_car_focused', '/static/img/char_icons/focused.png', [53, 53]);
+        this.load_new_icon('icon_car_info', '/static/img/char_icons/info.png', [18, 18]);
+
         // Ракета
         this.load_new_icon('icon-rocket-small', '/static/img/map_icons/transport/rocket.png', [26, 26], 5);
         this.load_new_icon('icon-rocket', '/static/img/map_icons/transport/rocket_2.png', [26, 26], 5);

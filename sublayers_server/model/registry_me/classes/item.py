@@ -262,26 +262,27 @@ class MechanicItem(SlotItem):
     def html_description(self):
         result = '<br>'
         attr_name_list = dict(
-            p_visibility_min=u'Мин. заметность',
-            p_visibility_max=u'Макс. заметность',
-            p_observing_range=u'Радиус обзора',
-            max_hp=u'HP',
-            r_min=u'Маневренность',
-            ac_max=u'Контроль',
-            v_forward=u'Макс. скорость',
-            v_backward=u'Макс. скорость назад',
-            a_forward=u'Динамика разгона',
-            a_backward=u'Динамика задн. хода',
-            a_braking=u'Торможение',
-            max_fuel=u'Бак',
-            p_fuel_rate=u'Расход топлива',
+            p_visibility_min=dict(name=u'Мин. заметность', mul=1.0),
+            p_visibility_max=dict(name=u'Макс. заметность', mul=1.0),
+            p_observing_range=dict(name=u'Радиус обзора', mul=1.0),
+            max_hp=dict(name=u'HP', mul=1.0),
+            r_min=dict(name=u'Маневренность', mul=-1.0),
+            ac_max=dict(name=u'Контроль', mul=1.0),
+            v_forward=dict(name=u'Макс. скорость', mul=1.0),
+            v_backward=dict(name=u'Макс. скорость назад', mul=-1.0),
+            a_forward=dict(name=u'Динамика разгона', mul=1.0),
+            a_backward=dict(name=u'Динамика задн. хода', mul=-1.0),
+            a_braking=dict(name=u'Торможение', mul=-1.0),
+            max_fuel=dict(name=u'Бак', mul=1.0),
+            p_fuel_rate=dict(name=u'Расход топлива', mul=1.0),
         )
         for attr_name in attr_name_list.keys():
             attr_value = getattr(self, attr_name, None)
             if attr_value:
-                attr_str = attr_name_list[attr_name]
+                attr_str = attr_name_list[attr_name]["name"]
                 attr_value *= 100
-                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{:.1f}%</div>'.format(attr_str, attr_value)
+                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{:.1f}%</div>'.format(attr_str, attr_value * attr_name_list[attr_name]["mul"])
+
         return result
 
 
