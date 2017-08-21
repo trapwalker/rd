@@ -182,7 +182,7 @@ input:focus {
 }
 
 .sublayers-clickable, .leaflet-clickable {
-    cursor: url('/static/img/cursors/hyper.png'), pointer;
+    cursor: url('/static/img/cursors/hyper.png') 6 0, pointer;
 }
 
 .sublayers-unclickable {
