@@ -59,10 +59,10 @@
 
 <script>
     // Запрашиваем инвентарь
-    inventoryList.showInventory({{ inv_id }}, $('#barterInventoryWindow-id-car-{{ barter.id }}')
+    inventoryList.showInventory("{{ inv_id }}", $('#barterInventoryWindow-id-car-{{ barter.id }}')
             .find('.inventory-{{ inv_id }}').first());
-    inventoryList.showInventory({{ my_table_id }}, $('#barterInventoryWindow-id-my-table-{{ barter.id }}'));
-    inventoryList.showInventory({{ other_table_id }}, $('#barterInventoryWindow-id-another-table-{{ barter.id }}'));
+    inventoryList.showInventory("{{ my_table_id }}", $('#barterInventoryWindow-id-my-table-{{ barter.id }}'));
+    inventoryList.showInventory("{{ other_table_id }}", $('#barterInventoryWindow-id-another-table-{{ barter.id }}'));
 
     // "Подтвердить сделку"
     $('#barterInventoryWindow-apply-button-{{ barter.id }}').click(function(event) {

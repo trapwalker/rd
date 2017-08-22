@@ -452,7 +452,10 @@ var QuestJournalManager = (function () {
             if (jq_current_group) {
                 // Добавляем квест в меню
                 quest.jq_journal_menu = this._create_menu_quest(quest, quest_id);
-                jq_current_group.find('.journal-menu-list').first().append(quest.jq_journal_menu);
+                if (quest.html_hash == "reg--registry-quests-delivery_quest-teaching")
+                    jq_current_group.find('.journal-menu-list').first().prepend(quest.jq_journal_menu);
+                else
+                    jq_current_group.find('.journal-menu-list').first().append(quest.jq_journal_menu);
 
                 // Добавляем инфоблок квеста
                 quest.jq_journal_info = this._create_quest_info_block(quest);

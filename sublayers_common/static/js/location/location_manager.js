@@ -358,10 +358,11 @@ var LocationManager = (function () {
                 });
             }
         }
-        if (this.screens[this.active_screen_name])
-            this.screens[this.active_screen_name].clickBtn(btnIndex);
-        else if ((btnIndex == 1) && (locationManager.dump)) locationManager.dump.activate();
-
+        else {
+            if (this.screens[this.active_screen_name])
+                this.screens[this.active_screen_name].clickBtn(btnIndex);
+            else if ((btnIndex == 1) && (locationManager.dump)) locationManager.dump.activate();
+        }
     };
 
     LocationManager.prototype.update = function () {
@@ -894,6 +895,11 @@ var LocationPlaceBuilding = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
 
         if (!html_text) {
+            var note = this.get_active_note();
+            if (note)
+                html_text = note.get_head_text();
+        }
+        if (!html_text) {
             var quest_info = journalManager.quests.getCountQuestsByNPC(this.building_rec.head.node_hash);
             var npc = this.building_rec.head;
             switch (this.building_rec.name) {
@@ -1038,14 +1044,12 @@ var LocationPlaceBuilding = (function (_super) {
         //    $('#' + page_id).find('.building-quest-list-item').first().click();
         //else
 
-
         // Если эта страница-нота
         var note = this.get_active_note();
         if (note) {
             note.activate();
         }else {
-           if (this.selected_quest)
-            this.set_selected_quest(null);
+            if (this.selected_quest) this.set_selected_quest(null);
         }
 
         // сделать обязательно, так как мы  перешли в новое состояние

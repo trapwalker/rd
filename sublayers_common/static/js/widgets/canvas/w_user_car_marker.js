@@ -333,10 +333,6 @@ var WCanvasCarMarker = (function (_super) {
             ctx.restore(); // Возврат после поворота
         }
 
-        if (focused && this.icon_obj_focused && mobj != user.userCar) {
-            ctx.drawImage(this.icon_obj_focused.img, -this.icon_obj_focused.iconSize[0] >> 1, -this.icon_obj_focused.iconSize[1] >> 1);
-        }
-
         ctx.restore();  // Возврат транслейта
 
         this.post_redraw(ctx, time, client_time);
@@ -736,43 +732,45 @@ var WCanvasNicknameMarker = (function (_super) {
     WCanvasNicknameMarker.prototype.light_time = 500;
 
     function WCanvasNicknameMarker(mobj, w_car_marker, nickname) {
+        // Инициализация кнопки info
+        this.btn_info_icon = "";
+        this.btn_info_width = 0;
+        this.btn_info_height = 0;
+        // Инициализация параметров отрисовки текста и расчёта клика
+        this._icon_height_half = 0; // Половина от высоты - зависит от высоты иконки
+        this._text_width_half = 0;  // Половина от полной ширины текста (так удобнее считать)
+
         _super.call(this, mobj, w_car_marker);
+
         this.obj_id = mobj.ID;
         this.w_car_marker = w_car_marker;
 
-        this.def_font_height_px = 6;
         this._nickname = "";
-        this.def_info_label = ' @';
-
-        // Инициализация параметров отрисовки текста и расчёта клика
-        this._text_height = this.def_font_height_px; // Высота зависит от размера шрифта
-        this._text_width_half = 0;  // Половина от полной ширины текста (так удобнее считать)
 
         this._offset = new Point(0, -15);
         this._font = "8pt MICRADI";
 
         this._text_width_x_path = 0;  // Максимальный (левый! имено левый) Х при mouse_test
-        this.ctx_text_params = false;
+        this.ctx_text_params = false;  // Флаг инициализации ширины текста
 
         this.set_nickname(nickname);
 
-        this.last_draw = false;
+        this.last_draw = false;  // Флаг, что в послднем цикле была отрисовка (нужно для mouse_test
         this.last_focused_marker_time = 0;  // Время, когда в фокусе последний раз был маркер или ник
     }
 
     WCanvasNicknameMarker.prototype.set_nickname = function (nickname) {
         this._nickname = nickname || this.mobj._agent_login || "";
-        this._nickname = this._nickname + this.def_info_label;
+        this._nickname = this._nickname + " ";
         this._offset = new Point(0, -15);
         this._font = "8pt MICRADI";
-        this._text_height = this.def_font_height_px; // Высота зависит от размера шрифта
         this.ctx_text_params = false;
     };
 
-    WCanvasNicknameMarker.prototype.set_clickable_params = function (width, info_width) {
+    WCanvasNicknameMarker.prototype.set_clickable_params = function (width) {
         // console.log('WCanvasNicknameMarker.prototype.set_clickable_params', width, info_width);
         this._text_width_half = width / 2.; // Ширина также зависит от размера шрифта
-        this._text_width_x_path = -this._text_width_half + info_width;
+        this._text_width_x_path = this._text_width_half + this.btn_info_width;
         this.ctx_text_params = true;
     };
 
@@ -792,10 +790,9 @@ var WCanvasNicknameMarker = (function (_super) {
             }
         this.last_draw = true;
 
-
         ctx.save();
         var ctx_car_pos = summVector(this.w_car_marker._last_car_ctx_pos || this.w_car_marker._last_mobj_ctx_pos, this._offset);
-        ctx.translate(ctx_car_pos.x, ctx_car_pos.y - 3);
+        ctx.translate(ctx_car_pos.x, ctx_car_pos.y - 3.);
         this._last_mobj_ctx_pos = ctx_car_pos;
         this._last_mobj_position = this.w_car_marker._last_mobj_position;
         // Вывод лейбла
@@ -804,9 +801,17 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.font = this._font;
         ctx.fillStyle = (focused || focused_marker) ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
         ctx.fillText(this._nickname, 0, 0);
-        if (!this.ctx_text_params) {  // Если ещё не измеряли длину текста
-            this.set_clickable_params(ctx.measureText(this._nickname).width, ctx.measureText(this.def_info_label).width);
-        }
+
+        if (!this.ctx_text_params)  // Если ещё не измеряли длину текста
+            this.set_clickable_params(ctx.measureText(this._nickname).width);
+
+        // Отрисовать кнопку info
+        if (this.btn_info_icon)
+            //ctx.drawImage(this.btn_info_icon.img, this._text_width_half, -this._icon_height_half);
+            ctx.drawImage(this.btn_info_icon.img, 0, 0,
+                this.btn_info_width, this.btn_info_height,
+                this._text_width_half, -this._icon_height_half,
+                this.btn_info_width, this.btn_info_height);
 
         ctx.restore();
     };
@@ -814,9 +819,10 @@ var WCanvasNicknameMarker = (function (_super) {
     WCanvasNicknameMarker.prototype.mouse_test = function(time) {
         //console.log('WCanvasMarker.prototype.mouse_test');
         if(! this.last_draw || !this.ctx_text_params) return false;
-        var distance = subVector(this._last_mobj_ctx_pos, mapCanvasManager._mouse_client);
-        var y_path = Math.abs(distance.y) < this._text_height;
-        var x_path = Math.abs(distance.x) < this._text_width_half && distance.x < this._text_width_x_path;
+        var distance = subVector(mapCanvasManager._mouse_client, this._last_mobj_ctx_pos);
+        var y_path = Math.abs(distance.y) <= this._icon_height_half;
+        var abs_x = Math.abs(distance.x);
+        var x_path = abs_x >= this._text_width_half && abs_x <= this._text_width_x_path;
         return x_path && y_path;
     };
 
@@ -824,6 +830,12 @@ var WCanvasNicknameMarker = (function (_super) {
         //console.log('WCanvasNicknameMarker.prototype.updateIcon');
         // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
         this.cm_z_index = 9;
+        this.btn_info_icon = iconsLeaflet.getIcon("icon_car_info");
+        if (this.btn_info_icon) {
+            this.btn_info_width = this.btn_info_icon.size[0];
+            this.btn_info_height = this.btn_info_icon.size[1];
+            this._icon_height_half = this.btn_info_height / 2.;
+        }
     };
 
     WCanvasNicknameMarker.prototype.click_handler = function(event) {
