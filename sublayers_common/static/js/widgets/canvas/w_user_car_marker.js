@@ -776,7 +776,7 @@ var WCanvasNicknameMarker = (function (_super) {
 
     WCanvasNicknameMarker.prototype.redraw = function(ctx, time, client_time){
         //console.log('WCanvasNicknameMarker.prototype.redraw', time);
-        if (!this._nickname) return;
+        if (!this._nickname || this._nickname.length < 2.) return;
         var focused = mapCanvasManager._mouse_focus_widget == this;
         var focused_marker = mapCanvasManager._mouse_focus_widget == this.w_car_marker;
         if (this.light_time)

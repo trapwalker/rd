@@ -68,7 +68,7 @@ class PersonInfoCorpseHandler(BaseHandler):
         container_id = self.get_argument("container_id")
         container = None
         if container_id:
-            container = self.application.srv.objects.get(long(container_id))
+            container = self.application.srv.objects.get(container_id)
         if container is None or not isinstance(container, POICorpse) or not container.agent_donor:
             self.send_error(status_code=404)
             return
