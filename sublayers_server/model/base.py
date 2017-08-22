@@ -3,7 +3,6 @@
 import logging
 log = logging.getLogger(__name__)
 
-# from utils import get_uid, serialize
 from sublayers_server.model import messages
 from sublayers_server.model.events import Init, Delete, Save
 from sublayers_server.model.parameters import Parameter
