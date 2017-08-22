@@ -46,7 +46,7 @@ var QuestNoteSelectTeacher = (function (_super) {
             var relation = locationManager.get_relation(curr_place.building_rec.head.node_hash);
             if (relation < 0.5)
                 result = $(
-                        '<div>Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как' +
+                        '<div>Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как ' +
                         'минимум в 75, дальнейшего разговора не будет.</br> Отношение можно повысить ' +
                         'близостью в карме и выполнением моих заданий.</div>'
                 );

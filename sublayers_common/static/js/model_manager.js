@@ -2641,7 +2641,7 @@ var ClientManager = (function () {
 
     // Teleport
     ClientManager.prototype.sendTeleportCoord = function(x, y) {
-        console.log('ClientManager.prototype.sendTeleportCoord', x, y);
+        // console.log('ClientManager.prototype.sendTeleportCoord', x, y);
         var mes = {
             call: "teleport",
             rpc_call_id: rpcCallList.getID(),

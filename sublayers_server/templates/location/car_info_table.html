@@ -1,7 +1,7 @@
 {% try %}
   {% set car_info_table_agent = agent.example %}
 {% except %}
-    {% set car_info_table_agent = None %}
+  {% set car_info_table_agent = None %}
 {% end %}
 
 {% if car_info_table_agent %}
@@ -16,6 +16,17 @@
     {% set v_value = round(car.get_modify_value(param_name='v_forward', example_agent=None) * 3.6) %}
     {% set str_value = "{}".format(int(v_value)) %}
 {% end %}
+
+{% set p_cc = car.v_forward / car.max_control_speed %}
+{% set p_cc_dirt = p_cc - p_cc * car.m_cc_dirt * (1.0 - car.r_cc_dirt) %}
+{% set value_v_dirt =  round(car.max_control_speed * p_cc_dirt * 3.6) %}
+{% set str_v_dirt = "{}".format(int(value_v_dirt)) %}
+{% set value_v_wood = round(car.max_control_speed * (p_cc_dirt - p_cc * car.m_cc_wood * (1.0 - car.r_cc_wood)) * 3.6) %}
+{% set str_v_wood = "{}".format(int(value_v_wood)) %}
+{% set value_v_slope = round(car.max_control_speed * (p_cc_dirt - p_cc * car.m_cc_slope * (1.0 - car.r_cc_slope)) * 3.6) %}
+{% set str_v_slope = "{}".format(int(value_v_slope)) %}
+{% set value_v_water = round(car.max_control_speed * (p_cc_dirt - p_cc * car.m_cc_water * (1.0 - car.r_cc_water)) * 3.6) %}
+{% set str_v_water = "{}".format(int(value_v_water)) %}
 
 <div class="car-info-block-info">
     <div class="car-info-block-body-right-menu">
@@ -42,18 +53,15 @@
         <div class="car-info-block-body-right-list-text value uneven">{{ car.p_fuel_rate }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbspНавык вождения:</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.needed_driving }}</div>
-        <div class="car-info-block-body-right-list-bonuses">Бонусы местности:</div>
-        <!--<div class="mainCarInfoWindow-body-right-list-model-road">&nbspДорога:</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-road-value">Максимальная скорость</div>-->
-        <div class="car-info-block-body-right-list-bonuses">Пенальти местности:</div>
-        <!--<div class="mainCarInfoWindow-body-right-list-model-forest">&nbspЛес:</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-forest-value">Максимальная скорость</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-hill">&nbspХолмы:</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-hill-value">-</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-water">&nbspВода:</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-water-value">Невозможно</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-mountain">&nbspГоры:</div>-->
-        <!--<div class="mainCarInfoWindow-body-right-list-model-mountain-value">Невозможно</div>-->
+        <div class="car-info-block-body-right-list-bonuses">Скорсть на местности:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbspБездорожье:</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ str_v_dirt }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspЛес:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ str_v_wood }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbspГористость:</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ str_v_slope }}</div>
+        <div class="car-info-block-body-right-list-text name even">&nbspБолото:</div>
+        <div class="car-info-block-body-right-list-text value even">{{ str_v_water }}</div>
     </div>
     <div class="car-info-block-body-right-list ammo">
         {% for k, v in car.iter_slots(tags='armorer') %}
