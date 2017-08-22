@@ -63,8 +63,8 @@ class RandomizeExamples(object):
         if weapons:
             if isinstance(weapons[0], basestring) or isinstance(weapons[0], StringField):
                 weapons = [cls.registry.get(w) for w in weapons]
-        if not weapons or not isinstance(weapons[0], Weapon):
-            raise RandomizeCarWeaponException('Weapons list empty.')
+        # if not weapons or not isinstance(weapons[0], Weapon):
+        #     raise RandomizeCarWeaponException('Weapons list empty.')
 
         # Подготовка айтемов тюнинга
         if tuner_items:
@@ -102,8 +102,8 @@ class RandomizeExamples(object):
             if ammo not in ammo_map:
                 ammo_map.append(ammo)
 
-        if not armorer_map:
-            raise RandomizeCarWeaponException('Weapons for setup not found: %s  = >> %s', car_proto.uri, weapons)
+        # if not armorer_map:
+        #     raise RandomizeCarWeaponException('Weapons for setup not found: %s  = >> %s', car_proto.uri, weapons)
 
         if car_proto.inventory.size < len(ammo_map):
             raise RandomizeCarException('Ammo len = %s, Inventory size = %s ', len(ammo_map), car_proto.inventory.size)
@@ -141,9 +141,9 @@ class RandomizeExamples(object):
         cache = cls.cache_car_level
         level_recod = cache.get(level, None)
         candidate_cars = cars or level_recod['cars']
-        candidate_weapons = weapons or level_recod['weapons']
+        candidate_weapons = weapons if isinstance(weapons, list) else level_recod['weapons']
 
-        if level_recod and candidate_cars and candidate_weapons:
+        if level_recod and candidate_cars:
             return cls.get_random_car(cars=candidate_cars, weapons=candidate_weapons,
                                       tuner_items=level_recod['tuner_items'], car_params=car_params)
         else:
