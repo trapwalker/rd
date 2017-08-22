@@ -57,7 +57,10 @@ class Select(object):
 
         if fltr:
             query = eval(fltr, dict(Q=Q,))
-            qs = qs.filter(query)
+            if isinstance(query, dict):
+                qs = qs.filter(**query)
+            else:
+                qs = qs.filter(query)
             log.debug('QUERY: {}'.format(qs._query))
 
         self.qs = qs
