@@ -455,7 +455,6 @@ var ViewMessengerGlass = (function () {
             jq_list.children().each(function (index, element) {
                 if ($(element).css('display') == 'block')
                     width += $(element).outerWidth(true);
-                console.log($(element).text());
             });
             var jq_parent = jq_list.parent();
             var jq_parent_parent = jq_parent.parent();
