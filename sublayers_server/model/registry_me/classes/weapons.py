@@ -35,7 +35,7 @@ class Cannon(Weapon):
     def html_description(self):
         weight = u'Не указан'
         if self.weight_class == 1: weight = u'Легкий'
-        elif self.weight_class == 2: weight = u'Срений'
+        elif self.weight_class == 2: weight = u'Средний'
         elif self.weight_class == 3: weight = u'Тяжелый'
         return (u'<div class="description-line left-align small">Класс:</div><div class="description-line right-align small">{}</div>'.format(weight) +
                 u'<div class="description-line left-align">Урон:</div><div class="description-line right-align">{}</div>'.format(self.dmg) +
@@ -55,7 +55,7 @@ class MachineGun(Weapon):
     def html_description(self):
         weight = u'Не указан'
         if self.weight_class == 1: weight = u'Легкий'
-        elif self.weight_class == 2: weight = u'Срений'
+        elif self.weight_class == 2: weight = u'Средний'
         elif self.weight_class == 3: weight = u'Тяжелый'
         return (u'<div class="description-line left-align small">Класс:</div><div class="description-line right-align small">{}</div>'.format(weight) +
                 u'<div class="description-line left-align">Урон в секунду:</div><div class="description-line right-align">{}</div>'.format(self.dps) +

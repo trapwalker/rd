@@ -142,6 +142,11 @@ var LocationServiceBuilding = (function (_super) {
     LocationServiceBuilding.prototype.set_header_text = function (html_text) {
         if (!locationManager.isActivePlace(this)) return;
         if (!html_text) {
+            var note = this.get_active_note();
+            if (note)
+                html_text = note.get_head_text();
+        }
+        if (!html_text) {
             var quest_info = journalManager.quests.getCountQuestsByNPC(this.building_rec.head.node_hash);
             var r = locationManager.get_npc_by_type(LocationArmorerNPC);
             var npc_armorer = r ? r[0] : null;
