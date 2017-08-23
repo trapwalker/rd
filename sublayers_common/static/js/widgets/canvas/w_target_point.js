@@ -182,13 +182,14 @@ var MapRoute = (function (_super) {
         return this.target_point && distancePoints2(this.target_point, car_pos) < this.route_accuracy2;
     };
 
-    MapRoute.prototype.get_next_point = function () {
+    MapRoute.prototype.get_next_point = function (not_send_to_server) {
         //console.log('MapRoute.prototype.get_next_point');
         if (this.target_point && this.points && this.target_point == this.points[0])
             this.points.shift();
         this.target_point = this.points && this.points[0];
         if (this.target_point) {
-            clientManager.sendGoto(this.target_point);
+            if (!not_send_to_server)
+                clientManager.sendGoto(this.target_point);
             // todo: звук взята следующая точка
             //audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
         }
@@ -207,7 +208,7 @@ var MapRoute = (function (_super) {
         if (this.equals_target_point(target_point))
             return;
         this.clear_points();
-        this.add_point(target_point);
+        this.add_point(target_point, true);
     };
 
     MapRoute.prototype.clear_points = function () {
@@ -219,7 +220,7 @@ var MapRoute = (function (_super) {
         this.clear_points();
     };
 
-    MapRoute.prototype.add_point = function(point) {
+    MapRoute.prototype.add_point = function(point, not_send_to_server) {
         //console.log("MapRoute.prototype.add_point", point);
         // не учитывать, если клик был рядом с последней точкой (или с любой, тогда заменять, например)
         var last_p = this.points && this.points[this.points.length - 1];
@@ -238,7 +239,7 @@ var MapRoute = (function (_super) {
 
         audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
 
-        if (! this.target_point) this.get_next_point();
+        if (! this.target_point) this.get_next_point(not_send_to_server);
     };
 
 
