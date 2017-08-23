@@ -13,7 +13,16 @@ class UserStatusHandler(AdmAPIHandler):
     def get(self, *args, **kwargs):
         self.set_header('Content-Type', 'text/html; charset=utf-8')
         srv = self.application.srv
-        agents = [a.adm_info for a in srv.agents_by_name.values()]
+        npc = self.get_argument('npc', '-')
+
+        agents = [
+            a.adm_info
+            for a in srv.agents_by_name.values()
+            if
+                npc == '-'
+                or npc in {'0', 'no', 'n'} and a.user
+                or npc in {'1', 'yes', 'y'} and a.user is None
+        ]
         data = serialize(agents, ensure_ascii=False)
         self.write(data)
 
