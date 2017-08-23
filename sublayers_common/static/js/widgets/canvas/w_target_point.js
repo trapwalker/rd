@@ -200,7 +200,7 @@ var MapRoute = (function (_super) {
 
     MapRoute.prototype.equals_target_point = function (target) {
         if (!this.target_point) return true;
-        return distancePoints(this.target_point, target) < this.route_accuracy2;
+        return distancePoints2(this.target_point, target) < this.route_accuracy2;
     };
 
     MapRoute.prototype.activate = function (target_point) {

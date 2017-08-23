@@ -427,7 +427,7 @@ var LocationMechanicNPC = (function (_super) {
             if (user.example_car) {
                 var cti = this.current_transaction_info();
                 if (cti.on == 0 && cti.off == 0)
-                    jq_text_div.append('<div>Установить деталь: ' + this.setup_cost + ' NC. <br>Снять деталь: ' + this.clear_cost +' NC. </div>');
+                    jq_text_div.append('<div>Установить деталь: ' + Math.ceil(this.setup_cost) + ' NC. <br>Снять деталь: ' + Math.ceil(this.clear_cost) +' NC. </div>');
                 else {
                     var price = Math.ceil(cti.on * this.setup_cost + cti.off * this.clear_cost);
                     jq_text_div.append('Установлено: ' + cti.on + ' деталей.<br>Снято: ' + cti.off + ' деталей.<br>Цена: ' + price + ' NC<br>Установить?');

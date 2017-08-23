@@ -19,8 +19,8 @@ class DelPOIContainerEvent(Objective):
 
     def on_perform(self):
         super(DelPOIContainerEvent, self).on_perform()
-        if len(self.container.inventory.managers) > 0 and self.server.server_mode == "basic":
-            DelPOIContainerEvent(container=self.container, time=self.time + self.container.life_time).post()
+        if len(self.container.inventory.visitors) > 0 and self.server.server_mode == "basic":
+            DelPOIContainerEvent(container=self.container, time=self.time + self.container.life_time / 2).post()
         else:
             self.container.delete(time=self.time)
 
@@ -40,6 +40,10 @@ class CreatePOILootEvent(Event):
 
     def on_perform(self):
         super(CreatePOILootEvent, self).on_perform()
+
+        if not self.items:  # Не создавать лут без итемов
+            return
+
         objs = self.server.visibility_mng.get_around_objects(pos=self.position, time=self.time)
         stash = None
         for obj in objs:
@@ -97,6 +101,7 @@ class CheckPOILootEmptyEvent(Event):
 
     def on_perform(self):
         super(CheckPOILootEmptyEvent, self).on_perform()
+        # log.debug('CheckPOILootEmptyEvent: %s', self.poi_loot.inventory)
         if self.poi_loot.inventory.get_item_count() == 0:
             self.poi_loot.delete(time=self.time)
 
@@ -111,9 +116,12 @@ class POIContainer(Observer):
         self.example.inventory.size = self.inventory_size
         self.inventory = Inventory(max_size=self.example.inventory.size, owner=self)
         self.load_inventory(time=time)
-        self.life_time = life_time
+        self.life_time = life_time or self.server.poi_loot_objects_life_time
         if life_time:
             DelPOIContainerEvent(time=time + life_time, container=self).post()
+
+    def __str__(self):
+        return '{}:life_time={} '.format(super(POIContainer, self).__str__(), self.life_time)
 
     def is_available(self, agent, time):
         return agent.car in self.visible_objects
@@ -150,7 +158,8 @@ class POILoot(POIContainer):
         pass
 
     def change_inventory(self, inventory, time):
-        if inventory.get_item_count() == 0:
+        # log.debug('POILoot.change_inventory %s', inventory)
+        if inventory is self.inventory and inventory.get_item_count() == 0:
             # todo: с этим эвентом иногда бывают проблемы. Возможно сделать не эвентом
             CheckPOILootEmptyEvent(server=self.server, time=time, poi_loot=self).post()
 
@@ -161,7 +170,7 @@ class POILoot(POIContainer):
 
 class QuestPrivatePOILoot(POILoot):
     def __init__(self, private_name=None, **kw):
-        super(POILoot, self).__init__(**kw)
+        super(QuestPrivatePOILoot, self).__init__(**kw)
         self.private_name = private_name
 
     def can_see_me(self, subj, **kw):
@@ -171,6 +180,7 @@ class QuestPrivatePOILoot(POILoot):
 
 class POICorpse(POIContainer):
     def __init__(self, time, sub_class_car, car_direction, donor_v, donor_example, agent_viewer=None, **kw):
+        self.agent_login = "" if not agent_viewer else agent_viewer.print_login()
         super(POICorpse, self).__init__(time=time, **kw)
         self.sub_class_car = sub_class_car
         self.car_direction = car_direction
@@ -178,7 +188,6 @@ class POICorpse(POIContainer):
         self.donor_param_aggregate = donor_example.param_aggregate(example_agent=None)
         self.tasks = []
         self.agent_viewer = agent_viewer  # Для шаринга видимости этому агенту некоторое время
-        self.agent_login = "" if not agent_viewer else agent_viewer.print_login()
 
         self.agent_donor = agent_viewer  # Для запоминания чей именно это труп
         self.donor_car = donor_example  # Для запоминания example мёртвой машинки
@@ -190,6 +199,9 @@ class POICorpse(POIContainer):
         self.max_control_speed = self.donor_param_aggregate['max_control_speed']
         assert v_forward <= self.max_control_speed
         Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
+
+    def __str__(self):
+        return '{}:Nickname={}'.format(super(POICorpse, self).__str__(), self.agent_login)
 
     def init_state_params(self):
         return dict(
