@@ -232,7 +232,7 @@ class AgentProfile(Node):
     )
 
     quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
-    party_capacity_count = IntField(root_default=0, caption=u"Стартовое значение количества человек в пати")
+    party_capacity_count = IntField(root_default=1, caption=u"Стартовое значение количества человек в пати")
 
     def set_role_class(self, role_class_ex, registry):
         mod_0 = registry.get("reg:///registry/rpg_settings/class_skill/empty_0")

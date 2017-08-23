@@ -543,8 +543,10 @@ var ClientManager = (function () {
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             wFireController.updateQuickConsumerPanel(event.car.quick_consumer_panel);
             wFireController.updateStateAutoShooting(event.auto_shooting_state);
-            mapManager.widget_target_point = new WCanvasTargetPoint(mcar); // виджет пункта назначения
             //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
+
+            if (mapManager.current_route) mapManager.current_route.delFromVisualManager();
+            mapManager.current_route = null;
 
             if (mcar.fireSidesMng.getSectors(null, true, true).length > 0) {
                 mapManager.widget_fire_sectors = new WCanvasFireSectorsScaled(mcar);
@@ -609,11 +611,11 @@ var ClientManager = (function () {
             car.setFuelState(fuel_state);
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
-            if (mapManager.widget_target_point) {
+            if (mapManager.current_route) {
                 if (tp != undefined && tp != null)
-                    mapManager.widget_target_point.activate(tp);
+                    mapManager.current_route.activate(tp);
                 else
-                    mapManager.widget_target_point.deactivate();
+                    mapManager.current_route.deactivate();
             }
 
             // При попадании залповым орудием включить эффект тряски

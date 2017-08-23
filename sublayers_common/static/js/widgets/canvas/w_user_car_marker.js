@@ -243,7 +243,8 @@ var WCanvasCarMarker = (function (_super) {
         var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
         var r = 15;
         p = normVector(p, r);
-        clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
+
     };
 
     WCanvasCarMarker.prototype.redraw = function(ctx, time, client_time){
@@ -556,13 +557,13 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     WCanvasStaticTownMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasStaticTownMarker.prototype.click_handler', this.mobj);
-        if (! user.userCar) return;
+        if (! user.userCar || ! event) return;
         var u_car_pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
         var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
-        if (distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
+        if (!event.shiftKey && distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
             clientManager.sendEnterToLocation(this.mobj.ID);
         else  // Ехать в координаты города
-            clientManager.sendGoto(this._last_mobj_position);
+            mapManager.goto_handler(event, this._last_mobj_position);
     };
 
     WCanvasStaticTownMarker.prototype.redraw = function(ctx, time, client_time){
@@ -662,7 +663,7 @@ var WCanvasLootMarker = (function (_super) {
         this.obj_id = mobj.ID;
 
         if (mobj.cls == "POICorpse")
-            new WCanvasNicknameMarker(mobj, this);
+            new WCanvasNicknameMarker(mobj, this, "", true);
     }
 
     WCanvasLootMarker.prototype.updateIcon = function() {
@@ -698,14 +699,14 @@ var WCanvasLootMarker = (function (_super) {
     WCanvasLootMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
         returnFocusToMap();
-        if (! user.userCar) return;
-        if (this.is_backlight) // Если мы в радиусе доступа, то открыть окно
+        if (! user.userCar || ! event) return;
+        if (!event.shiftKey && this.is_backlight) // Если мы в радиусе доступа, то открыть окно
             windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
         else { // Попробовать подъехать к цели
             var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
             var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
             p = normVector(p, r);
-            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+            mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
         }
     };
 
@@ -731,7 +732,7 @@ var WCanvasNicknameMarker = (function (_super) {
 
     WCanvasNicknameMarker.prototype.light_time = 500;
 
-    function WCanvasNicknameMarker(mobj, w_car_marker, nickname) {
+    function WCanvasNicknameMarker(mobj, w_car_marker, nickname, corpse) {
         // Инициализация кнопки info
         this.btn_info_icon = "";
         this.btn_info_width = 0;
@@ -740,12 +741,15 @@ var WCanvasNicknameMarker = (function (_super) {
         this._icon_height_half = 0; // Половина от высоты - зависит от высоты иконки
         this._text_width_half = 0;  // Половина от полной ширины текста (так удобнее считать)
 
+        this.is_corpse = corpse;
+
         _super.call(this, mobj, w_car_marker);
 
         this.obj_id = mobj.ID;
         this.w_car_marker = w_car_marker;
 
         this._nickname = "";
+        this.color_path = corpse ? 'rgba(120, 120, 120, ' : 'rgba(0, 255, 161, ';
 
         this._offset = new Point(0, -15);
         this._font = "8pt MICRADI";
@@ -776,7 +780,7 @@ var WCanvasNicknameMarker = (function (_super) {
 
     WCanvasNicknameMarker.prototype.redraw = function(ctx, time, client_time){
         //console.log('WCanvasNicknameMarker.prototype.redraw', time);
-        if (!this._nickname) return;
+        if (!this._nickname || this._nickname.length < 2.) return;
         var focused = mapCanvasManager._mouse_focus_widget == this;
         var focused_marker = mapCanvasManager._mouse_focus_widget == this.w_car_marker;
         if (this.light_time)
@@ -799,7 +803,8 @@ var WCanvasNicknameMarker = (function (_super) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = this._font;
-        ctx.fillStyle = (focused || focused_marker) ? 'rgba(0, 255, 161, 0.9)' : 'rgba(0, 255, 161, 0.6)';
+
+        ctx.fillStyle = (focused || focused_marker) ? this.color_path + '0.9)' : this.color_path + '0.6)';
         ctx.fillText(this._nickname, 0, 0);
 
         if (!this.ctx_text_params)  // Если ещё не измеряли длину текста
@@ -830,7 +835,8 @@ var WCanvasNicknameMarker = (function (_super) {
         //console.log('WCanvasNicknameMarker.prototype.updateIcon');
         // this.cm_z_index = 15; // info выглядит лучше, но кликать менее удобно - потестить и подумать ещё
         this.cm_z_index = 9;
-        this.btn_info_icon = iconsLeaflet.getIcon("icon_car_info");
+        this.btn_info_icon = this.is_corpse ?
+            iconsLeaflet.getIcon("icon_car_info_corpse") : iconsLeaflet.getIcon("icon_car_info");
         if (this.btn_info_icon) {
             this.btn_info_width = this.btn_info_icon.size[0];
             this.btn_info_height = this.btn_info_icon.size[1];

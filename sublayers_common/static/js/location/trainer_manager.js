@@ -524,6 +524,7 @@ var LocationTrainerNPC = (function (_super) {
         var skill_point = 0;
         var buy_skill_point = 0;
         var rpg_info = user.example_agent.rpg_info;
+        if (! rpg_info || ! rpg_info['driving']) return 0; // info: если будет driving, то и остальное должно быть
         var skill_names = ['driving', 'engineering', 'leading', 'masking', 'shooting', 'trading'];
 
         for (var  i = 0; i < skill_names.length; i++) {
@@ -536,7 +537,8 @@ var LocationTrainerNPC = (function (_super) {
 
     LocationTrainerNPC._getFreePerkPointsReal = function() {
         var res = 0;
-        var perks = user.example_agent.rpg_info.perks;
+        var perks = user.example_agent.rpg_info && user.example_agent.rpg_info.perks;
+        if (! perks) return 0;
         for(var key in perks)
             if (perks.hasOwnProperty(key))
                 if (perks[key].active) res++;
