@@ -243,7 +243,8 @@ var WCanvasCarMarker = (function (_super) {
         var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
         var r = 15;
         p = normVector(p, r);
-        clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
+
     };
 
     WCanvasCarMarker.prototype.redraw = function(ctx, time, client_time){
@@ -556,13 +557,13 @@ var WCanvasStaticTownMarker = (function (_super) {
 
     WCanvasStaticTownMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasStaticTownMarker.prototype.click_handler', this.mobj);
-        if (! user.userCar) return;
+        if (! user.userCar || ! event) return;
         var u_car_pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
         var distance2 = distancePoints2(this._last_mobj_position, u_car_pos);
-        if (distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
+        if (!event.shiftKey && distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
             clientManager.sendEnterToLocation(this.mobj.ID);
         else  // Ехать в координаты города
-            clientManager.sendGoto(this._last_mobj_position);
+            mapManager.goto_handler(event, this._last_mobj_position);
     };
 
     WCanvasStaticTownMarker.prototype.redraw = function(ctx, time, client_time){
@@ -698,14 +699,14 @@ var WCanvasLootMarker = (function (_super) {
     WCanvasLootMarker.prototype.click_handler = function(event) {
         //console.log('WCanvasPOILootMarker.prototype.click_handler', event);
         returnFocusToMap();
-        if (! user.userCar) return;
-        if (this.is_backlight) // Если мы в радиусе доступа, то открыть окно
+        if (! user.userCar || ! event) return;
+        if (!event.shiftKey && this.is_backlight) // Если мы в радиусе доступа, то открыть окно
             windowTemplateManager.openUniqueWindow('container' + this.obj_id, '/container', {container_id: this.obj_id});
         else { // Попробовать подъехать к цели
             var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
             var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
             p = normVector(p, r);
-            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+            mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
         }
     };
 

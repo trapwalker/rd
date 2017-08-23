@@ -133,16 +133,16 @@ class WeaponAuto(Weapon):
         owner = None if self.owner is None or self.owner.owner is None else self.owner.owner
 
         if owner:
-            owner.log.info('_start_fire_to_car: car<{}> time={}'.format(car, time))
+            owner.log.info(u'_start_fire_to_car: car<{}> time={}'.format(car, time))
 
         # assert car not in self.targets, '{} in weapon.targets weapon_owner={}  car_owner={}'.format(car, owner, car.main_agent)
         if car in self.targets:
-            log.warning('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+            log.warning(u'Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             if owner:
-                owner.log.info('Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
+                owner.log.info(u'Error ! {} in weapon.targets weapon_owner={}  car_owner={}  time={}'.format(car, owner, car.main_agent, time))
             log.debug(''.join(traceback.format_stack()))
             old_dps = self.dps_list.get(car.id, None)
-            assert old_dps == dps, 'old_dps == {}    dps={}'.format(old_dps, dps)
+            assert old_dps == dps, u'old_dps == {}    dps={}'.format(old_dps, dps)
 
         car.set_hp(dps=dps, add_shooter=self.owner, time=time, add_weapon=self)
         self.targets.append(car)
