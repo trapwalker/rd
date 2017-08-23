@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_server.model.registry_me.classes.agents import Agent
+from cli.agents_adm import Select
 
 from mongoengine import connect
 import click
@@ -24,6 +25,31 @@ def agents(ctx):
     pass
 
 
+@agents.group(name='find', invoke_without_command=True)
+@click.pass_context
+
+@click.option('--fixup', '-x', 'fixup', is_flag=True, default=False, help='Fixup problems')
+@click.option('--wipe_unsolved', '-w', 'wipe_unsolved', is_flag=True, default=False, help='Delete agents with unsolved problems')
+@click.option('--reg_reload', '-r', 'reg_reload', is_flag=True, default=False, help='Reload registry from filesystem')
+@click.option('--skip', '-s', 'skip', default=None, type=click.INT, help='Count records to skip')
+@click.option('--limit', '-l', 'limit', default=None, type=click.INT, help='Count records to limit')
+@click.option('--filter', '-f', 'fltr', default=None, type=click.STRING, help='Filter agents')
+
+@click.option('--format', '-m', 'fmt', default='{i:5}: {it.login}', type=click.STRING, help='Item echo format')
+
+def agents_find(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, fltr, fmt):
+    world = ctx.obj['world']
+
+    if ctx.invoked_subcommand is None:
+        sel = Select(
+            cls=Agent, world_path=world, reg_reload=reg_reload,
+            skip=skip, limit=limit, fltr=fltr, fixup=fixup, wipe_unsolved=wipe_unsolved,
+            #raw_only=True,
+        )
+        for i, raw, it in sel:
+            click.echo(fmt.format(**locals()))
+
+
 @agents.command(name='clean')
 @click.pass_context
 def agents_clean(ctx):
@@ -34,7 +60,7 @@ def agents_clean(ctx):
 
 
 @agents.command(name='check')
-@click.option('--fixup', '-f', 'fixup', is_flag=True, default=False, help='Fixup problems')
+@click.option('--fixup', '-x', 'fixup', is_flag=True, default=False, help='Fixup problems')
 @click.option('--wipe_unsolved', '-w', 'wipe_unsolved', is_flag=True, default=False, help='Delete agents with unsolved problems')
 @click.option('--reg_reload', '-r', 'reg_reload', is_flag=True, default=False, help='Reload registry from filesystem')
 @click.option('--skip', '-s', 'skip', default=None, type=click.INT, help='Count records to skip')

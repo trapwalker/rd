@@ -74,8 +74,10 @@ tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchil
 
 def special_type_serialize_prepare(obj):
     from sublayers_server.model.vectors import Point
-    
-    if isinstance(obj, (Point, complex)):
+
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    elif isinstance(obj, (Point, complex)):
         return dict(x=obj.real, y=obj.imag)
     elif isinstance(obj, UUID):
         return str(obj)
@@ -84,11 +86,12 @@ def special_type_serialize_prepare(obj):
     elif hasattr(obj, 'as_dict'):
         return obj.as_dict()
 
-    return obj
+    log.warning('Specific type to json serialization: %r', obj)
+    return str(obj)
 
 
-def serialize(obj):
-    return json.dumps(obj, sort_keys=True, indent=4, default=special_type_serialize_prepare)
+def serialize(obj, **kw):
+    return json.dumps(obj, sort_keys=True, indent=4, default=special_type_serialize_prepare, **kw)
 
 
 class AttrPreserve(object):

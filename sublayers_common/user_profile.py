@@ -45,6 +45,17 @@ class User(Document):
         class AuthSocial(EmbeddedDocument):
             social_id = StringField()
 
+        @property
+        def adm_info(self):
+            return dict(
+                email=self.standard.email,
+                confirmed=self.standard.email_confirmed,
+                google=self.google.social_id,
+                vk=self.vk.social_id,
+                twitter=self.twitter.social_id,
+                fb=self.fb.social_id,
+            )
+
         standard = EmbeddedDocumentField(AuthStandard, default=AuthStandard)
         google = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
         vk = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
@@ -67,7 +78,18 @@ class User(Document):
     teaching_state = StringField(default="", max_length=30)  # "" - не известно, "cancel" - отменено, "done" - завершено, "map" - карта, "city" - город
     start_position = PositionField(caption=u"Стартовые координаты")
 
-
+    @property
+    def adm_info(self):
+        return dict(
+            login=self.name,
+            quick=self.quick,
+            avatar=self.avatar_link,
+            teaching_state=self.teaching_state,
+            registration_status=self.registration_status,
+            date_created=self.date_created,
+            rating=self.ordinal_number,
+            auth=self.auth.adm_info,
+        )
 
     def __init__(self, raw_password=None, email=None, google_id=None, vk_id=None, twitter_id=None, fb_id=None, **kw):
         super(User, self).__init__(**kw)

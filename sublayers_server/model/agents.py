@@ -254,6 +254,17 @@ class Agent(Object):
     def is_online(self):
         return self.connection is not None
 
+    @property
+    def adm_info(self):
+        connection = self.connection
+        user = self.user
+        return dict(
+            is_online=self.is_online,
+            ip=connection and connection.request.remote_ip,
+            name=self._login,
+            user=user and user.adm_info,
+        )
+
     def add_observer(self, observer, time):
         if not self.is_online:
             return
@@ -395,14 +406,12 @@ class Agent(Object):
             self.party.on_exclude(agent=self, time=event.time)
 
         # todo: выйти из пати, удалить все инвайты, а только потом удалиться из списка агентов
-        if self.server.agents.get(str(self.user.pk), None):
-            del self.server.agents[str(self.user.pk)]
-        else:
+        _ag = self.server.agents.pop(str(self.user.pk), None)
+        if _ag is None:
             log.warn("Agent %s with key %s not found in server.agents", self, self.user.pk)
 
-        if self.server.agents_by_name.get(self._login, None):
-            del self.server.agents_by_name[self._login]
-        else:
+        _ag = self.server.agents_by_name.pop(self._login, None)
+        if _ag is None:
             log.warn("Agent %s with key %s not found in server.agents_by_name", self, self._login)
 
         self.server.stat_log.s_agents_on(time=event.time, delta=-1.0)
