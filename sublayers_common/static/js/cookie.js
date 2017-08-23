@@ -724,6 +724,22 @@ var SettingsManager = (function() {
                 }
             },
         },
+        map_route_accuracy: {
+            name: "map_route_accuracy",
+            page: "other",
+            text_name: "Точность следования по маршруту",
+            text_description: "При въезде в заданный радиус будет взята следующая точка маршрута.",
+            jq_div: null,
+            type: "list",
+            default: "15",
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "10", value: 10}, {text: "15", value: 15}, {text: "25", value: 25}, {text: "35", value: 35}, {text: "50", value: 50}],
+            set_callback: function(new_value) {
+                if (mapManager && mapManager.current_route) mapManager.current_route.set_accuracy();
+            },
+            init: function() {settingsManager.options.map_route_accuracy.value = settingsManager.options.map_route_accuracy.currentValue = parseInt(settingsManager.options.map_route_accuracy.currentValue);}
+        },
         auto_off_autofire_in_city: {
             name: "auto_off_autofire_in_city",
             page: "other",
@@ -790,7 +806,7 @@ var SettingsManager = (function() {
                 if (Math.random() > 0.5 || user.userCar.getCurrentSpeed(clock.getCurrentTime()) < 5) {
                     var curr_pos = user.userCar.getCurrentCoord(clock.getCurrentTime());
                     var random_point = polarPoint(Math.random() * 300, Math.random() * Math.PI * 2.);
-                    clientManager.sendGoto(summVector(curr_pos, random_point));
+                    mapManager.goto_handler(null, summVector(curr_pos, random_point));
                 }
                 // Рандомно стрельнуть
                 if (Math.random() > 0.7) {

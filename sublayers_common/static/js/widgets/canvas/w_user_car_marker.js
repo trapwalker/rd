@@ -243,7 +243,8 @@ var WCanvasCarMarker = (function (_super) {
         var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
         var r = 15;
         p = normVector(p, r);
-        clientManager.sendGoto(summVector(p, this._last_mobj_position));
+        mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
+
     };
 
     WCanvasCarMarker.prototype.redraw = function(ctx, time, client_time){
@@ -562,7 +563,7 @@ var WCanvasStaticTownMarker = (function (_super) {
         if (distance2 < this.mobj.p_enter_range * this.mobj.p_enter_range) // Если мы в p_enter_range, то войти в город
             clientManager.sendEnterToLocation(this.mobj.ID);
         else  // Ехать в координаты города
-            clientManager.sendGoto(this._last_mobj_position);
+            mapManager.goto_handler(event, this._last_mobj_position);
     };
 
     WCanvasStaticTownMarker.prototype.redraw = function(ctx, time, client_time){
@@ -705,7 +706,7 @@ var WCanvasLootMarker = (function (_super) {
             var p = subVector(user.userCar.getCurrentCoord(clock.getCurrentTime()), this._last_mobj_position);
             var r = this.mobj.hasOwnProperty('p_observing_range') ? this.mobj.p_observing_range / 2. : 15;
             p = normVector(p, r);
-            clientManager.sendGoto(summVector(p, this._last_mobj_position));
+            mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
         }
     };
 

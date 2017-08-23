@@ -10,18 +10,15 @@ var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
 function onMouseUpMap(mouseEventObject) {
+    if (!user.userCar) return;
+
     if (mapCanvasManager && mapCanvasManager._mouse_focus_widget)
         mapCanvasManager._mouse_focus_widget.click_handler(mouseEventObject);
     else {
         var click_point = new Point(mouseEventObject.clientX, mouseEventObject.clientY);
-        // info: для удобного задания маршрутов
-        //var a = summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
-        //                                  mulScalVector(click_point, mapManager.getZoomKoeff()));
-        //console.log('{x: ' + Math.floor(a.x) + ', y: ' + Math.floor(a.y) + '}');
-        clientManager.sendGoto(summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
-                                          mulScalVector(click_point, mapManager.getZoomKoeff())));
-
-
+        var target_point = summVector(mapManager.getTopLeftCoords(mapManager.getZoom()),
+                                          mulScalVector(click_point, mapManager.getZoomKoeff()));
+        mapManager.goto_handler(mouseEventObject, target_point);
         // Google Analytics
         analytics.drive_only_mouse(true);
     }
@@ -71,10 +68,11 @@ var MapManager = (function(_super) {
         this.addToVisualManager();
 
         // Виджеты карты: виджеты-синглеты, находятся на карте, хранятся здесь для быстрого доступа
-        this.widget_target_point = null; // инициализируется при получении своей машинки
+        //this.widget_target_point = null; // инициализируется при получении своей машинки
         this.widget_fire_radial_grid = null; // инициализируется при получении своей машинки
         this.widget_fire_sectors = null; // инициализируется при получении своей машинки
         this.zoomSlider = null; // инициализируется после карты
+        this.current_route = null;
 
         this.strategy_mode_timer = null;
 
@@ -209,6 +207,24 @@ var MapManager = (function(_super) {
             smap.renderer.refresh();
             this.last_render_time = client_time;
             this.zoomSlider.setZoom(this.current_zoom);
+        }
+    };
+
+    MapManager.prototype.goto_handler = function (event, point) {
+        //console.log("MapManager.prototype.goto_handler");
+        if (!this.current_route) {
+            this.current_route = new MapRoute(user.userCar, point);
+            this.current_route.add_point(point);
+            return;
+        }
+
+        if (event && event.shiftKey && this.current_route) {
+            this.current_route.add_point(point);
+        }
+        else {
+            if (this.current_route)
+                this.current_route.clear_points();
+            this.current_route.add_point(point);
         }
     };
 

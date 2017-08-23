@@ -49,7 +49,7 @@ var QuestMapMarkerNote = (function (_super) {
 
     QuestMapMarkerNote.prototype.click_handler = function(event) {
         //console.log('QuestMapMarkerNote.prototype.click_handler', this);
-        clientManager.sendGoto(this.position);
+        mapManager.goto_handler(event, this.position)
     };
 
     // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
