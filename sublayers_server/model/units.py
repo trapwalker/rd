@@ -408,7 +408,7 @@ class Mobile(Unit):
         v_forward = self._param_aggregate['v_forward']
         self.max_control_speed = self._param_aggregate['max_control_speed']
         assert v_forward <= self.max_control_speed
-        Parameter(original=v_forward / self.max_control_speed, min_value=0.05, max_value=1.0, owner=self, name='p_cc')
+        Parameter(original=v_forward / self.max_control_speed, min_value=0.01, max_value=1.0, owner=self, name='p_cc')
 
         Parameter(
             original=self._param_aggregate['p_fuel_rate'],
