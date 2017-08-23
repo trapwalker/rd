@@ -118,6 +118,11 @@ var LocationNucoilBuilding = (function (_super) {
     LocationNucoilBuilding.prototype.set_header_text = function (html_text) {
         //console.log('LocationNucoilBuilding.prototype.set_header_text');
         if (!html_text) {
+            var note = this.get_active_note();
+            if (note)
+                html_text = note.get_head_text();
+        }
+        if (!html_text) {
             html_text = "Добро пожаловать, " + user.login + "!<br>Официальная заправка Корпорации Нукойл предоставляет:" +
                 "<ul><li>Автострахование: защитите свое имущество от происшествий на дорогах!</li>" +
                 "<li>Топливная заправка.</li>" +
