@@ -301,8 +301,8 @@ function convertKeyCodeToString(keycode) {
         return "Arrow Right";
     if (keycode == 40)  // Стрелка вниз
         return "Arrow Down";
-    if (keycode == 16)  // Shift
-        return "Shift";
+    //if (keycode == 16)  // Shift  - Нельзя настраивать шифт
+    //    return "Shift";
     if (keycode == 17)  // Ctrl
         return "Ctrl";
     if (keycode == 18)  // Alt
