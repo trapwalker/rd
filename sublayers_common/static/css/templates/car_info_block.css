@@ -47,6 +47,7 @@
 .car-info-block-info {
     position: relative;
     box-sizing: border-box;
+    padding-bottom: 8px;
     height: 100%;
     width: 100%;
 }
