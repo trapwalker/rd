@@ -214,7 +214,9 @@ var MapManager = (function(_super) {
         //console.log("MapManager.prototype.goto_handler");
         if (!this.current_route) {
             this.current_route = new MapRoute(user.userCar, point);
-            this.current_route.add_point(point);
+            this.current_route.get_next_point();
+            // Да, фигова, что звук здесь.. но иначе не получается! ... пока что не получается
+            audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
             return;
         }
 
