@@ -19,7 +19,7 @@ class DelPOIContainerEvent(Objective):
 
     def on_perform(self):
         super(DelPOIContainerEvent, self).on_perform()
-        if len(self.container.inventory.managers) > 0 and self.server.server_mode == "basic":
+        if len(self.container.inventory.visitors) > 0 and self.server.server_mode == "basic":
             DelPOIContainerEvent(container=self.container, time=self.time + self.container.life_time).post()
         else:
             self.container.delete(time=self.time)
@@ -97,6 +97,7 @@ class CheckPOILootEmptyEvent(Event):
 
     def on_perform(self):
         super(CheckPOILootEmptyEvent, self).on_perform()
+        # log.debug('CheckPOILootEmptyEvent: %s', self.poi_loot.inventory)
         if self.poi_loot.inventory.get_item_count() == 0:
             self.poi_loot.delete(time=self.time)
 
@@ -150,7 +151,8 @@ class POILoot(POIContainer):
         pass
 
     def change_inventory(self, inventory, time):
-        if inventory.get_item_count() == 0:
+        # log.debug('POILoot.change_inventory %s', inventory)
+        if inventory is self.inventory and inventory.get_item_count() == 0:
             # todo: с этим эвентом иногда бывают проблемы. Возможно сделать не эвентом
             CheckPOILootEmptyEvent(server=self.server, time=time, poi_loot=self).post()
 
@@ -161,7 +163,7 @@ class POILoot(POIContainer):
 
 class QuestPrivatePOILoot(POILoot):
     def __init__(self, private_name=None, **kw):
-        super(POILoot, self).__init__(**kw)
+        super(QuestPrivatePOILoot, self).__init__(**kw)
         self.private_name = private_name
 
     def can_see_me(self, subj, **kw):
