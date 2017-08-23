@@ -275,6 +275,7 @@ class MechanicItem(SlotItem):
             a_braking=dict(name=u'Торможение', mul=-1.0),
             max_fuel=dict(name=u'Бак', mul=1.0),
             p_fuel_rate=dict(name=u'Расход топлива', mul=1.0),
+            r_cc_dirt=dict(name=u'Проходимость', mul=1.0),            
         )
         for attr_name in attr_name_list.keys():
             attr_value = getattr(self, attr_name, None)
