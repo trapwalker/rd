@@ -472,8 +472,9 @@ class HideInventoryEvent(Event):
     def on_perform(self):
         super(HideInventoryEvent, self).on_perform()
         obj = self.server.objects.get(self.owner_id)
-        assert (obj is not None) and (obj.inventory is not None)
-        obj.inventory.del_visitor(agent=self.agent, time=self.time)
+        # assert (obj is not None) and (obj.inventory is not None)
+        if obj and obj.inventory:
+            obj.inventory.del_visitor(agent=self.agent, time=self.time)
 
 
 class ItemActionInventoryEvent(Event):

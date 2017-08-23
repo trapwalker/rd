@@ -79,7 +79,7 @@ class Server(object):
 
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
-        self.poi_loot_objects_life_time = 600  # Время жизни лута на карте для обычного режима
+        self.poi_loot_objects_life_time = 180  # Время жизни лута на карте для обычного режима
 
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
