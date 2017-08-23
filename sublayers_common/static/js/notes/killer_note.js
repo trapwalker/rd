@@ -25,18 +25,21 @@ var QuestNoteNPCBtnKiller = (function (_super) {
         this.jq_main_div.append(jq_down_path);
 
         // пройти по списку доставки, посчитать сколько таких предметов есть в инвентарях (+ квестовый) и вывести
-        var victims_count = quest.victims.length;
+        var victims_count = quest.victims ? quest.victims.length : 0;
         this.availability_test = victims_count >= quest.count_to_kill;
         for (var i = 0; i < quest.count_to_kill; i++) {
             var vict_name = victims_count > i ?  quest.victims[i].login : "";
             var photo =  victims_count > i ? location.origin + "/" + quest.victims[i].photo : ""; // todo: повесить фото-заглушку
-            var jq_item = $(
-                '<div class="building-npc-list-item">' +
-                    '<img class="building-npc-photo" ' +
-                    'style="background: transparent url(' + photo + ') no-repeat 100% 100%; width: 100%; height: 100%;">' +
-                    '<div class="building-npc-name-block"><span class="building-npc-name">' + vict_name + '</span></div>' +
-                '</div>'
-            );
+            var jq_item = '';
+            if (photo)
+                jq_item = $(
+                    '<div class="building-npc-list-item">' +
+                        '<img class="building-npc-photo" style="background: transparent url(' + photo + ') no-repeat 100% 100%; width: 100%; height: 100%;">' +
+                        '<div class="building-npc-name-block"><span class="building-npc-name">' + vict_name + '</span></div>' +
+                    '</div>'
+                );
+            else
+                jq_item = $('<div class="building-npc-list-item"></div>');
             jq_inv_list.append(jq_item);
         }
 

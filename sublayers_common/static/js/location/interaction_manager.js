@@ -163,7 +163,7 @@ var InteractionManager = (function (_super) {
         // Заполнение npc заголовка
         this.jq_main_div.find('.npc-name').text(this.player_nick);
         this.jq_main_div.find('.npc-text').text(user_data.about_self);
-        this.jq_main_div.find('.npc-photo').attr("src", user_data.avatar);
+        this.jq_main_div.find('.npc-photo').css("background-image", "url(" + user_data.avatar + ")");
 
         // Вставляем верстку автомобиля
         this.jq_main_div.find('.chat-interaction-car-photo-block').append(user_data.html_car_img);
