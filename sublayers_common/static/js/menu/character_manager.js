@@ -48,6 +48,8 @@ var CharacterManager = (function () {
         var class_light = 'trainer-dark-back';
         var perk_list = user.example_agent.rpg_info.perks;
 
+        if (!perk_list) return;
+
         if (quick_mode) {
             var no_active_perks = true;
             var perks = user.example_agent.rpg_info.perks;
