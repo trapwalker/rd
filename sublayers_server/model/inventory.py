@@ -157,6 +157,7 @@ class Inventory(object):
     def add_visitor(self, agent, time):
         if agent not in self.visitors:
             self.visitors.append(agent)
+            # log.debug('Inventory.add_visitor %s', agent)
         self.send_inventory(agent=agent, time=time)
 
     def del_all_visitors(self, time):
@@ -167,6 +168,7 @@ class Inventory(object):
     def del_visitor(self, agent, time):
         if agent in self.visitors:
             self.visitors.remove(agent)
+            # log.debug('Inventory.del_visitor %s', agent)
         InventoryHideMessage(time=time, agent=agent, inventory_id=self.owner.uid).post()
 
     def add_manager(self, agent):
