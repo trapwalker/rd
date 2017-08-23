@@ -5,7 +5,8 @@
 {% end %}
 
 {% if car_info_table_agent %}
-    {% set v_value = round(car.get_modify_value(param_name='v_forward', example_agent=car_info_table_agent) * 3.6) %}
+    {% set v_forward = car.get_modify_value(param_name='v_forward', example_agent=car_info_table_agent) %}
+    {% set v_value = round(v_forward * 3.6) %}
     {% set v_dvalue = v_value - round(car.get_modify_value(param_name='v_forward', example_agent=None) * 3.6) %}
     {% if v_dvalue < 0 %}
         {% set str_value = "{}({})".format(int(v_value), int(v_dvalue)) %}
@@ -13,19 +14,27 @@
         {% set str_value = "{}".format(int(v_value)) %}
     {% end %}
 {% else %}
-    {% set v_value = round(car.get_modify_value(param_name='v_forward', example_agent=None) * 3.6) %}
+    {% set v_forward = car.get_modify_value(param_name='v_forward', example_agent=None) %}
+    {% set v_value = round(v_forward * 3.6) %}
     {% set str_value = "{}".format(int(v_value)) %}
 {% end %}
 
-{% set p_cc = car.v_forward / car.max_control_speed %}
-{% set p_cc_dirt = p_cc - p_cc * car.m_cc_dirt * (1.0 - car.r_cc_dirt) %}
+{% set p_cc = v_forward / car.max_control_speed %}
+
+{% set p_cc_dirt = max((p_cc - p_cc * car.m_cc_dirt * (1.0 - car.r_cc_dirt)), 0.05) %}
 {% set value_v_dirt =  round(car.max_control_speed * p_cc_dirt * 3.6) %}
 {% set str_v_dirt = "{}".format(int(value_v_dirt)) %}
-{% set value_v_wood = round(car.max_control_speed * (p_cc_dirt - p_cc * car.m_cc_wood * (1.0 - car.r_cc_wood)) * 3.6) %}
+
+{% set p_cc_wood = max((p_cc_dirt - p_cc * car.m_cc_wood * (1.0 - car.r_cc_wood)), 0.05) %}
+{% set value_v_wood = round(car.max_control_speed * p_cc_wood * 3.6) %}
 {% set str_v_wood = "{}".format(int(value_v_wood)) %}
-{% set value_v_slope = round(car.max_control_speed * (p_cc_dirt - p_cc * car.m_cc_slope * (1.0 - car.r_cc_slope)) * 3.6) %}
-{% set str_v_slope = "{}".format(int(value_v_slope)) %}
-{% set value_v_water = round(car.max_control_speed * (p_cc_dirt - p_cc * car.m_cc_water * (1.0 - car.r_cc_water)) * 3.6) %}
+
+{% set p_cc_slope = max((p_cc_dirt - p_cc * car.m_cc_slope * (1.0 - car.r_cc_slope)), 0.05) %}
+{% set value_v_slope = round(car.max_control_speed * p_cc_slope * 3.6) %}
+{% set str_v_slope = "{}".format(int(max(value_v_slope, 0.05))) %}
+
+{% set p_cc_water = max((p_cc_dirt - p_cc * car.m_cc_water * (1.0 - car.r_cc_water)), 0.05) %}
+{% set value_v_water = round(car.max_control_speed * p_cc_water * 3.6) %}
 {% set str_v_water = "{}".format(int(value_v_water)) %}
 
 <div class="car-info-block-info">
