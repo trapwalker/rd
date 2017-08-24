@@ -155,7 +155,7 @@ var LocationManager = (function () {
         //console.log('LocationManager.prototype.openNPC', npcHTMLHash);
         if (!this.npc.hasOwnProperty(npcHTMLHash)) return;
         var npc = this.npc[npcHTMLHash];
-        if (npc.npc_rec.type == "mayor") return;
+        if (npc.npc_rec.type == "mayor" || npc.npc_rec.type == "nucoil_help_npc") return;
         npc.activate();
     };
 
