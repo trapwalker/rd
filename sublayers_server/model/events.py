@@ -307,7 +307,9 @@ class FireDischargeEffectEvent(Objective):
         fake_position = Point.polar(max_radius,
                                     self.obj.direction(time=self.time) + get_angle_by_side(self.side)) + subj_position
 
-        for agent in self.server.agents.values():
+        # for agent in self.server.agents.values():
+        for agent in self.server.get_agents_around_position(time=self.time, pos=subj_position, min_radius=30000):
+            # info: костыль, чтобы не отправлять выстрел всем на сервере
             FireDischargeEffect(agent=agent, pos_subj=subj_position, targets=targets, fake_position=fake_position,
                                 time=self.time, self_shot=(agent is self.obj.main_agent),
                                 weapon_animation=self.weapon_example.weapon_animation,
@@ -365,7 +367,8 @@ class BangEvent(Event):
 
         self.damager.main_agent.on_bang_damage(obj=self.damager, targets=list_targets, time=self.time)
 
-        for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+        # for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+        for agent in self.server.get_agents_around_position(time=self.time, pos=self.center, min_radius=30000):
             Bang(
                 position=self.center,
                 agent=agent,

@@ -844,6 +844,12 @@ class Agent(Object):
         if self.party and self.party.owner is self:
             self.party.change_exp_modifier()
 
+    def global_position(self, time):
+        if self.car and not self.car.limbo:
+            return self.car.position(time)
+        if self.current_location:
+            return self.current_location.position(time)
+        return self.example.profile.last_town.position.as_point()
 
 # todo: Переименовать в UserAgent
 class User(Agent):
