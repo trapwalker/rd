@@ -308,6 +308,8 @@ var window_scaled_prc = 1.0;
 
 
 $(window).resize(resizeWindowHandler);
+$(window).bind('focus', function() {window_focused = true;});
+$(window).bind('blur', function() {window_focused = false;});
 
 
 function resizeWindowHandler() {
@@ -410,6 +412,7 @@ var carMarkerList;
 var clientManager;
 var j_connector;
 var ws_connector;
+var window_focused = true;
 
 var user;
 var listMapObject;
