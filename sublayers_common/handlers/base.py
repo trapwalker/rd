@@ -136,3 +136,24 @@ class BaseHandler(AuthHandlerMixin):
             static_mobile_link_repr=static_mobile_link_repr,
         )
         return namespace
+
+
+class FailUnauthorizedHandler(BaseHandler):
+    def prepare(self):
+        super(FailUnauthorizedHandler, self).prepare()
+        user = self.current_user
+        user_id = self.get_secure_cookie("user")
+        if user is None:
+            log.warning('Unauthorized call of %s by user %r', self.__class__.__name__, user_id)
+            raise tornado.web.HTTPError(403)
+
+
+class FailWithoutAgentHandler(FailUnauthorizedHandler):
+    """"Abstract handler class that fails if agent of user is not found"""
+    def prepare(self):
+        super(FailWithoutAgentHandler, self).prepare()
+        user = self.current_user
+        self.agent = agent = self.application.srv.api.get_agent(user, make=False, do_disconnect=False)
+        if agent is None:
+            log.warning('Agent of user %s is not found in database', user)
+            self.send_error(status_code=404, reason='Agent is not found')

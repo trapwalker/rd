@@ -3,13 +3,12 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado.gen
-
-from sublayers_common.handlers.base import BaseHandler
+from sublayers_common.handlers.base import BaseHandler, FailWithoutAgentHandler
 from sublayers_server.model.poi_loot_objects import POICorpse
 
 
 class MenuCarHandler(BaseHandler):
+    # todo: Может быть нужно унаследоваться от абстректного хендлера, падающего без авторизации?
     def get(self):
         if self.current_user:
             agent = self.application.srv.agents.get(str(self.current_user.pk), None)
@@ -24,30 +23,27 @@ class MenuCarHandler(BaseHandler):
 
 
 # todo: скорее всего не используется
-class MainCarInfoHandler(BaseHandler):
+class MainCarInfoHandler(FailWithoutAgentHandler):
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
-        if agent is None:
-            log.warning('Agent not found in database')
-            self.send_error(status_code=404)
-            return
-        self.render("main_car_info_window.html", car=agent.example.profile.car)
+        self.render("main_car_info_window.html", car=self.agent.example.profile.car)
 
 
-class PersonInfoHandler(BaseHandler):
+class PersonInfoHandler(FailWithoutAgentHandler):
     def get(self):
         # Параметр mode: 'map' окно на карте, 'city' окно в городе
+        agent = self.agent
         mode = self.get_argument('mode', 'city')
         person_name = self.get_argument('person', default=None)
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
         person = None
         if person_name:
             # log.debug('Person Name is %s', person_name)
             person = self.application.srv.agents_by_name.get(str(person_name), None)
-        if agent is None or person is None:
-            log.warning('Agent not found in database')
+
+        if person is None:
+            log.warning('Person %r is not found online', person_name)
             self.send_error(status_code=404)
             return
+
         agent.log.info('open PersonInfoHandler for person_name={}'.format(person_name))
         # print 'open PersonInfoHandler for person_name={}'.format(person_name)
         if mode == 'city':
@@ -58,13 +54,9 @@ class PersonInfoHandler(BaseHandler):
             self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)
 
 
-class PersonInfoCorpseHandler(BaseHandler):
+class PersonInfoCorpseHandler(FailWithoutAgentHandler):
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
-        if agent is None:
-            log.warning('Agent not found in database')
-            self.send_error(status_code=404)
-            return
+        agent = self.agent
         container_id = self.get_argument("container_id")
         container = None
         if container_id:
