@@ -24,8 +24,8 @@ var CharacterManager = (function () {
         self.jq_main_div.find('.character-window-about-area').first().find('textarea').first().text(user.example_agent.about_self);
 
         // Шкала опыта
-        self.jq_main_div.find('.cur-exp').first().text(user.example_agent.rpg_info.cur_exp);
-        self.jq_main_div.find('.total-exp').first().text(user.example_agent.rpg_info.next_lvl_exp);
+        self.jq_main_div.find('.cur-exp').first().text(Math.floor(user.example_agent.rpg_info.cur_exp));
+        self.jq_main_div.find('.total-exp').first().text(Math.floor(user.example_agent.rpg_info.next_lvl_exp));
         var progress = (user.example_agent.rpg_info.cur_exp - user.example_agent.rpg_info.cur_lvl_exp) /
                        (user.example_agent.rpg_info.next_lvl_exp - user.example_agent.rpg_info.cur_lvl_exp);
         progress = progress < 0 ? 0 : progress;
