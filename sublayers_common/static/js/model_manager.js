@@ -612,6 +612,7 @@ var ClientManager = (function () {
             // Считать таргет поинт и включить/выключить виджет таргет_поинта
             var tp = event.object.target_point;
             if (mapManager.current_route) {
+                //console.log("ClientManager.prototype.Update", tp);
                 if (tp != undefined && tp != null)
                     mapManager.current_route.activate(tp);
                 else
@@ -1627,20 +1628,24 @@ var ClientManager = (function () {
     ClientManager.prototype.sendStopCar = function () {
         //console.log('ClientManager.prototype.sendStopCar');
         if (!user.userCar) return;
-        this.sendMotion(null, 0.0, null)
+        this.sendMotion(null, 0.0, null);
+
+        if (mapManager.current_route) mapManager.current_route.clear_points();
     };
 
     ClientManager.prototype.sendTurn = function (turn) {
         //console.log('ClientManager.prototype.sendTurn');
         if (!user.userCar) return;
-        this.sendMotion(null, null, turn);        
+        this.sendMotion(null, null, turn);
+
+        if (mapManager.current_route) mapManager.current_route.clear_points();
         
         // Google Analytics
         analytics.drive_only_mouse(false);
     };
 
     ClientManager.prototype.sendGoto = function (target) {
-        //console.log('ClientManager.prototype.sendGoto');
+        //console.log('ClientManager.prototype.sendGoto', target);
         if (!user.userCar) return;
         var currentSpeed = wCruiseControl.getSpeedHandleValue();
         if (currentSpeed == 0)

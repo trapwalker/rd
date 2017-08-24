@@ -49,7 +49,7 @@ class Route(AbstractRoute):
 
     def get_current_point(self):
         if self.current_index < 0 or self.current_index >= len(self.points):
-            return self.get_start_point()
+            return self.get_start_point().as_point()
         return self.points[self.current_index].as_point()
 
     def nearest_point(self, position):  # Вызывать при возвращении на маршрут (или при старте маршрута)

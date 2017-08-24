@@ -183,19 +183,25 @@ var MapRoute = (function (_super) {
     };
 
     MapRoute.prototype.get_next_point = function (not_send_to_server) {
-        //console.log('MapRoute.prototype.get_next_point');
+        //console.log('MapRoute.prototype.get_next_point', this.points.length);
         if (this.target_point && this.points && this.target_point == this.points[0])
             this.points.shift();
         this.target_point = this.points && this.points[0];
         if (this.target_point) {
-            if (!not_send_to_server)
+            if (!not_send_to_server) {
                 clientManager.sendGoto(this.target_point);
-            // todo: звук взята следующая точка
-            //audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                // звук взята следующая точка
+                if (!window_focused){
+                    audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                }
+            }
         }
         else {
-            // todo: звук маршрут завершён
-            //audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+            // звук маршрут завершён
+            if (!window_focused) {
+                audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
+                audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, time: 0.15});
+            }
         }
     };
 
@@ -205,19 +211,30 @@ var MapRoute = (function (_super) {
     };
 
     MapRoute.prototype.activate = function (target_point) {
-        if (this.equals_target_point(target_point))
+        //console.log('MapRoute.prototype.activate');
+        if (this.equals_target_point(target_point)) {
+            // Проверить, если вкладка не активна, и до точки недалеко, то взять следующую точку
+            if (!window_focused && this.need_next_point(this.car.getCurrentCoord(clock.getCurrentTime())))
+                this.get_next_point();
             return;
+        }
         this.clear_points();
         this.add_point(target_point, true);
     };
 
     MapRoute.prototype.clear_points = function () {
+        //console.log('MapRoute.prototype.clear_points');
         this.points = [];
         this.get_next_point();
     };
 
-    MapRoute.prototype.deactivate = function(){
-        this.clear_points();
+    MapRoute.prototype.deactivate = function() {
+        //console.log('MapRoute.prototype.deactivate', clock.getClientTime(), this.points);
+        if (this.points.length == 0 || window_focused)
+            this.clear_points();
+        else
+            if (this.need_next_point(this.car.getCurrentCoord(clock.getCurrentTime())))
+                this.get_next_point();
     };
 
     MapRoute.prototype.add_point = function(point, not_send_to_server) {

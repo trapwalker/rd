@@ -3,35 +3,27 @@
 import logging
 log = logging.getLogger(__name__)
 
-import tornado.gen
-
-from sublayers_common.handlers.base import BaseHandler
+from sublayers_common.handlers.base import FailWithoutAgentHandler
 from sublayers_server.model.poi_loot_objects import POIContainer
 from sublayers_server.model.barter import Barter
 
 
-class MainInventoryHandler(BaseHandler):
+class MainInventoryHandler(FailWithoutAgentHandler):
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
-        if agent is None:
-            log.warning('Agent not found in database')
-            self.send_error(status_code=404)
-            return
+        agent = self.agent
         if agent.car is None:
             log.warning('Agent {} cheating!!! MainInventoryHandler without car'.format(agent))
             self.send_error(status_code=404)
             return
+
         agent.log.info('open inventory_info_window car_id={}'.format(agent.car.uid))
         self.render("inventory_info_window.html", car_id=agent.car.uid, car=agent.car)
 
 
-class ContainerInventoryHandler(BaseHandler):
+class ContainerInventoryHandler(FailWithoutAgentHandler):
+    # todo: use @auth decorator
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
-        if agent is None:
-            log.warning('Agent not found in database')
-            self.send_error(status_code=404)
-            return
+        agent = self.agent
         container_id = self.get_argument("container_id")
         container = None
         if container_id:
@@ -41,15 +33,10 @@ class ContainerInventoryHandler(BaseHandler):
             self.render("inventory_container_window.html", car_id=agent.car.uid, container_id=container_id)
 
 
-class BarterInventoryHandler(BaseHandler):
+class BarterInventoryHandler(FailWithoutAgentHandler):
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
-        if agent is None:
-            log.warning('Agent not found in database')
-            self.send_error(status_code=404)
-            return
+        agent = self.agent
         barter_id = long(self.get_argument("barter_id"))
-
         barter = Barter.get_barter(barter_id=barter_id, agent=agent)
         if (barter is None) or ((agent is not barter.initiator) and (agent is not barter.recipient)):
             log.warning('Agent has not access')
@@ -75,4 +62,3 @@ class BarterInventoryHandler(BaseHandler):
         else:
             self.render("inventory_barter.html", agent=agent, inv_id=inv_id, barter=barter,
                         my_table_id=my_table_id, other_table_id=other_table_id, barter_name=barter_name, in_location=True)
-

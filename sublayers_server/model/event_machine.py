@@ -79,7 +79,7 @@ class Server(object):
 
         self.stat_log = StatLogger()
         self.visibility_mng = VisibilityManager(server=self)
-        self.poi_loot_objects_life_time = 180  # Время жизни лута на карте для обычного режима
+        self.poi_loot_objects_life_time = 360  # Время жизни лута на карте для обычного режима
 
         # todo: QuickGame settings fix it
         if options.mode == 'quick':
@@ -277,6 +277,20 @@ class Server(object):
         self._outher_loop_time_arr = []
 
         self.logger_statlog_events.info(log_str)
+
+    def get_agents_around_position(self, time, pos, min_radius, max_agents=50):
+        # Вернёт всех агентов в min_radius и ещё добавит остальных до max_agents, если нужно
+        agents = []
+        # взять позиции всех агентов, отсортировать, отправить только ближайшим, учесть max_agents
+        agents_poss = [dict(agent=agent, d=agent.global_position(time).distance(pos)) for agent in self.agents.values() if agent.connection]
+        # todo: придумать как учитывать max_agents и min_radius
+        # agents_poss = sorted(agents_poss, key=lambda elem: elem['d'])
+        for agent_rec in agents_poss:
+            if agent_rec['d'] < min_radius:
+                agents.append(agent_rec['agent'])
+            # elif len(agents) < max_agents:
+            #     agents.append(agent_rec['agent'])
+        return agents
 
 ########################################################################################################################
 class LocalServer(Server):

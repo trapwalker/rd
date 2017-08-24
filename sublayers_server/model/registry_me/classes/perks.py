@@ -66,6 +66,7 @@ class Perk(Node):
     def html_description(self):
         main_req_str = ''
         attr_name_list = dict(
+            driving_req=u'Требование к вождению',
             shooting_req=u'Требование к Стрельбе',
             masking_req=u'Требование к Маскировке',
             leading_req=u'Требование к Лидерству',
