@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 log = logging.getLogger(__name__)
 
-import tornado.gen
-
-from sublayers_common.handlers.base import BaseHandler
+from sublayers_common.handlers.base import FailWithoutAgentHandler
 
 
-class MainMenuNucoilHandler(BaseHandler):
+class MainMenuNucoilHandler(FailWithoutAgentHandler):
     def get(self):
-        agent = self.application.srv.api.get_agent(self.current_user, make=False, do_disconnect=False)
-        if agent is None:
-            log.warning('Agent not found in database')
-            self.send_error(status_code=404)
-            return
+        agent = self.agent
+
         if agent.car is None:
             log.warning('Agent {} cheating!!! MainMenuNucoilHandler without car'.format(agent))
             self.send_error(status_code=404)
