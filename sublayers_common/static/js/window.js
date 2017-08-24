@@ -221,7 +221,10 @@ var WindowTemplateManager = (function () {
                 temp_window.mainDiv.css('z-index', self.count);
 
                 if (open_call_back && typeof(open_call_back) === 'function') open_call_back(temp_window.mainDiv);
-            }
+            },
+            error: function (jqXHR, textStatus, errorThrown){
+                console.log(jqXHR, textStatus, errorThrown);
+            },
         });
     };
 
