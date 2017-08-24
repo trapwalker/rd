@@ -131,6 +131,9 @@ def setup():
     for fn in glob(os.path.join(CONF_FOLDER, 'sites-available', '*.conf')):
         link(fn, os.path.join(CONF_FOLDER, 'sites-enabled', ''), replace=True)
 
+    open(os.path.join(CONF_FOLDER, 'ssl.conf'), 'w').close()
+    open(os.path.join(CONF_FOLDER, 'ssl_redirect.conf'), 'w').close()
+
     app_root_abs_path = os.path.abspath(APP_ROOT).replace("\\", "/")
     log.debug('Making application root path inclusion: %r', app_root_abs_path)
     with open(PROJECT_ROOT_CONF_FN, 'w') as f:
