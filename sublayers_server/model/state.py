@@ -344,7 +344,11 @@ class MotionState(BaseMotionState):
             self._turn_sign = self.turn
             if abs(self.a) > 0.0:
                 aa = 2 * abs(self.a) / self.ac_max
-                m = aa / sqrt(1 - aa ** 2)
+                try:
+                    m = aa / sqrt(1 - aa ** 2)
+                except Exception as e:
+                    log.exception('ERROR in state.py: {e!r} # details: aa={aa!r}; a={self.a!r}; ac_max={self.ac_max!r}'.format(**locals()))
+                    raise e
                 self._sp_m = m
                 self._sp_fi0 = self.sp_fi(self.t0)
                 self._rv_fi = acos(m / sqrt(1 + m ** 2))
