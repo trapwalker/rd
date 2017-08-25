@@ -269,7 +269,7 @@ class Town(MapLocation):
         # не трогать нормальных мобов около города
         # todo: потом сделать как-то на основе ТОЛЬКО кармы
         from sublayers_server.model.ai_dispatcher import AIAgent
-        if isinstance(agent, AIAgent) and agent.example.profile.karma_norm > 0.0:
+        if isinstance(agent, AIAgent) and agent.example.profile.karma_norm > -0.1:
             return
         if self.can_attack() and agent.car and (self.position(time).distance(agent.car.position(time)) < self.example.p_enter_range or damage):
             self.enemy_agents[agent.print_login()] = time + self.aggro_time
