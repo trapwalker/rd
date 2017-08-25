@@ -68,6 +68,11 @@ class BaseMotionState(object):
         self._sp_m = 0.0
         self._sp_fi0 = 0.0
         self._rv_fi = 0.0
+        self.errors = []
+
+    def error(self, info):
+        self.errors.append(info)
+        log.warning(info)
 
     def fix(self, t=None, dt=0.0):
         t = (self.t0 if t is None else t) + dt
@@ -186,8 +191,27 @@ class MotionState(BaseMotionState):
     ):
         super(MotionState, self).__init__(t=t, p=p, fi=fi, r_min=r_min, ac_max=ac_max, v=v)
         half_ac_max = 0.5 * self.ac_max
-        assert (a_forward < half_ac_max) and (a_backward < half_ac_max) and (a_braking < half_ac_max)
-        assert (v_forward >= 0.0) and (v_backward <= 0.0)
+
+        if abs(a_forward) >= half_ac_max:
+            self.error("!!! MotionState: a_forward({a_forward}) >= 0.5 * ac_max({self.ac_max}). Set to 0.99*ac_max/2".format(**locals()))
+            a_forward = 0.99 * half_ac_max
+
+        if abs(a_backward) >= half_ac_max:
+            self.error("!!! MotionState: a_backward({a_backward}) >= 0.5 * ac_max({self.ac_max}). Set to 0.99*ac_max/2".format(**locals()))
+            a_backward = -0.99 * half_ac_max
+
+        if abs(a_braking) >= half_ac_max:
+            self.error("!!! MotionState: a_braking({a_braking}) >= 0.5 * ac_max({self.ac_max}). Set to 0.99*ac_max/2".format(**locals()))
+            a_braking = -0.99 * half_ac_max
+
+        if v_forward < 0.0:
+            self.error("!!! MotionState: v_forward({v_forward}) < 0. Set to 0".format(**locals()))
+            v_forward = 0.0
+
+        if v_backward > 0.0:
+            self.error("!!! MotionState: v_backward({v_backward}) > 0. Set to 0".format(**locals()))
+            v_backward = 0.0
+
         self.v_forward = v_forward
         self.v_backward = v_backward
         self.a_forward = a_forward
@@ -387,8 +411,6 @@ class MotionState(BaseMotionState):
         res.target_point = self.target_point
         res.u_cc = self.u_cc
         return res
-
-
 
 
 if __name__ == '__main__':

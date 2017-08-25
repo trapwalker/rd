@@ -202,8 +202,13 @@ class MotionTask(TaskSingleton):
             log.exception(e)
             if self.owner.main_agent:
                 self.owner.main_agent.log.info('on_perform_update_state error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
-            self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
-            self.owner.state.p0 = last_owner_position
+            self.owner.state = state = MotionState(t=event.time, **self.owner.init_state_params())
+            state.p0 = last_owner_position
+            if state.errors:
+                log.warning('!!! State ERROR {where}:\n    {errors}'.format(
+                    where=self.owner and self.owner.example,
+                    errors='\n    '.join(state.errors),
+                ))
             self.owner.set_motion(cc=0.0, time=event.time)
             # self.owner.server.stop()
 
@@ -235,9 +240,14 @@ class MotionTask(TaskSingleton):
                 log.exception(e)
                 if owner.main_agent:
                     owner.main_agent.log.info('_calc_goto error for {} {} cc={} turn={} tp={}'.format(self.owner, event.time, self.cc, self.turn, self.target_point))
-                self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
+                self.owner.state = state = MotionState(t=event.time, **self.owner.init_state_params())
                 self.owner.state.p0 = owner_position
                 self.owner.set_motion(cc=0.0, time=event.time)
+                if state.errors:
+                    log.warning('!!! State ERROR {where}:\n    {errors}'.format(
+                        where=self.owner and self.owner.example,
+                        errors='\n    '.join(state.errors),
+                    ))
                 # self.owner.server.stop()
         else:
             self._calc_keybord(start_time=event.time)
