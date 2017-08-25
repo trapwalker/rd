@@ -21,7 +21,7 @@ def create_agent(registry, user):
         log.warning('Trouble with create agent: ')
         log.exception(e)
         role_class_ex = registry.get('/registry/rpg_settings/role_class/chosen_one')
-        agent_parent = registry.get('/registry/agents/user')
+        agent_parent = registry.get('/registry/agents/user')  # todo: WAT?!!!
 
     agent_example = Agent(
         login=user.name,

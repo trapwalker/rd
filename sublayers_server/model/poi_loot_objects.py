@@ -192,7 +192,13 @@ class POICorpse(POIContainer):
         self.agent_donor = agent_viewer  # Для запоминания чей именно это труп
         self.donor_car = donor_example  # Для запоминания example мёртвой машинки
 
-        self.state = MotionState(t=time, **self.init_state_params())
+        self.state = state = MotionState(t=time, **self.init_state_params())
+        if state.errors:
+            log.warning('!!! State ERROR {where}:\n    {errors}'.format(
+                where=self.example or self.__class__.__name__,
+                errors='\n    '.join(state.errors),
+            ))
+
         self.cur_motion_task = None
 
         v_forward = self.donor_param_aggregate['v_forward']

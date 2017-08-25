@@ -235,6 +235,23 @@ class Chat(Message):
         return d
 
 
+class SystemChatMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] @{self.author} SAY "self.text">'
+
+    def __init__(self, text=None, **kw):
+        """
+        @param sublayers_server.model.agents.Agent author: Sender of message
+        @param unicode text: message text
+        """
+        super(SystemChatMessage, self).__init__(**kw)
+        self.text = text
+
+    def as_dict(self):
+        d = super(SystemChatMessage, self).as_dict()
+        d.update(text=self.text)
+        return d
+
+
 class Subjective(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] subj={self.subj}>'
 

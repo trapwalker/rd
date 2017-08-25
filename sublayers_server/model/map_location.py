@@ -266,6 +266,11 @@ class Town(MapLocation):
 
     def on_enemy_candidate(self, agent, damage, time):
         # log.info('{} on_enemy_candidate: {}'.format(self, agent))
+        # не трогать нормальных мобов около города
+        # todo: потом сделать как-то на основе ТОЛЬКО кармы
+        from sublayers_server.model.ai_dispatcher import AIAgent
+        if isinstance(agent, AIAgent) and agent.example.profile.karma_norm > -0.1:
+            return
         if self.can_attack() and agent.car and (self.position(time).distance(agent.car.position(time)) < self.example.p_enter_range or damage):
             self.enemy_agents[agent.print_login()] = time + self.aggro_time
             self.need_start_attack(obj=agent.car, time=time)
@@ -310,7 +315,8 @@ class Town(MapLocation):
         self.make_damage(obj=obj, time=event.time + delay)
 
         # Разослать всем сообщение о начале анимации дамага (старт ракеты-трассера)
-        for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+        # for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+        for agent in self.server.get_agents_around_position(time=event.time, pos=self.position(event.time), min_radius=5000):
             TownAttackMessage(agent=agent, town_position=self.position(event.time), target_id=obj.uid,
                               target_pos=obj.position(event.time), time=event.time, duration=delay).post()
 

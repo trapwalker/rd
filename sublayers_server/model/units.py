@@ -401,7 +401,13 @@ class Mobile(Unit):
 
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)
-        self.state = MotionState(t=time, **self.init_state_params())
+        self.state = state = MotionState(t=time, **self.init_state_params())
+        if state.errors:
+            log.warning('!!! State ERROR {where}:\n    {errors}'.format(
+                where=self.example or self.__class__.__name__,
+                errors='\n    '.join(state.errors),
+            ))
+
         self.fuel_state = FuelState(t=time, fuel=self.example.fuel, max_fuel=self._param_aggregate['max_fuel'])
         self.cur_motion_task = None
 

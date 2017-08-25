@@ -82,6 +82,7 @@ var TextConsoleManager = (function(){
     };
 
     TextConsoleManager.prototype.add_log_message = function(message) {
+        try {message = message.replace(/<br>/g, " "); }catch (e) {return};
         var jq_old_text = this.jq_main_div.find('.console-old-text');
         var old_text = jq_old_text.text();
         old_text = old_text.substr(old_text.length - 2000, 2000); // хранить последение 2000 символов
