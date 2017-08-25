@@ -198,6 +198,13 @@ class AgentConsoleNamespace(Namespace):
         for quest in self.agent.example.profile.quests:
             log.info('QUEST: {}'.format(quest))
 
+    def sys_message(self, message):
+        time = self.agent.server.get_time()
+        for agent in self.agent.server.agents.values():
+            if agent.connection:
+                messages.SystemChatMessage(text=message, agent=agent, time=time).post()
+
+
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):

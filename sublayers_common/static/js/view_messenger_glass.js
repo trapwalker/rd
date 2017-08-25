@@ -890,6 +890,8 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog('Подобрано: ' + msg.comment + '.');
                     new WTextArcade(msg.comment).start();
                     break;
+                case 'SystemChatMessage':
+                    this.addMessageToSys(msg.text);
             }
         }
         return true;
