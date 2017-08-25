@@ -446,6 +446,8 @@ var ViewMessengerGlass = (function () {
         });
         this.activeChat = aChat;
         this.page_global.chat = aChat;
+
+        if (aChat && aChat.chatArea) setTimeout(function(){aChat.chatArea.scrollTop(99999999);}, 300);
     };
 
     ViewMessengerGlass.prototype._resizePageControl = function(jq_list) {
@@ -1009,7 +1011,7 @@ var ViewMessengerGlass = (function () {
             pageBtn.addClass('wait');
         // Показать сообщение, опустив скрол дива
         mesDiv.slideDown('fast', function () {
-            chat.chatArea.scrollTop(99999999)
+            chat.chatArea.scrollTop(99999999);
         });
         // Добавить mesDiv и spanUser в mesList для этого chat
         chat.mesList.push({mesDiv: mesDiv});
@@ -1254,6 +1256,7 @@ var ViewMessengerGlass = (function () {
         jq_town_chat_div.append(this.parent);
         $('#VMGDynamicAreaForBorder').css('border-width', '0px');
         this.in_town = true;
+        setTimeout(chat.scroll_all_chats, 3000);
     };
 
     ViewMessengerGlass.prototype.showChatInMap = function(){
@@ -1261,7 +1264,30 @@ var ViewMessengerGlass = (function () {
         $('#VMGDynamicAreaForBorder').css('border-width', '1px');
         $('#VGM-PlayerInfoDivInCity').remove();
         this.in_town = false;
+        setTimeout(chat.scroll_all_chats, 3000);
     };
+
+    ViewMessengerGlass.prototype.scroll_all_chats = function(){
+        //console.log("ViewMessengerGlass.prototype.scroll_all_chats");
+        try {
+            chat.chats.forEach(function (achat) {
+                setTimeout(function () {
+                    if (achat.chatArea)achat.chatArea.scrollTop(99999999);
+                    //console.log(achat);
+                }, 1000);
+            });
+
+            chat.pages.forEach(function (page) {
+                setTimeout(function () {
+                    if (page.chat && page.chat.chatArea) page.chat.chatArea.scrollTop(99999999);
+                    //console.log(page);
+                }, 1000);
+            });
+
+        }
+        catch(e) {console.log(e);}
+    };
+
 
     return ViewMessengerGlass;
 })();
