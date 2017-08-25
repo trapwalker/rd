@@ -310,7 +310,8 @@ class Town(MapLocation):
         self.make_damage(obj=obj, time=event.time + delay)
 
         # Разослать всем сообщение о начале анимации дамага (старт ракеты-трассера)
-        for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+        # for agent in self.server.agents.values():  # todo: Ограничить круг агентов, получающих уведомление о взрыве, геолокацией.
+        for agent in self.server.get_agents_around_position(time=event.time, pos=self.position(event.time), min_radius=5000):
             TownAttackMessage(agent=agent, town_position=self.position(event.time), target_id=obj.uid,
                               target_pos=obj.position(event.time), time=event.time, duration=delay).post()
 
