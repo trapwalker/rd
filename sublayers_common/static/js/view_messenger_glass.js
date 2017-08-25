@@ -1146,6 +1146,7 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.addMessageToLog = function (aText, aImportant) {
+        try {aText = aText.replace(/<br>/g, " "); }catch (e) {return};
         // Найти чат для добавления в него сообщения
         var chat = this.page_log.log_chat;
         if(! chat) {
