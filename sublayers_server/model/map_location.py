@@ -266,6 +266,11 @@ class Town(MapLocation):
 
     def on_enemy_candidate(self, agent, damage, time):
         # log.info('{} on_enemy_candidate: {}'.format(self, agent))
+        # не трогать нормальных мобов около города
+        # todo: потом сделать как-то на основе ТОЛЬКО кармы
+        from sublayers_server.model.ai_dispatcher import AIAgent
+        if isinstance(agent, AIAgent) and agent.example.profile.karma_norm > 0.0:
+            return
         if self.can_attack() and agent.car and (self.position(time).distance(agent.car.position(time)) < self.example.p_enter_range or damage):
             self.enemy_agents[agent.print_login()] = time + self.aggro_time
             self.need_start_attack(obj=agent.car, time=time)
