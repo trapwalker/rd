@@ -740,6 +740,19 @@ var SettingsManager = (function() {
             },
             init: function() {settingsManager.options.map_route_accuracy.value = settingsManager.options.map_route_accuracy.currentValue = parseInt(settingsManager.options.map_route_accuracy.currentValue);}
         },
+        map_route_time: {
+            name: "map_route_time",
+            page: "other",
+            text_name: "Отображение примерного времени прибытия",
+            text_description: "Отображение приблизительного времени прибытия",
+            jq_div: null,
+            type: "list",
+            default: "last",
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Нет", value: ""}, {text: "Последняя точка", value: "last"}, {text: "Все точки", value: "all"}],
+            set_callback: function(new_value) {},
+        },
         auto_off_autofire_in_city: {
             name: "auto_off_autofire_in_city",
             page: "other",

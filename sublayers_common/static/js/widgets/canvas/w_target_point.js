@@ -1,7 +1,7 @@
 /*
- * Виджет для указания пункта назначения пользовательской машинки
- * Виджет находится на карте, поэтому ссылка на него находится в map_manager
- * для того, чтобы им было легко управлять (включать и выключать)
+ * Р’РёРґР¶РµС‚ РґР»СЏ СѓРєР°Р·Р°РЅРёСЏ РїСѓРЅРєС‚Р° РЅР°Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ РјР°С€РёРЅРєРё
+ * Р’РёРґР¶РµС‚ РЅР°С…РѕРґРёС‚СЃСЏ РЅР° РєР°СЂС‚Рµ, РїРѕСЌС‚РѕРјСѓ СЃСЃС‹Р»РєР° РЅР° РЅРµРіРѕ РЅР°С…РѕРґРёС‚СЃСЏ РІ map_manager
+ * РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РёРј Р±С‹Р»Рѕ Р»РµРіРєРѕ СѓРїСЂР°РІР»СЏС‚СЊ (РІРєР»СЋС‡Р°С‚СЊ Рё РІС‹РєР»СЋС‡Р°С‚СЊ)
  */
 
 var WCanvasTargetPoint = (function (_super) {
@@ -23,15 +23,15 @@ var WCanvasTargetPoint = (function (_super) {
 
         ctx.save();
 
-        // Вычисляем координаты
+        // Р’С‹С‡РёСЃР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹
         var tp_ctx = mulScalVector(subVector(this.target_point, this.car.getCurrentCoord(time)), 1.0 / mapCanvasManager.zoom_koeff);
-        if (tp_ctx.abs() > 10.0) { // если меньше 10 пикселей, то просто не показываем
+        if (tp_ctx.abs() > 10.0) { // РµСЃР»Рё РјРµРЅСЊС€Рµ 10 РїРёРєСЃРµР»РµР№, С‚Рѕ РїСЂРѕСЃС‚Рѕ РЅРµ РїРѕРєР°Р·С‹РІР°РµРј
             ctx.translate(mapCanvasManager.cur_ctx_car_pos.x, mapCanvasManager.cur_ctx_car_pos.y);
 
             //ctx.strokeStyle = 'rgba(0, 255, 161, 0.2)';
             //ctx.setLineDash([8, 5]);
 
-            // чтобы линия не наезжала на крестик
+            // С‡С‚РѕР±С‹ Р»РёРЅРёСЏ РЅРµ РЅР°РµР·Р¶Р°Р»Р° РЅР° РєСЂРµСЃС‚РёРє
             //tp_ctx = summVector(tp_ctx, normVector(tp_ctx, -10));
 
             var gradient = ctx.createLinearGradient(0, 0, tp_ctx.x, tp_ctx.y);
@@ -45,7 +45,7 @@ var WCanvasTargetPoint = (function (_super) {
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
 
-            // Отрисовка линии
+            // РћС‚СЂРёСЃРѕРІРєР° Р»РёРЅРёРё
             ctx.beginPath();
             ctx.moveTo(tp_ctx.x, tp_ctx.y);
             ctx.lineTo(0, 0);
@@ -69,7 +69,7 @@ var WCanvasTargetPoint = (function (_super) {
     };
 
     WCanvasTargetPoint.prototype.activate = function(target_point){
-        // если таргет поинт не сменился, то выход
+        // РµСЃР»Рё С‚Р°СЂРіРµС‚ РїРѕРёРЅС‚ РЅРµ СЃРјРµРЅРёР»СЃСЏ, С‚Рѕ РІС‹С…РѕРґ
         if (this.equals_target_points(target_point))
             return;
         audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
@@ -122,14 +122,25 @@ var MapRoute = (function (_super) {
 
         var car_pos = this.car.getCurrentCoord(time);
 
-        // Попробовать перейти на следующую точку
+        // РџРѕРїСЂРѕР±РѕРІР°С‚СЊ РїРµСЂРµР№С‚Рё РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ С‚РѕС‡РєСѓ
         if (this.need_next_point(car_pos))
             this.get_next_point();
 
         ctx.save();
 
+
+        var settings_view_route_time = settingsManager.options.map_route_time.currentValue;
+        if (settings_view_route_time) {
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = "6pt MICRADI";
+            ctx.fillStyle = '#00ffa1';
+        }
+
         var current_point = car_pos;
         var current_ctx_pos = mapCanvasManager.cur_ctx_car_pos;
+        var current_car_speed = Math.abs(this.car.getCurrentSpeed(time));
+        var route_time = 0;
         for (var i = 0; i < this.points.length; i++) {
             var p = this.points[i];
             var tp_ctx = mulScalVector(subVector(p, current_point), 1.0 / mapCanvasManager.zoom_koeff);
@@ -150,7 +161,7 @@ var MapRoute = (function (_super) {
             ctx.globalAlpha = 0.2;
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
-            // Отрисовка линии
+            // РћС‚СЂРёСЃРѕРІРєР° Р»РёРЅРёРё
             ctx.beginPath();
             ctx.moveTo(tp_ctx.x, tp_ctx.y);
             ctx.lineTo(0, 0);
@@ -163,6 +174,19 @@ var MapRoute = (function (_super) {
                 Math.round(tp_ctx.y - this.icon_height_half),
                 this.icon_width, this.icon_height
             );
+
+            if (settings_view_route_time) {
+                if (current_car_speed > 1.0)  // РћС‚СЂРёСЃРѕРІРєР° РІСЂРµРјРµРЅРё РїСЂРёР±С‹С‚РёСЏ Рє С‚РѕС‡РєРµ
+                    route_time += distancePoints(current_point, p) / current_car_speed;
+                if (settings_view_route_time == 'all' || i == this.points.length - 1) {
+                    var minutes = Math.floor(route_time / 60.);
+                    var time_str = "";
+                    if (minutes > 60) time_str = "> 1h";
+                    else if (minutes < 5) time_str = "";
+                    else time_str = minutes.toFixed(0) + 'm';
+                    if (time_str) ctx.fillText(time_str, tp_ctx.x, tp_ctx.y - 15);
+                }
+            }
 
             ctx.restore();
 
@@ -190,14 +214,14 @@ var MapRoute = (function (_super) {
         if (this.target_point) {
             if (!not_send_to_server) {
                 clientManager.sendGoto(this.target_point);
-                // звук взята следующая точка
+                // Р·РІСѓРє РІР·СЏС‚Р° СЃР»РµРґСѓСЋС‰Р°СЏ С‚РѕС‡РєР°
                 if (!window_focused){
                     audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                 }
             }
         }
         else {
-            // звук маршрут завершён
+            // Р·РІСѓРє РјР°СЂС€СЂСѓС‚ Р·Р°РІРµСЂС€С‘РЅ
             if (!window_focused) {
                 audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                 audioManager.play({name: "path_setting", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, time: 0.15});
@@ -213,7 +237,7 @@ var MapRoute = (function (_super) {
     MapRoute.prototype.activate = function (target_point) {
         //console.log('MapRoute.prototype.activate');
         if (this.equals_target_point(target_point)) {
-            // Проверить, если вкладка не активна, и до точки недалеко, то взять следующую точку
+            // РџСЂРѕРІРµСЂРёС‚СЊ, РµСЃР»Рё РІРєР»Р°РґРєР° РЅРµ Р°РєС‚РёРІРЅР°, Рё РґРѕ С‚РѕС‡РєРё РЅРµРґР°Р»РµРєРѕ, С‚Рѕ РІР·СЏС‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ С‚РѕС‡РєСѓ
             if (!window_focused && this.need_next_point(this.car.getCurrentCoord(clock.getCurrentTime())))
                 this.get_next_point();
             return;
@@ -239,7 +263,7 @@ var MapRoute = (function (_super) {
 
     MapRoute.prototype.add_point = function(point, not_send_to_server) {
         //console.log("MapRoute.prototype.add_point", point);
-        // не учитывать, если клик был рядом с последней точкой (или с любой, тогда заменять, например)
+        // РЅРµ СѓС‡РёС‚С‹РІР°С‚СЊ, РµСЃР»Рё РєР»РёРє Р±С‹Р» СЂСЏРґРѕРј СЃ РїРѕСЃР»РµРґРЅРµР№ С‚РѕС‡РєРѕР№ (РёР»Рё СЃ Р»СЋР±РѕР№, С‚РѕРіРґР° Р·Р°РјРµРЅСЏС‚СЊ, РЅР°РїСЂРёРјРµСЂ)
         var last_p = this.points && this.points[this.points.length - 1];
 
         if (!last_p)
@@ -269,4 +293,5 @@ var MapRoute = (function (_super) {
     };
 
     return MapRoute;
+
 })(VisualObject);
