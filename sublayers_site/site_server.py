@@ -41,11 +41,11 @@ from sublayers_site.handlers.email_confirm import EmailConfirmHandler
 from sublayers_common import mailing
 from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
+from sublayers_common.site_locale import load_locale_objects
 
 import sublayers_server.model.registry_me.classes  #autoregistry classes
 from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_site.news import NewsManager
-from sublayers_site.site_locale import load_locale_objects
 
 
 class Application(BaseApplication):
@@ -90,7 +90,7 @@ class Application(BaseApplication):
 
         self.reg = get_global_registry(options.world_path, reload=options.reg_reload)
         self.news_manager = NewsManager()
-        load_locale_objects()  # Загрузка всех локализаций
+        load_locale_objects('../sublayers_common/static/locale/site')  # Загрузка всех локализаций
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/email_confirm", EmailConfirmHandler),

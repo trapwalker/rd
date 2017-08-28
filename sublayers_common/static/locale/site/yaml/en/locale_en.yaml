@@ -1,0 +1,391 @@
+"locale": "en"
+
+# Общее
+
+# Главный шаблон - Описания сайта # sm
+sm_title: "Road Dogs: A Post Nuclear Privateer/Trader MMORPG (PC, Android, iOS)"
+sm_description: Road Dogs official web-site. Mad Max – style combats featuring post apocalyptic barren vehicles.
+
+
+# Окно регистрации и авторизации  site_window_reg.html  # swr
+swr_Registration: "Registration"
+swr_Password: "PASSWORD>"
+swr_sign up: "Sign up"
+swr_Authorisation: "Sign in"
+swr_Log_In_1: "Sign in"
+swr_Log_In_2: ""
+swr_Repair Password: "Restore password"
+swr_1. enter_with_VK : 1. VK
+swr_2. enter_with_FB : 2. FACEBOOK
+swr_3. enter_with_TWitter : 3. TWITTER
+swr_4. enter_with_G+ : 4. GOOGLE+
+
+
+# Окно регистрации  site_window_reg_1.html   # swr1
+swr1_nick and avatar : Name and image
+swr1_nick : NAME
+swr1_class : Class
+swr1_back : Back
+swr1_next : Next
+
+
+# Окно регистрации  site_window_reg_2.html   # swr2
+swr2_skills : Skills
+swr2_driving : Drive
+swr2_shooting : Shoot
+swr2_masking : Hide
+swr2_engineering : Mechanic
+swr2_trading : Barter
+swr2_leading : Leadship
+swr2_free_skills : "Available points:"
+swr2_perks : Perks
+swr2_free_perks : "Available points:"
+swr2_back : Back
+swr2_next : Next
+
+
+# Окно регистрации  site_window_reg_3.html   # swr3
+swr3_class : "Class:"
+swr3_date : "Date of issue:"
+swr3_balance : "Balance:"
+swr3_skills : "Skills:"
+swr3_driving : "Drive:"
+swr3_shooting : "Shoot:"
+swr3_masking : "Hide:"
+swr3_engineering : "Mechanic:"
+swr3_trading : "Barter:"
+swr3_leading : "Leadership:"
+swr3_perks : "Perks:"
+
+
+# Окно персональной информации site_personal_info.html
+spi_enter : Enter the game
+spi_out : Sign out
+
+
+# Окно быстрой игры site_quick_game.html  # sqg
+sqg_header : Quick fight
+sqg_nickname : Player
+sqg_game : Go!
+sqg_records : High Score
+sqg_points : Score
+sqg_gamer_name : Name
+
+
+# Окно новостей site_news.html   # sn
+sn_news: News
+
+
+# Окно рейтингов site_ratings.html  # sr
+sr_traders : Traders
+sr_looters : Robbers
+sr_heroes : Heroes
+sr_villain : Villains
+sr_leaders : Leaders
+sr_warriors : Warriors
+sr_adventures : Adventurers
+
+sr_traders_small_descr: Top traders
+sr_looters_small_descr: Top robbers
+sr_heroes_small_descr: Top heroes
+sr_villain_small_descr: Top villians
+sr_leaders_small_descr: Top leaders
+sr_warriors_small_descr: Top warriors
+sr_adventures_small_descr: Top adventurers
+
+sr_name: Name
+sr_score: Points
+sr_rating_descr: Ranking description
+sr_traders_descr: The noocoins total earned by trade skills, as well as the numbers of the purchased exported and sold imported goods.
+sr_looters_descr: The cost ratio of the loot beaten from other characters to that lost by the character.
+sr_heroes_descr: The ratio of the highest-ever karma of the character and the current karma.
+sr_villain_descr: The ratio of the lowest-ever karma of the character and the current karma.
+sr_leaders_descr: The experience and loot beaten by the participants of the party controlled by the character.
+sr_warriors_descr: The fighting experience and the destroyed transport driven by the characters of similar level.
+sr_adventures_descr: The ratio of fulfilled and failed missions, their level, as well as the diversity of the quest grantors.
+
+
+# Шаблон персональной информации person_site_info.html  # tpsi
+tpsi_lvl : Level
+tpsi_class : "Class:"
+tpsi_karma : "Carma:"
+tpsi_driving : "Drive:"
+tpsi_shooting : "Shoot:"
+tpsi_masking : "Hide:"
+tpsi_engineering : "Mechanic:"
+tpsi_trading : "Barter:"
+tpsi_leading : "Leadship:"
+
+
+# Заполнение консоли: consoleWPI  # con_wpi
+con_wpi_1: Navigation system loading.
+con_wpi_2_1: Done.
+con_wpi_2_2: "Welcome, "
+con_wpi_2_3: "Your balance:"
+con_wpi_2_4: "Your location:"
+con_wpi_2_5: "Insurance:"
+con_wpi_2_6: "Active quests:"
+
+
+con_int: Interrupted.
+
+# Заполнение консоли: consoleWPI  # con_pre
+con_pre_1 : Loading.
+con_pre_2 : Download source identified.
+con_pre_3 : Deciphering the boot sector.
+con_pre_4 : Done.
+con_pre_5 : Signal localize.
+con_pre_6 : Location determined.
+con_pre_7 : Satellite phishing.
+con_pre_8 : Satellite connection is established.
+con_pre_9: " Nuke Commander  v."
+con_pre_10: "     Nukeoil corp. 2084.     "
+con_pre_11: "Server status: "
+con_pre_12: "Drivers found: "
+con_pre_13: "Latest news: "
+con_pre_14: "Data loading: "
+
+
+# Консоль регистрации
+con_wreg_msg1_part1: |
+  ================================================
+  >                                              <
+  >        Nuke Commander v.
+con_wreg_msg1_part2: |
+  <
+  >                                              <
+  >           NukeOil Corporation 20841               <
+  >                                              <
+  ================================================
+con_wreg_msg2: |
+  Navigation system loading.
+con_wreg_msg3: |
+  Access denied.
+con_wreg_msg4: |
+  Drivers accounting protocol loading.
+con_wreg_msg5: |
+  Done.
+
+  --------------------------------------------------------------
+  To register a new driver in the system log in under your e-mail and passwords or connect via one of the external networks.
+
+  If you are a registered driver, log in the system using the log-in menu or connect via one of the external networks.
+
+  Press <1> for sign in with vk.com
+  Press <2> for sign in with facebook.com
+  Press <3> for sign in with twitter.com
+  Press <4> for sign in with plus.google.com
+  --------------------------------------------------------------
+con_wreg_msg6: |
+  Sign in with steampowered.com
+con_wreg_msg7: |
+  Error: not available in alpha test mode.
+con_wreg_msg8: |
+  Sign in with facebook.com
+con_wreg_msg9: |
+  Error: not available in alpha test mode.
+con_wreg_msg10: |
+  Sign in with twitter.com
+con_wreg_msg11: |
+  Error: not available in alpha test mode.
+con_wreg_msg12: |
+  Sign in with plus.google.com
+con_wreg_msg13: |
+  Error: not available in alpha test mode.
+con_wreg_msg14: |
+  Request for navigation system database data entry.
+con_wreg_msg15: |
+  Done.
+
+  --------------------------------------------------------------
+  Enter your email address.
+  --------------------------------------------------------------
+con_wreg_msg16: |
+  Request for navigation system database data entry.
+con_wreg_msg17: |
+  Done.
+
+  --------------------------------------------------------------
+  Enter your email address.
+  --------------------------------------------------------------
+con_wreg_msg18: |
+  Request for navigation system database data entry.
+con_wreg_msg19: |
+  Done.
+
+  --------------------------------------------------------------
+  Create a new password.
+  --------------------------------------------------------------
+con_wreg_msg20: |
+  Request for navigation system database data entry.
+con_wreg_msg21: |
+  Done.
+
+  --------------------------------------------------------------
+  Enter password
+  --------------------------------------------------------------
+con_wreg_msg22: |
+  Registration process activation.
+con_wreg_msg23: |
+  Done.
+con_wreg_msg24: |
+  Data upload error.
+
+  Invalid e-mail or password is incorrect.
+
+  --------------------------------------------------------------
+   Enter a valid e-mail address.
+   Enter the password corresponding to the format of the input system.
+   --------------------------------------------------------------
+con_wreg_msg25: |
+  Data upload error.
+
+  Driver with this email is already registered.
+con_wreg_msg26: |
+  Registration process activation.
+con_wreg_msg27: |
+  System not respond. Please try again later.
+con_wreg_msg28: |
+  Registration process activation.
+con_wreg_msg29: |
+  Done.
+con_wreg_msg30: |
+  Access denied. Username or password you entered is incorrect.
+
+  --------------------------------------------------------------
+  Check the username and the password you entered is correct. Is case sensitive and input language.
+  --------------------------------------------------------------
+con_wreg_msg31: |
+  Registration process activation.
+con_wreg_msg32: |
+  System not respond. Please try again later.
+con_wreg_msg33: |
+  Access recovery process activation.
+con_wreg_msg34: |
+  Error: not available in alpha test mode.
+con_wreg_msg35: |
+  Class loading.
+con_wreg_msg36: |
+  Done.
+
+  --------------------------------------------------------------
+con_wreg_msg37: |
+  Request for navigation system database data entry.
+con_wreg_msg38: |
+  Done.
+
+  --------------------------------------------------------------
+  Enter the name. Allowed characters:
+  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+  0 1 2 3 4 5 6 7 8 9
+  _ -
+  Space not allowed.
+  --------------------------------------------------------------
+con_wreg_msg39: |
+  Registration process activation.
+con_wreg_msg40: |
+  Data upload error.
+
+  Username is incorrect
+
+  --------------------------------------------------------------
+  Please enter a valid nickname.
+  --------------------------------------------------------------
+con_wreg_msg41: |
+  Data upload error.
+
+  Driver with the same name is already exists.
+con_wreg_msg42: |
+  Registration process activation.
+con_wreg_msg43: |
+  System not respond. Please try again later.
+con_wreg_msg44: |
+  Registration process activation.
+con_wreg_msg45: |
+  System not respond. Please try again later.
+con_wreg_msg46: |
+  Perk loading:
+con_wreg_msg47: |
+  Done.
+
+  --------------------------------------------------------------
+con_wreg_msg48: |
+  Creating image of Nukeoil Driver's License.
+con_wreg_msg49: |
+  Error. Detected unallocated points.
+
+  --------------------------------------------------------------
+  Distribute all available points.
+  --------------------------------------------------------------
+con_wreg_msg50: |
+  Registration process activation.
+con_wreg_msg51: |
+  Done.
+con_wreg_msg52:
+  Registration process activation.
+con_wreg_msg53: |
+  System not respond. Please try again later.
+con_wreg_msg54 : |
+  Registration process activation.
+con_wreg_msg55: |
+  System not respond. Please try again later.
+con_wreg_msg56: |
+  Skill loading:
+con_wreg_msg57: |
+  Done.
+
+  --------------------------------------------------------------
+  Drive.
+  Adds to the maximum speed and cornering ability of the driven transport. Complex vehicles have set requirements to the driving skills level.
+  --------------------------------------------------------------
+con_wreg_msg58: |
+  Done.
+
+  --------------------------------------------------------------
+  Shoot.
+  Adds to the damage per second caused by automatic weapons, and the damage caused by salvo weapons. Complex weaponry has set requirements to the shooting skills level.
+  --------------------------------------------------------------
+con_wreg_msg59: |
+  Done.
+
+  --------------------------------------------------------------
+  Hide.
+  Minimizes the distance required by other players and communities defense systems to detect the character’s vehicle. Stealth determines the conspicuity of the hideouts made up by the character.
+  --------------------------------------------------------------
+con_wreg_msg60: |
+  Done.
+
+  --------------------------------------------------------------
+  Mechanics.
+  Minimizes the wear rate of the character’s vehicle, increases the efficiency of field maintenance. The mechanics skill determines the speed of hideouts construction and the level of danger of the protective traps.
+  --------------------------------------------------------------
+con_wreg_msg61: |
+  Done.
+
+  --------------------------------------------------------------
+  Barter.
+  Minimizes the prices for goods and services, provided by the characters. Adds to the mission rewards.
+  --------------------------------------------------------------
+con_wreg_msg62: |
+  Done.
+
+  --------------------------------------------------------------
+  Leadership.
+  Determines the maximum number of players who can join the character’s party. The characters issuing group missions have set leadership skill requirements.
+  --------------------------------------------------------------
+con_wreg_msg63: |
+  Stat loading:
+con_wreg_msg64: |
+  Done.
+
+  --------------------------------------------------------------
+  Skills.
+  Free skill points are generated along with the character’s experience. A player is free to distribute them. Every 10 skill points level up the character.
+  --------------------------------------------------------------
+con_wreg_msg65: |
+  Done.
+
+  --------------------------------------------------------------
+  Perks.
+  Every new character level gives one perk point. The appearing talents depend on the class, skills, and the existing talents of the character.
+  --------------------------------------------------------------

@@ -30,7 +30,7 @@ class LocalizedString(EmbeddedDocument):
 
 
 class LocalizedStringField(EmbeddedDocumentField):
-    def __init__(self, document_type=LocalizedString(), default=LocalizedString, **kwargs):
+    def __init__(self, document_type=LocalizedString, default=LocalizedString, **kwargs):
         super(LocalizedStringField, self).__init__(document_type=document_type, default=default, **kwargs)
 
     def to_python(self, value):

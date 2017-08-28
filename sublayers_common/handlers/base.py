@@ -10,8 +10,10 @@ from mongoengine.queryset import DoesNotExist
 
 from random import randint
 from time import time
+from functools import partial
 
 from sublayers_common.user_profile import User
+from sublayers_common.site_locale import locale
 
 
 def static_mobile_link_repr(link):
@@ -134,8 +136,24 @@ class BaseHandler(AuthHandlerMixin):
             version=self.application.version,
             static_world_link_repr=static_world_link_repr,
             static_mobile_link_repr=static_mobile_link_repr,
+            _=partial(locale, self.user_lang),
         )
         return namespace
+
+    def prepare(self):
+        super(BaseHandler, self).prepare()
+        user_lang = self.get_cookie('lang', None)
+        # если cookie с языком не задана, то смотреть на host
+        if user_lang is None:
+            host = self.request.host
+            # todo: ##REFACTORING host name
+            if host == 'roaddogs.online':
+                user_lang = 'en'
+            elif host == 'roaddogs.ru':
+                user_lang = 'ru'
+            else:
+                user_lang = 'en'
+        self.user_lang = user_lang
 
 
 class FailUnauthorizedHandler(BaseHandler):

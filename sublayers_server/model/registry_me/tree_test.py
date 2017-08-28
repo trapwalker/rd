@@ -222,6 +222,16 @@ def test_perf(reload=True, save_loaded=True):
     globals().update(locals())
 
 
+@T(logger=log)
+def test_localization(reload=True, save_loaded=True):
+    import random
+    import sublayers_server.model.registry_me.classes
+    from sublayers_server.model.registry_me.classes.agents import Agent
+    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+
+    globals().update(locals())
+
+
 if __name__ == '__main__':
     import math
     log.info('{:=<80}'.format('=== tree_test START '))
@@ -230,10 +240,10 @@ if __name__ == '__main__':
     db = connect(db=db_name)
     log.info('Use {db_name!r} db'.format(**locals()))
 
-    rel = 0
+    rel = 1
     save = 0 #True
 
-    test_perf(reload=rel, save_loaded=save)
+    test_localization(reload=rel, save_loaded=save)
 
     #its = sorted([(v, k) for k, v in c.items()], reverse=True)
 

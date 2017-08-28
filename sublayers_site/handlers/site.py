@@ -11,7 +11,7 @@ import tornado
 
 from tornado.options import options
 from sublayers_common.user_profile import User
-from sublayers_site.site_locale import locale, locale_objects
+from sublayers_common.site_locale import locale, locale_objects
 from sublayers_site.handlers.site_auth import get_forum_cookie_str
 
 
