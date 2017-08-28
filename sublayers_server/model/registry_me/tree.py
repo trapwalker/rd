@@ -549,6 +549,9 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
                 subfield = field.field
                 return {k: clean_value(subfield, v) for k, v in value.iteritems()}
 
+            if isinstance(field, LocalizedStringField):
+                return value.as_dict()
+
             assert not hasattr(value, '_instance'), 'Unsupported value {!r} of field {!r} to serializtion by as_client_dict'.format(value, field)
             return value
 
@@ -657,7 +660,10 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
                         expanded_value[k] = new_v
         else:
             expanded_value = field.to_python(value)
-            if field.__class__.__name__ != 'PositionField':
+            if (
+                not isinstance(field, LocalizedStringField)
+                and field.__class__.__name__ != 'PositionField'
+            ):
                 log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
 
         return expanded_value

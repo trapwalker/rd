@@ -5,7 +5,7 @@ import sys
 import logging
 log = logging.getLogger(__name__)
 
-from mongoengine import EmbeddedDocument, EmbeddedDocumentField, StringField, MapField
+from mongoengine import EmbeddedDocument, EmbeddedDocumentField, StringField
 
 
 DEFAULT_LANG = 'en'
@@ -27,6 +27,21 @@ class LocalizedString(EmbeddedDocument):
     def as_dict(self):
         # todo: ##REFACTORING
         return dict(en=self.en, ru=self.ru)
+
+    def get(self, lang, *default):
+        try:
+            if lang in self._fields_ordered:
+                return getattr(self, lang)
+        except AttributeError:
+            pass
+
+        log.warning('The language %r is not supported', lang)
+        if default:
+            return default[0]
+        raise KeyError('The language %r is not supported' % lang)
+
+    def __getitem__(self, name):
+        return self.get(name, getattr(self, DEFAULT_LANG))
 
 
 class LocalizedStringField(EmbeddedDocumentField):

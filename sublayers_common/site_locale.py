@@ -3,9 +3,11 @@
 import logging
 log = logging.getLogger(__name__)
 
-from os import listdir, walk
-from os.path import isfile, join
+from os import walk
+from os.path import join
 import yaml
+
+from sublayers_server.model.registry_me.localization import LocalizedString
 
 
 locale_objects = dict()
@@ -29,5 +31,8 @@ def load_locale_objects(path):
 
 
 def locale(lang, key):
+    if isinstance(key, LocalizedString) or isinstance(key, dict):
+        return key.get(lang, '##LANG NOT SUPPORTED##')
+
     locale_lang = locale_objects.get(lang, None)
     return locale_lang and locale_lang.get(key, key) or key

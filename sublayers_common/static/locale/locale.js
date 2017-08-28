@@ -18,12 +18,13 @@ function loadLocale(callback) {
 }
 
 function _(str) {
-	if (locale_object && locale_object.hasOwnProperty(str)) {
-		return locale_object[str];
-	}
+    // TODO: Тут нужно проверить не является ли str объектом и если так, то вернуть по ключу из него en или ru строку в соответствии с текущей локалью клиента
+    if (locale_object && locale_object.hasOwnProperty(str)) {
+        return locale_object[str];
+    }
     if (locale_object)
         console.warn('Not found translate in [' + locale_object.locale + '] for: ' + str);
     else
         console.warn('locale_object not loaded');
-	return str;
+    return str;
 }

@@ -11,6 +11,7 @@ from sublayers_server.model.registry_me.tree import (
     Node, Subdoc,
     IntField, StringField, FloatField, EmbeddedDocumentField, ListField,
     RegistryLinkField, EmbeddedNodeField, PositionField, BooleanField,
+    LocalizedStringField,
 )
 
 SLOT_LOCK = "reg:///registry/items/slot_item/_lock"
@@ -161,9 +162,9 @@ class Mobile(Node):
     base_exp_price = FloatField(root_default=1, caption=u"Цена")
 
     # Косметика
-    class_car     = StringField(caption=u"Класс автомобиля", tags={'client'})
-    sub_class_car = StringField(caption=u"Подкласс автомобиля", tags={'client'})
-    name_car      = StringField(caption=u"Название автомобиля", tags={'client'})
+    class_car     = LocalizedStringField(caption=u"Класс автомобиля", tags={'client'})
+    sub_class_car = LocalizedStringField(caption=u"Подкласс автомобиля", tags={'client'})
+    name_car      = LocalizedStringField(caption=u"Название автомобиля", tags={'client'})
 
     # Влияние скилов
     driving_r_min             = FloatField(caption=u"Влияние Вождения на Минимальный радиус разворота")

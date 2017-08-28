@@ -320,7 +320,9 @@ class TunerItem(SlotItem):
         return None
 
     def html_description(self):
-        car_str = ', '.join([car_rec.car.title for car_rec in self.images])
+        # TODO: ##LOCALIZATION Нужно пробрасывать в html названия в виде локализационных объектов завёрнутых в js
+        log.warning(u'### ВНИМАНИЕ! Здесь некорректно берется локализованное имя машин!')
+        car_str = ', '.join([unicode(car_rec.car.title) for car_rec in self.images])
         return (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
                 u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str))
 

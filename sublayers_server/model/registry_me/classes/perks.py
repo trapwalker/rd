@@ -82,7 +82,9 @@ class Perk(Node):
                 main_req_str += u'<div class="mechanic-description-line left-align">{}: {}</div>'.format(attr_str, attr_value)
         perks_req_str = ''
         if self.perks_req:
-            perks_req_str = u'<div class="mechanic-description-line left-align">Необходимые перки: {}</div>'.format(', '.join([perk.title for perk in self.perks_req]))
+            # TODO: ##LOCALIZATION Нужно пробрасывать в html названия перков в виде локализационных объектов завёрнутых в js
+            log.warning(u'### ВНИМАНИЕ! Здесь некорректно перется локализованное имя перка!')
+            perks_req_str = u'<div class="mechanic-description-line left-align">Необходимые перки: {}</div>'.format(', '.join([unicode(perk.title) for perk in self.perks_req]))
         return (main_req_str + perks_req_str +
                 u'<div class="mechanic-description-line left-align">Действие: {}</div>'.format(self.description))
 
