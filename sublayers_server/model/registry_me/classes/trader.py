@@ -90,7 +90,9 @@ class Price(object):
         )
 
     def change(self, count, item):  # Вызывается в случае изменения количества итемов
-        self.price -= self.price_option.influence * count
+        # info: убрали влияние influence
+        # todo: Реализовать ещё один коридор для influence (базовая цена не должна уходить выше марджина покупки)
+        # self.price -= self.price_option.influence * count
         if count < 0:  # значит у торговца купили итемы
             self.price = min(self.price, self.price_option.price_max)
             if self.start_price < 1.0:  # был профицит
