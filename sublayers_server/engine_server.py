@@ -70,6 +70,7 @@ from sublayers_server.handlers.site_api import (
 )
 from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
 from sublayers_common.site_locale import load_locale_objects
+from sublayers_common.handlers.locale import GetUserLocaleJSONHandler
 
 from ctx_timer import Timer
 
@@ -135,6 +136,7 @@ class Application(BaseApplication):
             (r"/stat/event_graphics", ServerStatEventGraphicsHandler),
             (r"/stat/quests", ServerStatQuestsHandler),
 
+            (r"/site_api/locale", GetUserLocaleJSONHandler),  # todo: rename
 
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),

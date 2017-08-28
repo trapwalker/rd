@@ -31,7 +31,7 @@ from sublayers_site import settings
 import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler, VKLoginHandler,
                                                TwitterLoginHandler, FacebookLoginHandler)
-from sublayers_site.handlers.site import SiteMainHandler, GetUserLocaleJSONHandler
+from sublayers_site.handlers.site import SiteMainHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
@@ -42,6 +42,7 @@ from sublayers_common import mailing
 from sublayers_common import service_tools
 from sublayers_common.base_application import BaseApplication
 from sublayers_common.site_locale import load_locale_objects
+from sublayers_common.handlers.locale import GetUserLocaleJSONHandler
 
 import sublayers_server.model.registry_me.classes  #autoregistry classes
 from sublayers_server.model.registry_me.tree import get_global_registry

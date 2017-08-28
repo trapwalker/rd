@@ -1,4 +1,7 @@
 $(document).ready(function () {
+
+    loadLocale(function(){console.log(locale_object)});
+
     basic_server_mode = $('#settings_server_mode').text() == "basic";
     initConsoles();
     if ($('#settings_first_enter').text() == 'True')

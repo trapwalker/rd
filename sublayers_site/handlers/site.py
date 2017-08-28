@@ -5,14 +5,8 @@ log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
 
-import os
-import yaml
-import tornado
-
 from tornado.options import options
 from sublayers_common.user_profile import User
-from sublayers_common.site_locale import locale, locale_objects
-from sublayers_site.handlers.site_auth import get_forum_cookie_str
 
 
 class SiteMainHandler(BaseSiteHandler):
@@ -38,11 +32,3 @@ class SiteMainHandler(BaseSiteHandler):
             community_link_en=options.community_link_en,
             community_link_ru=options.community_link_ru,
         )
-
-
-class GetUserLocaleJSONHandler(BaseSiteHandler):
-    def get(self):
-        if locale_objects.get(self.user_lang, None):
-            self.finish(locale_objects[self.user_lang])
-        else:
-            self.send_error(status_code=404)
