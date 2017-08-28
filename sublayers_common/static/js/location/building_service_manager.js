@@ -109,7 +109,7 @@ var LocationServiceBuilding = (function (_super) {
 
         this.set_header_text(
             'Ремонт: ' + Math.ceil(current_price) + ' NC</br>' +
-            'Полный рамонт: ' + Math.ceil(max_price) + 'NC'
+            'Полный ремонт: ' + Math.ceil(max_price) + 'NC'
         );
     };
 
