@@ -46,6 +46,7 @@ from mongoengine import (
     GenericEmbeddedDocumentField,
     #GenericReferenceField,
 )
+from sublayers_server.model.registry_me.localization import LocalizedStringField
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
 
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types
@@ -700,9 +701,9 @@ class Node(Subdoc, SubdocToolsMixin):
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
     #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
     abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
-    title = StringField(caption=u"Название", tags={"client"})
+    title = LocalizedStringField(caption=u"Название", tags={"client"})
     can_instantiate = BooleanField(root_default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
-    doc = StringField(caption=u"Описание узла реестра")
+    doc = LocalizedStringField(caption=u"Описание узла реестра")
     tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
 
     #uri = StringField(unique=True, null=True, not_inherited=True)
