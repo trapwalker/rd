@@ -1,4 +1,4 @@
-{% set window_caption = 'Nuke:\Обучение\Шаг_4_из_10>' %}
+{% set window_caption = _("mt_header_4") %}
 <div class="map-teaching-window-main cruise_speed_btn">
     {% include ../drag_close_header.html %}
     <div class="map-teaching-content-wrap">
@@ -6,15 +6,11 @@
             <div class="map-teaching-img-block-left cruise_speed_btn"></div>
             <div class="map-teaching-img-block-right cruise_speed_btn"></div>
         </div>
-        <div class="map-teaching-text-block cruise_speed_btn">Это кнопки заднего хода и остановки. При нажатии на кнопку заднего хода
-            регулятор круиз-контроля станет влиять на скорость заднего хода и число на нем будет отрицательным. При
-            нажатии на кнопку остановки регулятор круиз-контроля сбросится в 0 и произойдет остановка транспортного
-            средства. Также остановку можно совершить, нажав клавишу &#60;пробел&#62; на клавиатуре.
-        </div>
+        <div class="map-teaching-text-block cruise_speed_btn">{% raw _("mt_text_4") %}</div>
         <div class="map-teaching-btn-block">
             <div class="group-btn-wrap">
-                <div class="map-teaching-btn btn-back group-btn">Назад</div>
-                <div class="map-teaching-btn btn-next group-btn">Далее</div>
+                <div class="map-teaching-btn btn-back group-btn">{{ _("mt_btn_back") }}</div>
+                <div class="map-teaching-btn btn-next group-btn">{{ _("mt_btn_next") }}</div>
             </div>
         </div>
     </div>
