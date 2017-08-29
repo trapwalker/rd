@@ -18,7 +18,7 @@ var CharacterManager = (function () {
         else
             self.jq_main_div.find('.character-window-name').first().text(user.login);
         self.jq_main_div.find('.character-window-about-line.lvl span').text(user.example_agent.rpg_info.cur_lvl);
-        self.jq_main_div.find('.character-window-about-line.role-class span').last().text(user.example_agent.role_class);
+        self.jq_main_div.find('.character-window-about-line.role-class span').last().text(_(user.example_agent.role_class));
         self.jq_main_div.find('.character-window-about-line.karma span').text(getKarmaNameWithoutNorm(user.example_agent.rpg_info.karma));
         self.jq_main_div.find('.character-window-about-line.balance span').text(user.balance.toFixed(0) + " Nc");
         self.jq_main_div.find('.character-window-about-area').first().find('textarea').first().text(user.example_agent.about_self);
@@ -59,8 +59,8 @@ var CharacterManager = (function () {
                 var p = {
                     active: true,
                     perk: {
-                        title: 'Не доступно',
-                        description: 'Перки не доступны в данном режме игры.'
+                        title: _('mchw_perks_title'),
+                        description: _('mchw_perks_description')
                     },
                     perk_req: []
                 };
@@ -72,7 +72,7 @@ var CharacterManager = (function () {
             var perk_rec = perk_list[i];
             if (perk_rec.active) {
                 class_light = (class_light == 'trainer-dark-back') ? 'trainer-light-back' : 'trainer-dark-back';
-                jq_perks.append('<div class="character-window-ttx-item ' + class_light + '" data-index="' + i + '">' + perk_rec.perk.title +'</div>');
+                jq_perks.append('<div class="character-window-ttx-item ' + class_light + '" data-index="' + i + '">' + _(perk_rec.perk.title) +'</div>');
             }
         }
 

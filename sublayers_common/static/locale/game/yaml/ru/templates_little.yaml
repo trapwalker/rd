@@ -90,6 +90,10 @@
 "mchw_lead": "Лидерство"
 "mchw_skills_free": "Свободные очки"
 
+
+"mchw_perks_title": "Не доступно"
+"mchw_perks_description": "Перки не доступны в данном режме игры."
+
 # Шаблон Окно инвентаря
 "iiw_all": "Всё"
 "iiw_cargo": "Груз"
