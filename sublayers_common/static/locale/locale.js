@@ -3,7 +3,8 @@ var locale_object = null;
 function loadLocale(callback) {
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
-    xobj.open('GET', '/site_api/locale', true);
+    var path = window.location.pathname == "/" ? "/site_api/" : "/api/";
+    xobj.open('GET', path + 'locale', true);
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4 && xobj.status == "200") {
             locale_object = JSON.parse(xobj.responseText);
@@ -26,4 +27,10 @@ function _(str) {
     else
         console.warn('locale_object not loaded');
     return str;
+}
+
+
+function changeLanguage(lang) {
+    document.cookie = 'lang' + "=" + lang;
+    window.location.reload();
 }

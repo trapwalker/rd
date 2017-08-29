@@ -461,10 +461,7 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-function changeLanguage(lang) {
-    document.cookie = 'lang' + "=" + lang;
-    window.location.reload();
-}
+
 
 function init_site_sound() {
     audioManager.gain_all(0.0);

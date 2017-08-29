@@ -136,7 +136,7 @@ class Application(BaseApplication):
             (r"/stat/event_graphics", ServerStatEventGraphicsHandler),
             (r"/stat/quests", ServerStatQuestsHandler),
 
-            (r"/site_api/locale", GetUserLocaleJSONHandler),  # todo: rename
+            (r"/api/locale", GetUserLocaleJSONHandler),  # todo: rename
 
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),
