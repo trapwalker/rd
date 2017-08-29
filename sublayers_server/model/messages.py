@@ -670,7 +670,11 @@ class EnterToLocation(Message):
         location = self.location
         if self.agent.resolution_scale not in ['big', 'small']:
             self.agent.resolution_scale = 'big'
-        cache_index = '{}_{}'.format(location.example.uri, self.agent.resolution_scale)
+        cache_index = '{}_{}_{}'.format(
+            location.example.uri,
+            self.agent.resolution_scale,
+            self.agent.connection.user_lang
+        )
         location_html = self.locations_cache.get(cache_index, None)
         if location_html is None:
             svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
@@ -695,7 +699,7 @@ class EnterToLocation(Message):
             if isinstance(location, Town) or isinstance(location, GasStation):
                 location_html = tornado.template.Loader(
                     root_directory="templates/location",
-                    namespace=self.agent.connection.get_template_namespace()
+                    namespace=self.agent.connection.get_template_namespace(),
                 ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common,
                                                  svg_code_btn=svg_code_btn, is_big=(self.agent.resolution_scale == 'big'), car=None)
             else:
