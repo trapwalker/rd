@@ -164,7 +164,7 @@ class Mobile(Node):
     # Косметика
     class_car     = LocalizedStringField(caption=u"Класс автомобиля", tags={'client'})
     sub_class_car = LocalizedStringField(caption=u"Подкласс автомобиля", tags={'client'})
-    name_car      = LocalizedStringField(caption=u"Название автомобиля", tags={'client'})
+    name_car      = StringField(caption=u"Название автомобиля", tags={'client'})
 
     # Влияние скилов
     driving_r_min             = FloatField(caption=u"Влияние Вождения на Минимальный радиус разворота")

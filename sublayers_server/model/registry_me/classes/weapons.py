@@ -33,6 +33,7 @@ class Cannon(Weapon):
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
 
     def html_description(self):
+        # TODO: ##LOCALIZATION
         weight = u'Не указан'
         if self.weight_class == 1: weight = u'Легкий'
         elif self.weight_class == 2: weight = u'Средний'

@@ -7,6 +7,7 @@ from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, 
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
     RegistryLinkField,
+    LocalizedStringField,
 )
 
 import math
@@ -22,7 +23,7 @@ class Skill(Node):
     value = IntField(caption=u"Уровень навыка", tags={'client'})
     limit = IntField(caption=u"Предел прокачки навыка", tags={'client'})
     mod = RegistryLinkField(caption=u"Модификатор навыка", document_type=ClassSkill)
-    description = StringField(caption=u'Расширенное описание', tags={'client'})
+    description = LocalizedStringField(caption=u'Расширенное описание', tags={'client'})
 
     def get_bonuses(self, v):
         if v >= self.mod.bonus_step:
@@ -53,7 +54,7 @@ class SkillPriceItem(Subdoc):
 class BuySkill(Node):
     value = IntField(caption=u"Количество купленных очков навыка", tags={'client'})
     limit = IntField(caption=u"Предел покупки очков навыка", tags={'client'})
-    description = StringField(caption=u"Расширенное описание", tags={'client'})
+    description = LocalizedStringField(caption=u"Расширенное описание", tags={'client'})
     price = ListField(
         caption=u'Таблица цен на очки навыков', tags={'client'},
         field=EmbeddedDocumentField(document_type=SkillPriceItem),

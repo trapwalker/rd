@@ -8,6 +8,7 @@ from sublayers_server.model.registry_me.tree import (
     Node, Subdoc,
     IntField, FloatField, StringField, ListField, EmbeddedDocumentField,
     RegistryLinkField, EmbeddedNodeField,
+    LocalizedStringField,
 )
 
 
@@ -19,7 +20,7 @@ class Item(Node):
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
 
-    description = StringField(caption=u'Расширенное описание предмета')
+    description = LocalizedStringField(caption=u'Расширенное описание предмета')
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
@@ -29,7 +30,7 @@ class Item(Node):
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags={'client'})
     activate_time = FloatField(caption=u'Время активации итема')
-    activate_disable_comment = StringField(caption=u'Опсиание условий активации', tags={'client'})
+    activate_disable_comment = LocalizedStringField(caption=u'Опсиание условий активации', tags={'client'})
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())

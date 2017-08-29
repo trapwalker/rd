@@ -8,17 +8,13 @@ from sublayers_server.model.registry_me.tree import (
     Node, 
     StringField, IntField, ListField, FloatField,
     RegistryLinkField,
+    LocalizedStringField,
 )
 
 
 class Perk(Node):
     icon = StringField(caption=u'Пиктограмма перка', tags={'client'})
-
-    title__en = StringField(caption=u"Название", tags={'client'})
-    title__ru = StringField(caption=u"Название", tags={'client'})
-    description = StringField(caption=u'Расширенное описание перка')
-    description__en = StringField(caption=u'Расширенное описание перка', tags={'client'})
-    description__ru = StringField(caption=u'Расширенное описание перка', tags={'client'})
+    description = LocalizedStringField(caption=u'Расширенное описание перка')
 
     driving_req     = IntField(caption=u"Необходимый уровень навыка вождения", tags={'client'})
     shooting_req    = IntField(caption=u"Необходимый уровень навыка стрельбы", tags={'client'})

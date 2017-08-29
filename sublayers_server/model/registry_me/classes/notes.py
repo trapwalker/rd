@@ -7,7 +7,8 @@ from sublayers_server.model.messages import Message
 from sublayers_server.model.registry_me.tree import (
     Subdoc, get_uuid,
     IntField, StringField, UUIDField, FloatField,    
-    RegistryLinkField, PositionField
+    RegistryLinkField, PositionField,
+    LocalizedStringField, LocalizedString,
 )
 
 from sublayers_server.model.vectors import Point
@@ -64,8 +65,8 @@ class MapMarkerNote(Note):
 
 
 class NPCPageNote(Note):
-    page_caption = StringField(caption=u'Название кнопки у нпц', tags={'client'})
-    btn1_caption = StringField(default=u'<br>Сдать', caption=u'Текст для кнопки btn1', tags={'client'})
+    page_caption = LocalizedStringField(caption=u'Название кнопки у нпц', tags={'client'})
+    btn1_caption = LocalizedStringField(default=LocalizedString(ru=u'<br>Сдать', en=u'<br>Complete'), caption=u'Текст для кнопки btn1', tags={'client'})
     npc = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
         tags={'client'},
@@ -89,8 +90,8 @@ class MapActivationRadarsNoteFinish(NPCPageNote): pass
 # Классовые ноты
 class FirstOutNote(Note): pass
 class NPCTypePageNote(Note):
-    page_caption = StringField(caption=u'Название кнопки у нпц', tags={'client'})
-    btn1_caption = StringField(default=u'<br>Сдать', caption=u'Текст для кнопки btn1', tags={'client'})
+    page_caption = LocalizedStringField(caption=u'Название кнопки у нпц', tags={'client'})
+    btn1_caption = LocalizedStringField(default=LocalizedString(ru=u'<br>Сдать', en=u'<br>Complete'), caption=u'Текст для кнопки btn1', tags={'client'})
     npc_type = StringField(caption=u'Тип NPC', tags={'client'})
 
 class VisitTrainerNote(NPCTypePageNote): pass

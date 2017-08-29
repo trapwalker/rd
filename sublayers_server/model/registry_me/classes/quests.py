@@ -11,6 +11,7 @@ from sublayers_server.model.registry_me.tree import (
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField, MapField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
     GenericEmbeddedDocumentField, DynamicSubdoc,
+    LocalizedStringField, LocalizedString,
 )
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
@@ -138,8 +139,8 @@ class FailByCancelState(FailState):
 # todo: ##DEPRECATED
 class QuestState(Node):
     id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
-    enter_state_message = StringField(doc=u"Сообщение в журнал при входе в состояние")
-    exit_state_message = StringField(doc=u"Сообщение в журнал при выходе из состояния")
+    enter_state_message = LocalizedStringField(doc=u"Сообщение в журнал при входе в состояние")
+    exit_state_message = LocalizedStringField(doc=u"Сообщение в журнал при выходе из состояния")
     status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
     result = StringField(doc=u"Результат квеста данном текущем состоянии (None/win/fail)")
 
@@ -246,10 +247,10 @@ class Quest(Node):
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
     on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
         стартового состояния. Любое исключение в скрипте отменяет принятие квеста. Исключение Cancel тихо отменяет.''')
-    caption     = StringField(tags={'client'}, caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text        = StringField(tags={'client'}, caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short  = StringField(tags={'client'}, caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
-    typename    = StringField(tags={'client'}, caption=u'Тип квеста', doc=u'Может быть произвольным')
+    caption     = LocalizedStringField(tags={'client'}, caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
+    text        = LocalizedStringField(tags={'client'}, caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
+    text_short  = LocalizedStringField(tags={'client'}, caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
+    typename    = LocalizedStringField(tags={'client'}, caption=u'Тип квеста', doc=u'Может быть произвольным')
     list_icon   = StringField(tags={'client'}, caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
     map_icon_full    = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
     map_icon_circle  = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
