@@ -669,6 +669,23 @@ var SettingsManager = (function() {
         },
 
         /* Вкладка Другое */
+        localization: {
+            name: "localization",
+            page: "other",
+            text_name: "Язык",
+            text_description: "Выбор языка локализации. Будет произведена перезагрузка клиента.",
+            jq_div: null,
+            type: "list",
+            default: 'en',
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Русский", value: "ru"}, {text: "English", value: "en"}],
+            set_callback: function(new_value) {changeLanguage(new_value);},
+            init: function() {
+                var lang = settingsManager.getCookie("lang") || "en";
+                settingsManager.options.localization.value = settingsManager.options.localization.currentValue = lang;
+            },
+        },
         save_current_zoom: {
             name: "save_current_zoom",
             page: "other",
@@ -768,6 +785,7 @@ var SettingsManager = (function() {
         },
         /*Дебаг-инфо*/
         fps_rate: {
+            admin_mode: true,
             name: "fps_rate",
             page: "other",
             text_name: "fps_rate",
@@ -784,6 +802,7 @@ var SettingsManager = (function() {
             },
         },
         auto_resurrection: {
+            admin_mode: true,
             name: "auto_resurrection",
             page: "other",
             text_name: "auto_resurrection",
@@ -797,6 +816,7 @@ var SettingsManager = (function() {
             set_callback: function (new_value) {},
         },
         auto_simple_bot: {
+            admin_mode: true,
             name: "auto_simple_bot",
             page: "other",
             text_name: "auto_simple_bot",
