@@ -470,8 +470,8 @@ var SettingsManager = (function() {
         quick_panel_3: {
             name: "quick_panel_3",
             page: "control",
-            text_name: _("quick_panel_3_text_name"),
-            text_description: _("quick_panel_3_text_description"),
+            text_name: _("setman_opt_quick_panel_3_text_name"),
+            text_description: _("setman_opt_quick_panel_3_text_description"),
             jq_div: null,
             type: "control",
             default: 51,
