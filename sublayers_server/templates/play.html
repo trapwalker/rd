@@ -307,17 +307,17 @@
          | Ping <span id="PingSpan">0</span>   FPS <span id="FPSSpan">0</span>
     </div>
     <div id="divMainMenu">
-        <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">Character</div>
-        <div id="divMainMenuBtnCar" class="main-menu-btn-up sublayers-clickable">Vehicle</div>
-        <div id="divMainMenuBtnInventory" class="main-menu-btn-up sublayers-clickable">Trunk</div>
-        <div id="divMainMenuBtnJournal" class="main-menu-btn-up sublayers-clickable">Journal</div>
-        <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">Party</div>
-        <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">Website</div>
-        <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Community</div>
-        <div id="divMainMenuBtnRadio" class="main-menu-btn-up sublayers-clickable">Radio</div>
-        <!--<div id="divMainMenuBtnNucoil" class="main-menu-btn-up sublayers-clickable">Nucoil</div>-->
-        <div id="divMainMenuBtnOptions" class="main-menu-btn-up sublayers-clickable">Options</div>
-        <!--<div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">Forum</div>-->
+        <div id="divMainMenuBtnCharacter" class="main-menu-btn-up sublayers-clickable">{{ _("play_character") }}</div>
+        <div id="divMainMenuBtnCar" class="main-menu-btn-up sublayers-clickable">{{ _("play_vehicle") }}</div>
+        <div id="divMainMenuBtnInventory" class="main-menu-btn-up sublayers-clickable">{{ _("play_trunk") }}</div>
+        <div id="divMainMenuBtnJournal" class="main-menu-btn-up sublayers-clickable">{{ _("play_journal") }}</div>
+        <div id="divMainMenuBtnParty" class="main-menu-btn-up sublayers-clickable">{{ _("play_party") }}</div>
+        <div id="divMainMenuBtnMain" class="main-menu-btn-up sublayers-clickable">{{ _("play_site") }}</div>
+        <div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">{{ _("play_community") }}</div>
+        <div id="divMainMenuBtnRadio" class="main-menu-btn-up sublayers-clickable">{{ _("play_radio") }}</div>
+        <!--<div id="divMainMenuBtnNucoil" class="main-menu-btn-up sublayers-clickable">{{ _("play_nukeoil") }}</div>-->
+        <div id="divMainMenuBtnOptions" class="main-menu-btn-up sublayers-clickable">{{ _("play_options") }}</div>
+        <!--<div id="divMainMenuBtnForum" class="main-menu-btn-up sublayers-clickable">{{ _("play_forum") }}</div>-->
     </div>
     <div id="mapTeachingCanvasBackDiv"></div>
     <div id="divButtons">
@@ -377,7 +377,7 @@
         <span id="settings_start_coord">{{ '{}_{}'.format(start_coord.x, start_coord.y) if start_coord else '' }}</span>
         <span id="settings_user_insurance_name">{{ insurance_name }}</span>
         <span id="settings_user_balance">{{ user_balance }}</span>
-        <span id="settings_user_position">{{ '{}: {}'.format(start_coord.x, start_coord.y) if start_coord else 'Нет доступа' }}</span>
+        <span id="settings_user_position">{{ '{}: {}'.format(start_coord.x, start_coord.y) if start_coord else _("play_position_none") }}</span>
         <span id="settings_connection_delay">{{ connection_delay }}</span>
     </div>
     <div id="textConsoleDivWrap" tabindex="0">

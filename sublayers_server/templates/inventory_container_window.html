@@ -4,14 +4,14 @@
     {% include drag_close_header.html %}
     <div class="containerInventoryWindow-window-wrap">
         <div id="containerInventoryWindow-id-car-{{ car_id }}-{{ container_id }}" class="containerInventoryWindow-inventory-wrap border">
-            <div class="containerInventoryWindow-inventory-header">Ваш инвентарь</div>
+            <div class="containerInventoryWindow-inventory-header">{{ _("icw_you_inv") }}</div>
             <div class="containerInventoryWindow-inventory-body inventory-{{ car_id }}" data-other_id="{{ container_id }}"></div>
         </div>
         <div id="containerInventoryWindow-id-container-{{ container_id }}" class="containerInventoryWindow-inventory-wrap">
-            <div class="containerInventoryWindow-inventory-header">Контейнер</div>
+            <div class="containerInventoryWindow-inventory-header">{{ _("icw_container") }}</div>
             <div class="containerInventoryWindow-inventory-body other inventory-{{ container_id }}" data-other_id="{{ car_id }}"></div>
             <div class="containerInventoryWindow-inventory-footer">
-                <div class="take-all-btn" onclick="clientManager.sendTakeAllInventory('{{ container_id }}')">Взять всё</div>
+                <div class="take-all-btn" onclick="clientManager.sendTakeAllInventory('{{ container_id }}')">{{ _("icw_take_all") }}</div>
             </div>
         </div>
     </div>

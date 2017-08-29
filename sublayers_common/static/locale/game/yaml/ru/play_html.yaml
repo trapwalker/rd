@@ -1,0 +1,15 @@
+"locale": "ru"
+
+# Шаблон Play html
+"play_character": "Character"
+"play_vehicle": "Vehicle"
+"play_trunk" : "Trunk"
+"play_journal": "Journal"
+"play_party": "Party"
+"play_site": "Website"
+"play_community": "Community"
+"play_radio": "Radio"
+"play_nukeoil": "Nucoil"
+"play_options": "Options"
+"play_forum": "Forum"
+"play_position_none": "Нет доступа"
