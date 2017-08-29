@@ -6,6 +6,8 @@ log = logging.getLogger(__name__)
 from os import walk
 from os.path import join
 import yaml
+import json
+import codecs
 
 from sublayers_server.model.registry_me.localization import LocalizedString
 
@@ -28,6 +30,10 @@ def load_locale_objects(path):
                         locale_objects.setdefault(locale, {}).update(data)
                     else:
                         log.warning('Not define locale in file: {}'.format(fn))
+
+    for locale, locale_object in locale_objects.items():
+        with codecs.open(join(mypath, locale, '.compiled.js'), 'w', encoding='utf-8') as f:
+            f.write(u'locale_object = {};'.format(json.dumps(locale_object, ensure_ascii=False)))
 
 
 def locale(lang, key):

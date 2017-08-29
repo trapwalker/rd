@@ -20,7 +20,7 @@
     {% include npc_gas_station.html %}
 {% else %}
     {% set npc_photo = cur_npc.photo %}
-    {% set npc_title = cur_npc.title %}
+    {% set npc_title = _(cur_npc.title) %}
     {% set npc_text = cur_npc.text %}
     {% include npc_header.html %}
 {% end %}

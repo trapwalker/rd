@@ -46,7 +46,7 @@ from mongoengine import (
     GenericEmbeddedDocumentField,
     #GenericReferenceField,
 )
-from sublayers_server.model.registry_me.localization import LocalizedStringField
+from sublayers_server.model.registry_me.localization import LocalizedStringField, LocalizedString
 from sublayers_server.model.registry_me.odm_position import PositionField, Position
 
 CONTAINER_FIELD_TYPES_SIMPLE = (ListField, DictField)  # TODO: support other field types

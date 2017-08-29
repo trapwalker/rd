@@ -35,59 +35,59 @@
 
 <div class="car-info-block-info">
     <div class="car-info-block-body-right-menu">
-        <div class="mainCarInfoWindow-body-right-menu-button active" onclick="CarTableInfoMenuClick(this)" data-page="model">TTX</div>
-        <div class="mainCarInfoWindow-body-right-menu-button" onclick="CarTableInfoMenuClick(this)" data-page="ammo">Вооружение</div>
-        <div class="mainCarInfoWindow-body-right-menu-button" onclick="CarTableInfoMenuClick(this)" data-page="history">История</div>
+        <div class="mainCarInfoWindow-body-right-menu-button active" onclick="CarTableInfoMenuClick(this)" data-page="model">{{ _("lcit_tth") }}</div>
+        <div class="mainCarInfoWindow-body-right-menu-button" onclick="CarTableInfoMenuClick(this)" data-page="ammo">{{ _("lcit_weapon") }}</div>
+        <div class="mainCarInfoWindow-body-right-menu-button" onclick="CarTableInfoMenuClick(this)" data-page="history">{{ _("lcit_history") }}</div>
     </div>
     <div class="car-info-block-body-right-list active model">
-        <div class="car-info-block-body-right-list-text name even">&nbspЦена:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_price") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ int(car.price) }} Nc</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspКласс:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_class") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ _(car.class_car) }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspПрочность:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_strength") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.max_hp }}</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspCкорость:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_speed") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ str_value }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspСлотов кузова:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_slot_count") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.get_count_slots(tags='armorer') }}</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspСлотов багажника:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_inventory_size") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.inventory.size }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspОбъём бака:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_fuel") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.max_fuel }}</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspРасход топлива:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_fuel_consumption") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ car.p_fuel_rate }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspНавык вождения:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_driving_req") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.needed_driving }}</div>
-        <div class="car-info-block-body-right-list-bonuses">Скорсть на местности:</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspБездорожье:</div>
+        <div class="car-info-block-body-right-list-bonuses">{{ _("lcit_zone_speed") }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_dirt_speed") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ str_v_dirt }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspЛес:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_wood_speed") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ str_v_wood }}</div>
-        <div class="car-info-block-body-right-list-text name uneven">&nbspГористость:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_slope_speed") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ str_v_slope }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspБолото:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_water_speed") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ str_v_water }}</div>
     </div>
     <div class="car-info-block-body-right-list ammo">
         {% for k, v in car.iter_slots(tags='armorer') %}
             {% if v is not None %}
             <div class="car-info-block-item-wrap"
-                 onmouseover="CarInfoBlockAmmoInfoView('{{ v.description }}', '{{ v.title }}')" onmouseout="CarInfoBlockAmmoInfoHide()">
+                 onmouseover="CarInfoBlockAmmoInfoView('{{ _(v.description) }}', '{{ _(v.title) }}')" onmouseout="CarInfoBlockAmmoInfoHide()">
                 <div class="npcInventory-pictureWrap town-interlacing">
                     <div class="car-info-block-itemy-picture"
                          style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(v.inv_icon_big))) }} ) no-repeat center;"></div>
                 </div>
-                <div class="npcInventory-name">{% raw v.title %}</div>
+                <div class="npcInventory-name">{% raw _(v.title) %}</div>
             </div>
             {% end %}
         {% end %}
     </div>
     <div class="car-info-block-body-right-list history">
-        <div class="car-info-block-body-right-list-text name uneven">&nbspПробег:</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_mileage") }}</div>
         <div class="car-info-block-body-right-list-text value uneven dynamic_car_way">{{ '{:.1f}'.format(car.way/1000) }}</div>
-        <div class="car-info-block-body-right-list-text name even">&nbspУбийств:</div>
+        <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_kill_count") }}</div>
         <div class="car-info-block-body-right-list-text value even dynamic_car_frag">{{ car.frag }}</div>
-        <div class="car-info-block-body-right-list-bonuses">Опыт:</div>
+        <div class="car-info-block-body-right-list-bonuses">{{ _("lcit_exp") }}</div>
         <div class="car-info-block-body-right-exp-block">
             {% set lvl = car.exp_table.car_lvl_by_exp(car.exp) %}
             {% for temp_lvl in range(1, 6) %}

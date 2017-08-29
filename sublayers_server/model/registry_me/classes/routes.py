@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc,
-    StringField, IntField, BooleanField, ListField, EmbeddedDocumentField,
+    IntField, BooleanField, ListField, EmbeddedDocumentField,
     RegistryLinkField, PositionField
 )
 from sublayers_server.model.utils import get_time

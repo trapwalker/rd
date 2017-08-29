@@ -140,7 +140,7 @@
         </div>
         <div id="townParkingBagExchange" class="townPageWrap npc-wrap" style="display: none">
             <div class="town-parking-bag-body-header">
-                <div class="town-parking-bag-body-header-text town-parking-bag-universal-wrap left">Ваш багажник</div>
+                <div class="town-parking-bag-body-header-text town-parking-bag-universal-wrap left">{{ _("ll_inventory") }}</div>
                 <div id="townParkingBagExchangeBagText" class="town-parking-bag-body-header-text town-parking-bag-universal-wrap"></div>
             </div>
             <div class="town-parking-bag-body">
@@ -151,8 +151,8 @@
 
         <div id="townDumpWrap" class="townPageWrap npc-wrap" style="display: none">
             <div class="town-dump-header">
-                <div class="town-dump-header-text town-dump-universal-wrap left">Ваш багажник</div>
-                <div class="town-dump-header-text town-dump-universal-wrap">Найдено</div>
+                <div class="town-dump-header-text town-dump-universal-wrap left">{{ _("ll_inventory") }}</div>
+                <div class="town-dump-header-text town-dump-universal-wrap">{{ _("ll_found") }}</div>
             </div>
             <div class="town-dump-body">
                 <div id="townDumpSelfInventory" class="town-dump-universal-wrap left"></div>
@@ -162,10 +162,10 @@
     </div>
 
     <div class="town-btn-area">
-        <div id="btn_1_text" class="town-btn-block left{{ '' if is_big else ' small' }}">Завершить квест</div>
-        <div id="btn_2_text" class="town-btn-block left{{ '' if is_big else ' small' }}">Отказаться от квеста</div>
-        <div id="btn_3_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></br>Назад</div>
-        <div id="btn_4_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></br>Выход</div>
+        <div id="btn_1_text" class="town-btn-block left{{ '' if is_big else ' small' }}"></div>
+        <div id="btn_2_text" class="town-btn-block left{{ '' if is_big else ' small' }}"></div>
+        <div id="btn_3_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></div>
+        <div id="btn_4_text" class="town-btn-block right{{ '' if is_big else ' small' }}"></div>
     </div>
 
     <div class="location-noise-canvas-wrap">
@@ -207,40 +207,6 @@
 </div>
 
 <script>
-    var text_variants = [
-        '</br>Назад',
-        '</br>Выход',
-        '</br>Взять квест',
-        'Завершить</br>квест',
-        'Отказаться</br>от квеста',
-        '</br>Купить ТС',
-        '</br>Продать ТС',
-        '</br>Обменять ТС',
-        '</br>Взять ТС',
-        '</br>Сменить ТС',
-        'Поставить</br>ТС',
-        'Подтвердить</br>сделку',
-        '</br>Отмена',
-        '</br>Применить',
-        '</br>Оформить',
-        '</br>Продлить',
-        '</br>Залить',
-        'Залить</br>полный бак',
-        '</br>Заправить',
-        'Заправить</br>всё',
-        '</br>Создать',
-        '</br>Принять',
-        '</br>Отказаться',
-        '</br>Применить',
-        'Покинуть</br>группу',
-        '</br>Установить'
-    ];
-
-    function random_text(){
-        var index = Math.floor(Math.random() * text_variants.length);
-        return text_variants[index];
-    }
-
     $(function () {
 {#        console.log('Вызов установки кликов для города!');#}
         var jq_btn = $('#btn_screen_location_area, #btn_screen_chat_area, #btn_screen_menu_area, #btn_1_area, #btn_2_area, #btn_3_area, #btn_4_area');
