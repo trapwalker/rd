@@ -88,3 +88,18 @@ class BaseSiteHandler(BaseHandler):
             html_car_img = template_car.generate(car=car_proto)
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
+
+    def prepare(self):
+        super(BaseSiteHandler, self).prepare()
+        user_lang = self.get_cookie('lang', None)
+        # если cookie с языком не задана, то смотреть на host
+        if user_lang is None:
+            host = self.request.host
+            # todo: ##REFACTORING host name
+            if host == 'roaddogs.online':
+                user_lang = 'en'
+            elif host == 'roaddogs.ru':
+                user_lang = 'ru'
+            else:
+                user_lang = 'en'
+        self.user_lang = user_lang

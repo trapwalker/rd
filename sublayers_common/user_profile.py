@@ -67,6 +67,7 @@ class User(Document):
     name = StringField(max_length=64)
     registration_status = StringField(max_length=64)
     auth = EmbeddedDocumentField(AuthData, default=AuthData)
+    lang = StringField(default="en", max_length=64)
 
     quick = BooleanField(default=False)
     is_tester = BooleanField(default=False)

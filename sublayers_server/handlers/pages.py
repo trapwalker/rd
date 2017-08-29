@@ -67,6 +67,28 @@ class PlayHandler(BaseHandler):
         log.debug('== User %r is closed connection.', self.get_secure_cookie("user"))
         self._break_handler = True
 
+    def prepare(self):
+        super(PlayHandler, self).prepare()
+
+        user_lang = self.get_cookie('lang', None)
+        # если cookie с языком не задана, то смотреть на host
+        if user_lang is None:
+            host = self.request.host
+            # todo: ##REFACTORING host name
+            if host == 'roaddogs.online':
+                user_lang = 'en'
+            elif host == 'roaddogs.ru':
+                user_lang = 'ru'
+            else:
+                user_lang = 'en'
+
+        if self.current_user:
+            if self.current_user.lang != user_lang:
+                self.current_user.lang = user_lang
+                self.current_user.save()
+            self.user_lang = user_lang
+
+
     @tornado.gen.coroutine
     def get(self):
         user_id = self.get_secure_cookie("user")

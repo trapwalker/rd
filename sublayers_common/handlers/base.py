@@ -142,18 +142,7 @@ class BaseHandler(AuthHandlerMixin):
 
     def prepare(self):
         super(BaseHandler, self).prepare()
-        user_lang = self.get_cookie('lang', None)
-        # если cookie с языком не задана, то смотреть на host
-        if user_lang is None:
-            host = self.request.host
-            # todo: ##REFACTORING host name
-            if host == 'roaddogs.online':
-                user_lang = 'en'
-            elif host == 'roaddogs.ru':
-                user_lang = 'ru'
-            else:
-                user_lang = 'en'
-        self.user_lang = user_lang
+        self.user_lang = self.current_user and self.current_user.lang or "en"
 
 
 class FailUnauthorizedHandler(BaseHandler):
