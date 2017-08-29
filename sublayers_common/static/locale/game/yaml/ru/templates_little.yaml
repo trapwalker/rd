@@ -1,0 +1,115 @@
+"locale": "ru"
+
+# radio_window.html
+"radio_power": "Питание"
+"radio_power_off": "ВЫКЛ"
+"radio_volume": "Громкость"
+"radio_channel": "Канал"
+"radio_bitrate": "Битрейт"
+
+# Шаблон Person Info Chat
+"pichr_character": "Персонаж"
+"pichr_transport": "Транспорт"
+"pichr_close": "Закрыть"
+
+"pichr_class": "Класс"
+"pichr_karma": "Карма"
+"pichr_driving": "Вождение"
+"pichr_shooting": "Стрельба"
+"pichr_hiding": "Скрытность"
+"pichr_mechanik": "Механик"
+"pichr_trading": "Торговля"
+"pichr_leading": "Лидерство"
+
+"pichr_about_self": "О себе"
+"pichr_transport_empty": "Транспорт отсутствует"
+
+# menu_person_window.html
+"mpersw_about": "О себе"
+"mpersw_lvl_text": "Уровень"
+"mpersw_class": "Класс"
+"mpersw_karma": "Карма"
+"mpersw_driv": "Вождение"
+"mpersw_shoot": "Стрельба"
+"mpersw_hide": "Скрытность"
+"mpersw_mech": "Механика"
+"mpersw_trad": "Торговля"
+"mpersw_lead": "Лидерство"
+
+"mpersw_invite": "Пригласить"
+
+# menu_party_window
+"mpw_create" : "Создание"
+"mpw_manage" : "Управление"
+"mpw_invite": "Инвайты"
+
+"mpw_name": "ИМЯ ПАТИ"
+"mpw_targets": "ЦЕЛИ"
+"mpw_share_loot": "Настройка деления опыта"
+"mpw_create_btn": "Создать"
+
+"mpw_invite_text": "ПРИГЛАСИТЬ"
+"mpw_members": "УЧАСТНИКИ"
+
+"mpw_lvl_text": "Уровень"
+"mpw_class": "Класс"
+"mpw_karma": "Карма"
+"mpw_driv": "Вождение"
+"mpw_shoot": "Стрельба"
+"mpw_hide": "Скрытность"
+"mpw_mech": "Механика"
+"mpw_trad": "Торговля"
+"mpw_lead": "Лидерство"
+
+"mpw_inv_text_inv": "ИНВАЙТЫ"
+"mpw_inv_members_party": "УЧАСТНИКИ ПАТИ"
+
+# menu_journal_window
+"mjw_tasks" : "Задания"
+"mjw_parkings" : "Стоянки"
+
+# menu_character_window
+"mchw_descr" : "Описание"
+"mchw_lvl": "Уровень"
+"mchw_class": "Класс"
+"mchw_karma": "Карма"
+"mchw_balance": "Баланс"
+"mchw_about_self": "О себе"
+"mchw_set_info": "Характеристики"
+"mchw_inv": "Инвентарь"
+"mchw_effects": "Эффекты"
+"mchw_perks": "Перки"
+"mchw_perks_free": "Свободные очки"
+
+"mchw_perks_skills": "Навыки"
+"mchw_driv": "Вождение"
+"mchw_shoot": "Стрельба"
+"mchw_hide": "Скрытность"
+"mchw_mech": "Механика"
+"mchw_trad": "Торговля"
+"mchw_lead": "Лидерство"
+"mchw_skills_free": "Свободные очки"
+
+# Шаблон Окно инвентаря
+"iiw_all": "Всё"
+"iiw_cargo": "Груз"
+"iiw_ammo": "Боеприпасы"
+"iiw_active": "Активировать"
+
+# inventory_container_window
+"icw_you_inv": "Ваш инвентарь"
+"icw_container": "Контейнер"
+"icw_take_all": "Взять всё"
+
+# inventory_barter
+"ib_you_inv": "Ваш инвентарь"
+"ib_you_balance": "Ваш счет"
+"ib_Ok": "Подтвердить"
+"ib_Cancel": "Отмена"
+"ib_table": "Столик обмена"
+"ib_summ": "Сумма к переводу"
+"ib_summ_2": "Сумма партнера"
+
+# Заглушка быстрой игры quick_mode_plug
+"quick_mode_plug_1": "Функция заблокирована в режиме «Быстрый бой»"
+"quick_mode_plug_2": "Авторизуйтесь и начните полноценную игру."
