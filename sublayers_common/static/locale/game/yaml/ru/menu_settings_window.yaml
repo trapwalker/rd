@@ -1,0 +1,36 @@
+"locale": "ru"
+
+# settings_window.html
+"msetw_page_grapf": "Графика"
+"msetw_page_audio": "Звук"
+"msetw_page_control": "Управление"
+"msetw_page_other": "Другое"
+"msetw_descr": "Описание"
+"msetw_btn_default": "По умолчанию"
+"msetw_btn_apply": "Применить"
+"msetw_btn_cancel": "Отменить"
+
+# cookie.js
+
+"setman_page_descriptions_graphics": "Настройки графики"
+"setman_page_descriptions_audio": "Настройки звука"
+"setman_page_descriptions_control": "Настройки управления"
+"setman_page_descriptions_other": "Другие настройки"
+
+# Настройки громкости
+"setman_opt_general_gain_text_name": "Общая громкость"
+"setman_opt_general_gain_text_description": "Настройка общей громкости"
+"setman_opt_auto_fire_gain_text_name": "Громкость автоматической стрельбы"
+"setman_opt_auto_fire_gain_text_description": "Настройка громкости автоматической стрельбы"
+"setman_opt_discharge_fire_gain_text_name": "Громкость залповой стрельбы"
+"setman_opt_discharge_fire_gain_text_description": "Настройка громкости залповой стрельбы"
+"setman_opt_bang_gain_text_name": "Громкость взрывов"
+"setman_opt_bang_gain_text_description": "Настройка громкости взрывов"
+"setman_opt_engine_gain_text_name": "Громкость автомобиля"
+"setman_opt_engine_gain_text_description": "Настройка громкости двигателя и сигнала заднего хода"
+"setman_opt_interface_gain_text_name": "Громкость интерфейса"
+"setman_opt_interface_gain_text_description": "Настройка громкости интерфейса"
+
+# Настройка графики
+
+
