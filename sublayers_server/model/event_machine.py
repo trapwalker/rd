@@ -131,6 +131,7 @@ class Server(object):
             log.info('Zones activation disabled')
         else:
             self.init_zones(time=self.get_time())
+        self.max_agent_lvl = self.reg.get('/registry/rpg_settings/exptable').get_max_lvl()
 
     def post_message(self, message):
         """

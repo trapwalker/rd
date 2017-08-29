@@ -3,6 +3,8 @@
 import logging
 log = logging.getLogger(__name__)
 
+import math
+
 from sublayers_server.model.registry_me.tree import (
     Node, 
     IntField, FloatField, ListField, EmbeddedDocumentField, EmbeddedDocument,
@@ -104,3 +106,6 @@ class ExpTable(Node):
             if p[0] > points:
                 return p[1]
         return 0
+
+    def get_max_lvl(self):
+        return math.ceil(max([p.k for p in self.user_exp_table]) / 10.)
