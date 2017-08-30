@@ -42,7 +42,7 @@ var LocationTraderNPC = (function (_super) {
         var res_str = '';
         for (var i = 0; i < this.trader_assortment.length; i++)
             if (this.trader_assortment[i].item.tags.indexOf("cargo") >= 0)
-                item_rec_list.push({ item_title: this.trader_assortment[i].item.title,
+                item_rec_list.push({ item_title: _(this.trader_assortment[i].item.title),
                                      export_val: this.trader_assortment[i].price.sale / this.trader_assortment[i].price.base });
         item_rec_list = item_rec_list.sort(function (a, b) { return (a.export_val > b.export_val) });
         for (var i = 0; i < Math.min(item_rec_list.length, 3); i++)
@@ -56,7 +56,7 @@ var LocationTraderNPC = (function (_super) {
         var res_str = '';
         for (var i = 0; i < this.trader_assortment.length; i++)
             if (this.trader_assortment[i].item.tags.indexOf("cargo") >= 0)
-                item_rec_list.push({ item_title: this.trader_assortment[i].item.title,
+                item_rec_list.push({ item_title: _(this.trader_assortment[i].item.title),
                                      export_val: this.trader_assortment[i].price.buy / this.trader_assortment[i].price.base });
         item_rec_list = item_rec_list.sort(function (a, b) { return (a.export_val < b.export_val) });
         for (var i = 0; i < Math.min(item_rec_list.length, 3); i++)
@@ -302,7 +302,7 @@ var LocationTraderNPC = (function (_super) {
                 '<div class="npcInventory-itemWrap ' + dropCls + '" data-pos="' + i + '">' +
                     '<div class="npcInventory-item" data-img_link="' + example.inv_icon_mid + '">' +
                         '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + example.inv_icon_mid + ') no-repeat center"></div>' +
-                        '<div class="npcInventory-text name">' + example.title + '</div>' +
+                        '<div class="npcInventory-text name">' + _(example.title) + '</div>' +
                         '<div class="npcInventory-text count">' + count_str + '</div>' +
                         '<div class="npcInventory-text price">' + example.price.base + ' Nc</div>' +
                     '</div>' +
@@ -479,10 +479,10 @@ var LocationTraderNPC = (function (_super) {
     LocationTraderNPC.prototype.set_buttons = function () {
         //console.log('LocationParkingNPC.prototype.set_buttons', this.cars_list.length);
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, 'Подтвердить</br>сделку', true);
-        locationManager.setBtnState(2, '</br>Отмена', true);
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(1, _("loc_leaf_trader_apply"), true);
+        locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancel"), true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationTraderNPC.prototype.set_panels = function () {
@@ -519,11 +519,11 @@ var LocationTraderNPC = (function (_super) {
         // Вешаем эвенты на стрелочки
         this.jq_main_div.find('.trader-filter-change-arrow').click(this.filter_click_arrow.bind(this));
         return [
-            new TraderAssortmentFilter('Все'),
-            new TraderAssortmentFilterTags('Боеприпасы', ['ammo']),
-            new TraderAssortmentFilterTags('Оружие', ['armorer']),
-            new TraderAssortmentFilterTags('Тюнер', ['tuner']),
-            new TraderAssortmentFilterTags('Механик', ['mechanic'])
+            new TraderAssortmentFilter(_("loc_tarder_filter_all")),
+            new TraderAssortmentFilterTags(_("loc_tarder_filter_ammo"), ['ammo']),
+            new TraderAssortmentFilterTags(_("loc_tarder_filter_armorer"), ['armorer']),
+            new TraderAssortmentFilterTags(_("loc_tarder_filter_tuner"), ['tuner']),
+            new TraderAssortmentFilterTags(_("loc_tarder_filter_mechanic"), ['mechanic'])
         ];
     };
 
@@ -546,21 +546,21 @@ var LocationTraderNPC = (function (_super) {
         if (!html_text) {
             var jq_text_div = $('<div></div>');
             if (!user.example_car)
-                jq_text_div.append('<div>Подгоните ваш транспорт к складу.</div>');
+                jq_text_div.append('<div>' + _("loc_tarder_sht_no_car") + '</div>');
             else if ((this.playerTable.length == 0) && (this.traderTable.length == 0))
-                jq_text_div.append('<div>Стол обмена пуст. Выберите товар для начала торговли.</div>');
+                jq_text_div.append('<div>' + _("loc_tarder_sht_no_items") + '</div>');
             else if ((user.balance + this.price_player - this.price_trader) < 0)
-                jq_text_div.append('<div>Недостаточно средств.</div>');
+                jq_text_div.append('<div>' + _("loc_tarder_sht_no_money") + '</div>');
             else {
                 jq_text_div.append(
-                    '<div>Продаю на ' + this.price_trader + ' NC.</div>' +
-                    '<div>Покупаю на ' + this.price_player + ' NC.</div>'
+                    '<div>' + _("loc_tarder_sht_sale_for") + this.price_trader + ' NC.</div>' +
+                    '<div>' + _("loc_tarder_sht_buy_for") + this.price_player + ' NC.</div>'
                 );
                 var d_price = this.price_player - this.price_trader;
                 if (d_price >= 0)
-                    jq_text_div.append('<div>Итого с меня ' + d_price + ' NC.</div>');
+                    jq_text_div.append('<div>' + _("loc_tarder_sht_total_trader") + d_price + ' NC.</div>');
                 else
-                    jq_text_div.append('<div>Итого с тебя ' + -d_price + ' NC.</div>');
+                    jq_text_div.append('<div>' + _("loc_tarder_sht_total_player") + -d_price + ' NC.</div>');
             }
             html_text = jq_text_div;
         }
@@ -576,8 +576,8 @@ var LocationBarmanNPC = (function (_super) {
 
     function LocationBarmanNPC(npc_rec, jq_town_div, building_name) {
         _super.call(this, npc_rec, jq_town_div, building_name);
-        this.jq_main_div.find('.trader-center-player-table-label').text('Ваши квесты:');
-        this.jq_main_div.find('.trader-center-trader-table-label').text('Квесты на продажу:');
+        this.jq_main_div.find('.trader-center-player-table-label').text(_("loc_barmen_quests_player"));
+        this.jq_main_div.find('.trader-center-trader-table-label').text(_("loc_barmen_quests_sale"));
     }
 
     LocationBarmanNPC.prototype.get_self_info = function () {

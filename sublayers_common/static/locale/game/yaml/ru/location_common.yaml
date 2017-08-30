@@ -100,7 +100,9 @@
 "loc_leaf_trade": "Торговать"
 "loc_leaf_activate": "Активировать"
 "loc_leaf_setup": "Установить"
-
+"loc_leaf_gas_fuel": "Заправить"
+"loc_leaf_gas_full_fuel": "Заправить</br>всё"
+"loc_leaf_trader_apply": "Подтвердить</br>сделку"
 
 
 
@@ -207,6 +209,32 @@
 "loc_mech_sht_off": "Снято"
 "loc_mech_sht_price": "Цена"
 "loc_mech_sht_q_on": "Установить?"
+
+
+# gas_station
+"loc_gas_full_tanks": "Полные канистры"
+"loc_gas_sht_fuel": "Заправить"
+"loc_gas_sht_fuel_full": "Заправить полный бак и канистры"
+
+# trader
+"loc_tarder_filter_all": "Все"
+"loc_tarder_filter_ammo": "Боеприпасы"
+"loc_tarder_filter_armorer": "Оружие"
+"loc_tarder_filter_tuner": "Тюнер"
+"loc_tarder_filter_mechanic": "Механик"
+"loc_tarder_filter_teach": ""
+# set_header_text
+"loc_tarder_sht_no_car": "Подгоните ваш транспорт к складу."
+"loc_tarder_sht_no_items": "Стол обмена пуст. Выберите товар для начала торговли."
+"loc_tarder_sht_no_money": "Недостаточно средств."
+"loc_tarder_sht_sale_for": "Продаю на "
+"loc_tarder_sht_buy_for": "Покупаю на "
+"loc_tarder_sht_total_trader": "Итого с меня "
+"loc_tarder_sht_total_player": "Итого с тебя "
+
+# barmen
+"loc_barmen_quests_player": "Ваши квесты:"
+"loc_barmen_quests_sale": "Квесты на продажу:"
 
 
 
