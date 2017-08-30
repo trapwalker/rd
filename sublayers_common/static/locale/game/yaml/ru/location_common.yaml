@@ -210,7 +210,6 @@
 "loc_mech_sht_price": "Цена"
 "loc_mech_sht_q_on": "Установить?"
 
-
 # gas_station
 "loc_gas_full_tanks": "Полные канистры"
 "loc_gas_sht_fuel": "Заправить"
@@ -222,7 +221,7 @@
 "loc_tarder_filter_armorer": "Оружие"
 "loc_tarder_filter_tuner": "Тюнер"
 "loc_tarder_filter_mechanic": "Механик"
-"loc_tarder_filter_teach": ""
+"loc_tarder_filter_teach": "На продажу"
 # set_header_text
 "loc_tarder_sht_no_car": "Подгоните ваш транспорт к складу."
 "loc_tarder_sht_no_items": "Стол обмена пуст. Выберите товар для начала торговли."
