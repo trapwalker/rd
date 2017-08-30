@@ -287,7 +287,7 @@ var LocationMechanicNPC = (function (_super) {
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture town-interlacing"></div></div>' +
-                '<div class="npcInventory-name">Пусто</div>';
+                '<div class="npcInventory-name">' + _("inv_empty") + '</div>';
             itemDiv.append(emptyItemDiv);
             if (item && item.example) {
                 itemDiv.find('.npcInventory-name').html(_(item.example.title));
