@@ -1,0 +1,111 @@
+"locale": "ru"
+
+
+
+
+# logs
+chat_log_loc_enter: "Вы вошли в город - "
+chat_log_loc_exit: "Вы покинули город - "
+chat_log_barter_player: "Игрок - "
+chat_log_barter_player_inv: " приглашает вас в бартер."
+chat_log_barter_activate: "Активирован бартер с игроком - "
+chat_log_barter_ended: "Завершен бартер с игроком - "
+
+chat_log_exp_1: "Получено "
+chat_log_exp_2: " очков опыта."
+chat_log_exp_lvl_1: "Достигнут "
+chat_log_exp_lvl_2: " уровень."
+
+chat_log_skills_get: "Очков навыка получено"
+
+chat_log_quest_start: "Получен квест"
+chat_log_quest_fail: "Провален квест"
+chat_log_quest_finish: "Выполнен квест"
+
+chat_log_inv_items_gone: "Отдано"
+chat_log_inv_items_come: "Получено"
+
+chat_log_ammo_off: "Закончились патроны для "
+
+chat_log_act_item: "Активирован предмет "
+chat_log_open_delivery: "Вскрыта посылка."
+chat_log_cancel_act_item: "Отмена активации итема"
+chat_log_fail_act_item: "Невозможна активация итема"
+chat_log_fail_act_item_desr: "Необходимо выполнение следующих условий"
+chat_log_fail_act_item_timeout: "Таймаут активации 1 секунда."
+chat_log_fail_act_item_not_found: "Активации итема: невозможна. Итем не установлен."
+
+chat_log_fuel_add_1: "В бак залито "
+chat_log_fuel_l: "л."
+
+chat_log_add_hp: "Автомобиль починен на "
+
+chat_log_ammo_set: "Заряжено: "
+chat_log_setup_mine: "Установлена мина: "
+chat_log_rocket_start: "Запущена ракета: "
+chat_log_setup_turret: "Установлена турель: "
+chat_log_setup_radar: "Установлен радар: "
+
+
+chat_log_fuel_added_text: "В бак долито "
+chat_log_fuel_added_value: " литров топлива."
+chat_log_taks_list: "Заправлены канистры: "
+chat_log_car_sale: "Продана машина - "
+chat_log_car_buy: "Куплена машина - "
+chat_log_get_car: "Вы забрали машину - "
+chat_log_give_car: "Вы оставили машину - "
+
+chat_log_tt_1: "получено"
+chat_log_tt_2: "потрачено"
+chat_log_tt_3: "со стоянки"
+chat_log_tt_4: "потрачено"
+chat_log_tt_5: "на стоянке."
+
+chat_log_arm_items_off: "Оружейником демонтировано оборудование"
+chat_log_arm_items_on: "Оружейником установлено оборудование"
+chat_log_arm_price: "На оплату работы оружейника потрачено - "
+
+chat_log_mech_items_off: "Механиком демонтировано оборудование"
+chat_log_mech_items_on: "Механиком установлено оборудование"
+chat_log_mech_price: "На оплату работы механика потрачено - "
+
+chat_log_mech_repair_1: "Механиком восстановлено - "
+chat_log_mech_repair_2: " очков прочности"
+chat_log_mech_repair_3: "потрачено - "
+
+chat_log_tuner_items_off: "Тюнером демонтировано оборудование: "
+chat_log_tuner_items_on: "Тюнером установлено оборудование: "
+chat_log_tuner_price: "На оплату работы тюнера потрачено - "
+chat_log_tuner_points_inc: "Получено - "
+chat_log_tuner_points_points: " очков крутости."
+chat_log_tuner_points_dec: "Потеряно - "
+
+chat_log_trader_items_give: "Торговцу проданы предметы: "
+chat_log_trader_items_get: "У торговца куплены предметы: "
+chat_log_trader_money_give: "У торговца потрачено - "
+chat_log_trader_money_get: "От торговца получено - "
+chat_log_trainer_skills_buy: "Очков навыков приобретено: "
+chat_log_trainer_skills_set: "Очков навыков распределено: "
+chat_log_trainer_perks_set: "Очков перков распределено: "
+chat_log_trainer_price: "На оплату работы тренера потрачено - "
+chat_log_loot_get: "Подобрано: "
+
+
+# party_logs!
+chat_log_party_join: " присоединился к группе"
+chat_log_party_leave: " покинул группу"
+chat_log_party_u_join: "Вы включены в состав группы "
+chat_log_party_u_leave: "Вы исключены из состава группы "
+chat_log_party_u_kick: "Вас выгнали из состава группы "
+chat_log_party_u_inv: " приглашает Вас вступить в группу "
+chat_log_party_u_inv_send: "Ваше приглашение отправлено для "
+chat_log_party_inv: " приглашает "
+chat_log_party_join_in: " вступить в группу "
+chat_log_party_inv_in: "Приглашание вступить в группу "
+chat_log_party_from: " от "
+chat_log_party_inv_off: " отклонено."
+chat_log_party_u_inv_for: "Ваше приглашение для "
+chat_log_party_inv_from: "Приглашение от "
+chat_log_party_for: " для "
+chat_log_party_error: "Ошибка: "
+chat_log_party_unknown_info: "Неизвестная информация о пати!"
