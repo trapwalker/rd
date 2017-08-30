@@ -87,7 +87,6 @@ var WSConnector = (function(_super){
                     //console.log('Соединение закрыто чисто ', event);
                     var reason = event.reason;
                     if (reason.search('min_connection_time') >= 0) {
-                        alert('Попытка подключения раньше дедлайна! Нельзя так!');
                         setTimeout(function(){ ws_connector.connect();}, 60000); // Сразу ставим максимальный таймаут
                     }
 
@@ -95,8 +94,8 @@ var WSConnector = (function(_super){
                     //modalWindow.modalRestartShow();
                     modalWindow.modalDialogInfoShow({
                         caption: 'Disconnect',
-                        header: 'Произошёл плановый рестарт сервера!',
-                        body_text: 'Вы можете подождать до автоматического переподключения к серверу или нажать ОК для мгновенного обновления страницы.',
+                        header: _("window_disconnect_caption"),
+                        body_text: _("window_disconnect_text"),
                         callback_ok: function () {
                             window.location.reload();
                         }

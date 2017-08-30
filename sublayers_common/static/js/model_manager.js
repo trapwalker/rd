@@ -715,7 +715,7 @@ var ClientManager = (function () {
         else if (event.insurance.node_hash == 'reg:///registry/items/quest_item/insurance/base')
             textConsoleManager.start('die_base', 3000, event);
         else {
-            alert('Странная страховка: ' + event.insurance);
+            alert('Bad Insurance: ' + event.insurance);
             location.reload();
         }
 
@@ -742,7 +742,7 @@ var ClientManager = (function () {
             });
         }, 200);
 
-        new WTextArcade("Крушение").start();
+        new WTextArcade(_("ta_death")).start();
 
         // Запуск авто-воскрешения
         if (settingsManager.options["auto_resurrection"].value) {
@@ -811,7 +811,7 @@ var ClientManager = (function () {
             // Если был начислен бонус, то вывести текст об этом
             var points = event.quick_game_bonus_points - this._quick_game_points_info.quick_game_bonus_points;
             if (points > 0)
-                new WTextArcade("+" + points + " очков").start();
+                new WTextArcade("+" + points + " " + _("ta_points")).start();
         }
 
         this._quick_game_points_info = event;
@@ -895,7 +895,7 @@ var ClientManager = (function () {
             if (user.userCar.radiation_dps != 0.0 && !basic_server_mode)
                 setTimeout(function() { // Из-за особенностей быстрой игры
                     if (user.userCar && user.userCar.radiation_dps != 0.0)
-                        new WTextArcade("Вы покидаете поле боя").start();
+                        new WTextArcade(_("ta_out_battle")).start();
                 }, 500);
 
         }
@@ -1819,8 +1819,8 @@ var ClientManager = (function () {
         //console.log('ClientManager.prototype.sendInvitePartyFromTemplate');
         modalWindow.modalDialogInfoShow({
             caption: 'Invite',
-            header: 'Приглашение отправлено!',
-            body_text: 'Вы пригласили в пати игрока с ником - ' + name + '.',
+            header: _("window_inv_to_party"),
+            body_text: _("window_inv_to_party_q1") + ' - ' + name + '.',
             callback_ok: function () {}
         });
         var mes = {

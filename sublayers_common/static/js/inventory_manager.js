@@ -180,7 +180,7 @@ var Inventory = (function () {
             '-pos-' + position + '" data-owner_id="' + this.owner_id + '" data-pos="' + position + '">' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item inventory-' + this.owner_id +
             '-pos-' + position + '" data-owner_id="' + this.owner_id + '" data-pos="' + position + '">' +
-            '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">Пусто</div>' +
+            '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + _("inv_empty") + '</div>' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty">' +
             '<div class="mainCarInfoWindow-body-trunk-body-right-item-count-empty"></div></div></div></div>';
 
