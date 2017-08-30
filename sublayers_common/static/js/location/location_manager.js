@@ -976,7 +976,7 @@ var LocationPlaceBuilding = (function (_super) {
                 locationManager.setBtnState(1, '', false);
             else {
                 if (this.selected_quest.status == null)
-                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_apply"), true);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_accept"), true);
                 if (this.selected_quest.status == 'active')
                     locationManager.setBtnState(1, '</br>' + _("loc_leaf_otkaz"), true);
             }

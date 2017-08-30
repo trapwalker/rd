@@ -78,11 +78,16 @@
 "loc_leaf_search": "Обыскать"
 "loc_leaf_back": "Назад"
 "loc_leaf_exit": "Выход"
-"loc_leaf_apply": "Принять"
+"loc_leaf_accept": "Принять"
 "loc_leaf_otkaz": "Отказаться"
 "loc_leaf_repair": "Ремонт"
 "loc_leaf_full_repair_1": "Полный"
 "loc_leaf_full_repair_2": "ремонт"
+"loc_leaf_apply": "Применить"
+"loc_leaf_cancel": "Отмена"
+"loc_leaf_prolong": "Продлить"
+"loc_leaf_ins_form": "Оформить"
+"loc_leaf_girl_buy": "Приобрести</br>услугу"
 
 
 # location_manager.js
@@ -94,7 +99,9 @@
 "lm_error_exit_text": "Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный."
 
 
-# location_manager : set_header_text
+### set_header_text ###
+
+# location_manager
 "loc_sht_hello": "Вас приветствует "
 "loc_sht_quests_available": "Доступные задания"
 "loc_sht_quests_active": "Активные задания"
@@ -126,12 +133,58 @@
 "loc_sht_serv_repair_text_in_work": "Ремонт"
 "loc_sht_serv_full_repair_text_in_work": "Полный ремонт"
 
-# npc set_header_text
+# nukeoil
+"loc_sht_nuke_hello": "Добро пожаловать, "
+"loc_sht_nuke_descr": "!<br>Официальная заправка Корпорации Нукойл предоставляет:<ul><li>Автострахование: защитите свое имущество от происшествий на дорогах!</li><li>Топливная заправка.</li><li>Служба поддержки.</li></ul>"
+"loc_sht_nuke_days_before": "Действие: до "
+"loc_sht_nuke_days_no_time": "Действие: Бессрочно."
+"loc_sht_nuke_active_status": "Статус: Активна."
+"loc_sht_nuke_st_not_act": "Статус: Невозможно активировать во время действия другой страховки."
+"loc_sht_nuke_st_price_30": "Статус: неактивна.<br>Цена за 30 суток: "
+
+
+### NPCs ###
+
+# armorer
+# getSlotTextInfo
+"loc_armorer_slot_info_av_text": "Доступные направления"
+"loc_armorer_slot_direct_text_f": "вперёд"
+"loc_armorer_slot_direct_text_b": "назад"
+"loc_armorer_slot_direct_text_l": "влево"
+"loc_armorer_slot_direct_text_r": "вправо"
+"loc_armorer_slot_weight_text": "Класс тяжести"
+# set_header_text
+"loc_arm_sht_on": "Установлено"
+"loc_arm_sht_moduls": "модулей"
+"loc_arm_sht_off": "Снято"
+"loc_arm_sht_q_setup": "Установить"
+"loc_arm_sht_price": "Цена"
+"loc_arm_sht_set_m_q": "Монтировать модуль"
+"loc_arm_sht_unset_m_q": "Демонтировать модуль"
+"loc_arm_sht_car_off_warning": "Услуги предоставляются только владельцам собственного транспорта."
+
+# girl
+"loc_girl_sht_buy": "Приобрести услугу"
 
 
 
+### BUIDLINGs ###
 
-# buildings
 # building_service_manager.js
 "loc_bsm_additional_page_text_1": "Ремонт"
 "loc_bsm_additional_page_text_2": "автомобиля"
+
+
+
+# building_nocoil_manager.js
+"loc_bnc_additional_page_ins_text": "Страховка"
+"loc_bnc_additional_page_actions_text": "Акции"
+"loc_bnc_additional_page_special_text": "Специальные предложения"
+# panels:
+"loc_bnc_panel_ins_descr_standart": "Страховка Стандарт.<br>Компенсация при крушении: номинальной стоимости транспорта.<br>Респаун: Случайный город."
+"loc_bnc_panel_ins_descr_premium": "Страховка Премиум<br>Компенсация при крушении: Восстановление транспорта с потерей всего содержимого багажника и установленного тюнинга.<br>Респаун: Последний посещенный город."
+"loc_bnc_panel_ins_descr_shareholder": "Страховка VIP<br>Компенсация при крушении: Полное восстановление транспорта с потерей грузовых товаров из багажника.<br>Респаун: Город по выбору."
+
+
+# dump_manager.js
+#
