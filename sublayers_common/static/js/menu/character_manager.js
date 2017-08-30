@@ -144,7 +144,7 @@ var CharacterManager = (function () {
             var backlight = i % 2 ? "trainer-light-back" : "trainer-dark-back";
             jq_pers_effects.append(
                 '<div class="character-effect-block" data-index="' + i + '">' +
-                    '<div class="character-effect-title ' + backlight + '">' + item.title + '</div>' +
+                    '<div class="character-effect-title ' + backlight + '">' + _(item.title) + '</div>' +
                     '<div class="character-effect-deadline ' + backlight + '">' + time_str + '</div>' +
                 '</div>'
             );
@@ -166,21 +166,21 @@ var CharacterManager = (function () {
         //console.log('CharacterManager.skills_event_mouseenter');
         var skill_name = $(event.currentTarget).data('skill');
         if(! skill_name) return;
-        event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info[skill_name].description);
+        event.data.mng.jq_main_div.find('.character-window-hint-text').text(_(user.example_agent.rpg_info[skill_name].description));
     };
 
     CharacterManager.quest_item_event_mouseenter = function (event) {
         //console.log('CharacterManager.quest_item_event_mouseenter');
         var index = $(event.currentTarget).data('index');
         if (user.example_agent.rpg_info.quest_inventory.length > index)
-            event.data.mng.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info.quest_inventory[index].description);
+            event.data.mng.jq_main_div.find('.character-window-hint-text').text(_(user.example_agent.rpg_info.quest_inventory[index].description));
     };
 
     CharacterManager.agent_effect_event_mouseenter = function (event) {
         //console.log('CharacterManager.skills_event_mouseenter');
         var index = $(event.currentTarget).data('index');
         if (user.example_agent.rpg_info.agent_effects.length > index)
-            characterManager.jq_main_div.find('.character-window-hint-text').text(user.example_agent.rpg_info.agent_effects[index].description);
+            characterManager.jq_main_div.find('.character-window-hint-text').text(_(user.example_agent.rpg_info.agent_effects[index].description));
     };
 
     CharacterManager.event_mouseleave = function (event) {
@@ -196,7 +196,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_level = function (event) {
         //console.log('CharacterManager.event_mouseover_level');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = "Это уровень персонажа. Чем больше очков навыка он заработал, тем выше уровень. Уровень повышается каждые 10 очков навыка.";
+        var tt = _("mchw_lvl_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -206,7 +206,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_roleclass = function (event) {
         //console.log('CharacterManager.event_mouseover_roleclass');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = "Это класс персонажа. От класса зависит профильный навык, который растет быстрее – за каждые 5 очков – 1 бонусное. Кроме этого от класса зависит врожденный классовый квест и классовые перки.";
+        var tt = _("mchw_class_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -227,7 +227,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_karma = function (event) {
         //console.log('CharacterManager.event_mouseover_karma');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это Карма персонажа. В зависимости от поступков – добрых или злых, она улучшается или ухудшается. Чем ближе карма персонажа к карме городских жителей, тем лучше их отношение. Карма падает, если персонаж занимается мошенничеством или уничтожает других персонажей уровнем ниже себя.';
+        var tt = _("mchw_karma_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -237,7 +237,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_about_self = function (event) {
         //console.log('CharacterManager.event_mouseover_about_self');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Введите сюда любой текст, который отображается в окне персонажа и виден другим.';
+        var tt = _("mchw_about_self_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -247,7 +247,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_stats_btn = function (event) {
         //console.log('CharacterManager.event_mouseover_stats_btn');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Список перков и навыков персонажа.';
+        var tt = _("mchw_list_perks_skill_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -257,7 +257,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_exp = function (event) {
         //console.log('CharacterManager.event_mouseover_exp');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это опыт до получения следующего очка навыка. Опыт получается выполнением заданий и уничтожением транспорта других персонажей. Опыт за уничтожение транспорта получается в зависимости от пробега уничтоженного транспорта.';
+        var tt = _("mchw_exp_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -267,7 +267,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_all_perks = function (event) {
         //console.log('CharacterManager.event_mouseover_all_perks');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это список перков персонажа.  Что бы получить новый перк – нужно выбрать его у тренера в Библиотеке, имея при этом свободное очко перка.';
+        var tt = _("mchw_list_perks_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -277,7 +277,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_free_perks = function (event) {
         //console.log('CharacterManager.event_mouseover_free_perks');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это очки перков. 1 очко перка получается за каждый новый уровень персонажа.';
+        var tt = _("mchw_free_perks_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -287,7 +287,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_all_skills = function (event) {
         //console.log('CharacterManager.event_mouseover_all_skills');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это навыки персонажа. Навыки увеличиваются у тренера в Библиотеке, имея при этом свободные очки навыков.';
+        var tt = _("mchw_list_skills_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -297,7 +297,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_free_skills = function (event) {
         //console.log('CharacterManager.event_mouseover_free_skills');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это очки навыков. По мере роста опыта персонаж зарабатывает очки навыка, 10 за один уровень.';
+        var tt = _("mchw_free_skills_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -308,7 +308,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_inventory_btn = function (event) {
         //console.log('CharacterManager.event_mouseover_inventory_btn');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это рюкзак персонажа. Вещи в инвентаре сохраняются даже если был потерян транспорт. Сюда помещаются квестовые предметы и другие уникальные предметы, влияющие на персонажа.';
+        var tt = _("mchw_pers_inv_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -319,7 +319,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_effects_btn = function (event) {
         //console.log('CharacterManager.event_mouseover_effects_btn');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Это список положительных и отрицательных эффектов, влияющих на персонажа в данный момент.';
+        var tt = _("mchw_pers_effect_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
@@ -329,7 +329,7 @@ var CharacterManager = (function () {
     CharacterManager.event_mouseover_balance = function (event) {
         //console.log('CharacterManager.event_mouseover_balance');
         var mng = event && event.data && event.data.mng || characterManager;
-        var tt = 'Ваш электронный счет в системе Нукойл: 1 нукойн равен 1 литру топлива.';
+        var tt = _("mchw_balance_info");
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else

@@ -77,7 +77,7 @@ var ParkingJournalManager = (function () {
                     '<div class="journal-menu-block">' +
                         '<div class="journal-menu-name-block">' +
                             '<div class="journal-menu-arrow"></div>' +
-                            '<div class="journal-menu-name">' + town.location_name +'</div>' +
+                            '<div class="journal-menu-name">' + _(town.location_name) +'</div>' +
                         '</div>' +
                     '</div>');
 
@@ -86,12 +86,12 @@ var ParkingJournalManager = (function () {
                     var car_info = town.car_list[k];
                     jq_town_car_list.append(
                         '<div class="journal-parking-menu-city-car" data-car_id="' + car_info.car.uid + '">' +
-                            car_info.car.title +
+                            _(car_info.car.title) +
                         '</div>');
                     var jq_car_info_block = $('<div class="journal-page-parking-car-info-block" data-car_id="' + car_info.car.uid + '"></div>');
                     jq_car_info_block.append(car_info.armorer_css);
                     var jq_car_img_block = $('<div class="journal-page-parking-picture town-interlacing">' + car_info.html_car_img +'</div>' +
-                        '<div class="journal-page-car-name">' + car_info.car.title + '</div>');
+                        '<div class="journal-page-car-name">' + _(car_info.car.title) + '</div>');
                     var jq_car_table_block = $('<div class="journal-page-parking-info">' + car_info.html_car_table +'</div>');
                     jq_car_info_block.append(jq_car_img_block);
                     jq_car_info_block.append(jq_car_table_block);
@@ -272,7 +272,7 @@ var QuestJournalManager = (function () {
 
     QuestJournalManager.prototype._create_menu_quest = function(quest, quest_id) {
         return $('<div class="journal-quest-menu-quest"' + ' data-quest_id="' + quest_id + '">' +
-            '<img src="' + quest.list_icon + '" class="journal-quest-menu-quest-img">' + quest.caption + '</div>');
+            '<img src="' + quest.list_icon + '" class="journal-quest-menu-quest-img">' + _(quest.caption) + '</div>');
     };
 
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
@@ -347,13 +347,13 @@ var QuestJournalManager = (function () {
         if (quest.start_quest_time) {
             // info: возможно будет плохо работать с другими часовыми поясами
             var d = new Date(new Date((quest.start_quest_time + clock.getDt()) * 1000).setSeconds(0, 0));
-            deadline_str = 'Отправление: ' + d.toLocaleTimeString();
+            deadline_str = _("mjw_q_caravan_start_text") + d.toLocaleTimeString();
         }
 
         var jq_quest_block = $(
             '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
                 '<div class="building-quest-list-item-caption">' +
-                    '<img src="' + quest.list_icon + '" class="building-quest-list-item-img">' + quest.caption + '</br>Уровень: ' + quest.level +
+                    '<img src="' + quest.list_icon + '" class="building-quest-list-item-img">' + _(quest.caption) + '</br>' + ("mjw_q_level") + quest.level +
                 '</div>' +
                 '<div class="building-quest-list-item-description">' + quest.text_short + '</div>' +
                 '<div class="building-quest-list-item-time">' + deadline_str + '</div>' +
@@ -516,9 +516,9 @@ var QuestJournalManager = (function () {
         this.completed_count = 0;
         this.failed_count = 0;
 
-        this.jq_active_group = this._create_status_group('Активные');
-        this.jq_completed_group = this._create_status_group('Выполненные');
-        this.jq_failed_group= this._create_status_group('Проваленные');
+        this.jq_active_group = this._create_status_group(_('mjw_q_status_active_text'));
+        this.jq_completed_group = this._create_status_group(_('mjw_q_status_finished_text'));
+        this.jq_failed_group= this._create_status_group(_('mjw_q_status_failed_text'));
         jq_quest_list.append(this.jq_active_group);
         jq_quest_list.append(this.jq_completed_group);
         jq_quest_list.append(this.jq_failed_group);
