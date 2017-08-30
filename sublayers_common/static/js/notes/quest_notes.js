@@ -34,9 +34,9 @@ var QuestNoteNPCBtn = (function (_super) {
     function QuestNoteNPCBtn(options) {
         _super.call(this, options);
         this.npc_html_hash = options.npc.html_hash;
-        this.page_caption = options.page_caption;
+        this.page_caption = _(options.page_caption);
 
-        this.btn1_caption = options.btn1_caption;
+        this.btn1_caption = _(options.btn1_caption);
         //this.btn2_caption = options.btn2_caption;
 
         this.jq_main_div = null;  // Вёрстка в здании

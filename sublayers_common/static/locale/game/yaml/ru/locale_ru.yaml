@@ -1,3 +1,16 @@
 "locale": "ru"
 
 # Общее
+
+"hours_cut": "ч."
+"inv_empty": "Пусто"
+"barter_cancel" : "Отмена"
+
+
+"window_disconnect_caption": "Произошёл плановый рестарт сервера!"
+"window_disconnect_text": "Вы можете подождать до автоматического переподключения к серверу или нажать ОК для мгновенного обновления страницы."
+"window_drop_to_map": "Выбросить?"
+"window_drop_to_map_q1": "Вы уверены, что хотите выбросить "
+"window_drop_to_map_q2": " на карту?"
+"window_inv_to_party": "Приглашение отправлено!"
+"window_inv_to_party_q1": "Вы пригласили в пати игрока с ником"

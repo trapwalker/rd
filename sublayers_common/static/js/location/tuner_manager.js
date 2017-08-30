@@ -20,15 +20,15 @@ var LocationTunerNPC = (function (_super) {
     LocationTunerNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Установить', true);
-            locationManager.setBtnState(2, '</br>Отмена', true);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_setup"), true);
+            locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancel"), true);
         }
         else {
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationTunerNPC.prototype._addEmptyInventorySlot = function(position) {
@@ -344,12 +344,12 @@ var LocationTunerNPC = (function (_super) {
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture"></div></div>' +
-                '<div class="npcInventory-name">Пусто</div>';
+                '<div class="npcInventory-name">' + _("inv_empty") + '</div>';
             itemDiv.append(emptyItemDiv);
             var item = this.items[position];
 
             if (item.example) {
-                itemDiv.find('.npcInventory-name').html(item.example.title);
+                itemDiv.find('.npcInventory-name').html(_(item.example.title));
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
@@ -502,10 +502,11 @@ var LocationTunerNPC = (function (_super) {
         if (! html_text) {
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                jq_text_div.append('<div>Антикрыло хошь?</div>');
+                // todo: реализовать подсчёт цены и вывод сюда всего что нужно
+                jq_text_div.append('<div></div>');
             }
             else
-                jq_text_div.append('<div>Неее, без машины я ничего не буду делать!</div>');
+                jq_text_div.append('<div>' + _("loc_arm_sht_car_off_warning") + '</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);

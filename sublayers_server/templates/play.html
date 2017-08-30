@@ -117,6 +117,8 @@
 
     <!-- SVG JS Lib -->
     <script src="{{ static_url('js/third_party/svgjs/svg.js') }}"></script>
+    <script src="{{ static_url('locale/locale.js') }}"></script>
+    <script src="{{ static_url('locale/game/yaml/{}/.compiled.js'.format(user_lang)) }}"></script>
 
     <script src="{{ static_url('js/cookie.js') }}"></script>
     <script src="{{ static_url('js/game_info_metrics.js') }}"></script>
@@ -134,7 +136,6 @@
 
     <script src="{{ static_url('js/message_stream.js') }}"></script>
 
-    <script src="{{ static_url('locale/locale.js') }}"></script>
     <script src="{{ static_url('js/window.js') }}"></script>
     <script src="{{ static_url('js/modelJS.js') }}"></script>
 

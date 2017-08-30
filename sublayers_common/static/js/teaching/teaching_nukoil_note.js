@@ -17,7 +17,7 @@ var NukoilTeachingNote = (function (_super) {
         this.gas_coord = new Point(992, 424);
         this.buy_btn = new Point(402, 633);
 
-        chat.addMessageToLog('Транспорт без топлива бесполезен. Нукойны - электронная валюта Корпорации Нукойл. За 1 нукойн можно купить 1 литр топлива.', true);
+        chat.addMessageToLog(_("teach_town_nukeoil_note_log"), true);
     }
 
     NukoilTeachingNote.prototype.on_enter_location = function() {
@@ -37,29 +37,29 @@ var NukoilTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
              (active_place != null))) {
-            teachingManager.jq_panel_left_content.text('Транспорт без топлива бесполезен. Нукойны - электронная валюта Корпорации Нукойл. За 1 нукойн можно купить 1 литр топлива.');
-            teachingManager.jq_panel_right_content.text('Зайти в Нукойл для заправки транспорта.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_nukeoil_note_1"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_nukeoil_note_2"));
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('Транспорт без топлива бесполезен. Нукойны - электронная валюта Корпорации Нукойл. За 1 нукойн можно купить 1 литр топлива.');
-            teachingManager.jq_panel_right_content.text('Зайти в Нукойл для заправки транспорта.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_nukeoil_note_1"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_nukeoil_note_2"));
             this.draw_line(this.start_point, this.build_coord);
         }
 
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            teachingManager.jq_panel_left_content.text('Вы находитесь в приемной Нукойл. В любом отделении Нукойл вы можете получить услуги заправки, службы помощи клиентам и оформить страховку.');
-            teachingManager.jq_panel_right_content.text('Зайти в меню заправки.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_nukeoil_note_3"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_nukeoil_note_4"));
             this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
-            teachingManager.jq_panel_left_content.text('В меню заправки можно заполнить топливный бак и пустые канистры.');
-            teachingManager.jq_panel_right_content.text('Указать количество литров ползунком и нажать кнопку <Заправить>.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_nukeoil_note_5"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_nukeoil_note_6"));
 
             if (user.example_car)
                 if (Math.round(user.example_car.fuel) != this.needed_npc._get_gas_by_prc(this.needed_npc.current_prc_gas))

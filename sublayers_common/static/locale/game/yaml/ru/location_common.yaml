@@ -1,0 +1,262 @@
+"locale": "ru"
+
+"law_slot_name": "Имя слота"
+
+"lm_showp_head_no": "Нет"
+
+"lbw_available_quest": "Доступные задания"
+"lbw_active_quest": "Активные задания"
+
+"lcit_tth": "TTX"
+"lcit_weapon": "Вооружение"
+"lcit_history": "История"
+"lcit_price": "Цена:"
+"lcit_class": "Класс:"
+"lcit_strength": "Прочность:"
+"lcit_speed": "Cкорость:"
+"lcit_slot_count": "Слотов кузова:"
+"lcit_inventory_size": "Слотов багажника:"
+"lcit_fuel": "Объём бака:"
+"lcit_fuel_consumption": "Расход топлива:"
+"lcit_driving_req": "Навык вождения:"
+"lcit_zone_speed": "Скорсть на местности:"
+"lcit_dirt_speed": "Бездорожье:"
+"lcit_wood_speed": "Лес:"
+"lcit_slope_speed": "Гористость:"
+"lcit_water_speed": "Болото:"
+"lcit_mileage": "Пробег:"
+"lcit_kill_count": "Убийств:"
+"lcit_exp": "Опыт:"
+
+"lci_info": "Информация"
+"lci_trading_info": "Торговля"
+"lci_lvl": "Уровень:"
+"lci_class": "Класс:"
+"lci_karma": "Карма:"
+"lci_driving": "Вождение:"
+"lci_shooting": "Стрельба:"
+"lci_masking": "Скрытность:"
+"lci_engineering": "Механика:"
+"lci_trading": "Торговля:"
+"lci_leading": "Лидерство:"
+
+"lhw_proposal": "Предложение:"
+"lhw_parking": "ТС на парковке:"
+
+"ll_inventory": "Ваш багажник"
+"ll_found": "Найдено"
+
+"lm_pers": "Персонаж"
+"lm_car": "Автомобиль"
+"lm_inventory": "Инвентарь"
+"lm_journal": "Журнал"
+"lm_party": "Пати"
+"lm_radio": "Радио"
+"lm_settings": "Настройки"
+
+"lm_all": "Всё"
+"lm_ammo": "Боеприпасы"
+"lm_cargo": "Груз"
+"lm_insurance": "Страховка"
+"lm_appeals": "Обращения"
+
+"lngs_empty_tanks": "Пустые канистры:"
+
+"lni_inventory": "Инвентарь:"
+
+"ltw_table": "Столик обмена:"
+
+"ltw_perk": "Перки"
+"ltw_skill": "Навыки"
+"ltw_free_points": "Свободные очки"
+"ltw_drop_all": "Сбросить все"
+"ltw_load_update": "Скачать апдейт"
+
+"ltunw_cool": "Kpyto<span>ctb</span>:"
+
+# Все лепестки здесь!
+"loc_leaf_search": "Обыскать"
+"loc_leaf_back": "Назад"
+"loc_leaf_exit": "Выход"
+"loc_leaf_accept": "Принять"
+"loc_leaf_otkaz": "Отказаться"
+"loc_leaf_repair": "Ремонт"
+"loc_leaf_full_repair_1": "Полный"
+"loc_leaf_full_repair_2": "ремонт"
+"loc_leaf_apply": "Применить"
+"loc_leaf_cancel": "Отмена"
+"loc_leaf_cancelnit": "Отменить"
+"loc_leaf_prolong": "Продлить"
+"loc_leaf_ins_form": "Оформить"
+"loc_leaf_girl_buy": "Приобрести</br>услугу"
+"loc_leaf_hangar_swap": "Обменять ТС"
+"loc_leaf_hangar_sell": "Продать ТС"
+"loc_leaf_hangar_buy": "Купить ТС"
+"loc_leaf_park_swap": "Сменить ТС"
+"loc_leaf_park_give": "Поставить</br>ТС"
+"loc_leaf_park_take": "Взять ТС"
+"loc_leaf_inv_party": "Пригласить</br>в пати"
+"loc_leaf_barter_close": "Закрыть</br>бартер"
+"loc_leaf_trade": "Торговать"
+"loc_leaf_activate": "Активировать"
+"loc_leaf_setup": "Установить"
+"loc_leaf_gas_fuel": "Заправить"
+"loc_leaf_gas_full_fuel": "Заправить</br>всё"
+"loc_leaf_trader_apply": "Подтвердить</br>сделку"
+
+
+
+# location_manager.js
+"lm_question_to_drop": "Выбросить?"
+"lm_question_to_drop_t1": "Вы уверены, что хотите выбросить "
+"lm_question_to_drop_t2": " на свалку?"
+
+"lm_error_exit": "Внимание! Ошибка!"
+"lm_error_exit_text": "Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный."
+
+
+### set_header_text ###
+
+# location_manager
+"loc_sht_hello": "Вас приветствует "
+"loc_sht_quests_available": "Доступные задания"
+"loc_sht_quests_active": "Активные задания"
+
+# dealer:
+"loc_sht_dealer_work": "Продавец машин"
+"loc_sht_dealer_min_price_text_p1": "Транспорт от"
+"loc_sht_dealer_min_price_text_p2": " за ТС."
+"loc_sht_parking_work": "Парковщик"
+
+# library
+"loc_sht_trainer_work": "Тренер"
+"loc_sht_trainer_descr": ".Повышение навыков и получение новых способностей."
+
+# market
+"loc_sht_trader_work": "Торговец"
+"loc_sht_trader_export": "Экспорт"
+"loc_sht_trader_import": "Импорт"
+
+# mayor
+"loc_sht_mayor_hello": "Вас приветствует мэрия города "
+"loc_sht_mayor_text": "Пожертвование городу. Цена: 5000 Nc (+10 в отношение, +5 в карму)"
+
+# service
+"loc_sht_serv_armorer_descr": ": оружейник. Установка орудий и модулей на кузов транспорта."
+"loc_sht_serv_style_descr": ": стилист. Стайлинг транспорта."
+"loc_sht_serv_mechanik_descr": ": механик. Тюнинг внутренних компонентов транспорта."
+"loc_sht_serv_repair_text": "Ремонт транспорта."
+"loc_sht_serv_repair_text_in_work": "Ремонт"
+"loc_sht_serv_full_repair_text_in_work": "Полный ремонт"
+
+# nukeoil
+"loc_sht_nuke_hello": "Добро пожаловать, "
+"loc_sht_nuke_descr": "!<br>Официальная заправка Корпорации Нукойл предоставляет:<ul><li>Автострахование: защитите свое имущество от происшествий на дорогах!</li><li>Топливная заправка.</li><li>Служба поддержки.</li></ul>"
+"loc_sht_nuke_days_before": "Действие: до "
+"loc_sht_nuke_days_no_time": "Действие: Бессрочно."
+"loc_sht_nuke_active_status": "Статус: Активна."
+"loc_sht_nuke_st_not_act": "Статус: Невозможно активировать во время действия другой страховки."
+"loc_sht_nuke_st_price_30": "Статус: неактивна.<br>Цена за 30 суток: "
+
+
+### NPCs ###
+"loc_arm_sht_car_off_warning": "Услуги предоставляются только владельцам собственного транспорта."
+# armorer
+# getSlotTextInfo
+"loc_armorer_slot_info_av_text": "Доступные направления"
+"loc_armorer_slot_direct_text_f": "вперёд"
+"loc_armorer_slot_direct_text_b": "назад"
+"loc_armorer_slot_direct_text_l": "влево"
+"loc_armorer_slot_direct_text_r": "вправо"
+"loc_armorer_slot_weight_text": "Класс тяжести"
+# set_header_text
+"loc_arm_sht_on": "Установлено"
+"loc_arm_sht_moduls": "модулей"
+"loc_arm_sht_off": "Снято"
+"loc_arm_sht_q_setup": "Установить"
+"loc_arm_sht_price": "Цена"
+"loc_arm_sht_set_m_q": "Монтировать модуль"
+"loc_arm_sht_unset_m_q": "Демонтировать модуль"
+
+# girl
+"loc_girl_sht_buy": "Приобрести услугу"
+
+
+# hangar - parking
+"loc_park_enter_bag": "Зайти в багажник"
+# set_header_text
+"loc_hang_sht_swap": "Обменять"
+"loc_hang_sht_to": ' на '
+"loc_hang_sht_npc_summ": " с моей доплатой: "
+"loc_hang_sht_player_summ": " с Вашей доплатой: "
+"loc_hang_sht_sell": "Продать"
+"loc_hang_sht_buy": "Купить"
+"loc_park_sht_swap": "Обменять"
+"loc_park_sht_take": "Взять"
+"loc_park_sht_give": "Поставить"
+
+# mechanik
+"loc_mech_sys_engine": "Двигатель"
+"loc_mech_sys_transmission": "Трансмиссия"
+"loc_mech_sys_suspension": "Подвеска"
+"loc_mech_sys_brakes": "Тормоза"
+"loc_mech_sys_cooling": "Охлаждение"
+# set_header_text
+"loc_mech_sht_on_item": "Установить деталь"
+"loc_mech_sht_off_item": "Снять деталь"
+"loc_mech_sht_on": "Установлено"
+"loc_mech_sht_items": "деталей"
+"loc_mech_sht_off": "Снято"
+"loc_mech_sht_price": "Цена"
+"loc_mech_sht_q_on": "Установить?"
+
+# gas_station
+"loc_gas_full_tanks": "Полные канистры"
+"loc_gas_sht_fuel": "Заправить"
+"loc_gas_sht_fuel_full": "Заправить полный бак и канистры"
+
+# trader
+"loc_tarder_filter_all": "Все"
+"loc_tarder_filter_ammo": "Боеприпасы"
+"loc_tarder_filter_armorer": "Оружие"
+"loc_tarder_filter_tuner": "Тюнер"
+"loc_tarder_filter_mechanic": "Механик"
+"loc_tarder_filter_teach": "На продажу"
+# set_header_text
+"loc_tarder_sht_no_car": "Подгоните ваш транспорт к складу."
+"loc_tarder_sht_no_items": "Стол обмена пуст. Выберите товар для начала торговли."
+"loc_tarder_sht_no_money": "Недостаточно средств."
+"loc_tarder_sht_sale_for": "Продаю на "
+"loc_tarder_sht_buy_for": "Покупаю на "
+"loc_tarder_sht_total_trader": "Итого с меня "
+"loc_tarder_sht_total_player": "Итого с тебя "
+
+# barmen
+"loc_barmen_quests_player": "Ваши квесты:"
+"loc_barmen_quests_sale": "Квесты на продажу:"
+
+
+# trainer
+"loc_trainer_sht_apply_q": "Применить изменения характеристик"
+
+
+### BUIDLINGs ###
+
+# building_service_manager.js
+"loc_bsm_additional_page_text_1": "Ремонт"
+"loc_bsm_additional_page_text_2": "автомобиля"
+
+
+
+# building_nocoil_manager.js
+"loc_bnc_additional_page_ins_text": "Страховка"
+"loc_bnc_additional_page_actions_text": "Акции"
+"loc_bnc_additional_page_special_text": "Специальные предложения"
+# panels:
+"loc_bnc_panel_ins_descr_standart": "Страховка Стандарт.<br>Компенсация при крушении: номинальной стоимости транспорта.<br>Респаун: Случайный город."
+"loc_bnc_panel_ins_descr_premium": "Страховка Премиум<br>Компенсация при крушении: Восстановление транспорта с потерей всего содержимого багажника и установленного тюнинга.<br>Респаун: Последний посещенный город."
+"loc_bnc_panel_ins_descr_shareholder": "Страховка VIP<br>Компенсация при крушении: Полное восстановление транспорта с потерей грузовых товаров из багажника.<br>Респаун: Город по выбору."
+
+
+# interaction_manager.js
+"loc_im_invite_to_barter": "!!! Приглашение в бартер !!!"

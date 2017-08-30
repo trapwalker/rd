@@ -1,12 +1,12 @@
-{% set window_caption = 'Обучение вождению пройдено!' %}
+{% set window_caption = _("mt_header_final") %}
 <div class="map-teaching-window-main final">
     {% include ../drag_close_header.html %}
     <div class="map-teaching-content-wrap">
-        <div class="map-teaching-text-block">Обучение вождению успешно пройдено! В режиме боевой симуляции можно умирать бесконечное количество раз. Есть время потренироваться.</div>
+        <div class="map-teaching-text-block">{% raw _("mt_text_final") %}</div>
         <div class="map-teaching-btn-block">
             <div class="group-btn-wrap">
-                <div class="map-teaching-btn btn-back group-btn">Тренироваться</div>
-                <div class="map-teaching-btn btn-next group-btn">Продолжить</div>
+                <div class="map-teaching-btn btn-back group-btn">{{ _("mt_btn_traning") }}</div>
+                <div class="map-teaching-btn btn-next group-btn">{{ _("mt_btn_continue") }}</div>
             </div>
         </div>
     </div>

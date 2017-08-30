@@ -290,7 +290,7 @@ var LocationTrainerNPC = (function (_super) {
                     this._perk_line_back = !this._perk_line_back;
                     jq_perk_list.append(
                         '<div class="trainer-perk-item" data-node_hash="' + perk.node_hash + '">' +
-                            '<div class="trainer-perk-item-caption ' + state + ' ' + back_class + '">' + perk.title + '</div>' +
+                            '<div class="trainer-perk-item-caption ' + state + ' ' + back_class + '">' + _(perk.title) + '</div>' +
                             '<div class="trainer-perk-item-checkbox ' + state + ' ' + back_class + '" data-node_hash="' + perk.node_hash + '">' + this.perk_state[state].text + '</div>' +
                         '</div>');
                 }
@@ -453,10 +453,10 @@ var LocationTrainerNPC = (function (_super) {
     LocationTrainerNPC.prototype.set_buttons = function () {
         //console.log('LocationTrainerNPC.prototype.set_buttons');
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, '</br>Применить', true);
-        locationManager.setBtnState(2, '</br>Отмена', true);
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(1, '</br>' + _("loc_leaf_apply"), true);
+        locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancel"), true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationTrainerNPC.prototype.set_panels = function () {
@@ -470,7 +470,7 @@ var LocationTrainerNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         if (! html_text) {
             var jq_text_div = $('<div></div>');
-            jq_text_div.append('<div>Применить изменения характеристик: ' + this._getPrice() + 'NC.</div>');
+            jq_text_div.append('<div>' + _("loc_trainer_sht_apply_q") + ': ' + this._getPrice() + 'NC.</div>');
             html_text = jq_text_div
         }
         _super.prototype.set_header_text.call(this, html_text);
