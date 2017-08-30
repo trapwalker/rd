@@ -74,8 +74,64 @@
 
 "ltunw_cool": "Kpyto<span>ctb</span>:"
 
+# Все лепестки здесь!
+"loc_leaf_search": "Обыскать"
+"loc_leaf_back": "Назад"
+"loc_leaf_exit": "Выход"
+"loc_leaf_apply": "Принять"
+"loc_leaf_otkaz": "Отказаться"
+"loc_leaf_repair": "Ремонт"
+"loc_leaf_full_repair_1": "Полный"
+"loc_leaf_full_repair_2": "ремонт"
+
+
+# location_manager.js
+"lm_question_to_drop": "Выбросить?"
+"lm_question_to_drop_t1": "Вы уверены, что хотите выбросить "
+"lm_question_to_drop_t2": " на свалку?"
+
+"lm_error_exit": "Внимание! Ошибка!"
+"lm_error_exit_text": "Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный."
+
+
+# location_manager : set_header_text
+"loc_sht_hello": "Вас приветствует "
+"loc_sht_quests_available": "Доступные задания"
+"loc_sht_quests_active": "Активные задания"
+
+# dealer:
+"loc_sht_dealer_work": "Продавец машин"
+"loc_sht_dealer_min_price_text_p1": "Транспорт от"
+"loc_sht_dealer_min_price_text_p2": " за ТС."
+"loc_sht_parking_work": "Парковщик"
+
+# library
+"loc_sht_trainer_work": "Тренер"
+"loc_sht_trainer_descr": ".Повышение навыков и получение новых способностей."
+
+# market
+"loc_sht_trader_work": "Торговец"
+"loc_sht_trader_export": "Экспорт"
+"loc_sht_trader_import": "Импорт"
+
+# mayor
+"loc_sht_mayor_hello": "Вас приветствует мэрия города "
+"loc_sht_mayor_text": "Пожертвование городу. Цена: 5000 Nc (+10 в отношение, +5 в карму)"
+
+# service
+"loc_sht_serv_armorer_descr": ": оружейник. Установка орудий и модулей на кузов транспорта."
+"loc_sht_serv_style_descr": ": стилист. Стайлинг транспорта."
+"loc_sht_serv_mechanik_descr": ": механик. Тюнинг внутренних компонентов транспорта."
+"loc_sht_serv_repair_text": "Ремонт транспорта."
+"loc_sht_serv_repair_text_in_work": "Ремонт"
+"loc_sht_serv_full_repair_text_in_work": "Полный ремонт"
+
+# npc set_header_text
 
 
 
 
-
+# buildings
+# building_service_manager.js
+"loc_bsm_additional_page_text_1": "Ремонт"
+"loc_bsm_additional_page_text_2": "автомобиля"
