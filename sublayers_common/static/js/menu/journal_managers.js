@@ -353,9 +353,9 @@ var QuestJournalManager = (function () {
         var jq_quest_block = $(
             '<div class="building-quest-list-item" data-quest_uid="' + quest.uid + '">' +
                 '<div class="building-quest-list-item-caption">' +
-                    '<img src="' + quest.list_icon + '" class="building-quest-list-item-img">' + _(quest.caption) + '</br>' + ("mjw_q_level") + quest.level +
+                    '<img src="' + quest.list_icon + '" class="building-quest-list-item-img">' + _(quest.caption) + '</br>' + _("mjw_q_level") + quest.level +
                 '</div>' +
-                '<div class="building-quest-list-item-description">' + quest.text_short + '</div>' +
+                '<div class="building-quest-list-item-description">' + _(quest.text_short) + '</div>' +
                 '<div class="building-quest-list-item-time">' + deadline_str + '</div>' +
             '</div>');
         return jq_quest_block;

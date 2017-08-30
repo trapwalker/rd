@@ -1104,7 +1104,7 @@ var LocationPlaceBuilding = (function (_super) {
         }
 
         this.set_buttons();
-        this.set_header_text(this.selected_quest ? this.selected_quest.text : null);
+        this.set_header_text(this.selected_quest ? _(this.selected_quest.text) : null);
 
         // Вызвать обновление teachingManager
         teachingManager.redraw();

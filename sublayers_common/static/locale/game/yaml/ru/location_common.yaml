@@ -88,7 +88,12 @@
 "loc_leaf_prolong": "Продлить"
 "loc_leaf_ins_form": "Оформить"
 "loc_leaf_girl_buy": "Приобрести</br>услугу"
-
+"loc_leaf_hangar_swap": "Обменять ТС"
+"loc_leaf_hangar_sell": "Продать ТС"
+"loc_leaf_hangar_buy": "Купить ТС"
+"loc_leaf_park_swap": "Сменить ТС"
+"loc_leaf_park_give": "Поставить</br>ТС"
+"loc_leaf_park_take": "Взять ТС"
 
 # location_manager.js
 "lm_question_to_drop": "Выбросить?"
@@ -165,6 +170,24 @@
 
 # girl
 "loc_girl_sht_buy": "Приобрести услугу"
+
+
+# hangar - parking
+"loc_park_enter_bag": "Зайти в багажник"
+
+# set_header_text
+"loc_hang_sht_swap": "Обменять"
+"loc_hang_sht_to": ' на '
+"loc_hang_sht_npc_summ": " с моей доплатой: "
+"loc_hang_sht_player_summ": " с Вашей доплатой: "
+"loc_hang_sht_sell": "Продать"
+"loc_hang_sht_buy": "Купить"
+"loc_park_sht_swap": "Обменять"
+"loc_park_sht_take": "Взять"
+"loc_park_sht_give": "Поставить"
+
+
+
 
 
 
