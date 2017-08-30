@@ -23,8 +23,8 @@ var LocationPlaceChat = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
-        locationManager.setBtnState(3, '</br>Назад', false);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationPlaceChat.prototype.get_important_msg = function () {

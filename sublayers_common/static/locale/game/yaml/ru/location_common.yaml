@@ -85,6 +85,7 @@
 "loc_leaf_full_repair_2": "ремонт"
 "loc_leaf_apply": "Применить"
 "loc_leaf_cancel": "Отмена"
+"loc_leaf_cancelnit": "Отменить"
 "loc_leaf_prolong": "Продлить"
 "loc_leaf_ins_form": "Оформить"
 "loc_leaf_girl_buy": "Приобрести</br>услугу"
@@ -94,6 +95,14 @@
 "loc_leaf_park_swap": "Сменить ТС"
 "loc_leaf_park_give": "Поставить</br>ТС"
 "loc_leaf_park_take": "Взять ТС"
+"loc_leaf_inv_party": "Пригласить</br>в пати"
+"loc_leaf_barter_close": "Закрыть</br>бартер"
+"loc_leaf_trade": "Торговать"
+"loc_leaf_activate": "Активировать"
+"loc_leaf_setup": "Установить"
+
+
+
 
 # location_manager.js
 "lm_question_to_drop": "Выбросить?"
@@ -149,7 +158,7 @@
 
 
 ### NPCs ###
-
+"loc_arm_sht_car_off_warning": "Услуги предоставляются только владельцам собственного транспорта."
 # armorer
 # getSlotTextInfo
 "loc_armorer_slot_info_av_text": "Доступные направления"
@@ -166,7 +175,6 @@
 "loc_arm_sht_price": "Цена"
 "loc_arm_sht_set_m_q": "Монтировать модуль"
 "loc_arm_sht_unset_m_q": "Демонтировать модуль"
-"loc_arm_sht_car_off_warning": "Услуги предоставляются только владельцам собственного транспорта."
 
 # girl
 "loc_girl_sht_buy": "Приобрести услугу"
@@ -174,7 +182,6 @@
 
 # hangar - parking
 "loc_park_enter_bag": "Зайти в багажник"
-
 # set_header_text
 "loc_hang_sht_swap": "Обменять"
 "loc_hang_sht_to": ' на '
@@ -186,8 +193,20 @@
 "loc_park_sht_take": "Взять"
 "loc_park_sht_give": "Поставить"
 
-
-
+# mechanik
+"loc_mech_sys_engine": "Двигатель"
+"loc_mech_sys_transmission": "Трансмиссия"
+"loc_mech_sys_suspension": "Подвеска"
+"loc_mech_sys_brakes": "Тормоза"
+"loc_mech_sys_cooling": "Охлаждение"
+# set_header_text
+"loc_mech_sht_on_item": "Установить деталь"
+"loc_mech_sht_off_item": "Снять деталь"
+"loc_mech_sht_on": "Установлено"
+"loc_mech_sht_items": "деталей"
+"loc_mech_sht_off": "Снято"
+"loc_mech_sht_price": "Цена"
+"loc_mech_sht_q_on": "Установить?"
 
 
 
@@ -209,5 +228,5 @@
 "loc_bnc_panel_ins_descr_shareholder": "Страховка VIP<br>Компенсация при крушении: Полное восстановление транспорта с потерей грузовых товаров из багажника.<br>Респаун: Город по выбору."
 
 
-# dump_manager.js
-#
+# interaction_manager.js
+"loc_im_invite_to_barter": "!!! Приглашение в бартер !!!"
