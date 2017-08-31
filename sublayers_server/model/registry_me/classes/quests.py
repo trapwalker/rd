@@ -16,6 +16,7 @@ from sublayers_server.model.registry_me.tree import (
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
+from sublayers_common.site_locale import locale
 
 from ctx_timer import Timer
 from functools import partial, wraps
@@ -731,6 +732,10 @@ class Quest(Node):
         if self.agent.profile._agent_model:
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
+
+    def locale(self, key):
+        lang = self.agent and self.agent.profile._agent_model and self.agent.profile._agent_model.user and self.agent.profile._agent_model.user.lang or 'en'
+        return locale(lang=lang, key=key)
 
     def npc_replica(self, npc, replica, event, replica_type='Error'):
         if self.agent.profile._agent_model:

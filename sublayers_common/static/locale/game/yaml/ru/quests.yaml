@@ -1,0 +1,47 @@
+"locale": "ru"
+
+"q_share_q_fail": "Квест провален."
+"q_share_q_win": "Квест выполнен."
+"q_share_no_rel_npc": "NPC не достаточно хорошо к Вам относится."
+"q_share_no_inv_slot": "Не хватает места в инвентаре."
+"q_share_cancel_pen_done": "Уплачен штраф в размере"
+"q_share_cancel_pen_try": "Для отказа от квеста заплатите штраф"
+
+# init_text
+"q_share_reward": "Награда"
+"q_share_reward_karma": "кармы"
+"q_share_reward_exp": "ед. опыта."
+"q_share_deadline_pretext": "за"
+
+
+
+# MapActivateItemQuest
+"q_ai_start_text": "Начат квест по активации предметов."
+"q_ai_do_activate": "Произведена активация."
+"q_ai_note_caption": "Награда"
+"q_ai_note_btn1": "<br>Отчитаться"
+
+
+# MeasureRadiation
+"q_mr_start_text": "Начат квест по замеру уровня радиации."
+"q_mr_cancel_pen_done": "Уплачен штраф в размере"
+"q_mr_cancel_pen_try": "Для отказа от квеста заплатите штраф"
+"q_mr_do_measure": "Произведено измерение."
+"q_mr_do_measure_done": "Измерения завершены. Вернитесь за наградой."
+"q_mr_note_caption": "Измерение<br>радиации"
+"q_mr_note_btn1": "<br>Отчитаться"
+
+
+# SearchCourier
+"q_sq_get_fishka_return_town": "Получена платиновая фишка. Вернитесь в город для завершения квеста."
+"q_sq_started": "Начат квест по поиску пропавшего курьера."
+"q_sq_rel_bad": "Испорчены отношения с"
+"q_sq_finded_car": "Найдена машина курьера."
+"q_sq_fail_cancel_q": "Вы нашли машину курьера и не можете отказаться."
+"q_sq_init_text_short": "Найти пропавшего курьера."
+"q_sq_init_text": "Найти пропавшего курьера и вернуть важный предмет"
+
+
+
+
+
