@@ -86,6 +86,9 @@ class PlayHandler(BaseHandler):
             if self.current_user.lang != user_lang:
                 self.current_user.lang = user_lang
                 self.current_user.save()
+                agent = self.application.srv.api.get_agent_by_user_pk(self.current_user)
+                if agent:
+                    agent.user.reload()
             self.user_lang = user_lang
 
 

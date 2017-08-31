@@ -20,6 +20,9 @@ class ServerAPI(API):
         """
         self.server = server
 
+    def get_agent_by_user_pk(self, user):
+        return self.server.agents.get(str(user.pk), None)
+
     def get_agent(self, user, make=None, do_disconnect=False):
         """
         @rtype sublayers_server.model.agents.Agent
