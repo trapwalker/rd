@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.handlers.base import BaseHandler
 from sublayers_common.creater_agent import create_agent
+from sublayers_common.site_locale import locale
 
 import tornado.template
 #from tornado.httpclient import AsyncHTTPClient
@@ -35,7 +36,7 @@ class BaseSiteHandler(BaseHandler):
             user_info['leading']     = agent_example.profile.leading.value
             user_info['about_self']  = agent_example.profile.about_self  # Досье
             user_info['balance']     = agent_example.profile.balance
-            user_info['class'] = '' if agent_example.profile.role_class is None else agent_example.profile.role_class.description
+            user_info['class'] = '' if agent_example.profile.role_class is None else locale(self.user_lang, agent_example.profile.role_class.description)
 
             # todo: научиться получать эти параметры
             user_info['lvl'] = agent_example.profile.get_lvl()
@@ -58,7 +59,7 @@ class BaseSiteHandler(BaseHandler):
             if ex_car:
                 user_info['position'] = ex_car.position.as_point().as_tuple()
             try:
-                user_info['insurance_name'] = agent_example.profile.insurance.title
+                user_info['insurance_name'] = locale(self.user_lang, agent_example.profile.insurance.title)
                 user_info['active_quests_count'] = len(agent_example.profile.quests_active or [])
             except:
                 pass

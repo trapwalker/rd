@@ -670,18 +670,15 @@ class EnterToLocation(Message):
         location = self.location
         if self.agent.resolution_scale not in ['big', 'small']:
             self.agent.resolution_scale = 'big'
-        cache_index = '{}_{}_{}'.format(
-            location.example.uri,
-            self.agent.resolution_scale,
-            self.agent.connection.user_lang
-        )
+        lang = self.agent.connection.user_lang
+        cache_index = '{}_{}_{}'.format(location.example.uri, self.agent.resolution_scale, lang)
         location_html = self.locations_cache.get(cache_index, None)
         if location_html is None:
             svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
             svg_code_common = ''
             svg_code_btn = ''
-            svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'
-            svg_code_btn_file = 'location_btn_big.svg' if self.agent.resolution_scale == 'big' else 'location_btn_small.svg'
+            svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'.format(lang)
+            svg_code_btn_file = 'location_btn_big_{}.svg'.format(lang) if self.agent.resolution_scale == 'big' else 'location_btn_small_{}.svg'.format(lang)
             with open(os.path.join(svg_link_common, svg_code_common_file)) as f:
                 svg_code_common = f.read()
                 svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
