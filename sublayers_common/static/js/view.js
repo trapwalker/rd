@@ -21,11 +21,6 @@ $(document).ready(function () {
     modalWindow = new ModalWindow({
         parent: 'modalDiv',
         back: 'modalBack',
-        modalWelcome: 'modalWelcome',
-        modalOptions: 'modalOptions',
-        modalDeath: 'modalDeath',
-        modalWin: 'modalWin',
-        modalLose: 'modalLose',
         modalRestart: 'modalRestart'
     });
 

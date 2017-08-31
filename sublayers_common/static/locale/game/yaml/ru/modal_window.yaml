@@ -1,0 +1,27 @@
+"locale": "ru"
+
+"mw_btn_ok": "Ок"
+"mw_btn_cancel": "Отмена"
+
+"cqfo_caption": "Новая запись в журнале"
+"dap_caption": "Nuke:\\<span>System Message</span>&gt;"
+"dip_caption": "Nuke:\\<span>System Message</span>&gt;"
+"ia_caption": "Nuke:\\Активация итема&gt;"
+"id_caption": "Nuke:\\DivisionItem&gt;"
+
+"mqgmtp_caption": "Nuke:\\<span>Быстрый бой</span>&gt;"
+"mqgmtp_text": "Быстрый бой - это урезанная версия Road Dogs без MMORPG-составляющей. Здесь можно оценить боевой компонент игры в режиме death match и научиться сражаться, используя тактический навигатор Nuke Commander."
+"mqgmtp_question": "Желаете пройти обучение из 10 шагов?"
+"mqgmtp_start_teaching": "Пройти обучение"
+"mqgmtp_play": "Играть"
+
+"qgpp_caption": "Nuke:\\Quick Game\\High score&gt;"
+"qgpp_record": Рекорды
+"qgpp_change_car": Сменить ТС
+"qgpp_name": Имя
+"qgpp_points": Очки
+"qgpp_game_end": Игра окончена!
+"qgpp_full_game": Полная игра
+"qgpp_play_again": Играть снова
+
+"rw_text": "Произошла плановая перезагрузка сервера."
