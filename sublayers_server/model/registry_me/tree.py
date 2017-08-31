@@ -550,6 +550,8 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
                 return {k: clean_value(subfield, v) for k, v in value.iteritems()}
 
             if isinstance(field, LocalizedStringField):
+                if isinstance(value, basestring):
+                    return value
                 return value.as_dict()
 
             assert not hasattr(value, '_instance'), 'Unsupported value {!r} of field {!r} to serializtion by as_client_dict'.format(value, field)
