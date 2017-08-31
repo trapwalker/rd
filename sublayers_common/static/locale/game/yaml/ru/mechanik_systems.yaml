@@ -52,15 +52,15 @@
 
 
 ### transmission ###
-ms_transmission_ATF: "Масло"
-ms_transmission_clutch: "Сцепление"
-ms_transmission_front_axle: "Полуоси<br>(перед)"
-ms_transmission_front_differential: "Дифференциал<br>(перед)"
-ms_transmission_gearbox: "Коробка<br>передач"
-ms_transmission_primary_shaft: "Первичный<br>вал"
-ms_transmission_rear_axle: "Полуоси<br>(зад)"
-ms_transmission_rear_differential: "Дифференциал<br>(зад)"
-ms_transmission_secondary_shaft: "Вторичный<br>вал"
-ms_transmission_torque_converter: "Гидротрансформатор"
-ms_transmission_transfer_case: "Раздатка"
+"ms_transmission_ATF": "Масло"
+"ms_transmission_clutch": "Сцепление"
+"ms_transmission_front_axle": "Полуоси<br>(перед)"
+"ms_transmission_front_differential": "Дифференциал<br>(перед)"
+"ms_transmission_gearbox": "Коробка<br>передач"
+"ms_transmission_primary_shaft": "Первичный<br>вал"
+"ms_transmission_rear_axle": "Полуоси<br>(зад)"
+"ms_transmission_rear_differential": "Дифференциал<br>(зад)"
+"ms_transmission_secondary_shaft": "Вторичный<br>вал"
+"ms_transmission_torque_converter": "Гидротрансформатор"
+"ms_transmission_transfer_case": "Раздатка"
 
