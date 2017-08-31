@@ -1428,33 +1428,30 @@ class HangarInfoMessage(NPCInfoMessage):
     template_img = None
 
     def get_car_list(self, npc):
-        car_list = HangarInfoMessage.npc_cars.get(npc.uri, None)
+        npc_key = '{}_{}'.format(npc.uri, self.agent.connection and self.agent.connection.user_lang or 'en')
+        print npc_key
+        car_list = HangarInfoMessage.npc_cars.get(npc_key, None)
         if car_list is None:
+            namespace = self.agent.connection.get_template_namespace()
             if HangarInfoMessage.template_table:
                 template_table = HangarInfoMessage.template_table
             else:
-                template_table = Loader(
-                    "templates/location",
-                    namespace=self.agent.connection.get_template_namespace()
-                ).load("car_info_table.html")
+                template_table = Loader("templates/location").load("car_info_table.html")
                 HangarInfoMessage.template_table = template_table
 
             if HangarInfoMessage.template_img:
                 template_img = HangarInfoMessage.template_img
             else:
-                template_img = Loader(
-                    "templates/location",
-                    namespace=self.agent.connection.get_template_namespace()
-                ).load("car_info_img_ext.html")
+                template_img = Loader("templates/location").load("car_info_img_ext.html")
             HangarInfoMessage.template_img = template_img
 
             car_list = [dict(
                 car=car.as_client_dict(),
-                html_car_table=template_table.generate(car=car, agent=None),
-                html_car_img=template_img.generate(car=car),
+                html_car_table=template_table.generate(car=car, agent=None, **namespace),
+                html_car_img=template_img.generate(car=car, **namespace),
             ) for car in npc.car_list or []]
 
-            HangarInfoMessage.npc_cars[npc.uri] = car_list
+            HangarInfoMessage.npc_cars[npc_key] = car_list
         return car_list
 
     def as_dict(self):
