@@ -4,6 +4,16 @@
 "mw_btn_cancel": "Отмена"
 
 "cqfo_caption": "Новая запись в журнале"
+"cqfo_text1": "Получено задание: "
+"cqfo_text2": "Смотрите Журнал для подробностей.:"
+"cqfo_text3_1": "Основать поселение.</br>"
+"cqfo_text3_2": "Создать клан.</br>"
+"cqfo_text3_3": "Получить стелс-технологию.</br>"
+"cqfo_text3_4": "Открыть магазин.</br>"
+"cqfo_text3_5": "Получить суперкар.</br>"
+"cqfo_text3_6": "Открыть сервисный центр.</br>"
+
+
 "dap_caption": "Nuke:\\<span>System Message</span>&gt;"
 "dip_caption": "Nuke:\\<span>System Message</span>&gt;"
 "ia_caption": "Nuke:\\Активация итема&gt;"
@@ -23,5 +33,7 @@
 "qgpp_game_end": Игра окончена!
 "qgpp_full_game": Полная игра
 "qgpp_play_again": Играть снова
+"qgpp_get_point": "Набрано: "
+"qgpp_get_place": "<br>Место: "
 
 "rw_text": "Произошла плановая перезагрузка сервера."

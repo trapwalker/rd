@@ -44,14 +44,8 @@ var QuestNoteSelectTeacher = (function (_super) {
         var curr_place = locationManager.get_current_active_place();
         if (locationManager.in_location_flag && (curr_place instanceof LocationPlaceBuilding)) {
             var relation = locationManager.get_relation(curr_place.building_rec.head.node_hash);
-            if (relation < 0.5)
-                result = $(
-                        '<div>Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как ' +
-                        'минимум в 75, дальнейшего разговора не будет.</br> Отношение можно повысить ' +
-                        'близостью в карме и выполнением моих заданий.</div>'
-                );
-            else
-                result = $('<div>Хорошо, вот мои требования к ученикам:</br>- Взнос 3000 NC.</br>- Уровень не менее 4.</div>');
+            if (relation < 0.5) result = $(_("stn_text1"));
+            else result = $(_("stn_text2"));
         }
         return result;
     };

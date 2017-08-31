@@ -69,9 +69,6 @@ var ModalWindow = (function () {
     ModalWindow.prototype.closeAllWindows = function() {
         this._modalBackHide();
 
-        this.modalWelcome.removeClass('modal-window-welcome-show');
-        this.modalWelcome.addClass('modal-window-hide');
-
         this.modalRestart.removeClass('modal-window-restart-show');
         this.modalRestart.addClass('modal-window-hide');
 
@@ -471,9 +468,10 @@ var ModalWindow = (function () {
 
         // Вывод очков
         if (options.record_index >= 0)
-            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html('Набрано: ' + options.points + '<br>Место: ' + options.record_index);
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html(_("qgpp_get_point") + options.points +
+                                                                             _("qgpp_get_place") + options.record_index);
         else
-            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html('Набрано: ' + options.points);
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html(_("qgpp_get_point") + options.points);
 
         // Вывод High Score
         var color_class = 'qg-pp-light-back';
@@ -648,35 +646,35 @@ var ModalWindow = (function () {
 
         var class_icon = '';
         var text = '';
-        var text1 = 'Получено задание: ';
-        var text2 = 'Смотрите Журнал для подробностей.';
+        var text1 = _("cqfo_text1");
+        var text2 = _("cqfo_text2");
         var add_class = '';
         if (user.example_agent.role_class == "Избранный") {
-            text = text1 + 'Основать поселение.</br>' + text2;
+            text = text1 + _("cqfo_text3_1") + text2;
             class_icon = '/static/content/class-icons/co.png';
             add_class = 'two_line';
         }
         else if (user.example_agent.role_class == "Альфа-волк") {
-            text = text1 + 'Создать клан.</br>' + text2;
+            text = text1 + _("cqfo_text3_2") + text2;
             class_icon = '/static/content/class-icons/aw.png';
             add_class = 'two_line';
         }
         else if (user.example_agent.role_class == "Ночной ездок") {
-            text = text1 + 'Получить стелс-технологию.</br>' + text2;
+            text = text1 + _("cqfo_text3_3") + text2;
             class_icon = '/static/content/class-icons/nr.png';
         }
         else if (user.example_agent.role_class == "Нефтяной магнат") {
-            text = text1 + 'Открыть магазин.</br>' + text2;
+            text = text1 + _("cqfo_text3_4") + text2;
             class_icon = '/static/content/class-icons/om.png';
             add_class = 'two_line';
         }
         else if (user.example_agent.role_class == "Воин дорог") {
-            text = text1 + 'Получить суперкар.</br>' + text2;
+            text = text1 + _("cqfo_text3_5") + text2;
             class_icon = '/static/content/class-icons/rw.png';
             add_class = 'two_line';
         }
         else if (user.example_agent.role_class == "Технокинетик") {
-            text = text1 + 'Открыть сервисный центр.</br>' + text2;
+            text = text1 + _("cqfo_text3_6") + text2;
             class_icon = '/static/content/class-icons/tk.png';
         }
 
