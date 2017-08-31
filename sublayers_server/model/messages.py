@@ -688,7 +688,7 @@ class EnterToLocation(Message):
 
             svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
             svg_code = ''
-            with open(os.path.join(svg_link, 'location.svg')) as f:
+            with open(os.path.join(svg_link, 'location_{}.svg'.format(lang))) as f:
                 svg_code = f.read()
                 svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
             location_html = ''
