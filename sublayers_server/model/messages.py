@@ -1429,7 +1429,6 @@ class HangarInfoMessage(NPCInfoMessage):
 
     def get_car_list(self, npc):
         npc_key = '{}_{}'.format(npc.uri, self.agent.connection and self.agent.connection.user_lang or 'en')
-        print npc_key
         car_list = HangarInfoMessage.npc_cars.get(npc_key, None)
         if car_list is None:
             namespace = self.agent.connection.get_template_namespace()
