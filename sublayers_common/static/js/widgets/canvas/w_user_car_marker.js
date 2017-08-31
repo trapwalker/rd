@@ -434,7 +434,7 @@ var WCanvasCarMarker = (function (_super) {
             icon_type = 'party';
         }
 
-        icon_name = WCanvasCarMarker._get_icon_by_sub_class(_(car.sub_class_car));
+        icon_name = WCanvasCarMarker._get_icon_by_sub_class(car.sub_class_car);
 
         this.icon_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_' + icon_name);
         this.icon_arrow_obj = iconsLeaflet.getIcon('icon_' + icon_type + '_arrow');

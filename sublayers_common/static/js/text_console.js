@@ -180,7 +180,7 @@ var TextConsole = (function(){
         }
 
         if ((this._cur_message) && (this._cur_message.message))
-            this._messages.push({sender: 'system', message: 'Прервано.'});
+            this._messages.push({sender: 'system', message: _("con_interrupt")});
     };
 
     TextConsole.prototype._state_wait_user_input = function(self) {
@@ -360,7 +360,7 @@ var TextConsole = (function(){
             this._timeout = null;
 
             if ((this._messages.length > 0) || this._cur_message)
-                this.target_div.find('.console-new-text').text(this._text + '... Прервано...');
+                this.target_div.find('.console-new-text').text(this._text + _("con_interrupt2"));
             else
                 this.target_div.find('.console-new-text').text(this._text);
 
@@ -409,7 +409,7 @@ var TextConsoleAudio = (function (_super) {
             this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
         }
         if ((this._cur_message) && (this._cur_message.message)) {
-            this._messages.push({sender: 'interrupt', message: 'Прервано.'});
+            this._messages.push({sender: 'interrupt', message: _("con_interrupt")});
         }
     };
 
@@ -445,21 +445,21 @@ var ConsoleFirstEnter = (function (_super) {
             'welcome',
             '\n       ================================================\n' +
             '       >                                              <\n' +
-            '       >        Нюк Коммандер вер. ' + textConsoleManager.app_version + '         <\n' +
+            _("con_fe_01") + textConsoleManager.app_version + '         <\n' +
             '       >                                              <\n' +
-            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
+            _("con_fe_02")+ '\n' +
             '       >                                              <\n' +
             '       ================================================'
         );
-        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message('user', _("con_fe_03"));
         this.add_message(
             'system',
-            $('#settings_user_insurance_name').text() + ' страховка активна для ' + textConsoleManager.user_name + '.\n\n' +
+            $('#settings_user_insurance_name').text() + _("con_fe_04") + textConsoleManager.user_name + '.\n\n' +
             '--------------------------------------------------------------\n' +
-            'Уважаемый, ' + textConsoleManager.user_name + '! Поздравляем вас с успешной регистрацией в системе Nuke Commander и получением корпоративных водительских прав. Финансовый отдел корпорации Нукойл одобрил оформление авто-кредита и аренду клиентского оборудования системы Nuke Navigator.\n\n' +
-            'Наша компания приветствует квалифицированных пользователей и предлагает плату за прохождение обучения. Желаете пройти обучение за бонус в 850nc + 100exp?\n\n' +
-            'Y - Yes\n' +
-            'N - No\n' +
+            _("con_fe_05") + textConsoleManager.user_name + '! ' + _("con_fe_06") + '\n\n' +
+            _("con_fe_07") + '\n\n' +
+            'Y - ' + _("con_fe_08") + '\n' +
+            'N - ' + _("con_fe_09") + '\n' +
             '--------------------------------------------------------------'
         );
         this.add_message('user_input', ' ');
@@ -472,14 +472,14 @@ var ConsoleFirstEnter = (function (_super) {
             switch (event.keyCode) {
                 case 89:
                     this.teaching_answer_value = true;
-                    this.add_message('user', 'Активация системы обучения.');
+                    this.add_message('user', _("con_fe_10"));
                     this.add_message(
                         'system',
-                        'Демонстрационный скрипт запущен. Следуйте дальнейшим инструкциям.\n\n' +
+                        _("con_fe_11") + '\n\n' +
                         '--------------------------------------------------------------\n' +
-                        'Enter - продолжить.\n' +
-                        'С - условия кредитного договора.\n' +
-                        'A - о системе.\n' +
+                        _("con_fe_12") + '\n' +
+                        _("con_fe_13") + '\n' +
+                        _("con_fe_14") + '\n' +
                         '--------------------------------------------------------------'
                     );
                     this.add_message('user_input', ' ');
@@ -490,14 +490,14 @@ var ConsoleFirstEnter = (function (_super) {
                     break;
                 case 78:
                     this.teaching_answer_value = false;
-                    this.add_message('user', 'Деактивация системы обучения.');
+                    this.add_message('user', _("con_fe_15") + '');
                     this.add_message(
                         'system',
-                        'Запуск демонстрационного скрипта отменен.\n\n' +
+                        _("con_fe_16") + '\n\n' +
                         '--------------------------------------------------------------\n' +
-                        'Enter - продолжить.\n' +
-                        'С - условия кредитного договора.\n' +
-                        'A - о системе.\n' +
+                        _("con_fe_12") + '\n' +
+                        _("con_fe_13") + '\n' +
+                        _("con_fe_14") + '\n' +
                         '--------------------------------------------------------------'
                     );
                     this.add_message('user_input', ' ');
@@ -510,15 +510,15 @@ var ConsoleFirstEnter = (function (_super) {
         else
             switch (event.keyCode) {
                     case 65:
-                        this.add_message('user', 'Запрос приветственного буклета.');
+                        this.add_message('user', _("con_fe_17") + '');
                         this.add_message(
                             'system',
-                            'Данные загружены.\n\n' +
+                            _("con_fe_18") + '\n\n' +
                             '--------------------------------------------------------------\n' +
-                            'Нукойл основана в 2084 году, через 2 года после начала и окончания войны. Наши инженеры объединили лучше довоенные технологии, пригодные для возобновления жизни в условиях непригодной для жизни атмосферы нашей планеты. К вашим услугам сеть заправочных комплексов Nukeoil, спутниковая система навигации Nuke Navigator и персональная операционная система Nuke Commander. Корпорация Нукойл - это источник жизни во мраке ядерной зимы.\n\n' +
-                            'Enter - продолжить.\n' +
-                            'С - условия кредитного договора.\n' +
-                            'A - о системе.\n' +
+                            _("con_fe_20") + '\n\n' +
+                            _("con_fe_12") + '\n' +
+                            _("con_fe_13") + '\n' +
+                            _("con_fe_14") + '\n' +
                             '--------------------------------------------------------------'
                         );
                         this.add_message('user_input', ' ');
@@ -528,15 +528,15 @@ var ConsoleFirstEnter = (function (_super) {
                         this._wait_input = false;
                         break;
                     case 67:
-                        this.add_message('user', 'Запрос условий кредитного договора.');
+                        this.add_message('user', _("con_fe_19") + '');
                         this.add_message(
                             'system',
-                            'Данные загружены.\n\n' +
+                            _("con_fe_18") + '\n\n' +
                             '--------------------------------------------------------------\n' +
-                            'Корпорация Нукойл предоставляет клиенту Username кредит на покупку своего первого транспортного средства в размере до 2000 нукойнов. Любой верифицированный в системе автодилер предоставит вам транспорт в рамках указанного бюджета. До момента погашения кредита в размере 2500 нукойнов - все транзакции аккаунта Username будут заблокированы.\n\n' +
-                            'Enter - продолжить.\n' +
-                            'С - условия кредитного договора.\n' +
-                            'A - о системе.\n' +
+                            _("con_fe_21") + '\n\n' +
+                            _("con_fe_12") + '\n' +
+                            _("con_fe_13") + '\n' +
+                            _("con_fe_14") + '\n' +
                             '--------------------------------------------------------------'
                         );
                         this.add_message('user_input', ' ');
@@ -553,7 +553,7 @@ var ConsoleFirstEnter = (function (_super) {
                         if (! this.teaching_answer_value)
                             resourceLoadManager.del(this);  // Произошёл отказ от обучения, поэтому коннект по ws
                         else
-                            console.log('Происходит редирект на карту быстрой игры для обучения!');
+                            console.log('Redirect to teaching map');
                         this.target_div.off("keydown");
                         break;
             }
@@ -600,18 +600,18 @@ var ConsoleEnter = (function (_super) {
             'welcome',
             '\n       ================================================\n' +
             '       >                                              <\n' +
-            '       >        Нюк Коммандер вер. ' + textConsoleManager.app_version + '         <\n' +
+            _("con_fe_01") + textConsoleManager.app_version + '         <\n' +
             '       >                                              <\n' +
-            '       >         Корпорация (К) Нукойл 2084 г.        <\n' +
+            _("con_fe_02")+ '\n' +
             '       >                                              <\n' +
             '       ================================================'
         );
-        this.add_message('user', 'Запрос статуса активной страховки.');
-        this.add_message('system', $('#settings_user_insurance_name').text() + ' Страховка активна для ' + textConsoleManager.user_name + '.');
-        this.add_message('user', 'Запрос актуальных координат.');
-        this.add_message('system', 'Ваши координаты: ' + textConsoleManager.user_position + '.');
-        this.add_message('user', 'Запрос баланса.');
-        this.add_message('system', 'Баланс вашего счёта: ' + textConsoleManager.user_balance + '.');
+        this.add_message('user', _("con_fe_03"));
+        this.add_message('system', $('#settings_user_insurance_name').text() + _("con_fe_04") + textConsoleManager.user_name + '.');
+        this.add_message('user', _("con_e_01"));
+        this.add_message('system', _("con_e_02") + textConsoleManager.user_position + '.');
+        this.add_message('user', _("con_e_03"));
+        this.add_message('system', _("con_e_04") + textConsoleManager.user_balance + '.');
 
         textConsoleManager.add(this, 'enter');
     }
@@ -632,10 +632,10 @@ var ConsoleEnterToLocation = (function (_super) {
 
     ConsoleEnterToLocation.prototype._init_messages = function() {
         this._messages = [];
-        this.add_message('user', 'Активация протокола входа в локацию.');
-        this.add_message('system', 'Проверка протоколов безопасности...');
-        this.add_message('system', 'Одобрено.');
-        this.add_message('system', 'Загрузка данных.');
+        this.add_message('user', _("con_etl_01"));
+        this.add_message('system', _("con_etl_02"));
+        this.add_message('system', _("con_etl_03"));
+        this.add_message('system', _("con_etl_04"));
     };
 
     ConsoleEnterToLocation.prototype.start = function() {
@@ -659,10 +659,10 @@ var ConsoleEnterToMap = (function (_super) {
 
     ConsoleEnterToMap.prototype._init_messages = function() {
         this._messages = [];
-        this.add_message('user', 'Активация протокола выхода на карту.');
-        this.add_message('system', 'Проверка протоколов безопасности...');
-        this.add_message('system', 'Одобрено.');
-        this.add_message('system', 'Загрузка данных.');
+        this.add_message('user', _("con_etl_05"));
+        this.add_message('system', _("con_etl_02"));
+        this.add_message('system', _("con_etl_03"));
+        this.add_message('system', _("con_etl_04"));
     };
 
     ConsoleEnterToMap.prototype.start = function() {
@@ -691,7 +691,7 @@ var ConsoleDieBase = (function (_super) {
             var start_quest_date = new Date((options.insurance.starttime + options.insurance.deadline) * 1000);
             start_quest_date.setFullYear(start_quest_date.getFullYear() + 100);
             var start_quest_date_s = start_quest_date.toLocaleString('ru');
-            res = res + ' до ' + start_quest_date_s;
+            res = res + _("con_die_00") + start_quest_date_s;
         }
         //res = res + '.\n\n';
         return res;
@@ -708,20 +708,20 @@ var ConsoleDieBase = (function (_super) {
         this.add_message(
             'system',
             '\n' +
-            'Соединение со спутником утеряно.'
+            _("con_die_01")
         );
-        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message('user', _("con_fe_03"));
         this.add_message(
             'system',
-            user.login + ' имеет активную Базовую Страховку корпорации Нукойл' +
+            user.login + ' ' + _("con_dieb_01") +
             this.get_insurance_deadline_info(options) + '.\n\n' +
             '-------------------------------------------\n' +
-            'Ваше транспортное средство уничтожено. Согласно условиям Базовой Страховки, ' +
-            'Корпорация Нукойл выплатит Вам номинальную стоимость за ' +
-            (user && user.example_car ? user.example_car.name_car : 'автомобиль') +
-            ' и эвакуирует Вас в тот город, который будет удобней нашей спасательной команде: ' +
-            options.towns[0].title + '.\n' +
-            'Нажмите любую кнопку для продолжения. \n'+
+            _("con_dieb_02") + ', ' +
+            _("con_dieb_03") + ' ' +
+            (user && user.example_car ? user.example_car.name_car : _("con_die_auto")) +
+            _("con_dieb_05") +
+            _(options.towns[0].title) + '.\n' +
+            _("con_die_02") + ' \n'+
             '-------------------------------------------\n'
         );
         this.add_message('user_input', ' ');
@@ -752,20 +752,20 @@ var ConsoleDiePremium = (function (_super) {
         this.add_message(
             'system',
             '\n' +
-            'Соединение со спутником утеряно.'
+            _("con_die_01")
         );
-        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message('user', _("con_fe_03"));
         this.add_message(
             'system',
-            user.login + ' имеет активную Премиум Страховку корпорации Нукойл' +
+            user.login + _("con_diep_01") +
             this.get_insurance_deadline_info(options) + '.\n\n' +
             '-------------------------------------------\n' +
-            'Ваше транспортное средство уничтожено. Согласно условиям Премиум Страховки, ' +
-            'Корпорация Нукойл восстановит ' +
-            (user && user.example_car ? user.example_car.name_car : 'автомобиль') +
-            ' без груза, тюнинга, стайлинга и пробега, а также эвакуирует Вас в последний посещенный город: ' +
-            options.towns[0].title + '.\n' +
-            'Нажмите любую кнопку для продолжения. \n' +
+            _("con_diep_02") +
+            _("con_diep_03") +
+            (user && user.example_car ? user.example_car.name_car : _("con_die_auto")) +
+            _("con_diep_05") +
+            _(options.towns[0].title) + '.\n' +
+            _("con_die_02") + ' \n'+
             '-------------------------------------------\n'
         );
         this.add_message('user_input', ' ');
@@ -806,24 +806,23 @@ var ConsoleDieShareholder = (function (_super) {
         this.add_message(
             'system',
             '\n' +
-            'Соединение со спутником утеряно.'
+            _("con_die_01")
         );
-        this.add_message('user', 'Запрос статуса активной страховки.');
+        this.add_message('user', _("con_fe_03"));
         var s = '';
         for (var i = 0; i < options.towns.length; i++)
-            s = s + (i + 1).toString() + ': ' + options.towns[i].title + '\n';
+            s = s + (i + 1).toString() + ': ' + _(options.towns[i].title) + '\n';
 
         this.add_message(
             'system',
-            user.login + ' имеет активную Акционерную Страховку корпорации Нукойл' +
+            user.login + _("con_dievip_01") +
             this.get_insurance_deadline_info(options) + '.\n\n' +
             '-------------------------------------------\n' +
-            'Ваше транспортное средство уничтожено. Согласно условиям Страховки Акционера, ' +
-            'Корпорация Нукойл полностью восстановит ' +
-            (user && user.example_car ? user.example_car.name_car : 'автомобиль') +
-            ' за исключением груза. Кроме этого Вам предлагается выбрать город эвакуации. ' +
-            'Нажмите соответствующую цифру или Enter для продолжения: ' +
-            options.towns[0].title + '.\n' + s +
+            _("con_dievip_02") +
+            _("con_dievip_03") +
+            (user && user.example_car ? user.example_car.name_car : _("con_die_auto")) +
+            _("con_dievip_05") +_("con_dievip_06") +
+            _(options.towns[0].title) + '.\n' + s +
             '-------------------------------------------\n'
         );
 
