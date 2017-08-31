@@ -54,6 +54,32 @@
     -webkit-filter: blur(4px) brightness(200%);
 }
 
+.panel-info-car-info-car .car-info-block-picture-tuner::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(3px) brightness(200%);
+    -webkit-filter: blur(3px) brightness(200%);
+}
+.panel-info-car-info-car .car-info-block-picture-tuner::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(0) brightness(200%);
+    -webkit-filter: blur(0) brightness(200%);
+    opacity: 0.6;
+}
+
 .panel-info-car-info-car .armorer-car-slot-picture::before {
     content: " ";
     display: block;
