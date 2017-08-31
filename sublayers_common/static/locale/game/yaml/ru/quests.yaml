@@ -6,12 +6,27 @@
 "q_share_no_inv_slot": "Не хватает места в инвентаре."
 "q_share_cancel_pen_done": "Уплачен штраф в размере"
 "q_share_cancel_pen_try": "Для отказа от квеста заплатите штраф"
+"q_share_piece": "шт"
+"q_share_rewnote_caption": "Награда"
+"q_share_rewnote_btn1": "<br>Забрать"
+
 
 # init_text
 "q_share_reward": "Награда"
+"q_share_get_reward": "Получено вознаграждение в размере"
 "q_share_reward_karma": "кармы"
 "q_share_reward_exp": "ед. опыта."
 "q_share_deadline_pretext": "за"
+
+
+
+# KillerQuest
+"q_kt_start_text": "Начат квест на убийство. Целей"
+"q_kt_target_killed": "убит"
+"q_kt_return_to_reward": "Возвращайтесь за наградой."
+"q_kt_fail_cancel": "Квест провален: отказ от выполнения."
+"q_kt_fail_deadline": "Квест провален: время вышло."
+
 
 
 
@@ -20,6 +35,14 @@
 "q_ai_do_activate": "Произведена активация."
 "q_ai_note_caption": "Награда"
 "q_ai_note_btn1": "<br>Отчитаться"
+
+# MapActivateRadarsQuest
+"q_ar_start_text": "Начат квест по установке радаров."
+"q_ar_cancel_pen_done": "Зонды возвращены."
+"q_ar_cancel_pen_try": "Для отказа от квеста отдайте зонды в количестве"
+"q_ar_set_done_return_town": "Все радары установлены. Вернитесь за наградой."
+"q_mr_note_caption": "Установка<br>радаров"
+"q_mr_note_btn1": "<br>Отчитаться"
 
 
 # MeasureRadiation
