@@ -194,7 +194,7 @@ var WCanvasCarMarker = (function (_super) {
 
     WCanvasCarMarker.prototype._set_car_tail = function() {
         var car = this.mobj;
-        switch (_(car.sub_class_car)) {
+        switch (car.sub_class_car) {
             case 'motorcycles':
             case 'quadbikes':
             case 'buggies':
