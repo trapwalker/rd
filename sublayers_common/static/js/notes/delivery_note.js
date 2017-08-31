@@ -27,7 +27,7 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
 
         var jq_up_path = $('<div class="notes-npc-delivery-up"></div>');
         this.jq_main_div.append(jq_up_path);
-        this.jq_main_div.append('<div class="notes-npc-delivery-inventory-label">Список необходимых предметов</div>');
+        this.jq_main_div.append('<div class="notes-npc-delivery-inventory-label">' + _("dn_list_item") + '</div>');
         var jq_down_path = $('<div class="notes-npc-delivery-inventory-wrap"></div>');
         var jq_inv_list = $('<div class="notes-npc-delivery-inventory"></div>');
         jq_down_path.append(jq_inv_list);
@@ -55,7 +55,7 @@ var QuestNoteNPCBtnDelivery = (function (_super) {
                                 '<div class="npcInventory-picture town-interlacing" ' +
                                     'style="background: transparent url(' + item.inv_icon_mid + ') no-repeat 100% 100%;"></div>' +
                             '</div>' +
-                            '<div class="npcInventory-name">' + item.title + '</div>' +
+                            '<div class="npcInventory-name">' + _(item.title) + '</div>' +
                             '<div class="npcInventory-notes-delivery-count">' + count + '/' + count_need + '</div>' +
                         '</div>' +
                     '</div>'
