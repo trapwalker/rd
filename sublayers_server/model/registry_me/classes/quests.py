@@ -677,6 +677,8 @@ class Quest(Node):
         pass  # todo: ##IMPLEMENTATION
 
     def log(self, text, event=None, position=None, **kw):
+        if isinstance(text, LocalizedString):
+            text = self.locale(text)
         rendered_text = self._template_render(text, position=position, **kw)
         log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
         self.history.append(log_record)
@@ -738,6 +740,9 @@ class Quest(Node):
         return locale(lang=lang, key=key)
 
     def npc_replica(self, npc, replica, event, replica_type='Error'):
+        if isinstance(replica, LocalizedString):
+            replica = self.locale(replica)
+
         if self.agent.profile._agent_model:
             messages.NPCReplicaMessage(agent=self.agent.profile._agent_model, npc=npc, replica=replica,
                                        replica_type=replica_type, time=event.time).post()
