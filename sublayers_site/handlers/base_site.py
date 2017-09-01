@@ -13,7 +13,6 @@ import tornado.template
 from functools import partial
 
 
-
 class BaseSiteHandler(BaseHandler):
     def _get_car(self, user):
         user_info = dict(name=user.name)

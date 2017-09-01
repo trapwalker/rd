@@ -673,7 +673,6 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
             _xsrf: getCookie('_xsrf')
         },
         success: function (data_str) {
-            //console.log(data);
             var data = JSON.parse(data_str);
             if (data.status == 'success') {
                 // Отобразить show_skills в вёрстку
@@ -709,7 +708,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         var perk_rec = data.perks[i];
                         var jq_perk = $(
                             '<div class="reg2-table-line ' + (i % 2 ? '' : 'odd') + '">' +
-                            '<div class="reg2-perk-table-label" data-title="' + perk_rec.perk['title__' + locale_object.locale] + '" data-description="' + perk_rec.perk['description__' + locale_object.locale] + '">' + perk_rec.perk['title__' + locale_object.locale] + '</div>' +
+                            '<div class="reg2-perk-table-label" data-title="' + _(perk_rec.perk['title']) + '" data-description="' + _(perk_rec.perk['description_locale']) + '">' + _(perk_rec.perk['title']) + '</div>' +
                             '<div class="reg2-perk-table-checkbox-block" onclick="Reg2PerkClick(`' + perk_rec.perk.uri + '`)">[' + (perk_rec.active ? '●' : ' ') + ']</div>' +
                             '</div>');
                         jq_perk_table.append(jq_perk);

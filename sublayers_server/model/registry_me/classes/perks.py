@@ -56,6 +56,7 @@ class Perk(Node):
         d.update(
             uri=self.uri,
             description=self.html_description(),
+            description_locale=self.description,
         )
         return d
 
