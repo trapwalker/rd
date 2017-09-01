@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectCodeStyleSettingsManager">
+    <option name="PER_PROJECT_SETTINGS">
+      <value>
+        <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+        <Python>
+          <option name="DICT_ALIGNMENT" value="2" />
+          <option name="DICT_NEW_LINE_AFTER_LEFT_BRACE" value="true" />
+          <option name="DICT_NEW_LINE_BEFORE_RIGHT_BRACE" value="true" />
+          <option name="FROM_IMPORT_NEW_LINE_AFTER_LEFT_PARENTHESIS" value="true" />
+          <option name="FROM_IMPORT_NEW_LINE_BEFORE_RIGHT_PARENTHESIS" value="true" />
+          <option name="FROM_IMPORT_PARENTHESES_FORCE_IF_MULTILINE" value="true" />
+          <option name="FROM_IMPORT_TRAILING_COMMA_IF_MULTILINE" value="true" />
+        </Python>
+        <codeStyleSettings language="Python">
+          <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+          <indentOptions>
+            <option name="CONTINUATION_INDENT_SIZE" value="4" />
+          </indentOptions>
+        </codeStyleSettings>
+      </value>
+    </option>
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
+  </component>
+</project>
