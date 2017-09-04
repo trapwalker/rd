@@ -278,7 +278,7 @@ var QuestJournalManager = (function () {
     QuestJournalManager.prototype._create_quest_info_block = function(quest) {
         //console.log('QuestJournalManager.prototype._create_quest_info_block', quest.uid);
         var hirer_photo = quest.hirer ? quest.hirer.photo : '/static/img/journal/dices.png';
-        var hirer_name = quest.hirer ? quest.hirer.title : '';
+        var hirer_name = quest.hirer ? _(quest.hirer.title) : '';
 
         // Время старта квеста, плюс 100 лет
         var start_quest_date = new Date(quest.starttime * 1000);
@@ -293,18 +293,18 @@ var QuestJournalManager = (function () {
                     '</div>' +
                     '<div class="journal-quest-info-block-main-description-block">' +
                         '<div class="journal-quest-info-block-main-description-start-date">' + start_quest_date_s + '</div>' +
-                        '<div class="journal-quest-info-block-main-description">Описание:<br>' + quest.text + '</div>' +
-                        '<div class="journal-quest-info-block-main-description-end-date">Осталось времени: <span>00:00:00</span></div>' +
+                        '<div class="journal-quest-info-block-main-description">' + _("mjw_q_desr_q_desr") + ':<br>' + _(quest.text) + '</div>' +
+                        '<div class="journal-quest-info-block-main-description-end-date">' + _("mjw_q_desr_q_deadline") + ': <span>00:00:00</span></div>' +
                     '</div>' +
                     (quest.status == "active" ?
                         '<div class="journal-quest-info-block-main-active-view-block' + (quest.active_notes_view ? " select" : " unselect") + '" ' +
                             'onclick="journalManager.quests.click_handler_change_active_view(`' + quest.uid + '`)">' +
-                            'Отображать маркера' +
+                            _("mjw_q_desr_view_map_notes") +
                         '</div>'
                     : "" ) +
                 '</div>' +
                 '<div class="journal-quest-info-block-log-block">' +
-                    '<div class="journal-quest-info-block-log-caption">События:</div>' +
+                    '<div class="journal-quest-info-block-log-caption">' + _("mjw_q_desr_q_history") + ':</div>' +
                 '</div>' +
             '</div>'
         );

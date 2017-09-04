@@ -95,6 +95,11 @@
 "mjw_q_status_finished_text": "Выполненные"
 "mjw_q_status_failed_text": "Проваленные"
 
+"mjw_q_desr_view_map_notes": "Отображать маркера"
+"mjw_q_desr_q_desr": "Описание"
+"mjw_q_desr_q_deadline": "Осталось времени"
+"mjw_q_desr_q_history": "События"
+
 
 # menu_character_window
 "mchw_descr" : "Описание"
