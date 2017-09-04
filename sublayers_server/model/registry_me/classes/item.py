@@ -329,8 +329,8 @@ class TunerItem(SlotItem):
 
     def init_html_description(self):
         super(TunerItem, self).init_html_description()
-        car_str_ru = ', '.join([unicode(car_rec.car.title.ru) for car_rec in self.images])
-        car_str_en = ', '.join([unicode(car_rec.car.title.en) for car_rec in self.images])
+        car_str_ru = u', '.join([car_rec.car.title.ru for car_rec in self.images])
+        car_str_en = u', '.join([car_rec.car.title.en for car_rec in self.images])
         self.html_description.ru = (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
                                     u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str_ru))
         self.html_description.en = (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +

@@ -72,16 +72,15 @@ class Perk(Node):
             level_req=u'Требование к уровню',
             role_class_req=u'Требование к классу',
         )
-        for attr_name in attr_name_list.keys():
+        for attr_name, attr_str in attr_name_list.items():
             attr_value = getattr(self, attr_name, None)
             if attr_value:
-                attr_str = attr_name_list[attr_name]
                 main_req_str += u'<div class="mechanic-description-line left-align">{}: {}</div>'.format(attr_str, attr_value)
-        perks_req_str = ''
+        perks_req_str = u''
         if self.perks_req:
             # TODO: ##LOCALIZATION Нужно пробрасывать в html названия перков в виде локализационных объектов завёрнутых в js
             log.warning(u'### ВНИМАНИЕ! Здесь некорректно перется локализованное имя перка!')
-            perks_req_str = u'<div class="mechanic-description-line left-align">Необходимые перки: {}</div>'.format(', '.join([unicode(perk.title) for perk in self.perks_req]))
+            perks_req_str = u'<div class="mechanic-description-line left-align">Необходимые перки: {}</div>'.format(u', '.join([unicode(perk.title) for perk in self.perks_req]))
         return (main_req_str + perks_req_str +
                 u'<div class="mechanic-description-line left-align">Действие: {}</div>'.format(self.description))
 
