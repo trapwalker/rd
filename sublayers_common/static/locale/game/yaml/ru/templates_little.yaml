@@ -39,8 +39,8 @@
 "mpersw_invite": "Пригласить"
 
 # menu_party_window
-"mpw_create" : "Создание"
-"mpw_manage" : "Управление"
+"mpw_create": "Создание"
+"mpw_manage": "Управление"
 "mpw_invite": "Инвайты"
 
 "mpw_name": "ИМЯ ПАТИ"
@@ -83,8 +83,8 @@
 
 
 # menu_journal_window
-"mjw_tasks" : "Задания"
-"mjw_parkings" : "Стоянки"
+"mjw_tasks": "Задания"
+"mjw_parkings": "Стоянки"
 
 
 "mjw_q_caravan_start_text": "Отправление: "
@@ -102,7 +102,7 @@
 
 
 # menu_character_window
-"mchw_descr" : "Описание"
+"mchw_descr": "Описание"
 "mchw_lvl": "Уровень"
 "mchw_class": "Класс"
 "mchw_karma": "Карма"
