@@ -1,3 +1,16 @@
 "locale": "en"
 
 # Общее
+
+"hours_cut": "h."
+"inv_empty": "Empty"
+"barter_cancel": "Cancel"
+
+
+"window_disconnect_caption": "Scheduled server restart!"
+"window_disconnect_text": "You can wait until automatic reconnection to server, or click OK to instantly refresh page."
+"window_drop_to_map": "Drop?"
+"window_drop_to_map_q1": "Do you really want to drop away "
+"window_drop_to_map_q2": " to map?"
+"window_inv_to_party": "Invitation sent!"
+"window_inv_to_party_q1": "You invited a player to party with a nickname"
