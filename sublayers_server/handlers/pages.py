@@ -148,6 +148,7 @@ class PlayHandler(BaseHandler):
                         insurance_name=agent.example.profile.insurance.title,
                         user_balance=agent.balance,
                         connection_delay=connection_delay,
+                        electron=self.get_argument("mode", "") == "electron",
                     )
                 else:
                     log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
@@ -199,6 +200,7 @@ class PlayHandler(BaseHandler):
                 insurance_name='quick',
                 user_balance=0,
                 connection_delay=connection_delay,
+                electron=self.get_argument("mode", "") == "electron",
             )
 
 
