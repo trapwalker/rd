@@ -31,4 +31,15 @@ class SiteMainHandler(BaseSiteHandler):
             user_lang=self.user_lang,
             community_link_en=options.community_link_en,
             community_link_ru=options.community_link_ru,
+            for_electron=self.get_argument("mode", "") == 'electron',
         )
+
+
+class SiteMainHandlerElectron(BaseSiteHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        # Подготовка списка новостей
+        if self.get_argument("mode", "") == "test":
+            self.finish("OK")
+        else:
+            self.render('electron_auth.html', user=self.current_user)

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+
+    <style>
+        .auth-path-up-btn {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            background: #006641;
+            border: 1px solid black;
+            text-align: center;
+            line-height: 50px;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
+
+
+{#    <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>#}
+    <script>window.$ = window.jQuery = require('jquery');</script>
+
+</head>
+
+<body>
+
+<h1>Road Dogs Online</h1>
+
+{% if user %}
+<div>Hello, {{ user.name }}.</div>
+<div class="auth-path-up-btn" onclick="PlayBtnClick()">PLAY</div>
+{% else %}
+<div id="center_authorization">
+    <div class="reg-path-up-text-input-block">
+        <div class="reg-path-label">E-MAIL></div>
+        <input type="email" id="auth_email" autocomplete="off">
+    </div>
+    <div class="reg-path-up-text-input-block">
+        <div class="reg-path-label">Password</div>
+        <input type="password" id="auth_password" autocomplete="off">
+    </div>
+    <div class="window-reg-up-btn-block">
+        <div class="auth-path-up-btn" onclick="AuthorisationBtnClick()"><span>Auth</span></div>
+    </div>
+</div>
+{% end %}
+
+
+</body>
+
+<script>
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function AuthorisationBtnClick() {
+        var email = document.getElementById('auth_email').value;
+        var password = document.getElementById('auth_password').value;
+        console.log("AuthorisationBtnClick", email, password);
+        $.ajax({
+            url: location.protocol + '//' + location.host + '/login',
+            method: 'POST',
+            data: {
+                email: email,
+                password: password,
+                action: 'auth',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) {
+                console.log("success:", data);
+                setTimeout(function () {window.location.reload();}, 2000);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("error:", jqXHR, textStatus, errorThrown);
+            }
+        });
+    }
+
+    function PlayBtnClick() {
+        console.log("PlayBtnClick");
+        window.location = location.protocol + '//' + location.host + '/play?mode=electron';
+    }
+</script>
+
+</html>
