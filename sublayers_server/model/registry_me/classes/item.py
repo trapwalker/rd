@@ -55,6 +55,21 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        {{ _(this.description) }}
+    """, whitespace='oneline')
+
+    @property
+    def html_description(self):
+        html_description = getattr(self, '_html_description', None)
+        if html_description is None:
+            template = self.HTML_DESCRIPTION_TEMPLATE
+            html_description = self._html_description = LocalizedString(
+                en=template.generate(this=self, _=lambda key: locale('en', key)),
+                ru=template.generate(this=self, _=lambda key: locale('ru', key)),
+            )
+        return html_description
+
     def as_client_dict(self):
         d = super(Item, self).as_client_dict()
         d.update(
@@ -273,10 +288,10 @@ class MechanicItem(SlotItem):
         "r_cc_dirt",
     ]
 
-    HTML_DESCRIPTION_TEMPLATE = Template("""
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
         <br>
-        {% for param in item.PUBLIC_PARAMS %}
-            {% set v = getattr(item, param, None) %}
+        {% for param in this.PUBLIC_PARAMS %}
+            {% set v = getattr(this, param, None) %}
             {% if v %}
                 {% set v = -v if param in {'r_min', 'v_backward', 'a_backward', 'a_braking',} else v %}
                 <div class="mechanic-description-line left-align">{{ _('iht__' + param) }}</div>
@@ -284,17 +299,6 @@ class MechanicItem(SlotItem):
             {% end %}
         {% end %}
     """, whitespace='oneline')
-
-    @property
-    def html_description(self):
-        html_description = getattr(self, '_html_description', None)
-        if html_description is None:
-            template = self.HTML_DESCRIPTION_TEMPLATE
-            html_description = self._html_description = LocalizedString(
-                en=template.generate(item=self, _=lambda key: locale('en', key)),
-                ru=template.generate(item=self, _=lambda key: locale('ru', key)),
-            )
-        return html_description
 
 
 class TunerItem(SlotItem):
@@ -329,27 +333,16 @@ class TunerItem(SlotItem):
         # log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
 
-    HTML_DESCRIPTION_TEMPLATE = Template("""
-        <div class="mechanic-description-line left-align">{{ _('tiht__pont_points') }}: {{ '{:.0f}'.format(item.pont_points) }}</div>
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        <div class="mechanic-description-line left-align">{{ _('tiht__pont_points') }}: {{ '{:.0f}'.format(this.pont_points) }}</div>
         <div class="mechanic-description-line left-align">{{ _('tiht__compatibility') }}:
-            {% if item.images %}
-                {{ _(item.images[0].car.title) }}{% for car_rec in item.images[1:] %}, {{ _(car_rec.car.title) }}{% end %}
+            {% if this.images %}
+                {{ _(this.images[0].car.title) }}{% for car_rec in this.images[1:] %}, {{ _(car_rec.car.title) }}{% end %}
             {% else %}
                 --
             {% end %}
         </div>
     """, whitespace='oneline')
-
-    @property
-    def html_description(self):
-        html_description = getattr(self, '_html_description', None)
-        if html_description is None:
-            template = self.HTML_DESCRIPTION_TEMPLATE
-            html_description = self._html_description = LocalizedString(
-                en=template.generate(item=self, _=lambda key: locale('en', key)),
-                ru=template.generate(item=self, _=lambda key: locale('ru', key)),
-            )
-        return html_description
 
 
 class ArmorerItem(SlotItem):
