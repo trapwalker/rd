@@ -1,0 +1,53 @@
+"locale": "en"
+
+# TransactionTownNPC
+"tr_tnpc_npc_not_found": "We had trouble with finding NPC in this location."
+"tr_tnpc_act_barter": "Action can't be an active barter"
+"tr_tnpc_no_car": "Without a car it's impossible!"
+"tr_tnpc_no_money": "You don't have enough money!"
+"tr_tnpc_no_inv_space": "Not enough space in your inventory."
+"tr_tnpc_bad_transaction": "Something went wrong!"
+
+
+# TransactionGasStation
+"tr_tgs_fuel_nocorrect": "Invalid amount of fuel!"
+"tr_tgs_do_text": "Refueling"
+
+# TransactionHangarSell
+"tr_thangarsell_do_text": "Selling"
+
+# TransactionHangarBuy
+"tr_thangarbuy_notcorrect_car": "Inaccessible car selected!"
+"tr_thangar_swap": "Exchange for"
+"tr_thangar_buy": "Buy"
+"tr_tpark_swap": "Exchange for"
+"tr_tpark_buy": "Took"
+"tr_tpark_leave": "Leave"
+
+# TransactionGirlApply
+"tr_tgirl_service_text": "Service"
+
+# TransactionArmorerApply
+"tr_tarmor_no_end": "Transaction could not be completed."
+"tr_tarmor_setup_text": "Installation on"
+
+# TransactionMechanicRepairApply
+"tr_tmechrepair_bad_repair": "Invalid repair value!"
+"tr_tmechrepair_price": "Repaired to"
+
+# TransactionTunerApply
+"tr_ttuner_price": "Installation on"
+
+# TransactionTraderApply
+"tr_trader_no_count": "is not in right amount!"
+"tr_trader_no_trade": "not sold and not bought!"
+"tr_trader_sale": "Sale"
+"tr_trader_buy": "Buy"
+"tr_trader_not_inv_slot": "Not enough empty slots!"
+
+# TransactionSetRPGState
+"tr_trainer_no_correct_skills": "Current value of skills is unacceptable!"
+"tr_trainer_no_correct_perks": "Current value of perks is unacceptable!"
+"tr_trainer_no_correct_buy_skills": "Invalid value of purchased skills!"
+"tr_trainer_perk_no_set": "This perk can not be learned"
+"tr_trainer_price": "Learning character"
