@@ -57,7 +57,7 @@ class Perk(Node):
         d = super(Perk, self).as_client_dict()
         d.update(
             uri=self.uri,
-            description=self.html_description(),
+            description=self.html_description,
             description_locale=self.description,
         )
         return d
@@ -73,22 +73,22 @@ class Perk(Node):
         'role_class_req',
     ]
 
-    HTML_DESCRIPTION_TEMPLATE = Template("""
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
         <br>
         {% for param in perk.PUBLIC_PARAMS %}
-            {% set v = getattr(perk, param, None) %}
+            {% set v = getattr(this, param, None) %}
             {% if v %}                
                 <div class="mechanic-description-line left-align">{{ _('pht__' + param) }}: {{ v }}</div>                
             {% end %}
         {% end %}
         <div class="mechanic-description-line left-align">{{ _('pht__need_perks') }}:
-            {% if perk.perks_req %}
-                {{ _(perk.perks_req[0].title) }}{% for p in perk.perks_req[1:] %}, {{ _(p.title) }}{% end %}
+            {% if this.perks_req %}
+                {{ _(this.perks_req[0].title) }}{% for p in this.perks_req[1:] %}, {{ _(p.title) }}{% end %}
             {% else %}
                 --
             {% end %}
         </div>
-        <div class="mechanic-description-line left-align">{{ _('pht__effect') }}: {{ _(perk.description) }}</div>
+        <div class="mechanic-description-line left-align">{{ _('pht__effect') }}: {{ _(this.description) }}</div>
     """, whitespace='oneline')
 
     @property
@@ -97,8 +97,8 @@ class Perk(Node):
         if html_description is None:
             template = self.HTML_DESCRIPTION_TEMPLATE
             html_description = self._html_description = LocalizedString(
-                en=template.generate(perk=self, _=lambda key: locale('en', key)),
-                ru=template.generate(perk=self, _=lambda key: locale('ru', key)),
+                en=template.generate(this=self, _=lambda key: locale('en', key)),
+                ru=template.generate(this=self, _=lambda key: locale('ru', key)),
             )
         return html_description
 
