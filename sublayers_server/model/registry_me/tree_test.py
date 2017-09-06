@@ -234,6 +234,7 @@ def test_localization(reload=True, save_loaded=True):
 
     x = reg.get(r'registry\items\slot_item\mechanic_item\engine\air_filter\00_tsn')
     p = reg.get(r'registry\rpg_settings\perks\perk_passive\chipskater\chipskater_5')
+    t = reg.get(r'registry\items\slot_item\tuner_item\armor\00_armor_001')
     print(x.html_description)
 
     globals().update(locals())

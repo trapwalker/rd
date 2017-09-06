@@ -329,19 +329,25 @@ class TunerItem(SlotItem):
         # log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
 
+    HTML_DESCRIPTION_TEMPLATE = Template("""
+        <div class="mechanic-description-line left-align">{{ _('tiht__pont_points') }}: {{ '{:.0f}'.format(item.pont_points) }}</div>
+        <div class="mechanic-description-line left-align">{{ _('tiht__compatibility') }}:
+            {% if item.images %}
+                {{ _(item.images[0].car.title) }}{% for car_rec in item.images[1:] %}, {{ _(car_rec.car.title) }}{% end %}
+            {% else %}
+                --
+            {% end %}
+        </div>
+    """, whitespace='oneline')
+
     @property
     def html_description(self):
         html_description = getattr(self, '_html_description', None)
         if html_description is None:
+            template = self.HTML_DESCRIPTION_TEMPLATE
             html_description = self._html_description = LocalizedString(
-                en=(
-                    u'<div class="mechanic-description-line left-align">Очки крутости: {:.0f}</div>'  #TODO: ##LOCALIZATION
-                    u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'
-                ).format(self.pont_points, u', '.join([car_rec.car.title.en for car_rec in self.images])),
-                ru=(
-                    u'<div class="mechanic-description-line left-align">Очки крутости: {:.0f}</div>'
-                    u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'
-                ).format(self.pont_points, u', '.join([car_rec.car.title.ru for car_rec in self.images])),
+                en=template.generate(item=self, _=lambda key: locale('en', key)),
+                ru=template.generate(item=self, _=lambda key: locale('ru', key)),
             )
         return html_description
 
