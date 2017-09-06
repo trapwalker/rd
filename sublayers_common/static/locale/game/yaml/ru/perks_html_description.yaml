@@ -1,0 +1,14 @@
+"locale": "ru"
+"__prefix": "pht__"
+
+"pht__driving_req": "Требование к вождению"
+"pht__shooting_req": "Требование к Стрельбе"
+"pht__masking_req": "Требование к Маскировке"
+"pht__leading_req": "Требование к Лидерству"
+"pht__trading_req": "Требование к Торговле"
+"pht__engineering_req": "Требование к Механике"
+"pht__level_req": "Требование к уровню"
+"pht__role_class_req": "Требование к классу"
+
+"pht__need_perks": "Необходимые перки"
+"pht__effect": "Действие"

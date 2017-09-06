@@ -4,11 +4,13 @@ import logging
 log = logging.getLogger(__name__)
 
 
+from tornado.template import Template
+from sublayers_common.site_locale import locale
 from sublayers_server.model.registry_me.tree import (
     Node, 
     StringField, IntField, ListField, FloatField,
     RegistryLinkField,
-    LocalizedStringField,
+    LocalizedStringField, LocalizedString,
 )
 
 
@@ -60,30 +62,45 @@ class Perk(Node):
         )
         return d
 
+    PUBLIC_PARAMS = [
+        'driving_req',
+        'shooting_req',
+        'masking_req',
+        'leading_req',
+        'trading_req',
+        'engineering_req',
+        'level_req',
+        'role_class_req',
+    ]
+
+    HTML_DESCRIPTION_TEMPLATE = Template("""
+        <br>
+        {% for param in perk.PUBLIC_PARAMS %}
+            {% set v = getattr(perk, param, None) %}
+            {% if v %}                
+                <div class="mechanic-description-line left-align">{{ _('pht__' + param) }}: {{ v }}</div>                
+            {% end %}
+        {% end %}
+        <div class="mechanic-description-line left-align">{{ _('pht__need_perks') }}:
+            {% if perk.perks_req %}
+                {{ _(perk.perks_req[0].title) }}{% for p in perk.perks_req[1:] %}, {{ _(p.title) }}{% end %}
+            {% else %}
+                --
+            {% end %}
+        </div>
+        <div class="mechanic-description-line left-align">{{ _('pht__effect') }}: {{ _(perk.description) }}</div>
+    """, whitespace='oneline')
+
+    @property
     def html_description(self):
-        main_req_str = ''
-        attr_name_list = dict(
-            driving_req=u'Требование к вождению',
-            shooting_req=u'Требование к Стрельбе',
-            masking_req=u'Требование к Маскировке',
-            leading_req=u'Требование к Лидерству',
-            trading_req=u'Требование к Торговле',
-            engineering_req=u'Требование к Механике',
-            level_req=u'Требование к уровню',
-            role_class_req=u'Требование к классу',
-        )
-        for attr_name in attr_name_list.keys():
-            attr_value = getattr(self, attr_name, None)
-            if attr_value:
-                attr_str = attr_name_list[attr_name]
-                main_req_str += u'<div class="mechanic-description-line left-align">{}: {}</div>'.format(attr_str, attr_value)
-        perks_req_str = ''
-        if self.perks_req:
-            # TODO: ##LOCALIZATION Нужно пробрасывать в html названия перков в виде локализационных объектов завёрнутых в js
-            log.warning(u'### ВНИМАНИЕ! Здесь некорректно перется локализованное имя перка!')
-            perks_req_str = u'<div class="mechanic-description-line left-align">Необходимые перки: {}</div>'.format(', '.join([unicode(perk.title) for perk in self.perks_req]))
-        return (main_req_str + perks_req_str +
-                u'<div class="mechanic-description-line left-align">Действие: {}</div>'.format(self.description))
+        html_description = getattr(self, '_html_description', None)
+        if html_description is None:
+            template = self.HTML_DESCRIPTION_TEMPLATE
+            html_description = self._html_description = LocalizedString(
+                en=template.generate(perk=self, _=lambda key: locale('en', key)),
+                ru=template.generate(perk=self, _=lambda key: locale('ru', key)),
+            )
+        return html_description
 
 
 class PerkPassive(Perk):

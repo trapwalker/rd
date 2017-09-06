@@ -4,9 +4,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from tornado.template import Template
+from sublayers_common.site_locale import locale
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, IntField, FloatField, StringField, ListField, EmbeddedDocumentField, RegistryLinkField,
-    EmbeddedNodeField, LocalizedStringField,
+    EmbeddedNodeField, LocalizedStringField, LocalizedString,
 )
 
 
@@ -19,7 +21,6 @@ class Item(Node):
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
 
     description = LocalizedStringField(caption=u'Расширенное описание предмета')
-    html_description = LocalizedStringField(caption=u'Расширенное описание предмета с версткой')
 
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
@@ -38,7 +39,6 @@ class Item(Node):
     def __init__(self, *av, **kw):
         super(Item, self).__init__(*av, **kw)
         self._parent_list = []
-        self.is_init_html_description = True
 
     # todo!!! Review! Убедиться, что это работает нормально! Больше тестов!
     def get_ancestor_level(self, parent_candidate):
@@ -55,13 +55,8 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
-    def init_html_description(self):
-        self.is_init_html_description = False
-        self.html_description = self.description
-
     def as_client_dict(self):
         d = super(Item, self).as_client_dict()
-        if self.is_init_html_description: self.init_html_description()
         d.update(
             ids=self.ids(),
             description=self.html_description,
@@ -69,7 +64,6 @@ class Item(Node):
         return d
 
     def as_assortment_dict(self):
-        if self.is_init_html_description: self.init_html_description()
         d = dict(
             title=self.title,
             description=self.html_description,
@@ -262,37 +256,45 @@ class MechanicItem(SlotItem):
     r_cc_wood = FloatField(caption=u"Резист к модификатору CC в лесу")
     r_cc_slope = FloatField(caption=u"Резист к модификатору CC в горах")
     r_cc_water = FloatField(caption=u"Резист к модификатору CC в воде")
+    PUBLIC_PARAMS = [
+        "p_visibility_max",
+        "p_visibility_min",
+        "p_observing_range",
+        "max_hp",
+        "r_min",
+        "ac_max",
+        "v_forward",
+        "v_backward",
+        "a_forward",
+        "a_backward",
+        "a_braking",
+        "max_fuel",
+        "p_fuel_rate",
+        "r_cc_dirt",
+    ]
 
-    def init_html_description(self):
-        super(MechanicItem, self).init_html_description()
-        result_ru = '<br>'
-        result_en = '<br>'
-        attr_name_list = dict(
-            p_visibility_min=dict(name_ru=u'Мин. заметность', name_en=u'zМин. заметность', mul=1.0),
-            p_visibility_max=dict(name_ru=u'Макс. заметность', name_en=u'zМакс. заметность', mul=1.0),
-            p_observing_range=dict(name_ru=u'Радиус обзора', name_en=u'zРадиус обзора', mul=1.0),
-            max_hp=dict(name_ru=u'HP', name_en=u'zHP', mul=1.0),
-            r_min=dict(name_ru=u'Маневренность', name_en=u'zМаневренность', mul=-1.0),
-            ac_max=dict(name_ru=u'Контроль', name_en=u'zКонтроль', mul=1.0),
-            v_forward=dict(name_ru=u'Макс. скорость', name_en=u'zМакс. скорость', mul=1.0),
-            v_backward=dict(name_ru=u'Макс. скорость назад', name_en=u'zМакс. скорость назад', mul=-1.0),
-            a_forward=dict(name_ru=u'Динамика разгона', name_en=u'zДинамика разгона', mul=1.0),
-            a_backward=dict(name_ru=u'Динамика задн. хода', name_en=u'zДинамика задн. хода', mul=-1.0),
-            a_braking=dict(name_ru=u'Торможение', name_en=u'zТорможение', mul=-1.0),
-            max_fuel=dict(name_ru=u'Бак', name_en=u'zБак', mul=1.0),
-            p_fuel_rate=dict(name_ru=u'Расход топлива', name_en=u'zРасход топлива', mul=1.0),
-            r_cc_dirt=dict(name_ru=u'Проходимость', name_en=u'zПроходимость', mul=1.0),
-        )
-        for attr_name in attr_name_list.keys():
-            attr_value = getattr(self, attr_name, None)
-            if attr_value:
-                attr_str_ru = attr_name_list[attr_name]["name_ru"]
-                attr_str_en = attr_name_list[attr_name]["name_en"]
-                attr_value *= 100
-                result_ru += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{:.1f}%</div>'.format(attr_str_ru, attr_value * attr_name_list[attr_name]["mul"])
-                result_en += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{:.1f}%</div>'.format(attr_str_en, attr_value * attr_name_list[attr_name]["mul"])
-        self.html_description.ru = result_ru
-        self.html_description.en = result_en
+    HTML_DESCRIPTION_TEMPLATE = Template("""
+        <br>
+        {% for param in item.PUBLIC_PARAMS %}
+            {% set v = getattr(item, param, None) %}
+            {% if v %}
+                {% set v = -v if param in {'r_min', 'v_backward', 'a_backward', 'a_braking',} else v %}
+                <div class="mechanic-description-line left-align">{{ _('iht__' + param) }}</div>
+                <div class="mechanic-description-line right-align">{{ "{:.1f}".format(v * 100) }}%</div>
+            {% end %}
+        {% end %}
+    """, whitespace='oneline')
+
+    @property
+    def html_description(self):
+        html_description = getattr(self, '_html_description', None)
+        if html_description is None:
+            template = self.HTML_DESCRIPTION_TEMPLATE
+            html_description = self._html_description = LocalizedString(
+                en=template.generate(item=self, _=lambda key: locale('en', key)),
+                ru=template.generate(item=self, _=lambda key: locale('ru', key)),
+            )
+        return html_description
 
 
 class TunerItem(SlotItem):
@@ -327,14 +329,21 @@ class TunerItem(SlotItem):
         # log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
 
-    def init_html_description(self):
-        super(TunerItem, self).init_html_description()
-        car_str_ru = ', '.join([unicode(car_rec.car.title.ru) for car_rec in self.images])
-        car_str_en = ', '.join([unicode(car_rec.car.title.en) for car_rec in self.images])
-        self.html_description.ru = (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
-                                    u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str_ru))
-        self.html_description.en = (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
-                                    u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str_en))
+    @property
+    def html_description(self):
+        html_description = getattr(self, '_html_description', None)
+        if html_description is None:
+            html_description = self._html_description = LocalizedString(
+                en=(
+                    u'<div class="mechanic-description-line left-align">Очки крутости: {:.0f}</div>'  #TODO: ##LOCALIZATION
+                    u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'
+                ).format(self.pont_points, u', '.join([car_rec.car.title.en for car_rec in self.images])),
+                ru=(
+                    u'<div class="mechanic-description-line left-align">Очки крутости: {:.0f}</div>'
+                    u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'
+                ).format(self.pont_points, u', '.join([car_rec.car.title.ru for car_rec in self.images])),
+            )
+        return html_description
 
 
 class ArmorerItem(SlotItem):
