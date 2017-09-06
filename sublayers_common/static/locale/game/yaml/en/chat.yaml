@@ -1,0 +1,108 @@
+"locale": "en"
+
+# logs
+"chat_log_loc_enter": "You entered city - "
+"chat_log_loc_exit": "You left city - "
+"chat_log_barter_player": "Player - "
+"chat_log_barter_player_inv": " invites you to barter."
+"chat_log_barter_activate": "Activated barter with player - "
+"chat_log_barter_ended": "Completed barter with player - "
+
+"chat_log_exp_1": "Received "
+"chat_log_exp_2": " experience points."
+"chat_log_exp_lvl_1": "Reached "
+"chat_log_exp_lvl_2": " level."
+
+"chat_log_skills_get": "Skill points obtained"
+
+"chat_log_quest_start": "Quest received"
+"chat_log_quest_fail": "Quest failed"
+"chat_log_quest_finish": "Quest completed"
+
+"chat_log_inv_items_gone": "Given"
+"chat_log_inv_items_come": "Received"
+
+"chat_log_ammo_off": "Out of ammo for "
+
+"chat_log_act_item": "Activated item "
+"chat_log_open_delivery": "Parcel is opened."
+"chat_log_cancel_act_item": "Canceling an item activation"
+"chat_log_fail_act_item": "You can't activate an item"
+"chat_log_fail_act_item_desr": "Following conditions must be met"
+"chat_log_fail_act_item_timeout": "Activation timeout 1 second."
+"chat_log_fail_act_item_not_found": "Item activation: impossible. Item is not installed."
+
+"chat_log_fuel_add_1": "Tank is filled "
+"chat_log_fuel_l": "l."
+
+"chat_log_add_hp": "Car is repaired on "
+
+"chat_log_ammo_set": "Loaded: "
+"chat_log_setup_mine": "Set mine: "
+"chat_log_rocket_start": "Launched missile: "
+"chat_log_setup_turret": "Mounted turret: "
+"chat_log_setup_radar": "Mounted radar: "
+
+
+"chat_log_fuel_added_text": "Tank is topped up "
+"chat_log_fuel_added_value": " liters of fuel."
+"chat_log_taks_list": "Tucked cans: "
+"chat_log_car_sale": "Sold car - "
+"chat_log_car_buy": "Purchased car - "
+"chat_log_get_car": "You took car - "
+"chat_log_give_car": "You left car - "
+
+"chat_log_tt_1": "received"
+"chat_log_tt_2": "spent"
+"chat_log_tt_3": "from parking"
+"chat_log_tt_4": "spent"
+"chat_log_tt_5": "in parking."
+
+"chat_log_arm_items_off": "Weaponsmith dismantled equipment"
+"chat_log_arm_items_on": "Weaponsmith has equipment"
+"chat_log_arm_price": "To pay for work of weaponsmith spent - "
+
+"chat_log_mech_items_off": "Mechanic dismantled equipment"
+"chat_log_mech_items_on": "Mechanic installed equipment"
+"chat_log_mech_price": "To pay for work of mechanic spent - "
+
+"chat_log_mech_repair_1": "Mechanic restored - "
+"chat_log_mech_repair_2": " points of strength"
+"chat_log_mech_repair_3": "spent - "
+
+"chat_log_tuner_items_off": "Tuner dismantled equipment: "
+"chat_log_tuner_items_on": "Tuner installed equipment: "
+"chat_log_tuner_price": "To pay for work of tuner is spent - "
+"chat_log_tuner_points_inc": "Received - "
+"chat_log_tuner_points_points": " showoff points."
+"chat_log_tuner_points_dec": "Lost - "
+
+"chat_log_trader_items_give": "Trader sold items: "
+"chat_log_trader_items_get": "In trader purchased items: "
+"chat_log_trader_money_give": "A trader has spent - "
+"chat_log_trader_money_get": "From trader received - "
+"chat_log_trainer_skills_buy": "Skill points purchased: "
+"chat_log_trainer_skills_set": "Skill points distributed: "
+"chat_log_trainer_perks_set": "Perk points distributed: "
+"chat_log_trainer_price": "To pay for work of trainer spent - "
+"chat_log_loot_get": "Picked up: "
+
+
+# party_logs!
+"chat_log_party_join": " joined group"
+"chat_log_party_leave": " left group"
+"chat_log_party_u_join": "You are included in group "
+"chat_log_party_u_leave": "You are excluded from group "
+"chat_log_party_u_kick": "You kicked out of group "
+"chat_log_party_u_inv": " invites you to join a group "
+"chat_log_party_u_inv_send": "Your invitation was sent to "
+"chat_log_party_inv": " invites "
+"chat_log_party_join_in": " join group "
+"chat_log_party_inv_in": "Invite to join group "
+"chat_log_party_from": " from "
+"chat_log_party_inv_off": " rejected."
+"chat_log_party_u_inv_for": "Your invitation to "
+"chat_log_party_inv_from": "Invitation from "
+"chat_log_party_for": " for "
+"chat_log_party_error": "Error: "
+"chat_log_party_unknown_info": "Unknown information about party!"
