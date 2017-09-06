@@ -1,0 +1,16 @@
+"locale": "ru"
+"__prefix": "w__"
+
+"w__weight_class__undefined": "Не указан"
+"w__weight_class__light": "Легкий"
+"w__weight_class__middle": "Средний"
+"w__weight_class__heavy": "Тяжелый"
+
+"w__weight_class": "Класс"
+"w__damage": "Урон"
+"w__dps": "Урон в секунду"
+"w__time_recharge": "Перезараядка"
+"w__radius": "Дальность"
+"w__sector": "Сектор"
+"w__power_penetration": "Пробитие"
+"w__ammo": "Снаряд"
