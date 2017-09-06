@@ -227,7 +227,14 @@ def test_localization(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
+    from sublayers_common.site_locale import load_locale_objects
+    load_locale_objects(path='../../../sublayers_common/static/locale/game')
+
     reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+
+    x = reg.get(r'registry\items\slot_item\mechanic_item\engine\air_filter\00_tsn')
+    p = reg.get(r'registry\rpg_settings\perks\perk_passive\chipskater\chipskater_5')
+    print(x.html_description)
 
     globals().update(locals())
 
