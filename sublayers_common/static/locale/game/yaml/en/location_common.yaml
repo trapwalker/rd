@@ -1,1 +1,262 @@
 "locale": "en"
+
+"law_slot_name": "Slot name"
+
+"lm_showp_head_no": "No"
+
+"lbw_available_quest": "Available quests"
+"lbw_active_quest": "Active quests"
+
+"lcit_tth": "TTC"
+"lcit_weapon": "Weapons"
+"lcit_history": "Story"
+"lcit_price": "Price:"
+"lcit_class": "Class:"
+"lcit_strength": "Durability:"
+"lcit_speed": "Speed:"
+"lcit_slot_count": "Body slots:"
+"lcit_inventory_size": "Trunk slots:"
+"lcit_fuel": "Tank capacity:"
+"lcit_fuel_consumption": "Fuel consumption:"
+"lcit_driving_req": "Driving skill:"
+"lcit_zone_speed": "Speed on ground:"
+"lcit_dirt_speed": "Off-road:"
+"lcit_wood_speed": "Forest:"
+"lcit_slope_speed": "Mountain:"
+"lcit_water_speed": "Swamp:"
+"lcit_mileage": "Mileage:"
+"lcit_kill_count": "Kills:"
+"lcit_exp": "Exp:"
+
+"lci_info": "Information"
+"lci_trading_info": "Trading"
+"lci_lvl": "Level:"
+"lci_class": "Class:"
+"lci_karma": "Karma:"
+"lci_driving": "Driving:"
+"lci_shooting": "Shooting:"
+"lci_masking": "Stealth:"
+"lci_engineering": "Engineering:"
+"lci_trading": "Trading:"
+"lci_leading": "Leadership:"
+
+"lhw_proposal": "Offer:"
+"lhw_parking": "Car in parking:"
+
+"ll_inventory": "Your trunk"
+"ll_found": "Found"
+
+"lm_pers": "Character"
+"lm_car": "Car"
+"lm_inventory": "Inventory"
+"lm_journal": "Journal"
+"lm_party": "Party"
+"lm_radio": "Radio"
+"lm_settings": "Settings"
+
+"lm_all": "All"
+"lm_ammo": "Ammunition"
+"lm_cargo": "Cargo"
+"lm_insurance": "Insurance"
+"lm_appeals": "Appeals"
+
+"lngs_empty_tanks": "Empty cans:"
+
+"lni_inventory": "Inventory:"
+
+"ltw_table": "Exchange table:"
+
+"ltw_perk": "Perks"
+"ltw_skill": "Skills"
+"ltw_free_points": "Free points"
+"ltw_drop_all": "Reset all"
+"ltw_load_update": "Download update"
+
+"ltunw_cool": "Show<span>off</span>:"
+
+# Все лепестки здесь!
+"loc_leaf_search": "Search"
+"loc_leaf_back": "Back"
+"loc_leaf_exit": "Exit"
+"loc_leaf_accept": "Accept"
+"loc_leaf_otkaz": "Decline"
+"loc_leaf_repair": "Repair"
+"loc_leaf_full_repair_1": "Full"
+"loc_leaf_full_repair_2": "repair"
+"loc_leaf_apply": "Accept"
+"loc_leaf_cancel": "Cancel"
+"loc_leaf_cancelnit": "Cancel"
+"loc_leaf_prolong": "Extend"
+"loc_leaf_ins_form": "Checkout"
+"loc_leaf_girl_buy": "Purchase</br>service"
+"loc_leaf_hangar_swap": "Exchange car"
+"loc_leaf_hangar_sell": "Sell car"
+"loc_leaf_hangar_buy": "Buy car"
+"loc_leaf_park_swap": "Change car"
+"loc_leaf_park_give": "Put car"
+"loc_leaf_park_take": "Take car"
+"loc_leaf_inv_party": "Invite</br>to party"
+"loc_leaf_barter_close": "Close</br>exchange"
+"loc_leaf_trade": "Trade"
+"loc_leaf_activate": "Activate"
+"loc_leaf_setup": "Install"
+"loc_leaf_gas_fuel": "Fill"
+"loc_leaf_gas_full_fuel": "Fill all"
+"loc_leaf_trader_apply": "Confirm</br>transaction"
+
+
+
+# location_manager.js
+"lm_question_to_drop": "Drop?"
+"lm_question_to_drop_t1": "You want to drop "
+"lm_question_to_drop_t2": " to dump?"
+
+"lm_error_exit": "Attention! Error!"
+"lm_error_exit_text": "You can't leave city without a car. Buy a new car or take left in parking."
+
+
+### set_header_text ###
+
+# location_manager
+"loc_sht_hello": "Welcome to "
+"loc_sht_quests_available": "Available quests"
+"loc_sht_quests_active": "Active quests"
+
+# dealer:
+"loc_sht_dealer_work": "Car dealer"
+"loc_sht_dealer_min_price_text_p1": "Car from"
+"loc_sht_dealer_min_price_text_p2": " for car."
+"loc_sht_parking_work": "Parker"
+
+# library
+"loc_sht_trainer_work": "Trainer"
+"loc_sht_trainer_descr": ".Increase skills and gain new abilities."
+
+# market
+"loc_sht_trader_work": "Trader"
+"loc_sht_trader_export": "Export"
+"loc_sht_trader_import": "Import"
+
+# mayor
+"loc_sht_mayor_hello": "Welcome to City Hall of "
+"loc_sht_mayor_text": "Donation to city. Price: 5000 Nc (+10 in respect, +5 in karma)"
+
+# service
+"loc_sht_serv_armorer_descr": ": armorer. Installation of guns and modules on car."
+"loc_sht_serv_style_descr": ": stylist. Styling car."
+"loc_sht_serv_mechanik_descr": ": mechanic. Tuning of internal components of car."
+"loc_sht_serv_repair_text": "Repair car."
+"loc_sht_serv_repair_text_in_work": "Repair"
+"loc_sht_serv_full_repair_text_in_work": "Complete repair"
+
+# nukeoil
+"loc_sht_nuke_hello": "Welcome, "
+"loc_sht_nuke_descr": "!<br>Official gas station of Corporation NukeOil provides:<ul><li>Auto Insurance: protect your property from accidents on roads!</li><li>Fuel filling.</li><li>Support service.</li></ul>"
+"loc_sht_nuke_days_before": "Valid: until "
+"loc_sht_nuke_days_no_time": "Valid: Unlimited."
+"loc_sht_nuke_active_status": "Status: Active."
+"loc_sht_nuke_st_not_act": "Status: Unable to activate. There is another insurance."
+"loc_sht_nuke_st_price_30": "Status: inactive.<br>Price for 30 days: "
+
+
+### NPCs ###
+"loc_arm_sht_car_off_warning": "Services are available only to owners of own car."
+# armorer
+# getSlotTextInfo
+"loc_armorer_slot_info_av_text": "Available destinations"
+"loc_armorer_slot_direct_text_f": "forward"
+"loc_armorer_slot_direct_text_b": "backward"
+"loc_armorer_slot_direct_text_l": "left"
+"loc_armorer_slot_direct_text_r": "right"
+"loc_armorer_slot_weight_text": "Heavy class"
+# set_header_text
+"loc_arm_sht_on": "Installed"
+"loc_arm_sht_moduls": "modules"
+"loc_arm_sht_off": "Removed"
+"loc_arm_sht_q_setup": "Install"
+"loc_arm_sht_price": "Price"
+"loc_arm_sht_set_m_q": "Mount module"
+"loc_arm_sht_unset_m_q": "Unmount module"
+
+# girl
+"loc_girl_sht_buy": "Purchase service"
+
+
+# hangar - parking
+"loc_park_enter_bag": "View in trunk"
+# set_header_text
+"loc_hang_sht_swap": "Exchange"
+"loc_hang_sht_to": ' for '
+"loc_hang_sht_npc_summ": " with my surcharge: "
+"loc_hang_sht_player_summ": " with your surcharge: "
+"loc_hang_sht_sell": "Sell"
+"loc_hang_sht_buy": "Buy"
+"loc_park_sht_swap": "Exchange"
+"loc_park_sht_take": "Take"
+"loc_park_sht_give": "Deliver"
+
+# mechanik
+"loc_mech_sys_engine": "Engine"
+"loc_mech_sys_transmission": "Transmission"
+"loc_mech_sys_suspension": "Suspension"
+"loc_mech_sys_brakes": "Brakes"
+"loc_mech_sys_cooling": "Cooling"
+# set_header_text
+"loc_mech_sht_on_item": "Install detail"
+"loc_mech_sht_off_item": "Remove detail"
+"loc_mech_sht_on": "Installed"
+"loc_mech_sht_items": "details"
+"loc_mech_sht_off": "Removed"
+"loc_mech_sht_price": "Price"
+"loc_mech_sht_q_on": "Install?"
+
+# gas_station
+"loc_gas_full_tanks": "Full cans"
+"loc_gas_sht_fuel": "Fill"
+"loc_gas_sht_fuel_full": "Fill up full tank and cans"
+
+# trader
+"loc_tarder_filter_all": "All"
+"loc_tarder_filter_ammo": "Ammunition"
+"loc_tarder_filter_armorer": "Weapons"
+"loc_tarder_filter_tuner": "Tuner"
+"loc_tarder_filter_mechanic": "Mechanic"
+"loc_tarder_filter_teach": "For sale"
+# set_header_text
+"loc_tarder_sht_no_car": "Go up to the warehouse."
+"loc_tarder_sht_no_items": "Exchange table is empty. Select item to trading."
+"loc_tarder_sht_no_money": "Insufficient funds."
+"loc_tarder_sht_sale_for": "I sell for "
+"loc_tarder_sht_buy_for": "I'm buying for "
+"loc_tarder_sht_total_trader": "Total from me "
+"loc_tarder_sht_total_player": "Total from you "
+
+# barmen
+"loc_barmen_quests_player": "Your quests:"
+"loc_barmen_quests_sale": "Quests for sale:"
+
+
+# trainer
+"loc_trainer_sht_apply_q": "Apply changes characteristics"
+
+
+### BUIDLINGs ###
+
+# building_service_manager.js
+"loc_bsm_additional_page_text_1": "Repair"
+"loc_bsm_additional_page_text_2": "car"
+
+
+
+# building_nocoil_manager.js
+"loc_bnc_additional_page_ins_text": "Insurance"
+"loc_bnc_additional_page_actions_text": "Promotions"
+"loc_bnc_additional_page_special_text": "Special offers"
+# panels:
+"loc_bnc_panel_ins_descr_standart": "Insurance Standard.<br>Compensation for crash: nominal value of transport.<br>Respawn: random city."
+"loc_bnc_panel_ins_descr_premium": "Insurance Premium.<br>Compensation for crash: restore car with loss of all the contents of trunk and installed tuning.<br>Respawn: last visited city."
+"loc_bnc_panel_ins_descr_shareholder": "Insurance VIP.<br>Compensation for crash: full recovery of transport with loss of cargo goods from trunk.<br>Respawn: choice city."
+
+
+# interaction_manager.js
+"loc_im_invite_to_barter": "!!! Invitation to exchange !!!"

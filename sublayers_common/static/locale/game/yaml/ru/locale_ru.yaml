@@ -4,7 +4,7 @@
 
 "hours_cut": "ч."
 "inv_empty": "Пусто"
-"barter_cancel" : "Отмена"
+"barter_cancel": "Отмена"
 
 
 "window_disconnect_caption": "Произошёл плановый рестарт сервера!"
@@ -14,3 +14,4 @@
 "window_drop_to_map_q2": " на карту?"
 "window_inv_to_party": "Приглашение отправлено!"
 "window_inv_to_party_q1": "Вы пригласили в пати игрока с ником"
+
