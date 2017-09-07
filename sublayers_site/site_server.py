@@ -31,7 +31,7 @@ from sublayers_site import settings
 import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler, VKLoginHandler,
                                                TwitterLoginHandler, FacebookLoginHandler)
-from sublayers_site.handlers.site import SiteMainHandler, SiteMainHandlerElectron
+from sublayers_site.handlers.site import SiteMainHandler
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
@@ -98,7 +98,6 @@ class Application(BaseApplication):
             (r"/login", StandardLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
-            (r"/site_api/electron", SiteMainHandlerElectron),
             (r"/site_api/locale", GetUserLocaleJSONHandler),
             (r"/site_api/join_news_group", tornado.web.RedirectHandler, {"url": options.join_news_group_link}),
             (r"/site_api/get_user_info", GetUserInfoHandler),

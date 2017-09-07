@@ -64,7 +64,6 @@
     function gotoSite(event) {
         var address = $(event.target).data("address");
         if (address) {
-            address = address + '/site_api/electron';
             $(event.target).addClass("not-access");
             $.ajax({
                 url: address + '?mode=test',
@@ -73,7 +72,7 @@
                 timeout: 5000,
                 success: function (data) {
                     console.log("success: site worked:", data);
-                    window.location = address;
+                    window.location = address + '?mode=electron';
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("error: site not worked:", jqXHR, textStatus, errorThrown);

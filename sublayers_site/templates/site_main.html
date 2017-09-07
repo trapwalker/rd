@@ -67,12 +67,8 @@
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_ratings.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('locale/site/css/locale_{}.css'.format(user_lang)) }}"/>
 
-    {% if not for_electron %}
     <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
-    {% else %}
-    <script>window.$ = window.jQuery = require('jquery');</script>
-    {% end %}
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
     <script src="{{ static_url('locale/locale.js') }}"></script>

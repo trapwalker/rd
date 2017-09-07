@@ -23,22 +23,20 @@ class SiteMainHandler(BaseSiteHandler):
         # if self.current_user:
         #     self.set_cookie("forum_user", get_forum_cookie_str(self.current_user.name))
 
-        self.render(
-            'site_main.html',
-            news_list=news_list,
-            quick_game_cars=quick_game_info.get('quick_cars', []),
-            all_users_registered=users_count,
-            user_lang=self.user_lang,
-            community_link_en=options.community_link_en,
-            community_link_ru=options.community_link_ru,
-            for_electron=self.get_argument("mode", "") == 'electron',
-        )
+        mode = self.get_argument("mode", "")
 
-
-class SiteMainHandlerElectron(BaseSiteHandler):
-    def get(self):
-        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
-        if self.get_argument("mode", "") == "test":
-            self.finish("OK")
+        if mode == "":
+            self.render(
+                'site_main.html',
+                news_list=news_list,
+                quick_game_cars=quick_game_info.get('quick_cars', []),
+                all_users_registered=users_count,
+                user_lang=self.user_lang,
+                community_link_en=options.community_link_en,
+                community_link_ru=options.community_link_ru,
+            )
+        elif mode == "electron":
+            self.render('electron_site.html', user=self.current_user, user_lang=self.user_lang,)
         else:
-            self.render('electron_auth.html', user=self.current_user)
+            self.finish("OK")
+
