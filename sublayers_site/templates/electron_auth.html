@@ -16,39 +16,30 @@
             margin-top: 20px;
         }
     </style>
-{#    <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>#}
-    <script>
-        window.nodeRequire = require;
-        delete window.require;
-        delete window.exports;
-        delete window.module;
-    </script>
-    <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
-    <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
+    <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
 </head>
 
 <body>
+    <h1>Road Dogs Online</h1>
 
-<h1>Road Dogs Online</h1>
-
-{% if user %}
-<div>Hello, {{ user.name }}.</div>
-<div class="auth-path-up-btn" onclick="PlayBtnClick()">PLAY</div>
-{% else %}
-<div id="center_authorization">
-    <div class="reg-path-up-text-input-block">
-        <div class="reg-path-label">E-MAIL></div>
-        <input type="email" id="auth_email" autocomplete="off">
+    {% if user %}
+    <div>Hello, {{ user.name }}.</div>
+    <div class="auth-path-up-btn" onclick="PlayBtnClick()">PLAY</div>
+    {% else %}
+    <div id="center_authorization">
+        <div class="reg-path-up-text-input-block">
+            <div class="reg-path-label">E-MAIL></div>
+            <input type="email" id="auth_email" autocomplete="off">
+        </div>
+        <div class="reg-path-up-text-input-block">
+            <div class="reg-path-label">Password</div>
+            <input type="password" id="auth_password" autocomplete="off">
+        </div>
+        <div class="window-reg-up-btn-block">
+            <div class="auth-path-up-btn" onclick="AuthorisationBtnClick()"><span>Auth</span></div>
+        </div>
     </div>
-    <div class="reg-path-up-text-input-block">
-        <div class="reg-path-label">Password</div>
-        <input type="password" id="auth_password" autocomplete="off">
-    </div>
-    <div class="window-reg-up-btn-block">
-        <div class="auth-path-up-btn" onclick="AuthorisationBtnClick()"><span>Auth</span></div>
-    </div>
-</div>
-{% end %}
+    {% end %}
 </body>
 
 <script>
