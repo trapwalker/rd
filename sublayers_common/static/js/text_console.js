@@ -573,7 +573,7 @@ var ConsoleFirstEnter = (function (_super) {
             data: {answer: teach},
             success: function(data) {
                 if (data && data.length) {
-                    window.location = data;
+                    window.location = data + ($("electron_mode").text() ? "?mode=electron" : "");
                 }
                 // Google Analytics
                 if (teach)

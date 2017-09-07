@@ -117,6 +117,8 @@ class PlayHandler(BaseHandler):
             self.redirect(self.get_login_url())
             return
 
+        electron = self.get_argument("mode", "") == "electron"
+
         if options.mode == 'basic':
             coord = None
             agent = self.application.srv.api.get_agent(user=user, make=True, do_disconnect=False)
@@ -148,18 +150,18 @@ class PlayHandler(BaseHandler):
                         insurance_name=agent.example.profile.insurance.title,
                         user_balance=agent.balance,
                         connection_delay=connection_delay,
-                        electron=self.get_argument("mode", "") == "electron",
+                        electron=electron,
                     )
                 else:
                     log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
-                    self.redirect('/quick/play')
+                    self.redirect('/quick/play{}'.format("?mode=electron" if electron else ""))
             else:
                 self.redirect(self.get_login_url())
 
         if options.mode == 'quick':
             if not user.quick and user.teaching_state != "map" and user.teaching_state != "map_start":
                 log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
-                self.redirect('/play')
+                self.redirect('/play{}'.format("?mode=electron" if electron else ""))
                 return
 
             if not user.quick and user.teaching_state == "map_start":
@@ -167,7 +169,7 @@ class PlayHandler(BaseHandler):
                 agent = self.application.srv.agents.get(str(user.pk), None)
                 if not agent:
                     log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
-                    self.redirect('/play')
+                    self.redirect('/play{}'.format("?mode=electron" if electron else ""))
                     return
 
             coord = None
@@ -200,7 +202,7 @@ class PlayHandler(BaseHandler):
                 insurance_name='quick',
                 user_balance=0,
                 connection_delay=connection_delay,
-                electron=self.get_argument("mode", "") == "electron",
+                electron=electron,
             )
 
 
