@@ -36,7 +36,7 @@ let mainWindow;
 function createWindow() {
     mainWindow = new BrowserWindow();
     mainWindow.setMenu(null);
-    mainWindow.maximize();
+    //mainWindow.maximize();
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',

@@ -4,47 +4,87 @@
     <meta charset="UTF-8">
     <title>Road Dogs Online</title>
     <style>
-        #center_authorization {
-            position: relative;
-            margin: auto;
-            width: 200px;
-            height: 100px;
-            border: 1px solid black;
-            text-align: center;
-            line-height: 100px;
-            color: white;
-            pointer-events: none;
-            background-color: #7a807d;
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030f00;
         }
-        #center_authorization.active { background-color: #006641; pointer-events: auto; }
+
+        .content-block {
+            position: relative;
+            width: 716px;
+            height: 438px;
+            margin: 50px auto;
+        }
+
+        .window-reg-up-btn {
+            position: relative;
+            cursor: pointer;
+            margin: 20px auto;
+            border: 2px solid #209509;
+            background-color: #0d3207;
+            border-radius: 1px;
+            text-align: center;
+            height: 35px;
+            line-height: 35px;
+            color: #31c811;
+            width: 200px;
+        }
+        .window-reg-up-btn:hover {
+            background-color: #16560c;
+            color: #51ff00;
+            border-color: #37ff10;
+        }
+        .window-reg-up-btn:active {
+            background-color: #030f00;
+            color: #00ff00;
+            border-color: #008000;
+        }
+        .window-reg-up-btn.not-access {
+            background-color: #777777;
+            color: whitesmoke;
+            border-color: #444444;
+        }
+
     </style>
+
+    <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
 </head>
 
 <body>
-    <h1>Road Dogs Online</h1>
-    <div id="center_authorization" onclick="gotoSite()">Go To Road Dogs !!!</div>
-    <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
+    <div class="content-block">
+        <div class="window-reg-up-btn" onclick="gotoSite(event)" data-address="http://192.168.1.104">192.168.1.104</div>
+        <div class="window-reg-up-btn" onclick="gotoSite(event)" data-address="http://192.168.1.105">192.168.1.105</div>
+    </div>
 </body>
 
 <script>
-    var game_server = "http://192.168.1.104";
-    function gotoSite() { window.location = game_server + '/site_api/electron'; }
+    function gotoSite(event) {
+        var address = $(event.target).data("address");
+        if (address) {
+            address = address + '/site_api/electron';
+            $(event.target).addClass("not-access");
+            $.ajax({
+                url: address + '?mode=test',
+                method: 'GET',
+                data: {},
+                timeout: 5000,
+                success: function (data) {
+                    console.log("success: site worked:", data);
+                    window.location = address;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error: site not worked:", jqXHR, textStatus, errorThrown);
+                    setTimeout(function (args) { $(event.target).removeClass("not-access"); }, 10000);
+                }
+             });
+        }
+        else
+            console.error("Not found addres: ", address);
+    }
 
-    // Установка _xsrf токена для работы сайта
-    setTimeout(function () {
-        $.ajax({
-            url: game_server + '/site_api/electron?mode=test',
-            method: 'GET',
-            data: {},
-            success: function (data) {
-                console.log("success: site worked:", data);
-                $("#center_authorization").addClass("active");
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log("error: site not worked:", jqXHR, textStatus, errorThrown);
-            }
-        });
-    }, 1000);
 </script>
 
 </html>

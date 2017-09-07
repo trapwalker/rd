@@ -1,11 +1,11 @@
 {
-  "name": "electron_test",
+  "name": "RoadDogs",
   "version": "1.0.0",
-  "description": "",
+  "description": "Road Dogs Online Game Client",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager .  electron_test --overwrite --platform=win32 --arch=x64 --out=build"
+    "build": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build"
   },
   "dependencies": {
     "jquery": "^3.2.1"
