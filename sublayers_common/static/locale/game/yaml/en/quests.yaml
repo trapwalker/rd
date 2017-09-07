@@ -1,0 +1,114 @@
+"locale": "en"
+
+"q_share_q_fail": "Quest failed."
+"q_share_q_win": "Quest completed."
+"q_share_no_rel_npc": "NPC is not well apply to you."
+"q_share_no_inv_slot": "Not enough space in your inventory."
+"q_share_cancel_pen_done": "A fine in amount of"
+"q_share_cancel_pen_try": "To cancel quest, pay a penalty"
+"q_share_piece": "pc"
+"q_share_rewnote_caption": "Reward"
+"q_share_rewnote_btn1": "<br>Take"
+
+# init_text
+"q_share_reward": "Reward"
+"q_share_get_reward": "Received an award in amount of"
+"q_share_reward_karma": "karma"
+"q_share_reward_exp": "exp."
+"q_share_deadline_pretext": "per"
+
+# KillerQuest
+"q_kt_start_text": "Quest for murder has been launched. Goals"
+"q_kt_target_killed": "killed"
+"q_kt_return_to_reward": "Return for reward."
+"q_kt_fail_cancel": "Quest failed: failure to comply."
+"q_kt_fail_deadline": "Quest failed: time is over."
+"q_kt_page_caption": "Assignment for murder"
+
+# MapActivateItemQuest
+"q_ai_start_text": "Launched a quest to activate items."
+"q_ai_do_activate": "Activation completed."
+"q_ai_note_caption": "Reward"
+"q_ai_note_btn1": "<br>Report"
+
+# MapActivateRadarsQuest
+"q_ar_start_text": "Started quest for installation of radars."
+"q_ar_cancel_pen_done": "Probes returned."
+"q_ar_cancel_pen_try": "To abandon quest, give probes in"
+"q_ar_set_done_return_town": "All radars installed. Return for reward."
+"q_mr_note_caption": "Installation<br>of radars"
+"q_mr_note_btn1": "<br>Report"
+
+# MeasureRadiation
+"q_mr_start_text": "Started quest for level of radiation measurements."
+"q_mr_cancel_pen_done": "A fine in amount of"
+"q_mr_cancel_pen_try": "To cancel quest, pay a penalty"
+"q_mr_do_measure": "Measurement has been completed."
+"q_mr_do_measure_done": "Measurements are completed. Return for reward."
+"q_mr_note_caption": "Measurement<br>of radiation"
+"q_mr_note_btn1": "<br>Report"
+
+# SearchCourier
+"q_sq_get_fishka_return_town": "Received a platinum chip. Return to city to complete quest."
+"q_sq_started": "Launched a quest to find missing courier."
+"q_sq_rel_bad": "Spoiled relations with"
+"q_sq_finded_car": "Found car courier."
+"q_sq_fail_cancel_q": "You found a courier car and can not refuse."
+"q_sq_init_text_short": "Find missing courier."
+"q_sq_init_text": "Find missing courier and return important item"
+
+# Караван
+"q_eq_caravan_ready": "Caravan is formed."
+"q_eq_caravan_wait": "Waiting for caravan."
+"q_eq_caravan_go": "Caravan left."
+"q_eq_caravan_participation": "Participation in caravan: "
+"q_eq_caravan_fail": "Refusal to participate in caravan."
+
+# Убить босса
+"q_kb_note_caption": "Search and destroy"
+"q_kb_quest_is_started": "Started quest - search and destroy."
+"q_kb_killed": "killed."
+"q_kb_killed_by_another": "Killed not by you."
+
+# Классовый квест
+"q_cq_started": "Started a class quest."
+"q_cq_caption_1": "Establish a settlement"
+"q_cq_caption_2": "Create a clan"
+"q_cq_caption_3": "Get stealth technology"
+"q_cq_caption_4": "Open shop"
+"q_cq_caption_5": "Get supercar"
+"q_cq_caption_6": "Open a service center"
+"q_cq_caption_get_new_task": "Received a new assignment."
+"q_cq_class_target_note": "Class goal"
+"q_cq_visit_trainer": "Coach was visited."
+"q_cq_select_teacher_note_caption": "Mentor"
+"q_cq_select_teacher_note_btn": "<br>Accept"
+"q_cq_phrase_1": "Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как минимум в 75, дальнейшего разговора не будет.<//br> Отношение можно повысить близостью в карме и выполнением моих заданий."
+"q_cq_phrase_2": "Хорошо, вот мои требования к ученикам:<//br>- Взнос 3000 NC.<//br>- Уровень не менее 4."
+"q_cq_final": "Quest completed."
+
+# Посылка
+"q_dfc_started": "Launched a quest to find package."
+"q_dfc_relations": "Spoiled relations with"
+"q_dfc_find_package": "A parcel is found."
+"q_dfc_cancel_fail": "You found parcel and can not refuse."
+
+# Доставка машины
+"q_dc_drop_car": "Get rid of your car."
+"q_dc_started": "Started quest for delivery of vehicle."
+"q_dc_cancel_req": "To refuse quest, return vehicle and pay a penalty"
+
+# Доставка пассажиров
+"q_dp_started": "Started quest for delivery of passengers."
+"q_dp_in_passengers": "Following passengers were picked up:"
+"q_dp_out_passengers": "Following passengers came out:"
+"q_dp_reward": "Received an award in amount of"
+
+# Доставка
+"q_dq_note_btn1": "Cargo<br>delivery"
+"q_dq_start_log": "Started quest for delivery."
+"q_dq_get_items_1": "From"
+"q_dq_get_items_2": "obtained following items"
+"q_dq_give_items": "took following items"
+"q_dq_cancel_pen_try": "To refuse quest, return items and pay a penalty"
+"q_dq_get_reward": "Received an award in amount of"

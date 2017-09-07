@@ -1,2 +1,166 @@
 "locale": "en"
 
+# radio_window.html
+"radio_power": "Power"
+"radio_power_off": "OFF"
+"radio_volume": "Volume"
+"radio_channel": "Channel"
+"radio_bitrate": "Bitrate"
+
+# Шаблон Person Info Chat
+"pichr_character": "Character"
+"pichr_transport": "Car"
+"pichr_close": "Close"
+
+"pichr_class": "Class"
+"pichr_karma": "Karma"
+"pichr_driving": "Driving"
+"pichr_shooting": "Shooting"
+"pichr_hiding": "Stealthiness"
+"pichr_mechanik": "Engineering"
+"pichr_trading": "Trading"
+"pichr_leading": "Leadership"
+
+"pichr_about_self": "About me"
+"pichr_transport_empty": "No transport available"
+
+# menu_person_window.html
+"mpersw_about": "About me"
+"mpersw_lvl_text": "Level"
+"mpersw_class": "Class"
+"mpersw_karma": "Karma"
+"mpersw_driv": "Driving"
+"mpersw_shoot": "Shooting"
+"mpersw_hide": "Stealthiness"
+"mpersw_mech": "Engineering"
+"mpersw_trad": "Trading"
+"mpersw_lead": "Leadership"
+
+"mpersw_invite": "Invite"
+
+# menu_party_window
+"mpw_create": "Create"
+"mpw_manage": "Control"
+"mpw_invite": "Invites"
+
+"mpw_name": "PARTY NAME"
+"mpw_targets": "GOALS"
+"mpw_share_loot": "Setting division of experience"
+"mpw_create_btn": "Create"
+
+"mpw_invite_text": "INVITE"
+"mpw_members": "MEMBERS"
+
+"mpw_lvl_text": "Level"
+"mpw_class": "Class"
+"mpw_karma": "Karma"
+"mpw_driv": "Driving"
+"mpw_shoot": "Shooting"
+"mpw_hide": "Stealthiness"
+"mpw_mech": "Engineering"
+"mpw_trad": "Trading"
+"mpw_lead": "Leadership"
+
+"mpw_inv_text_inv": "INVITES"
+"mpw_inv_members_party": "PARTY MEMBERS"
+
+"mpw_exp_share_solo": "Each his"
+"mpw_exp_share": "Equally"
+
+"mpw_invites_js_exp": "Experience:"
+"mpw_invites_js_sender_invite": "Invited:"
+
+"mpw_dialog_join": "Join?"
+"mpw_dialog_join_question": "Are you sure you want to join "
+
+"mpw_dialog_inv_cancel": "Undo?"
+"mpw_dialog_inv_cancel_question": "Are you sure you want to uninvite?"
+
+"mpw_dialog_leave": "Leave?"
+"mpw_dialog_leave_question": "Are you sure you want to leave party?"
+"mpw_dialog_kick": "Kick?"
+"mpw_dialog_kick_question": "Are you sure you want to kick "
+
+
+# menu_journal_window
+"mjw_tasks": "Quests"
+"mjw_parkings": "Parkings"
+
+
+"mjw_q_caravan_start_text": "Departure: "
+
+"mjw_q_level": "Level: "
+
+"mjw_q_status_active_text": "Active"
+"mjw_q_status_finished_text": "Completed"
+"mjw_q_status_failed_text": "Failed"
+
+"mjw_q_desr_view_map_notes": "Display markers"
+"mjw_q_desr_q_desr": "Description"
+"mjw_q_desr_q_deadline": "Time remaining"
+"mjw_q_desr_q_history": "Events"
+
+
+# menu_character_window
+"mchw_descr": "Description"
+"mchw_lvl": "Level"
+"mchw_class": "Class"
+"mchw_karma": "Karma"
+"mchw_balance": "Balance"
+"mchw_about_self": "About me"
+"mchw_set_info": "Specifications"
+"mchw_inv": "Inventory"
+"mchw_effects": "Effects"
+"mchw_perks": "Perks"
+"mchw_perks_free": "Available points"
+
+"mchw_perks_skills": "Skills"
+"mchw_driv": "Driving"
+"mchw_shoot": "Shooting"
+"mchw_hide": "Stealthiness"
+"mchw_mech": "Engineering"
+"mchw_trad": "Trading"
+"mchw_lead": "Leadership"
+"mchw_skills_free": "Available points"
+
+
+mchw_lvl_info: "Это уровень персонажа. Чем больше очков навыка он заработал, тем выше уровень. Уровень повышается каждые 10 очков навыка."
+mchw_class_info: "Это класс персонажа. От класса зависит профильный навык, который растет быстрее – за каждые 5 очков – 1 бонусное. Кроме этого от класса зависит врожденный классовый квест и классовые перки."
+mchw_karma_info: "Это Карма персонажа. В зависимости от поступков – добрых или злых, она улучшается или ухудшается. Чем ближе карма персонажа к карме городских жителей, тем лучше их отношение. Карма падает, если персонаж занимается мошенничеством или уничтожает других персонажей уровнем ниже себя."
+mchw_about_self_info: "Введите сюда любой текст, который отображается в окне персонажа и виден другим."
+mchw_list_perks_skill_info: "Список перков и навыков персонажа."
+mchw_exp_info: "Это опыт до получения следующего очка навыка. Опыт получается выполнением заданий и уничтожением транспорта других персонажей. Опыт за уничтожение транспорта получается в зависимости от пробега уничтоженного транспорта."
+mchw_list_perks_info: "Это список перков персонажа.  Что бы получить новый перк – нужно выбрать его у тренера в Библиотеке, имея при этом свободное очко перка."
+mchw_free_perks_info: "Это очки перков. 1 очко перка получается за каждый новый уровень персонажа."
+mchw_list_skills_info: "Это навыки персонажа. Навыки увеличиваются у тренера в Библиотеке, имея при этом свободные очки навыков."
+mchw_free_skills_info: "Это очки навыков. По мере роста опыта персонаж зарабатывает очки навыка, 10 за один уровень."
+mchw_pers_inv_info: "Это рюкзак персонажа. Вещи в инвентаре сохраняются даже если был потерян транспорт. Сюда помещаются квестовые предметы и другие уникальные предметы, влияющие на персонажа."
+mchw_pers_effect_info: "Это список положительных и отрицательных эффектов, влияющих на персонажа в данный момент."
+mchw_balance_info: "Ваш электронный счет в системе Нукойл: 1 нукойн равен 1 литру топлива."
+
+"mchw_perks_title": "Not available"
+"mchw_perks_description": "Perks are not available in this game mode."
+
+# Шаблон Окно инвентаря
+"iiw_all": "All"
+"iiw_cargo": "Cargo"
+"iiw_ammo": "Ammo"
+"iiw_active": "Activate"
+
+# inventory_container_window
+"icw_you_inv": "Your inventory"
+"icw_container": "Container"
+"icw_take_all": "Take all"
+
+# inventory_barter
+"ib_you_inv": "Your inventory"
+"ib_you_balance": "Your account"
+"ib_Ok": "Confirm"
+"ib_Cancel": "Cancel"
+"ib_table": "Exchange table"
+"ib_summ": "Amount to be transferred"
+"ib_summ_2": "Partner amount"
+
+# Заглушка быстрой игры quick_mode_plug
+"quick_mode_plug_1": "Function is disabled in «Quick Fight» mode"
+"quick_mode_plug_2": "Log in and start a full game."
