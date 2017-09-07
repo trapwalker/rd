@@ -16,11 +16,15 @@
             margin-top: 20px;
         }
     </style>
-
-
-{#    <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>#}
-    <script>window.$ = window.jQuery = require('jquery');</script>
-
+{#    <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>#}
+    <script>
+        window.nodeRequire = require;
+        delete window.require;
+        delete window.exports;
+        delete window.module;
+    </script>
+    <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
+    <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
 </head>
 
 <body>
@@ -45,8 +49,6 @@
     </div>
 </div>
 {% end %}
-
-
 </body>
 
 <script>

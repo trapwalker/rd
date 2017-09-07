@@ -34,18 +34,16 @@ let mainWindow;
 //}
 
 function createWindow() {
-    //mainWindow = new BrowserWindow({width: 1200, height: 800, frame: false});
-    //mainWindow.setMenu(null);
-    mainWindow = new BrowserWindow({width: 1200, height: 800});
-
+    mainWindow = new BrowserWindow();
+    mainWindow.setMenu(null);
+    mainWindow.maximize();
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
 
-
-    //mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         //save_cookies_on_exit();

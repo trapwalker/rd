@@ -38,7 +38,6 @@ class SiteMainHandler(BaseSiteHandler):
 class SiteMainHandlerElectron(BaseSiteHandler):
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
-        # Подготовка списка новостей
         if self.get_argument("mode", "") == "test":
             self.finish("OK")
         else:
