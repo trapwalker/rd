@@ -7,7 +7,7 @@
         {% if v is not None %}
             {% set view = v.get_view(car.node_hash()) %}
             {% if view is not None %}
-            <div class="car-info-block-picture" style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(view.side.link))) }} ) no-repeat center;
+            <div class="car-info-block-picture-tuner" style="background: url({{ static_mobile_link_repr(static_url(static_world_link_repr(view.side.link))) }} ) no-repeat center;
                     z-index: {{ view.side.z_index }}"></div>
             {% end %}
         {% end %}

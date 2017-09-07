@@ -7,7 +7,10 @@ from sublayers_server.model.registry_me.classes.item import ArmorerItem, Item
 from sublayers_server.model.registry_me.tree import (
     StringField, FloatField, ListField,
     RegistryLinkField, EmbeddedNodeField,
+    LocalizedString,
 )
+
+from tornado.template import Template
 
 
 class RocketLauncher(ArmorerItem):
@@ -32,20 +35,21 @@ class Cannon(Weapon):
     area_dmg = FloatField(caption=u'Урон за выстрел')
     time_recharge = FloatField(caption=u'Время перезарядки (с)')
 
-    def html_description(self):
-        # TODO: ##LOCALIZATION
-        weight = u'Не указан'
-        if self.weight_class == 1: weight = u'Легкий'
-        elif self.weight_class == 2: weight = u'Средний'
-        elif self.weight_class == 3: weight = u'Тяжелый'
-        return (u'<div class="description-line left-align small">Класс:</div><div class="description-line right-align small">{}</div>'.format(weight) +
-                u'<div class="description-line left-align">Урон:</div><div class="description-line right-align">{}</div>'.format(self.dmg) +
-                u'<div class="description-line left-align">Перезараядка:</div><div class="description-line right-align">{} с</div>'.format(self.time_recharge) +
-                u'<div class="description-line left-align small">Дальность:</div><div class="description-line right-align small">{} м</div>'.format(int(self.radius)) +
-                u'<div class="description-line left-align small">Сектор:</div><div class="description-line right-align small">{}°</div>'.format(int(self.width)) +
-                u'<div class="description-line left-align">Пробитие:</div><div class="description-line right-align">{}</div>'.format(int(self.power_penetration)) +
-                u'<div class="description-line left-align small">Снаряд:</div><div class="description-line right-align small">{}</div>'.format(self.ammo.doc)
-                )
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        <div class="description-line left-align small">{{ _('w__weight_class') }}:</div><div class="description-line right-align small">
+            {{ {
+                1: _('w__weight_class__light'),
+                2: _('w__weight_class__middle'),
+                3: _('w__weight_class__heavy'),
+            }.get(this.weight_class, _('w__weight_class__undefined')) }}
+        </div>
+        <div class="description-line left-align">{{ _('w__damage') }}:</div><div class="description-line right-align">{{ this.dmg }}</div>
+        <div class="description-line left-align">{{ _('w__time_recharge') }}:</div><div class="description-line right-align">{{ this.time_recharge }} s</div>
+        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.radius) }} m</div>
+        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.width) }}°</div>
+        <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:0f}'.format(this.power_penetration) }}</div>
+        <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.doc) }}</div>
+    """, whitespace='oneline')
 
 
 class MachineGun(Weapon):
@@ -53,16 +57,17 @@ class MachineGun(Weapon):
     dps = FloatField(caption=u'Урон в секунду')
     animation_tracer_rate = FloatField(caption=u'Количество трассеров отрисовываемых в секунду')
 
-    def html_description(self):
-        weight = u'Не указан'
-        if self.weight_class == 1: weight = u'Легкий'
-        elif self.weight_class == 2: weight = u'Средний'
-        elif self.weight_class == 3: weight = u'Тяжелый'
-        return (u'<div class="description-line left-align small">Класс:</div><div class="description-line right-align small">{}</div>'.format(weight) +
-                u'<div class="description-line left-align">Урон в секунду:</div><div class="description-line right-align">{}</div>'.format(self.dps) +
-                u'<div class="description-line left-align small">Дальность:</div><div class="description-line right-align small">{} м</div>'.format(int(self.radius)) +
-                u'<div class="description-line left-align small">Сектор:</div><div class="description-line right-align small">{}°</div>'.format(int(self.width)) +
-                u'<div class="description-line left-align">Пробитие:</div><div class="description-line right-align">{}</div>'.format(int(self.power_penetration)) +
-                u'<div class="description-line left-align small">Снаряд:</div><div class="description-line right-align small">{}</div>'.format(self.ammo.doc)
-                )
-
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        <div class="description-line left-align small">{{ _('w__weight_class') }}:</div><div class="description-line right-align small">
+            {{ {
+                1: _('w__weight_class__light'),
+                2: _('w__weight_class__middle'),
+                3: _('w__weight_class__heavy'),
+            }.get(this.weight_class, _('w__weight_class__undefined')) }}
+        </div>
+        <div class="description-line left-align">{{ _('w__dps') }}:</div><div class="description-line right-align">{{ this.dps }}</div>
+        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.radius) }} m</div>
+        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.width) }}°</div>
+        <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:0f}'.format(this.power_penetration) }}</div>
+        <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.doc) }}</div>
+    """, whitespace='oneline')

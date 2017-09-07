@@ -75,7 +75,7 @@ class Perk(Node):
 
     HTML_DESCRIPTION_TEMPLATE = Template(u"""
         <br>
-        {% for param in perk.PUBLIC_PARAMS %}
+        {% for param in thisperk.PUBLIC_PARAMS %}
             {% set v = getattr(this, param, None) %}
             {% if v %}                
                 <div class="mechanic-description-line left-align">{{ _('pht__' + param) }}: {{ v }}</div>                
