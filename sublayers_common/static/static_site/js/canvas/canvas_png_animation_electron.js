@@ -11,6 +11,8 @@ var ECanvasChipAnimation = (function () {
         this.offset_x = 200;
         this.offset_y = 105;
 
+        $('#RDSiteWReg3').append('<canvas id="chip-canvas" class="canvas-property"></canvas>');
+
         this.width = $('.content-block').width();
         this.height = $('.content-block').height();
 
