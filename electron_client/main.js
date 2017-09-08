@@ -24,12 +24,12 @@ var mainWindow;
 //// })
 //}
 
-function getAllCookies() {
-   session.defaultSession.cookies.get({name: "server_host"}, (error, cookies) => {
-       // Cookies can be accessed here using cookies variable
-       console.log(cookies);
-   });
-}
+// function getAllCookies() {
+//    session.defaultSession.cookies.get({name: "server_host"}, (error, cookies) => {
+//        // Cookies can be accessed here using cookies variable
+//        console.log(cookies);
+//    });
+// }
 
 function createWindow() {
     mainWindow = new BrowserWindow({width: 1000, height: 700});
@@ -54,7 +54,7 @@ function createWindow() {
 
     mainWindow.webContents.openDevTools();
 
-    getAllCookies();
+    // getAllCookies();
     // var args = process.argv.slice(2);
     // args.forEach(function (elem) {
     //     var aa = elem.split('=');

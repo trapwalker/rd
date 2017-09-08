@@ -40,17 +40,9 @@
                 registration_status = 'not_register';
                 if(window.__electron_mode) {
                     //EmitClickBtnStart();
-                    require('electron').remote.session.defaultSession.cookies.set(
-                        {
-                            url: window.location.hostname,
-                            name: "server_host",
-                            value: ""
-                        },
-                        function () {
-                            var c = require('electron').remote.getCurrentWebContents();
-                            if (c && c.canGoBack())
-                                c.goToIndex(0);
-                    });
+                    var c = require('electron').remote.getCurrentWebContents();
+                    if (c && c.canGoBack())
+                        c.goToIndex(0);
                 }
 
                 else

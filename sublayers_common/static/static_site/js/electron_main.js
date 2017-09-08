@@ -38,7 +38,6 @@ function centered_window() {
         $('.content-block').css('padding-top', (all_height - window_height) / 2 - 20 + 'px');
     else
         $('.content-block').css('padding-top', '50px');
-    console.log(all_height, window_height);
 }
 
 // Инициализация всего и вся

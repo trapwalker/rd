@@ -116,17 +116,23 @@
 
     $(document).ready(function () {
         require('electron').remote.session.defaultSession.cookies.get(
-            {name: "server_host"},
+            {},
             function(error, cookies) {
                 if (cookies.length) {
                     var address = null;
                     for (var ki = 0; ki < cookies.length && !address; ki++) {
                         var k = cookies[ki];
-                        if (k.value)
+                        if (k.name == "server_host" && k.value) {
                             for (var i = 0; i < servers.length && !address; i++) {
-                                if (servers[i].address.indexOf(k.domain) >= 0)
-                                    address = servers[i].address;
+                                if (servers[i].address.indexOf(k.domain) >= 0) {
+                                    // Найти хоть одну куку - юзера для этого домена
+                                    for (var ui = 0; ui < cookies.length && !address; ui++) {
+                                        if (cookies[ui].name == "user" && cookies[ui].domain == k.domain)
+                                            address = servers[i].address;
+                                    }
+                                }
                             }
+                        }
                     }
                     if (address)
                         $.ajax({
@@ -135,16 +141,8 @@
                             data: {},
                             timeout: max_timeout,
                             success: function (data) {
-                                if (data == "OK") {
-                                    require('electron').remote.session.defaultSession.cookies.get(
-                                        {name: "user"},
-                                        function (error, cookies) {
-                                            if(cookies.length)
-                                                window.location = address + '?mode=electron';
-                                            else
-                                                show_server_list();
-                                        });
-                                }
+                                if (data == "OK")
+                                    window.location = address + '?mode=electron';
                                 else
                                     show_server_list();
                             },
