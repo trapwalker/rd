@@ -32,7 +32,7 @@ var mainWindow;
 // }
 
 function createWindow() {
-    mainWindow = new BrowserWindow({width: 1000, height: 700});
+    mainWindow = new BrowserWindow({width: 1020, height: 740, minWidth: 1020, minHeight: 740, backgroundColor: "#030f00", darkTheme: true});
     mainWindow.setMenu(null);
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
