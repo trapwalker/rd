@@ -1,11 +1,3 @@
-html, body {
-    height: 100%;
-}
-
-html {
-    height: 100%;
-}
-
 .text-blur {
     text-shadow: 0px 0px 0px #00ff00;
 }
@@ -21,23 +13,22 @@ html {
 }
 
 body {
-    min-height: 658px;
-    min-width: 1150px;
+    min-height: 550px;
+    min-width: 950px;
     margin: 0;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    cursor: url('/static/img/cursors/main.png'), default;
+    cursor: url(/static/img/cursors/main.png), default;
     color: #00ff00;
     font-family: FreePixel;
     font-weight: bold;
     text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
     letter-spacing: 2px;
-    background-color: #030f00; /*#191f2f; #030f00; */
-    background-repeat: repeat-x;
-    background-attachment: fixed;
-    background-position: top center;
+    background-color: #030f00;
+    box-sizing: border-box;
+    padding: 50px 0 0 0;
 }
 
 
@@ -69,7 +60,7 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     position: relative;
     width: 716px;
     height: 438px;
-    margin: 50px auto;
+    margin: 0px auto;
     box-sizing: border-box;
     padding: 2px;
 }
