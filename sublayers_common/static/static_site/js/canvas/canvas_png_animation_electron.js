@@ -8,8 +8,16 @@ var ECanvasChipAnimation = (function () {
         this.frame_width = 515; // размер одного кадра
         this.start_time = 0;
         this.next_random_delay = 3000;
-        this.offset_x = 0;
-        this.offset_y = 0;
+        this.offset_x = 200;
+        this.offset_y = 105;
+
+        this.width = $('.content-block').width();
+        this.height = $('.content-block').height();
+
+        this.canvas = document.getElementById("chip-canvas");
+        this.context = this.canvas.getContext("2d");
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
 
         if (canvasManager) canvasManager.add_obj(this, 80);
     }
@@ -27,24 +35,10 @@ var ECanvasChipAnimation = (function () {
         return frame % this.frame_count;
     };
 
-    ECanvasChipAnimation.prototype._set_offsets = function () {
-        if (canvasManager.screen_size === 'big') {
-            this.offset_x = 200;
-            this.offset_y = 105;
-        }
-        else {
-            this.offset_x = 95;
-            this.offset_y = 60;
-        }
-    };
-
-    ECanvasChipAnimation.prototype.resize_window = function () {
-        this._set_offsets();
-    };
+    ECanvasChipAnimation.prototype.resize_window = function () {};
 
     ECanvasChipAnimation.prototype.start = function () {
         this.start_time = timeManager.getTime();
-        this._set_offsets();
         return this;
     };
 
@@ -53,12 +47,16 @@ var ECanvasChipAnimation = (function () {
     };
 
     ECanvasChipAnimation.prototype.redraw = function (ctx, time) {
-        if (! this.start_time) return;
-        ctx.save();
+        if (! this.start_time) {
+            this.context.clearRect(0, 0, this.width, this.height);
+            return;
+        }
+        this.context.clearRect(0, 0, this.width, this.height);
+        this.context.save();
         var frame = this._get_frame_num(time);
-        ctx.drawImage(this.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
+        this.context.drawImage(this.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
             this.offset_x, this.offset_y, this.frame_width, this.frame_height);
-        ctx.restore();
+        this.context.restore();
     };
 
     return ECanvasChipAnimation

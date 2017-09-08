@@ -17,7 +17,6 @@
 
     <meta name="application-name" content="Road Dogs">
 
-
     <style>
         @font-face {
             font-family: Nouveau_IBM;
@@ -37,19 +36,15 @@
 
     <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_main.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/electron/car_represent.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_reg.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_reg_1.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_reg_2.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_reg_3.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg_1.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg_2.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg_3.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_personal_info.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_quick_game.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_news.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_ratings.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('locale/site/css/locale_{}.css'.format(user_lang)) }}"/>
 
-
     <script>window.$ = window.jQuery = require('jquery');</script>
-
 
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/color.js') }}"></script>
     <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
@@ -69,13 +64,11 @@
     <script src="{{ static_url('static_site/js/canvas/canvas_line.js') }}"></script>
     <script src="{{ static_url('static_site/js/canvas/canvas_rippling.js') }}"></script>
     <script src="{{ static_url('static_site/js/canvas/canvas_blackout.js') }}"></script>
-    <script src="{{ static_url('static_site/js/canvas/canvas_png_animation.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_png_animation_electron.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/indicator_blink.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/text_blur_blink.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/glitch.js') }}"></script>
     <script src="{{ static_url('static_site/js/effects/change_back.js') }}"></script>
-
-
 
     <!-- Google analytics -->
     <script>
@@ -91,24 +84,28 @@
     </script>
     <!-- /Google analytics -->
 </head>
+
 <body>
-    <div class="site-sound-switch"></div>
-    <!-- Контент - окна -->
-    <div class="content-block">
-        <!--Окно регистрации-->
-        {% include 'site_window_reg.html' %}
-        {% include 'site_window_reg_1.html' %}
-        {% include 'site_window_reg_2.html' %}
-        {% include 'site_window_reg_3.html' %}
-        <!--Личный кабинет-->
-        {% include 'site_personal_info.html' %}
+    <div class="shift-content-block">
+        <div class="site-sound-switch"></div>
+        <!-- Контент - окна -->
+        <div class="content-block">
+            <!--Окно регистрации-->
+            {% include 'site_window_reg.html' %}
+            {% include 'site_window_reg_1.html' %}
+            {% include 'site_window_reg_2.html' %}
+            {% include 'site_window_reg_3.html' %}
+            <!--Личный кабинет-->
+            {% include 'site_personal_info.html' %}
+            <canvas id="chip-canvas" class="canvas-property"></canvas>
+        </div>
+        <canvas id="content-canvas" class="canvas-property"></canvas>
+        {% if user_lang == 'ru' %}
+        <div class="copyright-block">Все права защищены. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('en');">English version</span>.</div>
+        {% else %}
+        <div class="copyright-block">All rights reserved. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('ru');">Русская версия</span>.</div>
+        {% end %}
     </div>
-    <canvas id="content-canvas"></canvas>
-    {% if user_lang == 'ru' %}
-    <div class="copyright-block">Все права защищены. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('en');">English version</span>.</div>
-    {% else %}
-    <div class="copyright-block">All rights reserved. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('ru');">Русская версия</span>.</div>
-    {% end %}
 </body>
 
 <script>
