@@ -9,6 +9,7 @@ from sublayers_common.site_locale import locale
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, IntField, FloatField, StringField, ListField, EmbeddedDocumentField, RegistryLinkField,
     EmbeddedNodeField, LocalizedStringField, LocalizedString,
+    MapField,
 )
 
 
@@ -19,6 +20,7 @@ class Item(Node):
     stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags={'client'})
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
+    condition = IntField(caption=u'Состояние (если есть) предмета по 5-бальной шкале. По умолчанию состояния не определено.')
 
     description = LocalizedStringField(caption=u'Расширенное описание предмета')
 
@@ -32,6 +34,43 @@ class Item(Node):
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags={'client'})
     activate_time = FloatField(caption=u'Время активации итема')
     activate_disable_comment = LocalizedStringField(caption=u'Опсиание условий активации', tags={'client'})
+
+    condition_map = MapField(
+        caption=u'Словарь состояний предмета (<числовой индекс>: <Локализуемый текст>)',
+        field=LocalizedStringField(), root_default=dict,
+    )
+
+    @property
+    def title_with_condition(self):
+        condition = self.condition
+        condition_map = self.condition_map
+        title = self.title
+
+        if not condition or not condition_map:
+            return title
+
+        condition_text = condition_map.get(condition, None)
+        if not condition_text:
+            return title
+
+        def merge(c, t):
+            return u'{} {}{}'.format(c, t[:1].lower(), t[1:])
+
+        return LocalizedString(  #TODO: ##FIX ##LOCALIZATION Смерджить все локали
+            en=merge(condition_text.en, title.en),
+            ru=merge(condition_text.ru, title.ru),
+        )
+
+    @property
+    def condition_text(self):
+        condition = self.condition
+        condition_map = self.condition_map
+        if not condition_map or not condition:
+            return LocalizedString(u'')
+
+        return condition_map.get(condition, LocalizedString(u''))
+
+
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
