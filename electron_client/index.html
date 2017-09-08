@@ -55,10 +55,7 @@
 </head>
 
 <body>
-    <div class="content-block">
-        <div class="window-reg-up-btn" onclick="gotoSite(event)" data-address="http://192.168.1.104">192.168.1.104</div>
-        <div class="window-reg-up-btn" onclick="gotoSite(event)" data-address="http://192.168.1.105">192.168.1.105</div>
-    </div>
+    <div class="content-block"></div>
 </body>
 
 <script>
@@ -94,11 +91,10 @@
              });
             setTimeout(function (args) { ping_server(server) }, 10000);
         }
-
     }
 
 
-    $(document).ready(function () {
+    function show_server_list() {
         var jq_servers = $(".content-block").first();
         jq_servers.empty();
 
@@ -115,10 +111,65 @@
         }
         if (!servers_added)
             jq_servers.append('<div class="window-reg-up-btn">Not found servers</div>');
+    }
+
+
+    $(document).ready(function () {
+        require('electron').remote.session.defaultSession.cookies.get(
+            {name: "server_host"},
+            function(error, cookies) {
+                if (cookies.length) {
+                    var address = null;
+                    for (var ki = 0; ki < cookies.length && !address; ki++) {
+                        var k = cookies[ki];
+                        if (k.value)
+                            for (var i = 0; i < servers.length && !address; i++) {
+                                if (servers[i].address.indexOf(k.domain) >= 0)
+                                    address = servers[i].address;
+                            }
+                    }
+                    if (address)
+                        $.ajax({
+                            url: address + '?mode=test',
+                            method: 'GET',
+                            data: {},
+                            timeout: max_timeout,
+                            success: function (data) {
+                                if (data == "OK") {
+                                    require('electron').remote.session.defaultSession.cookies.get(
+                                        {name: "user"},
+                                        function (error, cookies) {
+                                            if(cookies.length)
+                                                window.location = address + '?mode=electron';
+                                            else
+                                                show_server_list();
+                                        });
+                                }
+                                else
+                                    show_server_list();
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                show_server_list();
+                            }
+                        });
+                    else
+                        show_server_list();
+                }
+                else
+                    show_server_list();
+            });
     });
 
 
     function gotoSite(event) {
+        //var path = require('path');
+        //var url = require('url');
+        //require('electron').remote.getCurrentWindow().loadURL(url.format({
+        //                pathname: path.join(__dirname, 'index.html'),
+        //                protocol: 'file:',
+        //                slashes: true
+        //            }));
+        //return;
         var address = $(event.target).data("address");
         if (address) {
             $(event.target).addClass("not-access");
@@ -140,7 +191,6 @@
         else
             console.error("Not found addres: ", address);
     }
-
 </script>
 
 </html>

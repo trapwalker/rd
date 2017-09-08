@@ -10,7 +10,7 @@ const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+var mainWindow;
 
 
 //function save_cookies_on_exit() {
@@ -24,14 +24,12 @@ let mainWindow;
 //// })
 //}
 
-//function getAllCookies() {
-//    session.defaultSession.cookies.get({}, (error, cookies) => {
-//        // Cookies can be accessed here using cookies variable
-//        console.log("aaaaaaaaaa");
-//        console.log(error);
-//        console.log(cookies);
-//    });
-//}
+function getAllCookies() {
+   session.defaultSession.cookies.get({name: "server_host"}, (error, cookies) => {
+       // Cookies can be accessed here using cookies variable
+       console.log(cookies);
+   });
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow();
@@ -43,13 +41,31 @@ function createWindow() {
         slashes: true
     }));
 
-    mainWindow.webContents.openDevTools();
-
     mainWindow.on('closed', function () {
         //save_cookies_on_exit();
         mainWindow = null;
     });
-    //getAllCookies();
+
+
+    mainWindow.webContents.on('devtools-opened', function (event, input) {
+        // mainWindow.console.warn("aaaaaaaa");
+        // console.warn('WARNING!');
+    });
+
+
+    mainWindow.webContents.openDevTools();
+
+    getAllCookies();
+    // var args = process.argv.slice(2);
+    // args.forEach(function (elem) {
+    //     var aa = elem.split('=');
+    //     var a = aa[0].replace('--', "");
+    //     var b = aa.length > 1 ? aa[1] :null;
+    //     if (b)
+    //         console.log(a, '=', b);
+    //     else
+    //         console.log(a);
+    // });
 }
 
 app.on('ready', createWindow);

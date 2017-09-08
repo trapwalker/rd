@@ -36,6 +36,7 @@ class SiteMainHandler(BaseSiteHandler):
                 community_link_ru=options.community_link_ru,
             )
         elif mode == "electron":
+            self.set_cookie("server_host", "true", expires_days=180)
             self.render('electron_site.html', user=self.current_user, user_lang=self.user_lang,)
         else:
             self.finish("OK")
