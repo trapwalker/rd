@@ -31,6 +31,16 @@ function SetImageOnLoad(img, onLoadHandler) {
 }
 
 
+function centered_window() {
+    var all_height = $('.shift-content-block').height();
+    var window_height = $('.content-block').height();
+    if ((all_height - window_height) > 150)
+        $('.content-block').css('padding-top', (all_height - window_height) / 2 - 20 + 'px');
+    else
+        $('.content-block').css('padding-top', '50px');
+    console.log(all_height, window_height);
+}
+
 // Инициализация всего и вся
 function main() {
     // Начальная установка размера
@@ -113,9 +123,10 @@ function main() {
 
     init_site_sound();
 
+    centered_window();
+
     window.onresize = function () {
         canvasManager.resize_window();
-
         var new_size = window.matchMedia("screen and (min-width: 1367px) and (min-height: 801px)").matches ? '1080' : '768';
         var old_size = currentSiteSize;
         if (new_size != currentSiteSize) {
@@ -125,9 +136,8 @@ function main() {
             if (changeBackFrameEffect)
                 changeBackFrameEffect.change_site_size(old_size, new_size);
         }
-
+        centered_window();
     };
-
 
     // Клики на всякие кнопки внутри монитора
     // Hover

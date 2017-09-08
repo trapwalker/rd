@@ -32,9 +32,8 @@ function getAllCookies() {
 }
 
 function createWindow() {
-    mainWindow = new BrowserWindow();
+    mainWindow = new BrowserWindow({width: 1000, height: 700});
     mainWindow.setMenu(null);
-    //mainWindow.maximize();
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
