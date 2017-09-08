@@ -46,6 +46,7 @@
             background-color: #777777;
             color: whitesmoke;
             border-color: #444444;
+            pointer-events: none;
         }
 
     </style>
@@ -61,6 +62,62 @@
 </body>
 
 <script>
+
+    var debug = true; // todo: Забрать из настроек клиента
+    var servers_added = 0;
+    var max_timeout = 3000;
+
+    var servers = [
+        {name: "192.168.1.104", address: "http://192.168.1.104", debug: true},
+        {name: "192.168.1.105", address: "http://192.168.1.105", debug: true},
+        {name: "Road Dogs RU", address: "https://roaddogs.ru", debug: false},
+        {name: "Road Dogs Online", address: "https://roaddogs.online", debug: false}
+    ];
+
+
+    function ping_server(server) {
+        // todo: Замерять пинг до серверов
+        var address = server.address;
+        if (address) {
+            $.ajax({
+                url: address + '?mode=test',
+                method: 'GET',
+                data: {},
+                timeout: max_timeout,
+                success: function (data) {
+                    if (data != "OK") return;
+                    if (server.jq_div) server.jq_div.removeClass("not-access")
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (server.jq_div) server.jq_div.addClass("not-access");
+                }
+             });
+            setTimeout(function (args) { ping_server(server) }, 10000);
+        }
+
+    }
+
+
+    $(document).ready(function () {
+        var jq_servers = $(".content-block").first();
+        jq_servers.empty();
+
+        for (var i = 0; i < servers.length; i++) {
+            var server = servers[i];
+            if (!server.debug || debug) {
+                server.jq_div = $('<div class="window-reg-up-btn not-access" onclick="gotoSite(event)" ' +
+                    'data-address="' + server.address + '">' + server.name + '</div>');
+                jq_servers.append(server.jq_div);
+
+                servers_added++;
+                ping_server(server);
+            }
+        }
+        if (!servers_added)
+            jq_servers.append('<div class="window-reg-up-btn">Not found servers</div>');
+    });
+
+
     function gotoSite(event) {
         var address = $(event.target).data("address");
         if (address) {
