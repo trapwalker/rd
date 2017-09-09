@@ -377,7 +377,13 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
     def get(self):
         code = self.get_argument('code', False)
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/google")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/google",
+            mode="?mode=electron" if electron else "",
+        )
 
         if not self.settings.get('google_oauth', None):
             self.send_error(status_code=501)
@@ -394,7 +400,10 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             cookie = self._on_get_user_info(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
@@ -432,7 +441,13 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
     def get(self):
         code = self.get_argument('code', False)
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/vk")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/vk",
+            mode="?mode=electron" if electron else "",
+        )
 
         if not self.settings.get(self._OAUTH_SETTINGS_KEY, None):
             self.send_error(status_code=501)
@@ -463,7 +478,10 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
             self.clear_cookie("action")
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
@@ -497,7 +515,13 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
     @tornado.gen.coroutine
     def get(self):
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/twitter")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/twitter",
+            mode="?mode=electron" if electron else "",
+        )
 
         if not self.settings.get('twitter_consumer_key', None) or not self.settings.get('twitter_consumer_secret', None):
             self.send_error(status_code=501)
@@ -508,7 +532,10 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
             cookie = self._on_get_user_info(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
@@ -539,7 +566,13 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
             self.send_error(status_code=501)
             return
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/facebook")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/facebook",
+            mode="?mode=electron" if electron else "",
+        )
 
         code = self.get_argument("code", False)
         if code:
@@ -551,10 +584,12 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
             cookie = self._on_get_user_info_fb(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
-
         else:
             yield self.authorize_redirect(
                 redirect_uri=redirect_uri,
