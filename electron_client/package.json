@@ -5,14 +5,17 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build"
+    "build": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build",
+    "rebuild": "electron-rebuild -f -w greenworks"
   },
   "dependencies": {
-    "jquery": "^3.2.1",
-    "electron-config": "^1.0.0"
+    "electron-config": "^1.0.0",
+    "greenworks": "git+https://github.com/greenheartgames/greenworks.git",
+    "jquery": "^3.2.1"
   },
   "devDependencies": {
     "electron": "^1.7.6",
-    "electron-config": "^1.0.0"
+    "electron-config": "^1.0.0",
+    "electron-rebuild": "^1.6.0"
   }
 }
