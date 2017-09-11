@@ -54,6 +54,67 @@ function createWindow() {
 
     mainWindow.webContents.openDevTools();
 
+
+    var greenworks;
+    try {
+        // if greenworks is installed in a node_modules folder, this will work
+        greenworks = require('greenworks');
+    } catch (e) {
+        greenworks = require('../../greenworks');
+    }
+    if (!greenworks) {
+        console.log('Greenworks not support for platform');
+    } else {
+        if (!greenworks.initAPI()) {
+            console.log('Error on initializing steam API.');
+        } else {
+            console.log('Steam API initialized successfully.');
+
+            var user_info = greenworks.getSteamId();
+            console.log(user_info && user_info.accountId);
+            var lang = greenworks.getCurrentGameLanguage();
+            console.log(lang);
+
+            // greenworks.getAuthSessionTicket(
+            //     function (ticket) {
+            //         console.log("ticket: " + ticket.toString('hex'));
+            //         var key = new Buffer("88EEC1766D1014779E214417719AB02D");
+            //         if (key.length != greenworks.EncryptedAppTicketSymmetricKeyLength)
+            //             console.log("key.length = ", key.length, '   but need = ', greenworks.EncryptedAppTicketSymmetricKeyLength);
+            //         var decrypted_app_ticket = greenworks.decryptAppTicket(ticket.toString('hex'), key);
+            //         // console.log(greenworks.isTicketForApp(ticket, greenworks.getAppId()));
+            //         // console.log(greenworks.getTicketSteamId(ticket));
+            //     },
+            //     function (err) {
+            //         console.log(err);
+            //         throw err;
+            //     }
+            // );
+
+            // greenworks.getEncryptedAppTicket('user', function (ticket) {
+            //     console.log("ticket: " + ticket.toString('hex'));
+            //     // Specify the secret key.
+            //     var key = new Buffer("88EEC1766D1014779E214417719AB02D");
+            //     // TODO: you must initialize Buffer key with the secret key of your game here,
+            //     // e.g. key = new Buffer([0x0a, ..., 0x0b]).
+            //     if (key.length != greenworks.EncryptedAppTicketSymmetricKeyLength)
+            //         console.log("key.length = ", key.length, '   but need = ', greenworks.EncryptedAppTicketSymmetricKeyLength);
+            //     var decrypted_app_ticket = greenworks.decryptAppTicket(ticket, key);
+            //     if (decrypted_app_ticket) {
+            //         console.log(greenworks.isTicketForApp(decrypted_app_ticket,
+            //             greenworks.getAppId()));
+            //         console.log(greenworks.getTicketAppId(decrypted_app_ticket));
+            //         console.log(greenworks.getTicketSteamId(decrypted_app_ticket));
+            //         console.log(greenworks.getTicketIssueTime(decrypted_app_ticket));
+            //     }
+            // }, function (err) {
+            //     console.log(err);
+            //     throw err;
+            // });
+
+        }
+    }
+
     // var args = process.argv.slice(2);
     // args.forEach(function (elem) {
     //     var aa = elem.split('=');
