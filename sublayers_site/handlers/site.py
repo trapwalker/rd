@@ -48,3 +48,26 @@ class SitePingHandler(tornado.web.RequestHandler):
         self.finish("OK")
 
 
+class SiteCheckAuthId(tornado.web.RequestHandler):
+    def get(self):
+        social = self.get_argument("social", "")
+        uid = self.get_argument("uid", "")
+        if social and uid:
+            if social == "steam":
+                user = User.get_by_steam_id(uid=uid)
+            elif social == "vk":
+                user = User.get_by_vk_id(uid=uid)
+            elif social == "fb":
+                user = User.get_by_fb_id(uid=uid)
+            elif social == "twitter":
+                user = User.get_by_twitter_id(uid=uid)
+            else:
+                self.send_error(415, reason="Social type not supported")
+                return
+            if user:
+                self.finish(dict(uid=str(user.pk)))
+            else:
+                self.finish(dict(uid=""))
+        else:
+            self.send_error(415, reason="Bad arguments")
+
