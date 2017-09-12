@@ -49,14 +49,14 @@ class Item(Node):
         if not condition or not condition_map:
             return title
 
-        condition_text = condition_map.get(condition, None)
+        condition_text = condition_map.get(str(condition), None)
         if not condition_text:
             return title
 
         def merge(c, t):
             return u'{} {}{}'.format(c, t[:1].lower(), t[1:])
 
-        return LocalizedString(  #TODO: ##FIX ##LOCALIZATION Смерджить все локали
+        return LocalizedString(  #TODO: ##FIX ##LOCALIZATION Смерджить все возможные локали
             en=merge(condition_text.en, title.en),
             ru=merge(condition_text.ru, title.ru),
         )
@@ -69,8 +69,6 @@ class Item(Node):
             return LocalizedString(u'')
 
         return condition_map.get(condition, LocalizedString(u''))
-
-
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
@@ -114,6 +112,7 @@ class Item(Node):
         d.update(
             ids=self.ids(),
             description=self.html_description,
+            title=self.title_with_condition,
         )
         return d
 
