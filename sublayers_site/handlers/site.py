@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_site.handlers.base_site import BaseSiteHandler
+import tornado.web
 
 from tornado.options import options
 from sublayers_common.user_profile import User
@@ -40,4 +41,10 @@ class SiteMainHandler(BaseSiteHandler):
             self.render('electron_site.html', user=self.current_user, user_lang=self.user_lang,)
         else:
             self.finish("OK")
+
+
+class SitePingHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.finish("OK")
+
 
