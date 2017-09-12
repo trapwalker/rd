@@ -13,7 +13,7 @@ import tornado.gen
 from tornado.web import RequestHandler, HTTPError
 from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin, FacebookGraphMixin, AuthError
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPClient
+from tornado.httpclient import HTTPClient, AsyncHTTPClient, HTTPError
 import json
 import hashlib
 import urllib
@@ -370,6 +370,61 @@ class SetForumUserAuth(StandardLoginHandler):
             self.finish("OK")
         else:
             self.finish("Not auth")
+
+
+class SteamLoginHandler(RequestHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        ticket = self.get_argument('ticket', False)
+        if ticket and self.settings.get("steam_auth", None):
+            http_client = AsyncHTTPClient()
+            params = {
+                "ticket": ticket,
+                "key": self.settings["steam_auth"]["key"],
+                "appid": self.settings["steam_auth"]["appid"],
+            }
+            try:
+                response = yield http_client.fetch(url_concat("https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/", params),
+                                             method="GET")
+                response = json.loads(response.body)
+                response = response and response.get("response", None)
+                params = response and response.get("params", None)
+                if params and params.get("result", None) == "OK" and params.get("steamid", None):
+                    user_steamid = params["steamid"]
+                    print 'User SteamID: {}'.format(user_steamid)
+                    # todo: поискать в базе, если нет, то зарегистрировать и перекинуть на ввод никнейма
+                    cookie = self._on_get_user_info(user_steamid)
+                    if cookie is not None:
+                        self.set_secure_cookie("user", cookie)
+                        # info: Нельзя с авторизацией стим играть в браузере. Поэтому только редирект в клиент-версию
+                        self.redirect("/?mode=electron")
+                    else:
+                        self.redirect("/login?msg=Ошибка%20авторизации")
+                    return
+
+            except HTTPError as e:  # HTTPError is raised for non-200 responses; the response can be found in e.response
+                print("Error: " + str(e))
+            except Exception as e:   # Other errors are possible, such as IOError.
+                print("Error: " + str(e))
+            http_client.close()
+
+        # todo: self.send_error(5XX) или 4XX
+        self.finish('Error')
+
+    def _on_get_user_info(self, user):
+        steam_id = user
+        if steam_id:
+            profile_user = User.get_by_steam_id(uid=steam_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(steam_id=steam_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with SteamID: {}'.format(steam_id))
+
+            # Авторизация
+            return str(profile_user.pk)
 
 
 class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):

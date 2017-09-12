@@ -54,7 +54,6 @@ function createWindow() {
 
     mainWindow.webContents.openDevTools();
 
-
     var greenworks;
     try {
         // if greenworks is installed in a node_modules folder, this will work
@@ -62,6 +61,7 @@ function createWindow() {
     } catch (e) {
         greenworks = require('../../greenworks');
     }
+
     if (!greenworks) {
         console.log('Greenworks not support for platform');
     } else {
@@ -71,47 +71,48 @@ function createWindow() {
             console.log('Steam API initialized successfully.');
 
             var user_info = greenworks.getSteamId();
-            console.log(user_info && user_info.accountId);
+            console.log(user_info);
             var lang = greenworks.getCurrentGameLanguage();
             console.log(lang);
 
-            // greenworks.getAuthSessionTicket(
-            //     function (ticket) {
-            //         console.log("ticket: " + ticket.toString('hex'));
-            //         var key = new Buffer("88EEC1766D1014779E214417719AB02D");
-            //         if (key.length != greenworks.EncryptedAppTicketSymmetricKeyLength)
-            //             console.log("key.length = ", key.length, '   but need = ', greenworks.EncryptedAppTicketSymmetricKeyLength);
-            //         var decrypted_app_ticket = greenworks.decryptAppTicket(ticket.toString('hex'), key);
-            //         // console.log(greenworks.isTicketForApp(ticket, greenworks.getAppId()));
-            //         // console.log(greenworks.getTicketSteamId(ticket));
-            //     },
-            //     function (err) {
-            //         console.log(err);
-            //         throw err;
-            //     }
-            // );
+            greenworks.getAuthSessionTicket(
+                function (ticket) {
+                    console.log("ticket: " + ticket.ticket.toString('hex'));
 
-            // greenworks.getEncryptedAppTicket('user', function (ticket) {
-            //     console.log("ticket: " + ticket.toString('hex'));
-            //     // Specify the secret key.
-            //     var key = new Buffer("88EEC1766D1014779E214417719AB02D");
-            //     // TODO: you must initialize Buffer key with the secret key of your game here,
-            //     // e.g. key = new Buffer([0x0a, ..., 0x0b]).
-            //     if (key.length != greenworks.EncryptedAppTicketSymmetricKeyLength)
-            //         console.log("key.length = ", key.length, '   but need = ', greenworks.EncryptedAppTicketSymmetricKeyLength);
-            //     var decrypted_app_ticket = greenworks.decryptAppTicket(ticket, key);
-            //     if (decrypted_app_ticket) {
-            //         console.log(greenworks.isTicketForApp(decrypted_app_ticket,
-            //             greenworks.getAppId()));
-            //         console.log(greenworks.getTicketAppId(decrypted_app_ticket));
-            //         console.log(greenworks.getTicketSteamId(decrypted_app_ticket));
-            //         console.log(greenworks.getTicketIssueTime(decrypted_app_ticket));
-            //     }
-            // }, function (err) {
-            //     console.log(err);
-            //     throw err;
-            // });
+                    var querystring = require('querystring');
+                    var http = require('http');
+                    var fs = require('fs');
 
+                    var req_data = querystring.stringify({
+                        'ticket': ticket.ticket.toString('hex')
+                    });
+
+                    var req_options = {
+                        host: 'localhost',
+                        port: '80',
+                        path: '/site_api/auth/steam',
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Length': Buffer.byteLength(req_data)
+                        }
+                    };
+
+                    var post_req = http.request(req_options, function (res) {
+                        res.setEncoding('utf8');
+                        res.on('data', function (chunk) {
+                            console.log('Response: ' + chunk);
+                        });
+                    });
+                    // post the data
+                    post_req.write(req_data);
+                    post_req.end();
+                },
+                function (err) {
+                    console.log(err);
+                    throw err;
+                }
+            );
         }
     }
 
