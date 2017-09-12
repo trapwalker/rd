@@ -71,42 +71,43 @@ function createWindow() {
             console.log('Steam API initialized successfully.');
 
             var user_info = greenworks.getSteamId();
-            console.log(user_info);
+            console.log(user_info && user_info.steamId);
             var lang = greenworks.getCurrentGameLanguage();
             console.log(lang);
 
             greenworks.getAuthSessionTicket(
                 function (ticket) {
                     console.log("ticket: " + ticket.ticket.toString('hex'));
+                    mainWindow._ticket_steam = ticket.ticket.toString('hex');
 
-                    var querystring = require('querystring');
-                    var http = require('http');
-                    var fs = require('fs');
-
-                    var req_data = querystring.stringify({
-                        'ticket': ticket.ticket.toString('hex')
-                    });
-
-                    var req_options = {
-                        host: 'localhost',
-                        port: '80',
-                        path: '/site_api/auth/steam',
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Content-Length': Buffer.byteLength(req_data)
-                        }
-                    };
-
-                    var post_req = http.request(req_options, function (res) {
-                        res.setEncoding('utf8');
-                        res.on('data', function (chunk) {
-                            console.log('Response: ' + chunk);
-                        });
-                    });
-                    // post the data
-                    post_req.write(req_data);
-                    post_req.end();
+                    // var querystring = require('querystring');
+                    // var http = require('http');
+                    // var fs = require('fs');
+                    //
+                    // var req_data = querystring.stringify({
+                    //     'ticket': ticket.ticket.toString('hex')
+                    // });
+                    //
+                    // var req_options = {
+                    //     host: 'localhost',
+                    //     port: '80',
+                    //     path: '/site_api/auth/steam',
+                    //     method: 'GET',
+                    //     headers: {
+                    //         'Content-Type': 'application/x-www-form-urlencoded',
+                    //         'Content-Length': Buffer.byteLength(req_data)
+                    //     }
+                    // };
+                    //
+                    // var post_req = http.request(req_options, function (res) {
+                    //     res.setEncoding('utf8');
+                    //     res.on('data', function (chunk) {
+                    //         console.log('Response: ' + chunk);
+                    //     });
+                    // });
+                    // // post the data
+                    // post_req.write(req_data);
+                    // post_req.end();
                 },
                 function (err) {
                     console.log(err);
