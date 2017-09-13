@@ -59,113 +59,52 @@
 </body>
 
 <script>
-
+    var start_ping_timeout = 5000;
+    var ping_timeout = 3000;
     var debug = true; // todo: Забрать из настроек клиента
     var servers_added = 0;
-    var max_timeout = 3000;
     var all_client_cookies = null;
 
     var servers = [
-        {name: "localhost", address: "http://localhost", debug: true},
-        {name: "192.168.1.104", address: "http://192.168.1.104", debug: true},
-        {name: "192.168.1.105", address: "http://192.168.1.105", debug: true},
-        {name: "Road Dogs RU", address: "https://roaddogs.ru", debug: false},
-        {name: "Road Dogs Online", address: "https://roaddogs.online", debug: false},
+        {name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "Road Dogs RU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
+        {name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
 
-
-    function get_average_ping_from_server(server) {
-        var pings = server.pings;
-        if (!pings || !pings.length) return 0;
-        var s = 0;
-        for (var i = 0; i < pings.length; i++)
-            s += pings[i];
-        return s / pings.length;
-    }
-
-
-    function get_server_with_best_ping() {
-        var ping = get_average_ping_from_server(servers[0]);
-        var server = servers[0];
-        for (var i = 1; i < servers.length; i++) {
-            var p = get_average_ping_from_server(servers[i]);
-            if (p < ping) {ping = p; server = servers[i]}
-        }
-        return ping > 0 && server;  // Если это не совсем недоступный сервер
-    }
-
-
+    // Рекурсивный зацикленный пинг серверов
     function ping_server(server) {
         // Замерять пинг до серверов
-        if (server.is_pinged) return;
-        server.is_pinger = true;
+        if (server.pings.length > 10) server.pings.shift();
         var t_start = new Date().time();
         var address = server.address;
         if (address) {
             $.ajax({
-                url: address + '?mode=test',
+                url: address + '/site_api/ping',
                 method: 'GET',
                 data: {},
-                timeout: max_timeout,
+                timeout: ping_timeout,
                 success: function (data) {
-                    if (data != "OK") return; // todo: убрать когда будет изменён адрес пинга сайта
                     if (server.jq_div) server.jq_div.removeClass("not-access");
-
                     var t_ping = new Date().time() - t_start;
-                    if (server.pings) server.pings.push(t_ping);
-                    else server.pings = [t_ping];
+                    server.active = true;
+                    server.pings.push(t_ping);
+                    server.average_ping = server.pings.reduce(function(a, b) {return a + b}, 0) / server.pings.length;
+                    ping_server(server)
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (server.jq_div) server.jq_div.addClass("not-access");
-
-                    var t_ping = new Date().time() - t_start;
-                    if (server.pings) server.pings.push(t_ping);
-                    else server.pings = [t_ping];
+                    server.active = false;
+                    server.pings = [];
+                    server.average_ping = 0;
+                    ping_server(server)
                 }
             });
-            setTimeout(function (args) {ping_server(server)}, 500);
         }
     }
 
-
-    function check_steam(){
-        var ticket = require('electron').remote.getCurrentWindow()._ticket_steam;
-        if (ticket) {
-            // 1 - Проверить куку "steam_registration" - Она отвечает за ПЕРВУЮ авторизацию этого КЛИЕНТА через стим
-            var steam_registration_cookie = null;
-            for (var i = 0; i < all_client_cookies.length && !steam_registration_cookie; i++)
-                if (all_client_cookies[i].name == "steam_registration_cookie")
-                    steam_registration_cookie = all_client_cookies[i];
-            if (steam_registration_cookie) {
-                show_server_list();
-                return;
-            }
-            // Пройти по всем серверам и поискать там аккаунт, если он 1, то редиректнуть на тот сервер, иначе выбор сервера
-            var greenworks;
-            try {
-                // if greenworks is installed in a node_modules folder, this will work
-                greenworks = require('greenworks');
-            } catch (e) {
-                greenworks = require('../../greenworks');
-            }
-            if (greenworks) {
-                 var user_info = greenworks.getSteamId();
-                 var user_steam_id = user_info && user_info.steamId;
-                 console.log(user_steam_id);
-                 // todo: спросить у всех серверов этот user_steam_id
-            }
-
-            // Найти минимальный пинг и зарегать там пользователя
-
-
-
-
-        } else {
-            show_server_list();
-        }
-    }
-
-
+    // Отображение кнопок серверов
     function show_server_list() {
         var jq_servers = $(".content-block").first();
         jq_servers.empty();
@@ -176,63 +115,101 @@
                 server.jq_div = $('<div class="window-reg-up-btn not-access" onclick="gotoSite(event)" ' +
                     'data-address="' + server.address + '">' + server.name + '</div>');
                 jq_servers.append(server.jq_div);
-
                 servers_added++;
-                ping_server(server);
             }
         }
         if (!servers_added)
             jq_servers.append('<div class="window-reg-up-btn">Not found servers</div>');
     }
 
+    function check_steam(){
+        // Выбор оптимального сервера (по пингу)
+        function get_optimal_server() {
+            var index = servers.reduce(function(acc, server, index, servers) {
+                if (!server.active || (server.pings.length < 5)) return acc;
+                return ((acc >= 0) && (servers[acc].average_ping < server.average_ping)) ? acc : index;
+            }, -1);
+            return index >= 0 ? servers[index] : null;
+        }
 
-    $(document).ready(function () {
+        var current_window = require('electron').remote.getCurrentWindow();
+        var ticket = current_window._ticket_steam;
+        var steam_id = current_window._steam_id;
 
-        require('electron').remote.session.defaultSession.cookies.get(
-            {},
-            function(error, cookies) {
-                all_client_cookies = cookies;
-                if (cookies.length) {
-                    var address = null;
-                    for (var ki = 0; ki < cookies.length && !address; ki++) {
-                        var k = cookies[ki];
-                        if (k.name == "server_host" && k.value) {
-                            for (var i = 0; i < servers.length && !address; i++) {
-                                if (servers[i].address.indexOf(k.domain) >= 0) {
-                                    // Найти хоть одну куку - юзера для этого домена
-                                    for (var ui = 0; ui < cookies.length && !address; ui++) {
-                                        if (cookies[ui].name == "user" && cookies[ui].domain == k.domain)
-                                            address = servers[i].address;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (address)
-                        $.ajax({
-                            url: address + '?mode=test',
-                            method: 'GET',
-                            data: {},
-                            timeout: max_timeout,
-                            success: function (data) {
-                                if (data == "OK")
-                                    window.location = address + '?mode=electron';
-                                else
-                                    check_steam();
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                check_steam();
-                            }
-                        });
-                    else
-                        check_steam();
-                }
-                else
-                    check_steam();
-            });
+        if (ticket && steam_id) {
+            // 1 - Проверить куку "steam_registration" - Она отвечает за ПЕРВУЮ авторизацию этого КЛИЕНТА через стим
+            var steam_registration_cookie = null;
+            for (var i = 0; i < all_client_cookies.length && !steam_registration_cookie; i++)
+                if (all_client_cookies[i].name == "steam_registration_cookie")
+                    steam_registration_cookie = all_client_cookies[i];
+            if (steam_registration_cookie) {
+                show_server_list();
+                return;
+            }
 
-        console.log(require('electron').remote.getCurrentWindow()._ticket_steam);
-    });
+            // Пройти по всем серверам и поискать там аккаунт, если он 1, то редиректнуть на тот сервер, иначе выбор сервера
+            // todo: спросить у всех серверов этот user_steam_id
+
+            // Найти минимальный пинг и зарегать там пользователя
+            var server = get_optimal_server();
+            if (server)
+                $.ajax({
+                    url: server.address + '/site_api/auth/steam',
+                    method: 'GET',
+                    data: { ticket: ticket },
+                    timeout: ping_timeout,
+                    success: function (data) {
+                        console.log(data);
+{#                        window.location = server.address + '?mode=electron'                        #}
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) { show_server_list() }
+                });
+            else
+                show_server_list();
+
+
+
+
+
+            // var querystring = require('querystring');
+            // var http = require('http');
+            // var fs = require('fs');
+            //
+            // var req_data = querystring.stringify({
+            //     'ticket': ticket.ticket.toString('hex')
+            // });
+            //
+            // var req_options = {
+            //     host: 'localhost',
+            //     port: '80',
+            //     path: '/site_api/auth/steam',
+            //     method: 'GET',
+            //     headers: {
+            //         'Content-Type': 'application/x-www-form-urlencoded',
+            //         'Content-Length': Buffer.byteLength(req_data)
+            //     }
+            // };
+            //
+            // var post_req = http.request(req_options, function (res) {
+            //     res.setEncoding('utf8');
+            //     res.on('data', function (chunk) {
+            //         console.log('Response: ' + chunk);
+            //     });
+            // });
+            // // post the data
+            // post_req.write(req_data);
+            // post_req.end();
+
+
+
+
+
+        } else {
+            show_server_list();
+        }
+    }
+
+
 
 
     function gotoSite(event) {
@@ -265,6 +242,57 @@
         else
             console.error("Not found addres: ", address);
     }
+
+    $(document).ready(function () {
+        // Запускаем пинг всех серверов
+        for (var i = 0; i < servers.length; i++)
+            ping_server(servers[i]);
+
+        // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
+        setTimeout(function() {
+            require('electron').remote.session.defaultSession.cookies.get({},
+                function(error, cookies) {
+                    all_client_cookies = cookies;
+                    if (cookies.length) {
+                        var address = null;
+                        for (var ki = 0; ki < cookies.length && !address; ki++) {
+                            var k = cookies[ki];
+                            if (k.name == "server_host" && k.value) {
+                                for (var i = 0; i < servers.length && !address; i++) {
+                                    if (servers[i].address.indexOf(k.domain) >= 0) {
+                                        // Найти хоть одну куку - юзера для этого домена
+                                        for (var ui = 0; ui < cookies.length && !address; ui++) {
+                                            if (cookies[ui].name == "user" && cookies[ui].domain == k.domain)
+                                                address = servers[i].address;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (address)
+                            $.ajax({
+                                url: address + '?mode=test',
+                                method: 'GET',
+                                data: {},
+                                timeout: max_timeout,
+                                success: function (data) {
+                                    if (data == "OK")
+                                        window.location = address + '?mode=electron';
+                                    else
+                                        check_steam();
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    check_steam();
+                                }
+                            });
+                        else
+                            check_steam();
+                    }
+                    else
+                        check_steam();
+            });
+        }, start_ping_timeout);
+    });
 </script>
 
 </html>
