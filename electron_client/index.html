@@ -78,6 +78,15 @@
         {name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
 
+
+    // Удаление всех куков (дебаг-функция)
+    function clear_all_cookie_electron() {
+        // Очистить куки
+        require('electron').remote.getCurrentWindow().webContents.session.clearStorageData([]);
+        // Считать все куки
+        require('electron').remote.session.defaultSession.cookies.get({}, function(error, cookies){console.log(cookies)});
+    }
+
     // Рекурсивный зацикленный пинг серверов
     function ping_server(server) {
         // Замерять пинг до серверов
@@ -228,8 +237,12 @@
                                     if (servers[i].address.indexOf(k.domain) >= 0) {
                                         // Найти хоть одну куку - юзера для этого домена
                                         for (var ui = 0; ui < cookies.length && !address; ui++) {
-                                            if (cookies[ui].name == "user" && cookies[ui].domain == k.domain)
-                                                address = servers[i].address;
+                                            if (cookies[ui].name == "user" && cookies[ui].domain == k.domain) {
+                                                // Проверить, а был ли этот пользователь на этом клиенте на этом домене
+                                                for (var si = 0; si < cookies.length && !address; si++)
+                                                    if (cookies[si].name == "steam_registration_cookie" && cookies[si].value == steam_id && cookies[si].domain == k.domain)
+                                                        address = servers[i].address;
+                                            }
                                         }
                                     }
                                 }
