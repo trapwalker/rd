@@ -396,7 +396,7 @@ class SteamLoginHandler(RequestHandler):
                     cookie = self._on_get_user_info(user_steamid)
                     if cookie is not None:
                         self.set_secure_cookie("user", cookie)
-                        self.set_cookie("steam_registration_cookie", "true", expires_days=365)
+                        self.set_cookie("steam_registration_cookie", user_steamid, expires_days=365)
                         # info: Нельзя с авторизацией через стим играть в браузере. Поэтому только для клиента
                         self.finish("OK")
                     else:
