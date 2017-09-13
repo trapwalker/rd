@@ -4,9 +4,10 @@
   "description": "Road Dogs Online Game Client",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build",
-    "rebuild": "electron-rebuild -f -w greenworks"
+    "start": "electron . --devtools",
+    "start-steam": "electron . --steam --devtools",
+    "build-win-64": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build",
+    "rebuild_greenworks": "electron-rebuild -f -w greenworks"
   },
   "dependencies": {
     "electron-config": "^1.0.0",

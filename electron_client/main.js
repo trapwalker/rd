@@ -48,53 +48,60 @@ function createWindow() {
     mainWindow.on('close', function () {config.set('winBounds', mainWindow.getBounds())});
     mainWindow.on('closed', function () {mainWindow = null;});
 
-    mainWindow.webContents.on('devtools-opened', function (event, input) {
-        // todo: написать как-то в консоль, чтобы юзер был осторожнее
+    // todo: написать как-то в консоль, чтобы юзер был осторожнее
+    //mainWindow.webContents.on('devtools-opened', function (event, input) {});
+
+    var command_line_args = {};
+
+    var args = process.argv.slice(2);
+    args.forEach(function (elem) {
+        var aa = elem.split('=');
+        var a = aa[0].replace('--', "");
+        var b = aa.length > 1 ? aa[1] : null;
+        if (b)
+            command_line_args[a] = b;
+        else
+            command_line_args[a] = true;
     });
 
-    mainWindow.webContents.openDevTools();
+    console.log(command_line_args);
 
-    var greenworks;
-    try {
-        // if greenworks is installed in a node_modules folder, this will work
-        greenworks = require('greenworks');
-    } catch (e) {
-        greenworks = require('../../greenworks');
-    }
+    if (command_line_args.devtools)
+        mainWindow.webContents.openDevTools();
 
-    if (!greenworks) {
-        console.log('Greenworks not support for platform');
-    } else {
-        if (!greenworks.initAPI()) {
-            console.log('Error on initializing steam API.');
+    if (command_line_args.steam) {
+        var greenworks;
+        try {
+            // if greenworks is installed in a node_modules folder, this will work
+            greenworks = require('greenworks');
+        } catch (e) {
+            greenworks = require('../../greenworks');
+        }
+
+        if (!greenworks) {
+            console.log('Greenworks not support for platform');
         } else {
-            console.log('Steam API initialized successfully.');
-            var user_info = greenworks.getSteamId();
-            mainWindow._steam_id = user_info && user_info.steamId;
+            if (!greenworks.initAPI()) {
+                console.log('Error on initializing steam API.');
+            } else {
+                console.log('Steam API initialized successfully.');
+                var user_info = greenworks.getSteamId();
+                mainWindow._steam_id = user_info && user_info.steamId;
 
-            greenworks.getAuthSessionTicket(
-                function (ticket) {
-                    console.log("ticket: " + ticket.ticket.toString('hex'));
-                    mainWindow._ticket_steam = ticket.ticket.toString('hex');
-                },
-                function (err) {
-                    console.log(err);
-                    throw err;
-                }
-            );
+                greenworks.getAuthSessionTicket(
+                    function (ticket) {
+                        //console.log("ticket: " + ticket.ticket.toString('hex'));
+                        mainWindow._ticket_steam = ticket.ticket.toString('hex');
+                    },
+                    function (err) {
+                        //console.log(err);
+                        throw err;
+                    }
+                );
+            }
         }
     }
 
-    // var args = process.argv.slice(2);
-    // args.forEach(function (elem) {
-    //     var aa = elem.split('=');
-    //     var a = aa[0].replace('--', "");
-    //     var b = aa.length > 1 ? aa[1] :null;
-    //     if (b)
-    //         console.log(a, '=', b);
-    //     else
-    //         console.log(a);
-    // });
 }
 
 app.on('ready', createWindow);
