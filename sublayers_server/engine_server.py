@@ -97,7 +97,7 @@ class Application(BaseApplication):
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
-        load_locale_objects(path='../sublayers_common/static/locale/game')
+        load_locale_objects('../sublayers_common/static/locale/game', options.world_path)
         self.init_handlers()
         self.clients = []
         self.chat = []  # todo: truncate chat history

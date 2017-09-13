@@ -97,7 +97,7 @@ class Application(BaseApplication):
 
         self.reg = get_global_registry(options.world_path, reload=options.reg_reload)
         self.news_manager = NewsManager()
-        load_locale_objects('../sublayers_common/static/locale/site')  # Загрузка всех локализаций
+        load_locale_objects('../sublayers_common/static/locale/site', options.world_path)  # Загрузка всех локализаций
 
         self.add_handlers(".*$", [  # todo: use tornado.web.URLSpec
             (r"/email_confirm", EmailConfirmHandler),

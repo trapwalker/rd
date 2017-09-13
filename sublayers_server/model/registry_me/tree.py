@@ -1113,7 +1113,13 @@ class Registry(Document):
             # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
             # todo: need to centralization of filtering
-            if not f.startswith('_') and not f.startswith('#') and os.path.isfile(p) and fnmatch(p, '*.yaml'):
+            if (
+                not f.startswith('_')
+                and not f.startswith('#')
+                and os.path.isfile(p)
+                and fnmatch(p, '*.yaml')
+                and not fnmatch(p, '*.lang.yaml')
+            ):
                 with open(p) as attr_file:
                     try:
                         d = yaml_tools.load(attr_file) or {}
