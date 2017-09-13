@@ -59,12 +59,16 @@
 </body>
 
 <script>
+    var current_window = require('electron').remote.getCurrentWindow();
+    var ticket = current_window._ticket_steam;
+    var steam_id = current_window._steam_id;
+
     var start_ping_timeout = 5000;
     var ping_timeout = 3000;
+    var re_ping_timeout = 300;
     var debug = true; // todo: Забрать из настроек клиента
     var servers_added = 0;
     var all_client_cookies = null;
-
     var servers = [
         {name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
         {name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
@@ -77,7 +81,7 @@
     function ping_server(server) {
         // Замерять пинг до серверов
         if (server.pings.length > 10) server.pings.shift();
-        var t_start = new Date().time();
+        var t_start = new Date().getTime();
         var address = server.address;
         if (address) {
             $.ajax({
@@ -87,18 +91,18 @@
                 timeout: ping_timeout,
                 success: function (data) {
                     if (server.jq_div) server.jq_div.removeClass("not-access");
-                    var t_ping = new Date().time() - t_start;
+                    var t_ping = new Date().getTime() - t_start;
                     server.active = true;
                     server.pings.push(t_ping);
                     server.average_ping = server.pings.reduce(function(a, b) {return a + b}, 0) / server.pings.length;
-                    ping_server(server)
+                    setTimeout(function(){ ping_server(server) }, re_ping_timeout);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (server.jq_div) server.jq_div.addClass("not-access");
                     server.active = false;
                     server.pings = [];
                     server.average_ping = 0;
-                    ping_server(server)
+                    setTimeout(function(){ ping_server(server) }, re_ping_timeout);
                 }
             });
         }
@@ -113,7 +117,7 @@
             var server = servers[i];
             if (!server.debug || debug) {
                 server.jq_div = $('<div class="window-reg-up-btn not-access" onclick="gotoSite(event)" ' +
-                    'data-address="' + server.address + '">' + server.name + '</div>');
+                    'data-index="' + i + '">' + server.name + '</div>');
                 jq_servers.append(server.jq_div);
                 servers_added++;
             }
@@ -132,9 +136,20 @@
             return index >= 0 ? servers[index] : null;
         }
 
-        var current_window = require('electron').remote.getCurrentWindow();
-        var ticket = current_window._ticket_steam;
-        var steam_id = current_window._steam_id;
+        // Найти минимальный пинг и зарегать там пользователя
+        function create_steam_account() {
+            var server = get_optimal_server();
+            if (server)
+                $.ajax({
+                    url: server.address + '/site_api/auth/steam',
+                    method: 'GET',
+                    data: { ticket: ticket },
+                    timeout: ping_timeout,
+                    success: function (data) { window.location = server.address + '?mode=electron'; },
+                    error: function (jqXHR, textStatus, errorThrown) { show_server_list() }
+                });
+            else show_server_list();
+        }
 
         if (ticket && steam_id) {
             // 1 - Проверить куку "steam_registration" - Она отвечает за ПЕРВУЮ авторизацию этого КЛИЕНТА через стим
@@ -147,100 +162,48 @@
                 return;
             }
 
-            // Пройти по всем серверам и поискать там аккаунт, если он 1, то редиректнуть на тот сервер, иначе выбор сервера
-            // todo: спросить у всех серверов этот user_steam_id
-
-            // Найти минимальный пинг и зарегать там пользователя
-            var server = get_optimal_server();
-            if (server)
+            // Пройти по всем серверам и поискать там аккаунт, если он 1, то редиректнуть на тот сервер
+            var steam_account_count = 0;
+            var last_server = null;
+            servers.forEach(function(server) {
+                if (!server.active) return;
                 $.ajax({
-                    url: server.address + '/site_api/auth/steam',
+                    url: server.address + '/site_api/user_check',
                     method: 'GET',
-                    data: { ticket: ticket },
+                    data: { social: 'steam', uid: steam_id },
                     timeout: ping_timeout,
                     success: function (data) {
-                        console.log(data);
-{#                        window.location = server.address + '?mode=electron'                        #}
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) { show_server_list() }
+                        if (data.uid) {
+                            steam_account_count++;
+                            last_server = server;
+                        }
+                    }
                 });
-            else
-                show_server_list();
-
-
-
-
-
-            // var querystring = require('querystring');
-            // var http = require('http');
-            // var fs = require('fs');
-            //
-            // var req_data = querystring.stringify({
-            //     'ticket': ticket.ticket.toString('hex')
-            // });
-            //
-            // var req_options = {
-            //     host: 'localhost',
-            //     port: '80',
-            //     path: '/site_api/auth/steam',
-            //     method: 'GET',
-            //     headers: {
-            //         'Content-Type': 'application/x-www-form-urlencoded',
-            //         'Content-Length': Buffer.byteLength(req_data)
-            //     }
-            // };
-            //
-            // var post_req = http.request(req_options, function (res) {
-            //     res.setEncoding('utf8');
-            //     res.on('data', function (chunk) {
-            //         console.log('Response: ' + chunk);
-            //     });
-            // });
-            // // post the data
-            // post_req.write(req_data);
-            // post_req.end();
-
-
-
-
-
-        } else {
-            show_server_list();
-        }
+            });
+            setTimeout(function() {
+                // Если у игрока "чистый" клиент и сервер на котором он раньше играл лежит, то тут ему создастся
+                // новый аккаунт, чтобы этого избежать надо юзать steam cloud
+                console.log(steam_account_count, last_server);
+                if (steam_account_count == 0) create_steam_account();
+                if (steam_account_count == 1) window.location = last_server.address + '?mode=electron';
+                if (steam_account_count > 1) show_server_list();
+            }, ping_timeout + 100);
+        } else show_server_list();
     }
 
-
-
-
     function gotoSite(event) {
-        //var path = require('path');
-        //var url = require('url');
-        //require('electron').remote.getCurrentWindow().loadURL(url.format({
-        //                pathname: path.join(__dirname, 'index.html'),
-        //                protocol: 'file:',
-        //                slashes: true
-        //            }));
-        //return;
-        var address = $(event.target).data("address");
-        if (address) {
-            $(event.target).addClass("not-access");
-            $.ajax({
-                url: address + '?mode=test',
-                method: 'GET',
-                data: {},
-                timeout: 5000,
-                success: function (data) {
-                    console.log("success: site worked:", data);
-                    window.location = address + '?mode=electron';
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("error: site not worked:", jqXHR, textStatus, errorThrown);
-                    setTimeout(function (args) { $(event.target).removeClass("not-access"); }, 10000);
-                }
-             });
-        }
-        else
-            console.error("Not found addres: ", address);
+        var index = $(event.target).data("index");
+        if ((index == null) || (index == undefined) || (index < 0) || (index >= servers.length)) return;
+        var server = servers[index];
+        if (!server.active) return;
+        if (ticket && steam_id)
+            $.ajax({ url: server.address + '/site_api/auth/steam',
+                     method: 'GET',
+                     data: { ticket: ticket },
+                     timeout: ping_timeout,
+                     success: function (data) { window.location = server.address + '?mode=electron'; },
+                });
+        else window.location = address + '?mode=electron';
     }
 
     $(document).ready(function () {
@@ -274,7 +237,7 @@
                                 url: address + '?mode=test',
                                 method: 'GET',
                                 data: {},
-                                timeout: max_timeout,
+                                timeout: ping_timeout,
                                 success: function (data) {
                                     if (data == "OK")
                                         window.location = address + '?mode=electron';
