@@ -102,7 +102,7 @@
                     server.active = false;
                     server.pings = [];
                     server.average_ping = 0;
-                    setTimeout(function(){ ping_server(server) }, re_ping_timeout);
+                    setTimeout(function(){ ping_server(server) }, ping_timeout);
                 }
             });
         }
@@ -157,7 +157,8 @@
             for (var i = 0; i < all_client_cookies.length && !steam_registration_cookie; i++)
                 if (all_client_cookies[i].name == "steam_registration_cookie")
                     steam_registration_cookie = all_client_cookies[i];
-            if (steam_registration_cookie) {
+            if (steam_registration_cookie && (steam_registration_cookie.value == steam_id)) {
+                console.log("Not first steam enter");
                 show_server_list();
                 return;
             }
@@ -203,7 +204,7 @@
                      timeout: ping_timeout,
                      success: function (data) { window.location = server.address + '?mode=electron'; },
                 });
-        else window.location = address + '?mode=electron';
+        else window.location = server.address + '?mode=electron';
     }
 
     $(document).ready(function () {
