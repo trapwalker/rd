@@ -224,7 +224,7 @@
 
         // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
         setTimeout(function() {
-            cookie_storage = require('electron').remote.session.defaultSession.cookies
+            cookie_storage = require('electron').remote.session.defaultSession.cookies;
             cookie_storage.get({},
                 function(error, cookies) {
                     all_client_cookies = cookies;
@@ -234,7 +234,7 @@
                             var k = cookies[ki];
                             if (k.name == "server_host" && k.value) {
                                 for (var i = 0; i < servers.length && !address; i++) {
-                                    if (servers[i].address.indexOf(k.domain) >= 0) {
+                                    if (servers[i].active && servers[i].address.indexOf(k.domain) >= 0) {
                                         // Найти хоть одну куку - юзера для этого домена
                                         for (var ui = 0; ui < cookies.length && !address; ui++) {
                                             if (cookies[ui].name == "user" && cookies[ui].domain == k.domain) {
