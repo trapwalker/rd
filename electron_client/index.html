@@ -59,6 +59,7 @@
 </body>
 
 <script>
+    var cookie_storage;
     var current_window = require('electron').remote.getCurrentWindow();
     var ticket = current_window._ticket_steam;
     var steam_id = current_window._steam_id;
@@ -70,7 +71,7 @@
     var servers_added = 0;
     var all_client_cookies = null;
     var servers = [
-        {name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
+        //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
         {name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
         {name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
         {name: "Road Dogs RU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
@@ -137,8 +138,8 @@
         }
 
         // Найти минимальный пинг и зарегать там пользователя
-        function create_steam_account() {
-            var server = get_optimal_server();
+        function create_steam_account(server) {
+            if (!server) server = get_optimal_server();
             if (server)
                 $.ajax({
                     url: server.address + '/site_api/auth/steam',
@@ -186,7 +187,7 @@
                 // новый аккаунт, чтобы этого избежать надо юзать steam cloud
                 console.log(steam_account_count, last_server);
                 if (steam_account_count == 0) create_steam_account();
-                if (steam_account_count == 1) window.location = last_server.address + '?mode=electron';
+                if (steam_account_count == 1) create_steam_account(last_server);
                 if (steam_account_count > 1) show_server_list();
             }, ping_timeout + 100);
         } else show_server_list();
@@ -214,7 +215,8 @@
 
         // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
         setTimeout(function() {
-            require('electron').remote.session.defaultSession.cookies.get({},
+            cookie_storage = require('electron').remote.session.defaultSession.cookies
+            cookie_storage.get({},
                 function(error, cookies) {
                     all_client_cookies = cookies;
                     if (cookies.length) {
