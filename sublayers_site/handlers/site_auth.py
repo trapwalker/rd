@@ -396,10 +396,12 @@ class SteamLoginHandler(RequestHandler):
                     cookie = self._on_get_user_info(user_steamid)
                     if cookie is not None:
                         self.set_secure_cookie("user", cookie)
-                        # info: Нельзя с авторизацией стим играть в браузере. Поэтому только редирект в клиент-версию
-                        self.redirect("/?mode=electron")
+                        self.set_cookie("steam_registration_cookie", "true", expires_days=365)
+                        # info: Нельзя с авторизацией через стим играть в браузере. Поэтому только для клиента
+                        self.finish("OK")
                     else:
-                        self.redirect("/login?msg=Ошибка%20авторизации")
+                        self.send_error(404, reason="User authorisation failed")
+                        #self.redirect("/login?msg=Ошибка%20авторизации")
                     return
 
             except HTTPError as e:  # HTTPError is raised for non-200 responses; the response can be found in e.response
