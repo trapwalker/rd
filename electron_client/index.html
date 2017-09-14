@@ -218,6 +218,10 @@
     }
 
     $(document).ready(function () {
+
+        if (steam_id)
+            document.title = "Road Dogs Online [" + steam_id + "]";
+
         // Запускаем пинг всех серверов
         for (var i = 0; i < servers.length; i++)
             ping_server(servers[i]);
