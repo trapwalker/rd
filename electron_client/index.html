@@ -3,68 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Road Dogs Online</title>
+    <link rel="stylesheet" href="css/index_main.css"/>
     <style>
-
         @font-face {font-family: FreePixel; src: url('fonts/FreePixel.ttf'); }
         @font-face {font-family: Nouveau_IBM; src: url('fonts/Nouveau_IBM.ttf'); }
-
-
-        body {
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #030f00;
-            white-space: pre-wrap;
-            font-family: Nouveau_IBM;
-            cursor: url('img/main.png'), default;
-        }
-
-        .content-block {
-            position: relative;
-            width: 716px;
-            height: 438px;
-            margin: 50px auto;
-        }
-
-        .window-reg-up-btn {
-            position: relative;
-            cursor: pointer;
-            margin: 20px auto;
-            border: 2px solid #209509;
-            background-color: #0d3207;
-            border-radius: 1px;
-            text-align: center;
-            height: 35px;
-            line-height: 35px;
-            color: #31c811;
-            width: 200px;
-        }
-        .window-reg-up-btn:hover {
-            background-color: #16560c;
-            color: #51ff00;
-            border-color: #37ff10;
-        }
-        .window-reg-up-btn:active {
-            background-color: #030f00;
-            color: #00ff00;
-            border-color: #008000;
-        }
-        .window-reg-up-btn.not-access {
-            background-color: #777777;
-            color: whitesmoke;
-            border-color: #444444;
-            pointer-events: none;
-        }
-
     </style>
-
     <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
     <script src="js/time_manager.js"></script>
 </head>
 
 <body>
-    <div class="content-block"></div>
+    <div class="shift-content-block">
+        <div class="content-block"></div>
+        <canvas id="content-canvas" class="canvas-property"></canvas>
+    </div>
 </body>
 
 <script>
@@ -227,7 +179,6 @@
     }
 
     $(document).ready(function () {
-
         if (steam_id)
             document.title = "Road Dogs Online [" + steam_id + "]";
 
@@ -235,7 +186,10 @@
         for (var i = 0; i < servers.length; i++)
             ping_server(servers[i]);
 
+
+
         // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
+        /*
         setTimeout(function() {
             cookie_storage = require('electron').remote.session.defaultSession.cookies;
             cookie_storage.get({},
@@ -283,7 +237,7 @@
                     else
                         check_steam();
             });
-        }, start_ping_timeout);
+        }, start_ping_timeout);*/
     });
 </script>
 
