@@ -18,11 +18,15 @@
     <script src="js/canvas/canvas_line.js"></script>
     <script src="js/canvas/canvas_rippling.js"></script>
     <script src="js/canvas/canvas_blackout.js"></script>
+    <script src="js/text_console.js"></script>
 </head>
 
 <body>
     <div class="content-block"></div>
     <canvas id="content-canvas" class="canvas-property"></canvas>
+    <div id="preloaderBlock">
+        <div id="consolePreloader"></div>
+    </div>
 </body>
 
 <script>
@@ -201,6 +205,9 @@
         canvasDisplayLine = new CanvasDisplayLine();
         canvasDisplayRippling = new CanvasDisplayRippling();
         canvasBlackOut = new CanvasBlackOut();
+
+        // Запускаем консоль
+        consolePreloader = new ConsolePreloader();
 
         // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
         /*
