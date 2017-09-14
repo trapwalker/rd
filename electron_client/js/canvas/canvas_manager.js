@@ -1,7 +1,5 @@
 var CanvasManager = (function(){
     function CanvasManager(){
-        // todo: определять по размеру монитора
-        // Большой монитор 860x518   Маленький монитор  667x407
         this.width = $('.content-block').width();
         this.height = $('.content-block').height();
         this.screen_size = this.width > 800 ? 'big' : 'small';
@@ -11,8 +9,7 @@ var CanvasManager = (function(){
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
-        this.is_active = false;
-
+        this.is_active = true;
         this.obj_list = [];
 
         if (timeManager) timeManager.addTimerEvent(this, 'redraw');

@@ -1,4 +1,4 @@
-var constDisplayLineSpeed = 0.01;      // смещение линии на каждый тик
+var constDisplayLineSpeed = 0.02;      // смещение линии на каждый тик
 var constDisplayLineDelay = 60;        // задержка в тиках между линиями
 var constDisplayLineWidth = 200;       // ширина линии
 

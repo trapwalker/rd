@@ -8,17 +8,21 @@
         @font-face {font-family: FreePixel; src: url('fonts/FreePixel.ttf'); }
         @font-face {font-family: Nouveau_IBM; src: url('fonts/Nouveau_IBM.ttf'); }
     </style>
+
     <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
 
     <script src="js/locale.js"></script>
     <script src="js/time_manager.js"></script>
+    <script src="js/canvas/canvas_manager.js"></script>
+    <script src="js/canvas/canvas_noise.js"></script>
+    <script src="js/canvas/canvas_line.js"></script>
+    <script src="js/canvas/canvas_rippling.js"></script>
+    <script src="js/canvas/canvas_blackout.js"></script>
 </head>
 
 <body>
-    <div class="shift-content-block">
-        <div class="content-block"></div>
-        <canvas id="content-canvas" class="canvas-property"></canvas>
-    </div>
+    <div class="content-block"></div>
+    <canvas id="content-canvas" class="canvas-property"></canvas>
 </body>
 
 <script>
@@ -191,7 +195,12 @@
         for (var i = 0; i < servers.length; i++)
             ping_server(servers[i]);
 
-
+        // Запускаем эффекты канваса
+        canvasManager = new CanvasManager();
+        canvasNoise = new CanvasNoise();
+        canvasDisplayLine = new CanvasDisplayLine();
+        canvasDisplayRippling = new CanvasDisplayRippling();
+        canvasBlackOut = new CanvasBlackOut();
 
         // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
         /*
