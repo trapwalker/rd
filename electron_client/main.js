@@ -51,6 +51,13 @@ function createWindow() {
     // todo: написать как-то в консоль, чтобы юзер был осторожнее
     //mainWindow.webContents.on('devtools-opened', function (event, input) {});
 
+
+    // Подготовка переменных для index.html
+    mainWindow._steam_id = null;
+    mainWindow._ticket_steam = null;
+    mainWindow._client_language = "english";
+
+
     var command_line_args = {};
 
     var args = process.argv.slice(2);
@@ -64,7 +71,7 @@ function createWindow() {
             command_line_args[a] = true;
     });
 
-    console.log(command_line_args);
+    //console.log(command_line_args);
 
     if (command_line_args.devtools)
         mainWindow.webContents.openDevTools();
@@ -87,6 +94,8 @@ function createWindow() {
                 console.log('Steam API initialized successfully.');
                 var user_info = greenworks.getSteamId();
                 mainWindow._steam_id = user_info && user_info.steamId;
+                mainWindow._client_language = greenworks.getCurrentGameLanguage();
+                console.log(mainWindow._steam_id, " ===> ", mainWindow._client_language);
 
                 greenworks.getAuthSessionTicket(
                     function (ticket) {
@@ -101,6 +110,10 @@ function createWindow() {
             }
         }
     }
+
+    // Аргументы командной строки имеют более высокий приоритет, чем стим
+    if (command_line_args.lang)
+        mainWindow._client_language = command_line_args.lang;
 
 }
 

@@ -9,6 +9,8 @@
         @font-face {font-family: Nouveau_IBM; src: url('fonts/Nouveau_IBM.ttf'); }
     </style>
     <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
+
+    <script src="js/locale.js"></script>
     <script src="js/time_manager.js"></script>
 </head>
 
@@ -24,6 +26,9 @@
     var current_window = require('electron').remote.getCurrentWindow();
     var ticket = current_window._ticket_steam;
     var steam_id = current_window._steam_id;
+
+    // Установка языка клиента
+    set_current_locale();
 
     var start_ping_timeout = 5000;
     var ping_timeout = 3000;
