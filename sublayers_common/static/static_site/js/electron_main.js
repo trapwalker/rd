@@ -19,6 +19,8 @@ var videoPlayer;
 var videoPlayerReadyState = false;
 var lastRadioPlayerVolumeBeforeVideoActive = 0.15;
 
+var cut_radio_player = null;
+
 
 function SetImageOnLoad(img, onLoadHandler) {
     if (img.complete) {
@@ -121,6 +123,7 @@ function main() {
     initConsoles();
 
     init_site_sound();
+    init_radio_cut();  // Инициализация обрезанного радио - будет играть только 128 виджиланте
 
     centered_window();
 
@@ -174,6 +177,11 @@ function init_site_sound() {
     audioKeyboard = new AudioKeyboard([
         audioManager.get('key_cl_1')
     ]);
+}
+
+function init_radio_cut() {
+    audioManager.load('vigilante_128', {url: "http://listen.radiotower.su:8000/vigilante_2084_128"}, true, TagAudioObject, 1.0);
+    cut_radio_player = audioManager.get('vigilante_128');
 }
 
 
