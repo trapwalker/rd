@@ -10,8 +10,8 @@
 "con_fe_03": "Query active insurance status."
 "con_fe_04": " insurance is active for "
 "con_fe_05": "Dear, "
-"con_fe_06": "Поздравляем вас с успешной регистрацией в системе Nuke Commander и получением корпоративных водительских прав. Финансовый отдел корпорации Нукойл одобрил оформление авто-кредита и аренду клиентского оборудования системы Nuke Navigator."
-"con_fe_07": "Наша компания приветствует квалифицированных пользователей и предлагает плату за прохождение обучения. Желаете пройти обучение за бонус в 850nc + 100exp?"
+"con_fe_06": "Congratulations! You have successfully registered in the Nuke Commander system and received a corporate driver's license. The Finance Division of the Nukeoil Corporation has approved your auto loan and the lease of the client hardware for the Nuke Navigator system."
+"con_fe_07": "Our company welcomes qualified users, and it is willing to cover your tuition fees for training. Would you like to undergo training and receive a bonus of 850 nukecoins + 100 experience points?"
 "con_fe_08": "Yes"
 "con_fe_09": "No"
 "con_fe_10": "Activation of training system."
@@ -24,8 +24,8 @@
 "con_fe_17": "Request a welcome booklet."
 "con_fe_18": "Data is loaded."
 "con_fe_19": "Query terms of loan agreement."
-"con_fe_20": "Нукойл основана в 2084 году, через 2 года после начала и окончания войны. Наши инженеры объединили лучше довоенные технологии, пригодные для возобновления жизни в условиях непригодной для жизни атмосферы нашей планеты. К вашим услугам сеть заправочных комплексов Nukeoil, спутниковая система навигации Nuke Navigator и персональная операционная система Nuke Commander. Корпорация Нукойл - это источник жизни во мраке ядерной зимы."
-"con_fe_21": "Корпорация Нукойл предоставляет клиенту Username кредит на покупку своего первого транспортного средства в размере до 2000 нукойнов. Любой верифицированный в системе автодилер предоставит вам транспорт в рамках указанного бюджета. До момента погашения кредита в размере 2500 нукойнов - все транзакции аккаунта Username будут заблокированы."
+"con_fe_20": "Nukeoil was founded in 2084, 2 years after the start and end of the war. Our engineers have selected the best of the pre-war technologies that allow us to live again in the atmosphere of our planet, which has otherwise been made unfit for habitation. You have access to the network of Nukeoil filling stations, the Nuke Navigator satellite navigation system, and the Nuke Commander personal operating system. The Nukeoil Corporation is the source of life in the darkness of nuclear winter."
+"con_fe_21": "The Nukeoil Corporation provides the client Username with a loan to buy his first vehicle worth up to 2,000 nukecoins. Any auto dealer who has been verified in the system can provide you with transportation within the specified budget. Until the repayment of the loan of 2,500 nukecoins is complete, all transactions by the account Username will be blocked."
 
 
 # ConsoleEnter
