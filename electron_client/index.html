@@ -204,7 +204,8 @@
         //canvasBlackOut = new CanvasBlackOut();
 
         // Подготавливаем звук для консоли
-        audioManager.load('key_cl_1', {url: 'audio/type.mp3'}, null, null, 0.2);
+        audioManager.gain_all(0.1);
+        audioManager.load('key_cl_1', {url: 'js/audio/type.mp3'}, null, null, 1.0);
         audioKeyboard = new AudioKeyboard([audioManager.get('key_cl_1')]);
 
         // Запускаем консоль

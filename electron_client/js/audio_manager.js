@@ -46,7 +46,6 @@ var AudioManager = (function () {
 
     // Загрузка
     AudioManager.prototype.load = function (name, source, autoplay, class_name, gain) {
-        console.log('AudioManager.prototype.load ' + name);
         if (this.get(name)) {
             console.warn('Аудио Объект с таким именем уже был загружен. Замена.');
         }

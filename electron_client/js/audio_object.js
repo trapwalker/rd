@@ -102,18 +102,7 @@ var AudioObject = (function () {
     AudioObject.prototype.load = function (source) {
         var self = this;
         var context = audioManager.get_ctx();
-
-        console.log('1');
-        var file = new File([], source.url);
-
-        var fr = new FileReader();
-        fr.onload = function(event) {
-            console.log(event)
-        };
-        console.log(source.url);
-        fr.readAsArrayBuffer(file);
-        return;
-
+        // делаем XMLHttpRequest (AJAX) на сервер
         var xhr = new XMLHttpRequest();
         xhr.open('GET', source.url, true);
         xhr.responseType = 'arraybuffer'; // Говорит о том, что принятые данные будут являться аудио буффером
@@ -122,7 +111,6 @@ var AudioObject = (function () {
             context.decodeAudioData(this.response,
                 function (decodedArrayBuffer) {
                     // получаем декодированный буфер
-                    console.log('2');
                     self.audio_buffer = decodedArrayBuffer;
                     self.ready_to_play = true;
                     if (self.play_on_load){
