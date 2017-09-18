@@ -552,7 +552,10 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
             if isinstance(field, LocalizedStringField):
                 if isinstance(value, basestring):
                     return value
-                return value.as_dict()
+                elif hasattr(value, 'as_dict'):
+                    return value.as_dict()
+                else:
+                    log.error('Wrong value of field {}: {!r}'.format(field.name, value))
 
             assert not hasattr(value, '_instance'), 'Unsupported value {!r} of field {!r} to serializtion by as_client_dict'.format(value, field)
             return value
