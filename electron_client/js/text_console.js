@@ -232,6 +232,7 @@ var TextConsole = (function(){
     return TextConsole;
 })();
 
+
 var TextConsoleAudio = (function (_super) {
     __extends(TextConsoleAudio, _super);
 
@@ -255,21 +256,22 @@ var TextConsoleAudio = (function (_super) {
     };
 
     TextConsoleAudio.prototype._state_print_text = function(self) {
-        if (! this.start_audio) {
+        if (!this.start_audio) {
             this.start_audio = true;
-            //audioKeyboard.play();
+            audioKeyboard.play();
         }
         _super.prototype._state_print_text.call(this, self);
     };
 
     TextConsoleAudio.prototype._state_after_print_delay = function(self) {
         this.start_audio = false;
-        //audioKeyboard.stop();
+        audioKeyboard.stop();
         _super.prototype._state_after_print_delay.call(this, self);
     };
 
     return TextConsoleAudio;
 })(TextConsole);
+
 
 var ConsolePreloader = (function (_super) {
     __extends(ConsolePreloader, _super);
@@ -291,6 +293,7 @@ var ConsolePreloader = (function (_super) {
         };
         this.jq_load_status = null;
         this.max_load_data_number = 0;
+        this.out_server_list = false;
 
         this.add_message('user', _('con_pre_1'));
         this.add_message('system', _('con_pre_2'));
@@ -312,10 +315,27 @@ var ConsolePreloader = (function (_super) {
             '       >                                              <\n' +
             '       ================================================\n'
         );
+        this.add_message('user', _('con_pre_15'));
+
         this.start();
     }
 
+    ConsolePreloader.prototype._state_print_final_indicator = function (self) {
+        if ((self._messages.length == 0) && !self.out_server_list) {
+            self.target_div.find('.console-new-text').text(self._text);
+            for (var i = 0; i < servers.length; i++) {
+                var server = servers[i];
+                var text = '&gt; ' + (i + 1) + '. ' + server.name + ' ' + '<span id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
+                self.target_div.append('<div class="server_list_item" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
+            }
+        }
+        else
+            _super.prototype._state_print_final_indicator.call(self, self);
+    };
+
     return ConsolePreloader;
+
 })(TextConsoleAudio);
+
 
 var consolePreloader;
