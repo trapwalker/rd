@@ -160,7 +160,7 @@ function getCookie(name) {
 
 
 function init_site_sound() {
-    audioManager.gain_all(0.0);
+    //audioManager.gain_all(0.0);
 
     audioManager.load('microwave_btn_click', {url: '/static/audio/final_v1_mp3/buttons.mp3'}, null, null, 1.0);
     audioManager.load('microwave_btn_hover', {url: '/static/audio/interface/hover_001.m4a'}, null, null, 0.5);
