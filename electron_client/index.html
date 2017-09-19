@@ -175,7 +175,7 @@
 
     function gotoSite(event) {
         console.log('gotoSite');
-        var index = $(event.target).data("index") || $($(event.target).parent()).data("index");
+        var index = $(event.target).data("index"); // || $($(event.target).parent()).data("index");
         if ((index == null) || (index == undefined) || (index < 0) || (index >= servers.length)) {
             console.log(index, servers.length);
             return;

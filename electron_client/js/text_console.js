@@ -326,7 +326,7 @@ var ConsolePreloader = (function (_super) {
             for (var i = 0; i < servers.length; i++) {
                 var server = servers[i];
                 var name_with_spaces = server.name + (new Array(server_name_max_l - server.name.length ).join(" "));  // Имя сервера с дополненными пробелами
-                var text = '&gt; ' + (i + 1) + '. ' + name_with_spaces + ' ' + '<span id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
+                var text = '&gt; ' + (i + 1) + '. ' + name_with_spaces + ' ' + '<span style="pointer-events: none;" id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
                 self.target_div.append('<div class="server_list_item" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
             }
         }
