@@ -445,7 +445,7 @@ var ConsoleFirstEnter = (function (_super) {
             'welcome',
             '\n       ================================================\n' +
             '       >                                              <\n' +
-            _("con_fe_01") + textConsoleManager.app_version + '         <\n' +
+            _("con_fe_01") + textConsoleManager.app_version + _("con_fe_01_1") +
             '       >                                              <\n' +
             _("con_fe_02")+ '\n' +
             '       >                                              <\n' +
