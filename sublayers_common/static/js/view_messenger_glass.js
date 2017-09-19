@@ -707,18 +707,18 @@ var ViewMessengerGlass = (function () {
                     break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action) {
-                        this.addMessageToLog(_("chat_log_quest_start") + ': ' + msg.quest_caption + '.');
+                        this.addMessageToLog(_("chat_log_quest_start") + ': ' + _(msg.quest_caption) + '.');
                         // Google Analytics
                         analytics.get_quest();
                     }
                     else {
                         if (msg.result == 'fail') {
-                            this.addMessageToLog(_("chat_log_quest_fail") + ': ' + msg.quest_caption + '.', true);
+                            this.addMessageToLog(_("chat_log_quest_fail") + ': ' + _(msg.quest_caption) + '.', true);
                             // Google Analytics
                             analytics.fail_quest();
                         }
                         else {
-                            this.addMessageToLog(_("chat_log_quest_finish") + ': ' + msg.quest_caption + '.', true);
+                            this.addMessageToLog(_("chat_log_quest_finish") + ': ' + _(msg.quest_caption) + '.', true);
                             // Google Analytics
                             analytics.end_quest();
                         }
