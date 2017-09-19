@@ -703,6 +703,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                 jq_perk_table.empty();
                 jq_perk_chip_perk_list.empty();
 
+
                 if (data.perks) {
                     for (var i = 0; i < data.perks.length; i++) {
                         var perk_rec = data.perks[i];
@@ -722,7 +723,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                         if (perk_rec.active) {
                             var jq_perk_chip = $(
                                 '<div class="site-chip-content-line shift">' +
-                                '<div class="site-chip-content-line-text left">' + perk_rec.perk['title__' + locale_object.locale] + '</div>' +
+                                '<div class="site-chip-content-line-text left">' + perk_rec.perk.title[locale_object.locale] + '</div>' +
                                 '</div>'
                             );
                             jq_perk_chip_perk_list.append(jq_perk_chip);
@@ -730,8 +731,7 @@ function GetUserRPGInfo(action, skill_name, perk_node) {
                     }
                 }
                 // Обновление чипа
-                $('#RDSiteWReg3_RoleClass').text(data.role_class_title);
-
+                $('#RDSiteWReg3_RoleClass').text(data.role_class_title[locale_object.locale]);
                 if (registration_status == 'nickname') {
                     SetCurrentAvatar();
                     SetCurrentClass();

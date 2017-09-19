@@ -649,31 +649,31 @@ var ModalWindow = (function () {
         var text1 = _("cqfo_text1");
         var text2 = _("cqfo_text2");
         var add_class = '';
-        if (user.example_agent.role_class == "Избранный") {
+        if (user.example_agent.role_class['ru'] == "Избранный") {
             text = text1 + _("cqfo_text3_1") + text2;
             class_icon = '/static/content/class-icons/co.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Альфа-волк") {
+        else if (user.example_agent.role_class['ru'] == "Альфа-волк") {
             text = text1 + _("cqfo_text3_2") + text2;
             class_icon = '/static/content/class-icons/aw.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Ночной ездок") {
+        else if (user.example_agent.role_class['ru'] == "Ночной ездок") {
             text = text1 + _("cqfo_text3_3") + text2;
             class_icon = '/static/content/class-icons/nr.png';
         }
-        else if (user.example_agent.role_class == "Нефтяной магнат") {
+        else if (user.example_agent.role_class['ru'] == "Нефтяной магнат") {
             text = text1 + _("cqfo_text3_4") + text2;
             class_icon = '/static/content/class-icons/om.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Воин дорог") {
+        else if (user.example_agent.role_class['ru'] == "Воин дорог") {
             text = text1 + _("cqfo_text3_5") + text2;
             class_icon = '/static/content/class-icons/rw.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Технокинетик") {
+        else if (user.example_agent.role_class['ru'] == "Технокинетик") {
             text = text1 + _("cqfo_text3_6") + text2;
             class_icon = '/static/content/class-icons/tk.png';
         }
