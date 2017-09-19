@@ -396,6 +396,8 @@
     var GlobalGeneralSiteGain = 0.0;
 
     $(document).ready(function () {
+        if (!window.$ || !window.jQuery)
+            window.$ = window.jQuery = require('jquery');
         loadLocale(main);
     });
 </script>

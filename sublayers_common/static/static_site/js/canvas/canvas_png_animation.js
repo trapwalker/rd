@@ -58,7 +58,6 @@ var ECanvasChipAnimation = (function () {
         var frame = this._get_frame_num(time);
         ctx.drawImage(this.img, frame * this.frame_width, 0, this.frame_width, this.frame_height,
             this.offset_x, this.offset_y, this.frame_width, this.frame_height);
-
         ctx.restore();
     };
 

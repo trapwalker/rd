@@ -29,7 +29,10 @@
         <div class="window-reg1-console-wrap">
             <div id="RDSiteWReg1Console" class="console-block reg-main-console"></div>
         </div>
+
+        {% if not current_user or not current_user.auth.steam.social_id %}
         <div class="reg1-btn buttons-and-headers reg1-btn-back" onclick="Reg1BackBtnClick()">{{ _("swr1_back") }}</div>
+        {% end %}
         <div class="reg1-btn buttons-and-headers reg1-btn-next" onclick="Reg1NextBtnClick()">{{ _("swr1_next") }}</div>
     </div>
 </div>

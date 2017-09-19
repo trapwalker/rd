@@ -111,9 +111,14 @@
         <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
     {% end %}
 
+    {% if electron %}
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    {% else %}
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+    {% end %}
+
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
-    <script src="{{ static_url('js/third_party/jquery.jrumble.1.3.js') }}"></script>
+{#    <script src="{{ static_url('js/third_party/jquery.jrumble.1.3.js') }}"></script>#}
 
     <!-- SVG JS Lib -->
     <script src="{{ static_url('js/third_party/svgjs/svg.js') }}"></script>
@@ -378,6 +383,7 @@
         <span id="settings_user_balance">{{ user_balance }}</span>
         <span id="settings_user_position">{{ '{}: {}'.format(start_coord.x, start_coord.y) if start_coord else _("play_position_none") }}</span>
         <span id="settings_connection_delay">{{ connection_delay }}</span>
+        <span id="electron_mode">{{ "electron" if electron else "" }}</span>
     </div>
     <div id="textConsoleDivWrap" tabindex="0">
         <div id="textConsoleDiv" tabindex="0">

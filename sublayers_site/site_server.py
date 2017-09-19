@@ -30,8 +30,8 @@ from sublayers_site import settings
 
 import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler, VKLoginHandler,
-                                               TwitterLoginHandler, FacebookLoginHandler)
-from sublayers_site.handlers.site import SiteMainHandler
+                                               TwitterLoginHandler, FacebookLoginHandler, SteamLoginHandler)
+from sublayers_site.handlers.site import SiteMainHandler, SitePingHandler, SiteCheckAuthId
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
 from sublayers_site.handlers.ratings_info import GetQuickGameRecords, GetRatingInfo
@@ -77,6 +77,12 @@ class Application(BaseApplication):
         else:
             log.warning('[Social Auth] Facebook OAuth params not found in options. Facebook Auth not work.')
 
+        if options.auth_steam_key and options.auth_steam_appid:
+            settings["steam_auth"] = {"key": options.auth_steam_key, "appid": options.auth_steam_appid }
+        else:
+            log.warning('[Social Auth] Steam Auth params not found in options. Steam Auth not work.')
+
+
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
 
@@ -99,6 +105,8 @@ class Application(BaseApplication):
             (r"/logout", LogoutHandler),
             (r"/", SiteMainHandler),
             (r"/site_api/locale", GetUserLocaleJSONHandler),
+            (r"/site_api/ping", SitePingHandler),
+            (r"/site_api/user_check", SiteCheckAuthId),
             (r"/site_api/join_news_group", tornado.web.RedirectHandler, {"url": options.join_news_group_link}),
             (r"/site_api/get_user_info", GetUserInfoHandler),
             (r"/site_api/get_rpg_info", GetRPGInfoHandler),
@@ -112,6 +120,7 @@ class Application(BaseApplication):
             (r"/site_api/auth/vk", VKLoginHandler),
             (r"/site_api/auth/twitter", TwitterLoginHandler),
             (r"/site_api/auth/facebook", FacebookLoginHandler),
+            (r"/site_api/auth/steam", SteamLoginHandler)
             #(r"/site_api/forum_reg", RegisterOldUsersOnForum),
             #(r"/site_api/forum_auth", SetForumUserAuth),
         ])

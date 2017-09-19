@@ -1125,7 +1125,7 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name))
                 cookie_str = cookie_str + opt_name + "=" + this.options[opt_name].value + "|";
-        this.setCookie("rd_settings", cookie_str);
+        this.setCookie("rd_settings", cookie_str, {expires: 365 * 24 * 60 * 60}); // Ставим куки на 1 год
     };
 
     // Общие обработчики
