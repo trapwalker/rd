@@ -111,6 +111,8 @@
         <link rel="stylesheet" href="{{ static_url('css/templates/menu/quick_mode_plug.css') }}"/>
     {% end %}
 
+    <link rel="stylesheet" href="{{ static_url('locale/game/css/locale_{}.css'.format(user_lang)) }}"/>
+
     {% if electron %}
     <script>window.$ = window.jQuery = require('jquery');</script>
     {% else %}

@@ -38,6 +38,7 @@
     border-image: linear-gradient(to right, transparent, #0e4b00, #0e4b00, #0e4b00, #0e4b00, transparent);
     border-image-slice: 1;
     box-sizing: border-box;
+    overflow-y: hidden;
 }
 .map-teaching-text-block.cruise_speed { height: 80px; }
 .map-teaching-text-block.cruise_zone { height: 115px; }
