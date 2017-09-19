@@ -10,3 +10,8 @@
 "ta_setup_mine": "Set mine"
 "ta_setup_rocket": "Launched missile"
 "ta_setup_turret": "Mounted turret"
+
+"ta_kill_player": "is destroyed"
+"ta_double_kill": "Double kill"
+"ta_tripple_kill": "Triple kill"
+"ta_series_of_kill": "Multikill"

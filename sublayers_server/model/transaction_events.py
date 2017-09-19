@@ -49,7 +49,7 @@ class TransactionEvent(Event):
     def __init__(self, agent, **kw):
         super(TransactionEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
-        self.lang = agent.user and agent.user.lang or 'en'
+        self.lang = self.agent.get_lang()
 
         # todo: убрать асинхронность и прокинуть время правильно
 

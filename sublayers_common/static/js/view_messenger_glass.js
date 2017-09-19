@@ -887,8 +887,8 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog(_("chat_log_trainer_price") + msg.price + 'nc.');
                     break;
                 case 'PowerUPLogMessage':
-                    this.addMessageToLog(_("chat_log_loot_get") + msg.comment + '.');
-                    new WTextArcade(msg.comment).start();
+                    this.addMessageToLog(_("chat_log_loot_get") + _(msg.comment) + '.');
+                    new WTextArcade(_(msg.comment)).start();
                     break;
                 case 'SystemChatMessage':
                     this.addMessageToSys(msg.text);

@@ -11,3 +11,7 @@
 "ta_setup_rocket": "Запущена ракета"
 "ta_setup_turret": "Установлена турель"
 
+"ta_kill_player": "уничтожен"
+"ta_double_kill": "Двойное убийство"
+"ta_tripple_kill": "Тройное убийство"
+"ta_series_of_kill": "Серия убийств"
