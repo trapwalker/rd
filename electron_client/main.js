@@ -24,7 +24,7 @@ var mainWindow;
 // Получение состояния окна: либо последнее закрытое, либо по умолчанию
 function getWindowState() {
     // Не сохраняем позицию окна (второй монитор вкл/выкл) сохраняем только размеры
-    var def_options = {width: 1020, height: 740, minWidth: 1020, minHeight: 740};
+    var def_options = {width: 1120, height: 740, minWidth: 1120, minHeight: 740};
     // Object.assign(def_options, config.get('winBounds') || {});  // todo: так по идее правильнее, но тогда сохранится позиция окна
     var curr_state = config.get('winBounds') || {};
     if (curr_state.width && curr_state.width >= def_options.minWidth) def_options.width = curr_state.width;
