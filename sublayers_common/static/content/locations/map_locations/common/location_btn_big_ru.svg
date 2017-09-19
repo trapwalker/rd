@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1920"
+   height="1080"
+   viewBox="0 0 1920 1080"
+   id="svg_btn"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="location_btn_big_ru.svg">
+  <defs
+     id="defs_common" />
+  <sodipodi:namedview
+     id="base_common"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.5"
+     inkscape:cx="935.92226"
+     inkscape:cy="48.788599"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer3"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1272"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-nodes="false" />
+  <metadata
+     id="metadata_common">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="bottom_menu"
+     transform="translate(0,-3.7646484e-4)">
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\loc_active.png"
+       xlink:href="..\loc_active.png"
+       y="896.00037"
+       x="1087"
+       id="btn_screen_location"
+       preserveAspectRatio="none"
+       height="93"
+       width="157"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\loc_hover.png"
+       xlink:href="..\loc_hover.png"
+       style="display:none"
+       width="157"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_location_hover"
+       x="1087"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\loc_press.png"
+       xlink:href="..\loc_press.png"
+       style="display:none"
+       width="157"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_location_pressed"
+       x="1087"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\chat_active.png"
+       xlink:href="..\chat_active.png"
+       y="896.00037"
+       x="1223"
+       id="btn_screen_chat"
+       preserveAspectRatio="none"
+       height="93"
+       width="168"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\chat_hover.png"
+       xlink:href="..\chat_hover.png"
+       style="display:none"
+       y="896.00037"
+       x="1223"
+       id="btn_screen_chat_hover"
+       preserveAspectRatio="none"
+       height="93"
+       width="168" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\chat_press.png"
+       xlink:href="..\chat_press.png"
+       y="896.00037"
+       x="1223"
+       id="btn_screen_chat_pressed"
+       preserveAspectRatio="none"
+       height="93"
+       width="168"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\menu_active.png"
+       xlink:href="..\menu_active.png"
+       style="display:block"
+       width="178"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_menu"
+       x="1360"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\menu_hover.png"
+       xlink:href="..\menu_hover.png"
+       style="display:none"
+       width="178"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_menu_hover"
+       x="1360"
+       y="896.00037" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\menu_press.png"
+       xlink:href="..\menu_press.png"
+       style="display:none"
+       width="178"
+       height="93"
+       preserveAspectRatio="none"
+       id="btn_screen_menu_pressed"
+       x="1360"
+       y="896.00037" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1086.0714,895.28608 14.6429,92.2143 140.7142,0 -22.5248,-91.30444 z"
+       id="btn_screen_location_area"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1223.9285,897.50038 22.5001,90.35714 141.0714,-0.35714 -32.1428,-90.35715 z"
+       id="btn_screen_chat_area"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1360,897.50038 32.5,90.35714 142.5,-0.35714 -45,-89.64286 z"
+       id="btn_screen_menu_area"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="right_menu"
+     transform="translate(0,4.621582e-4)">
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbup_noactive.png"
+       xlink:href="..\rbup_noactive.png"
+       y="416.21066"
+       x="1442.0406"
+       id="btn_3_noactive"
+       preserveAspectRatio="none"
+       height="271"
+       width="316"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbup_active.png"
+       xlink:href="..\rbup_active.png"
+       style="display:none"
+       width="291"
+       height="299"
+       preserveAspectRatio="none"
+       id="btn_3_active"
+       x="1443.0508"
+       y="405.38281" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbup_hover.png"
+       xlink:href="..\rbup_hover.png"
+       y="405.38281"
+       x="1443.0508"
+       id="btn_3_hover"
+       preserveAspectRatio="none"
+       height="299"
+       width="291"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbup_press.png"
+       xlink:href="..\rbup_press.png"
+       y="405.38281"
+       x="1443.0508"
+       id="btn_3_pressed"
+       preserveAspectRatio="none"
+       height="299"
+       width="291"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbdown_noactive.png"
+       xlink:href="..\rbdown_noactive.png"
+       style="display:block"
+       width="327"
+       height="238"
+       preserveAspectRatio="none"
+       id="btn_4_noactive"
+       x="1392.0911"
+       y="635.25079" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbdown_active.png"
+       xlink:href="..\rbdown_active.png"
+       style="display:none"
+       width="299"
+       height="268"
+       preserveAspectRatio="none"
+       id="btn_4_active"
+       x="1391"
+       y="623.99951" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbdown_hover.png"
+       xlink:href="..\rbdown_hover.png"
+       style="display:none"
+       width="299"
+       height="268"
+       preserveAspectRatio="none"
+       id="btn_4_hover"
+       x="1391"
+       y="623.99951" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\rbdown_press.png"
+       xlink:href="..\rbdown_press.png"
+       style="display:none"
+       width="299"
+       height="268"
+       preserveAspectRatio="none"
+       id="btn_4_pressed"
+       x="1391"
+       y="623.99951" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1710.7143,543.57097 -242.1429,-120 -40,173.57143 244.2857,101.42857 z"
+       id="btn_3_area"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 1664.2857,736.42811 -242.1429,-94.28571 -22.8571,160.71428 227.1429,77.14286 z"
+       id="btn_4_area"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="left_menu">
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbup_noactive.png"
+       xlink:href="..\lbup_noactive.png"
+       y="420.72586"
+       x="158.02081"
+       id="btn_1_noactive"
+       preserveAspectRatio="none"
+       height="267"
+       width="316"
+       style="display:block" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbup_active.png"
+       xlink:href="..\lbup_active.png"
+       y="405.89847"
+       x="186.81015"
+       id="btn_1_active"
+       preserveAspectRatio="none"
+       height="299"
+       width="291"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbup_hover.png"
+       xlink:href="..\lbup_hover.png"
+       y="405.89847"
+       x="186.81015"
+       id="btn_1_hover"
+       preserveAspectRatio="none"
+       height="299"
+       width="291"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbup_press.png"
+       xlink:href="..\lbup_press.png"
+       y="405.89847"
+       x="186.81015"
+       id="btn_1_pressed"
+       preserveAspectRatio="none"
+       height="299"
+       width="291"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbdown_noactive.png"
+       xlink:href="..\lbdown_noactive.png"
+       style="display:block"
+       width="326"
+       height="238"
+       preserveAspectRatio="none"
+       id="btn_2_noactive"
+       x="199.5594"
+       y="637.07117" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbdown_active.png"
+       xlink:href="..\lbdown_active.png"
+       style="display:none"
+       width="299"
+       height="268"
+       preserveAspectRatio="none"
+       id="btn_2_active"
+       x="227.95938"
+       y="625.45428" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbdown_hover.png"
+       xlink:href="..\lbdown_hover.png"
+       style="display:none"
+       width="299"
+       height="268"
+       preserveAspectRatio="none"
+       id="btn_2_hover"
+       x="227.95938"
+       y="625.45428" />
+    <image
+       sodipodi:absref="D:\Projects\rd\sublayers_common\static\content\locations\map_locations\common\..\lbdown_press.png"
+       xlink:href="..\lbdown_press.png"
+       style="display:none"
+       width="299"
+       height="268"
+       preserveAspectRatio="none"
+       id="btn_2_pressed"
+       x="227.95938"
+       y="625.45428" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="M 201.42857,542.85714 450,421.42857 491.42857,595 239.28571,698.57143 Z"
+       id="btn_1_area"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0"
+       d="m 247.85714,736.42857 240.71429,-93.57143 32.14286,156.42857 -237.14286,81.42858 z"
+       id="btn_2_area"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

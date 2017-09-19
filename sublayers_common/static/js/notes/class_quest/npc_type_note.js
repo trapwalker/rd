@@ -5,8 +5,8 @@ var QuestNoteNPCTypeBtn = (function (_super) {
         _super.call(this, options);
 
         this.npc_type = options.npc_type;
-        this.page_caption = options.page_caption;
-        this.btn1_caption = options.btn1_caption;
+        this.page_caption = _(options.page_caption);
+        this.btn1_caption = _(options.btn1_caption);
 
         this.jq_main_div_list = [];  // Вёрстка в здании
         this.jq_menu_div_list = [];  // Вёрстка в меню (по сути кнопка-плашка)

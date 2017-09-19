@@ -391,7 +391,7 @@ var TryGameTeachingMapNote = (function (_super) {
     TryGameTeachingMapNote.prototype.send_activate_note = function (result) {
         _super.prototype.send_activate_note.call(this, result);
         if (result) {
-            setTimeout(function(){window.location = '/play'}, 2000);
+            setTimeout(function(){window.location = '/play' + ($("#electron_mode").text() ? "?mode=electron" : "")}, 2000);
             // Google Analytics
             analytics.teach_map_finish();
         }

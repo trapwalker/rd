@@ -74,19 +74,19 @@ var InteractionManager = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         switch (this.cur_page) {
             case 'chatInteractionInfo':
-                locationManager.setBtnState(1, 'Пригласить</br>в пати', true);
+                locationManager.setBtnState(1, _("loc_leaf_inv_party"), true);
                 locationManager.setBtnState(2, '', false);
                 break;
             case 'chatInteractionTrading':
                 if (this.barter_id) {
-                    locationManager.setBtnState(1, '</br>Применить', true);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_apply"), true);
                     if (this.barter_lock)
-                        locationManager.setBtnState(2, '</br>Отменить', true);
+                        locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancelnit"), true);
                     else
-                        locationManager.setBtnState(2, 'Закрыть</br>бартер', true);
+                        locationManager.setBtnState(2, _("loc_leaf_barter_close"), true);
                 }
                 else {
-                    locationManager.setBtnState(1, '</br>Торговать', true);
+                    locationManager.setBtnState(1, '</br>' +_("loc_leaf_trade"), true);
                     locationManager.setBtnState(2, '', false);
                 }
                 break;
@@ -94,8 +94,8 @@ var InteractionManager = (function (_super) {
                 locationManager.setBtnState(1, '', false);
                 locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     InteractionManager.prototype.set_panels = function() {
@@ -117,7 +117,7 @@ var InteractionManager = (function (_super) {
                             clientManager.sendLockBarter(this.barter_id);
                         else {
                             clientManager.sendInitBarter(this.player_nick);
-                            this.jq_main_div.find('.chat-interaction-private-chat-input').val('!!! Приглашение в бартер !!!');
+                            this.jq_main_div.find('.chat-interaction-private-chat-input').val(_("loc_im_invite_to_barter"));
                             this._send_message();
 
                         }
@@ -167,13 +167,17 @@ var InteractionManager = (function (_super) {
 
         // Вставляем верстку автомобиля
         this.jq_main_div.find('.chat-interaction-car-photo-block').append(user_data.html_car_img);
-        this.jq_main_div.find('.chat-interaction-car-photo-name').text(user_data.car_name);
+        this.jq_main_div.find('.chat-interaction-car-photo-name').text(_(user_data.car_name));
         this.jq_main_div.find('.chat-interaction-car-info').append(user_data.html_car_table);
 
         for (var i = 0; i < this.field_name_list.length; i++) {
             var field_name = this.field_name_list[i];
-            if (user_data.hasOwnProperty(field_name))
-                this.jq_main_div.find('.chat-interaction-' + field_name).text(user_data[field_name]);
+            if (user_data.hasOwnProperty(field_name)) {
+                var t = user_data[field_name];
+                if (t instanceof Object) t = _(t);
+                this.jq_main_div.find('.chat-interaction-' + field_name).text(t);
+            }
+
         }
 
         chat.searchChatInteraction(this.player_nick);

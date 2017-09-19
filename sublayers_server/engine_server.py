@@ -69,6 +69,8 @@ from sublayers_server.handlers.site_api import (
     APIGetCarInfoHandler, APIGetUserInfoHandler, APIGetUserInfoHandler2, APIGetQuickGameCarsHandler,
 )
 from sublayers_server.handlers.modal_window_handler import APIGetQuickGameCarsView
+from sublayers_common.site_locale import load_locale_objects
+from sublayers_common.handlers.locale import GetUserLocaleJSONHandler
 
 from ctx_timer import Timer
 
@@ -95,6 +97,7 @@ class Application(BaseApplication):
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)
+        load_locale_objects('../sublayers_common/static/locale/game', options.world_path)
         self.init_handlers()
         self.clients = []
         self.chat = []  # todo: truncate chat history
@@ -133,6 +136,7 @@ class Application(BaseApplication):
             (r"/stat/event_graphics", ServerStatEventGraphicsHandler),
             (r"/stat/quests", ServerStatQuestsHandler),
 
+            (r"/api/locale", GetUserLocaleJSONHandler),  # todo: rename
 
             (r"/api/main_menu_nucoil", MainMenuNucoilHandler),
             (r"/api/inventory", MainInventoryHandler),

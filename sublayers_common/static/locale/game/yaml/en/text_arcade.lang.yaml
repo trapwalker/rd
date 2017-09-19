@@ -1,0 +1,12 @@
+"locale": "en"
+
+# Общее
+"ta_death": "Crash"
+"ta_points": "scores"
+"ta_out_battle": "You leave battlefield"
+"ta_ammo_off": "Out of ammo for "
+"ta_add_fuel": "l"
+
+"ta_setup_mine": "Set mine"
+"ta_setup_rocket": "Launched missile"
+"ta_setup_turret": "Mounted turret"

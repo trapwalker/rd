@@ -20,7 +20,7 @@ var ArmorerTeachingNote = (function (_super) {
 
         this.last_item_direction = null;
 
-        chat.addMessageToLog('Все специалисты по модификации ТС находятся в здании “Автосервис”.', true);
+        chat.addMessageToLog(_("teach_town_arm_note_log"), true);
     }
 
     ArmorerTeachingNote.prototype.on_enter_location = function() {
@@ -39,24 +39,24 @@ var ArmorerTeachingNote = (function (_super) {
             this.needed_npc = locationManager.get_npc_by_node_hash('reg:///registry/institutions/armorer/whitehill_martin_arioso');
 
         if (this.needed_screen_name != locationManager.active_screen_name || (active_place != this.needed_building && active_place != this.needed_npc && active_place != null)) {
-            teachingManager.jq_panel_left_content.text('Теперь необходимо установить купленное оружие на транспорт. Все специалисты по модификации транспорта находятся в здании Сервиса.');
-            teachingManager.jq_panel_right_content.text('Зайти в Сервис.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_1"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_2"));
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('Теперь необходимо установить купленное оружие на транспорт. Все специалисты по модификации транспорта находятся в здании Сервиса.');
-            teachingManager.jq_panel_right_content.text('Зайти в Сервис.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_1"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_2"));
             this.draw_line(this.start_point, this.build_coord);
             return;
         }
         
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            teachingManager.jq_panel_left_content.text('Вы находитесь в здании Сервиса. Тут могут находиться механик, оружейник и стилист. Каждый - специалист в своей области.');
-            teachingManager.jq_panel_right_content.text('Зайти к оружейнику.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_3"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_4"));
             this.draw_line(this.start_point, this.npc_coord);
         }
 
@@ -65,8 +65,8 @@ var ArmorerTeachingNote = (function (_super) {
             var npc = this.needed_npc;
 
             if (! this.need_rose_activate) { // Значит уже вертели какой-то пулёмет, можно подтверждать
-                teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
-                teachingManager.jq_panel_right_content.text('Нажать кнопку <Применить>.');
+                teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_5"));
+                teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_6"));
                 this.draw_line(this.start_point, this.buy_btn);
                 return;
             }
@@ -74,8 +74,8 @@ var ArmorerTeachingNote = (function (_super) {
             var deffered_call = false;
             // Если есть активный слот, нужно вертеть
             if (npc.active_slot && npc.items[npc.active_slot].example) {
-                teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
-                teachingManager.jq_panel_right_content.text('Выбрать необходимое направление на виджете справа.');
+                teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_5"));
+                teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_7"));
                 this.draw_line(this.start_point, this.rose_of_wind_coord);
                 // Запоминаем направление выбранного итема
                 var new_item_direction = npc.items[npc.active_slot].direction;
@@ -94,15 +94,15 @@ var ArmorerTeachingNote = (function (_super) {
                 // Если не выбран слот, значит нужно либо установить оружие, либо выбрать слот
                 if (this.need_weapon_drag) {
                     // рисовать указатели на инвентарь и на машинку
-                    teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
-                    teachingManager.jq_panel_right_content.text('Выбрать пулемет в инвентаре и перетащить его в слот кузова.');
+                    teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_5"));
+                    teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_8"));
                     this.draw_line(this.start_point, this.inventory_coord);
                     this.draw_line(this.start_point, this.car_coord);
                 }
                 else {
                     // рисовать указатель на выбор слота (на машинку)
-                    teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе оружейника. Тут можно установить, снять или направить в нужную сторону вооружение.');
-                    teachingManager.jq_panel_right_content.text('Выбрать оружие для изменения направления.');
+                    teachingManager.jq_panel_left_content.text(_("teach_town_arm_note_5"));
+                    teachingManager.jq_panel_right_content.text(_("teach_town_arm_note_9"));
                     this.draw_line(this.start_point, this.car_coord);
                 }
             }

@@ -13,7 +13,7 @@ import tornado.gen
 from tornado.web import RequestHandler, HTTPError
 from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin, FacebookGraphMixin, AuthError
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPClient
+from tornado.httpclient import HTTPClient, AsyncHTTPClient, HTTPError
 import json
 import hashlib
 import urllib
@@ -372,12 +372,75 @@ class SetForumUserAuth(StandardLoginHandler):
             self.finish("Not auth")
 
 
+class SteamLoginHandler(RequestHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        ticket = self.get_argument('ticket', False)
+        if ticket and self.settings.get("steam_auth", None):
+            http_client = AsyncHTTPClient()
+            params = {
+                "ticket": ticket,
+                "key": self.settings["steam_auth"]["key"],
+                "appid": self.settings["steam_auth"]["appid"],
+            }
+            try:
+                response = yield http_client.fetch(url_concat("https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/", params),
+                                             method="GET")
+                response = json.loads(response.body)
+                response = response and response.get("response", None)
+                params = response and response.get("params", None)
+                if params and params.get("result", None) == "OK" and params.get("steamid", None):
+                    user_steamid = params["steamid"]
+                    print 'User SteamID: {}'.format(user_steamid)
+                    # todo: поискать в базе, если нет, то зарегистрировать и перекинуть на ввод никнейма
+                    cookie = self._on_get_user_info(user_steamid)
+                    if cookie is not None:
+                        self.set_secure_cookie("user", cookie)
+                        self.set_cookie("steam_registration_cookie", user_steamid, expires_days=365)
+                        # info: Нельзя с авторизацией через стим играть в браузере. Поэтому только для клиента
+                        self.finish("OK")
+                    else:
+                        self.send_error(404, reason="User authorisation failed")
+                        #self.redirect("/login?msg=Ошибка%20авторизации")
+                    return
+
+            except HTTPError as e:  # HTTPError is raised for non-200 responses; the response can be found in e.response
+                print("Error: " + str(e))
+            except Exception as e:   # Other errors are possible, such as IOError.
+                print("Error: " + str(e))
+            http_client.close()
+
+        # todo: self.send_error(5XX) или 4XX
+        self.finish('Error')
+
+    def _on_get_user_info(self, user):
+        steam_id = user
+        if steam_id:
+            profile_user = User.get_by_steam_id(uid=steam_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(steam_id=steam_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with SteamID: {}'.format(steam_id))
+
+            # Авторизация
+            return str(profile_user.pk)
+
+
 class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
     @tornado.gen.coroutine
     def get(self):
         code = self.get_argument('code', False)
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/google")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/google",
+            mode="?mode=electron" if electron else "",
+        )
 
         if not self.settings.get('google_oauth', None):
             self.send_error(status_code=501)
@@ -394,7 +457,10 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             cookie = self._on_get_user_info(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
@@ -432,7 +498,13 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
     def get(self):
         code = self.get_argument('code', False)
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/vk")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/vk",
+            mode="?mode=electron" if electron else "",
+        )
 
         if not self.settings.get(self._OAUTH_SETTINGS_KEY, None):
             self.send_error(status_code=501)
@@ -463,7 +535,10 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
             self.clear_cookie("action")
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
@@ -497,7 +572,13 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
     @tornado.gen.coroutine
     def get(self):
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/twitter")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/twitter",
+            mode="?mode=electron" if electron else "",
+        )
 
         if not self.settings.get('twitter_consumer_key', None) or not self.settings.get('twitter_consumer_secret', None):
             self.send_error(status_code=501)
@@ -508,7 +589,10 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
             cookie = self._on_get_user_info(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
@@ -539,7 +623,13 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
             self.send_error(status_code=501)
             return
         req = self.request
-        redirect_uri = '{}://{}/{}'.format(req.protocol, req.host, "site_api/auth/facebook")
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/facebook",
+            mode="?mode=electron" if electron else "",
+        )
 
         code = self.get_argument("code", False)
         if code:
@@ -551,10 +641,12 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
             cookie = self._on_get_user_info_fb(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
-                self.redirect("/#start")
+                if electron:
+                    self.redirect("/?mode=electron")
+                else:
+                    self.redirect("/#start")
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
-
         else:
             yield self.authorize_redirect(
                 redirect_uri=redirect_uri,

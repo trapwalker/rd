@@ -10,8 +10,10 @@ from mongoengine.queryset import DoesNotExist
 
 from random import randint
 from time import time
+from functools import partial
 
 from sublayers_common.user_profile import User
+from sublayers_common.site_locale import locale
 
 
 def static_mobile_link_repr(link):
@@ -134,8 +136,13 @@ class BaseHandler(AuthHandlerMixin):
             version=self.application.version,
             static_world_link_repr=static_world_link_repr,
             static_mobile_link_repr=static_mobile_link_repr,
+            _=partial(locale, self.user_lang),
         )
         return namespace
+
+    def prepare(self):
+        super(BaseHandler, self).prepare()
+        self.user_lang = self.current_user and self.current_user.lang or "en"
 
 
 class FailUnauthorizedHandler(BaseHandler):

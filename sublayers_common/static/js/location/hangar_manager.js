@@ -37,7 +37,7 @@ var LocationHangarNPC = (function (_super) {
                 var jq_car_content = $(
                     '<div class="car-info-block-main">' +
                         '<div class="car-info-block-picture-hangar town-interlacing">' + car_rec.html_car_img + '</div>' +
-                        '<div class="car-info-block-car-name-hangar">' + car_rec.car.title + '</div>' +
+                        '<div class="car-info-block-car-name-hangar">' + _(car_rec.car.title) + '</div>' +
                         '<div class="car-info-block-info-hangar">' +
                             '<div class="town-back-interlacing"></div>' +
                             car_rec.html_car_table +
@@ -50,7 +50,7 @@ var LocationHangarNPC = (function (_super) {
                     '<div class="npcInventory-itemWrap" data-car_number="' + i + '">' +
                         '<div class="npcInventory-item">' +
                             '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
-                            '<div class="npcInventory-name">' + car_rec.car.title + '</div>' +
+                            '<div class="npcInventory-name">' + _(car_rec.car.title) + '</div>' +
                         '</div>' +
                     '</div>'
                 );
@@ -90,15 +90,15 @@ var LocationHangarNPC = (function (_super) {
     LocationHangarNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Обменять ТС', true);
-            locationManager.setBtnState(2, '</br>Продать ТС', true);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_hangar_swap"), true);
+            locationManager.setBtnState(2, '</br>' + _("loc_leaf_hangar_sell"), true);
         }
         else {
-            locationManager.setBtnState(1, '</br>Купить ТС', true);
-            locationManager.setBtnState(2, '</br>Продать ТС', false);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_hangar_buy"), true);
+            locationManager.setBtnState(2, '</br>' + _("loc_leaf_hangar_sell"), false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationHangarNPC.prototype.set_panels = function() {
@@ -113,17 +113,17 @@ var LocationHangarNPC = (function (_super) {
             var cur_car = this.cars_list[this.current_car].car;
             var jq_text_div = $('<div></div>');
             if (user.example_car) {
-                var u_title = user.example_car.title;
+                var u_title = _(user.example_car.title);
                 var user_car_price = this.get_trading_effect_price_buy(user.example_car.price);
                 if (user_car_price > cur_car.price)
-                    jq_text_div.append('<div>Обменять ' + u_title + ' на ' + cur_car.title + ' с моей доплатой: ' + (user_car_price - cur_car.price) + 'NC</div>');
+                    jq_text_div.append('<div>' + _("loc_hang_sht_swap") + ' ' + u_title + _("loc_hang_sht_to") + _(cur_car.title) + _("loc_hang_sht_npc_summ") + (user_car_price - cur_car.price) + 'NC</div>');
                 else
-                    jq_text_div.append('<div>Обменять ' + u_title + ' на ' + cur_car.title + ' с Вашей доплатой: ' + (cur_car.price - user_car_price) + 'NC</div>');
+                    jq_text_div.append('<div>' + _("loc_hang_sht_swap") + ' ' + u_title + _("loc_hang_sht_to") + _(cur_car.title) + _("loc_hang_sht_player_summ") + (cur_car.price - user_car_price) + 'NC</div>');
 
-                jq_text_div.append('<div>Продать ' + u_title + ': ' + user_car_price + 'NC</div>');
+                jq_text_div.append('<div>' + _("loc_hang_sht_sell") + ' ' + u_title + ': ' + user_car_price + 'NC</div>');
             }
             else
-                jq_text_div.append('<div>Купить ' + cur_car.title + ': ' + cur_car.price + 'NC</div>');
+                jq_text_div.append('<div>' + _("loc_hang_sht_buy") + ' ' + _(cur_car.title) + ': ' + cur_car.price + 'NC</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);
@@ -182,7 +182,7 @@ var LocationParkingNPC = (function (_super) {
             var car_rec = this.cars_list[i];
             var jq_car = this.jq_main_div.find('#hangar-center-info-car-' + i);
             jq_car.append('<div class="hangar-center-info-car-bag" data-uid="' + car_rec.car.uid +
-                '">Зайти в багажник: ' + car_rec.car_parking_price + 'NC</div>');
+                '">' + _("loc_park_enter_bag") + ': ' + car_rec.car_parking_price + 'NC</div>');
         }
 
         this.jq_main_div.find('.hangar-center-info-car-bag').click(function (event) {
@@ -201,23 +201,23 @@ var LocationParkingNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
             if (this.cars_list.length) {
-                locationManager.setBtnState(1, '</br>Сменить ТС', true);
+                locationManager.setBtnState(1, '</br>' + _("loc_leaf_park_swap"), true);
             } else {
                 locationManager.setBtnState(1, '', false);
             }
-            locationManager.setBtnState(2, 'Поставить</br>ТС', true);
+            locationManager.setBtnState(2, _("loc_leaf_park_give"), true);
         }
         else {
             if (this.cars_list.length) {
-                locationManager.setBtnState(1, '</br>Взять ТС', true);
+                locationManager.setBtnState(1, '</br>' + _("loc_leaf_park_take"), true);
             }
             else {
                 locationManager.setBtnState(1, '', false);
             }
             locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationParkingNPC.prototype.clickBtn = function (btnIndex) {
@@ -242,12 +242,12 @@ var LocationParkingNPC = (function (_super) {
             if (this.cars_list.length) {
                 var cur_car = this.cars_list[this.current_car];
                 if (user.example_car)
-                    jq_text_div.append('<div>Обменять ' + user.example_car.title + ' на ' + cur_car.car.title + ': ' + (cur_car.car_parking_price) + 'NC</div>');
+                    jq_text_div.append('<div>' + _("loc_park_sht_swap") + ' ' + _(user.example_car.title) + _("loc_hang_sht_to") + _(cur_car.car.title) + ': ' + cur_car.car_parking_price + 'NC</div>');
                 else
-                    jq_text_div.append('<div>Взять ' + cur_car.car.title + ': ' + (cur_car.car_parking_price) + 'NC</div>');
+                    jq_text_div.append('<div>' + _("loc_park_sht_take") + ' ' + _(cur_car.car.title) + ': ' + cur_car.car_parking_price + 'NC</div>');
             }
             if (user.example_car)
-                jq_text_div.append('<div>Поставить ' + user.example_car.title + ': 0NC</div>');
+                jq_text_div.append('<div>' + _("loc_park_sht_give") + ' ' + _(user.example_car.title) + ': 0NC</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);
@@ -300,7 +300,7 @@ var LocationParkingBag = (function (_super) {
         }
 
         // Обновление имени машинки
-        this.jq_main_div.find('#townParkingBagExchangeBagText').text(data.car_title)
+        this.jq_main_div.find('#townParkingBagExchangeBagText').text(_(data.car_title))
     };
 
     LocationParkingBag.prototype.clickBtn = function (btnIndex) {
@@ -329,8 +329,8 @@ var LocationParkingBag = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationParkingBag.prototype.set_panels = function() {

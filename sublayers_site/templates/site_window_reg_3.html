@@ -78,7 +78,7 @@
                 try {ga('send', 'event', 'registration', 'view', 'finish');}
                 catch(e){console.warn('GA not defined');}
 
-                window.location = '/play';
+                window.location = '/play' + (window.__electron_mode ? "?mode=electron" : "");
                 //if (data.status == 'success') {
                 //    GetUserInfo();
                 //    audioManager.play('button_screen_press');

@@ -24,21 +24,14 @@ var QuestNoteVisitTrainer = (function (_super) {
         var role_skill = '';
         var teacher = '';
         var class_name = user.example_agent.role_class;
-        if (user.example_agent.role_class == "Избранный") { role_skill = 'Вождение'; teacher = 'мэра'; }
-        else if (user.example_agent.role_class == "Альфа-волк") { role_skill = 'Лидерство'; teacher = 'мэра'; }
-        else if (user.example_agent.role_class == "Ночной ездок") { role_skill = 'Скрытность'; teacher = 'бармен'; }
-        else if (user.example_agent.role_class == "Нефтяной магнат") { role_skill = 'Торговля'; teacher = 'торговца'; }
-        else if (user.example_agent.role_class == "Воин дорог") { role_skill = 'Стрельба'; teacher = 'автодилера'; }
-        else if (user.example_agent.role_class == "Технокинетик") { role_skill = 'Механика'; teacher = 'механика'; }
+        if (user.example_agent.role_class == "Избранный") { role_skill = _("vtn_skill_1"); teacher = _("vtn_npc_1"); }
+        else if (user.example_agent.role_class == "Альфа-волк") { role_skill = _("vtn_skill_2"); teacher = _("vtn_npc_2"); }
+        else if (user.example_agent.role_class == "Ночной ездок") { role_skill = _("vtn_skill_3"); teacher = _("vtn_npc_3"); }
+        else if (user.example_agent.role_class == "Нефтяной магнат") { role_skill = _("vtn_skill_4"); teacher = _("vtn_npc_4"); }
+        else if (user.example_agent.role_class == "Воин дорог") { role_skill = _("vtn_skill_5"); teacher = _("vtn_npc_5"); }
+        else if (user.example_agent.role_class == "Технокинетик") { role_skill = _("vtn_skill_6"); teacher = _("vtn_npc_6"); }
 
-        var text =
-            'С давних времен люди научились избирать для себя роль в мире и войне. Роль позволяет получить ' +
-            'специализацию. Только сконцентрировавшись на узком направлении можно достичь значимых результатов ' +
-            'и высокой цели, какой бы она не была.</br>' +
-            'Класс ' + class_name + ' имеет один навык-специализацию: ' + role_skill + '.</br>' +
-            'При достижении классовой цели появляется возможность выбрать второй класс и второй навык-специализацию, ' +
-            'получив тем самым суперкласс и новую цель. Чтобы освоить тонкости ролевого класса, нужно найти наставника.</br>' +
-            'Для класса ' + class_name + ' искать наставника стоит в лице ' + teacher + '.';
+        var text = _("vtn_text_1") + class_name + _("vtn_text_2") + role_skill + _("vtn_text_3") + class_name + _("vtn_text_4") + teacher + '.';
         jq_main_div.append(
             '<div class="notes-visit-trainer-img"></div>' +
             '<div class="notes-visit-trainer-text">' + text + '</div>'

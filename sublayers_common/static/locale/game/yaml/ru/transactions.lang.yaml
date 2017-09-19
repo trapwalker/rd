@@ -1,0 +1,54 @@
+"locale": "ru"
+
+# TransactionTownNPC
+"tr_tnpc_npc_not_found": "У нас возникли трудности c поиском NPC в данной локации."
+"tr_tnpc_act_barter": "Действие невозможно при активном бартере"
+"tr_tnpc_no_car": "Без автомобиля это невозможно!"
+"tr_tnpc_no_money": "У вас недостаточно стредств!"
+"tr_tnpc_no_inv_space": "Недостаточно места в инвентаре."
+"tr_tnpc_bad_transaction": "Что-то пошло не так!"
+
+
+# TransactionGasStation
+"tr_tgs_fuel_nocorrect": "Недопустимое кол-во топлива!"
+"tr_tgs_do_text": "Заправка"
+
+# TransactionHangarSell
+"tr_thangarsell_do_text": "Продажа"
+
+# TransactionHangarBuy
+"tr_thangarbuy_notcorrect_car": "Выбран недоступный автомобиль!"
+"tr_thangar_swap": "Обмен на"
+"tr_thangar_buy": "Покупка"
+"tr_tpark_swap": "Обмен на"
+"tr_tpark_buy": "Забрал"
+"tr_tpark_leave": "Оставил"
+
+# TransactionGirlApply
+"tr_tgirl_service_text": "Услуга"
+
+# TransactionArmorerApply
+"tr_tarmor_no_end": "Не удалось завершить транзакцию."
+"tr_tarmor_setup_text": "Установка на"
+
+# TransactionMechanicRepairApply
+"tr_tmechrepair_bad_repair": "Недопустимое значение ремонта!"
+"tr_tmechrepair_price": "Отремонтировал на"
+
+# TransactionTunerApply
+"tr_ttuner_price": "Установка на"
+
+# TransactionTraderApply
+"tr_trader_no_count": "отсутствует в нужном количестве!"
+"tr_trader_no_trade": "не продаётся и не покупается!"
+"tr_trader_sale": "Продажа"
+"tr_trader_buy": "Покупка"
+"tr_trader_not_inv_slot": "Недостаточно свободных слотов!"
+
+# TransactionSetRPGState
+"tr_trainer_no_correct_skills": "Текущее значение навыков недопустимо!"
+"tr_trainer_no_correct_perks": "Текущее значение перков недопустимо!"
+"tr_trainer_no_correct_buy_skills": "Недопустимое значение покупных навыков!"
+"tr_trainer_perk_no_set": "Данный перк нельзя прокачать"
+"tr_trainer_price": "Прокачка персонажа"
+

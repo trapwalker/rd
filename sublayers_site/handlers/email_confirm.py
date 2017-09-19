@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_common.handlers.base import TimeMeasuredHandler
 from sublayers_common.user_profile import User
-#from sublayers_site.site_locale import locale
+#from sublayers_common.site_locale import locale
 
 from mongoengine import DoesNotExist
 from tornado.web import HTTPError

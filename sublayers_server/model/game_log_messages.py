@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.messages import Message
+from sublayers_common.site_locale import locale
 
 
 class LocationLogMessage(Message):
@@ -208,12 +209,13 @@ class TransactionGasStationLogMessage(Message):
         super(TransactionGasStationLogMessage, self).__init__(**kw)
         self.d_fuel = d_fuel
         self.tank_list = tank_list
+        self.lang = self.agent.user and self.agent.user.lang or 'en'
 
     def as_dict(self):
         d = super(TransactionGasStationLogMessage, self).as_dict()
         d.update(
             d_fuel=self.d_fuel,
-            tank_list=[tank.title for tank in self.tank_list],
+            tank_list=[locale(self.lang, tank.title) for tank in self.tank_list],
         )
         return d
 
@@ -264,13 +266,14 @@ class TransactionArmorerLogMessage(Message):
         self.setup_list = setup_list
         self.remove_list = remove_list
         self.price = price
+        self.lang = self.agent.user and self.agent.user.lang or 'en'
 
     def as_dict(self):
         d = super(TransactionArmorerLogMessage, self).as_dict()
         d.update(
             price=self.price,
-            setup_list=[item.title for item in self.setup_list],
-            remove_list=[item.title for item in self.remove_list],
+            setup_list=[locale(self.lang, item.title) for item in self.setup_list],
+            remove_list=[locale(self.lang, item.title) for item in self.remove_list],
         )
         return d
 
@@ -283,13 +286,14 @@ class TransactionMechanicLogMessage(Message):
         self.setup_list = setup_list
         self.remove_list = remove_list
         self.price = price
+        self.lang = self.agent.user and self.agent.user.lang or 'en'
 
     def as_dict(self):
         d = super(TransactionMechanicLogMessage, self).as_dict()
         d.update(
             price=self.price,
-            setup_list=[item.title for item in self.setup_list],
-            remove_list=[item.title for item in self.remove_list],
+            setup_list=[locale(self.lang, item.title) for item in self.setup_list],
+            remove_list=[locale(self.lang, item.title) for item in self.remove_list],
         )
         return d
 
@@ -320,14 +324,15 @@ class TransactionTunerLogMessage(Message):
         self.remove_list = remove_list
         self.price = price
         self.pont_point = pont_point
+        self.lang = self.agent.user and self.agent.user.lang or 'en'
 
     def as_dict(self):
         d = super(TransactionTunerLogMessage, self).as_dict()
         d.update(
             price=self.price,
             pont_point=self.pont_point,
-            setup_list=[item.title for item in self.setup_list],
-            remove_list=[item.title for item in self.remove_list],
+            setup_list=[locale(self.lang, item.title) for item in self.setup_list],
+            remove_list=[locale(self.lang, item.title) for item in self.remove_list],
         )
         return d
 
@@ -340,13 +345,14 @@ class TransactionTraderLogMessage(Message):
         self.buy_list = buy_list
         self.sell_list = sell_list
         self.price = price
+        self.lang = self.agent.user and self.agent.user.lang or 'en'
 
     def as_dict(self):
         d = super(TransactionTraderLogMessage, self).as_dict()
         d.update(
             price=self.price,
-            buy_list=[item.title for item in self.buy_list],
-            sell_list=[item.title for item in self.sell_list],
+            buy_list=[locale(self.lang, item.title) for item in self.buy_list],
+            sell_list=[locale(self.lang, item.title) for item in self.sell_list],
         )
         return d
 

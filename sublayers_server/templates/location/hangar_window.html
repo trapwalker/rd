@@ -5,7 +5,7 @@
     {% include npc_header.html %}
     <div class="hangar-center"></div>
     <div class="hangar-car-list">
-        <div class="hangar-car-list-label">{{ 'Предложение:' if cur_npc.type == 'hangar' else 'ТС на парковке:' }}</div>
+        <div class="hangar-car-list-label">{{ _("lhw_proposal") if cur_npc.type == 'hangar' else _("lhw_parking") }}</div>
         <div class="hangar-car-list-wrap">
             <div class="hangar-car-list-list"></div>
         </div>

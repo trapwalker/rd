@@ -1,0 +1,166 @@
+"locale": "en"
+
+# radio_window.html
+"radio_power": "Power"
+"radio_power_off": "OFF"
+"radio_volume": "Volume"
+"radio_channel": "Channel"
+"radio_bitrate": "Bitrate"
+
+# Шаблон Person Info Chat
+"pichr_character": "Character"
+"pichr_transport": "Car"
+"pichr_close": "Close"
+
+"pichr_class": "Class"
+"pichr_karma": "Karma"
+"pichr_driving": "Driving"
+"pichr_shooting": "Shooting"
+"pichr_hiding": "Stealthiness"
+"pichr_mechanik": "Engineering"
+"pichr_trading": "Trading"
+"pichr_leading": "Leadership"
+
+"pichr_about_self": "About me"
+"pichr_transport_empty": "No transport available"
+
+# menu_person_window.html
+"mpersw_about": "About me"
+"mpersw_lvl_text": "Level"
+"mpersw_class": "Class"
+"mpersw_karma": "Karma"
+"mpersw_driv": "Driving"
+"mpersw_shoot": "Shooting"
+"mpersw_hide": "Stealthiness"
+"mpersw_mech": "Engineering"
+"mpersw_trad": "Trading"
+"mpersw_lead": "Leadership"
+
+"mpersw_invite": "Invite"
+
+# menu_party_window
+"mpw_create": "Create"
+"mpw_manage": "Control"
+"mpw_invite": "Invites"
+
+"mpw_name": "PARTY NAME"
+"mpw_targets": "GOALS"
+"mpw_share_loot": "Setting division of experience"
+"mpw_create_btn": "Create"
+
+"mpw_invite_text": "INVITE"
+"mpw_members": "MEMBERS"
+
+"mpw_lvl_text": "Level"
+"mpw_class": "Class"
+"mpw_karma": "Karma"
+"mpw_driv": "Driving"
+"mpw_shoot": "Shooting"
+"mpw_hide": "Stealthiness"
+"mpw_mech": "Engineering"
+"mpw_trad": "Trading"
+"mpw_lead": "Leadership"
+
+"mpw_inv_text_inv": "INVITES"
+"mpw_inv_members_party": "PARTY MEMBERS"
+
+"mpw_exp_share_solo": "Each his"
+"mpw_exp_share": "Equally"
+
+"mpw_invites_js_exp": "Experience:"
+"mpw_invites_js_sender_invite": "Invited:"
+
+"mpw_dialog_join": "Join?"
+"mpw_dialog_join_question": "Are you sure you want to join "
+
+"mpw_dialog_inv_cancel": "Undo?"
+"mpw_dialog_inv_cancel_question": "Are you sure you want to uninvite?"
+
+"mpw_dialog_leave": "Leave?"
+"mpw_dialog_leave_question": "Are you sure you want to leave party?"
+"mpw_dialog_kick": "Kick?"
+"mpw_dialog_kick_question": "Are you sure you want to kick "
+
+
+# menu_journal_window
+"mjw_tasks": "Quests"
+"mjw_parkings": "Parkings"
+
+
+"mjw_q_caravan_start_text": "Departure: "
+
+"mjw_q_level": "Level: "
+
+"mjw_q_status_active_text": "Active"
+"mjw_q_status_finished_text": "Completed"
+"mjw_q_status_failed_text": "Failed"
+
+"mjw_q_desr_view_map_notes": "Display markers"
+"mjw_q_desr_q_desr": "Description"
+"mjw_q_desr_q_deadline": "Time remaining"
+"mjw_q_desr_q_history": "Events"
+
+
+# menu_character_window
+"mchw_descr": "Description"
+"mchw_lvl": "Level"
+"mchw_class": "Class"
+"mchw_karma": "Karma"
+"mchw_balance": "Balance"
+"mchw_about_self": "About me"
+"mchw_set_info": "Specifications"
+"mchw_inv": "Inventory"
+"mchw_effects": "Effects"
+"mchw_perks": "Perks"
+"mchw_perks_free": "Available points"
+
+"mchw_perks_skills": "Skills"
+"mchw_driv": "Driving"
+"mchw_shoot": "Shooting"
+"mchw_hide": "Stealthiness"
+"mchw_mech": "Engineering"
+"mchw_trad": "Trading"
+"mchw_lead": "Leadership"
+"mchw_skills_free": "Available points"
+
+
+mchw_lvl_info: "This is your character level. The more points that your character earns, the higher the level. Your character will level up every 10 skill points."
+mchw_class_info: "This is your character class. Your specialized skill depends on your skill. The rate at which it grows increases each time you earn 5 points or 1 bonus point. Your innate class quest and class perks also depend on class."
+mchw_karma_info: "This is your character's karma. It will either improve or deteriorate depending on whether your actions are good or evil. The closer your karma is to the karma of your fellow city dwellers, the better their attitude. Your karma will drop if your character engages in fraud or destroys other characters with lower levels."
+mchw_about_self_info: "Enter any text here that you would like displayed in the character window and be visible to others."
+mchw_list_perks_skill_info: "List of perks and character skills."
+mchw_exp_info: "This is the number of experience points until you unlock the next skill point. You gain experience by completing missions and destroying other characters' vehicles. The number of experience points that you gain from destroying vehicles depends on the mileage of the destroyed vehicle."
+mchw_list_perks_info: "This is the list of your character's perks. In order to get a new perk, you need to select it from a trainer in the Library. In order to pick up the perk, you need an available perk point."
+mchw_free_perks_info: "These are your perk points. You will get 1 perk point for each new character level."
+mchw_list_skills_info: "These are your character skills. You can increase your skills with the trainer in the Library, assuming that you have available skill points."
+mchw_free_skills_info: "These are skill points. As you increase your character's experience, you earn 10 skill points for each level that you complete."
+mchw_pers_inv_info: "This is your character's backpack. The items in your inventory are saved here even when you lose your vehicle. This is where your character stores his quest items and other unique items that affect your character."
+mchw_pers_effect_info: "This is a list of the positive and negative effects that are currently impacting your character."
+mchw_balance_info: 'Your electronic account in the Nukeoil system: 1 nukecoin equals 1 liter of fuel.'
+
+"mchw_perks_title": "Not available"
+"mchw_perks_description": "Perks are not available in this game mode."
+
+# Шаблон Окно инвентаря
+"iiw_all": "All"
+"iiw_cargo": "Cargo"
+"iiw_ammo": "Ammo"
+"iiw_active": "Activate"
+
+# inventory_container_window
+"icw_you_inv": "Your inventory"
+"icw_container": "Container"
+"icw_take_all": "Take all"
+
+# inventory_barter
+"ib_you_inv": "Your inventory"
+"ib_you_balance": "Your account"
+"ib_Ok": "Confirm"
+"ib_Cancel": "Cancel"
+"ib_table": "Exchange table"
+"ib_summ": "Amount to be transferred"
+"ib_summ_2": "Partner amount"
+
+# Заглушка быстрой игры quick_mode_plug
+"quick_mode_plug_1": "Function is disabled in «Quick Fight» mode"
+"quick_mode_plug_2": "Log in and start a full game."

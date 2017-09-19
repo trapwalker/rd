@@ -65,7 +65,7 @@
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_quick_game.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_news.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_ratings.css') }}"/>
-    <link rel="stylesheet" href="{{ static_url('locale/css/locale_{}.css'.format(user_lang)) }}"/>
+    <link rel="stylesheet" href="{{ static_url('locale/site/css/locale_{}.css'.format(user_lang)) }}"/>
 
     <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
     <script src="{{ static_url('js/third_party/jquery-ui.min.js') }}"></script>
@@ -396,6 +396,8 @@
     var GlobalGeneralSiteGain = 0.0;
 
     $(document).ready(function () {
+        if (!window.$ || !window.jQuery)
+            window.$ = window.jQuery = require('jquery');
         loadLocale(main);
     });
 </script>

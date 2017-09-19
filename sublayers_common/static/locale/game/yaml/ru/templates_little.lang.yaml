@@ -1,0 +1,166 @@
+"locale": "ru"
+
+# radio_window.html
+"radio_power": "Питание"
+"radio_power_off": "ВЫКЛ"
+"radio_volume": "Громкость"
+"radio_channel": "Канал"
+"radio_bitrate": "Битрейт"
+
+# Шаблон Person Info Chat
+"pichr_character": "Персонаж"
+"pichr_transport": "Транспорт"
+"pichr_close": "Закрыть"
+
+"pichr_class": "Класс"
+"pichr_karma": "Карма"
+"pichr_driving": "Вождение"
+"pichr_shooting": "Стрельба"
+"pichr_hiding": "Скрытность"
+"pichr_mechanik": "Механик"
+"pichr_trading": "Торговля"
+"pichr_leading": "Лидерство"
+
+"pichr_about_self": "О себе"
+"pichr_transport_empty": "Транспорт отсутствует"
+
+# menu_person_window.html
+"mpersw_about": "О себе"
+"mpersw_lvl_text": "Уровень"
+"mpersw_class": "Класс"
+"mpersw_karma": "Карма"
+"mpersw_driv": "Вождение"
+"mpersw_shoot": "Стрельба"
+"mpersw_hide": "Скрытность"
+"mpersw_mech": "Механика"
+"mpersw_trad": "Торговля"
+"mpersw_lead": "Лидерство"
+
+"mpersw_invite": "Пригласить"
+
+# menu_party_window
+"mpw_create": "Создание"
+"mpw_manage": "Управление"
+"mpw_invite": "Инвайты"
+
+"mpw_name": "ИМЯ ПАТИ"
+"mpw_targets": "ЦЕЛИ"
+"mpw_share_loot": "Настройка деления опыта"
+"mpw_create_btn": "Создать"
+
+"mpw_invite_text": "ПРИГЛАСИТЬ"
+"mpw_members": "УЧАСТНИКИ"
+
+"mpw_lvl_text": "Уровень"
+"mpw_class": "Класс"
+"mpw_karma": "Карма"
+"mpw_driv": "Вождение"
+"mpw_shoot": "Стрельба"
+"mpw_hide": "Скрытность"
+"mpw_mech": "Механика"
+"mpw_trad": "Торговля"
+"mpw_lead": "Лидерство"
+
+"mpw_inv_text_inv": "ИНВАЙТЫ"
+"mpw_inv_members_party": "УЧАСТНИКИ ПАТИ"
+
+"mpw_exp_share_solo": "Каждому своё"
+"mpw_exp_share": "Поровну"
+
+"mpw_invites_js_exp": "Опыт:"
+"mpw_invites_js_sender_invite": "Пригласил:"
+
+"mpw_dialog_join": "Присоединиться?"
+"mpw_dialog_join_question": "Вы уверены, что хотите присоединиться к "
+
+"mpw_dialog_inv_cancel": "Отменить?"
+"mpw_dialog_inv_cancel_question": "Вы уверены, что хотите отменить приглашение?"
+
+"mpw_dialog_leave": "Покинуть?"
+"mpw_dialog_leave_question": "Вы уверены, что хотите покинуть пати?"
+"mpw_dialog_kick": "Кикнуть?"
+"mpw_dialog_kick_question": "Вы уверены, что хотите кикнуть "
+
+
+# menu_journal_window
+"mjw_tasks": "Задания"
+"mjw_parkings": "Стоянки"
+
+
+"mjw_q_caravan_start_text": "Отправление: "
+
+"mjw_q_level": "Уровень: "
+
+"mjw_q_status_active_text": "Активные"
+"mjw_q_status_finished_text": "Выполненные"
+"mjw_q_status_failed_text": "Проваленные"
+
+"mjw_q_desr_view_map_notes": "Отображать маркера"
+"mjw_q_desr_q_desr": "Описание"
+"mjw_q_desr_q_deadline": "Осталось времени"
+"mjw_q_desr_q_history": "События"
+
+
+# menu_character_window
+"mchw_descr": "Описание"
+"mchw_lvl": "Уровень"
+"mchw_class": "Класс"
+"mchw_karma": "Карма"
+"mchw_balance": "Баланс"
+"mchw_about_self": "О себе"
+"mchw_set_info": "Характеристики"
+"mchw_inv": "Инвентарь"
+"mchw_effects": "Эффекты"
+"mchw_perks": "Перки"
+"mchw_perks_free": "Свободные очки"
+
+"mchw_perks_skills": "Навыки"
+"mchw_driv": "Вождение"
+"mchw_shoot": "Стрельба"
+"mchw_hide": "Скрытность"
+"mchw_mech": "Механика"
+"mchw_trad": "Торговля"
+"mchw_lead": "Лидерство"
+"mchw_skills_free": "Свободные очки"
+
+
+mchw_lvl_info: "Это уровень персонажа. Чем больше очков навыка он заработал, тем выше уровень. Уровень повышается каждые 10 очков навыка."
+mchw_class_info: "Это класс персонажа. От класса зависит профильный навык, который растет быстрее – за каждые 5 очков – 1 бонусное. Кроме этого от класса зависит врожденный классовый квест и классовые перки."
+mchw_karma_info: "Это Карма персонажа. В зависимости от поступков – добрых или злых, она улучшается или ухудшается. Чем ближе карма персонажа к карме городских жителей, тем лучше их отношение. Карма падает, если персонаж занимается мошенничеством или уничтожает других персонажей уровнем ниже себя."
+mchw_about_self_info: "Введите сюда любой текст, который отображается в окне персонажа и виден другим."
+mchw_list_perks_skill_info: "Список перков и навыков персонажа."
+mchw_exp_info: "Это опыт до получения следующего очка навыка. Опыт получается выполнением заданий и уничтожением транспорта других персонажей. Опыт за уничтожение транспорта получается в зависимости от пробега уничтоженного транспорта."
+mchw_list_perks_info: "Это список перков персонажа.  Что бы получить новый перк – нужно выбрать его у тренера в Библиотеке, имея при этом свободное очко перка."
+mchw_free_perks_info: "Это очки перков. 1 очко перка получается за каждый новый уровень персонажа."
+mchw_list_skills_info: "Это навыки персонажа. Навыки увеличиваются у тренера в Библиотеке, имея при этом свободные очки навыков."
+mchw_free_skills_info: "Это очки навыков. По мере роста опыта персонаж зарабатывает очки навыка, 10 за один уровень."
+mchw_pers_inv_info: "Это рюкзак персонажа. Вещи в инвентаре сохраняются даже если был потерян транспорт. Сюда помещаются квестовые предметы и другие уникальные предметы, влияющие на персонажа."
+mchw_pers_effect_info: "Это список положительных и отрицательных эффектов, влияющих на персонажа в данный момент."
+mchw_balance_info: "Ваш электронный счет в системе Нукойл: 1 нукойн равен 1 литру топлива."
+
+"mchw_perks_title": "Не доступно"
+"mchw_perks_description": "Перки не доступны в данном режме игры."
+
+# Шаблон Окно инвентаря
+"iiw_all": "Всё"
+"iiw_cargo": "Груз"
+"iiw_ammo": "Боеприпасы"
+"iiw_active": "Активировать"
+
+# inventory_container_window
+"icw_you_inv": "Ваш инвентарь"
+"icw_container": "Контейнер"
+"icw_take_all": "Взять всё"
+
+# inventory_barter
+"ib_you_inv": "Ваш инвентарь"
+"ib_you_balance": "Ваш счет"
+"ib_Ok": "Подтвердить"
+"ib_Cancel": "Отмена"
+"ib_table": "Столик обмена"
+"ib_summ": "Сумма к переводу"
+"ib_summ_2": "Сумма партнера"
+
+# Заглушка быстрой игры quick_mode_plug
+"quick_mode_plug_1": "Функция заблокирована в режиме «Быстрый бой»"
+"quick_mode_plug_2": "Авторизуйтесь и начните полноценную игру."

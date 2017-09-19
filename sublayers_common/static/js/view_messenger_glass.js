@@ -682,43 +682,43 @@ var ViewMessengerGlass = (function () {
             switch (msg.cls) {
                 case "LocationLogMessage":
                     if (msg.action == "enter")
-                        this.addMessageToLog('Вы вошли в город - ' + msg.location_name + '.');
+                        this.addMessageToLog(_("chat_log_loc_enter") + _(msg.location_name) + '.');
                     if (msg.action == "exit")
-                        this.addMessageToLog('Вы покинули город - ' + msg.location_name + '.');
+                        this.addMessageToLog(_("chat_log_loc_exit") + _(msg.location_name) + '.');
                     break;
                 case "BarterLogMessage":
                     if (msg.action == "invite")
-                        this.addMessageToLog('Игрок - ' + msg.apponent + ' приглашает вас в бартер.', true);
+                        this.addMessageToLog(_("chat_log_barter_player") + msg.apponent + _("chat_log_barter_player_inv"), true);
                     if (msg.action == "start")
-                        this.addMessageToLog('Активирован бартер с игроком - ' + msg.apponent + '.');
+                        this.addMessageToLog(_("chat_log_barter_activate") + msg.apponent + '.');
                     if (msg.action == "end")
-                        this.addMessageToLog('Завершен бартер с игроком - ' + msg.apponent + '.');
+                        this.addMessageToLog(_("chat_log_barter_ended") + msg.apponent + '.');
                     break;
                 case "ExpLogMessage":
-                    this.addMessageToLog('Получено ' + msg.d_exp + ' очков опыта.');
+                    this.addMessageToLog(_("chat_log_exp_1") + msg.d_exp + _("chat_log_exp_2"));
                     break;
                 case "LvlLogMessage":
-                    this.addMessageToLog('Достигнут ' + msg.lvl + ' уровень.', true);                    
+                    this.addMessageToLog(_("chat_log_exp_lvl_1") + msg.lvl + _("chat_log_exp_lvl_2"), true);
                     // Google Analytics
                     analytics.get_level(msg.lvl);
                     break;
                 case "SkillLogMessage":
-                    this.addMessageToLog('Очков навыка получено: ' + msg.skill, true);
+                    this.addMessageToLog(_("chat_log_skills_get") + ': ' + msg.skill, true);
                     break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action) {
-                        this.addMessageToLog('Получен квест: ' + msg.quest_caption + '.');
+                        this.addMessageToLog(_("chat_log_quest_start") + ': ' + _(msg.quest_caption) + '.');
                         // Google Analytics
                         analytics.get_quest();
                     }
                     else {
                         if (msg.result == 'fail') {
-                            this.addMessageToLog('Провален квест: ' + msg.quest_caption + '.', true);
+                            this.addMessageToLog(_("chat_log_quest_fail") + ': ' + _(msg.quest_caption) + '.', true);
                             // Google Analytics
                             analytics.fail_quest();
                         }
                         else {
-                            this.addMessageToLog('Выполнен квест: ' + msg.quest_caption + '.', true);
+                            this.addMessageToLog(_("chat_log_quest_finish") + ': ' + _(msg.quest_caption) + '.', true);
                             // Google Analytics
                             analytics.end_quest();
                         }
@@ -727,95 +727,95 @@ var ViewMessengerGlass = (function () {
                 case 'InventoryChangeLogMessage':
                     // console.log('InventoryChangeLogMessage', msg);
                     if (msg.outgoings && msg.outgoings.length) {
-                        var s = 'Отдано: ';
+                        var s = _("chat_log_inv_items_gone") + ': ';
                         for (var i = 0; i < msg.outgoings.length; i++) {
-                            s = s + ' ' + msg.outgoings[i].item_title + ' x' + msg.outgoings[i].value + ',';
+                            s = s + ' ' + _(msg.outgoings[i].item_title) + ' x' + msg.outgoings[i].value + ',';
                         }
                         s = s.substr(0, s.length - 1) + '.';
                         this.addMessageToLog(s);
                     }
                     if (msg.incomings && msg.incomings.length) {
-                        var s = 'Получено: ';
+                        var s = _("chat_log_inv_items_come") + ': ';
                         for (var i = 0; i < msg.incomings.length; i++) {
-                            s = s + ' ' + msg.incomings[i].item_title + ' x' + msg.incomings[i].value + ',';
+                            s = s + ' ' + _(msg.incomings[i].item_title) + ' x' + msg.incomings[i].value + ',';
                         }
                         s = s.substr(0, s.length - 1) + '.';
                         this.addMessageToLog(s);
                     }
                     break;
                 case "WeaponAmmoFinishedLogMessage":
-                    this.addMessageToLog('Закончились патроны для ' + msg.weapon_name + '.', true);
-                    new WTextArcade('Кончились патроны для ' + msg.weapon_name).start();
+                    this.addMessageToLog(_("chat_log_ammo_off") + msg.weapon_name + '.', true);
+                    new WTextArcade(_("ta_ammo_off") + msg.weapon_name).start();
                     break;
                 case "TransactionActivateItemLogMessage":
-                    this.addMessageToLog('Активирован предмет ' + msg.item_title + '.');
+                    this.addMessageToLog(_("chat_log_act_item") + _(msg.item_title) + '.');
                     break;
                 case "TransactionActivatePackageLogMessage":
-                    this.addMessageToLog('Вскрыта посылка.');
+                    this.addMessageToLog(_("chat_log_open_delivery"));
                     break;
                 case "TransactionCancelActivateItemLogMessage":
-                    this.addMessageToLog('Отмена активации итема: ' + msg.item_title + '.');
+                    this.addMessageToLog(_("chat_log_cancel_act_item") + ': ' + _(msg.item_title) + '.');
                     break;
                 case "TransactionDisableActivateItemLogMessage":
-                    this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Необходимо выполнение следующих условий: ' + msg.activate_comment + '.');
+                    this.addMessageToLog(_("chat_log_fail_act_item") + ': ' + _(msg.item_title) + '. ' + _("chat_log_fail_act_item_desr") + ': ' + _(msg.activate_comment) + '.');
                     // TODO: вынести в model_manager
                     audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     break;
                 case "TransactionDisableActivateItemTimeoutLogMessage":
-                    this.addMessageToLog('Активации итема: ' + msg.item_title + ' невозможна. Таймаут активации 1 секунда.');
+                    this.addMessageToLog(_("chat_log_fail_act_item") + ': ' + _(msg.item_title) + '. ' + _("chat_log_fail_act_item_timeout"));
                     // TODO: вынести в model_manager
                     audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     break;
                 case "TransactionDisableActivateItemNotFoundLogMessage":
-                    this.addMessageToLog('Активации итема: невозможна. Итем не установлен.');
+                    this.addMessageToLog(_("chat_log_fail_act_item_not_found"));
                     // TODO: вынести в model_manager
                     audioManager.play({name: "error_1", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
                     break;
                 case "TransactionActivateTankLogMessage":
-                    this.addMessageToLog('В бак залито ' + msg.value_fuel + 'л.');
-                    new WTextArcade('+' + msg.value_fuel + 'л').start();
+                    this.addMessageToLog(_("chat_log_fuel_add_1") + msg.value_fuel + _("chat_log_fuel_l"));
+                    new WTextArcade('+' + msg.value_fuel + _("ta_add_fuel")).start();
                     break;
                 case "TransactionActivateRebuildSetLogMessage":
-                    this.addMessageToLog('Автомобиль починен на ' + msg.build_points + 'hp.');
+                    this.addMessageToLog(_("chat_log_add_hp") + msg.build_points + 'hp.');
                     new WTextArcade('+' + msg.build_points + 'hp').start();
                     break;
                 case "TransactionActivateAmmoBulletsLogMessage":
-                    this.addMessageToLog('Заряжено: ' + msg.ammo_title + '.');
+                    this.addMessageToLog(_("chat_log_ammo_set") + _(msg.ammo_title) + '.');
                     break;
                 case "TransactionActivateMineLogMessage":
-                    this.addMessageToLog('Установлена мина: ' + msg.item_title + '.');
-                    new WTextArcade('Установлена мина').start();
+                    this.addMessageToLog(_("chat_log_setup_mine") + _(msg.item_title) + '.');
+                    new WTextArcade(_("ta_setup_mine")).start();
                     break;
                 case "TransactionActivateRocketLogMessage":
-                    this.addMessageToLog('Запущена ракета: ' + msg.item_title + '.');
-                    //new WTextArcade('Запущена ракета').start();
+                    this.addMessageToLog(_("chat_log_rocket_start") + _(msg.item_title) + '.');
+                    //new WTextArcade(_("ta_setup_rocket)).start();
                     break;
                 case "TransactionActivateTurretLogMessage":
-                    this.addMessageToLog('Установлена турель: ' + msg.item_title + '.');
-                    new WTextArcade('Установлена турель').start();
+                    this.addMessageToLog(_("chat_log_setup_turret") + _(msg.item_title) + '.');
+                    new WTextArcade(_("ta_setup_turret")).start();
                     break;
                 case "TransactionActivateMapRadarLogMessage":
-                    this.addMessageToLog('Установлен радар: ' + msg.item_title + '.');
+                    this.addMessageToLog(_("chat_log_setup_radar") + _(msg.item_title) + '.');
                     break;
                 case "TransactionGasStationLogMessage":
                     if (msg.d_fuel > 0)
-                        this.addMessageToLog('В бак долито ' +  Math.trunc(msg.d_fuel) + ' литров топлива.');
+                        this.addMessageToLog(_("chat_log_fuel_added_text") +  Math.trunc(msg.d_fuel) + _("chat_log_fuel_added_value"));
                     //for (var i = 0; i < msg.tank_list.length; i++)
                     //    this.addMessageToLog('Заправлена канистра ' + msg.tank_list[i] + ' литров.');
                     if (msg.tank_list.length > 0)
-                        this.addMessageToLog('Заправлены канистры: ' + msg.tank_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_taks_list") + msg.tank_list.join(', ') + '.');
                     break;
                 case "TransactionHangarLogMessage":
                     if (msg.action == "sell")
-                        this.addMessageToLog('Продана машина - ' + msg.car + ', получено ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_car_sale") + _(msg.car) + ', ' + _("chat_log_tt_1") + ' ' + msg.price + 'nc.');
                     if (msg.action == "buy")
-                        this.addMessageToLog('Куплена машина - ' + msg.car + ', потрачено ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_car_buy") + _(msg.car) + ', ' + _("chat_log_tt_2") + ' ' + msg.price + 'nc.');
                     break;
                 case "TransactionParkingLogMessage":
                     if (msg.action == "select")
-                        this.addMessageToLog('Вы забрали машину - ' + msg.car + ' со стоянки, потрачено ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_get_car") + _(msg.car) + ' ' + _("chat_log_tt_3") + ', ' + _("chat_log_tt_4") + ' ' + msg.price + 'nc.');
                     if (msg.action == "leave")
-                        this.addMessageToLog('Вы оставили машину - ' + msg.car + ' на стоянке.');
+                        this.addMessageToLog(_("chat_log_give_car") + _(msg.car) + ' ' + _("chat_log_tt_5"));
                     break;
                 case 'TransactionArmorerLogMessage':
                     //for (var i = 0; i < msg.remove_list.length; i++)
@@ -823,11 +823,11 @@ var ViewMessengerGlass = (function () {
                     //for (var i = 0; i < msg.setup_list.length; i++)
                     //    this.addMessageToLog('Оружейником установлено оборудование - ' + msg.setup_list[i] + '.');
                     if (msg.remove_list.length > 0)
-                        this.addMessageToLog('Оружейником демонтировано оборудование: ' + msg.remove_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_arm_items_off") + ': ' + msg.remove_list.join(', ') + '.');
                     if (msg.setup_list.length > 0)
-                        this.addMessageToLog('Оружейником установлено оборудование: ' + msg.setup_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_arm_items_on") + ': ' + msg.setup_list.join(', ') + '.');
                     if (msg.price > 0)
-                        this.addMessageToLog('На оплату работы оружейника потрачено - ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_arm_price") + msg.price + 'nc.');
                     break;
                 case 'TransactionMechanicLogMessage':
                     //for (var i = 0; i < msg.remove_list.length; i++)
@@ -835,14 +835,14 @@ var ViewMessengerGlass = (function () {
                     //for (var i = 0; i < msg.setup_list.length; i++)
                     //    this.addMessageToLog('Механиком установлено оборудование - ' + msg.setup_list[i] + '.');
                     if (msg.remove_list.length > 0)
-                        this.addMessageToLog('Механиком демонтировано оборудование: ' + msg.remove_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_mech_items_off") + ': ' + msg.remove_list.join(', ') + '.');
                     if (msg.setup_list.length > 0)
-                        this.addMessageToLog('Механиком установлено оборудование: ' + msg.setup_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_mech_items_on") + ': ' + msg.setup_list.join(', ') + '.');
                     if (msg.price > 0)
-                        this.addMessageToLog('На оплату работы механика потрачено - ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_mech_price") + msg.price + 'nc.');
                     break;
                 case 'TransactionMechanicRepairLogMessage':
-                    this.addMessageToLog('Механиком восстановлено - ' + Math.trunc(msg.hp) + ' очков прочности, потрачено - ' + msg.price + ' nc.');
+                    this.addMessageToLog(_("chat_log_mech_repair_1") + Math.trunc(msg.hp) + _("chat_log_mech_repair_2") + ', ' + _("chat_log_mech_repair_3") + msg.price + ' nc.');
                     break;
                 case 'TransactionTunerLogMessage':
                     //for (var i = 0; i < msg.remove_list.length; i++)
@@ -850,16 +850,16 @@ var ViewMessengerGlass = (function () {
                     //for (var i = 0; i < msg.setup_list.length; i++)
                     //    this.addMessageToLog('Тюнером установлено оборудование - ' + msg.setup_list[i] + '.');
                     if (msg.remove_list.length > 0)
-                        this.addMessageToLog('Тюнером демонтировано оборудование: ' + msg.remove_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_tuner_items_off") + msg.remove_list.join(', ') + '.');
                     if (msg.setup_list.length > 0)
-                        this.addMessageToLog('Тюнером установлено оборудование: ' + msg.setup_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_tuner_items_on") + msg.setup_list.join(', ') + '.');
                     if (msg.pont_point != 0)
                         if (pont_point > 0)
-                            this.addMessageToLog('Получено - ' + Math.trunc(msg.pont_point) + ' очков крутости.');
+                            this.addMessageToLog(_("chat_log_tuner_points_inc") + Math.trunc(msg.pont_point) + _("chat_log_tuner_points_points"));
                         else
-                            this.addMessageToLog('Потеряно - ' + Math.trunc(-msg.pont_point) + ' очков крутости.');
+                            this.addMessageToLog(_("chat_log_tuner_points_dec") + Math.trunc(-msg.pont_point) + _("chat_log_tuner_points_points"));
                     if (msg.price > 0)
-                        this.addMessageToLog('На оплату работы тюнера потрачено - ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_tuner_price") + msg.price + 'nc.');
                     break;
                 case 'TransactionTraderLogMessage':
                     //for (var i = 0; i < msg.sell_list.length; i++)
@@ -867,27 +867,27 @@ var ViewMessengerGlass = (function () {
                     //for (var i = 0; i < msg.buy_list.length; i++)
                     //    this.addMessageToLog('У торговца куплен предмет - ' + msg.buy_list[i] + '.');
                     if (msg.sell_list.length > 0)
-                        this.addMessageToLog('Торговцу проданы предметы: ' + msg.sell_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_trader_items_give") + msg.sell_list.join(', ') + '.');
                     if (msg.buy_list.length > 0)
-                        this.addMessageToLog('У торговца куплены предметы: ' + msg.buy_list.join(', ') + '.');
+                        this.addMessageToLog(_("chat_log_trader_items_get") + msg.buy_list.join(', ') + '.');
                     if (msg.price != 0)
                         if (msg.price > 0)
-                            this.addMessageToLog('У торговца потрачено - ' + Math.trunc(msg.price) + 'nc.');
+                            this.addMessageToLog(_("chat_log_trader_money_give") + Math.trunc(msg.price) + 'nc.');
                         else
-                            this.addMessageToLog('От торговца получено - ' + Math.trunc(-msg.price) + 'nc.');
+                            this.addMessageToLog(_("chat_log_trader_money_get") + Math.trunc(-msg.price) + 'nc.');
                     break;
                 case 'TransactionTrainerLogMessage':
                     if (msg.buy_skill_count > 0)
-                        this.addMessageToLog('Очков навыков приобретено: ' + msg.buy_skill_count + '.');
+                        this.addMessageToLog(_("chat_log_trainer_skills_buy") + msg.buy_skill_count + '.');
                     if (msg.skill_count > 0)
-                        this.addMessageToLog('Очков навыков распределено: ' + msg.skill_count + '.');
+                        this.addMessageToLog(_("chat_log_trainer_skills_set") + msg.skill_count + '.');
                     if (msg.perk_count > 0)
-                        this.addMessageToLog('Очков перков распределено: ' + msg.perk_count + '.');
+                        this.addMessageToLog(_("chat_log_trainer_perks_set") + msg.perk_count + '.');
                     if (msg.price > 0)
-                        this.addMessageToLog('На оплату работы тренера потрачено - ' + msg.price + 'nc.');
+                        this.addMessageToLog(_("chat_log_trainer_price") + msg.price + 'nc.');
                     break;
                 case 'PowerUPLogMessage':
-                    this.addMessageToLog('Подобрано: ' + msg.comment + '.');
+                    this.addMessageToLog(_("chat_log_loot_get") + msg.comment + '.');
                     new WTextArcade(msg.comment).start();
                     break;
                 case 'SystemChatMessage':
@@ -936,55 +936,55 @@ var ViewMessengerGlass = (function () {
         var important = false;
         switch (msg.cls) {
             case 'AgentPartyChangeMessage':
-                aText = msg.subj.login + (msg.subj.party != null ? ' присоединился к группе' : ' покинул группу');
+                aText = msg.subj.login + (msg.subj.party != null ? _("chat_log_party_join") : _("chat_log_party_leave"));
                 break;
             case 'PartyIncludeMessageForIncluded':
-                aText = 'Вы включены в состав группы ' + msg.party.name;
+                aText = _("chat_log_party_u_join") + msg.party.name;
                 important = true;
                 break;
             case 'PartyExcludeMessageForExcluded':
-                aText = 'Вы исключены из состава группы ' + msg.party.name;
+                aText = _("chat_log_party_u_leave") + msg.party.name;
                 important = true;
                 break;
             case 'PartyKickMessageForKicked':
-                aText = 'Вас выгнали из состава группы ' + msg.party.name;
+                aText = _("chat_log_party_u_kick") + msg.party.name;
                 important = true;
                 break;
             case 'PartyInviteMessage':
                 if (user.login == msg.recipient.login) {
                     // значит инвайт для меня
-                    aText = msg.sender.login + ' приглашает Вас вступить в группу ' + msg.party.name;
+                    aText = msg.sender.login + _("chat_log_party_u_inv") + msg.party.name;
                     important = true;
                 } else {
                     // значит инвайт для кого-то другого
                     if (user.login == msg.sender.login) {
                         // значит я пригласил кого-то
-                        aText ='Ваше приглашение отправлено для ' + msg.recipient.login;
+                        aText =_("chat_log_party_u_inv_send") + msg.recipient.login;
                     }
                     else // просто кто-то кого-то пригласил
-                        aText = msg.sender.login + ' приглашает ' + msg.recipient.login + ' вступить в группу ' + msg.party.name;
+                        aText = msg.sender.login + _("chat_log_party_inv") + msg.recipient.login + _("chat_log_party_join_in") + msg.party.name;
                 }
                 break;
             case 'PartyInviteDeleteMessage':
                 if (user.login == msg.recipient.login) {
                     // значит инвайт для меня был кем-то отклонён, возможно даже мной
                     important = true;
-                    aText = 'Приглашание вступить в группу ' + msg.party.name + ' от ' + msg.sender.login + ' отклонено.';
+                    aText = _("chat_log_party_inv_in") + msg.party.name + _("chat_log_party_from") + msg.sender.login + _("chat_log_party_inv_off");
                 } else {
                     // значит инвайт для кого-то другого
                     if (user.login == msg.sender.login) {
                         // значит я пригласил кого-то, и как-то это приглашение было отклонено
-                        aText ='Ваше приглашение для ' + msg.recipient.login + ' отклонено.';
+                        aText =_("chat_log_party_u_inv_for") + msg.recipient.login + _("chat_log_party_inv_off");
                     }
                     else // просто кто-то кого-то пригласил
-                        aText = 'Приглашение от ' + msg.sender.login + ' для ' + msg.recipient.login + ' отклонено.';
+                        aText = _("chat_log_party_inv_from") + msg.sender.login + _("chat_log_party_for") + msg.recipient.login + _("chat_log_party_inv_off");
                 }
                 break;
             case 'PartyErrorMessage':
-                aText = 'Ошибка: ' + msg.comment;
+                aText = _("chat_log_party_error") + msg.comment;
                 break;
             default:
-                aText = 'Неизвестная информация о пати!';
+                aText = _("chat_log_party_unknown_info");
                 console.warn('Unknown party message: ', msg);
         }
 

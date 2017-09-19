@@ -28,7 +28,7 @@
         try {ga('send', 'event', 'btn_site', 'redirect', 'play');}
         catch(e){console.warn('GA not defined');}
 
-        window.location = '/play';
+        window.location = '/play' + (window.__electron_mode ? "?mode=electron" : "");
     }
 
     function Logout() {
@@ -38,8 +38,17 @@
             data: {_xsrf: getCookie('_xsrf')},
             success: function() {
                 registration_status = 'not_register';
-                $('#RDbtn_start').click();
+                if(window.__electron_mode) {
+                    //EmitClickBtnStart();
+                    var c = require('electron').remote.getCurrentWebContents();
+                    if (c && c.canGoBack())
+                        c.goToIndex(0);
+                }
+
+                else
+                    $('#RDbtn_start').click();
                 $('#RDSAuthFieldNote').text('');
+
                 audioManager.play('button_screen_press');
             }
         });

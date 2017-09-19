@@ -1,0 +1,16 @@
+"locale": "en"
+"__prefix": "w__"
+
+"w__weight_class__undefined": "Not specified"
+"w__weight_class__light": "Light"
+"w__weight_class__middle": "Middle"
+"w__weight_class__heavy": "Heavy"
+
+"w__weight_class": "Class"
+"w__damage": "Damage"
+"w__dps": "Damage per second"
+"w__time_recharge": "Reloading"
+"w__radius": "Range"
+"w__sector": "Sector"
+"w__power_penetration": "Penetration"
+"w__ammo": "Ammo"

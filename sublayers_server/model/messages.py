@@ -8,7 +8,7 @@ from sublayers_server.model.balance import BALANCE
 
 import math
 import os.path
-import tornado.template
+from tornado.template import Loader, Template
 from tornado.options import options
 from ctx_timer import Timer, T
 
@@ -670,14 +670,15 @@ class EnterToLocation(Message):
         location = self.location
         if self.agent.resolution_scale not in ['big', 'small']:
             self.agent.resolution_scale = 'big'
-        cache_index = '{}_{}'.format(location.example.uri, self.agent.resolution_scale)
+        lang = self.agent.connection.user_lang
+        cache_index = '{}_{}_{}'.format(location.example.uri, self.agent.resolution_scale, lang)
         location_html = self.locations_cache.get(cache_index, None)
         if location_html is None:
             svg_link_common = os.path.join(options.static_path, 'content/locations/map_locations/common')
             svg_code_common = ''
             svg_code_btn = ''
-            svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'
-            svg_code_btn_file = 'location_btn_big.svg' if self.agent.resolution_scale == 'big' else 'location_btn_small.svg'
+            svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'.format(lang)
+            svg_code_btn_file = 'location_btn_big_{}.svg'.format(lang) if self.agent.resolution_scale == 'big' else 'location_btn_small_{}.svg'.format(lang)
             with open(os.path.join(svg_link_common, svg_code_common_file)) as f:
                 svg_code_common = f.read()
                 svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
@@ -687,15 +688,15 @@ class EnterToLocation(Message):
 
             svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
             svg_code = ''
-            with open(os.path.join(svg_link, 'location.svg')) as f:
+            with open(os.path.join(svg_link, 'location_{}.svg'.format(lang))) as f:
                 svg_code = f.read()
                 svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
             location_html = ''
             from sublayers_server.model.map_location import Town, GasStation
             if isinstance(location, Town) or isinstance(location, GasStation):
-                location_html = tornado.template.Loader(
+                location_html = Loader(
                     root_directory="templates/location",
-                    namespace=self.agent.connection.get_template_namespace()
+                    namespace=self.agent.connection.get_template_namespace(),
                 ).load("location.html").generate(location=location, svg_code=svg_code, svg_code_common=svg_code_common,
                                                  svg_code_btn=svg_code_btn, is_big=(self.agent.resolution_scale == 'big'), car=None)
             else:
@@ -908,12 +909,12 @@ class JournalParkingInfoMessage(Message):
     def as_dict(self):
         d = super(JournalParkingInfoMessage, self).as_dict()
 
-        template_table = tornado.template.Loader(
+        template_table = Loader(
             "templates/location",
             namespace=self.agent.connection.get_template_namespace()
         ).load("car_info_table.html")
 
-        template_img = tornado.template.Loader(
+        template_img = Loader(
             "templates/location",
             namespace=self.agent.connection.get_template_namespace()
         ).load("car_info_img_ext.html")
@@ -923,7 +924,7 @@ class JournalParkingInfoMessage(Message):
                 car=car.as_client_dict(),
                 html_car_table=template_table.generate(car=car, agent=None),
                 html_car_img=template_img.generate(car=car),
-                # armorer_css=tornado.template.Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True)
+                # armorer_css=Loader('.').load(car.armorer_car).generate(car=car, need_css_only=True)
                 armorer_css=''
             ),
             location=car.last_location.node_hash(),
@@ -1073,11 +1074,11 @@ class UserExampleCarView(Message):
         templates = dict()
         if ex_car:
             # Шаблоны машинки
-            template_car_img = tornado.template.Loader(
+            template_car_img = Loader(
                 "../sublayers_server/templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
-            template_table = tornado.template.Loader(
+            template_table = Loader(
                 "templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_table.html")
@@ -1126,9 +1127,10 @@ class UserExampleCarNPCTemplates(Message):
         d['templates'] = dict()
         ex_car = self.agent.example.profile.car
         if ex_car:
-            template_armorer_car = tornado.template.Loader(
+            namespace=self.agent.connection.get_template_namespace()
+            template_armorer_car = Loader(
                 "../sublayers_common/",
-                namespace=self.agent.connection.get_template_namespace()
+                namespace=namespace
             ).load(ex_car.armorer_car)
 
             path_static = os.path.join(options.static_path, '..')
@@ -1144,20 +1146,26 @@ class UserExampleCarNPCTemplates(Message):
 
             # механик-системы
             mechanic_engine = ''
+            # todo: измерять скорость обработки, возможно закешировать по локалям
             with open(os.path.join(path_static, ex_car.mechanic_engine)) as f:
                 mechanic_engine = f.read()
+                mechanic_engine = Template(mechanic_engine).generate(**namespace)
             mechanic_transmission = ''
             with open(os.path.join(path_static, ex_car.mechanic_transmission)) as f:
                 mechanic_transmission = f.read()
+                mechanic_transmission = Template(mechanic_transmission).generate(**namespace)
             mechanic_brakes = ''
             with open(os.path.join(path_static, ex_car.mechanic_brakes)) as f:
                 mechanic_brakes = f.read()
+                mechanic_brakes = Template(mechanic_brakes).generate(**namespace)
             mechanic_cooling = ''
             with open(os.path.join(path_static, ex_car.mechanic_cooling)) as f:
                 mechanic_cooling = f.read()
+                mechanic_cooling = Template(mechanic_cooling).generate(**namespace)
             mechanic_suspension = ''
             with open(os.path.join(path_static, ex_car.mechanic_suspension)) as f:
                 mechanic_suspension = f.read()
+                mechanic_suspension = Template(mechanic_suspension).generate(**namespace)
 
             d['templates']['html_armorer_car'] = template_armorer_car.generate(car=ex_car, need_css_only=False)
             d['templates']['html_tuner_car'] = html_tuner_car
@@ -1276,11 +1284,11 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
         if ex_car:
             # Шаблоны машинки
             templates = dict()
-            template_car_img = tornado.template.Loader(
+            template_car_img = Loader(
                 "../sublayers_server/templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
-            template_table = tornado.template.Loader(
+            template_table = Loader(
                 "templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_table.html")
@@ -1320,9 +1328,10 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
         d = super(UserExampleSelfMessage, self).as_dict()
         ex_car = self.agent.example.profile.car
         if ex_car:
-            template_armorer_car = tornado.template.Loader(
+            namespace=self.agent.connection.get_template_namespace()
+            template_armorer_car = Loader(
                 "../sublayers_common/",
-                namespace=self.agent.connection.get_template_namespace()
+                namespace=namespace
             ).load(ex_car.armorer_car)
 
             path_static = os.path.join(options.static_path, '..')
@@ -1337,21 +1346,27 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
                 armorer_sectors_svg = f.read()
 
             # механик-системы
+            # todo: измерять скорость обработки, возможно закешировать по локалям
             mechanic_engine = ''
             with open(os.path.join(path_static, ex_car.mechanic_engine)) as f:
                 mechanic_engine = f.read()
+                mechanic_engine = Template(mechanic_engine).generate(**namespace)
             mechanic_transmission = ''
             with open(os.path.join(path_static, ex_car.mechanic_transmission)) as f:
                 mechanic_transmission = f.read()
+                mechanic_transmission = Template(mechanic_transmission).generate(**namespace)
             mechanic_brakes = ''
             with open(os.path.join(path_static, ex_car.mechanic_brakes)) as f:
                 mechanic_brakes = f.read()
+                mechanic_brakes = Template(mechanic_brakes).generate(**namespace)
             mechanic_cooling = ''
             with open(os.path.join(path_static, ex_car.mechanic_cooling)) as f:
                 mechanic_cooling = f.read()
+                mechanic_cooling = Template(mechanic_cooling).generate(**namespace)
             mechanic_suspension = ''
             with open(os.path.join(path_static, ex_car.mechanic_suspension)) as f:
                 mechanic_suspension = f.read()
+                mechanic_suspension = Template(mechanic_suspension).generate(**namespace)
 
             d['templates']['html_armorer_car'] = template_armorer_car.generate(car=ex_car, need_css_only=False)
             d['templates']['html_tuner_car'] = html_tuner_car
@@ -1413,33 +1428,29 @@ class HangarInfoMessage(NPCInfoMessage):
     template_img = None
 
     def get_car_list(self, npc):
-        car_list = HangarInfoMessage.npc_cars.get(npc.uri, None)
+        npc_key = '{}_{}'.format(npc.uri, self.agent.connection and self.agent.connection.user_lang or 'en')
+        car_list = HangarInfoMessage.npc_cars.get(npc_key, None)
         if car_list is None:
+            namespace = self.agent.connection.get_template_namespace()
             if HangarInfoMessage.template_table:
                 template_table = HangarInfoMessage.template_table
             else:
-                template_table = tornado.template.Loader(
-                    "templates/location",
-                    namespace=self.agent.connection.get_template_namespace()
-                ).load("car_info_table.html")
+                template_table = Loader("templates/location").load("car_info_table.html")
                 HangarInfoMessage.template_table = template_table
 
             if HangarInfoMessage.template_img:
                 template_img = HangarInfoMessage.template_img
             else:
-                template_img = tornado.template.Loader(
-                    "templates/location",
-                    namespace=self.agent.connection.get_template_namespace()
-                ).load("car_info_img_ext.html")
+                template_img = Loader("templates/location").load("car_info_img_ext.html")
             HangarInfoMessage.template_img = template_img
 
             car_list = [dict(
                 car=car.as_client_dict(),
-                html_car_table=template_table.generate(car=car, agent=None),
-                html_car_img=template_img.generate(car=car),
+                html_car_table=template_table.generate(car=car, agent=None, **namespace),
+                html_car_img=template_img.generate(car=car, **namespace),
             ) for car in npc.car_list or []]
 
-            HangarInfoMessage.npc_cars[npc.uri] = car_list
+            HangarInfoMessage.npc_cars[npc_key] = car_list
         return car_list
 
     def as_dict(self):
@@ -1461,11 +1472,11 @@ class ParkingInfoMessage(NPCInfoMessage):
         npc = self.npc
         agent = self.agent
         if npc and npc.type == 'parking':
-            template_table = tornado.template.Loader(
+            template_table = Loader(
                 "templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_table.html")
-            template_img = tornado.template.Loader(
+            template_img = Loader(
                 "templates/location",
                 namespace=agent.connection.get_template_namespace()
             ).load("car_info_img_ext.html")
@@ -1560,11 +1571,11 @@ class InteractionInfoMessage(Message):
 
             # Еслли есть машинка то отправить ее шаблоны и имя
             if player_profile.car:
-                template_table = tornado.template.Loader(
+                template_table = Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_table.html")
-                template_img = tornado.template.Loader(
+                template_img = Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")
@@ -1602,7 +1613,7 @@ class PartyUserInfoMessage(Message):
 
             # Еслли есть машинка то отправить ее шаблоны и имя
             if player_profile.car:
-                template_img = tornado.template.Loader(
+                template_img = Loader(
                     "templates/location",
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")

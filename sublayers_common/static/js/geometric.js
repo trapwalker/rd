@@ -226,14 +226,19 @@ toHHMMSS = function (value) {
 toHH = function (value) {
     var sec_num = parseInt(Math.floor(value / 1000.), 10);
     var hours   = Math.floor(sec_num / 3600);
-    if (hours == 0) return "< 1ч.";
-    return hours + 'ч.';
+    if (hours == 0) return "< 1" + _("hours_cut");
+    return hours + _("hours_cut");
 };
 
-var const_karma_list = ['Новая надежда', 'Мессия', 'Спаситель', 'Святой', 'Герой', 'Страж', 'Борец', 'Спасатель',
-    'Защитник', 'Друг людей', 'Правильный', 'Честный парень', 'Партнер', 'Славный малый', 'Поселенец',
-    'Человек простой', 'Странник', 'Наблюдатель', 'Выживальщик', 'Авантюрист', 'Равнодушный', 'Циник', 'Хулиган',
-    'Жулик', 'Изгой', 'Мошенник', 'Грабитель', 'Захватчик', 'Убийца', 'Псих', 'Больной ублюдок', 'Маньяк', 'Антихрист'];
+var const_karma_list = [
+    _("karma_name_01"), _("karma_name_02"), _("karma_name_03"), _("karma_name_04"), _("karma_name_05"),
+    _("karma_name_06"), _("karma_name_07"), _("karma_name_08"), _("karma_name_09"), _("karma_name_10"),
+    _("karma_name_11"), _("karma_name_12"), _("karma_name_13"), _("karma_name_14"), _("karma_name_15"),
+    _("karma_name_16"), _("karma_name_17"), _("karma_name_18"), _("karma_name_19"), _("karma_name_20"),
+    _("karma_name_21"), _("karma_name_22"), _("karma_name_23"), _("karma_name_24"), _("karma_name_25"),
+    _("karma_name_26"), _("karma_name_27"), _("karma_name_28"), _("karma_name_29"), _("karma_name_30"),
+    _("karma_name_31"), _("karma_name_32"), _("karma_name_33")
+];
 
 function getKarmaName(karma) {
     if (karma >= 1) return const_karma_list[0];

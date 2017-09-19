@@ -1,0 +1,65 @@
+"locale": "en"
+
+
+### brakes ###
+"ms_brakes_abs": "ABS"
+"ms_brakes_power": "Brake amplifier"
+"ms_brakes_liquid": "Brake fluid"
+"ms_brakes_lines_f": "Brake hoses (front)"
+"ms_brakes_pad_f": "Pads (front)"
+"ms_brakes_mechanism_f": "Device (front)"
+"ms_brakes_lines_b": "Brake hoses (rear)"
+"ms_brakes_pad_b": "Pads (rear)"
+"ms_brakes_mechanism_b": "Device (rear)"
+"ms_brakes_line_f": "Brake hose (front)"
+"ms_brakes_line_b": "Brake hose (rear)"
+
+
+### cooling ###
+"ms_cooling_rad_add": "Additional<br/>radiator"
+"ms_cooling_loquid": "Coolant"
+"ms_cooling_vent": "Fan"
+"ms_cooling_rad_main": "Main<br/>radiator"
+"ms_cooling_pompa": "Pump"
+"ms_cooling_termo": "Thermostat"
+
+
+### engine ###
+"ms_engine_ballancer": "Flywheel"
+"ms_engine_camshaft": "Camshaft"
+"ms_engine_compressor": "Compressor"
+"ms_engine_cylinderpiston": "CPG"
+"ms_engine_exhaust": "Exhaust"
+"ms_engine_filter": "Filter"
+"ms_engine_head": "Cylinder head"
+"ms_engine_ignition": "Ignition"
+"ms_engine_intake": "Intake"
+"ms_engine_oil": "Oil"
+"ms_engine_sparkplugs": "Spark plugs"
+"ms_engine_sparkplug": "Spark plug"
+
+
+### suspension ###
+"ms_suspension_front_coil_1": "Spring<br>(front)"
+"ms_suspension_front_arm_1": "Arm<br>(front)"
+"ms_suspension_front_hub_1": "Hub"
+"ms_suspension_front_shock_absorber_1": "Shock absorber<br>(front)"
+"ms_suspension_rear_arm_1": "Arm<br>(rear)"
+"ms_suspension_rear_coil_1": "Spring<br>(rear)"
+"ms_suspension_rear_hub_1": "Hub"
+"ms_suspension_rear_shock_absorber_1": "Shock absorber<br>(rear)"
+"ms_suspension_wheels": "Wheel"
+
+
+### transmission ###
+"ms_transmission_ATF": "Oil"
+"ms_transmission_clutch": "Clutch"
+"ms_transmission_front_axle": "Semiaxis<br>(front)"
+"ms_transmission_front_differential": "Differential<br>(front)"
+"ms_transmission_gearbox": "Transmission"
+"ms_transmission_primary_shaft": "Primary<br>shaft"
+"ms_transmission_rear_axle": "Semiaxis<br>(rear)"
+"ms_transmission_rear_differential": "Differential<br>(rear)"
+"ms_transmission_secondary_shaft": "Secondary<br>shaft"
+"ms_transmission_torque_converter": "Torque converter"
+"ms_transmission_transfer_case": "Transfer case"

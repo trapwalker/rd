@@ -95,17 +95,17 @@ var LocationPlaceMenu = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         var item = this.selected_car_inv_item;
 
-        locationManager.setBtnState(3, '</br>Назад', false);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
 
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
         if (this.selected_page_name == 'Inventory') {
             if (item) {
                 if (item.example.activate_type == 'self' && !item.hasTag('ammo')) {
-                    locationManager.setBtnState(1, '</br>Активировать', true);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_activate"), true);
                 }
                 else {
-                    locationManager.setBtnState(1, '</br>Активировать', false);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_activate"), false);
                 }
             } else {
                 locationManager.setBtnState(1, '', false);
@@ -115,7 +115,7 @@ var LocationPlaceMenu = (function (_super) {
         if (this.selected_page_name == 'Settings') settingsManager.btn_set_enable_disable();
 
 
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationPlaceMenu.prototype.set_panels = function () {

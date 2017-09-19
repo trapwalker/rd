@@ -21,11 +21,6 @@ $(document).ready(function () {
     modalWindow = new ModalWindow({
         parent: 'modalDiv',
         back: 'modalBack',
-        modalWelcome: 'modalWelcome',
-        modalOptions: 'modalOptions',
-        modalDeath: 'modalDeath',
-        modalWin: 'modalWin',
-        modalLose: 'modalLose',
         modalRestart: 'modalRestart'
     });
 
@@ -122,7 +117,14 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnMain').onclick = function () {
-        window.open('/', '_blank');
+        // Если это электрон, а не просто сайт
+        if ($("#electron_mode").text()) {
+            var c = require('electron').remote.getCurrentWebContents();
+            if (c && c.canGoBack())
+                c.goToIndex(1);
+        }
+        else
+            window.open('/', '_blank');
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
@@ -227,74 +229,6 @@ $(document).ready(function () {
 });
 
 var index_notes_test = 0;
-function addTestNotes() {
-    var npc_html_hash;
-    var build;
-    var note;
-
-    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
-    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
-    note = new QuestNoteNPCBtn({
-        npc_html_hash: npc_html_hash,
-        btn_caption: 'жми сюда ' + index_notes_test,
-        uid: 'notes_' + index_notes_test
-    });
-    note.bind_with_build(build);
-    index_notes_test++;
-
-    var inv = inventoryList.getInventory(user.ID);
-
-    npc_html_hash = 'reg--registry-institutions-trader-bob_ferolito';
-    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
-    note = new QuestNoteNPCBtnDelivery({
-        npc_html_hash: npc_html_hash,
-        btn_caption: 'Доставка ' + index_notes_test,
-        uid: 'notes_' + index_notes_test,
-        delivery_stuff: [
-            {
-                item: inv.items[0].example,
-                count: 4
-            },
-            {
-                item: inv.items[1].example,
-                count: 2
-            }
-        ]
-
-
-    });
-    note.bind_with_build(build);
-    index_notes_test++;
-
-    note = new QuestNoteNPCCar({
-        npc_html_hash: npc_html_hash,
-        btn_caption: 'Машина ' + index_notes_test,
-        uid: 'notes_' + index_notes_test,
-        delivery_stuff: [
-            {
-                item: inv.items[0].example,
-                count: 4
-            },
-            {
-                item: inv.items[1].example,
-                count: 2
-            }
-        ]
-    });
-    note.bind_with_build(build);
-    index_notes_test++;
-
-    npc_html_hash = 'reg--registry-institutions-mechanic-raul_alone';
-    build = locationManager.get_building_by_field('html_hash', npc_html_hash);
-    note = new QuestNoteNPCBtn({
-        npc_html_hash: npc_html_hash,
-        btn_caption: 'жми сюда ' + index_notes_test,
-        uid: 'notes_' + index_notes_test
-    });
-    note.bind_with_build(build);
-    index_notes_test++;
-
-}
 
 var basic_server_mode = true;
 var interface_scale_big = true;

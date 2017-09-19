@@ -1,6 +1,6 @@
 <div class="mainDivModalWindow">
     <div class="windowDragCloseHeader-main">
-        <div class="windowDragCloseHeader-caption">Новая запись в журнале</div>
+        <div class="windowDragCloseHeader-caption"></div>
         <div class="windowDragCloseHeader-close sublayers-clickable"></div>
     </div>
     <div class="modal-window-wrap">
@@ -9,7 +9,12 @@
         </div>
         <div class="mw_cqfo_text_block"></div>
         <div class="mw_cqfo_bottom_block">
-            <div id="classQuestFirstOutBtnOk" class="dialogBtnCancelSingle modal-window-footer-btn sublayers-clickable">ОК</div>
+            <div id="classQuestFirstOutBtnOk" class="dialogBtnCancelSingle modal-window-footer-btn sublayers-clickable"></div>
         </div>
     </div>
 </div>
+
+<script>
+    $('#modalClassQuestFirstOutPage').find('.windowDragCloseHeader-caption').html(_("cqfo_caption"));
+    $('#modalClassQuestFirstOutPage').find('#classQuestFirstOutBtnOk').html(_("mw_btn_ok"));
+</script>

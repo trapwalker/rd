@@ -7,12 +7,13 @@ from sublayers_site.handlers.base_site import BaseSiteHandler
 from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_server.model.registry_me.classes.perks import Perk
 from sublayers_server.model.utils import serialize
+from sublayers_common.site_locale import locale
 
 
 class GetRPGInfoHandler(BaseSiteHandler):
     def get_perk_rec(self, reg_obj):
         return dict(
-            title=reg_obj.title,
+            title=locale(self.user_lang, reg_obj.title),
             driving_req=reg_obj.driving_req,
             shooting_req=reg_obj.shooting_req,
             masking_req=reg_obj.masking_req,
@@ -27,13 +28,9 @@ class GetRPGInfoHandler(BaseSiteHandler):
         class_list = []
         for role_class in self.application.reg.get('/registry/world_settings').role_class_order:
             class_list.append(dict(
-                description=role_class.description,
-                description__en=role_class.description__en,
-                description__ru=role_class.description__ru,
-                console_description=role_class.console_description,
-                console_description__en=role_class.console_description__en,
-                console_description__ru=role_class.console_description__ru,
-                title=role_class.title,
+                description=locale(self.user_lang, role_class.description),
+                console_description=locale(self.user_lang, role_class.console_description),
+                title=locale(self.user_lang, role_class.title),
                 fp_skills=role_class.start_free_point_skills,
                 fp_perks=role_class.start_free_point_perks,
                 icon=role_class.icon,

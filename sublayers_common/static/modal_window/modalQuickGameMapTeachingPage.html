@@ -1,15 +1,23 @@
 <div class="qg-mt-graphic-wrap">
     <div class="mainDivModalWindow">
         <div class="windowDragCloseHeader-main">
-            <div class="windowDragCloseHeader-caption">Nuke:\<span>Быстрый бой</span>&gt;</div>
+            <div class="windowDragCloseHeader-caption"></div>
             <div class="windowDragCloseHeader-close sublayers-clickable"></div>
         </div>
         <div class="qg-mt-block">
             <div class="start-qg-logo"></div>
-            <div class="start-qg-text">Быстрый бой - это урезанная версия Road Dogs без MMORPG-составляющей. Здесь можно оценить боевой компонент игры в режиме death match и научиться сражаться, используя тактический навигатор Nuke Commander.</div>
-            <div class="start-qg-text-quest">Желаете пройти обучение из 10 шагов?</div>
-            <div id="quickGameMapTeachingPageBtnOK">Пройти обучение</div>
-            <div id="quickGameMapTeachingPageBtnCancel">Играть</div>
+            <div class="start-qg-text"></div>
+            <div class="start-qg-text-quest"></div>
+            <div id="quickGameMapTeachingPageBtnOK"></div>
+            <div id="quickGameMapTeachingPageBtnCancel"></div>
         </div>
     </div>
 </div>
+
+<script>
+    $('#modalQuickGameMapTeachingPage').find('.windowDragCloseHeader-caption').html(_("mqgmtp_caption"));
+    $('#modalQuickGameMapTeachingPage').find('.start-qg-text').html(_("mqgmtp_text"));
+    $('#modalQuickGameMapTeachingPage').find('.start-qg-text-quest').html(_("mqgmtp_question"));
+    $('#modalQuickGameMapTeachingPage').find('#quickGameMapTeachingPageBtnOK').html(_("mqgmtp_start_teaching"));
+    $('#modalQuickGameMapTeachingPage').find('#quickGameMapTeachingPageBtnCancel').html(_("mqgmtp_play"));
+</script>

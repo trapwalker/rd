@@ -4,12 +4,12 @@
     {% set npc_text = cur_npc.text %}
     {% include npc_header.html %}
     <div class="trainer-center">
-        <div class="trainer-center-header trainer-center-block town-back-interlacing-nocontent">Перки</div>
-        <div class="trainer-center-header trainer-center-block right-block town-back-interlacing-nocontent">Навыки</div>
+        <div class="trainer-center-header trainer-center-block town-back-interlacing-nocontent">{{ _("ltw_perk") }}</div>
+        <div class="trainer-center-header trainer-center-block right-block town-back-interlacing-nocontent">{{ _("ltw_skill") }}</div>
         <div class="trainer-center-content trainer-center-block">
             <div class="trainer-table-list trainer-perks-list town-back-interlacing-nocontent"></div>
             <div class="trainer-table-footer town-back-interlacing-nocontent">
-                <div class="trainer-table-footer-caption">Свободные очки</div>
+                <div class="trainer-table-footer-caption">{{ _("ltw_free_points") }}</div>
                 <div class="trainer-table-footer-value trainer-perk-free-points">0</div>
             </div>
         </div>
@@ -17,7 +17,7 @@
             <div class="trainer-center-skills trainer-center-block right-block">
                 <div class="trainer-table-list trainer-skills-list town-back-interlacing-nocontent">
                     <div class="trainer-skill-item-main" data-skill_name="driving">
-                        <div class="trainer-skill-item-caption trainer-light-back">Вождение:</div>
+                        <div class="trainer-skill-item-caption trainer-light-back">{{ _("lci_driving") }}</div>
                         <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
                              data-skill_name="driving" data-d_val="-1"></div>
                         <div class="trainer-skill-item-value trainer-light-back trainer-skill-driving">0</div>
@@ -25,7 +25,7 @@
                              data-skill_name="driving" data-d_val="1"></div>
                     </div>
                     <div class="trainer-skill-item-main" data-skill_name="shooting">
-                        <div class="trainer-skill-item-caption trainer-dark-back">Стрельба:</div>
+                        <div class="trainer-skill-item-caption trainer-dark-back">{{ _("lci_shooting") }}</div>
                         <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
                              data-skill_name="shooting" data-d_val="-1"></div>
                         <div class="trainer-skill-item-value trainer-dark-back trainer-skill-shooting">0</div>
@@ -33,7 +33,7 @@
                              data-skill_name="shooting" data-d_val="1"></div>
                     </div>
                     <div class="trainer-skill-item-main" data-skill_name="masking">
-                        <div class="trainer-skill-item-caption trainer-light-back">Скрытность:</div>
+                        <div class="trainer-skill-item-caption trainer-light-back">{{ _("lci_masking") }}</div>
                         <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
                              data-skill_name="masking" data-d_val="-1"></div>
                         <div class="trainer-skill-item-value trainer-light-back trainer-skill-masking">0</div>
@@ -41,7 +41,7 @@
                              data-skill_name="masking" data-d_val="1"></div>
                     </div>
                     <div class="trainer-skill-item-main" data-skill_name="engineering">
-                        <div class="trainer-skill-item-caption trainer-dark-back">Механика:</div>
+                        <div class="trainer-skill-item-caption trainer-dark-back">{{ _("lci_engineering") }}</div>
                         <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
                              data-skill_name="engineering" data-d_val="-1"></div>
                         <div class="trainer-skill-item-value trainer-dark-back trainer-skill-engineering">0</div>
@@ -49,7 +49,7 @@
                              data-skill_name="engineering" data-d_val="1"></div>
                     </div>
                     <div class="trainer-skill-item-main" data-skill_name="trading">
-                        <div class="trainer-skill-item-caption trainer-light-back">Торговля:</div>
+                        <div class="trainer-skill-item-caption trainer-light-back">{{ _("lci_trading") }}</div>
                         <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
                              data-skill_name="trading" data-d_val="-1"></div>
                         <div class="trainer-skill-item-value trainer-light-back trainer-skill-trading">0</div>
@@ -57,7 +57,7 @@
                              data-skill_name="trading" data-d_val="1"></div>
                     </div>
                     <div class="trainer-skill-item-main" data-skill_name="leading">
-                        <div class="trainer-skill-item-caption trainer-dark-back">Лидерство:</div>
+                        <div class="trainer-skill-item-caption trainer-dark-back">{{ _("lci_leading") }}</div>
                         <div class="trainer-skill-item-change-arrow trainer-skill-item-dec"
                              data-skill_name="leading" data-d_val="-1"></div>
                         <div class="trainer-skill-item-value trainer-dark-back trainer-skill-leading">0</div>
@@ -66,14 +66,14 @@
                     </div>
                 </div>
                 <div class="trainer-table-footer town-back-interlacing-nocontent">
-                    <div class="trainer-table-footer-caption">Свободные очки</div>
+                    <div class="trainer-table-footer-caption">{{ _("ltw_free_points") }}</div>
                     <div class="trainer-table-footer-value trainer-skill-free-points">0</div>
                 </div>
             </div>
             <div class="trainer-center-updates trainer-center-block right-block town-back-interlacing-nocontent">
                 <div class="trainer-center-updates-block trainer-buy_driving" data-update_name="buy_driving">
                     <div class="trainer-center-updates-picture trainer-buy-driving-picture"></div>
-                    <div class="trainer-center-updates-label">v.1</div>
+                    <div class="trainer-center-updates-label"></div>
                 </div>
                 <div class="trainer-center-updates-block trainer-buy_shooting" data-update_name="buy_shooting">
                     <div class="trainer-center-updates-picture trainer-buy-shooting-picture"></div>
@@ -97,7 +97,7 @@
                 </div>
             </div>
         </div>
-        <div class="trainer-center-button trainer-center-block trainer-reset-all">Сбросить все (<span class="trainer-drop-price">0</span>NC)</div>
-        <div class="trainer-center-button trainer-center-block trainer-buy-updates right-block">Скачать апдейт (<span class="trainer-update-price">0</span>NC)</div>
+        <div class="trainer-center-button trainer-center-block trainer-reset-all">{{ _("ltw_drop_all") }} (<span class="trainer-drop-price">0</span>NC)</div>
+        <div class="trainer-center-button trainer-center-block trainer-buy-updates right-block">{{ _("ltw_load_update") }} (<span class="trainer-update-price">0</span>NC)</div>
     </div>
 </div>

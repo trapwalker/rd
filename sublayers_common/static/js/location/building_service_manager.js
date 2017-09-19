@@ -20,7 +20,8 @@ var LocationServiceBuilding = (function (_super) {
     LocationServiceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
         // Добавление дополнительных функций в здание
         var page_id = 'buildingPageRepair_' + this.building_rec.name;
-        jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">Ремонт</br>автомобиля</div>');
+        jq_center_menu.append('<div class="building-center-menu-item" data-page_id="' + page_id + '">' +
+            _("loc_bsm_additional_page_text_1") + '</br>' + _("loc_bsm_additional_page_text_2") + '</div>');
         this.jq_repair_page = $('<div id="' + page_id + '" class="building-center-page">');
         jq_center_pages.append(this.jq_repair_page);
         // Вызвать после, чтобы основной функционал здания был сверху
@@ -108,8 +109,8 @@ var LocationServiceBuilding = (function (_super) {
         var max_price = (max_hp * hp_price) * (1 + npc.margin_repair * skill_effect);
 
         this.set_header_text(
-            'Ремонт: ' + Math.ceil(current_price) + ' NC</br>' +
-            'Полный ремонт: ' + Math.ceil(max_price) + 'NC'
+            _("loc_sht_serv_repair_text_in_work") + ': ' + Math.ceil(current_price) + ' NC</br>' +
+            _("loc_sht_serv_full_repair_text_in_work") + ': ' + Math.ceil(max_price) + 'NC'
         );
     };
 
@@ -130,10 +131,10 @@ var LocationServiceBuilding = (function (_super) {
     LocationServiceBuilding.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (this.active_central_page == 'buildingPageRepair_service') {
-            locationManager.setBtnState(1, '</br>Ремонт', user.example_car ? true : false);
-            locationManager.setBtnState(2, 'Полный</br>ремонт', user.example_car ? true : false);
-            locationManager.setBtnState(3, '</br>Назад', true);
-            locationManager.setBtnState(4, '</br>Выход', true);
+            locationManager.setBtnState(1, '</br>' + _('loc_leaf_repair'), user.example_car ? true : false);
+            locationManager.setBtnState(2, _('loc_leaf_full_repair_1') + '</br>' + _('loc_leaf_full_repair_2'), user.example_car ? true : false);
+            locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+            locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
         }
         else
             _super.prototype.set_buttons.call(this);
@@ -159,17 +160,17 @@ var LocationServiceBuilding = (function (_super) {
             var mechanic_npc_str = "";
 
             if (npc_armorer)
-                armorer_npc_str = "<li>" + npc_armorer.npc_rec.title + ": оружейник. Установка орудий и модулей на кузов транспорта.</li>";
+                armorer_npc_str = "<li>" + _(npc_armorer.npc_rec.title) + _("loc_sht_serv_armorer_descr") + "</li>";
             if (npc_tuner)
-                tuner_npc_str = "<li>" + npc_tuner.npc_rec.title + ": стилист. Стайлинг транспорта.</li>";
+                tuner_npc_str = "<li>" + _(npc_tuner.npc_rec.title) + _("loc_sht_serv_style_descr") + "</li>";
             if (npc_mechanic)
-                mechanic_npc_str = "<li>" + npc_mechanic.npc_rec.title + ": механик. Тюнинг внутренних компонентов транспорта.</li>";
-            html_text = "Вас приветствует " + this.building_rec.title + "." +
+                mechanic_npc_str = "<li>" + _(npc_mechanic.npc_rec.title) + _("loc_sht_serv_mechanik_descr") + "</li>";
+            html_text = _("loc_sht_hello") + _(this.building_rec.title) + "." +
                 "<ul>" +
-                "<li>Ремонт транспорта.</li>" +
+                "<li>" + _("loc_sht_serv_repair_text") + "</li>" +
                 armorer_npc_str + tuner_npc_str + mechanic_npc_str +
-                "<li>Доступные задания: " + quest_info.available_count + "</li>" +
-                "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                "<li>" + _("loc_sht_quests_active") + ": "+ quest_info.active_count + "</li></ul>";
         }
 
         _super.prototype.set_header_text.call(this, html_text);

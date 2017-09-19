@@ -1,21 +1,21 @@
 <div class="qg-pp-graphic-wrap">
     <div class="mainDivModalWindow">
         <div class="windowDragCloseHeader-main">
-            <div class="windowDragCloseHeader-caption">Nuke:\Quick Game\High score&gt;</div>
+            <div class="windowDragCloseHeader-caption"></div>
             <div class="windowDragCloseHeader-close sublayers-clickable"></div>
         </div>
         <div class="window-records-qg-wrap">
             <div class="window-records-qg-header-block">
-                <div id="quickGamePointsPageBtnRecords" class="qg-pp-btn window-records-qg-menu-item">Рекорды</div>
-                <div id="quickGamePointsPageBtnChangeCar" class="qg-pp-btn window-records-qg-menu-item">Сменить ТС</div>
+                <div id="quickGamePointsPageBtnRecords" class="qg-pp-btn window-records-qg-menu-item"></div>
+                <div id="quickGamePointsPageBtnChangeCar" class="qg-pp-btn window-records-qg-menu-item"></div>
             </div>
             <div class="window-records-qg-context">
                 <div id="quickGamePagePointPointsRecords">
                     <div class="qg-pp-block left">
                         <div class="qg-pp-block-left-header">
                             <div class="qg-pp-table-col place">#</div>
-                            <div class="qg-pp-table-col name">Имя</div>
-                            <div class="qg-pp-table-col score">Очки</div>
+                            <div class="qg-pp-table-col name"></div>
+                            <div class="qg-pp-table-col score"></div>
                         </div>
                         <div class="qg-pp-block-left-table"></div>
                     </div>
@@ -30,7 +30,7 @@
             <div class="qg-pp-left-info">
                 <div class="qg-pp-block-right top">
                     <div class="qg-pp-block-right-top-scull"></div>
-                    <div class="qg-pp-block-right-top-label">Игра окончена!</div>
+                    <div class="qg-pp-block-right-top-label"></div>
                 </div>
                 <div class="qg-pp-block-right bottom">
                     <div id="QuickGamePagePointPoints" class="qg-pp-block-right-bottom-label"></div>
@@ -42,3 +42,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('#modalQuickGamePointsPage').find('.windowDragCloseHeader-caption').html(_("qgpp_caption"));
+    $('#modalQuickGamePointsPage').find('#quickGamePointsPageBtnRecords').html(_("qgpp_record"));
+    $('#modalQuickGamePointsPage').find('#quickGamePointsPageBtnChangeCar').html(_("qgpp_change_car"));
+    $('#modalQuickGamePointsPage').find('.qg-pp-table-col.name').html(_("qgpp_name"));
+    $('#modalQuickGamePointsPage').find('.qg-pp-table-col.score').html(_("qgpp_points"));
+    $('#modalQuickGamePointsPage').find('.qg-pp-block-right-top-label').html(_("qgpp_game_end"));
+    $('#modalQuickGamePointsPage').find('#quickGamePointsPageBtnCancel').html(_("qgpp_full_game"));
+    $('#modalQuickGamePointsPage').find('#quickGamePointsPageBtnOK').html(_("qgpp_play_again"));
+</script>

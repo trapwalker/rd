@@ -9,6 +9,7 @@ from sublayers_server.model.registry_me.tree import (
     Subdoc, 
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField,
     EmbeddedNodeField,
+    LocalizedStringField,
 )
 
 import random
@@ -20,7 +21,7 @@ class BonusRec(Subdoc):
 
 
 class ServiceRec(Subdoc):
-    title = StringField(caption=u'Название услуги', tags={'client'})
+    title = LocalizedStringField(caption=u'Название услуги', tags={'client'})
     price = IntField(caption=u'Цена услуги', tags={'client'})
     image = StringField(caption=u'Изображение для услуги', tags={'client'})
     bonus_list = ListField(
