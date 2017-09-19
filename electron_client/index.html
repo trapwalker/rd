@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Road Dogs Online</title>
+    <link rel="stylesheet" href="css/index_main.css"/>
+    <style>
+        @font-face {font-family: FreePixel; src: url('fonts/FreePixel.ttf'); }
+        @font-face {font-family: Nouveau_IBM; src: url('fonts/Nouveau_IBM.ttf'); }
+    </style>
+
+    <script> window.$ = window.jQuery = window.jquery = require('jquery'); </script>
+
+    <script src="js/locale.js"></script>
+    <script src="js/time_manager.js"></script>
+    <script src="js/audio_object.js"></script>
+    <script src="js/audio_manager.js"></script>
+    <script src="js/audio_keyboard_emulate.js"></script>
+    <script src="js/canvas/canvas_manager.js"></script>
+    <script src="js/canvas/canvas_noise.js"></script>
+    <script src="js/canvas/canvas_line.js"></script>
+    <script src="js/canvas/canvas_rippling.js"></script>
+    <script src="js/canvas/canvas_blackout.js"></script>
+    <script src="js/text_console.js"></script>
+</head>
+
+<body>
+    <div class="content-block"></div>
+    <canvas id="content-canvas" class="canvas-property"></canvas>
+    <div id="preloaderBlock">
+        <div id="consolePreloader"></div>
+    </div>
+</body>
+
+<script>
+    var cookie_storage;
+    var current_window = require('electron').remote.getCurrentWindow();
+    var ticket = current_window._ticket_steam;
+    var steam_id = current_window._steam_id;
+
+    // Установка языка клиента
+    set_current_locale();
+    var start_ping_timeout = 5000;
+    var ping_timeout = 3000;
+    var re_ping_timeout = 300;
+    var debug = true; // todo: Забрать из настроек клиента
+    var servers_added = 0;
+    var all_client_cookies = null;
+    var servers = [
+        //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "Road Dogs RU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
+        {name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
+    ];
+    var server_name_max_l = servers.reduce(function (acc, current) {return Math.max(acc, current.name.length);}, 0);
+    server_name_max_l += 5;  // Минимум 5 пробелов после названия сервера до разделителя
+
+    // Удаление всех куков (дебаг-функция)
+    function clear_all_cookie_electron() {
+        // Очистить куки
+        require('electron').remote.getCurrentWindow().webContents.session.clearStorageData([]);
+        // Считать все куки
+        require('electron').remote.session.defaultSession.cookies.get({}, function(error, cookies){console.log(cookies)});
+    }
+
+    // Строка состояния сервера (выводится в консоль)
+    function geg_server_state_str(server) {
+        // return server.active ? '(' + _('con_pre_16') + ' ' + Math.floor(server.average_ping) + _('con_pre_18') + ')'
+        //                      : '(' + _('con_pre_17') + ')';
+        return server.active ? '| ' + _('con_pre_16') + ' ' + Math.floor(server.average_ping) + _('con_pre_18')
+                             : '| ' + _('con_pre_17');
+    }
+
+    // Рекурсивный зацикленный пинг серверов
+    function ping_server(server) {
+        // Замерять пинг до серверов
+        if (server.pings.length > 10) server.pings.shift();
+        var t_start = new Date().getTime();
+        var address = server.address;
+        if (address) {
+            $.ajax({
+                url: address + '/site_api/ping',
+                method: 'GET',
+                data: {},
+                timeout: ping_timeout,
+                success: function (data) {
+                    if (server.jq_div) server.jq_div.removeClass("not-access");
+                    var t_ping = new Date().getTime() - t_start;
+                    server.active = true;
+                    server.pings.push(t_ping);
+                    server.average_ping = server.pings.reduce(function(a, b) {return a + b}, 0) / server.pings.length;
+                    var index = servers.indexOf(server);
+                    $('#serverState' + index).text(geg_server_state_str(server));
+                    setTimeout(function(){ ping_server(server) }, re_ping_timeout);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (server.jq_div) server.jq_div.addClass("not-access");
+                    server.active = false;
+                    server.pings = [];
+                    server.average_ping = 0;
+                    var index = servers.indexOf(server);
+                    $('#serverState' + index).text(geg_server_state_str(server));
+                    setTimeout(function(){ ping_server(server) }, ping_timeout);
+                }
+            });
+        }
+    }
+
+    // Отображение кнопок серверов
+    function show_server_list() {}
+
+    function check_steam(){
+        // Выбор оптимального сервера (по пингу)
+        function get_optimal_server() {
+            var index = servers.reduce(function(acc, server, index, servers) {
+                if (!server.active || (server.pings.length < 5)) return acc;
+                return ((acc >= 0) && (servers[acc].average_ping < server.average_ping)) ? acc : index;
+            }, -1);
+            return index >= 0 ? servers[index] : null;
+        }
+
+        // Найти минимальный пинг и зарегать там пользователя
+        function create_steam_account(server) {
+            if (!server) server = get_optimal_server();
+            if (server)
+                $.ajax({
+                    url: server.address + '/site_api/auth/steam',
+                    method: 'GET',
+                    data: { ticket: ticket },
+                    timeout: ping_timeout,
+                    success: function (data) { window.location = server.address + '?mode=electron'; },
+                    error: function (jqXHR, textStatus, errorThrown) { show_server_list() }
+                });
+            else show_server_list();
+        }
+
+        if (ticket && steam_id) {
+            // 1 - Проверить куку "steam_registration" - Она отвечает за ПЕРВУЮ авторизацию этого КЛИЕНТА через стим
+            var steam_registration_cookie = null;
+            for (var i = 0; i < all_client_cookies.length && !steam_registration_cookie; i++)
+                if (all_client_cookies[i].name == "steam_registration_cookie")
+                    steam_registration_cookie = all_client_cookies[i];
+            if (steam_registration_cookie && (steam_registration_cookie.value == steam_id)) {
+                show_server_list();
+                return;
+            }
+
+            // Пройти по всем серверам и поискать там аккаунт, если он 1, то редиректнуть на тот сервер
+            var steam_account_count = 0;
+            var last_server = null;
+            servers.forEach(function(server) {
+                if (!server.active) return;
+                $.ajax({
+                    url: server.address + '/site_api/user_check',
+                    method: 'GET',
+                    data: { social: 'steam', uid: steam_id },
+                    timeout: ping_timeout,
+                    success: function (data) {
+                        if (data.uid) {
+                            steam_account_count++;
+                            last_server = server;
+                        }
+                    }
+                });
+            });
+            setTimeout(function() {
+                // Если у игрока "чистый" клиент и сервер на котором он раньше играл лежит, то тут ему создастся
+                // новый аккаунт, чтобы этого избежать надо юзать steam cloud
+                console.log(steam_account_count, last_server);
+                if (steam_account_count == 0) create_steam_account();
+                if (steam_account_count == 1) create_steam_account(last_server);
+                if (steam_account_count > 1) show_server_list();
+            }, ping_timeout + 100);
+        } else show_server_list();
+    }
+
+    function gotoSite(event) {
+        console.log('gotoSite');
+        var index = $(event.target).data("index") || $($(event.target).parent()).data("index");
+        if ((index == null) || (index == undefined) || (index < 0) || (index >= servers.length)) {
+            console.log(index, servers.length);
+            return;
+        }
+        var server = servers[index];
+        if (!server.active) {console.log("server not active"); return;}
+        console.log(ticket, steam_id, server.address);
+        if (ticket && steam_id)
+            $.ajax({ url: server.address + '/site_api/auth/steam',
+                 method: 'GET',
+                 data: { ticket: ticket },
+                 timeout: ping_timeout,
+                 success: function (data) { window.location = server.address + '?mode=electron'; },
+            });
+        else window.location = server.address + '?mode=electron';
+    }
+
+    $(document).ready(function () {
+        if (steam_id)
+            document.title = "Road Dogs Online [" + steam_id + "]";
+
+        // Запускаем пинг всех серверов
+        for (var i = 0; i < servers.length; i++)
+            ping_server(servers[i]);
+
+        // Запускаем эффекты канваса
+        //canvasManager = new CanvasManager();
+        //canvasNoise = new CanvasNoise();
+        //canvasDisplayLine = new CanvasDisplayLine();
+        //canvasDisplayRippling = new CanvasDisplayRippling();
+        //canvasBlackOut = new CanvasBlackOut();
+
+        // Подготавливаем звук для консоли
+        audioManager.gain_all(0.1);
+        audioManager.load('key_cl_1', {url: 'js/audio/type.mp3'}, null, null, 1.0);
+        audioKeyboard = new AudioKeyboard([audioManager.get('key_cl_1')]);
+
+        // Запускаем консоль
+        consolePreloader = new ConsolePreloader();
+
+        // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
+
+        setTimeout(function() {
+            cookie_storage = require('electron').remote.session.defaultSession.cookies;
+            cookie_storage.get({},
+                function(error, cookies) {
+                    all_client_cookies = cookies;
+                    if (cookies.length) {
+                        var address = null;
+                        for (var ki = 0; ki < cookies.length && !address; ki++) {
+                            var k = cookies[ki];
+                            if (k.name == "server_host" && k.value) {
+                                for (var i = 0; i < servers.length && !address; i++) {
+                                    if (servers[i].active && servers[i].address.indexOf(k.domain) >= 0) {
+                                        // Найти хоть одну куку - юзера для этого домена
+                                        for (var ui = 0; ui < cookies.length && !address; ui++) {
+                                            if (cookies[ui].name == "user" && cookies[ui].domain == k.domain) {
+                                                // Проверить, а был ли этот пользователь на этом клиенте на этом домене
+                                                for (var si = 0; si < cookies.length && !address; si++)
+                                                    if (cookies[si].name == "steam_registration_cookie" && cookies[si].value == steam_id && cookies[si].domain == k.domain)
+                                                        address = servers[i].address;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (address)
+                            $.ajax({
+                                url: address + '?mode=test',
+                                method: 'GET',
+                                data: {},
+                                timeout: ping_timeout,
+                                success: function (data) {
+                                    if (data == "OK")
+                                        window.location = address + '?mode=electron';
+                                    else
+                                        check_steam();
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    check_steam();
+                                }
+                            });
+                        else
+                            check_steam();
+                    }
+                    else
+                        check_steam();
+            });
+        }, start_ping_timeout);
+    });
+</script>
+
+</html>
+
+

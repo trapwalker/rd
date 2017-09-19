@@ -6,6 +6,9 @@
 sm_title: "Road Dogs: A Post Nuclear Privateer/Trader MMORPG (PC, Android, iOS)"
 sm_description: Road Dogs official web-site. Mad Max – style combats featuring post apocalyptic barren vehicles.
 
+sm_title_electron: "Road Dogs: A Post Nuclear Privateer/Trader MMORPG"
+sm_description_electron: Road Dogs official client. Mad Max – style combats featuring post apocalyptic barren vehicles.
+
 
 # Окно регистрации и авторизации  site_window_reg.html  # swr
 swr_Registration: "Registration"

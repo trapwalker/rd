@@ -55,14 +55,19 @@ define("join_news_group_link", default="https://t.me/joinchat/AAAAAD_pGB7aHkah39
 define("auth_google_key", default=None, help="Auth Google Client ID", type=str)
 define("auth_google_secret", default=None, help="Auth Google Secret Client", type=str)
 
-define("auth_vk_key", default=None, help="Auth Google Client ID", type=str)
-define("auth_vk_secret", default=None, help="Auth Google Secret Client", type=str)
+define("auth_vk_key", default=None, help="Auth VK Client ID", type=str)
+define("auth_vk_secret", default=None, help="Auth VK Secret Client", type=str)
 
-define("auth_twitter_key", default=None, help="Auth Google Client ID", type=str)
-define("auth_twitter_secret", default=None, help="Auth Google Secret Client", type=str)
+define("auth_twitter_key", default=None, help="Auth Twitter Client ID", type=str)
+define("auth_twitter_secret", default=None, help="Auth Twitter Secret Client", type=str)
 
-define("auth_facebook_key", default=None, help="Auth Google Client ID", type=str)
-define("auth_facebook_secret", default=None, help="Auth Google Secret Client", type=str)
+define("auth_facebook_key", default=None, help="Auth Facebook Client ID", type=str)
+define("auth_facebook_secret", default=None, help="Auth Facebook Secret Client", type=str)
+
+define("auth_steam_appid", default=None, help="Auth Steam Application ID", type=str)
+define("auth_steam_key", default=None, help="Auth Steam secret key", type=str)
+
+
 
 define("email_server",   default=None, help="Email sending SMTP server", type=str)
 define("email_login",    default=None, help="Email sending login (email_from used by default)", type=str)

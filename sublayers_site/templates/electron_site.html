@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _('sm_title_electron') }}</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content="{{ _('sm_description_electron') }}">
+    <meta name="keywords" content="RoadDogs, mmorpg, post-apocalyptic, nuclear, madmax, fallout, road war, retro, 80s, oldschool, cyberpunk, cars, new">
+    <meta http-equiv="content-language" content="ru">
+    <meta name="robots" content="all">
+    <meta name="author" content="Teletower Studios">
+    <meta name="copyright" content="Все права принадлежат ООО 'Телетауер Студиос'">
+
+    <meta name="yandex-verification" content="6028072d13fc338a" />
+    <meta name="google-site-verification" content="y9C6Km2TvQ_Lcml_O-EistXN1cI0v4Bo79wD72httj0" />
+
+    <meta name="application-name" content="Road Dogs">
+
+    <style>
+        @font-face {
+            font-family: Nouveau_IBM;
+            src: url( {{ static_url('fonts/Nouveau_IBM.ttf') }} );
+        }
+
+        @font-face {
+            font-family: FreePixel;
+            src: url( {{ static_url('fonts/FreePixel.ttf') }} );
+        }
+
+        @font-face {
+            font-family: perfo-bold;
+            src: url( {{ static_url('fonts/perfo-bold.ttf') }} );
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_main.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/car_represent.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg_1.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg_2.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_reg_3.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/electron/site_window_personal_info.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_quick_game.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('locale/site/css/locale_{}.css'.format(user_lang)) }}"/>
+
+    <script>window.$ = window.jQuery = require('jquery');</script>
+
+    <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/color.js') }}"></script>
+    <script src="{{ static_url('static_site/js/third_party/jquery-cssHooks-master/textshadow.js') }}"></script>
+    <script src="{{ static_url('locale/locale.js') }}"></script>
+
+    <script src="{{ static_url('static_site/js/electron_main.js') }}"></script>
+    <script src="{{ static_url('static_site/js/preloader_image.js') }}"></script>
+    <script src="{{ static_url('static_site/js/preloader_image_list.js') }}"></script>
+    <script src="{{ static_url('static_site/js/audio_object.js') }}"></script>
+    <script src="{{ static_url('static_site/js/audio_manager.js') }}"></script>
+    <script src="{{ static_url('static_site/js/audio_keyboard_emulate.js') }}"></script>
+    <script src="{{ static_url('static_site/js/site_html_audio_player.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/text_console.js') }}"></script>
+    <script src="{{ static_url('static_site/js/time_manager.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_manager.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_noise.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_line.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_rippling.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_blackout.js') }}"></script>
+    <script src="{{ static_url('static_site/js/canvas/canvas_png_animation_electron.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/indicator_blink.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/text_blur_blink.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/glitch.js') }}"></script>
+    <script src="{{ static_url('static_site/js/effects/change_back.js') }}"></script>
+
+    <!-- Google analytics -->
+    <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-81052008-1', 'auto');
+          ga('send', 'pageview');
+          // Чтобы не считались отказы для одностраничного сайта
+          setTimeout("ga('send','event','Engaged users','More than 10 seconds')", 10000);
+    </script>
+    <!-- /Google analytics -->
+</head>
+
+<body>
+    <div class="shift-content-block">
+        <div class="site-sound-switch"></div>
+        <!-- Контент - окна -->
+        <div class="content-block">
+            <!--Окно регистрации-->
+            {% include 'site_window_reg.html' %}
+            {% include 'site_window_reg_1.html' %}
+            {% include 'site_window_reg_2.html' %}
+            {% include 'site_window_reg_3.html' %}
+            <!--Личный кабинет-->
+            {% include 'site_personal_info.html' %}
+        </div>
+        <canvas id="content-canvas" class="canvas-property"></canvas>
+        {% if user_lang == 'ru' %}
+        <div class="copyright-block">Все права защищены. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('en');">English version</span>.</div>
+        {% else %}
+        <div class="copyright-block">All rights reserved. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('ru');">Русская версия</span>.</div>
+        {% end %}
+    </div>
+</body>
+
+<script>
+    var GlobalGeneralSiteGain = 0.0;
+    var version = '{{ version }}';
+    var all_users_registered = 0;
+    window.__electron_mode = true;
+
+    $(document).ready(function () {
+        loadLocale(main);
+    });
+</script>
+</html>

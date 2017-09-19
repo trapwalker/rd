@@ -117,7 +117,14 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnMain').onclick = function () {
-        window.open('/', '_blank');
+        // Если это электрон, а не просто сайт
+        if ($("#electron_mode").text()) {
+            var c = require('electron').remote.getCurrentWebContents();
+            if (c && c.canGoBack())
+                c.goToIndex(1);
+        }
+        else
+            window.open('/', '_blank');
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };
