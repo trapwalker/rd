@@ -43,8 +43,6 @@
     var start_ping_timeout = 5000;
     var ping_timeout = 3000;
     var re_ping_timeout = 300;
-    var debug = true; // todo: Забрать из настроек клиента
-    var servers_added = 0;
     var all_client_cookies = null;
     var servers = [
         //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
@@ -204,15 +202,15 @@
             ping_server(servers[i]);
 
         // Запускаем эффекты канваса
-        //canvasManager = new CanvasManager();
-        //canvasNoise = new CanvasNoise();
-        //canvasDisplayLine = new CanvasDisplayLine();
-        //canvasDisplayRippling = new CanvasDisplayRippling();
-        //canvasBlackOut = new CanvasBlackOut();
+        canvasManager = new CanvasManager();
+        canvasNoise = new CanvasNoise();
+        canvasDisplayLine = new CanvasDisplayLine();
+        canvasDisplayRippling = new CanvasDisplayRippling();
+        canvasBlackOut = new CanvasBlackOut();
 
         // Подготавливаем звук для консоли
         audioManager.gain_all(0.1);
-        audioManager.load('key_cl_1', {url: 'js/audio/type.mp3'}, null, null, 1.0);
+        audioManager.load('key_cl_1', {url: 'audio/type.mp3'}, null, null, 1.0);
         audioKeyboard = new AudioKeyboard([audioManager.get('key_cl_1')]);
 
         // Запускаем консоль
