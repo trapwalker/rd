@@ -37,7 +37,7 @@
                         onmouseover="locationManager.handler_npc_mouseover('{{ npc.node_hash() }}', '{{ building }}')"
                         onmouseout="locationManager.handler_mouseleave()">
                     <img class="building-npc-photo" src="{{ npc.photo }}"/>
-                    <div class="building-npc-name-block"><span class="building-npc-name"> {{ npc.doc }} </span></div>
+                    <div class="building-npc-name-block"><span class="building-npc-name"> {{ _(npc.doc) }} </span></div>
                 </div>
                 {% end %}
             </div>
