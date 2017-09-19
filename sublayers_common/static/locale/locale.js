@@ -59,6 +59,6 @@ function changeLanguage(lang) {
 
         document.cookie = updatedCookie;
     };
-    setCookie('lang', lang, {expires: 365 * 24 * 60 * 60});
+    setCookie('lang', lang, {expires: 365 * 24 * 60 * 60, path: "/"});
     window.location.reload();
 }
