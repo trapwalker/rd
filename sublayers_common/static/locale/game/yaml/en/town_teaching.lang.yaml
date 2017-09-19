@@ -1,0 +1,87 @@
+"locale": "en"
+
+# hangar
+"teach_town_hangar_note_log": "You are in the city interface. If you try to leave the city without a properly equipped vehicle, you will die of cold and poisoning. Buy your first vehicle."
+"teach_town_hangar_note_1": "You are in the city interface. If you try to leave the city without a properly equipped vehicle, you will die of cold and poisoning. Buy your first vehicle."
+"teach_town_hangar_note_2": "Go to the auto dealer in order to buy a vehicle."
+"teach_town_hangar_note_3": "You are in the auto dealer menu. Get in touch with a sales representative to buy a vehicle."
+"teach_town_hangar_note_4": "Visit the auto dealer."
+"teach_town_hangar_note_5": "You can only select a vehicle whose price does not exceed the amount of the auto loan that Nukeoil approved you for."
+"teach_town_hangar_note_6": "Select an appropriate vehicle."
+
+# nukoil
+"teach_town_nukeoil_note_log": "A vehicle is useless without fuel. Nukecoins are electronic currency issued by the Nukeoil Corporation. You can buy 1 liter of fuel for 1 Nukecoin."
+"teach_town_nukeoil_note_1": "A vehicle is useless without fuel. Nukecoins are electronic currency issued by the Nukeoil Corporation. You can buy 1 liter of fuel for 1 Nukecoin."
+"teach_town_nukeoil_note_2": "Visit a Nukeoil office to fill up your vehicle."
+"teach_town_nukeoil_note_3": "You are in the Nukeoil reception area. You can obtain fueling services, customer assistance, and purchase insurance at any Nukeoil branch office."
+"teach_town_nukeoil_note_4": "Go to the fueling menu."
+"teach_town_nukeoil_note_5": "You can fill your fuel tank and empty canisters in the fueling menu."
+"teach_town_nukeoil_note_6": "Specify the number of liters using the slider, and then click <Fill up>."
+
+# trader
+"teach_town_trader_note_log": "A car is not a car without weapons. But first, you must purchase these armaments from a dealer. You can find the dealer in the market building."
+"teach_town_trader_note_1": "A car is not a car without weapons. But first, you must purchase armaments from a dealer."
+"teach_town_trader_note_2": "Visit the dealer."
+"teach_town_trader_note_3": "You are in the dealer's building. In order to open the trading interface, click on the dealer image."
+"teach_town_trader_note_4": "Click on the dealer image."
+"teach_town_trader_note_5": "You are in the trading interface. Here you can buy various useful items and sell ones that you no longer need."
+"teach_town_trader_note_6": "Press the <Confirm transaction> button."
+"teach_town_trader_note_7": "Choose your weapon and ammunition in the \"Products for sale\" column and place them on the exchange table."
+
+# armorer
+"teach_town_arm_note_log": 'All of the vehicle modification specialists can be found in the "Auto service" building.'
+"teach_town_arm_note_1": "Now you need to mount the purchased weapon on the vehicle. All vehicle modification specialists can be found in the Service building."
+"teach_town_arm_note_2": "Visit the Service building."
+"teach_town_arm_note_3": "You are in the Service building. Here you can find mechanics, weapons specialists, and stylists. Each is a specialist in their own field."
+"teach_town_arm_note_4": "Visit the weapons specialist."
+"teach_town_arm_note_5": "You are in the weapons specialist interface. Here you can mount and remove weapons or aim them in the desired direction."
+"teach_town_arm_note_6": "Press the <Apply> button."
+"teach_town_arm_note_7": "Select the desired direction in the widget to the right."
+"teach_town_arm_note_8": "Select the machine gun in your inventory, and drag it to an available slot on your vehicle chassis."
+"teach_town_arm_note_9": "Select the weapon that you would like to re-aim."
+
+# quest
+"teach_town_q_note_log": "Now you are ready for your first job. You can review suggested assignments in any building. For example, check the mayor's office."
+"teach_town_q_note_1": "Now you are ready for your first job. You can look for suggested assignments in any building. For example, check the mayor's office."
+"teach_town_q_note_2": "Visit the Mayor's office."
+"teach_town_q_note_3": "You are in City Hall. Here you can review the available assignments and choose one that you would like to perform."
+"teach_town_q_note_4": "Press the <Accept> button."
+"teach_town_q_note_5": "Select the \"Trial delivery\" building."
+"teach_town_q_note_6": "Select the \"Trial delivery\" building."
+"teach_town_q_note_7": "Press the <Deliver> button."
+"teach_town_q_note_8": "Press the <Trial delivery> button."
+"teach_town_q_note_9": "Visit the Bar."
+"teach_town_q_note_10": "To complete this mission, you need to give the bartender a little something."
+"teach_town_q_note_11": "You are in the Bar. Here you can find the bartender and your female companions. The bartender can offer your interesting jobs, and the female companions can help you have a good time."
+"teach_town_q_note_12": "Visit the Dealer."
+"teach_town_q_note_13": "To complete this mission, you need to give the dealer a little something."
+"teach_town_q_note_14": "You are in the dealer's office."
+"teach_town_q_note_15": "Go to the Trainer."
+"teach_town_q_note_16": "To complete this mission, you need to give the trainer a little something."
+"teach_town_q_note_17": "You are in the trainer's office."
+
+# journal
+"teach_town_journal_log": "Go to the magazine office."
+"teach_town_journal_note_1": "All completed jobs are added to your quest log. It is a lot more profitable to complete many assignments at once. In order to avoid confusion and to lay out the best route on the map, you need to keep track of their status."
+"teach_town_journal_note_2": "Go to the Menu screen."
+"teach_town_journal_note_3": "Select the Magazine tab."
+"teach_town_journal_note_4": "Go to the Buildings section."
+"teach_town_journal_note_5": "Select the active quests."
+"teach_town_journal_note_6": "Here you will find a list of all the incomplete assignments. After you have selected a quest, you can find out more details about it."
+"teach_town_journal_note_7": "Select the trial delivery."
+
+# trainer
+"teach_town_trainer_log": "After you have completed your first assignment, you will gain a little bit more experience. You must spend it on obtaining perks and improving skills. To do this, you need a trainer. You can find him in the \"Library\" building."
+"teach_town_trainer_note_1": "After you have completed your first assignment, you will earn a little bit more experience. You can spend it on obtaining perks and improving skills. To do this, you need a trainer."
+"teach_town_trainer_note_2": "Visit the Trainer."
+"teach_town_trainer_note_3": "You are in the trainer's office. To open the interface where you can level up your character, click on the image of the trainer."
+"teach_town_trainer_note_4": "Click on the trainer image."
+"teach_town_trainer_note_5": "You are in the character upgrade interface. Here you can spend available points on desired perks and skills."
+"teach_town_trainer_note_6": "Distribute your available points across the skills you want, and press the <Apply> button."
+
+
+# finish quest
+"teach_town_finish_log": "Congratulations, you have passed the training!"
+"teach_town_finish_note_1": "Congratulations, you have passed the training! Your next task is to pay off your Nukeoil car loan. To do this, you need to earn money by completing assignments. Before going to the global map, you will need to receive assignments from city residents and make sure that you have enough fuel for your long trip."
+"teach_town_finish_note_2": "Return to the city menu."
+"teach_town_finish_note_3": "Go to the global map."
