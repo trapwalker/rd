@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron . --devtools",
     "start-steam": "electron . --steam --devtools",
-    "build-win-64": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build",
+    "build-win-64": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --out=build --icon=img/win_icon.ico",
     "build-ubuntu": "electron-packager .  RoadDogs --overwrite --platform=linux --arch=x64 --prune=true --out=build",
     "build-mac": "electron-packager .  RoadDogs --overwrite --platform=darwin --arch=x64 --prune=true --out=build",
     "rebuild_greenworks": "electron-rebuild -f -w greenworks"
