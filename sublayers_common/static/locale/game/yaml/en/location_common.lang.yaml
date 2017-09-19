@@ -101,7 +101,7 @@
 "loc_leaf_activate": "Activate"
 "loc_leaf_setup": "Install"
 "loc_leaf_gas_fuel": "Fill"
-"loc_leaf_gas_full_fuel": "Fill all"
+"loc_leaf_gas_full_fuel": "<br>Fill all"
 "loc_leaf_trader_apply": "Confirm</br>transaction"
 
 
