@@ -91,7 +91,8 @@ def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, details):
         except StopIteration:
             break
 
-        flags = 'Q' if a_raw['quick_flag'] else 'B'
+        qf = a_raw.get('quick_flag')
+        flags = {True: 'Q', False: 'B', None: '-'}.get(qf, '?==={!r}==='.format(qf))
         login = a_raw.get('login', '--- UNDEFINED --- ' + str(a_raw.get('_id')))
 
         a, problems, e = None, None, None
