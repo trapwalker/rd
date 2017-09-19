@@ -4,12 +4,9 @@ var ModalWindow = (function () {
         // - divs.parent - див для создания всего механизма модельных окон
         // - divs.back - див для бекграунда
         // - divs.modalWelcome - див для модального окна приветствия
-        // - divs.modalDeath - див для модального окна смерти игрока
 
         this.parent = $('#' + divs.parent);
         this.back = $('#' + divs.back);
-        this.modalWelcome = $('#' + divs.modalWelcome);
-        this.modalDeath = $('#' + divs.modalDeath);
         this.modalRestart = $('#' + divs.modalRestart);
         this.modalDialogInfo = $('#modalInfoPage');
         this.modalAnswerInfo = $('#modalAnswerPage');
@@ -22,8 +19,6 @@ var ModalWindow = (function () {
         // утсновка классов по умолчанию
         this.parent.addClass('modal-window-parent');
         this.back.addClass('modal-window-hide');
-        this.modalWelcome.addClass('modal-window-hide');
-        this.modalDeath.addClass('modal-window-hide');
         this.modalRestart.addClass('modal-window-hide');
         this.modalDialogInfo.addClass('modal-window-hide');
         this.modalAnswerInfo.addClass('modal-window-hide');
@@ -34,8 +29,6 @@ var ModalWindow = (function () {
         this.modalQuickGameMapTeaching.addClass('modal-window-hide');
 
         // Загрузка содержимого модельных окон
-        this.modalWelcomeLoad();
-        this.modalDeathLoad();
         this.modalRestartLoad();
         this.modalDialogInfoLoad();
         this.modalDialogAnswerLoad();
@@ -76,12 +69,6 @@ var ModalWindow = (function () {
     ModalWindow.prototype.closeAllWindows = function() {
         this._modalBackHide();
 
-        this.modalWelcome.removeClass('modal-window-welcome-show');
-        this.modalWelcome.addClass('modal-window-hide');
-
-        this.modalDeath.removeClass('modal-window-death-show');
-        this.modalDeath.addClass('modal-window-hide');
-
         this.modalRestart.removeClass('modal-window-restart-show');
         this.modalRestart.addClass('modal-window-hide');
 
@@ -116,71 +103,6 @@ var ModalWindow = (function () {
 
         //if (this.modalItemActivation.hasClass('modal-window-show'))
         //    this.modalItemActivationHide();
-    };
-
-
-    ModalWindow.prototype.modalWelcomeShow = function () {
-        // включить фон
-        this._modalBackShow();
-        // включить модальное окно Welcome
-        this.modalWelcome.removeClass('modal-window-hide');
-        this.modalWelcome.addClass('modal-window-welcome-show');
-    };
-
-    ModalWindow.prototype.modalWelcomeHide = function(){
-        // выключить фон
-        this._modalBackHide();
-        // выключить модальное окно Welcome
-        this.modalWelcome.removeClass('modal-window-welcome-show');
-        this.modalWelcome.addClass('modal-window-hide');
-        returnFocusToMap();
-    };
-
-    ModalWindow.prototype.modalWelcomeLoad = function () {
-        // Загрузить информацию из документа в див
-        var self = this;
-        this.modalWelcome.load('/static/modal_window/welcomePage.html', function(){
-            // Назначить кнопку закрытия окна
-            $('#welcomePageCloseButton').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalWelcomeHide();
-            });
-        });
-    };
-
-    ModalWindow.prototype.modalDeathShow = function () {
-        // включить фон - ФОН не включается, так как при смерти можно двигать карту и смотреть за боем
-        this._modalBackShow();
-        // включить модальное окно modalOptions
-        this.modalDeath.removeClass('modal-window-hide');
-        this.modalDeath.addClass('modal-window-death-show');
-    };
-
-    ModalWindow.prototype.modalDeathHide = function(){
-        // выключить фон
-        this._modalBackHide();
-        // выключить модальное окно Death
-        this.modalDeath.removeClass('modal-window-death-show');
-        this.modalDeath.addClass('modal-window-hide');
-        returnFocusToMap();
-    };
-
-    ModalWindow.prototype.modalDeathLoad = function () {
-        // Загрузить информацию из документа в див
-        var self = this;
-        this.modalDeath.load('/static/modal_window/deathPage.html', function(){
-            // Назначить кнопки закрытия окна
-            $('#deathPageButtonResp').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                //sendServConsole('change_car()');
-                location.reload();
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalDeathHide();
-            });
-
-        });
-
     };
 
 
@@ -546,9 +468,10 @@ var ModalWindow = (function () {
 
         // Вывод очков
         if (options.record_index >= 0)
-            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html('Набрано: ' + options.points + '<br>Место: ' + options.record_index);
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html(_("qgpp_get_point") + options.points +
+                                                                             _("qgpp_get_place") + options.record_index);
         else
-            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html('Набрано: ' + options.points);
+            this.modalQuickGamePoints.find('#QuickGamePagePointPoints').html(_("qgpp_get_point") + options.points);
 
         // Вывод High Score
         var color_class = 'qg-pp-light-back';
@@ -723,35 +646,35 @@ var ModalWindow = (function () {
 
         var class_icon = '';
         var text = '';
-        var text1 = 'Получено задание: ';
-        var text2 = 'Смотрите Журнал для подробностей.';
+        var text1 = _("cqfo_text1");
+        var text2 = _("cqfo_text2");
         var add_class = '';
-        if (user.example_agent.role_class == "Избранный") {
-            text = text1 + 'Основать поселение.</br>' + text2;
+        if (user.example_agent.role_class['ru'] == "Избранный") {
+            text = text1 + _("cqfo_text3_1") + text2;
             class_icon = '/static/content/class-icons/co.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Альфа-волк") {
-            text = text1 + 'Создать клан.</br>' + text2;
+        else if (user.example_agent.role_class['ru'] == "Альфа-волк") {
+            text = text1 + _("cqfo_text3_2") + text2;
             class_icon = '/static/content/class-icons/aw.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Ночной ездок") {
-            text = text1 + 'Получить стелс-технологию.</br>' + text2;
+        else if (user.example_agent.role_class['ru'] == "Ночной ездок") {
+            text = text1 + _("cqfo_text3_3") + text2;
             class_icon = '/static/content/class-icons/nr.png';
         }
-        else if (user.example_agent.role_class == "Нефтяной магнат") {
-            text = text1 + 'Открыть магазин.</br>' + text2;
+        else if (user.example_agent.role_class['ru'] == "Нефтяной магнат") {
+            text = text1 + _("cqfo_text3_4") + text2;
             class_icon = '/static/content/class-icons/om.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Воин дорог") {
-            text = text1 + 'Получить суперкар.</br>' + text2;
+        else if (user.example_agent.role_class['ru'] == "Воин дорог") {
+            text = text1 + _("cqfo_text3_5") + text2;
             class_icon = '/static/content/class-icons/rw.png';
             add_class = 'two_line';
         }
-        else if (user.example_agent.role_class == "Технокинетик") {
-            text = text1 + 'Открыть сервисный центр.</br>' + text2;
+        else if (user.example_agent.role_class['ru'] == "Технокинетик") {
+            text = text1 + _("cqfo_text3_6") + text2;
             class_icon = '/static/content/class-icons/tk.png';
         }
 

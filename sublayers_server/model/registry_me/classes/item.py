@@ -4,10 +4,12 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from tornado.template import Template
+from sublayers_common.site_locale import locale
 from sublayers_server.model.registry_me.tree import (
-    Node, Subdoc,
-    IntField, FloatField, StringField, ListField, EmbeddedDocumentField,
-    RegistryLinkField, EmbeddedNodeField,
+    Node, Subdoc, IntField, FloatField, StringField, ListField, EmbeddedDocumentField, RegistryLinkField,
+    EmbeddedNodeField, LocalizedStringField, LocalizedString,
+    MapField,
 )
 
 
@@ -18,8 +20,10 @@ class Item(Node):
     stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags={'client'})
     position = IntField(caption=u'Позиция в инвентаре')
     base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
+    condition = IntField(caption=u'Состояние (если есть) предмета по 5-бальной шкале. По умолчанию состояния не определено.')
 
-    description = StringField(caption=u'Расширенное описание предмета')
+    description = LocalizedStringField(caption=u'Расширенное описание предмета')
+
     inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
     inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
     inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
@@ -29,7 +33,42 @@ class Item(Node):
     # todo: move title attr to the root
     activate_type = StringField(caption=u'Способ активации: none, self ...', tags={'client'})
     activate_time = FloatField(caption=u'Время активации итема')
-    activate_disable_comment = StringField(caption=u'Опсиание условий активации', tags={'client'})
+    activate_disable_comment = LocalizedStringField(caption=u'Опсиание условий активации', tags={'client'})
+
+    condition_map = MapField(
+        caption=u'Словарь состояний предмета (<числовой индекс>: <Локализуемый текст>)',
+        field=LocalizedStringField(), root_default=dict,
+    )
+
+    @property
+    def title_with_condition(self):
+        condition = self.condition
+        condition_map = self.condition_map
+        title = self.title
+
+        if not condition or not condition_map:
+            return title
+
+        condition_text = condition_map.get(str(condition), None)
+        if not condition_text:
+            return title
+
+        def merge(c, t):
+            return u'{} {}{}'.format(c, t[:1].lower(), t[1:])
+
+        return LocalizedString(  #TODO: ##FIX ##LOCALIZATION Смерджить все возможные локали
+            en=merge(condition_text.en, title.en),
+            ru=merge(condition_text.ru, title.ru),
+        )
+
+    @property
+    def condition_text(self):
+        condition = self.condition
+        condition_map = self.condition_map
+        if not condition_map or not condition:
+            return LocalizedString(u'')
+
+        return condition_map.get(condition, LocalizedString(u''))
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
@@ -53,22 +92,34 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        {{ _(this.description) }}
+    """, whitespace='oneline')
+
+    @property
     def html_description(self):
-        return self.description
+        html_description = getattr(self, '_html_description', None)
+        if html_description is None:
+            template = self.HTML_DESCRIPTION_TEMPLATE
+            html_description = self._html_description = LocalizedString(
+                en=template.generate(this=self, _=lambda key: locale('en', key)),
+                ru=template.generate(this=self, _=lambda key: locale('ru', key)),
+            )
+        return html_description
 
     def as_client_dict(self):
         d = super(Item, self).as_client_dict()
         d.update(
             ids=self.ids(),
-            description=self.html_description(),
+            description=self.html_description,
+            title=self.title_with_condition,
         )
-
         return d
 
     def as_assortment_dict(self):
         d = dict(
             title=self.title,
-            description=self.html_description(),
+            description=self.html_description,
             inv_icon_mid=self.inv_icon_mid,
             stack_size=self.stack_size,
             node_hash=self.node_hash(),
@@ -258,33 +309,34 @@ class MechanicItem(SlotItem):
     r_cc_wood = FloatField(caption=u"Резист к модификатору CC в лесу")
     r_cc_slope = FloatField(caption=u"Резист к модификатору CC в горах")
     r_cc_water = FloatField(caption=u"Резист к модификатору CC в воде")
+    PUBLIC_PARAMS = [
+        "p_visibility_max",
+        "p_visibility_min",
+        "p_observing_range",
+        "max_hp",
+        "r_min",
+        "ac_max",
+        "v_forward",
+        "v_backward",
+        "a_forward",
+        "a_backward",
+        "a_braking",
+        "max_fuel",
+        "p_fuel_rate",
+        "r_cc_dirt",
+    ]
 
-    def html_description(self):
-        result = '<br>'
-        attr_name_list = dict(
-            p_visibility_min=dict(name=u'Мин. заметность', mul=1.0),
-            p_visibility_max=dict(name=u'Макс. заметность', mul=1.0),
-            p_observing_range=dict(name=u'Радиус обзора', mul=1.0),
-            max_hp=dict(name=u'HP', mul=1.0),
-            r_min=dict(name=u'Маневренность', mul=-1.0),
-            ac_max=dict(name=u'Контроль', mul=1.0),
-            v_forward=dict(name=u'Макс. скорость', mul=1.0),
-            v_backward=dict(name=u'Макс. скорость назад', mul=-1.0),
-            a_forward=dict(name=u'Динамика разгона', mul=1.0),
-            a_backward=dict(name=u'Динамика задн. хода', mul=-1.0),
-            a_braking=dict(name=u'Торможение', mul=-1.0),
-            max_fuel=dict(name=u'Бак', mul=1.0),
-            p_fuel_rate=dict(name=u'Расход топлива', mul=1.0),
-            r_cc_dirt=dict(name=u'Проходимость', mul=1.0),            
-        )
-        for attr_name in attr_name_list.keys():
-            attr_value = getattr(self, attr_name, None)
-            if attr_value:
-                attr_str = attr_name_list[attr_name]["name"]
-                attr_value *= 100
-                result += u'<div class="mechanic-description-line left-align">{}:</div><div class="mechanic-description-line right-align">{:.1f}%</div>'.format(attr_str, attr_value * attr_name_list[attr_name]["mul"])
-
-        return result
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        <br>
+        {% for param in this.PUBLIC_PARAMS %}
+            {% set v = getattr(this, param, None) %}
+            {% if v %}
+                {% set v = -v if param in {'r_min', 'v_backward', 'a_backward', 'a_braking',} else v %}
+                <div class="mechanic-description-line left-align">{{ _('iht__' + param) }}</div>
+                <div class="mechanic-description-line right-align">{{ "{:.1f}".format(v * 100) }}%</div>
+            {% end %}
+        {% end %}
+    """, whitespace='oneline')
 
 
 class TunerItem(SlotItem):
@@ -319,10 +371,16 @@ class TunerItem(SlotItem):
         # log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
 
-    def html_description(self):
-        car_str = ', '.join([car_rec.car.title for car_rec in self.images])
-        return (u'<div class="mechanic-description-line left-align">Очки крутости: {}</div>'.format(int(self.pont_points)) +
-                u'<div class="mechanic-description-line left-align">Совместимость: {}</div>'.format(car_str))
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+        <div class="mechanic-description-line left-align">{{ _('tiht__pont_points') }}: {{ '{:.0f}'.format(this.pont_points) }}</div>
+        <div class="mechanic-description-line left-align">{{ _('tiht__compatibility') }}:
+            {% if this.images %}
+                {{ _(this.images[0].car.title) }}{% for car_rec in this.images[1:] %}, {{ _(car_rec.car.title) }}{% end %}
+            {% else %}
+                --
+            {% end %}
+        </div>
+    """, whitespace='oneline')
 
 
 class ArmorerItem(SlotItem):

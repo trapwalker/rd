@@ -18,7 +18,7 @@ var QuestNoteNPCBtnKiller = (function (_super) {
         }
         var jq_up_path = $('<div class="notes-npc-killer-up">*** WANTED ***</div>');
         this.jq_main_div.append(jq_up_path);
-        this.jq_main_div.append('<div class="notes-npc-killer-inventory-label">Список целей</div>');
+        this.jq_main_div.append('<div class="notes-npc-killer-inventory-label">' + _("kn_list_target") + '</div>');
         var jq_down_path = $('<div class="notes-npc-killer-inventory-wrap"></div>');
         var jq_inv_list = $('<div class="notes-npc-killer-inventory"></div>');
         jq_down_path.append(jq_inv_list);

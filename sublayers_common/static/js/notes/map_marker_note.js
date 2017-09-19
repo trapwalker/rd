@@ -5,7 +5,7 @@ var QuestMapMarkerNote = (function (_super) {
         _super.call(this, options);
         this.radius = options.radius;
         this.position = new Point(options.position.x, options.position.y);
-        this.focus_caption = options.focus_caption || "";
+        this.focus_caption = _(options.focus_caption) || "";
 
         this.icon_circle = new Image();
         if (options.icon_circle)

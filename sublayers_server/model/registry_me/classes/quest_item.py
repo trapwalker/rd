@@ -8,6 +8,7 @@ from sublayers_server.model.registry_me.tree import (
     Subdoc, 
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField,
     EmbeddedNodeField,
+    LocalizedStringField,
 )
 
 
@@ -58,8 +59,8 @@ class QuestItem(Item):
     starttime = FloatField(tags={'client'}, caption=u'Время добавления итема в инвентарь', doc=u'Время старта квеста')
     deadline = IntField(tags={'client'}, caption=u'Время жизни итема в инвентаре', doc=u'')
 
-    effect_title = StringField(caption=u'Наименование эффекта квестового итема для окна персонажа')
-    effect_description = StringField(caption=u'Описание эффекта квестового итема для окна персонажа')
+    effect_title = LocalizedStringField(caption=u'Наименование эффекта квестового итема для окна персонажа')
+    effect_description = LocalizedStringField(caption=u'Описание эффекта квестового итема для окна персонажа')
 
     # аддитивные модификаторы скилов
     driving     = FloatField(caption=u"Модификатор навыка вождения", tags={'client', 'aggregate'})

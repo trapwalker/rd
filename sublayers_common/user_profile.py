@@ -3,14 +3,13 @@
 import logging
 log = logging.getLogger(__name__)
 
-from bson.objectid import ObjectId
 from uuid import uuid4
 import hashlib
 import datetime
 import random
 import re
 from mongoengine import (
-    Document, EmbeddedDocument, StringField, EmbeddedDocumentField, EmailField, BooleanField, IntField, DateTimeField,
+    Document, EmbeddedDocument, StringField, EmbeddedDocumentField, BooleanField, IntField, DateTimeField,
     UUIDField,
 )
 
@@ -54,6 +53,7 @@ class User(Document):
                 vk=self.vk.social_id,
                 twitter=self.twitter.social_id,
                 fb=self.fb.social_id,
+                steam=self.steam.social_id,
             )
 
         standard = EmbeddedDocumentField(AuthStandard, default=AuthStandard)
@@ -61,12 +61,14 @@ class User(Document):
         vk = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
         twitter = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
         fb = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
+        steam = EmbeddedDocumentField(AuthSocial, default=AuthSocial)
 
 
     __collection__ = 'profiles'
     name = StringField(max_length=64)
     registration_status = StringField(max_length=64)
     auth = EmbeddedDocumentField(AuthData, default=AuthData)
+    lang = StringField(default="en", max_length=64)
 
     quick = BooleanField(default=False)
     is_tester = BooleanField(default=False)
@@ -91,7 +93,8 @@ class User(Document):
             auth=self.auth.adm_info,
         )
 
-    def __init__(self, raw_password=None, email=None, google_id=None, vk_id=None, twitter_id=None, fb_id=None, **kw):
+    def __init__(self, raw_password=None, email=None,
+        google_id=None, vk_id=None, twitter_id=None, fb_id=None, steam_id=None, **kw):
         super(User, self).__init__(**kw)
         if raw_password:
             self.auth.standard.set_password(raw_password)
@@ -110,6 +113,9 @@ class User(Document):
 
         if fb_id:
             self.auth.fb.social_id = fb_id
+
+        if steam_id:
+            self.auth.steam.social_id = steam_id
 
 
     def __nonzero__(self):
@@ -150,6 +156,10 @@ class User(Document):
     @classmethod
     def get_by_fb_id(cls, uid):
         return cls.objects.filter(auth__fb__social_id=uid).first()
+
+    @classmethod
+    def get_by_steam_id(cls, uid):
+        return cls.objects.filter(auth__steam__social_id=uid).first()
 
     def as_document(self):
         d = self.__dict__.copy()

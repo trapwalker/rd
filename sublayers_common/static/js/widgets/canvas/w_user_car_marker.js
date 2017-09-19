@@ -231,7 +231,7 @@ var WCanvasCarMarker = (function (_super) {
                 this.tail_particles_icon_right_name = "icon-car-tail-06r-45";
                 break;
             default:
-                console.log('Не найдена иконка. Установлена стандартная. ', car.sub_class_car);
+                console.log('Не найдена иконка. Установлена стандартная. ', _(car.sub_class_car));
         }
     };
 
@@ -672,7 +672,7 @@ var WCanvasLootMarker = (function (_super) {
         this.cm_z_index = 10;
         var corpse_radiance_koeff = 1.0;  // Если это будет труп машинки, а не лут, то радиус клика нужно уменьшить
         if (this.mobj.cls == "POICorpse") {
-            var icon_name = WCanvasCarMarker._get_icon_by_sub_class(this.mobj.sub_class_car);
+            var icon_name = WCanvasCarMarker._get_icon_by_sub_class(_(this.mobj.sub_class_car));
             this.icon_obj = iconsLeaflet.getIcon("icon_dead_" + icon_name);
             this.icon_backlight = iconsLeaflet.getIcon("icon_corpse_backlight");
             corpse_radiance_koeff = 0.6;

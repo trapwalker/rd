@@ -67,6 +67,31 @@ class PlayHandler(BaseHandler):
         log.debug('== User %r is closed connection.', self.get_secure_cookie("user"))
         self._break_handler = True
 
+    def prepare(self):
+        super(PlayHandler, self).prepare()
+
+        user_lang = self.get_cookie('lang', None)
+        # если cookie с языком не задана, то смотреть на host
+        if user_lang is None:
+            host = self.request.host
+            # todo: ##REFACTORING host name
+            if host == 'roaddogs.online':
+                user_lang = 'en'
+            elif host == 'roaddogs.ru':
+                user_lang = 'ru'
+            else:
+                user_lang = 'en'
+
+        if self.current_user:
+            if self.current_user.lang != user_lang:
+                self.current_user.lang = user_lang
+                self.current_user.save()
+                agent = self.application.srv.api.get_agent_by_user_pk(self.current_user)
+                if agent:
+                    agent.user.reload()
+            self.user_lang = user_lang
+
+
     @tornado.gen.coroutine
     def get(self):
         user_id = self.get_secure_cookie("user")
@@ -91,6 +116,8 @@ class PlayHandler(BaseHandler):
         if user is None:
             self.redirect(self.get_login_url())
             return
+
+        electron = self.get_argument("mode", "") == "electron"
 
         if options.mode == 'basic':
             coord = None
@@ -117,22 +144,24 @@ class PlayHandler(BaseHandler):
                         server_mode=options.mode,
                         host_name=options.mobile_host,
                         user_name=user.name,
+                        user_lang=self.user_lang,
                         first_enter=first_enter,
                         start_coord=coord,
                         insurance_name=agent.example.profile.insurance.title,
                         user_balance=agent.balance,
                         connection_delay=connection_delay,
+                        electron=electron,
                     )
                 else:
                     log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
-                    self.redirect('/quick/play')
+                    self.redirect('/quick/play{}'.format("?mode=electron" if electron else ""))
             else:
                 self.redirect(self.get_login_url())
 
         if options.mode == 'quick':
             if not user.quick and user.teaching_state != "map" and user.teaching_state != "map_start":
                 log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
-                self.redirect('/play')
+                self.redirect('/play{}'.format("?mode=electron" if electron else ""))
                 return
 
             if not user.quick and user.teaching_state == "map_start":
@@ -140,7 +169,7 @@ class PlayHandler(BaseHandler):
                 agent = self.application.srv.agents.get(str(user.pk), None)
                 if not agent:
                     log.warning('{} with teaching_state = {} try to connect on quick server'.format(user, user.teaching_state))
-                    self.redirect('/play')
+                    self.redirect('/play{}'.format("?mode=electron" if electron else ""))
                     return
 
             coord = None
@@ -167,11 +196,13 @@ class PlayHandler(BaseHandler):
                 server_mode=options.mode,
                 host_name=options.mobile_host,
                 user_name=user.name,
+                user_lang=self.user_lang,
                 first_enter=False,
                 start_coord=coord,
                 insurance_name='quick',
                 user_balance=0,
                 connection_delay=connection_delay,
+                electron=electron,
             )
 
 

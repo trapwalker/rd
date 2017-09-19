@@ -12,6 +12,7 @@ from sublayers_server.model.registry_me.tree import (
     Node, Subdoc,
     IntField, FloatField, StringField, ListField, EmbeddedDocumentField,
     RegistryLinkField, EmbeddedNodeField, PositionField,
+    LocalizedStringField,
 )
 
 
@@ -66,7 +67,7 @@ class MapRespawn(POIObserver):
 class MapPowerUp(POIObserver):
     model_class_name = StringField(caption=u'Имя модельного класса')
     icon_name = StringField(caption=u'Имя иконки в iconManager')
-    activate_comment = StringField(caption=u'Комментарий для лога')
+    activate_comment = LocalizedStringField(caption=u'Комментарий для лога')
     life_time = FloatField(caption=u"Время жизни")
 
 
@@ -96,8 +97,8 @@ class MapLocation(POIObserver):
 
 class Building(Subdoc):
     name = StringField(caption=u'Техническое имя', tags={'client'})  # todo: identify string constrain
-    caption = StringField(caption=u'Название', tags={'client'})
-    title = StringField(caption=u'Заголовок', tags={'client'})
+    caption = LocalizedStringField(caption=u'Название', tags={'client'})
+    title = LocalizedStringField(caption=u'Заголовок', tags={'client'})
     head = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution', tags={'client'})
     instances = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
@@ -171,7 +172,7 @@ class Institution(Node):
     )
 
     photo = StringField(caption=u"Фото", tags={'client'})  # todo: Сделать специальный атрибут для ссылки на файл
-    text = StringField(caption=u"Текст приветствия", tags={'client'})
+    text = LocalizedStringField(caption=u"Текст приветствия", tags={'client'})
     type = StringField(caption=u"Специальность NPC", tags={'client'})
     quests = ListField(
         caption=u"Генераторы квестов",

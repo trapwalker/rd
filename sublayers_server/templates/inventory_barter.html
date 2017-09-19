@@ -11,17 +11,17 @@
     <div class="barter-window-wrap-right" {% if in_location %} style="width: 100%" {% end %}>
         <div class="barter-window-inventory-block my">
             <div id="barterInventoryWindow-id-car-{{ barter.id }}" class="barterInventoryWindow-inventory-wrap">
-                <div class="barterInventoryWindow-inventory-header">Ваш инвентарь</div>
+                <div class="barterInventoryWindow-inventory-header">{{ _("ib_you_inv") }}</div>
                 <div class="barterInventoryWindow-inventory-body inventory-{{ inv_id }}"></div>
                 <div class="barterInventoryWindow-lock-div"></div>
             </div>
-            <div class="barterInventoryWindow-my-money-wrap">Ваш счет: <span class="barterInventoryWindow-my-money self-balance-view">{{ agent.balance }}</span>нк.</div>
-            <div id="barterInventoryWindow-apply-button-{{ barter.id }}" class="barterInventoryWindow-button apply">Подтвердить</div>
-            <div id="barterInventoryWindow-cancel-button-{{ barter.id }}" class="barterInventoryWindow-button cancel">Отмена</div>
+            <div class="barterInventoryWindow-my-money-wrap">{{ _("ib_you_balance") }}: <span class="barterInventoryWindow-my-money self-balance-view">{{ agent.balance }}</span>NC</div>
+            <div id="barterInventoryWindow-apply-button-{{ barter.id }}" class="barterInventoryWindow-button apply">{{ _("ib_Ok") }}</div>
+            <div id="barterInventoryWindow-cancel-button-{{ barter.id }}" class="barterInventoryWindow-button cancel">{{ _("ib_Cancel") }}</div>
         </div>
         <div class="barter-window-inventory-block table">
             <div class="barterInventoryWindow-inventory-wrap">
-                <div class="barterInventoryWindow-inventory-header">Столик обмена:</div>
+                <div class="barterInventoryWindow-inventory-header">{{ _("ib_table") }}:</div>
                 <div class="barter-window-table-inventory-wrap border">
                     <div id="barterInventoryWindow-id-my-table-{{ barter.id }}" class="barterInventoryWindow-inventory-body table inventory-{{ my_table_id }}"></div>
                 </div>
@@ -31,7 +31,7 @@
                 <div class="barterInventoryWindow-lock-div"></div>
             </div>
             <div class="barterInventoryWindow-table-money-block border">
-                <div class="barterInventoryWindow-table-money-block-header left">Сумма к переводу</div>
+                <div class="barterInventoryWindow-table-money-block-header left">{{ _("ib_summ") }}</div>
                 <div class="barterInventoryWindow-table-money-config">
                     <div id="barterInventoryWindow-table-my-money-dec-{{ barter.id }}"
                          class="barterInventoryWindow-table-money-block-change-button barterInventoryWindow-button">-</div>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="barterInventoryWindow-table-money-block">
-                <div class="barterInventoryWindow-table-money-block-header right">Сумма партнера</div>
+                <div class="barterInventoryWindow-table-money-block-header right">{{ _("ib_summ_2") }}</div>
                 <div class="barterInventoryWindow-table-money-config">
                     <div class="barterInventoryWindow-table-money-block-count-edit barterInventoryWindow-table-money-block-count-edit-other">
                         <input id="barterInventoryWindow-table-other-money-edit-{{ barter.id }}" type="text" value="0" disabled="True">

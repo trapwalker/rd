@@ -171,10 +171,10 @@ var LocationGasStationNPC = (function (_super) {
             this.jq_empty_tank_text.text(info_empty_tanks.str);
 
             this.jq_main_div.find('.npcInventory-label').first()
-                .text('Полные канистры: ' + info_full_tanks.str);
+                .text(_("loc_gas_full_tanks") + ': ' + info_full_tanks.str);
         }
         else {
-            this.jq_repair_page.text('Отсутствует машинка');
+            this.jq_repair_page.text(_("loc_arm_sht_car_off_warning"));
         }
 
         _super.prototype.update.call(this, data);
@@ -260,8 +260,8 @@ var LocationGasStationNPC = (function (_super) {
             if (current_gas < 0) current_gas = 0;
             current_gas += this._get_selected_volume();
             html_text =
-                'Заправить: ' + Math.ceil(current_gas) + ' NC</br>' +
-                'Заправить полный бак и канистры: ' + Math.ceil(user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) + 'NC';
+                _("loc_gas_sht_fuel") + ': ' + Math.ceil(current_gas) + ' NC</br>' +
+                _("loc_gas_sht_fuel_full") + ': ' + Math.ceil(user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) + 'NC';
         }
         _super.prototype.set_header_text.call(this, html_text);
     };
@@ -287,15 +287,15 @@ var LocationGasStationNPC = (function (_super) {
         //console.log("LocationGasStationNPC.prototype.set_buttons");
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Заправить', true);
-            locationManager.setBtnState(2, 'Заправить</br>всё', true);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_gas_fuel"), true);
+            locationManager.setBtnState(2, _("loc_leaf_gas_full_fuel"), true);
         }
         else {
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationGasStationNPC.prototype.clickBtn = function (btnIndex) {

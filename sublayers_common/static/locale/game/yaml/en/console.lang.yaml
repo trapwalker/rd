@@ -1,0 +1,67 @@
+"locale": "en"
+
+"con_interrupt": "Aborted."
+"con_interrupt2": "... Aborted..."
+
+
+# ConsoleFirstEnter
+"con_fe_01": "       >        Nuke Commander ver. "
+"con_fe_01_1": "        <\n"
+"con_fe_02": "       >         Corporation (C) NukeOil 2084         <"
+"con_fe_03": "Query active insurance status."
+"con_fe_04": " insurance is active for "
+"con_fe_05": "Dear, "
+"con_fe_06": "Congratulations! You have successfully registered in the Nuke Commander system and received a corporate driver's license. The Finance Division of the Nukeoil Corporation has approved your auto loan and the lease of the client hardware for the Nuke Navigator system."
+"con_fe_07": "Our company welcomes qualified users, and it is willing to cover your tuition fees for training. Would you like to undergo training and receive a bonus of 850 nukecoins + 100 experience points?"
+"con_fe_08": "Yes"
+"con_fe_09": "No"
+"con_fe_10": "Activation of training system."
+"con_fe_11": "Demonstration script is running. Follow instructions."
+"con_fe_12": "Enter - continue."
+"con_fe_13": "С - terms of loan agreement."
+"con_fe_14": "A - about system."
+"con_fe_15": "Deactivation of training system."
+"con_fe_16": "Starting demonstration script is canceled."
+"con_fe_17": "Request a welcome booklet."
+"con_fe_18": "Data is loaded."
+"con_fe_19": "Query terms of loan agreement."
+"con_fe_20": "Nukeoil was founded in 2084, 2 years after the start and end of the war. Our engineers have selected the best of the pre-war technologies that allow us to live again in the atmosphere of our planet, which has otherwise been made unfit for habitation. You have access to the network of Nukeoil filling stations, the Nuke Navigator satellite navigation system, and the Nuke Commander personal operating system. The Nukeoil Corporation is the source of life in the darkness of nuclear winter."
+"con_fe_21": "The Nukeoil Corporation provides the client Username with a loan to buy his first vehicle worth up to 2,000 nukecoins. Any auto dealer who has been verified in the system can provide you with transportation within the specified budget. Until the repayment of the loan of 2,500 nukecoins is complete, all transactions by the account Username will be blocked."
+
+
+# ConsoleEnter
+"con_e_01": "Query actual coordinates."
+"con_e_02": "Your coordinates: "
+"con_e_03": "Balance request."
+"con_e_04": "Your account balance: "
+
+
+# ConsoleEnterToLocation / ConsoleEnterToMap
+"con_etl_01": "Activation input protocol location."
+"con_etl_02": "Checking security protocols..."
+"con_etl_03": "Approved."
+"con_etl_04": "Loading data."
+"con_etl_05": "Activating output protocol on map."
+
+
+# ConsoleDie
+"con_die_00": ' to '
+"con_die_01": "Connection with satellite is lost."
+"con_die_02": "Press any key to continue."
+"con_die_auto": "car"
+
+"con_dieb_01": "has an active Basic Insurance Corporation NukeOil"
+"con_dieb_02": "Your vehicle is destroyed. Under terms of Basic Insurance"
+"con_dieb_03": "Corporation NukeOil will pay you a nominal value of"
+"con_dieb_05": " and evacuate you to city that will be more convenient to our rescue team: "
+
+"con_diep_01": " has an active Premium Insurance Corporation NukeOil"
+"con_diep_02": "Your vehicle is destroyed. Under terms of Premium Insurance, "
+"con_diep_03": "Corporation NukeOil will restore "
+"con_diep_05": " without cargo, tuning, styling and mileage, and also evacuates you to last visited city: "
+
+"con_dievip_01": " has an active Shareholder Insurance Corporation NukeOil"
+"con_dievip_02": "Your vehicle is destroyed. Under terms of Shareholder Insurance, "
+"con_dievip_03": "Corporation NukeOil fully restore "
+"con_dievip_05": " with exception of cargo. In addition, you are invited to choose city of evacuation. "
+"con_dievip_06": "Press correct number or Enter to continue: "

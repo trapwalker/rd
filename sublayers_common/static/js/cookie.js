@@ -15,10 +15,10 @@ var SettingsManager = (function() {
         this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
 
         this.page_descriptions = {
-            settings_page_graphics: "Настройки графики",
-            settings_page_audio: "Настройки звука",
-            settings_page_control: "Настройки управления",
-            settings_page_other: "Другие настройки",
+            settings_page_graphics: _("setman_page_descriptions_graphics"),
+            settings_page_audio: _("setman_page_descriptions_audio"),
+            settings_page_control: _("setman_page_descriptions_control"),
+            settings_page_other: _("setman_page_descriptions_other"),
         };
 
 
@@ -37,8 +37,8 @@ var SettingsManager = (function() {
         general_gain: {
             name: "general_gain",
             page: "audio",
-            text_name: "Общая громкость",
-            text_description: "Настройка общей громкости",
+            text_name: _("setman_opt_general_gain_text_name"),
+            text_description: _("setman_opt_general_gain_text_description"),
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
@@ -49,8 +49,8 @@ var SettingsManager = (function() {
         auto_fire_gain: {
             name: "auto_fire_gain",
             page: "audio",
-            text_name: "Громкость автоматической стрельбы",
-            text_description: "Настройка громкости автоматической стрельбы",
+            text_name: _("setman_opt_auto_fire_gain_text_name"),
+            text_description: _("setman_opt_auto_fire_gain_text_description"),
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
@@ -61,8 +61,8 @@ var SettingsManager = (function() {
         discharge_fire_gain: {
             name: "discharge_fire_gain",
             page: "audio",
-            text_name: "Громкость залповой стрельбы",
-            text_description: "Настройка громкости залповой стрельбы",
+            text_name: _("setman_opt_discharge_fire_gain_text_name"),
+            text_description: _("setman_opt_discharge_fire_gain_text_description"),
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
@@ -73,8 +73,8 @@ var SettingsManager = (function() {
         bang_gain: {
             name: "bang_gain",
             page: "audio",
-            text_name: "Громкость взрывов",
-            text_description: "Настройка громкости взрывов",
+            text_name: _("setman_opt_bang_gain_text_name"),
+            text_description: _("setman_opt_bang_gain_text_description"),
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
@@ -85,8 +85,8 @@ var SettingsManager = (function() {
         engine_gain: {
             name: "engine_gain",
             page: "audio",
-            text_name: "Громкость автомобиля",
-            text_description: "Настройка громкости двигателя и сигнала заднего хода",
+            text_name: _("setman_opt_engine_gain_text_name"),
+            text_description: _("setman_opt_engine_gain_text_description"),
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
@@ -97,8 +97,8 @@ var SettingsManager = (function() {
         interface_gain: {
             name: "interface_gain",
             page: "audio",
-            text_name: "Громкость интерфейса",
-            text_description: "Настройка громкости интерфейса",
+            text_name: _("setman_opt_interface_gain_text_name"),
+            text_description: _("setman_opt_interface_gain_text_description"),
             jq_div: null,
             type: "scale",  // Значит значение от 0 до 1.
             default: 1.0,
@@ -106,11 +106,12 @@ var SettingsManager = (function() {
             currentValue: 1.0,
             set_callback: function(new_value) {if (audioManager) audioManager._settings_interface_gain = new_value;},
         },
+        /* Настройка графики */
         game_color: {
             name: "game_color",
             page: "graphics",
-            text_name: "Палитра интерфейса",
-            text_description: "Изменяет палитру интерфейса. (Experimental**)",
+            text_name: _("setman_opt_game_color_text_name"),
+            text_description: _("setman_opt_game_color_text_description"),
             jq_div: null,
             type: "list",
             default: "none",
@@ -118,7 +119,7 @@ var SettingsManager = (function() {
             currentValue: 0,
             list_values: [
                 {
-                    text: "Стандартная",
+                    text: _("setman_opt_game_color_list_1"),
                     value: "none"
                 },
                 // {
@@ -130,7 +131,7 @@ var SettingsManager = (function() {
                 //     value: "grayscale(100%) brightness(1.25) contrast(125%);"
                 // },
                 {
-                    text: "Сепия",
+                    text: _("setman_opt_game_color_list_2"),
                     value: "sepia(100%);"
                 },
                 // {
@@ -146,19 +147,19 @@ var SettingsManager = (function() {
                 //     value: "url(#orange);"
                 // },
                 {
-                    text: "Желтая",
+                    text: _("setman_opt_game_color_list_3"),
                     value: "url(#yellow);"
                 },
                 {
-                    text: "Зеленая",
+                    text: _("setman_opt_game_color_list_4"),
                     value: "url(#green);"
                 },
                 {
-                    text: "Голубая",
+                    text: _("setman_opt_game_color_list_5"),
                     value: "url(#cyan);"
                 },
                 {
-                    text: "Синяя",
+                    text: _("setman_opt_game_color_list_6"),
                     value: "url(#blue);"
                 }
                 // ,{
@@ -171,44 +172,43 @@ var SettingsManager = (function() {
                 if (!from_first_load) settingsManager._game_color_return_to_def_from_green = false;
             },
         },
-        /* Настройка графики */
         particles_tracer: {
             name: "particles_tracer",
             page: "graphics",
-            text_name: "Количество трасеров",
-            text_description: "Количество трасеров",
+            text_name: _("setman_opt_particles_tracer_text_name"),
+            text_description: _("setman_opt_particles_tracer_text_description"),
             jq_div: null,
             type: "list",
             default: 0.2,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Мало", value: 0.2}, {text: "Среднее", value: 0.05}, {text: "Много", value: 0.01}],
+            list_values: [{text: _("setman_opt_particles_tracer_list_1"), value: 0.2}, {text: _("setman_opt_particles_tracer_list_2"), value: 0.05}, {text: _("setman_opt_particles_tracer_list_3"), value: 0.01}],
             set_callback: function(new_value) {if (fireEffectManager) fireEffectManager._settings_particles_tracer = new_value;},
         },
         particles_tail: {
             name: "particles_tail",
             page: "graphics",
-            text_name: "Шлейфы",
-            text_description: "Длина шлейфов",
+            text_name: _("setman_opt_particles_tail_text_name"),
+            text_description: _("setman_opt_particles_tail_text_description"),
             jq_div: null,
             type: "list",
             default: 1.0,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Нет", value: 0}, {text: "Короткие", value: 0.5}, {text: "Обычные", value: 1.0}],
+            list_values: [{text: _("setman_opt_particles_tail_list_1"), value: 0}, {text: _("setman_opt_particles_tail_list_2"), value: 0.5}, {text: _("setman_opt_particles_tail_list_3"), value: 1.0}],
             set_callback: function(new_value) {if (mapCanvasManager) mapCanvasManager._settings_particles_tail = new_value;},
         },
         canvas_noise: {
             name: "canvas_noise",
             page: "graphics",
-            text_name: "Шум",
-            text_description: "Настройка шума карты",
+            text_name: _("setman_opt_canvas_noise_text_name"),
+            text_description: _("setman_opt_canvas_noise_text_description"),
             jq_div: null,
             type: "list",
             default: 1,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
+            list_values: [{text: _("setman_com_no"), value: 0}, {text: _("setman_com_have"), value: 1}],
             set_callback: function(new_value) {
                 if (wMapNoise) wMapNoise.activated = new_value == 1;
                 if (wRadiationNoise) wRadiationNoise.activated = new_value == 1;
@@ -217,14 +217,14 @@ var SettingsManager = (function() {
         map_tile_draw_back: {
             name: "map_tile_draw_back",
             page: "graphics",
-            text_name: "Отображение тайлов карты",
-            text_description: "Отображение тайлов карты",
+            text_name: _("setman_opt_map_tile_draw_back_text_name"),
+            text_description: _("setman_opt_map_tile_draw_back_text_description"),
             jq_div: null,
             type: "list",
             default: "merged",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Местность", value: "back"}, {text: "Метаданные", value: "front"}, {text: "По умолчанию", value: "merged"}],
+            list_values: [{text: _("setman_opt_map_tile_draw_back_list_1"), value: "back"}, {text: _("setman_opt_map_tile_draw_back_list_2"), value: "front"}, {text: _("setman_opt_map_tile_draw_back_list_3"), value: "merged"}],
             set_callback: function(new_value) {
                 if (!mapManager) return;
                 mapManager.set_tileprovider_visibility("back", new_value == "back");
@@ -250,14 +250,14 @@ var SettingsManager = (function() {
         map_tile_preload: {
             name: "map_tile_preload",
             page: "graphics",
-            text_name: "Предзагрузка тайлов карты",
-            text_description: "Предзагрузка тайлов карты",
+            text_name: _("setman_opt_map_tile_preload_text_name"),
+            text_description: _("setman_opt_map_tile_preload_text_description"),
             jq_div: null,
             type: "list",
             default: 8,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Текущий", value: 0}, {text: "Один масштаб", value: 1}, {text: "Два масштаба", value: 2}, {text: "Все масштабы", value: 8}],
+            list_values: [{text: _("setman_opt_map_tile_preload_list_1"), value: 0}, {text: _("setman_opt_map_tile_preload_list_2"), value: 1}, {text: _("setman_opt_map_tile_preload_list_3"), value: 2}, {text: _("setman_opt_map_tile_preload_list_4"), value: 8}],
             set_callback: function(new_value) {
                 if (mapManager) mapManager.set_pyramid_size("tiles", new_value);
             },
@@ -265,28 +265,28 @@ var SettingsManager = (function() {
         location_effects: {
             name: "location_effects",
             page: "graphics",
-            text_name: "Эффекты в городе",
-            text_description: "Эффекты в городе",
+            text_name: _("setman_opt_location_effects_text_name"),
+            text_description:_("setman_opt_location_effects_text_description"),
             jq_div: null,
             type: "list",
             default: 1,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Нет", value: 0}, {text: "Есть", value: 1}],
+            list_values: [{text: _("setman_com_no"), value: 0}, {text: _("setman_com_have"), value: 1}],
             set_callback: function(new_value) {},
             init: function() {settingsManager.options.location_effects.value = settingsManager.options.location_effects.currentValue = parseInt(settingsManager.options.location_effects.currentValue);}
         },
         show_nickname: {
             name: "show_nickname",
             page: "graphics",
-            text_name: "Отображение ников машиок",
-            text_description: "Отображение ников машиок на карте.",
+            text_name: _("setman_opt_show_nickname_text_name"),
+            text_description: _("setman_opt_show_nickname_text_description"),
             jq_div: null,
             type: "list",
             default: 750,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Всегда", value: 0}, {text: "По наведению", value: 750}],
+            list_values: [{text: _("setman_opt_show_nickname_list_1"), value: 0}, {text: _("setman_opt_show_nickname_list_2"), value: 750}],
             set_callback: function(new_value) {
                 WCanvasNicknameMarker.prototype.light_time = new_value;
             },
@@ -302,8 +302,8 @@ var SettingsManager = (function() {
         move_forvard: {
             name: "move_forvard",
             page: "control",
-            text_name: "Разгон",
-            text_description: "Разгон",
+            text_name: _("setman_opt_move_forvard_text_name"),
+            text_description: _("setman_opt_move_forvard_text_description"),
             jq_div: null,
             type: "control",
             default: 38,
@@ -314,8 +314,8 @@ var SettingsManager = (function() {
         move_backward: {
             name: "move_backward",
             page: "control",
-            text_name: "Торможение",
-            text_description: "Торможение",
+            text_name: _("setman_opt_move_backward_text_name"),
+            text_description: _("setman_opt_move_backward_text_description"),
             jq_div: null,
             type: "control",
             default: 40,
@@ -326,8 +326,8 @@ var SettingsManager = (function() {
         move_left: {
             name: "move_left",
             page: "control",
-            text_name: "Лево",
-            text_description: "Лево",
+            text_name: _("setman_opt_move_left_text_name"),
+            text_description: _("setman_opt_move_left_text_description"),
             jq_div: null,
             type: "control",
             default: 37,
@@ -338,8 +338,8 @@ var SettingsManager = (function() {
         move_right: {
             name: "move_right",
             page: "control",
-            text_name: "Право",
-            text_description: "Право",
+            text_name: _("setman_opt_move_right_text_name"),
+            text_description: _("setman_opt_move_right_text_description"),
             jq_div: null,
             type: "control",
             default: 39,
@@ -350,8 +350,8 @@ var SettingsManager = (function() {
         stop: {
             name: "stop",
             page: "control",
-            text_name: "Остановка",
-            text_description: "Остановка автомобиля",
+            text_name: _("setman_opt_stop_text_name"),
+            text_description: _("setman_opt_stop_text_description"),
             jq_div: null,
             type: "control",
             default: 32,
@@ -362,8 +362,8 @@ var SettingsManager = (function() {
         reverse: {
             name: "reverse",
             page: "control",
-            text_name: "Задняя передача",
-            text_description: "Задняя передача",
+            text_name: _("setman_opt_reverse_text_name"),
+            text_description: _("setman_opt_reverse_text_description"),
             jq_div: null,
             type: "control",
             default: 82,
@@ -374,8 +374,8 @@ var SettingsManager = (function() {
         toggle_auto_fire: {
             name: "toggle_auto_fire",
             page: "control",
-            text_name: "Вкл/Выкл автоматическую стрельбу",
-            text_description: "Вкл/Выкл автоматическую стрельбу",
+            text_name: _("setman_opt_toggle_auto_fire_text_name"),
+            text_description: _("setman_opt_toggle_auto_fire_text_description"),
             jq_div: null,
             type: "control",
             default: 81,
@@ -386,8 +386,8 @@ var SettingsManager = (function() {
         toggle_fire_widget: {
             name: "toggle_fire_widget",
             page: "control",
-            text_name: "Вкл/Выкл боевой режим",
-            text_description: "Вкл/Выкл боевой режим",
+            text_name: _("setman_opt_toggle_fire_widget_text_name"),
+            text_description: _("setman_opt_toggle_fire_widget_text_description"),
             jq_div: null,
             type: "control",
             default: 69,
@@ -398,8 +398,8 @@ var SettingsManager = (function() {
         fire_disc_front: {
             name: "fire_disc_front",
             page: "control",
-            text_name: "Фронтальный залп",
-            text_description: "Фронтальный залп",
+            text_name: _("setman_opt_fire_disc_front_text_name"),
+            text_description: _("setman_opt_fire_disc_front_text_description"),
             jq_div: null,
             type: "control",
             default: 87,
@@ -410,8 +410,8 @@ var SettingsManager = (function() {
         fire_disc_right: {
             name: "fire_disc_right",
             page: "control",
-            text_name: "Залп правым боротом",
-            text_description: "fire_disc_right",
+            text_name: _("setman_opt_fire_disc_right_text_name"),
+            text_description: _("setman_opt_fire_disc_right_text_description"),
             jq_div: null,
             type: "control",
             default: 68,
@@ -422,8 +422,8 @@ var SettingsManager = (function() {
         fire_disc_back: {
             name: "fire_disc_back",
             page: "control",
-            text_name: "Залп задом",
-            text_description: "Залп задом",
+            text_name: _("setman_opt_fire_disc_back_text_name"),
+            text_description: _("setman_opt_fire_disc_back_text_description"),
             jq_div: null,
             type: "control",
             default: 83,
@@ -434,8 +434,8 @@ var SettingsManager = (function() {
         fire_disc_left: {
             name: "fire_disc_left",
             page: "control",
-            text_name: "Залп левым боротом",
-            text_description: "Залп левым боротом",
+            text_name: _("setman_opt_fire_disc_left_text_name"),
+            text_description: _("setman_opt_fire_disc_left_text_description"),
             jq_div: null,
             type: "control",
             default: 65,
@@ -446,8 +446,8 @@ var SettingsManager = (function() {
         quick_panel_1: {
             name: "quick_panel_1",
             page: "control",
-            text_name: "Кнопка быстрого запуска 1",
-            text_description: "Кнопка быстрого запуска 1",
+            text_name: _("setman_opt_quick_panel_1_text_name"),
+            text_description: _("setman_opt_quick_panel_1_text_description"),
             jq_div: null,
             type: "control",
             default: 49,
@@ -458,8 +458,8 @@ var SettingsManager = (function() {
         quick_panel_2: {
             name: "quick_panel_2",
             page: "control",
-            text_name: "Кнопка быстрого запуска 2",
-            text_description: "Кнопка быстрого запуска 2",
+            text_name: _("setman_opt_quick_panel_2_text_name"),
+            text_description: _("setman_opt_quick_panel_2_text_description"),
             jq_div: null,
             type: "control",
             default: 50,
@@ -470,8 +470,8 @@ var SettingsManager = (function() {
         quick_panel_3: {
             name: "quick_panel_3",
             page: "control",
-            text_name: "Кнопка быстрого запуска 3",
-            text_description: "Кнопка быстрого запуска 3",
+            text_name: _("setman_opt_quick_panel_3_text_name"),
+            text_description: _("setman_opt_quick_panel_3_text_description"),
             jq_div: null,
             type: "control",
             default: 51,
@@ -482,8 +482,8 @@ var SettingsManager = (function() {
         quick_panel_4: {
             name: "quick_panel_4",
             page: "control",
-            text_name: "Кнопка быстрого запуска 4",
-            text_description: "Кнопка быстрого запуска 4",
+            text_name: _("setman_opt_quick_panel_4_text_name"),
+            text_description: _("setman_opt_quick_panel_4_text_description"),
             jq_div: null,
             type: "control",
             default: 52,
@@ -494,8 +494,8 @@ var SettingsManager = (function() {
         get_loot: {
             name: "get_loot",
             page: "control",
-            text_name: "Сбор лута",
-            text_description: "Сбор лута",
+            text_name: _("setman_opt_get_loot_text_name"),
+            text_description: _("setman_opt_get_loot_text_description"),
             jq_div: null,
             type: "control",
             default: 70,
@@ -508,8 +508,8 @@ var SettingsManager = (function() {
         zoom_in: {
             name: "zoom_in",
             page: "control",
-            text_name: "Увеличить масштаб",
-            text_description: "Увеличить масштаб",
+            text_name: _("setman_opt_zoom_in_text_name"),
+            text_description: _("setman_opt_zoom_in_text_description"),
             jq_div: null,
             type: "control",
             default: 187,
@@ -520,8 +520,8 @@ var SettingsManager = (function() {
         zoom_out: {
             name: "zoom_out",
             page: "control",
-            text_name: "Уменьшить масштаб",
-            text_description: "Уменьшить масштаб",
+            text_name: _("setman_opt_zoom_out_text_name"),
+            text_description: _("setman_opt_zoom_out_text_description"),
             jq_div: null,
             type: "control",
             default: 189,
@@ -532,8 +532,8 @@ var SettingsManager = (function() {
         zoom_roll_up: {
             name: "zoom_roll_up",
             page: "control",
-            text_name: "Свернуть виджеты",
-            text_description: "Свернуть виджеты",
+            text_name: _("setman_opt_zoom_roll_up_text_name"),
+            text_description: _("setman_opt_zoom_roll_up_text_description"),
             jq_div: null,
             type: "control",
             default: 219,
@@ -544,8 +544,8 @@ var SettingsManager = (function() {
         zoom_expand: {
             name: "zoom_expand",
             page: "control",
-            text_name: "Развернуть виджеты",
-            text_description: "Развернуть виджеты",
+            text_name: _("setman_opt_zoom_expand_text_name"),
+            text_description: _("setman_opt_zoom_expand_text_description"),
             jq_div: null,
             type: "control",
             default: 221,
@@ -558,8 +558,8 @@ var SettingsManager = (function() {
         open_character_info: {
             name: "open_character_info",
             page: "control",
-            text_name: "Информация о себе",
-            text_description: "Информация о себе",
+            text_name: _("setman_opt_open_character_info_text_name"),
+            text_description: _("setman_opt_open_character_info_text_description"),
             jq_div: null,
             type: "control",
             default: 67,
@@ -570,8 +570,8 @@ var SettingsManager = (function() {
         open_vehicle_info: {
             name: "open_vehicle_info",
             page: "control",
-            text_name: "Информация о ТС",
-            text_description: "Информация о ТС",
+            text_name: _("setman_opt_open_vehicle_info_text_name"),
+            text_description: _("setman_opt_open_vehicle_info_text_description"),
             jq_div: null,
             type: "control",
             default: 86,
@@ -582,8 +582,8 @@ var SettingsManager = (function() {
         open_inventory: {
             name: "open_inventory",
             page: "control",
-            text_name: "Инвентарь",
-            text_description: "Инвентарь",
+            text_name: _("setman_opt_open_inventory_text_name"),
+            text_description: _("setman_opt_open_inventory_text_description"),
             jq_div: null,
             type: "control",
             default: 73,
@@ -594,8 +594,8 @@ var SettingsManager = (function() {
         open_logbook_info: {
             name: "open_logbook_info",
             page: "control",
-            text_name: "Журнал",
-            text_description: "Журнал",
+            text_name: _("setman_opt_open_logbook_info_text_name"),
+            text_description: _("setman_opt_open_logbook_info_text_description"),
             jq_div: null,
             type: "control",
             default: 74,
@@ -606,8 +606,8 @@ var SettingsManager = (function() {
         open_party_info: {
             name: "open_party_info",
             page: "control",
-            text_name: "Окно настроек группы",
-            text_description: "Окно настроек группы",
+            text_name: _("setman_opt_open_party_info_text_name"),
+            text_description: _("setman_opt_open_party_info_text_description"),
             jq_div: null,
             type: "control",
             default: 80,
@@ -618,8 +618,8 @@ var SettingsManager = (function() {
         open_radio: {
             name: "open_radio",
             page: "control",
-            text_name: "Радио",
-            text_description: "Радио",
+            text_name: _("setman_opt_open_radio_text_name"),
+            text_description: _("setman_opt_open_radio_text_description"),
             jq_div: null,
             type: "control",
             default: 0,
@@ -630,8 +630,8 @@ var SettingsManager = (function() {
         open_options: {
             name: "open_options",
             page: "control",
-            text_name: "Настройки",
-            text_description: "Настройки",
+            text_name: _("setman_opt_open_options_text_name"),
+            text_description: _("setman_opt_open_options_text_description"),
             jq_div: null,
             type: "control",
             default: 79,
@@ -645,8 +645,8 @@ var SettingsManager = (function() {
             admin_mode: true,
             name: "use_teleport",
             page: "control",
-            text_name: "Телепорт",
-            text_description: "Телепортироваться по координатам курсора мыши",
+            text_name: _("setman_opt_use_teleport_text_name"),
+            text_description: _("setman_opt_use_teleport_text_description"),
             jq_div: null,
             type: "control",
             default: 84,
@@ -658,8 +658,8 @@ var SettingsManager = (function() {
             admin_mode: true,
             name: "save_tiles",
             page: "control",
-            text_name: "Выгрузка тайлов",
-            text_description: "Сформировать архив тайлов для загрузки на клиент (по координатам курсора мыши)",
+            text_name: _("setman_opt_save_tiles_text_name"),
+            text_description: _("setman_opt_save_tiles_text_description"),
             jq_div: null,
             type: "control",
             default: 72,
@@ -669,30 +669,47 @@ var SettingsManager = (function() {
         },
 
         /* Вкладка Другое */
+        localization: {
+            name: "localization",
+            page: "other",
+            text_name: _("setman_opt_localization_text_name"),
+            text_description: _("setman_opt_localization_text_description"),
+            jq_div: null,
+            type: "list",
+            default: 'en',
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: "Русский", value: "ru"}, {text: "English", value: "en"}],
+            set_callback: function(new_value) {changeLanguage(new_value);},
+            init: function() {
+                var lang = settingsManager.getCookie("lang") || "en";
+                settingsManager.options.localization.value = settingsManager.options.localization.currentValue = lang;
+            },
+        },
         save_current_zoom: {
             name: "save_current_zoom",
             page: "other",
-            text_name: "Сохранять масштаб",
-            text_description: "Сохранение масштаба между игровыми сессиями",
+            text_name: _("setman_opt_save_current_zoom_text_name"),
+            text_description: _("setman_opt_save_current_zoom_text_description"),
             jq_div: null,
             type: "list",
             default: 1,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Да", value: 1}, {text: "Нет", value: 0}],
+            list_values: [{text: _("setman_com_yes"), value: 1}, {text: _("setman_com_no"), value: 0}],
             set_callback: function(new_value) {},
         },
         zoom_step_value: {
             name: "zoom_step_value",
             page: "other",
-            text_name: "Скорость масштабирования",
-            text_description: "Скорость масштабирования колсёсиком мышки",
+            text_name: _("setman_opt_zoom_step_value_text_name"),
+            text_description: _("setman_opt_zoom_step_value_text_description"),
             jq_div: null,
             type: "list",
             default: 0.2,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Медленно", value: 0.2}, {text: "Нормально", value: 0.5}, {text: "Быстро", value: 1}, {text: "Очень быстро", value: 2}],
+            list_values: [{text: _("setman_opt_zoom_step_value_list_1"), value: 0.2}, {text: _("setman_opt_zoom_step_value_list_2"), value: 0.5}, {text: _("setman_opt_zoom_step_value_list_3"), value: 1}, {text: _("setman_opt_zoom_step_value_list_4"), value: 2}],
             set_callback: function(new_value) {if (mapManager)mapManager.zoom_wheel_step = new_value;},
             init: function() {
                 if (window.mapManager)
@@ -709,14 +726,14 @@ var SettingsManager = (function() {
         rotate_fire_sectors: {
             name: "rotate_fire_sectors",
             page: "other",
-            text_name: "Вращение секторов боевого виджета",
-            text_description: "Вращение секторов боевого виджета",
+            text_name: _("setman_opt_rotate_fire_sectors_text_name"),
+            text_description: _("setman_opt_rotate_fire_sectors_text_description"),
             jq_div: null,
             type: "list",
             default: 1,
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            list_values: [{text: _("setman_com_yes"), value: "1"}, {text: _("setman_com_no"), value: ""}],
             set_callback: function (new_value) {
                 if (wFireController) {
                     wFireController.setting_rotate_sectors = new_value == 1;
@@ -727,8 +744,8 @@ var SettingsManager = (function() {
         map_route_accuracy: {
             name: "map_route_accuracy",
             page: "other",
-            text_name: "Точность следования по маршруту",
-            text_description: "При въезде в заданный радиус будет взята следующая точка маршрута.",
+            text_name: _("setman_opt_map_route_accuracy_text_name"),
+            text_description: _("setman_opt_map_route_accuracy_text_description"),
             jq_div: null,
             type: "list",
             default: "15",
@@ -743,35 +760,36 @@ var SettingsManager = (function() {
         map_route_time: {
             name: "map_route_time",
             page: "other",
-            text_name: "Отображение примерного времени прибытия",
-            text_description: "Отображение приблизительного времени прибытия",
+            text_name: _("setman_opt_map_route_time_text_name"),
+            text_description: _("setman_opt_map_route_time_text_description"),
             jq_div: null,
             type: "list",
             default: "last",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Нет", value: ""}, {text: "Последняя точка", value: "last"}, {text: "Все точки", value: "all"}],
+            list_values: [{text: _("setman_com_no"), value: ""}, {text: _("setman_opt_map_route_time_list_1"), value: "last"}, {text: _("setman_opt_map_route_time_list_2"), value: "all"}],
             set_callback: function(new_value) {},
         },
         auto_off_autofire_in_city: {
             name: "auto_off_autofire_in_city",
             page: "other",
-            text_name: "Отключение автострельбы около городов",
-            text_description: "Отключение автострельбы в радиусах безопасности городов",
+            text_name: _("setman_opt_auto_off_autofire_in_city_text_name"),
+            text_description: _("setman_opt_auto_off_autofire_in_city_text_description"),
             jq_div: null,
             type: "list",
             default: "1",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            list_values: [{text: _("setman_com_yes"), value: "1"}, {text: _("setman_com_no"), value: ""}],
             set_callback: function(new_value) {},
         },
         /*Дебаг-инфо*/
         fps_rate: {
+            admin_mode: true,
             name: "fps_rate",
             page: "other",
-            text_name: "fps_rate",
-            text_description: "fps_rate",
+            text_name: _("setman_opt_fps_rate_text_name"),
+            text_description: _("setman_opt_fps_rate_text_description"),
             jq_div: null,
             type: "list",
             default: 0,
@@ -784,29 +802,31 @@ var SettingsManager = (function() {
             },
         },
         auto_resurrection: {
+            admin_mode: true,
             name: "auto_resurrection",
             page: "other",
-            text_name: "auto_resurrection",
-            text_description: "auto_resurrection",
+            text_name: _("setman_opt_auto_resurrection_text_name"),
+            text_description: _("setman_opt_auto_resurrection_text_description"),
             jq_div: null,
             type: "list",
             default: "",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            list_values: [{text: _("setman_com_yes"), value: "1"}, {text: _("setman_com_no"), value: ""}],
             set_callback: function (new_value) {},
         },
         auto_simple_bot: {
+            admin_mode: true,
             name: "auto_simple_bot",
             page: "other",
-            text_name: "auto_simple_bot",
-            text_description: "auto_simple_bot",
+            text_name: _("setman_opt_auto_simple_bot_text_name"),
+            text_description: _("setman_opt_auto_simple_bot_text_description"),
             jq_div: null,
             type: "list",
             default: "",
             value: 0,
             currentValue: 0,
-            list_values: [{text: "Да", value: "1"}, {text: "Нет", value: ""}],
+            list_values: [{text: _("setman_com_yes"), value: "1"}, {text: _("setman_com_no"), value: ""}],
             bot_reaction_handler: null,
             bot_reaction: function () {
                 settingsManager.options["auto_simple_bot"].bot_reaction_handler = null;
@@ -1042,8 +1062,8 @@ var SettingsManager = (function() {
 
         if (this.test_diffrents()) { // Кнопки доступны
             if (in_town) {
-                locationManager.setBtnState(1, '</br>Применить', true);
-                locationManager.setBtnState(2, '</br>Отменить', true);
+                locationManager.setBtnState(1, '</br>' + _("msetw_btn_apply"), true);
+                locationManager.setBtnState(2, '</br>' + _("msetw_btn_cancel"), true);
             }
             else {
                 this.jq_btn_cancel.removeClass("disable");
@@ -1052,8 +1072,8 @@ var SettingsManager = (function() {
         }
         else {  // Кнопки не доступны
             if (in_town) {
-                locationManager.setBtnState(1, '</br>Применить', false);
-                locationManager.setBtnState(2, '</br>Отменить', false);
+                locationManager.setBtnState(1, '</br>' + _("msetw_btn_apply"), false);
+                locationManager.setBtnState(2, '</br>' + _("msetw_btn_cancel"), false);
             }
             else {
                 this.jq_btn_cancel.addClass("disable");
@@ -1062,7 +1082,7 @@ var SettingsManager = (function() {
         }
 
          if (in_town)
-            locationManager.setBtnState(3, '</br>По умолчанию', true);
+            locationManager.setBtnState(3, '</br>' + _("msetw_btn_default"), true);
     };
 
     SettingsManager.prototype.load = function() {
@@ -1105,7 +1125,7 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name))
                 cookie_str = cookie_str + opt_name + "=" + this.options[opt_name].value + "|";
-        this.setCookie("rd_settings", cookie_str);
+        this.setCookie("rd_settings", cookie_str, {expires: 365 * 24 * 60 * 60}); // Ставим куки на 1 год
     };
 
     // Общие обработчики

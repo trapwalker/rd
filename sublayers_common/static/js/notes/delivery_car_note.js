@@ -16,7 +16,7 @@ var QuestNoteNPCBtnDeliveryCar = (function (_super) {
         }
 
         this.jq_main_div.append('<div class="notes-npc-delivery-car-up"></div>');
-        this.jq_main_div.append('<div class="notes-npc-delivery-inventory-label">Автомобиль</div>');
+        this.jq_main_div.append('<div class="notes-npc-delivery-inventory-label">' + _("dcn_car") + '</div>');
         var jq_down_path = $('<div class="notes-npc-delivery-inventory-wrap no-scroll"></div>');
         var jq_inv_list = $('<div class="notes-npc-delivery-inventory"></div>');
         jq_down_path.append(jq_inv_list);
@@ -31,7 +31,7 @@ var QuestNoteNPCBtnDeliveryCar = (function (_super) {
                             '<div class="npcInventory-picture town-interlacing" ' +
                                 'style="background: transparent url(' + user.example_car.inv_icon_mid + ') no-repeat 100% 100%;"></div>' +
                         '</div>' +
-                        '<div class="npcInventory-name">' + user.example_car.title + '</div>' +
+                        '<div class="npcInventory-name">' + _(user.example_car.title) + '</div>' +
                     '</div>' +
                 '</div>'
             );

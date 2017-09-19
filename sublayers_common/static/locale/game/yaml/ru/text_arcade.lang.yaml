@@ -1,0 +1,17 @@
+"locale": "ru"
+
+# Общее
+"ta_death": "Крушение"
+"ta_points": "очков"
+"ta_out_battle": "Вы покидаете поле боя"
+"ta_ammo_off": "Кончились патроны для "
+"ta_add_fuel": "л"
+
+"ta_setup_mine": "Установлена мина"
+"ta_setup_rocket": "Запущена ракета"
+"ta_setup_turret": "Установлена турель"
+
+"ta_kill_player": "уничтожен"
+"ta_double_kill": "Двойное убийство"
+"ta_tripple_kill": "Тройное убийство"
+"ta_series_of_kill": "Серия убийств"

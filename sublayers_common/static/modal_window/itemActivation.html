@@ -1,6 +1,6 @@
 <div class="mainDivModalWindow">
     <div class="windowDragCloseHeader-main">
-        <div class="windowDragCloseHeader-caption">Nuke:\Активация итема&gt;</div>
+        <div class="windowDragCloseHeader-caption"></div>
     </div>
     <div class="mw_ia_top_block">
         <div class="mw_ia_progress_bar">
@@ -9,6 +9,11 @@
         <div class="mw_ia_progress_bar_text">0% complete</div>
     </div>
     <div class="mw_ia_bottom_block">
-        <div id="activationItemBtnCancel" class="dialogBtnCancelSingle modal-window-footer-btn sublayers-clickable">Отмена</div>
+        <div id="activationItemBtnCancel" class="dialogBtnCancelSingle modal-window-footer-btn sublayers-clickable"></div>
     </div>
 </div>
+
+<script>
+    $('#modalItemActivationPage').find('.windowDragCloseHeader-caption').html(_("ia_caption"));
+    $('#modalItemActivationPage').find('#activationItemBtnCancel').html(_("mw_btn_cancel"));
+</script>

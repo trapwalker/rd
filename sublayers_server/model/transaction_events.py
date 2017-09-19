@@ -37,6 +37,8 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
 
+from sublayers_common.site_locale import locale
+
 from ctx_timer import T
 
 
@@ -47,6 +49,7 @@ class TransactionEvent(Event):
     def __init__(self, agent, **kw):
         super(TransactionEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
+        self.lang = self.agent.get_lang()
 
         # todo: убрать асинхронность и прокинуть время правильно
 
@@ -357,18 +360,18 @@ class TransactionTownNPC(TransactionEvent):
             error = True
         if error is True:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=None,
-                                       replica=u'У нас возникли трудности c поиском NPC в данной локации.').post()
+                                       replica=locale(lang=self.lang, key="tr_tnpc_npc_not_found")).post()
             return None
         return npc
 
     def is_agent_available_transaction(self, npc, with_car=True, with_barter=True):
         if with_barter and self.agent.has_active_barter():
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Действие невозможно при активном бартере').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_act_barter")).post()
             return False
         if with_car and self.agent.example.profile.car is None:
              messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Без автомобиля это невозможно!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_car")).post()
              return False
         return True
 
@@ -402,7 +405,7 @@ class TransactionGasStation(TransactionTownNPC):
             log.warning('%r try to use many fuel (%s), than can', self, self.fuel)
             messages.NPCReplicaMessage(
                 agent=self.agent, time=self.time, npc=npc,
-                replica=u'Недопустимое кол-во топлива!',
+                replica=locale(lang=self.lang, key="tr_tgs_fuel_nocorrect"),
             ).post()
             return
 
@@ -419,7 +422,7 @@ class TransactionGasStation(TransactionTownNPC):
             self.repair_example_inventory()
             messages.NPCReplicaMessage(
                 agent=self.agent, time=self.time, npc=npc,
-                replica=u'У вас недостаточно стредств!',
+                replica=locale(lang=self.lang, key="tr_tnpc_no_money"),
             ).post()
             return
         agent.example.profile.set_balance(time=self.time, delta=-sum_fuel)
@@ -453,7 +456,7 @@ class TransactionGasStation(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: Заправка {}NC'.format(date_str, str(sum_fuel))
+        info_string = u'{}: {} {}NC'.format(date_str, locale(lang=self.lang, key="tr_tgs_do_text"), str(sum_fuel))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionGasStationLogMessage(agent=agent, time=self.time, d_fuel=self.fuel, tank_list=tank_list_log).post()
@@ -475,7 +478,7 @@ class TransactionHangarSell(TransactionTownNPC):
         price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
 
         # todo: translate
-        info_string = u'{}: Продажа {}, {}NC'.format(date_str, self.agent.example.profile.car.title, str(price))
+        info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangarsell_do_text"), locale(self.lang, self.agent.example.profile.car.title), str(price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         log_car = self.agent.example.profile.car
@@ -509,7 +512,7 @@ class TransactionHangarBuy(TransactionTownNPC):
         if len(npc.car_list) <= self.car_number:
             log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Выбран недоступный автомобиль!').post()
+                                     replica=locale(lang=self.lang, key="tr_thangarbuy_notcorrect_car")).post()
             return
         car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
 
@@ -527,12 +530,12 @@ class TransactionHangarBuy(TransactionTownNPC):
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if self.agent.example.profile.car:
-                info_string = u'{}: Обмен на {}, {}NC'.format(date_str, car_proto.title,
+                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangar_swap"), locale(self.lang, car_proto.title),
                                                                str(new_car_price - old_car_price))
                 TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.profile.car,
                                             price=self.agent.example.profile.car.price, action="sell").post()
             else:
-                info_string = u'{}: Покупка {}, {}NC'.format(date_str, car_proto.title, str(-new_car_price))
+                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_thangar_buy"), locale(self.lang, car_proto.title), str(-new_car_price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -553,7 +556,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
 
 
 class TransactionGirlApply(TransactionTownNPC):
@@ -573,7 +576,7 @@ class TransactionGirlApply(TransactionTownNPC):
 
         service = npc.service_list[self.service_index]
         if self.agent.balance < service.price:
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc, replica=u'У вас недостаточно стредств!').post()
+            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc, replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
             return
         self.agent.example.profile.set_balance(time=self.time, delta=-service.price)
 
@@ -587,7 +590,7 @@ class TransactionGirlApply(TransactionTownNPC):
 
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{}: Услуга {}, {}NC.'.format(date_str, service.title, str(-service.price))
+        info_string = u'{}: {} {}, {}NC.'.format(date_str, locale(self.lang, "tr_tgirl_service_text"), locale(self.lang, service.title), str(-service.price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -615,7 +618,7 @@ class TransactionParkingSelect(TransactionTownNPC):
         if self.car_number is None or len(car_list) <= self.car_number or len(car_list) == 0:
             log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Выбран недоступный автомобиль!').post()
+                                     replica=locale(lang=self.lang, key="tr_thangarbuy_notcorrect_car")).post()
             return
 
         # Установка цены и может ли пользователь забрать машинка
@@ -628,10 +631,10 @@ class TransactionParkingSelect(TransactionTownNPC):
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if agent_ex.profile.car:
-                info_string = u'{}: Обмен на {}, -{}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
+                info_string = u'{}: {} {}, -{}NC'.format(date_str, locale(self.lang, "tr_tpark_swap"), locale(self.lang, car_list[self.car_number].title), str(summ_for_paying))
                 TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=0, action="leave").post()
             else:
-                info_string = u'{}: Забрал {}, {}NC'.format(date_str, car_list[self.car_number].title, str(summ_for_paying))
+                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tpark_buy"), locale(self.lang, car_list[self.car_number].title), str(summ_for_paying))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -656,7 +659,7 @@ class TransactionParkingSelect(TransactionTownNPC):
             TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=summ_for_paying, action="select").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
 
 
 class TransactionParkingLeave(TransactionTownNPC):
@@ -673,7 +676,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: translate
-        info_string = u'{}: Оставил {}, 0NC'.format(date_str, agent_ex.profile.car.title)
+        info_string = u'{}: {} {}, 0NC'.format(date_str, locale(self.lang, "tr_tpark_leave"), locale(self.lang, agent_ex.profile.car.title))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -737,7 +740,7 @@ class TransactionArmorerApply(TransactionTownNPC):
                 log.warning('Alarm: Direction for slot<%s> dont access (slot: %s; direction: %s)', slot_name,
                             getattr(ex_car, get_flags(slot_name)), self.armorer_slots[slot_name]['direction'])
                 messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
-                                               info_string=u"Не удалось завершить транзакцию.").post()
+                                               info_string=locale(self.lang, "tr_tarmor_no_end")).post()
                 return
 
         # Проход 1: снимаем старые итемы (проход по экземпляру и скидывание всех различий в armorer_buffer)
@@ -782,25 +785,25 @@ class TransactionArmorerApply(TransactionTownNPC):
                     log.warning('Alarm: Try to set Item [weight=%s] in Slot<%s> with weight=%s',
                                 item_weight, slot_name, slot_weight)
                     messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
-                                                   info_string=u"Не удалось завершить транзакцию.").post()
+                                                   info_string=locale(self.lang, "tr_tarmor_no_end")).post()
                     return
             else:
                 log.warning('Alarm: Try to set unknown Item [weight=%s] in Slot<%s> with weight=%s',
                             item_weight, slot_name, slot_weight)
                 messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
-                                               info_string=u"Не удалось завершить транзакцию.").post()
+                                               info_string=locale(self.lang, "tr_tarmor_no_end")).post()
                 return
 
         # Проверяем хватает ли места в инвентаре и денег
         if ex_car.inventory.size < len(armorer_buffer):
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
-                                           info_string=u"Недостаточно места в инвентаре.").post()
+                                           info_string=locale(self.lang, "tr_tnpc_no_inv_space")).post()
             return
 
         all_price = math.ceil(all_price)
         if self.agent.balance < all_price:
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
-                                           info_string=u"Не хватет денег.").post()
+                                           info_string=locale(self.lang, "tr_tnpc_no_money")).post()
             return
 
         # Закидываем буффер в инвентарь, применяем слоты, вычитаем деньги
@@ -827,7 +830,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(int(all_price)))
+        info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tarmor_setup_text"), locale(self.lang, ex_car.title), str(int(all_price)))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
@@ -870,7 +873,7 @@ class TransactionMechanicApply(TransactionTownNPC):
                     log.warning([el for el in proto_item.tag_set])
                     self.repair_example_inventory()
                     messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Что-то пошло не так!').post()
+                                     replica=locale(self.lang, "tr_tnpc_bad_transaction")).post()
                     return
 
         # Заполняем буфер итемов
@@ -922,14 +925,14 @@ class TransactionMechanicApply(TransactionTownNPC):
                     # Нас пытаются обмануть. Откатить транзакцию
                     log.warning('Alarm: Try to set unknown Item in Slot<%s>', slot_name)
                     messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                               replica=u'Не удалось завершить транзакцию.').post()
+                                               replica=locale(self.lang, "tr_tarmor_no_end")).post()
                     return
 
         # Проверка на достаточность денег
         all_price = math.ceil(all_price)
         if agent.balance < all_price:
             messages.NPCTransactionMessage(agent=agent, time=self.time, npc_html_hash=npc.node_html(),
-                                           info_string=u"Не хватет денег.").post()
+                                           info_string=locale(self.lang, "tr_tnpc_no_money")).post()
             return
 
         # Закидываем буффер в инвентарь, применяем слоты, вычитаем деньги
@@ -954,7 +957,7 @@ class TransactionMechanicApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(all_price))
+        info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tarmor_setup_text"), locale(self.lang, ex_car.title), str(all_price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
@@ -976,7 +979,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         if ex_car.max_hp < ex_car.hp + self.hp:
             log.warning('%s Try to lie in repair transaction', agent)
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Недопустимое значение ремонта!').post()
+                                     replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
             return
 
         hp_price = ex_car.price * npc.repair_cost / ex_car.max_hp
@@ -984,12 +987,12 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin_repair * skill_effect))
         if agent.balance < repair_cost:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
             return
         if repair_cost <= 0:
             log.warning('%s Try to repair with cost = 0 NC', agent)
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Недопустимое значение ремонта!').post()
+                                     replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
             return
         ex_car.hp = ex_car.hp + self.hp
         agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
@@ -1001,7 +1004,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: Оставил {}, 0NC'.format(date_str, ex_car.title)
+        info_string = u'{}: {} {}, 0NC'.format(date_str, locale(self.lang, "tr_tmechrepair_price"), locale(self.lang, ex_car.title))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicRepairLogMessage(agent=self.agent, time=self.time, hp=self.hp, price=repair_cost).post()
@@ -1043,7 +1046,7 @@ class TransactionTunerApply(TransactionTownNPC):
                     log.warning([el for el in proto_item.tag_set])
                     self.repair_example_inventory()
                     messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Что-то пошло не так!').post()
+                                     replica=locale(self.lang, "tr_tnpc_bad_transaction")).post()
                     return
 
         # Заполняем буфер итемов
@@ -1102,7 +1105,7 @@ class TransactionTunerApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = info_string = u'{}: Установка на {}, {}NC'.format(date_str, ex_car.title, str(0))
+        info_string = info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_ttuner_price"), locale(self.lang, ex_car.title), str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionTunerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list,
@@ -1146,7 +1149,7 @@ class TransactionTraderApply(TransactionTownNPC):
             if (item_ex is None) or (item_ex.amount < table_rec['count']):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} отсутствует в нужном количестве!'.format(item_ex and item_ex.title)).post()
+                                     replica=u'{} {}'.format(item_ex and locale(self.lang, item_ex.title), locale(self.lang, "tr_trader_no_count"))).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
@@ -1154,14 +1157,14 @@ class TransactionTraderApply(TransactionTownNPC):
             if price is None:
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} не продаётся и не покупается!'.format(item_ex.title)).post()
+                                     replica=u'{} {}'.format(locale(self.lang, item_ex.title), locale(self.lang, "tr_trader_no_trade"))).post()
                 return
             item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
             sell_list.append(item_ex)
 
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
-            tr_msg_list.append(u'{}: Продажа {}, {}NC'.format(date_str, item_ex.title, str(int(item_sale_price))))
+            tr_msg_list.append(u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_sale"), locale(self.lang, item_ex.title), str(int(item_sale_price))))
 
             item_ex.amount -= table_rec['count']
             if item_ex.amount == 0:
@@ -1180,7 +1183,7 @@ class TransactionTraderApply(TransactionTownNPC):
             if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                           replica=u'{} отсутствует в нужном количестве!'.format(price.item.title)).post()
+                                           replica=u'{} {}'.format(locale(self.lang, price.item.title), locale(self.lang, "tr_trader_no_count"))).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
@@ -1189,7 +1192,7 @@ class TransactionTraderApply(TransactionTownNPC):
             buy_price += item_buy_price
             buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
-            tr_msg_list.append(u'{}: Покупка {}, {}NC'.format(date_str, price.item.title, str(int(item_buy_price))))
+            tr_msg_list.append(u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_buy"), locale(self.lang, price.item.title), str(int(item_buy_price))))
 
             # Добавляем итемы в инвентарь игрока
             ex_car.inventory.add_item(item=price.item, count=table_rec['count'])
@@ -1202,14 +1205,14 @@ class TransactionTraderApply(TransactionTownNPC):
         if len(ex_car.inventory.items) > ex_car.inventory.size:
             self.repair_example_inventory()
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Недостаточно свободных слотов!').post()
+                                     replica=locale(self.lang, "tr_trader_not_inv_slot")).post()
             return
 
         # Проверяем хватает ли денег на все про все
         if (agent.balance + sale_price - buy_price) < 0:
             self.repair_example_inventory()
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
             return
         agent.example.profile.set_balance(time=self.time, delta=sale_price - buy_price)
 
@@ -1287,7 +1290,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         if cur_sp > max_sp:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Текущее значение навыков недопустимо!').post()
+                                     replica=locale(self.lang, "tr_trainer_no_correct_skills")).post()
             return  # todo: warning
 
         # Проверяем перки
@@ -1298,7 +1301,7 @@ class TransactionSetRPGState(TransactionTownNPC):
                 cur_p += 1
         if cur_p > max_p:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Текущее значение перков недопустимо!').post()
+                                     replica=locale(self.lang, "tr_trainer_no_correct_perks")).post()
             return  # todo: warning
 
         for perk in agent.server.reg.get('/registry/rpg_settings/perks').deep_iter():
@@ -1307,7 +1310,7 @@ class TransactionSetRPGState(TransactionTownNPC):
         for perk_node_hash in self.perks:
             if self.perks[perk_node_hash][u'state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Данный перк нельзя прокачать %s!'.format(perk_node_hash)).post()
+                                     replica=u'{} %s!'.format(locale(self.lang, "tr_trainer_perk_no_set"), perk_node_hash)).post()
                 return  # todo: warning
 
         for buy_skill_name in self.buy_skills:
@@ -1315,7 +1318,7 @@ class TransactionSetRPGState(TransactionTownNPC):
                 buy_skill = getattr(self.agent.example.profile, buy_skill_name, None)
                 if self.buy_skills[buy_skill_name] < buy_skill.value:
                     messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Недопустимое значение покупных навыков!').post()
+                                     replica=locale(self.lang, "tr_trainer_no_correct_buy_skills")).post()
                     return  # todo: warning
 
         # Считаем стоимость транзакции и проверяем хватает ли денег
@@ -1352,7 +1355,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         if price > agent.balance:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
             return
         agent.example.profile.set_balance(time=self.time, delta=-price)
 
@@ -1391,7 +1394,7 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{date_str}: Прокачка персонажа, {price} NC'.format(date_str=date_str, price=-price)  # todo: translate
+        info_string = u'{date_str}: {loc}, {price} NC'.format(date_str=date_str, loc=locale(self.lang, "tr_trainer_price"), price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionTrainerLogMessage(agent=self.agent, time=self.time, skill_count=cur_sp - old_sp,
@@ -1416,7 +1419,7 @@ class BagExchangeStartEvent(TransactionTownNPC):
             agent.reload_parking_bag(new_example_inventory=None, time=self.time)
             messages.NPCReplicaMessage(
                 agent=self.agent, time=self.time, npc=npc,
-                replica=u'Выбрана недоступная машинка!',
+                replica=locale(self.lang, "tr_thangarbuy_notcorrect_car"),
             ).post()
             return  # todo: Пометить жулика
 
@@ -1428,14 +1431,14 @@ class BagExchangeStartEvent(TransactionTownNPC):
                 target_car_ex = car
         if not target_car_ex:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'Выбрана недоступная машинка!').post()
+                                     replica=locale(self.lang, "tr_thangarbuy_notcorrect_car")).post()
             return  # todo: Пометить жулика
 
         # Списать деньги за стоянку, обновить время установки машинки на стоянку
         car_price = npc.get_car_price(target_car_ex)
         if agent.balance < car_price:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'У вас недостаточно стредств!').post()
+                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
             return  # todo: Пометить жулика
         agent.example.profile.set_balance(time=self.time, delta=-car_price)
         target_car_ex.date_setup_parking = time.mktime(datetime.now().timetuple())

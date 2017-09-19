@@ -64,27 +64,27 @@
         audioManager.play('button_screen_press');
         ga_try_social_auth();
 
-        window.location = "/site_api/auth/vk";
+        window.location = "/site_api/auth/vk" + (window.__electron_mode ? "?mode=electron" : "");
     }
 
     function FBClick() {
         audioManager.play('button_screen_press');
         ga_try_social_auth();
 
-        window.location = "/site_api/auth/facebook";
+        window.location = "/site_api/auth/facebook" + (window.__electron_mode ? "?mode=electron" : "");
     }
 
     function TWitterClick() {
         audioManager.play('button_screen_press');
         ga_try_social_auth();
 
-        window.location = "/site_api/auth/twitter";
+        window.location = "/site_api/auth/twitter" + (window.__electron_mode ? "?mode=electron" : "");
     }
 
     function GClick() {
         audioManager.play('button_screen_press');
         ga_try_social_auth();
-        window.location = "/site_api/auth/google";
+        window.location = "/site_api/auth/google" + (window.__electron_mode ? "?mode=electron" : "");
     }
 
     function RegEmailClick() {

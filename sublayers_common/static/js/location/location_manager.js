@@ -49,8 +49,8 @@ var LocationManager = (function () {
 
                 modalWindow.modalDialogAnswerShow({
                     caption: 'Inventory Operation',
-                    header: 'Выбросить?',
-                    body_text: 'Вы уверены, что хотите выбросить ' + item.example.title + ' на свалку?',
+                    header: _("lm_question_to_drop"),
+                    body_text: _("lm_question_to_drop_t1") + item.example.title + _("lm_question_to_drop_t2"),
                     callback_ok: function() {
                         clientManager.sendItemActionInventory(owner_id, pos, locationManager.uid, null);
                     }
@@ -131,10 +131,10 @@ var LocationManager = (function () {
                 $('#layer2').css('display', 'block');
                 $('#landscape').css('display', 'block');
 
-                locationManager.setBtnState(1, '</br>Обыскать', true);
+                locationManager.setBtnState(1, '</br>' + _("loc_leaf_search"), true);
                 locationManager.setBtnState(2, '', false);
-                locationManager.setBtnState(3, '</br>Назад', false);
-                locationManager.setBtnState(4, '</br>Выход', true);
+                locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
+                locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
 
                 locationManager.set_panels_location_screen();
 
@@ -198,8 +198,8 @@ var LocationManager = (function () {
 
         this.setBtnState(1, '', false);
         this.setBtnState(2, '', false);
-        this.setBtnState(3, '</br>Назад', false);
-        this.setBtnState(4, '</br>Выход', true);
+        this.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
+        this.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
         this.set_panels_location_screen();
 
         // Локации меню
@@ -333,12 +333,12 @@ var LocationManager = (function () {
                 if (this.screens[this.active_screen_name])
                     this.screens[this.active_screen_name].set_buttons();
                 else
-                    locationManager.setBtnState(1, '</br>Обыскать', true);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_search"), true);
                 setTimeout(function () {
                     if (locationManager.screens[locationManager.active_screen_name])
                         locationManager.screens[locationManager.active_screen_name].set_buttons();
                     else
-                        locationManager.setBtnState(1, '</br>Обыскать', true);
+                        locationManager.setBtnState(1, '</br>' + _("loc_leaf_search"), true);
                 }, this._clicks_btn[btnIndex].delay);
             }
         } else
@@ -353,8 +353,8 @@ var LocationManager = (function () {
             else {
                 modalWindow.modalDialogInfoShow({
                     caption: 'Error Message',
-                    header: 'Внимание! Ошибка!',
-                    body_text: 'Невозможно покинуть город без транспортного средства. Купите новый автомобиль или заберите со стоянки ранее оставленный.'
+                    header: _("lm_error_exit"),
+                    body_text: _("lm_error_exit_text")
                 });
             }
         }
@@ -559,20 +559,24 @@ var LocationPanelInfo = (function () {
         //console.log('LocationPanelInfo.prototype.show_description', options);
         var jq_panel = this.jq_main_div.find('.panel-info-description').first();
         this.jq_last_panel = jq_panel;
-        jq_panel.find('.panel-info-content').first().html(options.text);
-        if (!options.title) options.title = '';
-        jq_panel.find('.panel-info-item-title').first().html(options.title.replace("<br>", " ").toUpperCase());
+        var text = options.text;
+        var title = options.title;
+        if (text && text instanceof Object && text.hasOwnProperty(locale_object.locale)) text = _(text);
+        if (title && title instanceof Object && title.hasOwnProperty(locale_object.locale)) title = _(title);
+        jq_panel.find('.panel-info-content').first().html(text);
+        if (!title) title = '';
+        jq_panel.find('.panel-info-item-title').first().html(title.replace("<br>", " ").toUpperCase());
         this._anim_show(jq_panel);
     };
 
     LocationPanelInfo.prototype.show_location = function (options) {
         //console.log('LocationPanelInfo.prototype.show_location');
         var jq_panel = this.jq_main_div.find('.pi-location').first();
-        jq_panel.find('.location').text(locationManager.example.title);
-        jq_panel.find('.head').text('Нет');
+        jq_panel.find('.location').text(_(locationManager.example.title));
+        jq_panel.find('.head').text(_("lm_showp_head_no"));
         for (var key in locationManager.npc)
             if (locationManager.npc.hasOwnProperty(key) && (locationManager.npc[key].npc_rec.type == 'mayor')) {
-                jq_panel.find('.head').text(locationManager.npc[key].npc_rec.title);
+                jq_panel.find('.head').text(_(locationManager.npc[key].npc_rec.title));
                 break;
             }
         this._anim_show(jq_panel);
@@ -581,8 +585,8 @@ var LocationPanelInfo = (function () {
     LocationPanelInfo.prototype.show_building = function (options) {
         //console.log('LocationPanelInfo.prototype.show_building', options);
         var jq_panel = this.jq_main_div.find('.pi-building').first();
-        jq_panel.find('.location').text(options.build.title);
-        jq_panel.find('.head').text(options.build.head.title);
+        jq_panel.find('.location').text(_(options.build.title));
+        jq_panel.find('.head').text(_(options.build.head.title));
         jq_panel.find('.karma').text(getKarmaName(options.build.head.karma));
         jq_panel.find('.skill').text(options.build.head.trading);
         this._anim_show(jq_panel);
@@ -593,8 +597,8 @@ var LocationPanelInfo = (function () {
         var jq_panel = this.jq_main_div.find('.pi-npc-building').first();
         var npc_example = options.npc_example;
         var build_example = options.build_example;
-        jq_panel.find('.location').text(build_example.title);
-        jq_panel.find('.name').text(npc_example.title);
+        jq_panel.find('.location').text(_(build_example.title));
+        jq_panel.find('.name').text(_(npc_example.title));
         jq_panel.find('.karma').text(getKarmaName(npc_example.karma));
         this._anim_show(jq_panel);
     };
@@ -606,7 +610,7 @@ var LocationPanelInfo = (function () {
             var ins = user.example_agent.insurance;
             jq_panel.find('.pi-nukeoil-insurance-block').first()
                 .css('background', 'transparent url(/' + ins.icon_right_panel + ') 100% 100% no-repeat');
-            jq_panel.find('.panel-info-line.insurance-name').first().text(ins.title);
+            jq_panel.find('.panel-info-line.insurance-name').first().text(_(ins.title));
             if (ins.starttime && ins.deadline) {
                 jq_panel.find('.panel-info-line.insurance-deadline').css('display', 'block');
                 
@@ -865,10 +869,10 @@ var LocationPlaceBuilding = (function (_super) {
                 locationManager.screens[locationManager.active_screen_name] = null;
 
             // Показать кнопку Свалка
-            locationManager.setBtnState(1, '</br>Обыскать', true);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_search"), true);
             locationManager.setBtnState(2, '', false);
-            locationManager.setBtnState(3, '</br>Назад', false);
-            locationManager.setBtnState(4, '</br>Выход', true);
+            locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
+            locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
             locationManager.set_panels_location_screen();
 
             // Выход на старт какого-то из скринов: нужно обновить teachingManager
@@ -904,9 +908,9 @@ var LocationPlaceBuilding = (function (_super) {
             var npc = this.building_rec.head;
             switch (this.building_rec.name) {
                 case 'bar':
-                    html_text = "Вас приветствует " + this.building_rec.title + "." +
-                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
-                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    html_text = _("loc_sht_hello") + _(this.building_rec.title) + "." +
+                        "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
                 case 'dealer':
                     var r = locationManager.get_npc_by_type(LocationHangarNPC);
@@ -916,38 +920,40 @@ var LocationPlaceBuilding = (function (_super) {
                     var hangar_npc_str = "";
                     var parking_npc_str = "";
                     if (npc_hangar)
-                        hangar_npc_str = "<li>" + npc_hangar.npc_rec.title +": Продавец машин" +
-                            ". Транспорт от " + npc_hangar.get_min_price() + " за ТС.</li>";
+                        hangar_npc_str = "<li>" + _(npc_hangar.npc_rec.title) +": " + _("loc_sht_dealer_work") +
+                            ". " + _("loc_sht_dealer_min_price_text_p1") +" " + npc_hangar.get_min_price() +
+                            _("loc_sht_dealer_min_price_text_p2") + "</li>";
                     if (npc_parking)
-                        parking_npc_str = "<li>" + npc_parking.npc_rec.title +": Парковщик</li>";
+                        parking_npc_str = "<li>" + _(npc_parking.npc_rec.title) +": " + _("loc_sht_parking_work") +"</li>";
 
-                    html_text = "Вас приветствует " + this.building_rec.title + "." +
+                    html_text = _("loc_sht_hello") + _(this.building_rec.title) + "." +
                         "<ul>"
                         + hangar_npc_str + parking_npc_str +
-                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
-                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                        "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
                 case 'library':
-                    html_text = "Вас приветствует " + this.building_rec.title + "." +
-                        "<ul><li>Тренер: " + npc.title + ".Повышение навыков и получение новых способностей.</li>" +
-                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
-                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    html_text = _("loc_sht_hello") + _(this.building_rec.title) + "." +
+                        "<ul><li>" + _("loc_sht_trainer_work") + ": " + _(npc.title) +
+                        _("loc_sht_trainer_descr") + "</li>" +
+                        "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
                 case 'market':
                     // todo: выбрать товары для экспорта и импорта
                     var npc_manager = locationManager.npc[npc.html_hash];
-                    html_text = "Вас приветствует " + this.building_rec.title + "." +
-                        "<ul><li>Торговец: " + npc.title + "</li>" +
-                        "<li>Экспорт: " + npc_manager.getExportList() + "</li>" +
-                        "<li>Импорт: " + npc_manager.getImportList() + "</li>" +
-                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
-                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    html_text = _("loc_sht_hello") + _(this.building_rec.title) + "." +
+                        "<ul><li>" + _("loc_sht_trader_work") + ": " + _(npc.title) + "</li>" +
+                        "<li>" + _("loc_sht_trader_export") + ": " + npc_manager.getExportList() + "</li>" +
+                        "<li>" + _("loc_sht_trader_import") + ": " + npc_manager.getImportList() + "</li>" +
+                        "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
                 case 'mayor':
-                    html_text = "Вас приветствует мэрия города " + locationManager.example.title + "." +
-                        "<ul><li>Пожертвование городу. Цена: 5000 Nc (+10 в отношение, +5 в карму)</li>" +
-                        "<li>Доступные задания: " + quest_info.available_count + "</li>" +
-                        "<li>Активные задания: " + quest_info.active_count + "</li></ul>";
+                    html_text = _("loc_sht_mayor_hello") + _(locationManager.example.title) + "." +
+                        "<ul><li>" + _("loc_sht_mayor_text") + "</li>" +
+                        "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
 
                 default:
@@ -970,14 +976,14 @@ var LocationPlaceBuilding = (function (_super) {
                 locationManager.setBtnState(1, '', false);
             else {
                 if (this.selected_quest.status == null)
-                    locationManager.setBtnState(1, '</br>Принять', true);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_accept"), true);
                 if (this.selected_quest.status == 'active')
-                    locationManager.setBtnState(1, '</br>Отказаться', true);
+                    locationManager.setBtnState(1, '</br>' + _("loc_leaf_otkaz"), true);
             }
             locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationPlaceBuilding.prototype.addExtraPages = function (jq_center_menu, jq_center_pages) {
@@ -1098,7 +1104,7 @@ var LocationPlaceBuilding = (function (_super) {
         }
 
         this.set_buttons();
-        this.set_header_text(this.selected_quest ? this.selected_quest.text : null);
+        this.set_header_text(this.selected_quest ? _(this.selected_quest.text) : null);
 
         // Вызвать обновление teachingManager
         teachingManager.redraw();
@@ -1160,15 +1166,15 @@ var LocationPlaceNPC = (function (_super) {
 
                 locationManager.setBtnState(1, '', false);
                 locationManager.setBtnState(2, '', false);
-                locationManager.setBtnState(3, '</br>Назад', false);
-                locationManager.setBtnState(4, '</br>Выход', true);
+                locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
+                locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
             }
     };
 
     LocationPlaceNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationPlaceNPC.prototype.get_self_info = function () { return false; };

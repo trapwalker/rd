@@ -27,6 +27,7 @@ from sublayers_server.model.parking_bag import ParkingBag
 from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
 from sublayers_server.model.utils import NameGenerator
+from sublayers_common.site_locale import locale
 
 
 from ctx_timer import Timer
@@ -860,6 +861,9 @@ class Agent(Object):
             return self.current_location.position(time)
         return self.example.profile.last_town.position.as_point()
 
+    def get_lang(self):
+        return self.user and self.user.lang or 'en'
+
 # todo: Переименовать в UserAgent
 class User(Agent):
     @event_deco
@@ -987,18 +991,18 @@ class QuickUser(User):
         # Отправка сообщения об убийстве кого-то
         if target.main_agent:
             QuickGameArcadeTextMessage(agent=self, time=event.time,
-                                       text=u"{!r} уничтожен".format(target.main_agent.print_login())).post()
+                                       text=u"{!r} {}".format(target.main_agent.print_login(), locale(lang=self.get_lang(), key="ta_kill_player"))).post()
         # Обработка серии убийств
         if self.time_of_end_kills_series and self.time_of_end_kills_series > event.time:  # Если серия убийств в процессе
             self.time_of_end_kills_series = event.time + 7.0
             self.series_kills += 1
             if self.series_kills == 2:
-                QuickGameArcadeTextMessage(agent=self, time=event.time, text=u"Двойное убийство").post()
+                QuickGameArcadeTextMessage(agent=self, time=event.time, text=locale(lang=self.get_lang(), key="ta_double_kill")).post()
             elif self.series_kills == 3:
-                QuickGameArcadeTextMessage(agent=self, time=event.time, text=u"Тройное убийство").post()
+                QuickGameArcadeTextMessage(agent=self, time=event.time, text=locale(lang=self.get_lang(), key="ta_tripple_kill")).post()
             else:
                 QuickGameArcadeTextMessage(agent=self, time=event.time,
-                                           text=u"Серия убийств: {!s}".format(self.series_kills)).post()
+                                           text=u"{}: {!s}".format(locale(lang=self.get_lang(), key="ta_series_of_kill"), self.series_kills)).post()
             if self.series_kills > 1:
                 self.bonus_points += (self.series_kills - 1) * 5
         else:  # Если серия не начиналась или закончилась

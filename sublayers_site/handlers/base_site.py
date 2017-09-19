@@ -3,15 +3,14 @@
 import logging
 log = logging.getLogger(__name__)
 
-from sublayers_common.handlers.base import BaseHandler
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.handlers.base import BaseHandler
 from sublayers_common.creater_agent import create_agent
+from sublayers_common.site_locale import locale
 
 import tornado.template
 #from tornado.httpclient import AsyncHTTPClient
 from functools import partial
-
-from sublayers_site.site_locale import locale
 
 
 class BaseSiteHandler(BaseHandler):
@@ -36,7 +35,7 @@ class BaseSiteHandler(BaseHandler):
             user_info['leading']     = agent_example.profile.leading.value
             user_info['about_self']  = agent_example.profile.about_self  # Досье
             user_info['balance']     = agent_example.profile.balance
-            user_info['class'] = '' if agent_example.profile.role_class is None else agent_example.profile.role_class.description
+            user_info['class'] = '' if agent_example.profile.role_class is None else locale(self.user_lang, agent_example.profile.role_class.description)
 
             # todo: научиться получать эти параметры
             user_info['lvl'] = agent_example.profile.get_lvl()
@@ -59,7 +58,7 @@ class BaseSiteHandler(BaseHandler):
             if ex_car:
                 user_info['position'] = ex_car.position.as_point().as_tuple()
             try:
-                user_info['insurance_name'] = agent_example.profile.insurance.title
+                user_info['insurance_name'] = locale(self.user_lang, agent_example.profile.insurance.title)
                 user_info['active_quests_count'] = len(agent_example.profile.quests_active or [])
             except:
                 pass
@@ -90,19 +89,13 @@ class BaseSiteHandler(BaseHandler):
             car_templates_list.append(html_car_img)
         return dict(quick_cars=car_templates_list)
 
-    def get_template_namespace(self):
-        namespace = super(BaseSiteHandler, self).get_template_namespace()
-        namespace.update(
-            _=partial(locale, self.user_lang)
-        )
-        return namespace
-
     def prepare(self):
         super(BaseSiteHandler, self).prepare()
         user_lang = self.get_cookie('lang', None)
         # если cookie с языком не задана, то смотреть на host
         if user_lang is None:
             host = self.request.host
+            # todo: ##REFACTORING host name
             if host == 'roaddogs.online':
                 user_lang = 'en'
             elif host == 'roaddogs.ru':

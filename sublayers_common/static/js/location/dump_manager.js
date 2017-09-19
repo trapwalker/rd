@@ -40,10 +40,10 @@ var LocationDump = (function (_super) {
                     locationManager.screens[locationManager.active_screen_name] = null;
 
                 console.log(0);
-                locationManager.setBtnState(1, '</br>Обыскать', true);
+                locationManager.setBtnState(1, '</br>' + _("loc_leaf_search"), true);
                 locationManager.setBtnState(2, '', false);
-                locationManager.setBtnState(3, '</br>Назад', false);
-                locationManager.setBtnState(4, '</br>Выход', true);
+                locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), false);
+                locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
                 locationManager.set_panels_location_screen();
                 break;
             default:
@@ -62,8 +62,8 @@ var LocationDump = (function (_super) {
         console.log(1);
         locationManager.setBtnState(1, '', false);
         locationManager.setBtnState(2, '', false);
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationDump.prototype.set_panels = function() {

@@ -1,0 +1,39 @@
+"locale": "en"
+
+"mw_btn_ok": "Ok"
+"mw_btn_cancel": "Cancel"
+
+"cqfo_caption": "New entry in journal"
+"cqfo_text1": "Quest received: "
+"cqfo_text2": "See Journal for details."
+"cqfo_text3_1": "Establish a settlement.</br>"
+"cqfo_text3_2": "Create clan.</br>"
+"cqfo_text3_3": "Get stealth technology.</br>"
+"cqfo_text3_4": "Open shop.</br>"
+"cqfo_text3_5": "Get supercar.</br>"
+"cqfo_text3_6": "Open service center.</br>"
+
+
+"dap_caption": "Nuke:\\<span>System Message</span>&gt;"
+"dip_caption": "Nuke:\\<span>System Message</span>&gt;"
+"ia_caption": "Nuke:\\Activate item&gt;"
+"id_caption": "Nuke:\\DivisionItem&gt;"
+
+"mqgmtp_caption": "Nuke:\\<span>Quick fight</span>&gt;"
+"mqgmtp_text": "Quick Fight mode is a stripped down version of Road Dogs without an MMORPG component. Here you can evaluate the combat component of the game in death match mode and learn how to fight using the tactical navigator Nuke Commander."
+"mqgmtp_question": "Would you like to be trained in 10 steps?"
+"mqgmtp_start_teaching": "Training"
+"mqgmtp_play": "Fight"
+
+"qgpp_caption": "Nuke:\\Quick Game\\High score&gt;"
+"qgpp_record": Highscores
+"qgpp_change_car": Change car
+"qgpp_name": Name
+"qgpp_points": Scores
+"qgpp_game_end": Game over!
+"qgpp_full_game": Full game
+"qgpp_play_again": Play again
+"qgpp_get_point": "Scored: "
+"qgpp_get_place": "<br>Position: "
+
+"rw_text": "Scheduled server reboot."

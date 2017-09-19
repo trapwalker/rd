@@ -1,6 +1,6 @@
 <div class="mainDivModalWindow">
     <div class="windowDragCloseHeader-main">
-        <div class="windowDragCloseHeader-caption">Nuke:\DivisionItem&gt;</div>
+        <div class="windowDragCloseHeader-caption"></div>
     </div>
 
     <div class="modal-window-wrap">
@@ -20,7 +20,13 @@
     </div>
 
     <div class="dialogInfoPage-footer modal-window-footer">
-        <div id="divisionItemBtnOK" class="dialogBtnOK modal-window-footer-btn sublayers-clickable">ОК</div>
-        <div id="divisionItemBtnCancel" class="dialogBtnCancel modal-window-footer-btn sublayers-clickable">Cancel</div>
+        <div id="divisionItemBtnOK" class="dialogBtnOK modal-window-footer-btn sublayers-clickable"></div>
+        <div id="divisionItemBtnCancel" class="dialogBtnCancel modal-window-footer-btn sublayers-clickable"></div>
     </div>
 </div>
+
+<script>
+    $('#modalItemDivisionPage').find('.windowDragCloseHeader-caption').html(_("id_caption"));
+    $('#modalItemDivisionPage').find('#divisionItemBtnOK').html(_("mw_btn_ok"));
+    $('#modalItemDivisionPage').find('#divisionItemBtnCancel').html(_("mw_btn_cancel"));
+</script>

@@ -29,15 +29,15 @@ var LocationArmorerNPC = (function (_super) {
     LocationArmorerNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Применить', true);
-            locationManager.setBtnState(2, '</br>Отмена', true);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_apply"), true);
+            locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancel"), true);
         }
         else {
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationArmorerNPC.prototype._addEmptyInventorySlot = function(position) {
@@ -362,11 +362,11 @@ var LocationArmorerNPC = (function (_super) {
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture town-interlacing"></div></div>' +
-                '<div class="npcInventory-name">Пусто</div>';
+                '<div class="npcInventory-name">' + _("inv_empty") + '</div>';
             itemDiv.append(emptyItemDiv);
             var item = this.items[position];
             if (item.example) {
-                itemDiv.find('.npcInventory-name').html(item.example.title);
+                itemDiv.find('.npcInventory-name').html(_(item.example.title));
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
@@ -502,15 +502,15 @@ var LocationArmorerNPC = (function (_super) {
         var dir = dir_and_weight[0];
         var weight = dir_and_weight[1];
         if (dir.length) {
-            text = text + 'Доступные направления:<ul>';
-            if (dir.indexOf('F') >= 0) text = text + '<li>вперёд</li>';
-            if (dir.indexOf('B') >= 0) text = text + '<li>назад</li>';
-            if (dir.indexOf('L') >= 0) text = text + '<li>влево</li>';
-            if (dir.indexOf('R') >= 0) text = text + '<li>вправо</li>';
+            text = text + _("loc_armorer_slot_info_av_text") + ':<ul>';
+            if (dir.indexOf('F') >= 0) text = text + '<li>' + _("loc_armorer_slot_direct_text_f") + '</li>';
+            if (dir.indexOf('B') >= 0) text = text + '<li>' + _("loc_armorer_slot_direct_text_b") + '</li>';
+            if (dir.indexOf('L') >= 0) text = text + '<li>' + _("loc_armorer_slot_direct_text_l") + '</li>';
+            if (dir.indexOf('R') >= 0) text = text + '<li>' + _("loc_armorer_slot_direct_text_r") + '</li>';
             text = text + '</ul>';
         }
         if (weight.length) {
-            text = text + 'Класс тяжести: ' + weight + '</br>';
+            text = text + _("loc_armorer_slot_weight_text") + ': ' + weight + '</br>';
         }
         return text;
     };
@@ -544,14 +544,16 @@ var LocationArmorerNPC = (function (_super) {
             if (user.example_car) {
                 var price = Math.ceil(this.getPrice());
                 if (price)
-                    jq_text_div.append('Установлено: ' + this.last_price_info.on + ' модулей.<br>Снято: ' +
-                        this.last_price_info.off + ' модулей.<br>Цена: ' + price + ' NC<br>Установить?');
+                    jq_text_div.append(_("loc_arm_sht_on") + ': ' + this.last_price_info.on + ' '
+                        + _("loc_arm_sht_moduls") +'.<br>' + _("loc_arm_sht_off") + ': ' +
+                        this.last_price_info.off + ' ' + _("loc_arm_sht_moduls") + '.<br>' + _("loc_arm_sht_price")
+                        + ': ' + price + ' NC<br>' + _("loc_arm_sht_q_setup") + '?');
                 else
-                    jq_text_div.append('<div>Монтировать модуль: ' + Math.ceil(this.setup_cost) +
-                        ' NC.<br>Демонтировать модуль: ' + Math.ceil(this.clear_cost) + ' NC. </div>');
+                    jq_text_div.append('<div>' + _("loc_arm_sht_set_m_q") + ': ' + Math.ceil(this.setup_cost) +
+                        ' NC.<br>' + _("loc_arm_sht_unset_m_q") + ': ' + Math.ceil(this.clear_cost) + ' NC. </div>');
             }
             else
-                jq_text_div.append('<div>Услуги предоставляются только владельцам собственного транспорта.</div>');
+                jq_text_div.append('<div>' + _("loc_arm_sht_car_off_warning") + '</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);

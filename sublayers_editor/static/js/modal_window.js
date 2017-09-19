@@ -65,17 +65,17 @@ var ModalWindow = (function () {
     };
 
     ModalWindow.prototype.modalWelcomeLoad = function () {
-        // Загрузить информацию из документа в див
-        var self = this;
-        this.modalWelcome.load('/static/modal_window/welcomePage.html', function(){
-            // Назначить кнопку закрытия окна
-            $('#welcomePageCloseButton').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalWelcomeHide();
-            });
-
-        });
+        //// Загрузить информацию из документа в див
+        //var self = this;
+        //this.modalWelcome.load('/static/modal_window/welcomePage.html', function(){
+        //    // Назначить кнопку закрытия окна
+        //    $('#welcomePageCloseButton').on('click', {modal: self}, function(event){
+        //        // сначала обработать все необходимые данные
+        //        // Затем закрыть текущее модельное окно
+        //        event.data.modal.modalWelcomeHide();
+        //    });
+        //
+        //});
 
     };
 
@@ -184,18 +184,18 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalOptionsLoad = function () {
         // Загрузить информацию из документа в див
-        var self = this;
-        this.modalOptions.load('/static/modal_window/optionsPage.html', function(){
-            // Назначить кнопку закрытия окна
-            $('#optionsPageCloseButton').on('click', {modal: self}, function(event){
-                event.data.modal.modalOptionsHide(true);
-            });
-
-            $('#optionsPageCancelButton').on('click', {modal: self}, function(event){
-                event.data.modal.modalOptionsHide();
-            });
-
-        });
+        //var self = this;
+        //this.modalOptions.load('/static/modal_window/optionsPage.html', function(){
+        //    // Назначить кнопку закрытия окна
+        //    $('#optionsPageCloseButton').on('click', {modal: self}, function(event){
+        //        event.data.modal.modalOptionsHide(true);
+        //    });
+        //
+        //    $('#optionsPageCancelButton').on('click', {modal: self}, function(event){
+        //        event.data.modal.modalOptionsHide();
+        //    });
+        //
+        //});
 
     };
 
@@ -221,17 +221,17 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalDeathLoad = function () {
         // Загрузить информацию из документа в див
-        var self = this;
-        this.modalDeath.load('/static/modal_window/deathPage.html', function(){
-            // Назначить кнопки закрытия окна
-            $('#deathPageButtonResp').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                sendServConsole('change_car()');
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalDeathHide();
-            });
-
-        });
+        //var self = this;
+        //this.modalDeath.load('/static/modal_window/deathPage.html', function(){
+        //    // Назначить кнопки закрытия окна
+        //    $('#deathPageButtonResp').on('click', {modal: self}, function(event){
+        //        // сначала обработать все необходимые данные
+        //        sendServConsole('change_car()');
+        //        // Затем закрыть текущее модельное окно
+        //        event.data.modal.modalDeathHide();
+        //    });
+        //
+        //});
 
     };
 
@@ -256,16 +256,16 @@ var ModalWindow = (function () {
 
     ModalWindow.prototype.modalWinLoad = function () {
         // Загрузить информацию из документа в див
-        var self = this;
-        this.modalWin.load('/static/modal_window/winPage.html', function(){
-            // Назначить кнопки закрытия окна
-            $('#winPageButtonResp').on('click', {modal: self}, function(event){
-                // сначала обработать все необходимые данные
-                // Затем закрыть текущее модельное окно
-                event.data.modal.modalWinHide();
-            });
-
-        });
+        //var self = this;
+        //this.modalWin.load('/static/modal_window/winPage.html', function(){
+        //    // Назначить кнопки закрытия окна
+        //    $('#winPageButtonResp').on('click', {modal: self}, function(event){
+        //        // сначала обработать все необходимые данные
+        //        // Затем закрыть текущее модельное окно
+        //        event.data.modal.modalWinHide();
+        //    });
+        //
+        //});
 
     };
 

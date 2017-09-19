@@ -1,21 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
 <div class="mainDivModalWindow">
     <div class="windowDragCloseHeader-main">
-        <div class="windowDragCloseHeader-caption">Nuke:\<span>System Message</span>&gt;</div>
+        <div class="windowDragCloseHeader-caption"></div>
     </div>
     <div class="dialogInfoPage-wrap modal-window-wrap">
-        <div class="modal-header">Внимание вопрос!</div>
-        <span>Test Text Test Text Test Text 123 test text ???</span>
+        <div class="modal-header"></div>
+        <span></span>
     </div>
     <div class="dialogInfoPage-footer modal-window-footer">
         <div id="dialogInfoPageBtnOK" class="modal-window-footer-btn sublayers-clickable">ОК</div>
     </div>
 </div>
-</body>
-</html>
+
+<script>
+    $('#modalInfoPage').find('.windowDragCloseHeader-caption').html(_("dap_caption"));
+    $('#modalInfoPage').find('#dialogInfoPageBtnOK').html(_("mw_btn_ok"));
+</script>

@@ -15,7 +15,7 @@ var LocationMechanicNPC = (function (_super) {
          this.clear_cost = 0;
 
         this.mechanic_systems_names = ["engine", "transmission", "suspension", "brakes", "cooling"];
-        this.mechanic_systems_names_rus = ["Двигатель", "Трансмиссия", "Подвеска", "Тормоза", "Охлаждение"];
+        this.mechanic_systems_names_locale = [_("loc_mech_sys_engine"), _("loc_mech_sys_transmission"), _("loc_mech_sys_suspension"), _("loc_mech_sys_brakes"), _("loc_mech_sys_cooling")];
 
         this.jq_center_main_block = this.jq_main_div.find('.mechanic-center-main-block').first();
 
@@ -27,15 +27,15 @@ var LocationMechanicNPC = (function (_super) {
     LocationMechanicNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
         if (user.example_car) {
-            locationManager.setBtnState(1, '</br>Установить', true);
-            locationManager.setBtnState(2, '</br>Отмена', true);
+            locationManager.setBtnState(1, '</br>' + _("loc_leaf_setup"), true);
+            locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancel"), true);
         }
         else {
             locationManager.setBtnState(1, '', false);
             locationManager.setBtnState(2, '', false);
         }
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationMechanicNPC.prototype._addEmptyInventorySlot = function(position) {
@@ -130,7 +130,7 @@ var LocationMechanicNPC = (function (_super) {
                     jq_buttons_list.append('' +
                         '<div class="mechanic-center-page-control-page-button" ' +
                         'data-page="' + system_name + '" data-tag="'+ system_name +
-                        '">' + this.mechanic_systems_names_rus[i] + '</div>');
+                        '">' + this.mechanic_systems_names_locale[i] + '</div>');
                     this.jq_center_main_block.append(
                         '<div class="mechanic-center-main-block-page page-mechanic-system-' + system_name + '" data-page="' + system_name + '">' +
                             '<div class="town-back-interlacing"></div>' +
@@ -287,10 +287,10 @@ var LocationMechanicNPC = (function (_super) {
 
             var itemDiv = $('<div class="npcInventory-item" data-pos="' + position + '"></div>');
             var emptyItemDiv = '<div class="npcInventory-pictureWrap"><div class="npcInventory-picture town-interlacing"></div></div>' +
-                '<div class="npcInventory-name">Пусто</div>';
+                '<div class="npcInventory-name">' + _("inv_empty") + '</div>';
             itemDiv.append(emptyItemDiv);
             if (item && item.example) {
-                itemDiv.find('.npcInventory-name').html(item.example.title);
+                itemDiv.find('.npcInventory-name').html(_(item.example.title));
                 itemDiv.find('.npcInventory-picture')
                     .css('background', 'transparent url(' + item.example.inv_icon_mid + ') no-repeat 100% 100%');
                 itemDiv.draggable({
@@ -427,14 +427,14 @@ var LocationMechanicNPC = (function (_super) {
             if (user.example_car) {
                 var cti = this.current_transaction_info();
                 if (cti.on == 0 && cti.off == 0)
-                    jq_text_div.append('<div>Установить деталь: ' + Math.ceil(this.setup_cost) + ' NC. <br>Снять деталь: ' + Math.ceil(this.clear_cost) +' NC. </div>');
+                    jq_text_div.append('<div>' + _("loc_mech_sht_on_item")+': ' + Math.ceil(this.setup_cost) + ' NC. <br>' + _("loc_mech_sht_off_item")+': ' + Math.ceil(this.clear_cost) +' NC. </div>');
                 else {
                     var price = Math.ceil(cti.on * this.setup_cost + cti.off * this.clear_cost);
-                    jq_text_div.append('Установлено: ' + cti.on + ' деталей.<br>Снято: ' + cti.off + ' деталей.<br>Цена: ' + price + ' NC<br>Установить?');
+                    jq_text_div.append(_("loc_mech_sht_on")+': ' + cti.on + ' ' + _("loc_mech_sht_items") + '.<br>' + _("loc_mech_sht_off")+': ' + cti.off + ' ' + _("loc_mech_sht_items") + '.<br>' + _("loc_mech_sht_price")+': ' + price + ' NC<br>' + _("loc_mech_sht_q_on"));
                 }
             }
             else
-                jq_text_div.append('<div>Услуги предоставляются только владельцам собственного транспорта.</div>');
+                jq_text_div.append('<div>' + _("loc_arm_sht_car_off_warning") + '</div>');
             html_text = jq_text_div;
         }
         _super.prototype.set_header_text.call(this, html_text);
@@ -519,102 +519,102 @@ var LocationMechanicNPC = (function (_super) {
     };
 
     LocationMechanicNPC.slots_info = {
-        "slot_m1" : 'Двигатель: впуск',
-        "slot_m2" : 'Двигатель: компрессор',
-        "slot_m3" : 'Двигатель: воздушный фильтр',
-        "slot_m4" : 'Двигатель: распредвал',
-        "slot_m5" : 'Двигатель: зажигание',
-        "slot_m6" : 'Двигатель: ГБЦ',
-        "slot_m7" : 'Двигатель: ЦПГ',
-        "slot_m8" : 'Двигатель: маховик',
-        "slot_m9" : 'Двигатель: масло',
-        "slot_m10" : 'Двигатель: выпуск',
-        "slot_m11" : 'Двигатель: свеча зажигания',
-        "slot_m12" : 'Двигатель: свеча зажигания',
-        "slot_m13" : 'Двигатель: свеча зажигания',
-        "slot_m14" : 'Двигатель: свеча зажигания',
-        "slot_m15" : 'Двигатель: свеча зажигания',
-        "slot_m16" : 'Двигатель: свеча зажигания',
-        "slot_m17" : 'Двигатель: свеча зажигания',
-        "slot_m18" : 'Двигатель: свеча зажигания',
-        "slot_m19" : 'Двигатель: свеча зажигания',
-        "slot_m20" : 'Двигатель: свеча зажигания',
-        "slot_m21" : 'Двигатель: свеча зажигания',
-        "slot_m22" : 'Двигатель: свеча зажигания',
-        "slot_m23" : 'Трансмиссия: сцепление',
-        "slot_m24" : 'Трансмиссия: коробка передач',
-        "slot_m25" : 'Трансмиссия: полуоси перед',
-        "slot_m26" : 'Трансмиссия: полуоси зад',
-        "slot_m27" : 'Трансмиссия: дифференциал перед',
-        "slot_m28" : 'Трансмиссия: дифференциал зад',
-        "slot_m29" : 'Трансмиссия: трансмиссионное масло',
-        "slot_m30" : 'Трансмиссия: первичный вал',
-        "slot_m31" : 'Трансмиссия: вторичный вал',
-        "slot_m32" : 'Трансмиссия: гидротрансформатор',
-        "slot_m33" : 'Трансмиссия: раздатка',
-        "slot_m34" : 'Подвеска: передние амортизаторы',
-        "slot_m35" : 'Подвеска: передние амортизаторы',
-        "slot_m36" : 'Подвеска: задние амортизаторы',
-        "slot_m37" : 'Подвеска: задние амортизаторы',
-        "slot_m38" : 'Подвеска: передние пружины',
-        "slot_m39" : 'Подвеска: передние пружины',
-        "slot_m40" : 'Подвеска: задние пружины',
-        "slot_m41" : 'Подвеска: задние пружины',
-        "slot_m42" : 'Подвеска: передние рычаги',
-        "slot_m43" : 'Подвеска: передние рычаги',
-        "slot_m44" : 'Подвеска: задние рычаги',
-        "slot_m45" : 'Подвеска: задние рычаги',
-        "slot_m46" : 'Подвеска: ступица',
-        "slot_m47" : 'Подвеска: ступица',
-        "slot_m48" : 'Подвеска: ступица',
-        "slot_m49" : 'Подвеска: ступица',
-        "slot_m50" : 'Подвеска: ступица',
-        "slot_m51" : 'Подвеска: ступица',
-        "slot_m52" : 'Подвеска: ступица',
-        "slot_m53" : 'Подвеска: ступица',
-        "slot_m89" : 'Подвеска: колесо',
-        "slot_m90" : 'Подвеска: колесо',
-        "slot_m91" : 'Подвеска: колесо',
-        "slot_m92" : 'Подвеска: колесо',
-        "slot_m93" : 'Подвеска: колесо',
-        "slot_m94" : 'Подвеска: колесо',
-        "slot_m95" : 'Подвеска: колесо',
-        "slot_m96" : 'Подвеска: колесо',
-        "slot_m54" : 'Тормоза: передние тормозные механизмы',
-        "slot_m55" : 'Тормоза: передние тормозные механизмы',
-        "slot_m56" : 'Тормоза: задние тормозные механизмы',
-        "slot_m57" : 'Тормоза: задние тормозные механизмы',
-        "slot_m58" : 'Тормоза: задние тормозные механизмы',
-        "slot_m59" : 'Тормоза: задние тормозные механизмы',
-        "slot_m60" : 'Тормоза: задние тормозные механизмы',
-        "slot_m61" : 'Тормоза: задние тормозные механизмы',
-        "slot_m62" : 'Тормоза: передние колодки',
-        "slot_m63" : 'Тормоза: передние колодки',
-        "slot_m64" : 'Тормоза: задние колодки',
-        "slot_m65" : 'Тормоза: задние колодки',
-        "slot_m66" : 'Тормоза: задние колодки',
-        "slot_m67" : 'Тормоза: задние колодки',
-        "slot_m68" : 'Тормоза: задние колодки',
-        "slot_m69" : 'Тормоза: задние колодки',
-        "slot_m70" : 'Тормоза: усилитель тормозов',
-        "slot_m71" : 'Тормоза: АБС',
-        "slot_m72" : 'Тормоза: шланги перед',
-        "slot_m73" : 'Тормоза: шланги перед',
-        "slot_m74" : 'Тормоза: шланги зад',
-        "slot_m75" : 'Тормоза: шланги зад',
-        "slot_m76" : 'Тормоза: шланги зад',
-        "slot_m77" : 'Тормоза: шланги зад',
-        "slot_m78" : 'Тормоза: шланги зад',
-        "slot_m79" : 'Тормоза: шланги зад',
-        "slot_m80" : 'Тормоза: тормозная жидкость',
-        "slot_m81" : 'Охлаждение: радиатор',
-        "slot_m82" : 'Охлаждение: помпа',
-        "slot_m83" : 'Охлаждение: охлаждающая жидкость',
-        "slot_m84" : 'Охлаждение: дополнительный радиатор',
-        "slot_m85" : 'Охлаждение: термостат',
-        "slot_m86" : 'Охлаждение: вентилятор',
-        "slot_m87" : 'Охлаждение: вентилятор',
-        "slot_m88" : 'Охлаждение: вентилятор',
+        "slot_m1" : _("loc_mechanick_info_slot_m1"),
+        "slot_m2" : _("loc_mechanick_info_slot_m2"),
+        "slot_m3" : _("loc_mechanick_info_slot_m3"),
+        "slot_m4" : _("loc_mechanick_info_slot_m4"),
+        "slot_m5" : _("loc_mechanick_info_slot_m5"),
+        "slot_m6" : _("loc_mechanick_info_slot_m6"),
+        "slot_m7" : _("loc_mechanick_info_slot_m7"),
+        "slot_m8" : _("loc_mechanick_info_slot_m8"),
+        "slot_m9" : _("loc_mechanick_info_slot_m9"),
+        "slot_m10" : _("loc_mechanick_info_slot_m10"),
+        "slot_m11" : _("loc_mechanick_info_slot_m11"),
+        "slot_m12" : _("loc_mechanick_info_slot_m12"),
+        "slot_m13" : _("loc_mechanick_info_slot_m13"),
+        "slot_m14" : _("loc_mechanick_info_slot_m14"),
+        "slot_m15" : _("loc_mechanick_info_slot_m15"),
+        "slot_m16" : _("loc_mechanick_info_slot_m16"),
+        "slot_m17" : _("loc_mechanick_info_slot_m17"),
+        "slot_m18" : _("loc_mechanick_info_slot_m18"),
+        "slot_m19" : _("loc_mechanick_info_slot_m19"),
+        "slot_m20" : _("loc_mechanick_info_slot_m20"),
+        "slot_m21" : _("loc_mechanick_info_slot_m21"),
+        "slot_m22" : _("loc_mechanick_info_slot_m22"),
+        "slot_m23" : _("loc_mechanick_info_slot_m23"),
+        "slot_m24" : _("loc_mechanick_info_slot_m24"),
+        "slot_m25" : _("loc_mechanick_info_slot_m25"),
+        "slot_m26" : _("loc_mechanick_info_slot_m26"),
+        "slot_m27" : _("loc_mechanick_info_slot_m27"),
+        "slot_m28" : _("loc_mechanick_info_slot_m28"),
+        "slot_m29" : _("loc_mechanick_info_slot_m29"),
+        "slot_m30" : _("loc_mechanick_info_slot_m30"),
+        "slot_m31" : _("loc_mechanick_info_slot_m31"),
+        "slot_m32" : _("loc_mechanick_info_slot_m32"),
+        "slot_m33" : _("loc_mechanick_info_slot_m33"),
+        "slot_m34" : _("loc_mechanick_info_slot_m34"),
+        "slot_m35" : _("loc_mechanick_info_slot_m35"),
+        "slot_m36" : _("loc_mechanick_info_slot_m36"),
+        "slot_m37" : _("loc_mechanick_info_slot_m37"),
+        "slot_m38" : _("loc_mechanick_info_slot_m38"),
+        "slot_m39" : _("loc_mechanick_info_slot_m39"),
+        "slot_m40" : _("loc_mechanick_info_slot_m40"),
+        "slot_m41" : _("loc_mechanick_info_slot_m41"),
+        "slot_m42" : _("loc_mechanick_info_slot_m42"),
+        "slot_m43" : _("loc_mechanick_info_slot_m43"),
+        "slot_m44" : _("loc_mechanick_info_slot_m44"),
+        "slot_m45" : _("loc_mechanick_info_slot_m45"),
+        "slot_m46" : _("loc_mechanick_info_slot_m46"),
+        "slot_m47" : _("loc_mechanick_info_slot_m47"),
+        "slot_m48" : _("loc_mechanick_info_slot_m48"),
+        "slot_m49" : _("loc_mechanick_info_slot_m49"),
+        "slot_m50" : _("loc_mechanick_info_slot_m50"),
+        "slot_m51" : _("loc_mechanick_info_slot_m51"),
+        "slot_m52" : _("loc_mechanick_info_slot_m52"),
+        "slot_m53" : _("loc_mechanick_info_slot_m53"),
+        "slot_m89" : _("loc_mechanick_info_slot_m89"),
+        "slot_m90" : _("loc_mechanick_info_slot_m90"),
+        "slot_m91" : _("loc_mechanick_info_slot_m91"),
+        "slot_m92" : _("loc_mechanick_info_slot_m92"),
+        "slot_m93" : _("loc_mechanick_info_slot_m93"),
+        "slot_m94" : _("loc_mechanick_info_slot_m94"),
+        "slot_m95" : _("loc_mechanick_info_slot_m95"),
+        "slot_m96" : _("loc_mechanick_info_slot_m96"),
+        "slot_m54" : _("loc_mechanick_info_slot_m54"),
+        "slot_m55" : _("loc_mechanick_info_slot_m55"),
+        "slot_m56" : _("loc_mechanick_info_slot_m56"),
+        "slot_m57" : _("loc_mechanick_info_slot_m57"),
+        "slot_m58" : _("loc_mechanick_info_slot_m58"),
+        "slot_m59" : _("loc_mechanick_info_slot_m59"),
+        "slot_m60" : _("loc_mechanick_info_slot_m60"),
+        "slot_m61" : _("loc_mechanick_info_slot_m61"),
+        "slot_m62" : _("loc_mechanick_info_slot_m62"),
+        "slot_m63" : _("loc_mechanick_info_slot_m63"),
+        "slot_m64" : _("loc_mechanick_info_slot_m64"),
+        "slot_m65" : _("loc_mechanick_info_slot_m65"),
+        "slot_m66" : _("loc_mechanick_info_slot_m66"),
+        "slot_m67" : _("loc_mechanick_info_slot_m67"),
+        "slot_m68" : _("loc_mechanick_info_slot_m68"),
+        "slot_m69" : _("loc_mechanick_info_slot_m69"),
+        "slot_m70" : _("loc_mechanick_info_slot_m70"),
+        "slot_m71" : _("loc_mechanick_info_slot_m71"),
+        "slot_m72" : _("loc_mechanick_info_slot_m72"),
+        "slot_m73" : _("loc_mechanick_info_slot_m73"),
+        "slot_m74" : _("loc_mechanick_info_slot_m74"),
+        "slot_m75" : _("loc_mechanick_info_slot_m75"),
+        "slot_m76" : _("loc_mechanick_info_slot_m76"),
+        "slot_m77" : _("loc_mechanick_info_slot_m77"),
+        "slot_m78" : _("loc_mechanick_info_slot_m78"),
+        "slot_m79" : _("loc_mechanick_info_slot_m79"),
+        "slot_m80" : _("loc_mechanick_info_slot_m80"),
+        "slot_m81" : _("loc_mechanick_info_slot_m81"),
+        "slot_m82" : _("loc_mechanick_info_slot_m82"),
+        "slot_m83" : _("loc_mechanick_info_slot_m83"),
+        "slot_m84" : _("loc_mechanick_info_slot_m84"),
+        "slot_m85" : _("loc_mechanick_info_slot_m85"),
+        "slot_m86" : _("loc_mechanick_info_slot_m86"),
+        "slot_m87" : _("loc_mechanick_info_slot_m87"),
+        "slot_m88" : _("loc_mechanick_info_slot_m88"),
     };
 
     return LocationMechanicNPC;

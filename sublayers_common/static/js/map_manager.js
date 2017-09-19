@@ -110,8 +110,8 @@ var MapManager = (function(_super) {
                     if (!item) return;
                     modalWindow.modalDialogAnswerShow({
                         caption: 'Inventory Operation',
-                        header: 'Выбросить?',
-                        body_text: 'Вы уверены, что хотите выбросить ' + item.example.title + ' на карту?',
+                        header: _("window_drop_to_map"),
+                        body_text: _("window_drop_to_map_q1") + _(item.example.title) + _("window_drop_to_map_q2"),
                         callback_ok: function() {
                             clientManager.sendItemActionInventory(
                                 ui.draggable.data('owner_id'), ui.draggable.data('pos'), null, null);

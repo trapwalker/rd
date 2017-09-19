@@ -9,7 +9,7 @@ var BarterManager = (function () {
         if (barterManager.timers[barter_id]) {
             clearTimeout(barterManager.timers[barter_id]);
             barterManager.timers[barter_id] = -1;
-            $('#barterInventoryWindow-cancel-button-' + barter_id).text('Отмена');
+            $('#barterInventoryWindow-cancel-button-' + barter_id).text(_("barter_cancel"));
         }
     };
 
@@ -75,17 +75,17 @@ var BarterManager = (function () {
 
     BarterManager.prototype.StartBarterTimer = function (barter_id, success_delay) {
         //console.log('BarterManager.prototype.StartBarterTimer', barter_id, success_delay);
-        $('#barterInventoryWindow-cancel-button-' + barter_id).text('Отмена(' + success_delay + ')');
+        $('#barterInventoryWindow-cancel-button-' + barter_id).text(_("barter_cancel") + '(' + success_delay + ')');
 
         // Запускаем таймер
         barterManager.timers[barter_id] = setTimeout(function tick(barter_id, success_delay) {
             success_delay--;
             if ((success_delay >= 0) && (barterManager.timers[barter_id] != -1)) {
-                $('#barterInventoryWindow-cancel-button-' + barter_id).text('Отмена(' + success_delay + ')');
+                $('#barterInventoryWindow-cancel-button-' + barter_id).text(_("barter_cancel") + '(' + success_delay + ')');
                 barterManager.timers[barter_id] = setTimeout(tick, 1000, barter_id, success_delay);
             }
             else {
-                $('#barterInventoryWindow-cancel-button-' + barter_id).text('Отмена');
+                $('#barterInventoryWindow-cancel-button-' + barter_id).text(_("barter_cancel"));
                 barterManager.timers[barter_id] = null;
             }
         }, 1000, barter_id, success_delay);

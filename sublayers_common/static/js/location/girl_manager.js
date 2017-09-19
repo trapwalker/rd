@@ -19,7 +19,7 @@ var LocationGirlNPC = (function (_super) {
         jq_service_images.empty();
         for (var i = 0; i < this.npc_rec.service_list.length; i++) {
             var service_rec = this.npc_rec.service_list[i];
-            jq_service_menu.append('<div class="girl-center-menu-item" data-page_cls="' + i + '">' + service_rec.title + '</div>');
+            jq_service_menu.append('<div class="girl-center-menu-item" data-page_cls="' + i + '">' + _(service_rec.title) + '</div>');
             jq_service_images.append(
                 '<div class="girl-center-page ' + i + '">' +
                     '<div class="girl-center-page-img" style="background: url(' + service_rec.image + '); "></div>' +
@@ -43,7 +43,7 @@ var LocationGirlNPC = (function (_super) {
         if (!locationManager.isActivePlace(this)) return;
         if (!html_text && this.npc_rec.service_list && this.npc_rec.service_list.length > this.cur_service_index) {
             var html_text = $('<div></div>');
-            html_text.append('<div>Приобрести услугу: -' + this.npc_rec.service_list[this.cur_service_index].price + 'NC</div>');
+            html_text.append('<div>' +_("loc_girl_sht_buy") + ': -' + this.npc_rec.service_list[this.cur_service_index].price + 'NC</div>');
         }
         _super.prototype.set_header_text.call(this, html_text);
     };
@@ -61,10 +61,10 @@ var LocationGirlNPC = (function (_super) {
 
     LocationGirlNPC.prototype.set_buttons = function () {
         if (!locationManager.isActivePlace(this)) return;
-        locationManager.setBtnState(1, 'Приобрести</br>услугу', true);
-        locationManager.setBtnState(2, '</br>Отмена', false);
-        locationManager.setBtnState(3, '</br>Назад', true);
-        locationManager.setBtnState(4, '</br>Выход', true);
+        locationManager.setBtnState(1, _("loc_leaf_girl_buy"), true);
+        locationManager.setBtnState(2, '</br>' + _("loc_leaf_cancel"), false);
+        locationManager.setBtnState(3, '</br>' + _("loc_leaf_back"), true);
+        locationManager.setBtnState(4, '</br>' + _("loc_leaf_exit"), true);
     };
 
     LocationGirlNPC.prototype.set_panels = function() {

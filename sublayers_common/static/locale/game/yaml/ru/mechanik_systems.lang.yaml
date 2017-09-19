@@ -1,0 +1,66 @@
+"locale": "ru"
+
+
+### brakes ###
+"ms_brakes_abs": "АБС"
+"ms_brakes_power": "Усилитель тормозов"
+"ms_brakes_liquid": "Тормозная жидкость"
+"ms_brakes_lines_f": "Тормозные шланги (перед)"
+"ms_brakes_pad_f": "Колодки (перед)"
+"ms_brakes_mechanism_f": "Механизм (перед)"
+"ms_brakes_lines_b": "Тормозные шланги (зад)"
+"ms_brakes_pad_b": "Колодки (зад)"
+"ms_brakes_mechanism_b": "Механизм (зад)"
+"ms_brakes_line_f": "Тормозной шланг (перед)"
+"ms_brakes_line_b": "Тормозной шланг (зад)"
+
+
+### cooling ###
+"ms_cooling_rad_add": "Дополнительный<br/>радиатор"
+"ms_cooling_loquid": "Охлаждающая<br/>жидкость"
+"ms_cooling_vent": "Вентилятор"
+"ms_cooling_rad_main": "Основной<br/>радиатор"
+"ms_cooling_pompa": "Помпа"
+"ms_cooling_termo": "Термостат"
+
+
+### engine ###
+"ms_engine_ballancer": "Маховик"
+"ms_engine_camshaft": "Распредвал"
+"ms_engine_compressor": "Компрессор"
+"ms_engine_cylinderpiston": "ЦПГ"
+"ms_engine_exhaust": "Выпуск"
+"ms_engine_filter": "Фильтр"
+"ms_engine_head": "ГБЦ"
+"ms_engine_ignition": "Зажигание"
+"ms_engine_intake": "Впуск"
+"ms_engine_oil": "Масло"
+"ms_engine_sparkplugs": "Свечи зажигания"
+"ms_engine_sparkplug": "Свеча зажигания"
+
+
+### suspension ###
+"ms_suspension_front_coil_1": "Пружина<br>(перед)"
+"ms_suspension_front_arm_1": "Рычаг<br>(перед)"
+"ms_suspension_front_hub_1": "Ступица"
+"ms_suspension_front_shock_absorber_1": "Амортизатор<br>(перед)"
+"ms_suspension_rear_arm_1": "Рычаг<br>(зад)"
+"ms_suspension_rear_coil_1": "Пружина<br>(зад)"
+"ms_suspension_rear_hub_1": "Ступица"
+"ms_suspension_rear_shock_absorber_1": "Амортизатор<br>(зад)"
+"ms_suspension_wheels": "Колесо"
+
+
+### transmission ###
+"ms_transmission_ATF": "Масло"
+"ms_transmission_clutch": "Сцепление"
+"ms_transmission_front_axle": "Полуоси<br>(перед)"
+"ms_transmission_front_differential": "Дифференциал<br>(перед)"
+"ms_transmission_gearbox": "Коробка<br>передач"
+"ms_transmission_primary_shaft": "Первичный<br>вал"
+"ms_transmission_rear_axle": "Полуоси<br>(зад)"
+"ms_transmission_rear_differential": "Дифференциал<br>(зад)"
+"ms_transmission_secondary_shaft": "Вторичный<br>вал"
+"ms_transmission_torque_converter": "Гидротрансформатор"
+"ms_transmission_transfer_case": "Раздатка"
+

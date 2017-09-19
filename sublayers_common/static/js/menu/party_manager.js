@@ -14,7 +14,7 @@ var PartyManager = (function () {
         this.invite_user_name = '';
         this.party_user_name = '';
 
-        this.share_exp_type_list = ['Каждому своё', 'Поровну'];
+        this.share_exp_type_list = [_('mpw_exp_share_solo'), _('mpw_exp_share')];
         this.cur_share_exp_type = 0;
         this.jq_cur_share_exp_type = $();
     }
@@ -206,10 +206,11 @@ var PartyManager = (function () {
         var i;
         for (i = 0; i < this.invites.length; i++) {
             var invite = this.invites[i];
-            var share_exp_str = invite.party.share_exp ? 'Поровну' : 'Каждому своё';
+            var share_exp_str = invite.party.share_exp ? _('mpw_exp_share') : _('mpw_exp_share_solo');
             back_class = (back_class == 'party-page-line-light') ? 'party-page-line-dark' : 'party-page-line-light';
             var jq_invite = $(
-                '<div class="party-page-invite-invites-line party-page-line ' + back_class + '" data-party_name="' + invite.party.name + '">' + invite.party.name + ' [Опыт: '+ share_exp_str + '; Пригласил: ' + invite.sender.login + ']' +
+                '<div class="party-page-invite-invites-line party-page-line ' + back_class + '" data-party_name="' + invite.party.name + '">' + invite.party.name +
+                ' [' + _("mpw_invites_js_exp") + share_exp_str + '; ' + _("mpw_invites_js_sender_invite")  + invite.sender.login + ']' +
                     '<div class="party-page-invite-invites-accept-btn" data-party_name="' + invite.party.name + '">+</div>' +
                     '<div class="party-page-invite-invites-del-btn" data-invite_id="' + invite.invite_id + '">&ndash;</div>' +
                 '</div>'
@@ -232,8 +233,8 @@ var PartyManager = (function () {
 
             modalWindow.modalDialogAnswerShow({
                 caption: 'Party Operations',
-                header: 'Присоединиться?',
-                body_text: 'Вы уверены, что хотите присоединиться к ' + party_name + '?',
+                header: _("mpw_dialog_join"),
+                body_text: _("mpw_dialog_join_question") + party_name + '?',
                 callback_ok: function () {
                    clientManager.sendJoinPartyFromTemplate(party_name);
                 }
@@ -245,8 +246,8 @@ var PartyManager = (function () {
             stopEvent(event);
             modalWindow.modalDialogAnswerShow({
                 caption: 'Party Operations',
-                header: 'Отменить?',
-                body_text: 'Вы уверены, что хотите отменить приглашение?',
+                header: _("mpw_dialog_inv_cancel"),
+                body_text: _("mpw_dialog_inv_cancel_question"),
                 callback_ok: function () {
                    clientManager.sendPartyDeleteInvite(invite_id);
                 }
@@ -317,8 +318,8 @@ var PartyManager = (function () {
 
             modalWindow.modalDialogAnswerShow({
                 caption: 'Party Operations',
-                header: agent_name == user.login ? 'Покинуть?' : 'Кикнуть?',
-                body_text: agent_name == user.login ? 'Вы уверены, что хотите покинуть пати?' : 'Вы уверены, что хотите кикнуть ' + agent_name + '?',
+                header: agent_name == user.login ? _("mpw_dialog_leave") : _("mpw_dialog_kick"),
+                body_text: agent_name == user.login ? _("mpw_dialog_leave_question") : _("mpw_dialog_kick_question") + agent_name + '?',
                 callback_ok: function () {
                    clientManager.sendKickPartyFromTemplate(agent_name);
                 }

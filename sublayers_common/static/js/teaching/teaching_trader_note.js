@@ -17,7 +17,7 @@ var TraderTeachingNote = (function (_super) {
         this.buy_btn = new Point(402, 633);
         this.filter = null;
 
-        chat.addMessageToLog('Машина не машина без вооружения. Но сначала его необходимо приобрести у торговца. Торговец находится в здании рынка.', true);
+        chat.addMessageToLog(_("teach_town_trader_note_log"), true);
     }
 
     TraderTeachingNote.prototype.on_enter_location = function() {
@@ -42,44 +42,44 @@ var TraderTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
              (active_place != null))) {
-            teachingManager.jq_panel_left_content.text('Машина - не машина без вооружения. Но сначала его необходимо приобрести у торговца.');
-            teachingManager.jq_panel_right_content.text('Зайти к торговцу.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_trader_note_1"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_trader_note_2"));
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('Машина - не машина без вооружения. Но сначала его необходимо приобрести у торговца.');
-            teachingManager.jq_panel_right_content.text('Зайти к торговцу.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_trader_note_1"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_trader_note_2"));
             this.draw_line(this.start_point, this.build_coord);
             return;
         }
 
         if (active_place === this.needed_building) {
             // Указать на нпц в здании
-            teachingManager.jq_panel_left_content.text('Вы находитесь в здании торговца. Чтобы открыть интерфейс торговли, нажмите на изображение торговца.');
-            teachingManager.jq_panel_right_content.text('Нажать на изображение торговца.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_trader_note_3"));
+            teachingManager.jq_panel_right_content.text(_("teach_town_trader_note_4"));
             this.draw_line(this.start_point, this.npc_coord);
         }
 
         if (active_place === this.needed_npc) {
-            teachingManager.jq_panel_left_content.text('Вы находитесь в интерфейсе торговли. Тут можно приобрести различные полезные вещи и продать ненужные.');
+            teachingManager.jq_panel_left_content.text(_("teach_town_trader_note_5"));
 
             // Если не было добавлено обучающего списка, то добавить и переключить
             if (! this.filter) {
-                this.filter = new TraderAssortmentFilterTags('На продажу', ['teaching']);
+                this.filter = new TraderAssortmentFilterTags(_("loc_tarder_filter_teach"), ['teaching']);
                 active_place.filters.push(this.filter);
                 active_place.current_trader_filter_index = active_place.filters.indexOf(this.filter);
                 active_place.filter_apply('trader', this.filter);
             }
 
             if (this.check_table()) {
-                teachingManager.jq_panel_right_content.text('Нажать кнопку <Подтвердить сделку>.');
+                teachingManager.jq_panel_right_content.text(_("teach_town_trader_note_6"));
                 this.draw_line(this.start_point, this.buy_btn);
             }
             else {
-                teachingManager.jq_panel_right_content.text('Выбрать оружие и патроны в колонке “Товары на продажу” и перекинуть их на столик обмена.');
+                teachingManager.jq_panel_right_content.text(_("teach_town_trader_note_7"));
                 this.draw_line(this.start_point, this.buy_area);
             }
         }
