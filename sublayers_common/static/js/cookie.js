@@ -1062,8 +1062,8 @@ var SettingsManager = (function() {
 
         if (this.test_diffrents()) { // Кнопки доступны
             if (in_town) {
-                locationManager.setBtnState(1, '</br>Применить', true);
-                locationManager.setBtnState(2, '</br>Отменить', true);
+                locationManager.setBtnState(1, '</br>' + _("msetw_btn_apply"), true);
+                locationManager.setBtnState(2, '</br>' + _("msetw_btn_cancel"), true);
             }
             else {
                 this.jq_btn_cancel.removeClass("disable");
@@ -1072,8 +1072,8 @@ var SettingsManager = (function() {
         }
         else {  // Кнопки не доступны
             if (in_town) {
-                locationManager.setBtnState(1, '</br>Применить', false);
-                locationManager.setBtnState(2, '</br>Отменить', false);
+                locationManager.setBtnState(1, '</br>' + _("msetw_btn_apply"), false);
+                locationManager.setBtnState(2, '</br>' + _("msetw_btn_cancel"), false);
             }
             else {
                 this.jq_btn_cancel.addClass("disable");
@@ -1082,7 +1082,7 @@ var SettingsManager = (function() {
         }
 
          if (in_town)
-            locationManager.setBtnState(3, '</br>По умолчанию', true);
+            locationManager.setBtnState(3, '</br>' + _("msetw_btn_default"), true);
     };
 
     SettingsManager.prototype.load = function() {
