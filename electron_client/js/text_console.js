@@ -303,19 +303,19 @@ var ConsolePreloader = (function (_super) {
         this.add_message('system', _('con_pre_6'));
         this.add_message('user', _('con_pre_7'));
         this.add_message('system', _('con_pre_8'));
-        var version = require('electron').remote.app.getVersion();
+        var version = '0.130.3937';
 
         this.add_message('system',
             '\n       ================================================\n' +
             '       >                                              <\n' +
-            '       >           ' + _('con_pre_9') + version + '           <\n' +
+            '       >        ' + _('con_pre_9') + version + '         <\n' +
             '       >                                              <\n' +
             '       >         ' + _('con_pre_10') + '        <\n' +
             '       >                                              <\n' +
             '       ================================================\n'
         );
         this.add_message('user', _('con_pre_20'));
-        this.add_message('system', _('con_pre_21') + '\n' + '------------------------------------------------\n' + _('con_pre_15'));
+        this.add_message('system', _('con_pre_21') + '\n\n' + '------------------------------------------------\n' + _('con_pre_15'));
         this.start();
     }
 

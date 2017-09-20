@@ -43,13 +43,14 @@
     set_current_locale();
     var start_ping_timeout = 5000;
     var ping_timeout = 3000;
-    var re_ping_timeout = 300;
+    var re_ping_timeout = 500;
     var all_client_cookies = null;
     var servers = [
         //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
-        {name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
-        {name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
-        {name: "Road Dogs RU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
+        //{name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
+        //{name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "EU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
+        {name: "US", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false},
         //{name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
     var server_name_max_l = servers.reduce(function (acc, current) {return Math.max(acc, current.name.length);}, 0);
