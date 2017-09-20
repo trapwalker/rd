@@ -13,3 +13,8 @@
 
 /* Заглушка в городе */
 .pi-location-image { background-image: url(/static/img/scale_right_side_en.png); }
+
+/* Обучение на карте */
+.map-teaching-img-block-right.cruise_speed_control { background-image: url(/static/img/teaching/s3r_en.png); }
+.map-teaching-img-block-right.driving_control { background-image: url('/static/img/teaching/s5r_en.png'); }
+.map-teaching-img-block-right.discharge_shooting { background-image: url('/static/img/teaching/s8r_en.png'); }
