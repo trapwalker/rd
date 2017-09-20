@@ -260,3 +260,6 @@
 
 # interaction_manager.js
 "loc_im_invite_to_barter": "!!! Invitation to exchange !!!"
+
+# npc_gas_station.js
+"loc_ngs_liter": "l"

@@ -42,7 +42,7 @@ var LocationGasStationNPC = (function (_super) {
             '<div id="gasStationRepairCarrette" class="building-gas-repair-carette"></div>' +
             '</div>' +
             '<div id="gasStationRepairGasValue" class="building-gas-repair-hp-value building-gas-repair-text"></div>' +
-            '<div class="building-gas-repair-hp-text building-gas-repair-text">л</div>' +
+            '<div class="building-gas-repair-hp-text building-gas-repair-text">'+_("loc_ngs_liter")+'</div>' +
             '</div>' +
             '</div>');
 
