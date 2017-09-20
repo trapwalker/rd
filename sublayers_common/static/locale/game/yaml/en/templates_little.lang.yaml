@@ -165,3 +165,8 @@ mchw_balance_info: 'Your electronic account in the Nukeoil system: 1 nukecoin eq
 # Заглушка быстрой игры quick_mode_plug
 "quick_mode_plug_1": "Function is disabled in «Quick Fight» mode"
 "quick_mode_plug_2": "Log in and start a full game."
+
+# site_html_audio_player.js
+"shap_radio_on": "ON"
+"shap_radio_off": "OFF"
+"shap_radio_message": "TEST BROADCASTING"

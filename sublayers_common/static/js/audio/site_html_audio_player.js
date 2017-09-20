@@ -41,7 +41,7 @@ var RadioPlayer = (function () {
         this.playing = false;
         this.play_started = false;
 
-        this.news_text = 'ВЕЩАНИЕ ВЕДЕТСЯ В ТЕСТОВОМ РЕЖИМЕ';
+        this.news_text = _("shap_radio_message");
 
         // timeout на загрузку радио при старте проигрывания
         this.timer_for_buffer = null;
@@ -305,7 +305,7 @@ var RadioPlayer = (function () {
             this.click_stop();
             if (this.jq_power_btn && this.jq_quality_btn && this.jq_volume_indicator) {
                 this.jq_power_btn.removeClass('active');
-                this.jq_power_btn.text('ВЫКЛ');
+                this.jq_power_btn.text(_("shap_radio_off"));
                 this.jq_quality_btn.removeClass('active');
                 this.jq_volume_indicator.css('display', 'none');
             }
@@ -325,7 +325,7 @@ var RadioPlayer = (function () {
             this.click_play();
             if (this.jq_power_btn && this.jq_quality_btn && this.jq_volume_indicator) {
                 this.jq_power_btn.addClass('active');
-                this.jq_power_btn.text('ВКЛ');
+                this.jq_power_btn.text(_("shap_radio_on"));
                 this.jq_quality_btn.addClass('active');
                 this.jq_volume_indicator.css('display', 'block');
             }
@@ -517,7 +517,7 @@ var RadioPlayer = (function () {
         // ЕСЛИ РАДИО ВКЛЮЧЕНО
         if (this.power_on) {
             this.jq_power_btn.addClass('active');
-            this.jq_power_btn.text('ВКЛ');
+            this.jq_power_btn.text(_("shap_radio_on"));
             this.jq_quality_btn.addClass('active');
             this.ticker_create(this.news_text);
             var radio_key = this.get_channel_key();
