@@ -177,10 +177,7 @@
     function gotoSite(event, index) {
         if (try_to_connect) return;
         var index = parseInt((event) ? $(event.target).data("index") : index - 1);
-        if (!servers.hasOwnProperty(index)) {
-{#            console.log('Unknown server', index, servers.length);#}
-            return;
-        }
+        if (!servers.hasOwnProperty(index)) return;
         var server = servers[index];
         if (!server.active) {
             $('#selected_server').text((index + 1) + ' ' + _('con_pre_19') + _('con_pre_17'));
