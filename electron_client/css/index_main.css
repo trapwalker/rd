@@ -53,4 +53,4 @@ body {
     height: 337px;
 }
 
-.server_list_item:hover { color: #2ffa00; cursor: url('img/hyper.png'), pointer; }
+.server_list_item_selectable:hover { color: #2ffa00; cursor: url('img/hyper.png'), pointer; }

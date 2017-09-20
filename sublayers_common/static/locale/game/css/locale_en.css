@@ -1,12 +1,15 @@
-
-
-
-
-
-
-
+/* Иконки покупных скилов и тренера */
+.trainer-buy-driving-picture { background: url('/static/content/locations/institutions/trainer/driving_skill_en.png'); }
+.trainer-buy-shooting-picture { background: url('/static/content/locations/institutions/trainer/shooting_skill_en.png'); }
+.trainer-buy-masking-picture { background: url('/static/content/locations/institutions/trainer/secrecy_skill_en.png'); }
+.trainer-buy-engineering-picture { background: url('/static/content/locations/institutions/trainer/mechanica_skill_en.png'); }
+.trainer-buy-trading-picture { background: url('/static/content/locations/institutions/trainer/trading_skill_en.png'); }
+.trainer-buy-leading-picture { background: url('/static/content/locations/institutions/trainer/leading_skill_en.png'); }
 
 /* Окна обучения быстрой игры */
 .map-teaching-window-main.auto_shooting {height: 342px;}
 .map-teaching-text-block.auto_shooting {height: 154px;}
 .map-teaching-window-main.final {height: 168px;}
+
+/* Заглушка в городе */
+.pi-location-image { background-image: url(/static/img/scale_right_side_en.png); }

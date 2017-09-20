@@ -305,8 +305,7 @@ var ConsolePreloader = (function (_super) {
         this.add_message('system', _('con_pre_8'));
         var version = require('electron').remote.app.getVersion();
 
-        this.add_message(
-            'system',
+        this.add_message('system',
             '\n       ================================================\n' +
             '       >                                              <\n' +
             '       >           ' + _('con_pre_9') + version + '           <\n' +
@@ -315,8 +314,8 @@ var ConsolePreloader = (function (_super) {
             '       >                                              <\n' +
             '       ================================================\n'
         );
-        this.add_message('user', _('con_pre_15'));
-
+        this.add_message('user', _('con_pre_20'));
+        this.add_message('system', _('con_pre_21') + '\n' + '------------------------------------------------\n' + _('con_pre_15'));
         this.start();
     }
 
@@ -333,9 +332,10 @@ var ConsolePreloader = (function (_super) {
             for (var i = 0; i < servers.length; i++) {
                 var server = servers[i];
                 var name_with_spaces = server.name + (new Array(server_name_max_l - server.name.length ).join(" "));  // Имя сервера с дополненными пробелами
-                var text = '&gt; ' + (i + 1) + '. ' + name_with_spaces + ' ' + '<span style="pointer-events: none;" id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
-                self.target_div.append('<div class="server_list_item" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
+                var text = (i + 1) + '. ' + name_with_spaces + ' ' + '<span style="pointer-events: none;" id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
+                self.target_div.append('<div class="server_list_item server_list_item_selectable" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
             }
+            self.target_div.append('<div class="server_list_item">------------------------------------------------</div>');
             self.target_div.append('<div class="server_list_item"><span>&gt; </span><span id="selected_server"></span><span id="selected_server_carriage"></span></div>');
             last_carriage_blind();
 
