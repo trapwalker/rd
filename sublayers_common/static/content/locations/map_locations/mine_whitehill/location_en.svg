@@ -15,8 +15,8 @@
    viewBox="0 0 1920 1080"
    id="svg_town"
    version="1.1"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="location.svg">
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="location_en.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -54,11 +54,11 @@
      inkscape:cx="770.09341"
      inkscape:cy="655.51667"
      inkscape:document-units="px"
-     inkscape:current-layer="svg_town"
+     inkscape:current-layer="layer6"
      showgrid="false"
      units="px"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-height="1027"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -81,25 +81,25 @@
      id="layer1"
      transform="translate(0,-2.362448)">
     <image
-       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\ground+circle.png"
+       sodipodi:absref="D:\reps\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\ground+circle.png"
        xlink:href="ground+circle.png"
-       width="943"
-       height="752"
-       preserveAspectRatio="none"
-       id="landscape"
-       x="485"
-       y="138.36244" />
-    <image
-       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_bg.png"
-       xlink:href="mine_bg.png"
        y="138.36244"
        x="485"
-       id="mine-back"
+       id="landscape"
        preserveAspectRatio="none"
        height="752"
-       width="943"
+       width="943" />
+    <image
+       sodipodi:absref="D:\reps\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_bg.png"
+       xlink:href="mine_bg.png"
+       class="building-back"
        style="display:none"
-       class="building-back" />
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="mine-back"
+       x="485"
+       y="138.36244" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -108,27 +108,27 @@
      class="townPageWrap"
      transform="translate(0,2.3339844e-4)">
     <image
-       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine.png"
+       sodipodi:absref="D:\reps\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine.png"
        xlink:href="mine.png"
-       class="highlight-buildings"
-       y="333"
-       x="571"
+       width="840"
+       height="430"
+       preserveAspectRatio="none"
        id="img_house1_off"
-       preserveAspectRatio="none"
-       height="430"
-       width="840" />
-    <image
-       sodipodi:absref="C:\Projects\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_hover.png"
-       xlink:href="mine_hover.png"
-       style="display:none"
-       data-building="mine"
-       class="highlight-buildings"
-       y="333"
        x="571"
-       id="img_house1_on"
-       preserveAspectRatio="none"
+       y="333"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\reps\rd\sublayers_common\static\content\locations\map_locations\mine_whitehill\mine_hover.png"
+       xlink:href="mine_hover.png"
+       width="840"
        height="430"
-       width="840" />
+       preserveAspectRatio="none"
+       id="img_house1_on"
+       x="571"
+       y="333"
+       class="highlight-buildings"
+       data-building="mine"
+       style="display:none" />
     <g
        inkscape:groupmode="layer"
        id="layer6"
@@ -146,13 +146,12 @@
          x="930"
          y="174"
          id="path_text_h1"
-         class="town-build-path-text"
-         sodipodi:linespacing="0%"><tspan
+         class="town-build-path-text"><tspan
            sodipodi:role="line"
            id="tspan4204-9-7"
            x="930"
            y="174"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Шахта</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Mine</tspan></text>
     </g>
   </g>
 </svg>
