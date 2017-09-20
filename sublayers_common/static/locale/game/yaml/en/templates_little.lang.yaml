@@ -43,9 +43,9 @@
 "mpw_manage": "Control"
 "mpw_invite": "Invites"
 
-"mpw_name": "PARTY NAME"
-"mpw_targets": "GOALS"
-"mpw_share_loot": "Setting division of experience"
+"mpw_name": "Party name"
+"mpw_targets": "Party Missions"
+"mpw_share_loot": "Sharing of experience"
 "mpw_create_btn": "Create"
 
 "mpw_invite_text": "INVITE"
@@ -61,10 +61,10 @@
 "mpw_trad": "Trading"
 "mpw_lead": "Leadership"
 
-"mpw_inv_text_inv": "INVITES"
-"mpw_inv_members_party": "PARTY MEMBERS"
+"mpw_inv_text_inv": "Your invites"
+"mpw_inv_members_party": "Party members"
 
-"mpw_exp_share_solo": "Each his"
+"mpw_exp_share_solo": "Each his own"
 "mpw_exp_share": "Equally"
 
 "mpw_invites_js_exp": "Experience:"
