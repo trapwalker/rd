@@ -36,6 +36,7 @@
 "mpersw_trad": "Trading"
 "mpersw_lead": "Leadership"
 
+"mpersw_party": "Party"
 "mpersw_invite": "Invite"
 
 # menu_party_window
@@ -43,9 +44,9 @@
 "mpw_manage": "Control"
 "mpw_invite": "Invites"
 
-"mpw_name": "PARTY NAME"
-"mpw_targets": "GOALS"
-"mpw_share_loot": "Setting division of experience"
+"mpw_name": "Party name"
+"mpw_targets": "Party Missions"
+"mpw_share_loot": "Sharing of experience"
 "mpw_create_btn": "Create"
 
 "mpw_invite_text": "INVITE"
@@ -61,10 +62,10 @@
 "mpw_trad": "Trading"
 "mpw_lead": "Leadership"
 
-"mpw_inv_text_inv": "INVITES"
-"mpw_inv_members_party": "PARTY MEMBERS"
+"mpw_inv_text_inv": "Your invites"
+"mpw_inv_members_party": "Party members"
 
-"mpw_exp_share_solo": "Each his"
+"mpw_exp_share_solo": "Each his own"
 "mpw_exp_share": "Equally"
 
 "mpw_invites_js_exp": "Experience:"
@@ -106,9 +107,9 @@
 "mchw_lvl": "Level"
 "mchw_class": "Class"
 "mchw_karma": "Karma"
-"mchw_balance": "Balance"
+"mchw_balance": "Nucoins"
 "mchw_about_self": "About me"
-"mchw_set_info": "Specifications"
+"mchw_set_info": "Stats"
 "mchw_inv": "Inventory"
 "mchw_effects": "Effects"
 "mchw_perks": "Perks"
@@ -164,3 +165,8 @@ mchw_balance_info: 'Your electronic account in the Nukeoil system: 1 nukecoin eq
 # Заглушка быстрой игры quick_mode_plug
 "quick_mode_plug_1": "Function is disabled in «Quick Fight» mode"
 "quick_mode_plug_2": "Log in and start a full game."
+
+# site_html_audio_player.js
+"shap_radio_on": "ON"
+"shap_radio_off": "OFF"
+"shap_radio_message": "TEST BROADCASTING"

@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="person-window-bottom">
-            Пати: {% if agent.party %}{{ agent.party.name }}{% end %}
+            {{ _("mpersw_party") }}: {% if agent.party %}{{ agent.party.name }}{% end %}
             <div class="person-window-btn" data-name="{{  agent._login }}">{{ _("mpersw_invite") }}</div>
         </div>
     </div>

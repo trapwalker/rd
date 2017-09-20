@@ -46,10 +46,13 @@ var locales = {
         "con_pre_12": "Drivers found: ",
         "con_pre_13": "Latest news: ",
         "con_pre_14": "Data loading: ",
-        "con_pre_15": "Select server:",
+        "con_pre_15": "Select a server to continue:",
         "con_pre_16": "ping:",
         "con_pre_17": "not available",
-        "con_pre_18": "ms"
+        "con_pre_18": "ms",
+        "con_pre_19": "server ",
+        "con_pre_20": "Servers scanning",
+        "con_pre_21": "Server list ready"
     },
     "ru": {
         "locale": "ru",
@@ -68,9 +71,12 @@ var locales = {
         "con_pre_12": "Пользователей обнаружено: ",
         "con_pre_13": "Последняя новость: ",
         "con_pre_14": "Загрузка данных: ",
-        "con_pre_15": "Выберите сервер:",
+        "con_pre_15": "Выберите сервер для продолжения:",
         "con_pre_16": "пинг:",
         "con_pre_17": "недоступен",
-        "con_pre_18": "мс"
+        "con_pre_18": "мс",
+        "con_pre_19": "сервер ",
+        "con_pre_20": "Сканирование серверов",
+        "con_pre_21": "Список серверов готов"
     }
 };
