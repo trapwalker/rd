@@ -321,6 +321,13 @@ var ConsolePreloader = (function (_super) {
     }
 
     ConsolePreloader.prototype._state_print_final_indicator = function (self) {
+
+        function last_carriage_blind() {
+            var jq_span = $('#selected_server_carriage');
+            (jq_span.text() == '') ? jq_span.text('_') : jq_span.text('');
+            setTimeout(last_carriage_blind, 500);
+        }
+
         if ((self._messages.length == 0) && !self.out_server_list) {
             self.target_div.find('.console-new-text').text(self._text);
             for (var i = 0; i < servers.length; i++) {
@@ -329,6 +336,12 @@ var ConsolePreloader = (function (_super) {
                 var text = '&gt; ' + (i + 1) + '. ' + name_with_spaces + ' ' + '<span style="pointer-events: none;" id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
                 self.target_div.append('<div class="server_list_item" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
             }
+            self.target_div.append('<div class="server_list_item"><span>&gt; </span><span id="selected_server"></span><span id="selected_server_carriage"></span></div>');
+            last_carriage_blind();
+
+            var jq_keydown = $('#preloaderBlock');
+            jq_keydown.on("keydown", function(event){ gotoSite(null, event.key) });
+            jq_keydown.focus();
         }
         else
             _super.prototype._state_print_final_indicator.call(self, self);

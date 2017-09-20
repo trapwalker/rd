@@ -33,7 +33,6 @@ function getWindowState() {
     return def_options;
 }
 
-
 function createWindow() {
     var window_options = {backgroundColor: "#030f00", darkTheme: true, fullscreen: config.get('isFullScreen', false)};
     Object.assign(window_options, getWindowState());

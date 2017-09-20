@@ -27,12 +27,13 @@
 <body>
     <div class="content-block"></div>
     <canvas id="content-canvas" class="canvas-property"></canvas>
-    <div id="preloaderBlock">
+    <div id="preloaderBlock" tabindex="0">
         <div id="consolePreloader"></div>
     </div>
 </body>
 
 <script>
+    var try_to_connect = false;
     var cookie_storage;
     var current_window = require('electron').remote.getCurrentWindow();
     var ticket = current_window._ticket_steam;
@@ -46,8 +47,8 @@
     var all_client_cookies = null;
     var servers = [
         //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
-        //{name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
-        //{name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
+        {name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
         {name: "Road Dogs RU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
         //{name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
@@ -173,23 +174,29 @@
         } else show_server_list();
     }
 
-    function gotoSite(event) {
-        console.log('gotoSite');
-        var index = $(event.target).data("index"); // || $($(event.target).parent()).data("index");
-        if ((index == null) || (index == undefined) || (index < 0) || (index >= servers.length)) {
-            console.log(index, servers.length);
+    function gotoSite(event, index) {
+        if (try_to_connect) return;
+        var index = parseInt((event) ? $(event.target).data("index") : index - 1);
+        if (!servers.hasOwnProperty(index)) {
+{#            console.log('Unknown server', index, servers.length);#}
             return;
         }
         var server = servers[index];
-        if (!server.active) {console.log("server not active"); return;}
-        console.log(ticket, steam_id, server.address);
-        if (ticket && steam_id)
+        if (!server.active) {
+            $('#selected_server').text((index + 1) + ' ' + _('con_pre_19') + _('con_pre_17'));
+            return;
+        }
+        $('#selected_server').text(index + 1);
+        try_to_connect = true;
+        if (ticket && steam_id) {
             $.ajax({ url: server.address + '/site_api/auth/steam',
                  method: 'GET',
                  data: { ticket: ticket },
                  timeout: ping_timeout,
                  success: function (data) { window.location = server.address + '?mode=electron'; },
+                 error: function(dara) { try_to_connect = false; }
             });
+        }
         else window.location = server.address + '?mode=electron';
     }
 
