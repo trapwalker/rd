@@ -11,6 +11,7 @@ import os.path
 from tornado.template import Loader, Template
 from tornado.options import options
 from ctx_timer import Timer, T
+from sublayers_common.site_locale import locale
 
 
 def make_push_package(events):
@@ -1601,8 +1602,8 @@ class PartyUserInfoMessage(Message):
                 name=self.player_nick,
                 avatar=player.avatar_link,
                 lvl=player_profile.get_real_lvl(),
-                role_class=player_profile.role_class.description,
-                karma=player_profile.karma_name(),
+                role_class=locale(lang=self.agent.get_lang(), key=player_profile.role_class.description),
+                karma=player_profile.karma_name(lang=self.agent.get_lang()),
                 driving=player_profile.driving.calc_value(),
                 shooting=player_profile.shooting.calc_value(),
                 masking=player_profile.masking.calc_value(),

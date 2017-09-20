@@ -159,7 +159,7 @@ var CharacterManager = (function () {
         //console.log('CharacterManager.perks_event_mouseenter');
         var perc_rec = user.example_agent.rpg_info.perks[$(event.currentTarget).data('index')];
         if(! perc_rec) return;
-        event.data.mng.jq_main_div.find('.character-window-hint-text').html(perc_rec.perk.description);
+        event.data.mng.jq_main_div.find('.character-window-hint-text').html(_(perc_rec.perk.description));
     };
 
     CharacterManager.skills_event_mouseenter = function (event) {
