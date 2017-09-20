@@ -24,9 +24,10 @@ var mainWindow;
 // Получение состояния окна: либо последнее закрытое, либо по умолчанию
 function getWindowState() {
     // Не сохраняем позицию окна (второй монитор вкл/выкл) сохраняем только размеры
-    var def_options = {width: 1120, height: 740, minWidth: 1120, minHeight: 740};
+    var screen = electron.screen.getPrimaryDisplay().workAreaSize;
+    var def_options = {width: screen.width, height: screen.height, minWidth: 1120, minHeight: 740};
     // Object.assign(def_options, config.get('winBounds') || {});  // todo: так по идее правильнее, но тогда сохранится позиция окна
-    var curr_state = config.get('winBounds') || {};
+    var curr_state = config.get('winBounds', {});
     if (curr_state.width && curr_state.width >= def_options.minWidth) def_options.width = curr_state.width;
     if (curr_state.height && curr_state.height >= def_options.minHeight) def_options.height = curr_state.height;
     return def_options;
@@ -34,7 +35,7 @@ function getWindowState() {
 
 
 function createWindow() {
-    var window_options = {backgroundColor: "#030f00", darkTheme: true};
+    var window_options = {backgroundColor: "#030f00", darkTheme: true, fullscreen: config.get('isFullScreen', false)};
     Object.assign(window_options, getWindowState());
 
     mainWindow = new BrowserWindow(window_options);
@@ -45,7 +46,13 @@ function createWindow() {
         slashes: true
     }));
 
-    mainWindow.on('close', function () {config.set('winBounds', mainWindow.getBounds())});
+    if (config.get('isMaximize', true)) mainWindow.maximize();
+
+    mainWindow.on('close', function () {
+        config.set('winBounds', mainWindow.getBounds());
+        config.set('isMaximize', mainWindow.isMaximized());
+        config.set('isFullScreen', mainWindow.isFullScreen());
+    });
     mainWindow.on('closed', function () {mainWindow = null;});
 
     // todo: написать как-то в консоль, чтобы юзер был осторожнее
@@ -114,6 +121,22 @@ function createWindow() {
     // Аргументы командной строки имеют более высокий приоритет, чем стим
     if (command_line_args.lang)
         mainWindow._client_language = command_line_args.lang;
+
+
+    // Register a shortcuts listener.
+    var globalShortcut = electron.globalShortcut;
+    if (!globalShortcut.register(
+            'CommandOrControl+Shift+I',
+            function () { mainWindow.webContents.toggleDevTools(); })
+    ) console.log('Failed registration CommandOrControl+Shift+I');
+
+    if (!globalShortcut.register(
+            'F11',
+            function () {mainWindow.setFullScreen(!mainWindow.isFullScreen());})
+    ) console.log('Failed registration F11');
+
+    if (!globalShortcut.register('F5' ,function () {mainWindow.reload();})) console.log('Failed registration F5');
+
 
 }
 
