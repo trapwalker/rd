@@ -130,24 +130,26 @@ var CharacterManager = (function () {
         jq_pers_effects.empty();
         for (var i = 0; i < pers_effects.length; i++) {
             var item = pers_effects[i];
+            var locale_title = _(item.title);
+            if (locale_title) {
+                var time_str = "";
+                if (item.deadline == 0)
+                    time_str = "-:-";  // Бесконечность
+                else {
+                    var t = new Date(item.deadline * 1000);  // Дата окончания эффекта
+                    var n = new Date();
+                    var time_str = toHH(Math.max(t - n, 0));
+                    //time_str = t < new Date() ? "" : t.toLocaleTimeString('ru');
+                }
 
-            var time_str = "";
-            if (item.deadline == 0)
-                time_str = "-:-";  // Бесконечность
-            else {
-                var t = new Date(item.deadline * 1000);  // Дата окончания эффекта
-                var n = new Date();
-                var time_str = toHH(Math.max(t - n, 0));
-                //time_str = t < new Date() ? "" : t.toLocaleTimeString('ru');
-            }
-
-            var backlight = i % 2 ? "trainer-light-back" : "trainer-dark-back";
-            jq_pers_effects.append(
-                '<div class="character-effect-block" data-index="' + i + '">' +
-                    '<div class="character-effect-title ' + backlight + '">' + _(item.title) + '</div>' +
+                var backlight = i % 2 ? "trainer-light-back" : "trainer-dark-back";
+                jq_pers_effects.append(
+                    '<div class="character-effect-block" data-index="' + i + '">' +
+                    '<div class="character-effect-title ' + backlight + '">' + locale_title + '</div>' +
                     '<div class="character-effect-deadline ' + backlight + '">' + time_str + '</div>' +
-                '</div>'
-            );
+                    '</div>'
+                );
+            }
         }
 
         jq_pers_effects.find(".character-effect-block")
