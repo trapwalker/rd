@@ -1,6 +1,6 @@
 var constDisplayLineSpeed = 0.02;      // смещение линии на каждый тик
 var constDisplayLineDelay = 60;        // задержка в тиках между линиями
-var constDisplayLineWidth = 200;       // ширина линии
+var constDisplayLineWidth = 600;       // ширина линии
 
 var CanvasDisplayLine = (function(){
     function CanvasDisplayLine() {

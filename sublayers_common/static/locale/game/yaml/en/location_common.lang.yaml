@@ -7,26 +7,26 @@
 "lbw_available_quest": "Available quests"
 "lbw_active_quest": "Active quests"
 
-"lcit_tth": "TTC"
-"lcit_weapon": "Weapons"
-"lcit_history": "Story"
-"lcit_price": "Price:"
-"lcit_class": "Class:"
-"lcit_strength": "Durability:"
-"lcit_speed": "Speed:"
+"lcit_tth": "Specs"
+"lcit_weapon": "Modules"
+"lcit_history": "Mileage"
+"lcit_price": "Value:"
+"lcit_class": "Weight:"
+"lcit_strength": "Strength:"
+"lcit_speed": "Max. speed:"
 "lcit_slot_count": "Body slots:"
 "lcit_inventory_size": "Trunk slots:"
 "lcit_fuel": "Tank capacity:"
 "lcit_fuel_consumption": "Fuel consumption:"
 "lcit_driving_req": "Driving skill:"
-"lcit_zone_speed": "Speed on ground:"
+"lcit_zone_speed": "Terrain speed limits:"
 "lcit_dirt_speed": "Off-road:"
 "lcit_wood_speed": "Forest:"
 "lcit_slope_speed": "Mountain:"
 "lcit_water_speed": "Swamp:"
 "lcit_mileage": "Mileage:"
 "lcit_kill_count": "Kills:"
-"lcit_exp": "Exp:"
+"lcit_exp": "Tameness:"
 
 "lci_info": "Information"
 "lci_trading_info": "Trading"
@@ -260,3 +260,6 @@
 
 # interaction_manager.js
 "loc_im_invite_to_barter": "!!! Invitation to exchange !!!"
+
+# npc_gas_station.js
+"loc_ngs_liter": "l"

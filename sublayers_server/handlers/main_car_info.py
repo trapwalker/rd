@@ -51,7 +51,8 @@ class PersonInfoHandler(FailWithoutAgentHandler):
         elif mode == 'map':
             lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.profile.exp_table.by_exp(exp=person.example.profile.exp)
             car = None if person.car is None else person.car.example
-            self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)
+            target_agent_locale = agent.get_lang()
+            self.render("menu/person_window.html", agent=person, lvl=lvl, car=car, target_agent_locale=target_agent_locale)
 
 
 class PersonInfoCorpseHandler(FailWithoutAgentHandler):

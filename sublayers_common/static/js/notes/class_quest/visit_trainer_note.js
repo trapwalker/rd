@@ -23,13 +23,13 @@ var QuestNoteVisitTrainer = (function (_super) {
 
         var role_skill = '';
         var teacher = '';
-        var class_name = user.example_agent.role_class;
-        if (user.example_agent.role_class == "Избранный") { role_skill = _("vtn_skill_1"); teacher = _("vtn_npc_1"); }
-        else if (user.example_agent.role_class == "Альфа-волк") { role_skill = _("vtn_skill_2"); teacher = _("vtn_npc_2"); }
-        else if (user.example_agent.role_class == "Ночной ездок") { role_skill = _("vtn_skill_3"); teacher = _("vtn_npc_3"); }
-        else if (user.example_agent.role_class == "Нефтяной магнат") { role_skill = _("vtn_skill_4"); teacher = _("vtn_npc_4"); }
-        else if (user.example_agent.role_class == "Воин дорог") { role_skill = _("vtn_skill_5"); teacher = _("vtn_npc_5"); }
-        else if (user.example_agent.role_class == "Технокинетик") { role_skill = _("vtn_skill_6"); teacher = _("vtn_npc_6"); }
+        var class_name = _(user.example_agent.role_class);
+        if (user.example_agent.role_class.ru == "Избранный") { role_skill = _("vtn_skill_1"); teacher = _("vtn_npc_1"); }
+        else if (user.example_agent.role_class.ru == "Альфа-волк") { role_skill = _("vtn_skill_2"); teacher = _("vtn_npc_2"); }
+        else if (user.example_agent.role_class.ru == "Ночной ездок") { role_skill = _("vtn_skill_3"); teacher = _("vtn_npc_3"); }
+        else if (user.example_agent.role_class.ru == "Нефтяной магнат") { role_skill = _("vtn_skill_4"); teacher = _("vtn_npc_4"); }
+        else if (user.example_agent.role_class.ru == "Воин дорог") { role_skill = _("vtn_skill_5"); teacher = _("vtn_npc_5"); }
+        else if (user.example_agent.role_class.ru == "Технокинетик") { role_skill = _("vtn_skill_6"); teacher = _("vtn_npc_6"); }
 
         var text = _("vtn_text_1") + class_name + _("vtn_text_2") + role_skill + _("vtn_text_3") + class_name + _("vtn_text_4") + teacher + '.';
         jq_main_div.append(

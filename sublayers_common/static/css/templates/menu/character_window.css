@@ -324,14 +324,14 @@
 .character-window-ttx-footer-text {
     position: relative;
     float: left;
-    width: calc(100% - 10px - 55px);
+    width: calc(100% - 10px - 42px);
     margin-right: 10px;
     box-sizing: border-box;
     padding-left: 5px;
     line-height: 21px
 }
 .character-window-ttx-footer-text.right{
-    width: 55px;
+    width: 30px;
     height: 100%;
     text-align: center;
     margin: 0;

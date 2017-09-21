@@ -32,7 +32,6 @@ var TextBlurBlink2 = (function(){
         this.next_time = timeManager.getTime();
         timeManager.addTimerEvent(this, 'redraw');
     }
-
     // text-shadow: 0 0 1px #00ff00, 0 0 10px #00ff00;
 
     TextBlurBlink2.prototype.redraw = function(time) {
@@ -67,8 +66,6 @@ var TextBlurBlink2 = (function(){
 
             console.log(this.next_time);
         }
-
-
     };
 
     return TextBlurBlink2;

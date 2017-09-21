@@ -38,7 +38,7 @@
                     </div>
                     <div class="person-window-pers-info-line person-window-dark-back">
                         <div class="person-window-pers-info-label">{{ _("mpersw_karma") }}:</div>
-                        <div class="person-window-pers-info-value person-window-karma">{{ agent.example.profile.karma_name() }}</div>
+                        <div class="person-window-pers-info-value person-window-karma">{{ agent.example.profile.karma_name(lang=target_agent_locale) }}</div>
                     </div>
                     <div class="person-window-pers-info-line person-window-light-back">
                         <div class="person-window-pers-info-label">{{ _("mpersw_driv") }}:</div>
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="person-window-bottom">
-            Пати: {% if agent.party %}{{ agent.party.name }}{% end %}
+            {{ _("mpersw_party") }}: {% if agent.party %}{{ agent.party.name }}{% end %}
             <div class="person-window-btn" data-name="{{  agent._login }}">{{ _("mpersw_invite") }}</div>
         </div>
     </div>

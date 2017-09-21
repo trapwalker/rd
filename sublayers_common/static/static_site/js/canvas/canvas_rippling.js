@@ -23,7 +23,7 @@ var CanvasDisplayRippling = (function(){
             grd.addColorStop(1,"rgba(0, 0, 0, 0)");
 
             context.beginPath();
-            context.lineWidth = constDisplayLineWidth;
+            context.lineWidth = constDisplayRipplingWidth;
             context.strokeStyle = grd;
             context.moveTo(0, pos_y);
             context.lineTo(canvasManager.width, pos_y);
