@@ -23,7 +23,7 @@ def service_start(project_path, service_command, stdout_show_timeout=None):
 
 
 @root.group(name='save', invoke_without_command=True)
-@click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
 @click.pass_context
 def save_command(ctx, host):
     """Start service"""
@@ -46,7 +46,7 @@ def start_command(ctx):
 
 
 @root.group(name='stop', invoke_without_command=True)
-@click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
 @click.pass_context
 def stop_command(ctx, host):
     """Stop service"""
@@ -58,7 +58,7 @@ def stop_command(ctx, host):
 
 
 @root.group(name='restart', invoke_without_command=True)
-@click.option('--host' ,'-h', 'host', default='https://roaddogs.ru', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
 @click.pass_context
 def restart_command(ctx, host):
     """Restart service"""
