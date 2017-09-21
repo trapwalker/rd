@@ -1,1 +1,79 @@
-﻿<h1>Houston, we have a problem...</h1>
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Road Dogs Online</title>
+
+    <link rel="stylesheet" href="../static/error/50x/css/50x.css"/>
+    <style>
+        @font-face {font-family: FreePixel; src: url('../static/error/50x/fonts/FreePixel.ttf'); }
+        @font-face {font-family: Nouveau_IBM; src: url('../static/error/50x/fonts/Nouveau_IBM.ttf'); }
+    </style>
+
+    <script src="../static/static_site/js/third_party/jquery.min.js"></script>
+    <script src="../static/error/50x/js/locale.js"></script>
+    <script src="../static/error/50x/js/time_manager.js"></script>
+    <script src="../static/error/50x/js/audio_object.js"></script>
+    <script src="../static/error/50x/js/audio_manager.js"></script>
+    <script src="../static/error/50x/js/audio_keyboard_emulate.js"></script>
+    <script src="../static/error/50x/js/canvas/canvas_manager.js"></script>
+    <script src="../static/error/50x/js/canvas/canvas_noise.js"></script>
+    <script src="../static/error/50x/js/canvas/canvas_line.js"></script>
+    <script src="../static/error/50x/js/canvas/canvas_rippling.js"></script>
+    <script src="../static/error/50x/js/canvas/canvas_blackout.js"></script>
+    <script src="../static/error/50x/js/text_console.js"></script>
+</head>
+
+<body>
+    <div class="content-block"></div>
+    <canvas id="content-canvas" class="canvas-property"></canvas>
+    <div id="preloaderBlock">
+        <div id="consolePreloader"></div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function () {
+        // Установка локали
+        set_current_locale();
+
+        // Запускаем эффекты канваса
+        canvasManager = new CanvasManager();
+        canvasNoise = new CanvasNoise();
+        canvasDisplayLine = new CanvasDisplayLine();
+        canvasDisplayRippling = new CanvasDisplayRippling();
+        canvasBlackOut = new CanvasBlackOut();
+
+        // Подготавливаем звук для консоли
+        audioManager.gain_all(0.1);
+        audioManager.load('key_cl_1', {url: '../static/error/50x/audio/type.mp3'}, null, null, 1.0);
+        audioKeyboard = new AudioKeyboard([audioManager.get('key_cl_1')]);
+
+        // Запускаем консоль
+        consolePreloader = new ConsolePreloader();
+
+        // Пробуем достать сообщение от серверника
+        $.ajax({
+            url: "/static/error/50x/msg.txt",
+            timeout: 5000,
+            success: function (data){
+                consolePreloader.add_message('system', _('con_pre_8') + '\n' +
+                        '------------------------------------------------\n' +
+                        data + '\n' +
+                        _('con_pre_9') + '\n' +
+                        '------------------------------------------------\n'
+                );
+            },
+            error: function () {
+                consolePreloader.add_message('system', _('con_pre_8') + '\n' +
+                        '------------------------------------------------\n' +
+                        _('con_pre_10') + '\n' +
+                        _('con_pre_9') + '\n' +
+                        '------------------------------------------------\n'
+                );
+            }
+        });
+    });
+</script>
+
+</html>

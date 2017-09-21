@@ -1,0 +1,56 @@
+html, body { width: 100%; height: 100%; }
+body {
+    margin: 0px;
+    padding: 0px;
+    user-select: none;
+    cursor: url('../img/main.png'), default;
+    background-color: #030f00;
+    font-family: Nouveau_IBM;
+}
+
+.content-block {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.canvas-property {
+    position: absolute;
+    pointer-events: none;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+#preloaderBlock {
+    position: absolute;
+    top: 0;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    color: #31c811;
+    font-family: FreePixel, sans-serif;
+    font-weight: bold;
+    text-shadow: 0 0 1px #31c811, 0 0 10px #31c811;
+    font-size: 14pt;
+    letter-spacing: 2px;
+    padding: 100px;
+    box-sizing: border-box;
+    z-index: 50;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#consolePreloader {
+    position: relative;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+    width: 100%;
+    height: 337px;
+}
+
+.server_list_item_selectable:hover { color: #2ffa00; cursor: url('../static/error/50x/img/hyper.png'), pointer; }
