@@ -15,3 +15,6 @@
 "iht__max_fuel": "Tank"
 "iht__p_fuel_rate": "Fuel consumption"
 "iht__r_cc_dirt": "Passability"
+
+"item_price": "Value"
+"item_stack_size": "Stack"
