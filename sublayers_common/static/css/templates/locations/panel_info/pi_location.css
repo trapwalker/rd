@@ -15,6 +15,7 @@
     height: 130px;
     margin: 0 auto;
     background-image: url("/static/img/scale_right_side.png");
+    display: none;
 }
 .pi-location-image::before {
     content: " ";
