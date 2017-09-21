@@ -45,10 +45,10 @@ class Cannon(Weapon):
         </div>
         <div class="description-line left-align">{{ _('w__damage') }}:</div><div class="description-line right-align">{{ this.dmg }}</div>
         <div class="description-line left-align">{{ _('w__time_recharge') }}:</div><div class="description-line right-align">{{ this.time_recharge }} s</div>
-        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.radius) }} m</div>
-        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.width) }}°</div>
-        <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:0f}'.format(this.power_penetration) }}</div>
-        <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.doc) }}</div>
+        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.radius) }} m</div>
+        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.width) }}°</div>
+        <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:.0f}'.format(this.power_penetration) }}</div>
+        <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.title).replace("<br>", " ") }}</div>
     """, whitespace='oneline')
 
 
@@ -65,9 +65,9 @@ class MachineGun(Weapon):
                 3: _('w__weight_class__heavy'),
             }.get(this.weight_class, _('w__weight_class__undefined')) }}
         </div>
-        <div class="description-line left-align">{{ _('w__dps') }}:</div><div class="description-line right-align">{{ this.dps }}</div>
-        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.radius) }} m</div>
-        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:0f}'.format(this.width) }}°</div>
-        <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:0f}'.format(this.power_penetration) }}</div>
-        <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.doc) }}</div>
+        <div class="description-line left-align small">{{ _('w__dps') }}:</div><div class="description-line right-align small">{{ this.dps }}</div>
+        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.radius) }} m</div>
+        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.width) }}°</div>
+        <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:.0f}'.format(this.power_penetration) }}</div>
+        <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.title).replace("<br>", " ") }}</div>
     """, whitespace='oneline')
