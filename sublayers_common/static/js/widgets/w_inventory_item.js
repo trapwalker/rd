@@ -80,8 +80,8 @@ var WInventoryItem = (function (_super) {
             // отобразить текущий итем
             inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-picture-picture").css('background',
                     'transparent url(/' + self.item.example.inv_icon_mid + ') no-repeat 100% 100%');
-            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").html(self.item.example.title);
-            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-description").html(self.item.example.description);
+            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-name").html(_(self.item.example.title));
+            inv_parent.find(".mainCarInfoWindow-body-trunk-body-left-description").html(_(self.item.example.description));
 
             // добавляем поисковый класс для выделенных левых частей инвентаря
             var infoWindow = inv_parent.find(".mainCarInfoWindow-body-trunk-body-left");
