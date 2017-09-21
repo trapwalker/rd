@@ -6,7 +6,7 @@ from sublayers_server.handlers.adm_api.user_control import UserStatusHandler
 
 
 handlers = [
+    (r"/adm/api/shutdown", ServerShutdownHandler,),
     (r"/adm/api/save", ServerSaveHandler,),
     (r"/adm/api/user", UserStatusHandler,),
-
 ]
