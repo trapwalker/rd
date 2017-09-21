@@ -25,7 +25,7 @@ import os
 import sys
 import random
 import tornado.ioloop
-from collections import deque
+from collections import deque, Counter
 from tornado.options import options  # todo: Пробросить опции в сервер при создании оного
 from functools import partial, wraps
 from ctx_timer import Timer
@@ -185,11 +185,26 @@ class Server(object):
 
     def flash_save(self):
         log.debug('==== Server emergency save start ' + '=' * 17)
+        st = Counter(total=0, fail=0, done=0)
+        failed_logins = []
         time = self.get_time()
         with Timer() as t:
-            for agent in self.agents.values():
-                agent.on_save(time=time)
-        log.debug('==== Server emergency save DONE ({:.3f}s) {}'.format(t.duration, '=' * 9))
+            for pk, agent in self.agents.items():
+                st['total'] += 1
+                try:
+                    agent.on_save(time=time)
+                except Exception as e:
+                    st['fail'] += 1
+                    failed_logins.append(agent._login)
+                    log.error('Agent saving FAIL [PK={pk}: {agent}]: {e}'.format(**locals()))
+                else:
+                    st['done'] += 1
+
+        log.debug(
+            '==== Server emergency saved [ok=total-fail: {st[done]}={st[total]}-{st[fail]}] ({t.duration:.3f}s)'
+            .format(**locals())
+        )
+        return dict(failed=failed_logins, **st)
 
     @event_deco
     def server_stat_log(self, event, **kw):
