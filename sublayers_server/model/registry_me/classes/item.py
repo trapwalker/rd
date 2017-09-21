@@ -92,8 +92,17 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
+    # HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    #     {{ _(this.description) }}
+    # """, whitespace='oneline')
+
     HTML_DESCRIPTION_TEMPLATE = Template(u"""
-        {{ _(this.description) }}
+        <div class="description-line left-align small">{{ _('item_price') }}:</div><div class="description-line right-align small">{{ "{:.0f}".format(this.base_price) }}NC</div>
+        <div class="description-line left-align small">{{ _('item_stack_size') }}:</div><div class="description-line right-align small">{{ this.stack_size }}</div>
+        {% set text_description = _(this.description) %}
+        {% if text_description %}
+            <div class="description-line">{{ text_description }}</div>
+        {% end %}
     """, whitespace='oneline')
 
     @property

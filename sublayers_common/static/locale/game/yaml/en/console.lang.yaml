@@ -26,7 +26,9 @@
 "con_fe_18": "Data is loaded."
 "con_fe_19": "Query terms of loan agreement."
 "con_fe_20": "Nukeoil was founded in 2084, 2 years after the start and end of the war. Our engineers have selected the best of the pre-war technologies that allow us to live again in the atmosphere of our planet, which has otherwise been made unfit for habitation. You have access to the network of Nukeoil filling stations, the Nuke Navigator satellite navigation system, and the Nuke Commander personal operating system. The Nukeoil Corporation is the source of life in the darkness of nuclear winter."
-"con_fe_21": "The Nukeoil Corporation provides the client Username with a loan to buy his first vehicle worth up to 2,000 nukecoins. Any auto dealer who has been verified in the system can provide you with transportation within the specified budget. Until the repayment of the loan of 2,500 nukecoins is complete, all transactions by the account Username will be blocked."
+"con_fe_21_1": "The Nukeoil Corporation provides the client "
+"con_fe_21_2": " with a loan to buy his first vehicle worth up to 2,000 nukecoins. Any auto dealer who has been verified in the system can provide you with transportation within the specified budget. Until the repayment of the loan of 2,500 nukecoins is complete, all transactions by the account "
+"con_fe_21_3": " will be blocked."
 
 
 # ConsoleEnter

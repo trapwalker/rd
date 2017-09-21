@@ -533,7 +533,7 @@ var ConsoleFirstEnter = (function (_super) {
                             'system',
                             _("con_fe_18") + '\n\n' +
                             '--------------------------------------------------------------\n' +
-                            _("con_fe_21") + '\n\n' +
+                            _("con_fe_21_1") + textConsoleManager.user_name + _("con_fe_21_2") + textConsoleManager.user_name + _("con_fe_21_3") + '\n\n' +
                             _("con_fe_12") + '\n' +
                             _("con_fe_13") + '\n' +
                             _("con_fe_14") + '\n' +
