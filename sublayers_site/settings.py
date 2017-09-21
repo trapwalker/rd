@@ -73,3 +73,5 @@ define("email_server",   default=None, help="Email sending SMTP server", type=st
 define("email_login",    default=None, help="Email sending login (email_from used by default)", type=str)
 define("email_from",     default=None, help="Email sending address from", type=str)
 define("email_password", default=None, help="Email sending password", type=str)
+define("site_host",      default=None, help="Main site host domain name", type=str)
+define("site_host_proto", default='https', help="Main site url proto ('https' by default)", type=str)
