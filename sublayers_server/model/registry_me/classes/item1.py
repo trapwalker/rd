@@ -6,12 +6,13 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import Item, ItemUsable
 from sublayers_server.model.utils import NameGenerator
+from sublayers_server.model.registry_me.tree import LocalizedString
 
 
 class PassengerItem(Item):
     def init_name(self):
         name_pair = NameGenerator.pair()
-        self.title = u'{} {}'.format(name_pair[0], name_pair[1])
+        self.title = LocalizedString(u'{} {}'.format(name_pair[0], name_pair[1]))
 
 
 class Package(ItemUsable):
