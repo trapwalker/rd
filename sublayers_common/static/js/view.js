@@ -130,7 +130,17 @@ $(document).ready(function () {
     };
 
     document.getElementById('divMainMenuBtnForum').onclick = function () {
-        window.open('https://vk.com/road_dogs', '_blank');
+        if ($("#electron_mode").text()) {
+            var shell = require('electron').shell;
+            if (shell) {
+                var lang_parametr = "lang=" + locale_object.locale;
+                var link =  window.location.protocol + "//" + window.location.host + "/?" + lang_parametr + "#community";
+                shell.openExternal(link);
+            }
+        }
+        else {
+            window.open(window.location.protocol + "//" + window.location.hostname + '/#community', '_blank');
+        }
         // Звук на клик по кнопке меню
         audioManager.play({name: "click", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0});
     };

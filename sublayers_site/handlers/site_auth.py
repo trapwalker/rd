@@ -96,13 +96,19 @@ class StandardLoginHandler(BaseSiteHandler):
             self.finish({'status': 'fail_exist_email'})
             return
 
-        user = User(email=email, raw_password=password)
+        user = User(email=email, raw_password=password, lang=self.user_lang)
+        log.debug('!! User {user} set lang as "{user.lang}" by creation'.format(user=user))
         user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
         user.save()
         try:
-            msg = mailing.email_confirmation_template_ru(
+            conf_email_template = mailing.get_email_confirmation_template(user.lang)
+
+            msg = conf_email_template(
                 adr_to=email,
                 token=user.auth.standard.email_confirmation_token.hex,
+                adr_from=options.email_from,
+                site=options.site_host,
+                site_proto=options.site_host_proto,
             )
             log.debug(u'Confirmation email with token {user.auth.standard.email_confirmation_token.hex}: {msg}'.format(
                 **locals()))

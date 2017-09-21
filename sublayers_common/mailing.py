@@ -4,14 +4,14 @@ from __future__ import print_function, absolute_import
 import logging
 log = logging.getLogger(__name__)
 
+import sys
 from smtplib import SMTP, SMTPRecipientsRefused
 from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
 from tornado.options import options
-from ctx_timer import T
+from tornado.template import Template
 
-import sys
-from copy import copy
+from ctx_timer import T
 
 
 class TemplateError(Exception): pass
@@ -140,14 +140,17 @@ class Email(object):
 class EmailTemplate(object):
     def __init__(self, template=None, subject_template=None, cls=Email, mime_type='plain', **kw):
         self.cls = cls
-        self.template = template
-        self.subject_template = subject_template
+        self.template = template and Template(template)
+        self.subject_template = subject_template and Template(subject_template)
         self._params = kw
         kw['mime_type'] = mime_type
 
+    def update(self, **kw):
+        self._params.update(kw)
+
     def _render_template(self, template, **kw):
         try:
-            return template.format(**kw)
+            return template.generate(**kw)
         except (KeyError, AttributeError, TypeError) as e:
             _msg = 'Template render ERROR({self}): {e}\nTEMPLATE: {template!r}\nCONTEXT: {kw!r}'.format(**locals())
             log.exception(_msg)
@@ -181,13 +184,13 @@ email_confirmation_template_ru = EmailTemplate(
     subject=u"Road Dogs - подтвержение регистрации",
     template=u"""
         <body>
-            <p>Вас приветствует <a href="{site_proto}://{site}"><b>Road Dogs</b></a> – 
+            <p>Вас приветствует <a href="{{site_proto}}://{{site}}"><b>Road Dogs</b></a> – 
                постъядерная MMORPG в жанре Грабитель/Торговец.</p>
-            <p>Ваш адрес {adr_to} был указан при создании персонажа в нашей игре.</p>
+            <p>Ваш адрес {{adr_to}} был указан при создании персонажа в нашей игре.</p>
             <p>Для подтверждения привязки этой почты к персонажу пройдите по ссылке:
-               <a href="{site_proto}://{site}/email_confirm?token={token}">
-                        {site_proto}://{site}/email_confirm?token={token}</a></p>
-            <p>Если Вы не регистрировались на сайте <a href="{site_proto}://{site}">{site}</a> – 
+               <a href="{{site_proto}}://{{site}}/email_confirm?token={{token}}">
+                        {{site_proto}}://{{site}}/email_confirm?token={{token}}</a></p>
+            <p>Если Вы не регистрировались на сайте <a href="{{site_proto}}://{{site}}">{{site}}</a> – 
                проигнорируйте это письмо.</p>
         </body>
     """,
@@ -202,13 +205,13 @@ email_confirmation_template_en = EmailTemplate(
     subject=u"Road Dogs - confirmation of registration",
     template=u"""
         <body>
-            <p>Welcome to <a href="{site_proto}://{site}"><b>Road Dogs</b></a> - 
+            <p>Welcome to <a href="{{site_proto}}://{{site}}"><b>Road Dogs</b></a> - 
                post-nuclear MMORPG in the Privateer/Trader genre.</p>
-            <p>Your email address ({adr_to}) was specified when creating a character in our game.</p>            
+            <p>Your email address ({{adr_to}}) was specified when creating a character in our game.</p>            
             <p>To confirm the binding of this email adress to the game character go to: 
-               <a href="{site_proto}://{site}/{confirm_uri}{token}">
-                        {site_proto}://{site}/{confirm_uri}{token}</a></p>
-            <p>If you didn't register on <a href="{site_proto}://{site}">{site}</a>, please ignore this email.</p>
+               <a href="{{site_proto}}://{{site}}/{{confirm_uri}}{{token}}">
+                        {{site_proto}}://{{site}}/{{confirm_uri}}{{token}}</a></p>
+            <p>If you didn't register on <a href="{{site_proto}}://{{site}}">{{site}}</a>, please ignore this email.</p>
         </body>
     """,
     adr_from='info@roaddogs.ru',
@@ -216,6 +219,15 @@ email_confirmation_template_en = EmailTemplate(
     site='roaddogs.online',
     confirm_uri='email_confirm?token=',
 )
+
+email_confirmation_templates = dict(
+    ru=email_confirmation_template_ru,
+    en=email_confirmation_template_en,
+)
+
+
+def get_email_confirmation_template(lang):
+    return email_confirmation_templates.get(lang, email_confirmation_template_en)
 
 
 SENDER = None
@@ -249,11 +261,10 @@ if __name__ == '__main__':
     from pprint import pprint as pp
     from uuid import uuid4
     import datetime
-    et = email_confirmation_template_ru
+    et = email_confirmation_template_en
     get_sender()
 
     with get_sender(server='smtp.yandex.ru:587', login='info@roaddogs.ru', password='gdvyaavuccekawoj') as sender:
         print(et(adr_to="svpmailbox@gmail.com", token=uuid4().hex).send(sender))
         #print(e.send("SergyP@yandex.ru"))
         #print(e.send("was73r@gmail.com"))
-
