@@ -23,7 +23,7 @@ def service_start(project_path, service_command, stdout_show_timeout=None):
 
 
 @root.group(name='save', invoke_without_command=True)
-@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
 @click.pass_context
 def save_command(ctx, host):
     """Start service"""
@@ -46,7 +46,7 @@ def start_command(ctx):
 
 
 @root.group(name='stop', invoke_without_command=True)
-@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
 @click.pass_context
 def stop_command(ctx, host):
     """Stop service"""
@@ -58,7 +58,7 @@ def stop_command(ctx, host):
 
 
 @root.group(name='restart', invoke_without_command=True)
-@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
 @click.pass_context
 def restart_command(ctx, host):
     """Restart service"""
@@ -100,7 +100,7 @@ def start():
     except subprocess.CalledProcessError as e:
         log.error(e)
 
-def stop(host='http://localhost'):
+def stop(host='http://localhost:8000'):
     log.info('Service STOP (host: %r)', host)
     log.info(requests.post('{host}/adm/api/shutdown'.format(host=host)))
     try:
@@ -109,6 +109,6 @@ def stop(host='http://localhost'):
         log.error(e)
 
 
-def save(host='http://localhost'):
+def save(host='http://localhost:8000'):
     log.info('Server SAVE (host: %r)', host)
     log.info(requests.post('{host}/adm/api/save'.format(host=host)))

@@ -24,7 +24,7 @@ from hgapi import HgException
 @click.option('--no_db', is_flag=True, default=False, help='Do not store registry to DB')
 @click.option('--clean_agents', '-C', is_flag=True, default=False, help='Clean all stored agents from DB')
 @click.option('--reset_profiles', '-R', is_flag=True, default=False, help='Reset profile registration state to "nickname"')
-@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command')
+@click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
 @click.option('--no_reload', is_flag=True, default=False, help='Do not reload registry')
 @click.option('--no_restart', is_flag=True, default=False, help='Do not restart services')
 @click.pass_context

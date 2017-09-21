@@ -20,7 +20,7 @@ import shutil
 @root.group(name='backup', invoke_without_command=True)
 @click.option('--dest', '-d', 'dest', default=None, type=click.Path(file_okay=False, writable=True))
 @click.option('--save' ,'-s', 'save_server', is_flag=True, default=False, help='Backup server database')
-@click.option('--host' ,'-h', 'host', default='http://localhost', type=click.STRING, help='Host to send the command save')
+@click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command save')
 @click.pass_context
 def backup_command(ctx, dest, save_server, host):
     """Start service"""
