@@ -57,10 +57,8 @@
         if (window.__electron_mode) {
             var shell = require('electron').shell;
             if (shell) {
-                // todo: добавить язык (en/ru) - пока не понятно как, так как открывается другой браузер
                 var lang_parametr = "lang=" + locale_object.locale;
                 var link =  window.location.protocol + "//" + window.location.host + "/?" + lang_parametr + "#community";
-                console.log("Electron click ", link);
                 shell.openExternal(link);
             }
         }
