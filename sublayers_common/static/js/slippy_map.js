@@ -4,6 +4,7 @@
         var slippymap = function (options) {
             var $, map, defaults, property;
             $ = window;
+            var map_link = jQuery("#settings_map_link").text() || "https://roaddogs.ru/map";
             defaults = {
                 div: "map",
                 fullscreen : true,
@@ -17,7 +18,7 @@
                     {
                         name: "back",
                         url: function (x, y, z) {
-                            return "https://roaddogs.ru/map/back/" + z + "/" + x + "/" + y + ".png";
+                            return map_link + "/back/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
@@ -26,7 +27,7 @@
                     {
                         name: "front",
                         url: function (x, y, z) {
-                            return "https://roaddogs.ru/map/front/" + z + "/" + x + "/" + y + ".png";
+                            return map_link + "/front/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
@@ -35,7 +36,7 @@
                     {
                         name: "merged",
                         url: function (x, y, z) {
-                            return "https://roaddogs.ru/map/merged/" + z + "/" + x + "/" + y + ".png";
+                            return map_link + "/merged/" + z + "/" + x + "/" + y + ".png";
                         },
                         alpha: 1.0,
                         visible: true,
