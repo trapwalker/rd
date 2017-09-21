@@ -13,6 +13,21 @@ from sublayers_common.user_profile import User
 class SiteMainHandler(BaseSiteHandler):
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+
+        # Если есть язык в параметрах, то убрать этот параметр и редиректнуть на сайт без этого параметра
+        param_lang = self.get_argument("lang", "")
+        if param_lang and param_lang in ["en", "ru"]:
+            self.set_cookie('lang', param_lang, path="/", expires_days=356)
+            self.user_lang = param_lang
+            # info: Если будет глючить, то просто оставить первую часть (установка в куку lang - param_lang)
+            len_of_arguments = len(self.request.arguments.keys())
+            replace_str = '?lang={}'.format(param_lang) if len_of_arguments == 1 else 'lang={}'.format(param_lang)
+            replace_str2 = "{}{}".format(replace_str, ";")
+            new_uri = self.request.uri.replace(replace_str2, "")
+            new_uri = new_uri.replace(replace_str, "")
+            self.redirect(new_uri)
+            return
+
         # Подготовка списка новостей
         news_list = self.application.news_manager.news_by_locale(locale=self.user_lang)
         # Узнать количество пользователей (онлайн пока не делаем, так как не хотим делать запрос к серверу)

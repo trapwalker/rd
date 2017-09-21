@@ -14,7 +14,7 @@
             <div class="delimiter"></div>
             <div id="RDSitePersonalInfoUserCar" class="window-pi-user-car"></div>
         </div>
-        <div class="window-pi-content-block insurance"></div>
+        <div class="window-pi-content-block insurance" onclick="insuranceClick()"></div>
     </div>
 </div>
 
@@ -44,7 +44,6 @@
                     if (c && c.canGoBack())
                         c.goToIndex(0);
                 }
-
                 else
                     $('#RDbtn_start').click();
                 $('#RDSAuthFieldNote').text('');
@@ -52,5 +51,18 @@
                 audioManager.play('button_screen_press');
             }
         });
+    }
+
+    function insuranceClick() {
+        if (window.__electron_mode) {
+            var shell = require('electron').shell;
+            if (shell) {
+                var lang_parametr = "lang=" + locale_object.locale;
+                var link =  window.location.protocol + "//" + window.location.host + "/?" + lang_parametr + "#community";
+                shell.openExternal(link);
+            }
+        }
+        else
+            $("#RDbtn_community").click();
     }
 </script>
