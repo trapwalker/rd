@@ -70,4 +70,5 @@ class PersonInfoCorpseHandler(FailWithoutAgentHandler):
         # print 'open PersonInfoCorpseHandler for person={}'.format(person)
         agent.log.info('open PersonInfoCorpseHandler for person={}'.format(person))
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.profile.exp_table.by_exp(exp=person.example.profile.exp)
-        self.render("menu/person_window.html", agent=person, lvl=lvl, car=car)
+        target_agent_locale = agent.get_lang()
+        self.render("menu/person_window.html", agent=person, lvl=lvl, car=car, target_agent_locale=target_agent_locale)
