@@ -100,23 +100,26 @@ var WSConnector = (function(_super){
                             window.location.reload();
                         }
                     });
+                    // todo: именно здесь вызвать консоль. Выключать её не нужно, так как будет location.reload()
+
                     // Автореконнект
-                    var reconnect_interval;
                     var ping_link = window.location.protocol + "//" + location.hostname +
                                     $('#settings_server_mode_link_path').text() + '/site_stat';
                     function refresh_server_stat_request() {
                         $.ajax({
                             url: ping_link,
+                            timeout: 5000,
                             success: function() {
-                                clearInterval(reconnect_interval);
                                 window.location.reload();
                             },
-                            error: function() {console.log('Сервер недоступен.');}
+                            error: function() {
+                                console.log('Server not available. Next try in 20s.');
+                                setTimeout(refresh_server_stat_request, 20000);
+                            }
                         });
                     }
-                    reconnect_interval = setInterval(refresh_server_stat_request, 3000);
+                    setTimeout(refresh_server_stat_request, 10000);
                 }
-                //alert('Код: ' + event.code + ' причина: ' + event.reason);
             };
 
             // хендлер на отправку сообщения
