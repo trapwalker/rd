@@ -8,15 +8,17 @@ from os.path import join
 import yaml
 import json
 import codecs
-
 from fnmatch import fnmatch
 from itertools import chain
+
+from ctx_timer import Timer, T
 
 
 locale_objects = dict()
 locales_by_key = dict()
 
 
+@T(logger=log)
 def load_locale_objects(path, *other_paths):
     global locale_objects, locales_by_key
     mypath = join(path, 'yaml')
