@@ -106,11 +106,13 @@ function main() {
         if (audioManager.general_gain == 0.0) {
             // Отключено, нужно включить звук
             audioManager.gain_all(GlobalGeneralSiteGain);
+            set_radio_volume(GlobalGeneralSiteGain);
             $(this).removeClass('off');
         }
         else {
             GlobalGeneralSiteGain = audioManager.general_gain;
             audioManager.gain_all(0.0);
+            set_radio_volume(0.0);
             $(this).addClass('off');
         }
     });
@@ -158,7 +160,6 @@ function getCookie(name) {
 }
 
 
-
 function init_site_sound() {
     //audioManager.gain_all(0.0);
 
@@ -182,6 +183,27 @@ function init_site_sound() {
 function init_radio_cut() {
     audioManager.load('vigilante_128', {url: "http://listen.radiotower.su:8000/vigilante_2084_128"}, true, TagAudioObject, 1.0);
     cut_radio_player = audioManager.get('vigilante_128');
+
+    $(".electron-sound-volume-diagram").click(function (event) {
+        var max_width = event.target.offsetWidth || 1;
+        set_radio_volume(event.offsetX / max_width);
+    });
+
+    set_radio_volume(0.2);
+}
+
+
+function set_radio_volume(value) {
+    var jj = $(".electron-sound-volume-diagram").first();
+    var max_width = jj[0].offsetWidth || 1;
+    value = Math.min(Math.max(value, 0.0), 1.0);
+    jj.find(".electron-sound-volume-diagram-hover").first().width(value * max_width);
+    audioManager.gain_all(value);
+
+    if (value == 0)
+        $('.site-sound-switch').first().addClass("off");
+    else
+        $('.site-sound-switch').first().removeClass("off");
 }
 
 

@@ -28,7 +28,7 @@
 .window-pi-content-block.insurance {
     height: calc(70% - 8px);
     background: transparent url(/static/static_site/img/temp_insurance_ru.png) no-repeat;
-    cursor: url(/static/img/cursors/hyper.png), pointer;
+    cursor: url("/static/img/cursors/hyper.png"), pointer;
     /*background-size: 100% 100%;*/
 }
 
