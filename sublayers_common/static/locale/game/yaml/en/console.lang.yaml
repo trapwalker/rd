@@ -67,3 +67,9 @@
 "con_dievip_03": "Corporation NukeOil fully restore "
 "con_dievip_05": " with exception of cargo. In addition, you are invited to choose city of evacuation. "
 "con_dievip_06": "Press correct number or Enter to continue: "
+
+
+# ConsoleDisconnectFromServer
+"con_dfs_01": "Error: Connection to the satellite is lost."
+"con_dfs_02": "Satellite phishing."
+"con_dfs_03": "A scheduled server reboot has occurred."

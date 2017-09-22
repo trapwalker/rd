@@ -91,16 +91,16 @@ var WSConnector = (function(_super){
                     }
 
                 } else {
-                    //modalWindow.modalRestartShow();
-                    modalWindow.modalDialogInfoShow({
-                        caption: 'Disconnect',
-                        header: _("window_disconnect_caption"),
-                        body_text: _("window_disconnect_text"),
-                        callback_ok: function () {
-                            window.location.reload();
-                        }
-                    });
+                    // modalWindow.modalDialogInfoShow({
+                    //     caption: 'Disconnect',
+                    //     header: _("window_disconnect_caption"),
+                    //     body_text: _("window_disconnect_text"),
+                    //     callback_ok: function () {
+                    //         window.location.reload();
+                    //     }
+                    // });
                     // todo: именно здесь вызвать консоль. Выключать её не нужно, так как будет location.reload()
+                    textConsoleManager.start('dc_console');
 
                     // Автореконнект
                     var ping_link = window.location.protocol + "//" + location.hostname +
