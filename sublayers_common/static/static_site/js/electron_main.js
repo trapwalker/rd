@@ -196,9 +196,14 @@ function init_radio_cut() {
 function set_radio_volume(value) {
     var jj = $(".electron-sound-volume-diagram").first();
     var max_width = jj[0].offsetWidth || 1;
-    value = Math.min(Math.max(value, 0.03), 1.0);
+    value = Math.min(Math.max(value, 0.0), 1.0);
     jj.find(".electron-sound-volume-diagram-hover").first().width(value * max_width);
     audioManager.gain_all(value);
+
+    if (value == 0)
+        $('.site-sound-switch').first().addClass("off");
+    else
+        $('.site-sound-switch').first().removeClass("off");
 }
 
 
