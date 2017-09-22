@@ -126,15 +126,15 @@ function createWindow() {
     var globalShortcut = electron.globalShortcut;
     if (!globalShortcut.register(
             'CommandOrControl+Shift+I',
-            function () { mainWindow.webContents.toggleDevTools(); })
+            function () {if (mainWindow.isFocused()) mainWindow.webContents.toggleDevTools(); })
     ) console.log('Failed registration CommandOrControl+Shift+I');
 
     if (!globalShortcut.register(
             'F11',
-            function () {mainWindow.setFullScreen(!mainWindow.isFullScreen());})
+            function () {if (mainWindow.isFocused()) mainWindow.setFullScreen(!mainWindow.isFullScreen());})
     ) console.log('Failed registration F11');
 
-    if (!globalShortcut.register('F5' ,function () {mainWindow.reload();})) console.log('Failed registration F5');
+    if (!globalShortcut.register('F5' ,function () {if (mainWindow.isFocused()) mainWindow.reload();})) console.log('Failed registration F5');
 
 
 }

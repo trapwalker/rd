@@ -27,7 +27,8 @@
 .window-pi-content-block.game-info { height: calc(70% - 8px); }
 .window-pi-content-block.insurance {
     height: calc(70% - 8px);
-    background: transparent url(/static/static_site/img/temp_insurance_ru.png) no-repeat;
+    background: transparent url("/static/static_site/img/temp_insurance_ru.png") no-repeat;
+    cursor: url("/static/img/cursors/hyper.png"), pointer;
     /*background-size: 100% 100%;*/
 }
 
