@@ -308,3 +308,55 @@ input[type="text"]:focus, input[type='email']:focus, input[type='password']:focu
     pointer-events: none;
     opacity: 0.0;
 }
+
+
+/* Volume */
+
+.electron-sound-volume-diagram {
+    position: absolute;
+    z-index: 1000;
+    margin: 5px auto;
+    width: 316px;
+    height: 56px;
+    background-image: url("/static/img/panel_info/scale relations_softly.png");
+    transform: rotate(-90deg) scale(0.5);
+    top: 135px;
+    right: -105px;
+    cursor: url('/static/img/cursors/hyper.png'), pointer;
+}
+
+
+.electron-sound-volume-diagram-hover {
+    position: relative;
+    pointer-events: none;
+    height: 56px;
+    width: 150px;
+    background-image: url("/static/img/panel_info/scale relations_bright.png");
+}
+
+
+.electron-sound-volume-diagram-hover::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(2px) brightness(200%);
+    -webkit-filter: blur(2px) brightness(200%);
+}
+
+.electron-sound-volume-diagram-hover::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: inherit;
+    filter: blur(4px) brightness(200%);
+    -webkit-filter: blur(4px) brightness(200%);
+}
