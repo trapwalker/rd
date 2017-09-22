@@ -442,7 +442,7 @@ function main() {
     // Клики на всякие кнопки внутри монитора
     // Hover
     $('.window-reg-up-btn,.window-qg-btn,.reg-btn,.reg1-btn,.reg2-btn,.reg3-btn,.slide-arrow,' +
-        '.reg2-skill-table-counter-btn, .window-news-log-news-header, .scroll-btn, .window-ratings-header-path')
+        '.reg2-skill-table-counter-btn, .window-news-log-news-header, .scroll-btn, .window-ratings-header-path, .community-label-box')
         .mouseover(function () {
             audioManager.play('button_screen_hover');
         });

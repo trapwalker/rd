@@ -1035,6 +1035,7 @@ position: absolute;
     height: 80px;
     background-position: center center;
     background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 .community-label-box .icon-site.vk           {background-image: url('/static/static_site/img/community_links/vk64.png');}
@@ -1057,6 +1058,7 @@ position: absolute;
     height: calc(100% - 80px);
     text-align: center;
     line-height: 40px;
+    pointer-events: none;
 }
 
 /* Community page END */
