@@ -33,16 +33,16 @@ var TrainerTeachingNote = (function (_super) {
             ((active_place != this.needed_building) &&
              (active_place != this.needed_npc) &&
              (active_place != null))) {
-            teachingManager.jq_panel_left_content.text('teach_town_trainer_note_1');
-            teachingManager.jq_panel_right_content.text('teach_town_trainer_note_2');
+            teachingManager.jq_panel_left_content.text(_('teach_town_trainer_note_1'));
+            teachingManager.jq_panel_right_content.text(_('teach_town_trainer_note_2'));
             _super.prototype.redraw.call(this);
             return;
         }
 
         if (active_place === null) {
             // Указать на здание в радуге
-            teachingManager.jq_panel_left_content.text('teach_town_trainer_note_1');
-            teachingManager.jq_panel_right_content.text('teach_town_trainer_note_2');
+            teachingManager.jq_panel_left_content.text(_('teach_town_trainer_note_1'));
+            teachingManager.jq_panel_right_content.text(_('teach_town_trainer_note_2'));
             this.draw_line(this.start_point, this.build_coord);
             return;
         }
