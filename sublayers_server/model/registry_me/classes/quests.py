@@ -626,6 +626,9 @@ class Quest(Node):
 
     # todo: ##DEPRECATED
     def _template_render(self, template, **kw):
+        if template is None:
+            log.warning('quest text to render is None in quest: {!r}; context: {!r}'.format(self, kw))
+            return u''
         try:
             context = dict(self.global_context, **self.local_context)
             context.update(kw)

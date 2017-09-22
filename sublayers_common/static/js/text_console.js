@@ -85,7 +85,7 @@ var TextConsoleManager = (function(){
         try {message = message.replace(/<br>/g, " "); }catch (e) {return};
         var jq_old_text = this.jq_main_div.find('.console-old-text');
         var old_text = jq_old_text.text();
-        old_text = old_text.substr(old_text.length - 2000, 2000); // хранить последение 2000 символов
+        old_text = old_text.substr(old_text.length - 4000, 4000); // хранить последение 4000 символов
         old_text = old_text + '\n> ' + message;
         jq_old_text.text(old_text);
     };
@@ -676,6 +676,33 @@ var ConsoleEnterToMap = (function (_super) {
 })(TextConsole);
 
 
+var ConsoleDisconnectFromServer = (function (_super) {
+    __extends(ConsoleDisconnectFromServer, _super);
+
+    function ConsoleDisconnectFromServer() {
+        _super.call(this);
+        this.target_div = textConsoleManager.jq_main_div;
+        this._init_messages();
+        textConsoleManager.add(this, 'dc_console');
+    }
+
+    ConsoleDisconnectFromServer.prototype._init_messages = function() {
+        this._messages = [];
+        this.add_message('system', " ");
+        this.add_message('system', _("con_dfs_01"));
+        this.add_message('user', _("con_dfs_02"));
+        this.add_message('system', _("con_dfs_03"));
+    };
+
+    ConsoleDisconnectFromServer.prototype.start = function() {
+        this._init_messages();
+        _super.prototype.start.call(this);
+    };
+
+    return ConsoleDisconnectFromServer;
+})(TextConsole);
+
+
 var ConsoleDieBase = (function (_super) {
     __extends(ConsoleDieBase, _super);
 
@@ -950,6 +977,7 @@ function initConsoles() {
     new ConsoleEnter();
     new ConsoleEnterToLocation();
     new ConsoleEnterToMap();
+    new ConsoleDisconnectFromServer();
 
     new ConsoleDieBase();
     new ConsoleDiePremium();
