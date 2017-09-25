@@ -93,7 +93,7 @@
 "loc_leaf_hangar_sell": "Sell car"
 "loc_leaf_hangar_buy": "Buy car"
 "loc_leaf_park_swap": "Change car"
-"loc_leaf_park_give": "Put car"
+"loc_leaf_park_give": "<br>Put car"
 "loc_leaf_park_take": "Take car"
 "loc_leaf_inv_party": "Invite</br>to party"
 "loc_leaf_barter_close": "Close</br>exchange"
