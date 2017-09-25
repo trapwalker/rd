@@ -121,25 +121,6 @@ function createWindow() {
     // Аргументы командной строки имеют более высокий приоритет, чем стим
     if (command_line_args.lang)
         mainWindow._client_language = command_line_args.lang;
-
-    // Register Local Shortcuts
-    menu.append(new electron.MenuItem({
-      label: 'DevTools',
-      accelerator: 'CommandOrControl+Shift+I',
-      click: function() {  mainWindow.webContents.toggleDevTools(); }
-    }));
-    menu.append(new electron.MenuItem({
-      label: 'FullScreen',
-      accelerator: 'F11',
-      click: function() { mainWindow.setFullScreen(!mainWindow.isFullScreen()); }
-    }));
-    menu.append(new electron.MenuItem({
-      label: 'Refresh',
-      accelerator: 'F5',
-      click: function() {  mainWindow.reload(); }
-    }));
-
-    electron.Menu.setApplicationMenu(menu);
 }
 
 app.on('ready', createWindow);
