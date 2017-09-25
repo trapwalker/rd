@@ -6,6 +6,7 @@ const BrowserWindow = electron.BrowserWindow; // Module to create native browser
 const session = electron.session;
 const Config = require('electron-config');
 const config = new Config();
+const menu = new electron.Menu();
 
 const path = require('path');
 const url = require('url');
@@ -120,23 +121,6 @@ function createWindow() {
     // Аргументы командной строки имеют более высокий приоритет, чем стим
     if (command_line_args.lang)
         mainWindow._client_language = command_line_args.lang;
-
-
-    // Register a shortcuts listener.
-    var globalShortcut = electron.globalShortcut;
-    if (!globalShortcut.register(
-            'CommandOrControl+Shift+I',
-            function () {if (mainWindow.isFocused()) mainWindow.webContents.toggleDevTools(); })
-    ) console.log('Failed registration CommandOrControl+Shift+I');
-
-    if (!globalShortcut.register(
-            'F11',
-            function () {if (mainWindow.isFocused()) mainWindow.setFullScreen(!mainWindow.isFullScreen());})
-    ) console.log('Failed registration F11');
-
-    if (!globalShortcut.register('F5' ,function () {if (mainWindow.isFocused()) mainWindow.reload();})) console.log('Failed registration F5');
-
-
 }
 
 app.on('ready', createWindow);

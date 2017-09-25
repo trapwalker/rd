@@ -406,5 +406,23 @@
       setTimeout("ga('send','event','Engaged users','More than 10 seconds')", 10000);
 </script>
 
+{% if electron %}
+<script>
+    // Global Electron Events
+    window.addEventListener('keyup', function(event){
+        var win = require('electron').remote.getCurrentWindow();
+        if (event.keyCode == 116) { // F5
+            win.reload();
+        }
+        if (event.keyCode == 122) { // F11
+            win.setFullScreen(!win.isFullScreen());
+        }
+        if (event.keyCode == 73 && event.ctrlKey && event.shiftKey) { // toggle devtools (ctrl + shift + I)
+            win.webContents.toggleDevTools();
+        }
+    }, true);
+</script>
+{% end %}
+
 </body>
 </html>

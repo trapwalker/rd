@@ -2,12 +2,12 @@ var QuestNoteSelectTeacher = (function (_super) {
     __extends(QuestNoteSelectTeacher, _super);
 
     function QuestNoteSelectTeacher(options) {
-        if (user.example_agent.role_class == "Избранный") options.npc_type = 'mayor';
-        else if (user.example_agent.role_class == "Альфа-волк") options.npc_type = 'mayor';
-        else if (user.example_agent.role_class == "Ночной ездок") options.npc_type = 'barman';
-        else if (user.example_agent.role_class == "Нефтяной магнат") options.npc_type = 'trader';
-        else if (user.example_agent.role_class == "Воин дорог") options.npc_type = 'hangar';
-        else if (user.example_agent.role_class == "Технокинетик") options.npc_type = 'mechanic';
+        if (user.example_agent.role_class.ru == "Избранный") options.npc_type = 'mayor';
+        else if (user.example_agent.role_class.ru == "Альфа-волк") options.npc_type = 'mayor';
+        else if (user.example_agent.role_class.ru == "Ночной ездок") options.npc_type = 'barman';
+        else if (user.example_agent.role_class.ru == "Нефтяной магнат") options.npc_type = 'trader';
+        else if (user.example_agent.role_class.ru == "Воин дорог") options.npc_type = 'hangar';
+        else if (user.example_agent.role_class.ru == "Технокинетик") options.npc_type = 'mechanic';
         //console.log(options.npc_type);
         _super.call(this, options);
     }

@@ -280,13 +280,14 @@ var RadioPlayer = (function () {
         this.playing = true;
 
         // Запуск шума в цикле
-        this._current_radio_noise_switch = audioManager.play({
-            name:'radio_noise_switch',
-            gain: this.current_volume,
-            loop: true,
-            offset: Math.random() * 35,
-            priority: 1.0
-        });
+        if (!this._current_radio_noise_switch)
+            this._current_radio_noise_switch = audioManager.play({
+                name: 'radio_noise_switch',
+                gain: this.current_volume,
+                loop: true,
+                offset: Math.random() * 35,
+                priority: 1.0
+            });
     };
 
     RadioPlayer.prototype.click_stop = function (event) {

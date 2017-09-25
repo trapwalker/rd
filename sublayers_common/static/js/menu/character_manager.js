@@ -111,7 +111,7 @@ var CharacterManager = (function () {
             jq_pers_inventory.append(
                 '<div class="mainCarInfoWindow-body-trunk-body-right-item-wrap town-interlacing" data-index="' + i + '">' +
                     '<div class="mainCarInfoWindow-body-trunk-body-right-item">' +
-                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + item.title + '</div>' +
+                        '<div class="mainCarInfoWindow-body-trunk-body-right-item-name-empty">' + _(item.title) + '</div>' +
                         '<div class="mainCarInfoWindow-body-trunk-body-right-item-picture-empty" style="background: transparent url(/' + item.inv_icon_mid + ') no-repeat 100% 100%; "></div>' +
                     '</div>' +
                 '</div>'
@@ -168,21 +168,21 @@ var CharacterManager = (function () {
         //console.log('CharacterManager.skills_event_mouseenter');
         var skill_name = $(event.currentTarget).data('skill');
         if(! skill_name) return;
-        event.data.mng.jq_main_div.find('.character-window-hint-text').text(_(user.example_agent.rpg_info[skill_name].description));
+        event.data.mng.jq_main_div.find('.character-window-hint-text').html(_(user.example_agent.rpg_info[skill_name].description));
     };
 
     CharacterManager.quest_item_event_mouseenter = function (event) {
         //console.log('CharacterManager.quest_item_event_mouseenter');
         var index = $(event.currentTarget).data('index');
         if (user.example_agent.rpg_info.quest_inventory.length > index)
-            event.data.mng.jq_main_div.find('.character-window-hint-text').text(_(user.example_agent.rpg_info.quest_inventory[index].description));
+            event.data.mng.jq_main_div.find('.character-window-hint-text').html(_(user.example_agent.rpg_info.quest_inventory[index].description));
     };
 
     CharacterManager.agent_effect_event_mouseenter = function (event) {
         //console.log('CharacterManager.skills_event_mouseenter');
         var index = $(event.currentTarget).data('index');
         if (user.example_agent.rpg_info.agent_effects.length > index)
-            characterManager.jq_main_div.find('.character-window-hint-text').text(_(user.example_agent.rpg_info.agent_effects[index].description));
+            characterManager.jq_main_div.find('.character-window-hint-text').html(_(user.example_agent.rpg_info.agent_effects[index].description));
     };
 
     CharacterManager.event_mouseleave = function (event) {
@@ -191,7 +191,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel("");
         else
-            mng.jq_main_div.find('.character-window-hint-text').text('');
+            mng.jq_main_div.find('.character-window-hint-text').html('');
     };
 
 
@@ -202,7 +202,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_roleclass = function (event) {
@@ -212,7 +212,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_roleclass_cur = function (event) {
@@ -233,7 +233,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_about_self = function (event) {
@@ -243,7 +243,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_stats_btn = function (event) {
@@ -253,7 +253,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_exp = function (event) {
@@ -263,7 +263,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_all_perks = function (event) {
@@ -273,7 +273,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_free_perks = function (event) {
@@ -283,7 +283,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_all_skills = function (event) {
@@ -293,7 +293,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_free_skills = function (event) {
@@ -303,7 +303,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
 
@@ -314,7 +314,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
 
@@ -325,7 +325,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     CharacterManager.event_mouseover_balance = function (event) {
@@ -335,7 +335,7 @@ var CharacterManager = (function () {
         if(locationManager && locationManager.in_location_flag)
             locationManager.location_menu.viewRightPanel(tt);
         else
-            mng.jq_main_div.find('.character-window-hint-text').text(tt);
+            mng.jq_main_div.find('.character-window-hint-text').html(tt);
     };
 
     return CharacterManager;
