@@ -10,11 +10,11 @@
 "pb_location": "LOCATION:"
 "pb_owner": "OWNER:"
 "pb_karma": "KARMA:"
-"pb_trading": "SKILL TRADING:"
+"pb_trading": "BARTER SKILL:"
 
 "pbq_active_quest": "ACTIVE QUESTS:"
-"pbq_available_quest": "OFFERS OF WORK:"
-"pbq_relation": "ATTITUDE TO YOU:"
+"pbq_available_quest": "JOB OFFERS:"
+"pbq_relation": "RESPECT LEVEL:"
 
 "pl_population": "POPULATION:"
 "pl_hp": "HEALTH:"

@@ -100,8 +100,8 @@
 "loc_leaf_trade": "Trade"
 "loc_leaf_activate": "Activate"
 "loc_leaf_setup": "Install"
-"loc_leaf_gas_fuel": "Fill"
-"loc_leaf_gas_full_fuel": "<br>Fill all"
+"loc_leaf_gas_fuel": "Fill up"
+"loc_leaf_gas_full_fuel": "<br>Fill up all"
 "loc_leaf_trader_apply": "Confirm</br>transaction"
 
 
@@ -155,8 +155,8 @@
 "loc_sht_nuke_days_before": "Valid: until "
 "loc_sht_nuke_days_no_time": "Valid: Unlimited."
 "loc_sht_nuke_active_status": "Status: Active."
-"loc_sht_nuke_st_not_act": "Status: Unable to activate. There is another insurance."
-"loc_sht_nuke_st_price_30": "Status: inactive.<br>Price for 30 days: "
+"loc_sht_nuke_st_not_act": "Status: Unable to activate during the other insurance policy."
+"loc_sht_nuke_st_price_30": "Status: Inactive.<br>Price for 30 days: "
 
 
 ### NPCs ###
@@ -253,9 +253,9 @@
 "loc_bnc_additional_page_actions_text": "Promotions"
 "loc_bnc_additional_page_special_text": "Special offers"
 # panels:
-"loc_bnc_panel_ins_descr_standart": "Insurance Standard.<br>Compensation for crash: nominal value of transport.<br>Respawn: random city."
-"loc_bnc_panel_ins_descr_premium": "Insurance Premium.<br>Compensation for crash: restore car with loss of all the contents of trunk and installed tuning.<br>Respawn: last visited city."
-"loc_bnc_panel_ins_descr_shareholder": "Insurance VIP.<br>Compensation for crash: full recovery of transport with loss of cargo goods from trunk.<br>Respawn: choice city."
+"loc_bnc_panel_ins_descr_standart": "Standart Insurance.<br>Compensation for a wreck: Nominal value of vehicle.<br>Respawn: random city."
+"loc_bnc_panel_ins_descr_premium": "Premium Insurance.<br>Compensation for a wreck: Vehicle with loss of all the contents of trunk and installed tuning and styling.<br>Respawn: last visited city."
+"loc_bnc_panel_ins_descr_shareholder": "VIP Insurance.<br>Compensation for a wreck: Full recovery of vehicle and all components with loss only of cargo goods from trunk.<br>Respawn: in the city at will."
 
 
 # interaction_manager.js
