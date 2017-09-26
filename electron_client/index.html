@@ -129,7 +129,7 @@
                     method: 'GET',
                     data: { ticket: ticket },
                     timeout: ping_timeout,
-                    success: function (data) { window.location = server.address + '?mode=electron'; },
+                    success: function (data) { window_location_with_lang(server.address);},
                     error: function (jqXHR, textStatus, errorThrown) { show_server_list() }
                 });
             else show_server_list();
@@ -183,14 +183,30 @@
             timeout: ping_timeout,
             success: function (data) {
                 try_to_connect = false;
-                if (data == "OK") window.location = address + '?mode=electron';
+                if (data == "OK") window_location_with_lang(address);
                 else console.log("Steam Auth Fail!", data);
             },
             error: function (dara) {
                 try_to_connect = false;
             }
         });
-    };
+    }
+
+    function get_lang_by_domain(address) {
+        var lang_candidate = locale_lang; // По умолчанию будет выбран язык клиента
+        for (var i = 0; i < all_client_cookies.length; i++) {
+            var k = all_client_cookies[i];
+            if (k.name == "lang" && address.indexOf(k.domain) >= 0)
+                lang_candidate = k.value;
+        }
+        return lang_candidate;
+    }
+
+    function window_location_with_lang(address) {
+        var lang_parametr = "lang=" + get_lang_by_domain(address);
+        window.location = address + '?mode=electron' + ";" + lang_parametr;
+        console.log(address + '?mode=electron' + ";" + lang_parametr);
+    }
 
     function gotoSite(event, index) {
         if (try_to_connect) return;
@@ -205,7 +221,7 @@
         try_to_connect = true;
         if (ticket && steam_id)
             try_connect_for_steam(server.address);
-        else window.location = server.address + '?mode=electron';
+        else window_location_with_lang(server.address);
     }
 
     $(document).ready(function () {
@@ -269,7 +285,7 @@
                                         if (ticket && steam_id)
                                             try_connect_for_steam(address);
                                         else
-                                            window.location = address + '?mode=electron';
+                                            window_location_with_lang(address);
                                     }
                                     else
                                         check_steam();
