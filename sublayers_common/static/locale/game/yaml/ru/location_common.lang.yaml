@@ -47,10 +47,10 @@
 "ll_found": "Найдено"
 
 "lm_pers": "Персонаж"
-"lm_car": "Автомобиль"
-"lm_inventory": "Инвентарь"
+"lm_car": "Транспорт"
+"lm_inventory": "Багажник"
 "lm_journal": "Журнал"
-"lm_party": "Пати"
+"lm_party": "Отряд"
 "lm_radio": "Радио"
 "lm_settings": "Настройки"
 

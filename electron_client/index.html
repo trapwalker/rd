@@ -47,12 +47,16 @@
     var all_client_cookies = null;
     var servers = [
         //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
-        //{name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
-        //{name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
         {name: "EU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
         {name: "US", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false},
         //{name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
+
+    if (current_window._debug_mode) {
+        servers.push({name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true});
+        servers.push({name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true});
+    }
+
     var server_name_max_l = servers.reduce(function (acc, current) {return Math.max(acc, current.name.length);}, 0);
     server_name_max_l += 5;  // Минимум 5 пробелов после названия сервера до разделителя
 
@@ -129,7 +133,7 @@
                     method: 'GET',
                     data: { ticket: ticket },
                     timeout: ping_timeout,
-                    success: function (data) { window.location = server.address + '?mode=electron'; },
+                    success: function (data) { window_location_with_lang(server.address);},
                     error: function (jqXHR, textStatus, errorThrown) { show_server_list() }
                 });
             else show_server_list();
@@ -175,6 +179,39 @@
         } else show_server_list();
     }
 
+    function try_connect_for_steam(address) {
+        $.ajax({
+            url: address + '/site_api/auth/steam',
+            method: 'GET',
+            data: {ticket: ticket},
+            timeout: ping_timeout,
+            success: function (data) {
+                try_to_connect = false;
+                if (data == "OK") window_location_with_lang(address);
+                else console.log("Steam Auth Fail!", data);
+            },
+            error: function (dara) {
+                try_to_connect = false;
+            }
+        });
+    }
+
+    function get_lang_by_domain(address) {
+        var lang_candidate = locale_lang; // По умолчанию будет выбран язык клиента
+        for (var i = 0; i < all_client_cookies.length; i++) {
+            var k = all_client_cookies[i];
+            if (k.name == "lang" && address.indexOf(k.domain) >= 0)
+                lang_candidate = k.value;
+        }
+        return lang_candidate;
+    }
+
+    function window_location_with_lang(address) {
+        var lang_parametr = "lang=" + get_lang_by_domain(address);
+        window.location = address + '?mode=electron' + "&" + lang_parametr;
+        console.log(address + '?mode=electron' + "&" + lang_parametr);
+    }
+
     function gotoSite(event, index) {
         if (try_to_connect) return;
         var index = parseInt((event) ? $(event.target).data("index") : index - 1);
@@ -186,22 +223,9 @@
         }
         $('#selected_server').text(index + 1);
         try_to_connect = true;
-        if (ticket && steam_id) {
-            $.ajax({ url: server.address + '/site_api/auth/steam',
-                 method: 'GET',
-                 data: { ticket: ticket },
-                timeout: ping_timeout,
-                success: function (data) {
-                    try_to_connect = false;
-                    if (data == "OK") window.location = server.address + '?mode=electron';
-                    else console.log("Steam Auth Fail!", data);
-                },
-                error: function (dara) {
-                    try_to_connect = false;
-                }
-            });
-        }
-        else window.location = server.address + '?mode=electron';
+        if (ticket && steam_id)
+            try_connect_for_steam(server.address);
+        else window_location_with_lang(server.address);
     }
 
     $(document).ready(function () {
@@ -261,8 +285,12 @@
                                 data: {},
                                 timeout: ping_timeout,
                                 success: function (data) {
-                                    if (data == "OK")
-                                        window.location = address + '?mode=electron';
+                                    if (data == "OK") {
+                                        if (ticket && steam_id)
+                                            try_connect_for_steam(address);
+                                        else
+                                            window_location_with_lang(address);
+                                    }
                                     else
                                         check_steam();
                                 },

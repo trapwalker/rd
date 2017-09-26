@@ -4,8 +4,8 @@
   "description": "Road Dogs Online Game Client",
   "main": "main.js",
   "scripts": {
-    "start": "electron . --devtools",
-    "start-steam": "electron . --steam --devtools",
+    "start": "electron . --devtools --debug_mode",
+    "start-steam": "electron . --steam --devtools --debug_mode",
     "build-win-64": "electron-packager .  RoadDogs --overwrite --platform=win32 --arch=x64 --prune=true --out=build --icon=img/win_icon.ico",
     "build-ubuntu": "electron-packager .  RoadDogs --overwrite --platform=linux --arch=x64 --prune=true --out=build --icon=img/linux_icon.png",
     "build-mac": "electron-packager .  RoadDogs --overwrite --platform=darwin --arch=x64 --prune=true --out=build",
