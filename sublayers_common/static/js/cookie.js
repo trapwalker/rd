@@ -932,11 +932,12 @@ var SettingsManager = (function() {
     SettingsManager.prototype.unload_client = function () {
         // Сохранение разных значений
         // Зум
-        this.setCookie("current_zoom", mapManager.getZoom().toFixed(2));
+        this.setCookie("current_zoom", mapManager.getZoom().toFixed(2), {expires: 365 * 24 * 60 * 60});
         // Админский режим
-        this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0");
+        this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0", {expires: 365 * 24 * 60 * 60});
         // Сохранить значение "восстановления палитры"
-        this.setCookie("_game_color_return_to_def_from_green", this._game_color_return_to_def_from_green ? "1" : "0");
+        this.setCookie("_game_color_return_to_def_from_green", this._game_color_return_to_def_from_green ? "1" : "0",
+            {expires: 365 * 24 * 60 * 60});
     };
 
     SettingsManager.prototype.redraw = function(jq_main_div) {

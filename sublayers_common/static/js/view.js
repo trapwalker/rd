@@ -220,6 +220,8 @@ $(document).ready(function () {
                 console.error('Incorrect RadioPlayer settings: ', radio_settings);
             }
         }
+        else // По умолчанию будет играть vigilante 128
+            if ($("#electron_mode").text()) radioPlayer.set_state(1, 0, 0, 0.2, 1);
     }, 1000);
     
 
