@@ -744,8 +744,8 @@ var ViewMessengerGlass = (function () {
                     }
                     break;
                 case "WeaponAmmoFinishedLogMessage":
-                    this.addMessageToLog(_("chat_log_ammo_off") + msg.weapon_name + '.', true);
-                    new WTextArcade(_("ta_ammo_off") + msg.weapon_name).start();
+                    this.addMessageToLog(_("chat_log_ammo_off") + _(msg.weapon_name) + '.', true);
+                    new WTextArcade(_("ta_ammo_off") + _(msg.weapon_name)).start();
                     break;
                 case "TransactionActivateItemLogMessage":
                     this.addMessageToLog(_("chat_log_act_item") + _(msg.item_title) + '.');
