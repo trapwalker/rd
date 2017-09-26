@@ -39,6 +39,10 @@ var Point = (function () {
         return Math.sqrt((this.x * this.x) + (this.y * this.y));
     };
 
+    Point.prototype.sqr_abs = function () {
+        return (this.x * this.x) + (this.y * this.y);
+    };
+
     Point.prototype.round = function() {
         var x_sign = this.x > 0 ? 1 : -1;
         var y_sign = this.y > 0 ? 1 : -1;
@@ -54,10 +58,14 @@ function rotateVector(aPoint, aAngle) {
                      (aPoint.x * Math.sin(aAngle) + aPoint.y * Math.cos(aAngle)));
 }
 
-// Нормализация вектора
-function normVector(aPoint, length) {
-    length = length || 1.0;
-    return mulScalVector(aPoint, length / aPoint.abs());
+// Нормализация вектора (ноль вектор останется ноль вектором)
+function normVector(aPoint, aLength) {
+    aLength = aLength || 1.0;
+    var abs =  aPoint.abs();
+    if (abs)
+        return mulScalVector(aPoint, aLength / abs);
+    else
+        return aPoint;
 }
 
 // Сумма векторов

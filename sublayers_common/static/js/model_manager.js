@@ -524,7 +524,10 @@ var ClientManager = (function () {
             //new WCanvasCarMarker(mcar);
             var t = new WCanvasCarMarker(mcar);
             new WCanvasHPCarMarker(mcar, t);
-            new WMapPosition(mcar);  // виджет позиционирования карты
+
+            // Виджет позиционирования карты
+            if (!wMapPosition) wMapPosition = new WMapPosition();
+            wMapPosition.addModelObject(mcar);
 
             // Отирсовка щита, если нужно
             if (event.car.active_shield_effect) {

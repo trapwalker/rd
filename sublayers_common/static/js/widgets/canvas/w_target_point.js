@@ -92,7 +92,6 @@ var WCanvasTargetPoint = (function (_super) {
 })(VisualObject);
 
 
-
 var MapRoute = (function (_super) {
     __extends(MapRoute, _super);
 

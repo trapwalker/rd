@@ -25,8 +25,11 @@ function rotateVector(aPoint, aAngle) {
 }
 
 // Нормализация вектора
-function normVector(aPoint) {
-    return mulScalVector(aPoint, 1 / aPoint.abs());
+function normVector(aPoint, aLen) {
+    if (aLen)
+        return mulScalVector(aPoint, aLen / aPoint.abs());
+    else
+        return mulScalVector(aPoint, 1 / aPoint.abs());
 }
 
 // Сумма векторов

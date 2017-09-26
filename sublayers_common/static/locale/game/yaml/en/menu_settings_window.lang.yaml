@@ -167,6 +167,8 @@
 "setman_opt_auto_resurrection_text_description" : "Auto resurrection."
 "setman_opt_auto_simple_bot_text_name" : "Auto simple bot"
 "setman_opt_auto_simple_bot_text_description" : "Auto simple bot."
+"dynamic_camera_name": "Dynamic camera"
+"dynamic_camera_description": "Dynamic camera."
 
 
 "setman_opt_zoom_step_value_list_1": "Slow"

@@ -1,6 +1,3 @@
-
-
-
 var ControlManager = (function () {
     function ControlManager() {
         this.code_map = {};

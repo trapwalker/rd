@@ -1,7 +1,7 @@
 /*
-* MapCanvasManager - объект, занимающийся отрисовкой на мап-канвас своих виджетов
+* MapCanvasManager - РѕР±СЉРµРєС‚, Р·Р°РЅРёРјР°СЋС‰РёР№СЃСЏ РѕС‚СЂРёСЃРѕРІРєРѕР№ РЅР° РјР°Рї-РєР°РЅРІР°СЃ СЃРІРѕРёС… РІРёРґР¶РµС‚РѕРІ
 *
-* Чем выше приоритет добавляемого объекта, тем раньше он отрисуется на канвас!
+* Р§РµРј РІС‹С€Рµ РїСЂРёРѕСЂРёС‚РµС‚ РґРѕР±Р°РІР»СЏРµРјРѕРіРѕ РѕР±СЉРµРєС‚Р°, С‚РµРј СЂР°РЅСЊС€Рµ РѕРЅ РѕС‚СЂРёСЃСѓРµС‚СЃСЏ РЅР° РєР°РЅРІР°СЃ!
 * */
 
 var ParentCanvasManager = (function(_super){
@@ -13,7 +13,7 @@ var ParentCanvasManager = (function(_super){
         this.canvas = null;
         this.context = null;
         this.is_canvas_render = true;
-        // todo: сделать это не просто списком, а списком с параметрами
+        // todo: СЃРґРµР»Р°С‚СЊ СЌС‚Рѕ РЅРµ РїСЂРѕСЃС‚Рѕ СЃРїРёСЃРєРѕРј, Р° СЃРїРёСЃРєРѕРј СЃ РїР°СЂР°РјРµС‚СЂР°РјРё
         this.vobj_list = [];
 
         this.dom_canvas = null;
@@ -48,7 +48,7 @@ var ParentCanvasManager = (function(_super){
         //console.log('MapCanvasManager.prototype.add_vobj');
         for (var i = 0; i < this.vobj_list.length; i++)
             if (this.vobj_list[i].obj == vobj) {
-                console.error('[visual_manager] Попытка повторного добавления визуального объекта.');
+                console.error('[visual_manager] РџРѕРїС‹С‚РєР° РїРѕРІС‚РѕСЂРЅРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ РІРёР·СѓР°Р»СЊРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°.');
                 return;
             }
 
@@ -95,20 +95,26 @@ var MapCanvasManager = (function(_super){
     function MapCanvasManager(){
         _super.call(this, "ctest_1");
         this.init_canvas();
-        // Общие переменные
-        this.real_zoom = null; // Зум текущей итерации перерисовки
-        this.zoom_koeff = null; // Коэффициент зуммирования: 2 в стемени 18 зум минус текущий зум
-        this.map_tl = null;  // Игровые координаты, которые соответствуют 0,0 на канвасе (Map Top Left)
-        this.cur_map_size = new Point(0, 0); // Текущие размеры карты
-        this.cur_ctx_car_pos = new Point(0, 0); // Текущее положение userCar
-        this.called_reinit_canvas = false; // Для медленных машин
+        // РћР±С‰РёРµ РїРµСЂРµРјРµРЅРЅС‹Рµ
+        this.real_zoom = null; // Р—СѓРј С‚РµРєСѓС‰РµР№ РёС‚РµСЂР°С†РёРё РїРµСЂРµСЂРёСЃРѕРІРєРё
+        this.zoom_koeff = null; // РљРѕСЌС„С„РёС†РёРµРЅС‚ Р·СѓРјРјРёСЂРѕРІР°РЅРёСЏ: 2 РІ СЃС‚РµРјРµРЅРё 18 Р·СѓРј РјРёРЅСѓСЃ С‚РµРєСѓС‰РёР№ Р·СѓРј
+        this.map_tl = null;  // РРіСЂРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹, РєРѕС‚РѕСЂС‹Рµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‚ 0,0 РЅР° РєР°РЅРІР°СЃРµ (Map Top Left)
+        this.cur_map_size = new Point(0, 0); // РўРµРєСѓС‰РёРµ СЂР°Р·РјРµСЂС‹ РєР°СЂС‚С‹
+        this.cur_ctx_car_pos = new Point(0, 0); // РўРµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ userCar
+        this.called_reinit_canvas = false; // Р”Р»СЏ РјРµРґР»РµРЅРЅС‹С… РјР°С€РёРЅ
 
         this._mouse_focus_widget = null;
         this._mouse_look = false;
         this._mouse_client = new Point(0, 0);
+        this.global_mouse_client = new Point(0, 0);
+        $(document).mousemove(function(event) { mapCanvasManager.global_mouse_client = new Point(event.clientX, event.clientY); });
 
+        this._central_point = new Point(0, 0);
+        //this._lock_radius = 0;
+        this.current_mouse_shift = new Point(0, 0);
+        this.target_mouse_shift = new Point(0, 0);
 
-        this._settings_particles_tail = settingsManager.options.particles_tail.value;  // Длина шлейфов
+        this._settings_particles_tail = settingsManager.options.particles_tail.value;  // Р”Р»РёРЅР° С€Р»РµР№С„РѕРІ
     }
 
     MapCanvasManager.prototype.get_canvas_center = function() {
@@ -137,12 +143,38 @@ var MapCanvasManager = (function(_super){
 
     MapCanvasManager.prototype.redraw = function(time) {
         if(! this.is_canvas_render) return;
-        var a = mapManager.getMapSize();
+
+        var map_size = mapManager.getMapSize();
+        if (subVector(map_size, this.cur_map_size).abs() > 0.2) {
+            this.cur_map_size = map_size;
+            this._central_point = mulScalVector(mapManager.getMapSize(), 0.5);
+            //this._lock_radius = Math.max(Math.min(map_size.x, map_size.y) * 0.375, 410);
+        }
+
+        // Р Р°СЃС‡РµС‚ СЃРґРІРёРіР° РєР°СЂС‚С‹ РѕС‚ СѓРєР°Р·Р°С‚РµР»СЏ РјС‹С€Рё
+        var cursor_point = this.global_mouse_client;
+        this.target_mouse_shift = mulScalVector(subVector(cursor_point, this._central_point), 0.5);
+        //if (this.target_mouse_shift.sqr_abs() < (this._lock_radius * this._lock_radius)) this.target_mouse_shift = new Point(0, 0);
+        //this.target_mouse_shift = subVector(this.target_mouse_shift, normVector(this.target_mouse_shift, this._lock_radius));
+        var d_shift = subVector(this.target_mouse_shift, this.current_mouse_shift);
+
+        if (settingsManager.options.dynamic_camera.currentValue)
+            if (d_shift.sqr_abs() > 10) {
+                d_shift.x = d_shift.x * 0.2; d_shift.y = d_shift.y * 0.2;
+                this.current_mouse_shift = summVector(this.current_mouse_shift, d_shift);
+            }
+            else
+                this.current_mouse_shift = this.target_mouse_shift;
+        else
+            this.current_mouse_shift = new Point(0, 0);
+
         //console.log('MapCanvasManager.prototype.redraw', time);
-        this.context.clearRect(0, 0, a.x, a.y);
+        this.context.clearRect(0, 0, map_size.x, map_size.y);
+
+        if (wMapPosition) wMapPosition.redraw(time);
 
         var focused_widget = this.mouse_test(time);
-        // Заменить курсор и css, если нужно
+        // Р—Р°РјРµРЅРёС‚СЊ РєСѓСЂСЃРѕСЂ Рё css, РµСЃР»Рё РЅСѓР¶РЅРѕ
         if ((focused_widget && !this._mouse_focus_widget) || (!focused_widget && this._mouse_focus_widget))
             if (focused_widget)
                 this.jq_for_cursor.addClass("sublayers-clickable");
@@ -151,20 +183,13 @@ var MapCanvasManager = (function(_super){
         this._mouse_focus_widget = focused_widget;
 
         this.real_zoom = mapManager.getZoom();
-
         this.zoom_koeff = mapManager.getZoomKoeff();
 
-        // Старый вариант - рабочий, но немного расходится с картой
-        // this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
+        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Р­С‚Р° С‚РѕС‡РєР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ 0,0 РЅР° РєР°РЅРІР°СЃРµ
+        var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
+        var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
+        this.cur_ctx_car_pos = car_ctx_pos;
 
-        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
-        var map_size = mapManager.getMapSize();
-        if (subVector(map_size, this.cur_map_size).abs() > 0.2) {  // todo: ||  map.dragging._enabled
-            var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
-            var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
-            this.cur_map_size = map_size;
-            this.cur_ctx_car_pos = car_ctx_pos;
-        }
         _super.prototype.redraw.call(this, time);
     };
 

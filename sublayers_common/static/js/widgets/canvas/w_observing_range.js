@@ -1,9 +1,6 @@
 /*
  * Виджет для отрисовки области видимости машинки
- * todo: Виджет должен исчезать перед зумом и появляться после!
- * todo: Когда-нибудь сделать, если нам этот виджет будет нужен не только для отладки
  */
-
 
 var WObservingRange = (function (_super) {
     __extends(WObservingRange, _super);
@@ -57,12 +54,7 @@ var WObservingRange = (function (_super) {
         ctx.restore();
     };
 
-    WObservingRange.prototype.delFromVisualManager = function () {
-        //console.trace('WObservingRange.prototype.delFromVisualManager');
-        //mapCanvasManager.del_vobj(this);
-        //_super.prototype.delFromVisualManager.call(this);
-        //wObservingRange = null;
-    };
+    WObservingRange.prototype.delFromVisualManager = function () {};
 
     WObservingRange.prototype.in_observing_range = function (position) {
         var time = clock.getCurrentTime();

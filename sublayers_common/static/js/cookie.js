@@ -783,6 +783,19 @@ var SettingsManager = (function() {
             list_values: [{text: _("setman_com_yes"), value: "1"}, {text: _("setman_com_no"), value: ""}],
             set_callback: function(new_value) {},
         },
+        dynamic_camera: {
+            name: "dynamic_camera",
+            page: "other",
+            text_name: _("dynamic_camera_name"),
+            text_description: _("dynamic_camera_description"),
+            jq_div: null,
+            type: "list",
+            default: 1,
+            value: 0,
+            currentValue: 0,
+            list_values: [{text: _("setman_com_yes"), value: "1"}, {text: _("setman_com_no"), value: ""}],
+            set_callback: function (new_value) {},
+        },
         /*Дебаг-инфо*/
         fps_rate: {
             admin_mode: true,
