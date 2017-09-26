@@ -181,15 +181,108 @@ function init_site_sound() {
 }
 
 function init_radio_cut() {
-    audioManager.load('vigilante_128', {url: "http://listen.radiotower.su:8000/vigilante_2084_128"}, true, TagAudioObject, 1.0);
-    cut_radio_player = audioManager.get('vigilante_128');
+
+    var radio_map = {
+        name: 'p1',
+        channels: {
+            'r_ch0_128': {
+                link: "http://listen.radiotower.su:8000/vigilante_2084_128",
+                name: "Vigilante 2084 128",
+                screen_class: 'vigilante'
+            },
+            'r_ch0_320': {
+                link: "http://listen.radiotower.su:8000/vigilante_2084_320",
+                name: "Vigilante 2084 320",
+                screen_class: 'vigilante'
+            },
+            'r_ch1_128': {
+                link: "http://listen.radiotower.su:8000/lonesome_town_128",
+                name: "Lonesome Town 128",
+                screen_class: 'town'
+            },
+            'r_ch1_320': {
+                link: "http://listen.radiotower.su:8000/lonesome_town_320",
+                name: "Lonesome Town 320",
+                screen_class: 'town'
+            },
+            'r_ch2_128': {
+                link: "http://listen.radiotower.su:8000/mad_dog_fm_128",
+                name: "Mad Dog FM 128",
+                screen_class: 'maddog'
+            },
+            'r_ch2_320': {
+                link: "http://listen.radiotower.su:8000/mad_dog_fm_320",
+                name: "Mad Dog FM 320",
+                screen_class: 'maddog'
+            },
+            'r_ch3_128': {
+                link: "http://listen.radiotower.su:8000/rrn_radio_128",
+                name: "RRN Radio 128",
+                screen_class: 'rrn'
+            },
+            'r_ch3_320': {
+                link: "http://listen.radiotower.su:8000/rrn_radio_320",
+                name: "RRN Radio 320",
+                screen_class: 'rrn'
+            },
+            'r_ch4_128': {
+                link: "http://listen.radiotower.su:8000/industrial_junk_128",
+                name: "Industrial Junk 128",
+                screen_class: 'junk'
+            },
+            'r_ch4_320': {
+                link: "http://listen.radiotower.su:8000/industrial_junk_320",
+                name: "Industrial Junk 320",
+                screen_class: 'junk'
+            }
+        },
+        channel_name_prefix: 'r_',
+        channel_map: {
+            0: 'ch0',
+            1: 'ch1',
+            2: 'ch2',
+            3: 'ch3',
+            4: 'ch4'
+        },
+        quality_map: {
+            0: '128',
+            1: '320'
+        }
+    };
+
+    //play, channel_index, quality_index, volume
+    var radio_volume = 0.2;
+    var play = 1;
+    var radio_name = "r_ch0_128";
+    var radio_settings = getCookie('radio_player');
+    if (radio_settings) {
+        try {
+            var settings = radio_settings.split('_');
+            play = parseInt(settings[0]);
+            var channel = parseInt(settings[1]);
+            var quality = parseInt(settings[2]);
+            radio_volume = parseFloat(settings[3]);
+            radio_name = "r_" + radio_map.channel_map[channel] + "_" + radio_map.quality_map[quality];
+        }
+        catch (err) {
+            console.error('Incorrect RadioPlayer settings: ', radio_settings);
+            return;
+        }
+    }
+
+    if (!play) return;
+
+    var radio_object = radio_map.channels.hasOwnProperty(radio_name) && radio_map.channels[radio_name] || radio_map.channels["r_ch0_128"];
+
+    audioManager.load(radio_object.name, {url: radio_object.link}, true, TagAudioObject, 1.0);
+    cut_radio_player = audioManager.get(radio_object.name);
 
     $(".electron-sound-volume-diagram").click(function (event) {
         var max_width = event.target.offsetWidth || 1;
         set_radio_volume(event.offsetX / max_width);
     });
 
-    set_radio_volume(0.2);
+    set_radio_volume(radio_volume);
 }
 
 
