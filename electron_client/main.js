@@ -121,6 +121,9 @@ function createWindow() {
     // Аргументы командной строки имеют более высокий приоритет, чем стим
     if (command_line_args.lang)
         mainWindow._client_language = command_line_args.lang;
+
+    if (command_line_args.debug_mode)
+        mainWindow._debug_mode = command_line_args.debug_mode;
 }
 
 app.on('ready', createWindow);

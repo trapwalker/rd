@@ -288,6 +288,8 @@ var RadioPlayer = (function () {
                 offset: Math.random() * 35,
                 priority: 1.0
             });
+
+        this.save_setting_to_cookie(false);
     };
 
     RadioPlayer.prototype.click_stop = function (event) {
@@ -299,6 +301,8 @@ var RadioPlayer = (function () {
             clearInterval(this.timer_update_track);
             this.timer_update_track = null;
         }
+
+        this.save_setting_to_cookie(false);
     };
 
     RadioPlayer.prototype.click_power = function (event) {
@@ -338,9 +342,6 @@ var RadioPlayer = (function () {
 
         // Звук кнопки сети
         audioManager.play({name: 'tumbler', gain: 1.0 * audioManager._settings_interface_gain});
-
-        // Сохранить в cookie
-        this.save_setting_to_cookie(false);
     };
 
     RadioPlayer.prototype.set_volume = function (volume, not_ignore_equals) {
@@ -556,7 +557,8 @@ var RadioPlayer = (function () {
         var ofp = out_from_page ? '1' : '0';
         var value = (this.power_on ? '1':'0') + '_' + this.current_channel_pointer_number + '_' +
             radioPlayer.current_quality + '_' + this.current_volume + '_' + ofp;
-        document.cookie = "radio_player=" + value + " ;path=/;";
+        if (window.settingsManager && settingsManager.setCookie)
+            settingsManager.setCookie("radio_player", value, {path: "/", expires: 365 * 24 * 60 * 60});
     };
 
     return RadioPlayer;

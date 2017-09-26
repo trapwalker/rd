@@ -22,7 +22,7 @@ class SiteMainHandler(BaseSiteHandler):
             # info: Если будет глючить, то просто оставить первую часть (установка в куку lang - param_lang)
             len_of_arguments = len(self.request.arguments.keys())
             replace_str = '?lang={}'.format(param_lang) if len_of_arguments == 1 else 'lang={}'.format(param_lang)
-            replace_str2 = "{}{}".format(replace_str, ";")
+            replace_str2 = "{}{}".format("&", replace_str)
             new_uri = self.request.uri.replace(replace_str2, "")
             new_uri = new_uri.replace(replace_str, "")
             self.redirect(new_uri)
