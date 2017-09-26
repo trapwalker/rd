@@ -47,12 +47,16 @@
     var all_client_cookies = null;
     var servers = [
         //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
-        //{name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true},
-        //{name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true},
         {name: "EU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false},
         {name: "US", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false},
         //{name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
+
+    if (current_window._debug_mode) {
+        servers.push({name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true});
+        servers.push({name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true});
+    }
+
     var server_name_max_l = servers.reduce(function (acc, current) {return Math.max(acc, current.name.length);}, 0);
     server_name_max_l += 5;  // Минимум 5 пробелов после названия сервера до разделителя
 
@@ -204,8 +208,8 @@
 
     function window_location_with_lang(address) {
         var lang_parametr = "lang=" + get_lang_by_domain(address);
-        window.location = address + '?mode=electron' + ";" + lang_parametr;
-        console.log(address + '?mode=electron' + ";" + lang_parametr);
+        window.location = address + '?mode=electron' + "&" + lang_parametr;
+        console.log(address + '?mode=electron' + "&" + lang_parametr);
     }
 
     function gotoSite(event, index) {
