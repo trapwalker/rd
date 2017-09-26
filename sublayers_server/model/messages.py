@@ -991,18 +991,10 @@ class UserChangeEXP(Message):
 class UserChangeQuestInventory(Message):
     def as_dict(self):
         d = super(UserChangeQuestInventory, self).as_dict()
-        agent = self.agent
-        agent_example = agent.example.profile
-        quest_inventory = []
-        insurance = agent_example.insurance
-        for item in agent_example.quest_inventory.items:
-            dd = item.as_client_dict()
-            if item is insurance:
-                dd.update(title=u'{}: {}'.format(agent.print_login(), item.title))
-            quest_inventory.append(dd)
+        agent_example = self.agent.example.profile
         d.update(
             data=dict(
-                quest_inventory=quest_inventory,
+                quest_inventory=agent_example.quest_inventory.items,
                 agent_effects=agent_example.get_agent_effects(time=self.time),
             ),
         )
@@ -1212,15 +1204,6 @@ class UserExampleSelfRPGMessage(Message):
         cur_exp = agent.example.profile.exp
         lvl, (next_lvl, next_lvl_exp), rest_exp = agent.example.profile.exp_table.by_exp(exp=cur_exp)
 
-        # Формирование квестового инвентаря с изменённым именем страховки
-        insurance = agent.example.profile.insurance
-        quest_inventory = []
-        for item in agent.example.profile.quest_inventory.items:
-            dd = item.as_client_dict()
-            if item is insurance:
-                dd.update(title=u'{}: {}'.format(agent.print_login(), item.title))
-            quest_inventory.append(dd)
-
         rpg_info = dict()
         # Кеширование списка перков
         if not UserExampleSelfRPGMessage.all_perks:
@@ -1262,7 +1245,7 @@ class UserExampleSelfRPGMessage(Message):
 
             all_perks_points=math.floor(lvl / 10) + agent.example.profile.role_class.start_free_point_perks,
             perks=perks,
-            quest_inventory=quest_inventory,
+            quest_inventory=agent.example.profile.quest_inventory.items,
             agent_effects=agent.example.profile.get_agent_effects(time=self.time),
         )
         d['rpg_info'] = rpg_info
