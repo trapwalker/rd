@@ -1,0 +1,8 @@
+date: '26.09.2017'
+header:
+  ru: 'Ранний доступ'
+  en: "Early Access!"
+link: 'early-access'
+content:
+  ru: '<br>Road Dogs в <a target="_blank" href="https://store.steampowered.com/app/622470">Раннем Доступе Steam</a>!<br><br><div style="width: 400px; height: 184px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_21.png" style="pointer-events: auto; cursor: url(/static/img/cursors/hyper.png), pointer;" onclick="window.open(`https://store.steampowered.com/app/622470`, `_blank`);"></img></div>'
+  en: '<br>Road Dogs in <a target="_blank" href="https://store.steampowered.com/app/622470">Steam Early Access</a>!<br><br><div style="width: 400px; height: 184px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_21.png" style="pointer-events: auto; cursor: url(/static/img/cursors/hyper.png), pointer;" onclick="window.open(`https://store.steampowered.com/app/622470`, `_blank`);"></img></div>'
