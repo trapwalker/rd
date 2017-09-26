@@ -244,7 +244,6 @@ var WCanvasCarMarker = (function (_super) {
         var r = 15;
         p = normVector(p, r);
         mapManager.goto_handler(event, summVector(p, this._last_mobj_position));
-
     };
 
     WCanvasCarMarker.prototype.redraw = function(ctx, time, client_time){
@@ -692,8 +691,6 @@ var WCanvasLootMarker = (function (_super) {
         this.offset_y = -0.5; // Множитель сдвига кадра по оси Y (размер кадра умножается на это число)
 
         this.icon_size_min_div_2 = (Math.min(this.frame_width, this.frame_height) >> 1) * corpse_radiance_koeff;
-
-
     };
 
     WCanvasLootMarker.prototype.click_handler = function(event) {
