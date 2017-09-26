@@ -175,6 +175,23 @@
         } else show_server_list();
     }
 
+    function try_connect_for_steam(address) {
+        $.ajax({
+            url: address + '/site_api/auth/steam',
+            method: 'GET',
+            data: {ticket: ticket},
+            timeout: ping_timeout,
+            success: function (data) {
+                try_to_connect = false;
+                if (data == "OK") window.location = address + '?mode=electron';
+                else console.log("Steam Auth Fail!", data);
+            },
+            error: function (dara) {
+                try_to_connect = false;
+            }
+        });
+    };
+
     function gotoSite(event, index) {
         if (try_to_connect) return;
         var index = parseInt((event) ? $(event.target).data("index") : index - 1);
@@ -186,21 +203,8 @@
         }
         $('#selected_server').text(index + 1);
         try_to_connect = true;
-        if (ticket && steam_id) {
-            $.ajax({ url: server.address + '/site_api/auth/steam',
-                 method: 'GET',
-                 data: { ticket: ticket },
-                timeout: ping_timeout,
-                success: function (data) {
-                    try_to_connect = false;
-                    if (data == "OK") window.location = server.address + '?mode=electron';
-                    else console.log("Steam Auth Fail!", data);
-                },
-                error: function (dara) {
-                    try_to_connect = false;
-                }
-            });
-        }
+        if (ticket && steam_id)
+            try_connect_for_steam(server.address);
         else window.location = server.address + '?mode=electron';
     }
 
@@ -261,8 +265,12 @@
                                 data: {},
                                 timeout: ping_timeout,
                                 success: function (data) {
-                                    if (data == "OK")
-                                        window.location = address + '?mode=electron';
+                                    if (data == "OK") {
+                                        if (ticket && steam_id)
+                                            try_connect_for_steam(address);
+                                        else
+                                            window.location = address + '?mode=electron';
+                                    }
                                     else
                                         check_steam();
                                 },
