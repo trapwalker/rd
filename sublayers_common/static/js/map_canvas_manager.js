@@ -110,7 +110,8 @@ var MapCanvasManager = (function(_super){
         $(document).mousemove(function(event) { mapCanvasManager.global_mouse_client = new Point(event.clientX, event.clientY); });
 
         this._central_point = new Point(0, 0);
-        //this._lock_radius = 0;
+        this._lock_radius1 = 0;
+        this._lock_radius2 = 0;
         this.current_mouse_shift = new Point(0, 0);
         this.target_mouse_shift = new Point(0, 0);
 
@@ -148,16 +149,24 @@ var MapCanvasManager = (function(_super){
         if (subVector(map_size, this.cur_map_size).abs() > 0.2) {
             this.cur_map_size = map_size;
             this._central_point = mulScalVector(mapManager.getMapSize(), 0.5);
-            //this._lock_radius = Math.max(Math.min(map_size.x, map_size.y) * 0.375, 410);
+            var s = Math.min(map_size.x, map_size.y) * 0.5;
+            this._lock_radius1 = s * 0.5;
+            this._lock_radius2 = s;
         }
 
         // Расчет сдвига карты от указателя мыши
         var cursor_point = this.global_mouse_client;
-        this.target_mouse_shift = mulScalVector(subVector(cursor_point, this._central_point), 0.5);
-        //if (this.target_mouse_shift.sqr_abs() < (this._lock_radius * this._lock_radius)) this.target_mouse_shift = new Point(0, 0);
-        //this.target_mouse_shift = subVector(this.target_mouse_shift, normVector(this.target_mouse_shift, this._lock_radius));
-        var d_shift = subVector(this.target_mouse_shift, this.current_mouse_shift);
+        this.target_mouse_shift = subVector(cursor_point, this._central_point);
+        var sqr_abs = this.target_mouse_shift.sqr_abs();
 
+        if (sqr_abs < this._lock_radius1 * this._lock_radius1)
+            this.target_mouse_shift = new Point(0, 0);
+        else if (sqr_abs > this._lock_radius2 * this._lock_radius2)
+            this.target_mouse_shift = normVector(this.target_mouse_shift, this._lock_radius1);  // потому что this._lock_radius1 = this._lock_radius2 / 2
+        else
+            this.target_mouse_shift = normVector(this.target_mouse_shift, (Math.sqrt(sqr_abs) - this._lock_radius1));
+
+        var d_shift = subVector(this.target_mouse_shift, this.current_mouse_shift);
         if (settingsManager.options.dynamic_camera.currentValue)
             if (d_shift.sqr_abs() > 10) {
                 d_shift.x = d_shift.x * 0.2; d_shift.y = d_shift.y * 0.2;
