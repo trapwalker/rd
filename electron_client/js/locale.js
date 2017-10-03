@@ -52,7 +52,8 @@ var locales = {
         "con_pre_18": "ms",
         "con_pre_19": "server ",
         "con_pre_20": "Servers scanning",
-        "con_pre_21": "Server list ready."
+        "con_pre_21": "Server list ready.",
+        "con_pre_22": "Authorization with Steam not allowed. Please, restart Steam and try again."
     },
     "ru": {
         "locale": "ru",
@@ -77,6 +78,7 @@ var locales = {
         "con_pre_18": "мс",
         "con_pre_19": "сервер ",
         "con_pre_20": "Сканирование серверов",
-        "con_pre_21": "Список серверов готов."
+        "con_pre_21": "Список серверов готов.",
+        "con_pre_22": "Авторизация через Steam не разрешена. Перезапустите Steam и повторите ещё раз."
     }
 };

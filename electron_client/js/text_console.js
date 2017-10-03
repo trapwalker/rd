@@ -314,8 +314,11 @@ var ConsolePreloader = (function (_super) {
             '       >                                              <\n' +
             '       ================================================\n'
         );
-        this.add_message('user', _('con_pre_20'));
-        this.add_message('system', _('con_pre_21') + '\n\n' + '------------------------------------------------\n' + _('con_pre_15'));
+
+        if ((!steam_id) || (steam_id && ticket)) {
+            this.add_message('user', _('con_pre_20'));
+            this.add_message('system', _('con_pre_21') + '\n\n' + '------------------------------------------------\n' + _('con_pre_15'));
+        }
         this.start();
     }
 
@@ -329,19 +332,29 @@ var ConsolePreloader = (function (_super) {
 
         if ((self._messages.length == 0) && !self.out_server_list) {
             self.target_div.find('.console-new-text').text(self._text);
-            for (var i = 0; i < servers.length; i++) {
-                var server = servers[i];
-                var name_with_spaces = server.name + (new Array(server_name_max_l - server.name.length ).join(" "));  // Имя сервера с дополненными пробелами
-                var text = (i + 1) + '. ' + name_with_spaces + ' ' + '<span style="pointer-events: none;" id="serverState' + i + '">' + geg_server_state_str(server) + '</span>';
-                self.target_div.append('<div class="server_list_item server_list_item_selectable" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
+
+            if ((!steam_id) || (steam_id && ticket)) {
+                for (var i = 0; i < servers.length; i++) {
+                    var server = servers[i];
+                    var name_with_spaces = server.name + (new Array(server_name_max_l - server.name.length).join(" "));  // Имя сервера с дополненными пробелами
+                    var text = (i + 1) + '. ' + name_with_spaces + ' ' + '<span style="pointer-events: none;" id="serverState' + i + '">' + get_server_state_str(server) + '</span>';
+                    self.target_div.append('<div class="server_list_item server_list_item_selectable" data-index="' + i + '" onclick="gotoSite(event)" >' + text + '</div>');
+                }
+                self.target_div.append('<div class="server_list_item">------------------------------------------------</div>');
+
+
+                var jq_keydown = $('#preloaderBlock');
+                jq_keydown.on("keydown", function (event) {
+                    gotoSite(null, event.key)
+                });
+                jq_keydown.focus();
             }
-            self.target_div.append('<div class="server_list_item">------------------------------------------------</div>');
+            else
+                self.target_div.append('<div class="server_list_item">> ' + _("con_pre_22") + '</div>');
+
+
             self.target_div.append('<div class="server_list_item"><span>&gt; </span><span id="selected_server"></span><span id="selected_server_carriage"></span></div>');
             last_carriage_blind();
-
-            var jq_keydown = $('#preloaderBlock');
-            jq_keydown.on("keydown", function(event){ gotoSite(null, event.key) });
-            jq_keydown.focus();
         }
         else
             _super.prototype._state_print_final_indicator.call(self, self);
