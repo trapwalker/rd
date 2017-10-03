@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="dat.gui.min.js"></script>
+    <script src="js/geometric.js"></script>
+    <style>
+        #canvas { position: relative; width: 1000px; height: 1000px; }
+    </style>
+</head>
+<body>
+    <canvas id="html_canvas" width="1000" height="1000"></canvas>
+    <script>
+        var state;
+        var canvas;
+        var ctx;
+
+        var State = (function () {
+            function State() {
+                this.t0 = 0;                // Время начала движения (состояния)
+                this.p0 = new Point(0, 0); // Начальная позиция - вектор!
+                this.fi0 = 0;               // Начальный угол
+                this._fi0 = 0;              // Начальный угол для расчётов спиралей
+
+                this.v0 = 0;                // Начальная скорость - число, а не вектор
+                this.v_max = 30;            // Скорость до которой надо разогнаться
+                this.a = 7;                 // Начальное ускорение - число!
+
+                this._turn_sign = 1;
+                this.ac_max = 30;           // Максимальная перегрузка
+                this.r_min = 5;             // Минимальный радиус разворота
+
+                this.scale = 1;
+
+                // Параметры которые надо вычеслить
+                this._c = null;
+                this._sp_m = null;
+                this._sp_fi0 = null;
+                this._rv_fi = null;
+            }
+
+            State.prototype.s = function (t) {
+                if (t < this.t0) t = this.t0;
+                var dt = t - this.t0;
+                return this.v0 * dt + 0.5 * this.a * (dt * dt);
+            };
+
+            State.prototype.v = function (t) {
+                if (t < this.t0) t = this.t0;
+                var dt = t - this.t0;
+                return this.v0 + this.a * dt;
+            };
+
+            State.prototype.r = function (t) {
+                if (t < this.t0) t = this.t0;
+                if (this.a == 0)
+                    return Math.pow(this.v0, 2) / this.ac_max + this.r_min;
+                return Math.pow(this.v(t), 2) / this.ac_max + this.r_min
+            };
+
+            State.prototype.sp_fi = function (t) {
+                if (t < this.t0) t = this.t0;
+                return Math.log(this.r(t) / this.r_min) / this._sp_m
+            };
+
+            State.prototype.fi = function (t) {
+                if (t < this.t0) t = this.t0;
+                if (!this._c) return this.fi0;
+                if (this.a == 0.0)
+                    return this.fi0 - this.s(t) / this.r(t) * this._turn_sign;
+                return this.fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
+            };
+
+            State.prototype._fi = function (t) {
+                if (t < this.t0) t = this.t0;
+                if (!this._c) return this._fi0;
+                if (this.a == 0.0)
+                    return this._fi0 - this.s(t) / this.r(t) * this._turn_sign;
+                return this._fi0 - (this.sp_fi(t) - this._sp_fi0) * this._turn_sign;
+            };
+
+            State.prototype.p = function (t) {
+                if (t < this.t0) t = this.t0;
+                if (!this._c)
+                    return summVector(this.p0, polarPoint(this.s(t), this._fi0));
+                return summVector(this._c, polarPoint(this.r(t), this._fi(t) + this._turn_sign * this._rv_fi));
+            };
+
+            State.prototype.redraw = function () {
+                ctx.clearRect(0, 0, 1000, 1000);
+
+                var aa = 2 * Math.abs(this.a) / this.ac_max;
+                var m = aa / Math.sqrt(1 - aa * aa);
+                this._sp_m = m;
+                this._sp_fi0 = this.sp_fi(this.t0);
+                this._rv_fi = Math.acos(m / Math.sqrt(1 + m * m));
+                this._c = summVector(this.p0, polarPoint(this.r(this.t0), this._fi0 - this._turn_sign * (Math.PI - this._rv_fi)));
+
+                var t_max = this.v_max / this.a;
+                var t_max_100 = t_max / 100.;
+
+                ctx.save();
+                ctx.translate(500, 500);
+                ctx.scale(this.scale, this.scale);
+                ctx.strokeStyle = 'red';
+
+                // Спираль разворота
+                ctx.beginPath();
+                ctx.moveTo(this.p0.x, this.p0.y);
+                for (var i = 1; i < 100; i++) {
+                    var pos = this.p(t_max_100 * i);
+                    ctx.lineTo(pos.x, pos.y);
+                }
+                ctx.stroke();
+
+                // Центр спирали
+                ctx.beginPath();
+                ctx.arc(this._c.x, this._c.y, 1, 0, 2 * Math.PI, true);
+                ctx.stroke();
+
+                ctx.strokeStyle = 'green';
+
+                this.p0 = this.p(t_max);
+                // Точка максимального разгона
+                ctx.beginPath();
+                ctx.arc(this.p0.x, this.p0.y, 1, 0, 2 * Math.PI, true);
+                ctx.stroke();
+
+
+                this.fi0 = this.fi(t_max);
+                this._fi0 = this.fi0;
+                var aa = this.a;
+                this.a = 0;
+                this.v0 = this.v_max;
+                this._rv_fi = 0.5 * Math.PI;
+                this._c = summVector(this.p0, polarPoint(this.r(this.t0), this._fi0 - this._turn_sign * (Math.PI - this._rv_fi)));
+
+                ctx.strokeStyle = 'blue';
+
+                // Круг разворота
+                ctx.beginPath();
+                ctx.arc(this._c.x, this._c.y, this.r(t_max), 0, 2 * Math.PI, true);
+                ctx.stroke();
+
+                // Центр круга
+                ctx.beginPath();
+                ctx.arc(this._c.x, this._c.y, 1, 0, 2 * Math.PI, true);
+                ctx.stroke();
+
+                ctx.restore();
+
+                this.p0 = new Point(0, 0);
+                this.fi0 = 0;
+                this._fi0 = 0;
+                this.a = aa;
+                this.v0 = 0;
+            };
+
+            return State;
+        })();
+
+        window.onload = function() {
+            canvas = document.getElementById("html_canvas");
+            ctx = canvas.getContext("2d");
+            canvas.width = 1000;
+            canvas.height = 1000;
+
+            state = new State();
+            var gui = new dat.GUI();
+
+            var c1 = gui.add(state, 'v_max', 0, 300);
+            var c2 = gui.add(state, 'a', 0, 50);
+            var c3 = gui.add(state, 'ac_max', 0, 100);
+            var c4 = gui.add(state, 'r_min', 0.01, 100);
+            var c5 = gui.add(state, 'scale', 1, 10);
+
+            c1.onChange(function(value) { state.redraw() });
+            c2.onChange(function(value) { state.redraw() });
+            c3.onChange(function(value) { state.redraw() });
+            c4.onChange(function(value) { state.redraw() });
+            c5.onChange(function(value) { state.redraw() });
+
+            state.redraw();
+        };
+    </script>
+</body>
+</html>
