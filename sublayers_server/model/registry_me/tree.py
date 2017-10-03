@@ -781,6 +781,12 @@ class Node(Subdoc, SubdocToolsMixin):
         else:
             self._need_reinst = parent is not None
 
+    def __hash__(self):
+        uri = self.uri
+        if not uri:
+            log.warning('URI of node {!r} is {!r} for get __hash__'.format(self, uri))
+        return hash(uri)
+
     def is_field_inherited(self, name):
         return name not in self._data and name not in self._empty_overrided_fields
 
