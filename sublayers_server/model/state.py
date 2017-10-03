@@ -56,14 +56,14 @@ class BaseMotionState(object):
 
     def __init__(self, t, p, fi=0.0, r_min=10.0, ac_max=10.0, v=0.0):
         self.t0 = t
-        self.p0 = p
+        self.p0 = p  # стартовая точка движения
         self.fi0 = fi
         self._fi0 = fi
         self.r_min = r_min
         self.ac_max = ac_max
         self.v0 = v
         self.a = 0.0
-        self._c = None
+        self._c = None  # центр спирали или круга при повороте
         self._turn_sign = 0.0
         self._sp_m = 0.0
         self._sp_fi0 = 0.0
