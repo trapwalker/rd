@@ -81,6 +81,7 @@
 
 - cd ~/rd
 - sudo pip install -r requirements.txt --upgrade
+- sudo ln -s /home/sl/rd/deploy/srvcon /usr/bin/s
 
 # Полезные команды
 
