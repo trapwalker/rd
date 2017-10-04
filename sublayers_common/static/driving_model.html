@@ -32,6 +32,7 @@
                 this.r_min = 5;             // Минимальный радиус разворота
 
                 this.scale = 1;
+                this.mobility = 0.01;
 
                 // Параметры которые надо вычеслить
                 this._c = null;
@@ -89,7 +90,7 @@
 
             State.prototype.redraw = function () {
                 ctx.clearRect(0, 0, 1000, 1000);
-
+                this.ac_max = this.a * 2 * (1.01 + this.mobility);
                 var aa = 2 * Math.abs(this.a) / this.ac_max;
                 var m = aa / Math.sqrt(1 - aa * aa);
                 this._sp_m = m;
@@ -171,7 +172,7 @@
 
             var c1 = gui.add(state, 'v_max', 0, 300);
             var c2 = gui.add(state, 'a', 0, 50);
-            var c3 = gui.add(state, 'ac_max', 0, 100);
+            var c3 = gui.add(state, 'mobility', 0.01, 10);
             var c4 = gui.add(state, 'r_min', 0.01, 100);
             var c5 = gui.add(state, 'scale', 1, 10);
 
