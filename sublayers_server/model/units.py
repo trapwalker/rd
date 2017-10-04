@@ -451,9 +451,6 @@ class Mobile(Unit):
         assert 0 <= value <= 1, 'value={} p_obs_r_min={} p_obs_r_max={} cur_v={} max_c_s={}'.format(value, p_obs_range_rate_min, p_obs_range_rate_max, cur_v, self.max_control_speed)
         return self.params.get('p_observing_range').value * value
 
-    def get_ac_max(self, a, mobility):
-        return a * 2 * (1.01 + mobility)
-
     def init_state_params(self):
         params = dict(
             p=self._position,
@@ -466,8 +463,8 @@ class Mobile(Unit):
             a_braking=self._param_aggregate['a_braking'],
         )
         # Рассчёт ac_max для бОльшей безопасности ввода контента с
-        ac_max = self.get_ac_max(a=max(abs(params["a_forward"]), abs(params["a_backward"]), abs(params["a_braking"])),
-                                 mobility=self._param_aggregate['mobility'])
+        ac_max = self.example.ac_max(a=max(abs(params["a_forward"]), abs(params["a_backward"]), abs(params["a_braking"])),
+                                                mobility=self._param_aggregate['mobility'])
         print('{}:: ac_max={}  | {}, {}, {}'.format(self.example.title, ac_max, params["a_forward"], params["a_backward"], params["a_braking"]))
         params.update(ac_max=ac_max)
         return params

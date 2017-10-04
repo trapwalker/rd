@@ -214,7 +214,7 @@ class POICorpse(POIContainer):
             p=self._position,
             fi=self.car_direction,
             r_min=self.donor_param_aggregate['r_min'],
-            ac_max=self.donor_param_aggregate['ac_max'],
+            ac_max=self.donor_car.ac_max(),
             v_forward=self.donor_param_aggregate['max_control_speed'],
             v_backward=self.donor_param_aggregate['v_backward'],
             a_forward=self.donor_param_aggregate['a_forward'],
