@@ -192,6 +192,14 @@ class MotionState(BaseMotionState):
         super(MotionState, self).__init__(t=t, p=p, fi=fi, r_min=r_min, ac_max=ac_max, v=v)
         half_ac_max = 0.5 * self.ac_max
 
+        # Преобразование знаков параметров движения (ускорений и скоростей)
+        a_forward = abs(a_forward)  # всегда положительное
+        a_backward = -abs(a_backward)  # всегда отрицательное
+        a_braking = -abs(a_braking)  # всегда отрицательное
+        v_forward = abs(v_forward)  # всегда положительное
+        v_backward = -abs(v_backward)  # всегда отрицательное
+
+        # Проверка ускорений в сравнении с половиной ac_max
         if abs(a_forward) >= half_ac_max:
             self.error("!!! MotionState: a_forward({a_forward}) >= 0.5 * ac_max({self.ac_max}). Set to 0.99*ac_max/2".format(**locals()))
             a_forward = 0.99 * half_ac_max
@@ -203,14 +211,6 @@ class MotionState(BaseMotionState):
         if abs(a_braking) >= half_ac_max:
             self.error("!!! MotionState: a_braking({a_braking}) >= 0.5 * ac_max({self.ac_max}). Set to 0.99*ac_max/2".format(**locals()))
             a_braking = -0.99 * half_ac_max
-
-        if v_forward < 0.0:
-            self.error("!!! MotionState: v_forward({v_forward}) < 0. Set to 0".format(**locals()))
-            v_forward = 0.0
-
-        if v_backward > 0.0:
-            self.error("!!! MotionState: v_backward({v_backward}) > 0. Set to 0".format(**locals()))
-            v_backward = 0.0
 
         self.v_forward = v_forward
         self.v_backward = v_backward

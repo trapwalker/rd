@@ -108,6 +108,7 @@ class Mobile(Node):
     # атрибуты Mobile
     r_min                = FloatField(caption=u"Минимальный радиус разворота", tags={'param_aggregate'})
     ac_max               = FloatField(caption=u"Максимальная перегрузка при развороте", tags={'param_aggregate'})
+    mobility             = FloatField(root_default=0, caption=u"Манёвренность машинки", tags={'param_aggregate'})
     max_control_speed    = FloatField(caption=u"Абсолютная максимальная скорость движения", tags={'param_aggregate'})
     v_forward            = FloatField(caption=u"Максимальная скорость движения вперед", tags={'param_aggregate'})
     v_backward           = FloatField(caption=u"Максимальная скорость движения назад", tags={'param_aggregate'})
