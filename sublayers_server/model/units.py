@@ -465,7 +465,7 @@ class Mobile(Unit):
         # Рассчёт ac_max для бОльшей безопасности ввода контента с
         ac_max = self.example.ac_max(a=max(abs(params["a_forward"]), abs(params["a_backward"]), abs(params["a_braking"])),
                                                 mobility=self._param_aggregate['mobility'])
-        print('{}:: ac_max={}  | {}, {}, {}'.format(self.example.title, ac_max, params["a_forward"], params["a_backward"], params["a_braking"]))
+        # print('{}:: ac_max={}  | {}, {}, {}'.format(self.example.title, ac_max, params["a_forward"], params["a_backward"], params["a_braking"]))
         params.update(ac_max=ac_max)
         return params
 
