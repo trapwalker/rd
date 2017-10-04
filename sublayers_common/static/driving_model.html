@@ -170,11 +170,11 @@
             state = new State();
             var gui = new dat.GUI();
 
-            var c1 = gui.add(state, 'v_max', 0, 300);
-            var c2 = gui.add(state, 'a', 0, 50);
-            var c3 = gui.add(state, 'mobility', 0.01, 10);
-            var c4 = gui.add(state, 'r_min', 0.01, 100);
-            var c5 = gui.add(state, 'scale', 1, 10);
+            var c1 = gui.add(state, 'v_max', 0, 200);
+            var c2 = gui.add(state, 'a', 0, 30);
+            var c3 = gui.add(state, 'mobility', 0.01, 5);
+            var c4 = gui.add(state, 'r_min', 0.01, 50);
+            var c5 = gui.add(state, 'scale', 0.01, 10);
 
             c1.onChange(function(value) { state.redraw() });
             c2.onChange(function(value) { state.redraw() });
