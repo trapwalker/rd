@@ -117,6 +117,7 @@ var WRumble = (function (_super) {
     };
 
     WRumble.prototype.change = function (t) {
+        return;
         //console.log('WRumble.prototype.change');
         if (this.car._hp_state.dps) {
             if (!this.isStartAutoRumble && !this.isStartDischargeRumble) this._startAutoRumble();
