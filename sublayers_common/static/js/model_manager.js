@@ -623,7 +623,10 @@ var ClientManager = (function () {
             }
 
             // При попадании залповым орудием включить эффект тряски
-            if (hp_state.dhp && (hp_state.dhp > 0)) wRumble.startDischargeRumble();
+            if (hp_state.dhp && (hp_state.dhp > 0)) {
+                wRumble.startDischargeRumble();
+                setTimeout(function () { wMapPosition.random_shift();}, 150);
+            }
 
             // Установка cc для круизконтроля
             if (event.object.params) wCruiseControl.setSpeedRange(event.object.params.p_cc);
