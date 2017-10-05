@@ -25,56 +25,9 @@ var WMapPosition = (function (_super) {
         var car = this._model_objects[0];
         var tempPoint = car.getCurrentCoord(time);
         tempPoint = summVector(tempPoint, mapCanvasManager.current_mouse_shift);
-
-        // Рабочий вариант 1
-        // var sqr_abs = this.temp_vector.sqr_abs();
-        // if (sqr_abs > 0.0) {
-        //     if (sqr_abs < 0.02)
-        //         this.temp_vector = new Point3d(0, 0, 0);
-        //     else
-        //         this.temp_vector = this.temp_vector.mul_scal(0.93);
-        //     // console.log(this.temp_vector);
-        //     var map_zoom_k = mapManager.getZoomKoeff();
-        //     if (map_zoom_k < 2) {
-        //         mapManager.set_coord({z: mapManager.newZoomForCalcZoom + this.temp_vector.z});
-        //         tempPoint = summVector(tempPoint, new Point(this.temp_vector.x / map_zoom_k, this.temp_vector.y / map_zoom_k));
-        //     }
-        // }
-
-        // Рабочий вариант 2: разделение на фазы
-        // var sqr_abs = this.temp_vector.sqr_abs();  // К чему стремимся
-        // if (sqr_abs > 0) {
-        //     var sqr_abs_current = this.current_vector.sqr_abs();  // Что есть в данный момент
-        //
-        //     if (this.phase == "end") {
-        //         if (sqr_abs_current < 0.02) {
-        //             this.temp_vector = new Point3d(0, 0, 0);
-        //             this.current_vector = new Point3d(0, 0, 0);
-        //             this.phase = "";
-        //         }
-        //         else
-        //             this.current_vector = this.current_vector.mul_scal(0.93);
-        //     }
-        //
-        //     if (this.phase == "start") {
-        //         if (sqr_abs_current == 0.0)
-        //             this.current_vector = this.temp_vector.mul_scal(0.5);
-        //         else
-        //             this.current_vector = this.current_vector.mul_scal(1.5);
-        //
-        //         if (sqr_abs <= sqr_abs_current)
-        //             this.phase = "end";
-        //     }
-        //
-        //     var map_zoom_k = mapManager.getZoomKoeff();
-        //     if (map_zoom_k < 4) {
-        //         mapManager.set_coord({z: mapManager.newZoomForCalcZoom + this.current_vector.z});
-        //         tempPoint = summVector(tempPoint, new Point(this.current_vector.x / map_zoom_k, this.current_vector.y / map_zoom_k));
-        //     }
-        // }
+        var sqr_abs = settingsManager.options.rumble.currentValue ? this.temp_vector.sqr_abs() : 0;  // К чему стремимся
 
         // Рабочий вариант 3: зависимость от времени
-        var sqr_abs = this.temp_vector.sqr_abs();  // К чему стремимся
         if (sqr_abs > 0) {
             var phase_t = client_time - this.start_phase;
             var prc = 0;

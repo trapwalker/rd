@@ -625,6 +625,7 @@ var ClientManager = (function () {
             // При попадании залповым орудием включить эффект тряски
             if (hp_state.dhp && (hp_state.dhp > 0)) {
                 wRumble.startDischargeRumble();
+                wMapPosition.random_shift();
                 setTimeout(function () { wMapPosition.random_shift();}, 150);
             }
 
