@@ -23,7 +23,7 @@ var WCruiseControl = (function (_super) {
 
         // Компактный вид
         this.compactView = $("<div id='cruiseControlCompactView' class='sublayers-unclickable'></div>");
-        $('#cruiseControlMainDiv').append(this.compactView);
+        $('#cruiseControlRumble').append(this.compactView);
 
         var compactViewSpeedDiv = $("<div id='cruiseControlCompactViewSpeedDiv' class='compactViewDiv'></div>");
         var compactViewLimitDiv = $("<div id='cruiseControlCompactViewLimitDiv' class='compactViewDiv'></div>");

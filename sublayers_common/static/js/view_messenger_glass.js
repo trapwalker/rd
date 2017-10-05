@@ -19,8 +19,8 @@ var ViewMessengerGlass = (function () {
 
         // вёрстка
         var mainParent = $('#chatAreaGlass');
-        mainParent.append('<div id="VMGDivHardware"></div>');
-        mainParent.append('<div id="VMGMainDivGlass"><div id="divForChatNotClick" class="anti-click-class"></div></div>');
+        mainParent.find('#chatControlRumble').append('<div id="VMGDivHardware"></div>');
+        mainParent.find('#chatControlRumble').append('<div id="VMGMainDivGlass"><div id="divForChatNotClick" class="anti-click-class"></div></div>');
         this.parentGlass = $('#VMGMainDivGlass');
         this.parentGlass.append('<div id="VMGDivWrapChat"></div>');
         this.chatWrapDiv = $('#VMGDivWrapChat');
@@ -108,7 +108,7 @@ var ViewMessengerGlass = (function () {
         this.page_sys = this.initSysPage(); // системный лог
 
         // портативная версия чата. Главный див.
-        mainParent.append('<div id="VMGMainDivCompact"></div>');
+        mainParent.find('#chatControlRumble').append('<div id="VMGMainDivCompact"></div>');
         this.mainCompact = $('#VMGMainDivCompact');
 
         // зона для сообщений портативной версии

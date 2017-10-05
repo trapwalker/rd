@@ -1,10 +1,18 @@
 
 /* Настройка слайдера зума */
 .slider-zoom-parent {
+    position: absolute;
     left: 0;
     top: 0px;
-    position: absolute;
+    width: 119px;
+    height: 425px;
     z-index: 0;
+}
+
+#zoomControlRumble {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 /* То, на чём висит кнопка сворачивания и что не будет уезжать */

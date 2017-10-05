@@ -169,6 +169,8 @@
 "setman_opt_auto_simple_bot_text_description" : "Auto simple bot."
 "dynamic_camera_name": "Dynamic camera"
 "dynamic_camera_description": "Dynamic camera."
+"rumble_name": "Shaking"
+"rumble_description": "Shaking."
 
 
 "setman_opt_zoom_step_value_list_1": "Slow"

@@ -22,8 +22,8 @@ var WZoomSlider = (function () {
             onChange: ''
         };
         var mainParent = $('#' + this.options.parentDiv);
-        mainParent.append('<div id="zoomSliderMainDivHardware"></div>');
-        mainParent.append('<div id="zoomSliderMainDivGlass"><div id="divForZoomNotClick" class="anti-click-class"></div></div>');
+        mainParent.find('#zoomControlRumble').append('<div id="zoomSliderMainDivHardware"></div>');
+        mainParent.find('#zoomControlRumble').append('<div id="zoomSliderMainDivGlass"><div id="divForZoomNotClick" class="anti-click-class"></div></div>');
         mainParent.addClass('slider-zoom-parent sublayers-clickable');
         var parentGlass = $('#zoomSliderMainDivGlass');
         var parentPort = $('#zoomSliderMainDivHardware');
@@ -85,7 +85,7 @@ var WZoomSlider = (function () {
         this.btn_hide.on('click', {self: this}, this.btnHideReaction);
 
         // Зона для отображения урезанной версии контроллера
-        mainParent.append('<div id="zoomSliderMainDivCompact"></div>');
+        mainParent.find('#zoomControlRumble').append('<div id="zoomSliderMainDivCompact"></div>');
         this.mainCompact = $('#zoomSliderMainDivCompact');
 
         // добавление кнопки развернуть всё и фулл-скрин
