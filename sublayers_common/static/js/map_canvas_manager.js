@@ -143,6 +143,11 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype.redraw = function(time) {
+        function easeInQuart(x, t, b, c, d) { // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
+            //return c * (t /= d) * t * t * t + b;
+            return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+        }
+
         if(! this.is_canvas_render) return;
 
         var map_size = mapManager.getMapSize();
@@ -150,8 +155,8 @@ var MapCanvasManager = (function(_super){
             this.cur_map_size = map_size;
             this._central_point = mulScalVector(mapManager.getMapSize(), 0.5);
             var s = Math.min(map_size.x, map_size.y) * 0.5;
-            this._lock_radius1 = s * 0.5;
-            this._lock_radius2 = s;
+            this._lock_radius1 = s * 1.3;
+            this._lock_radius2 = s * 1.8;
         }
 
         // –†–∞—Å—á–µ—Ç —Å–¥–≤–∏–≥–∞ –∫–∞—Ä—Ç—ã –æ—Ç —É–∫–∞–∑–∞—Ç–µ–ª—è –º—ã—à–∏
@@ -159,17 +164,30 @@ var MapCanvasManager = (function(_super){
         this.target_mouse_shift = subVector(cursor_point, this._central_point);
         var sqr_abs = this.target_mouse_shift.sqr_abs();
 
+        // –ë—É–±–ª–∏–∫
+        var d_len = this._lock_radius2 - this._lock_radius1;
         if (sqr_abs < this._lock_radius1 * this._lock_radius1)
             this.target_mouse_shift = new Point(0, 0);
         else if (sqr_abs > this._lock_radius2 * this._lock_radius2)
-            this.target_mouse_shift = normVector(this.target_mouse_shift, this._lock_radius1);  // –ø–æ—Ç–æ–º—É —á—Ç–æ this._lock_radius1 = this._lock_radius2 / 2
+            this.target_mouse_shift = normVector(this.target_mouse_shift, d_len);  // –ø–æ—Ç–æ–º—É —á—Ç–æ this._lock_radius1 = this._lock_radius2 / 2
         else
             this.target_mouse_shift = normVector(this.target_mouse_shift, (Math.sqrt(sqr_abs) - this._lock_radius1));
 
+        // –ù–µ –±—É–±–ª–∏–∫
+        //if (sqr_abs > this._lock_radius2 * this._lock_radius2)
+        //    this.target_mouse_shift = normVector(this.target_mouse_shift, this._lock_radius2);
+        //var d_len = this._lock_radius2;
+
+        // –ì—Ä–∞–¥–∏–µ–Ω—Ç
+        var len = this.target_mouse_shift.abs();
+        var new_len = easeInQuart(0, len, 0, d_len, d_len);
+        this.target_mouse_shift = normVector(this.target_mouse_shift, new_len);
+
+        // –ú–µ–¥–ª–µ–Ω–Ω–æ–µ –¥–≤–∏–∂–µ–Ω–∏–µ
         var d_shift = subVector(this.target_mouse_shift, this.current_mouse_shift);
         if (settingsManager.options.dynamic_camera.currentValue)
             if (d_shift.sqr_abs() > 10) {
-                d_shift.x = d_shift.x * 0.2; d_shift.y = d_shift.y * 0.2;
+                d_shift.x = d_shift.x * 0.1; d_shift.y = d_shift.y * 0.1;
                 this.current_mouse_shift = summVector(this.current_mouse_shift, d_shift);
             }
             else
@@ -192,13 +210,24 @@ var MapCanvasManager = (function(_super){
         this._mouse_focus_widget = focused_widget;
 
         this.real_zoom = mapManager.getZoom();
+
         this.zoom_koeff = mapManager.getZoomKoeff();
 
-        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // –≠—Ç–∞ —Ç–æ—á–∫–∞ —Å–æ–æ—Ç–≤–µ—Ç—Å—Ç–≤—É–µ—Ç 0,0 –Ω–∞ –∫–∞–Ω–≤–∞—Å–µ
+        // —Ú‡˚È ‚‡Ë‡ÌÚ - ‡·Ó˜ËÈ, ÌÓ ÌÂÏÌÓ„Ó ‡ÒıÓ‰ËÚÒˇ Ò Í‡ÚÓÈ
+        // this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
+
+        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // ›Ú‡ ÚÓ˜Í‡ ÒÓÓÚ‚ÂÚÒÚ‚ÛÂÚ 0,0 Ì‡ Í‡Ì‚‡ÒÂ
         var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
         var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
         this.cur_ctx_car_pos = car_ctx_pos;
 
+        var map_size = mapManager.getMapSize();
+        if (subVector(map_size, this.cur_map_size).abs() > 0.2) {  // todo: ||  map.dragging._enabled
+            var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
+            var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
+            this.cur_map_size = map_size;
+            this.cur_ctx_car_pos = car_ctx_pos;
+        }
         _super.prototype.redraw.call(this, time);
     };
 
