@@ -87,3 +87,4 @@
 
 - free -h  # Показать использование оперативной памяти
 - df -h    # Показать список разделов, занятое и свободное место на них
+- rsync -zaP sl@roaddogs.ru:/home/sl/rd/sublayers_world/tiles/ /home/sl/rd/sublayers_world/tiles/  # -nvi - тестовый режим
