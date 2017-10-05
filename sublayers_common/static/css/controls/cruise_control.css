@@ -204,6 +204,16 @@
     top: 5px;
 }
 
+#cruiseControlSpeedHandleDiv1.max-speed {
+    width: 0;
+}
+
+#cruiseControlSpeedHandleDiv2.max-speed {
+    width: 60%;
+    text-align: center;
+}
+
+
 #cruiseControlScaleArea {
     position: absolute;
     left: 54px;
