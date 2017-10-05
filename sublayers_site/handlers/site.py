@@ -80,7 +80,7 @@ class SiteCheckAuthId(tornado.web.RequestHandler):
                 self.send_error(415, reason="Social type not supported")
                 return
             if user:
-                self.finish(dict(uid=str(user.pk)))
+                self.finish(dict(uid=str(user.pk), login=user.name))
             else:
                 self.finish(dict(uid=""))
         else:

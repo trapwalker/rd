@@ -71,6 +71,8 @@
 - rm /etc/nginx/sites-enabled/default
 - ln -s ~/rd/nginx_conf/sites-available/rd.conf /etc/nginx/sites-available/
 - ln -s /etc/nginx/sites-available/rd.conf /etc/nginx/sites-enabled/
+- touch /etc/nginx/ssl.conf
+- touch /etc/nginx/ssl_redirect.conf
 - nginx -t
 - service nginx restart
 - exit
@@ -78,9 +80,11 @@
 ## Настройка roaddogs
 
 - cd ~/rd
-- sudo pip install -e .
+- sudo pip install -r requirements.txt --upgrade
+- sudo ln -s /home/sl/rd/deploy/srvcon /usr/bin/s
 
 # Полезные команды
 
 - free -h  # Показать использование оперативной памяти
-- df - h   # Показать список разделов, занятое и свободное место на них
+- df -h    # Показать список разделов, занятое и свободное место на них
+- rsync -zaP sl@roaddogs.ru:/home/sl/rd/sublayers_world/tiles/ /home/sl/rd/sublayers_world/tiles/  # -nvi - тестовый режим
