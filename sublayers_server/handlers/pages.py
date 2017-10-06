@@ -94,6 +94,15 @@ class PlayHandler(BaseHandler):
 
     @tornado.gen.coroutine
     def get(self):
+        # Редирект для переезда
+        log.debug('### engine/play:: host={self.request.host}; uri={self.request.uri}; path={self.request.path}; query={self.request.query}'.format(**locals()))
+        if self.request.host == 'roaddogs.ru':
+            if self.get_argument('mode', None) == 'electron':
+                self.redirect('{self.request.protocol}://eu.roaddogs.online/static/connection_trouble.html'.format(**locals()))
+            else:
+                self.redirect('{self.request.protocol}://eu.roaddogs.online'.format(**locals()))
+        ############################################
+
         user_id = self.get_secure_cookie("user")
         if not user_id:
             self.redirect(self.get_login_url())
