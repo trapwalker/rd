@@ -21,6 +21,7 @@ class SiteMainHandler(BaseSiteHandler):
                 self.redirect('{self.request.protocol}://eu.roaddogs.online/static/connection_trouble.html'.format(**locals()))
             else:
                 self.redirect('{self.request.protocol}://eu.roaddogs.online'.format(**locals()))
+            return
         ############################################
 
         # Если есть язык в параметрах, то убрать этот параметр и редиректнуть на сайт без этого параметра

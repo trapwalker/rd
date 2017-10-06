@@ -101,6 +101,7 @@ class PlayHandler(BaseHandler):
                 self.redirect('{self.request.protocol}://eu.roaddogs.online/static/connection_trouble.html'.format(**locals()))
             else:
                 self.redirect('{self.request.protocol}://eu.roaddogs.online'.format(**locals()))
+            return
         ############################################
 
         user_id = self.get_secure_cookie("user")
