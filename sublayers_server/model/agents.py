@@ -156,7 +156,7 @@ class Agent(Object):
 
     def setup_logger(self, level=logging.ERROR):
         from sublayers_server.log_setup import (
-            logger, handler, formatter_simple, local_path, SUFFIX_BY_MODE, handler_errors_file, handler_screen,
+            logger, handler, formatter_simple_for_agent, local_path, SUFFIX_BY_MODE, handler_errors_file, handler_screen,
         )
         import logging.handlers
         user = self.user
@@ -172,7 +172,7 @@ class Agent(Object):
         l = logger(logger_name, level=level, propagate=0, handlers=[
             handler_errors_file,
             handler(
-                fmt=formatter_simple,
+                fmt=formatter_simple_for_agent,
                 cls=logging.handlers.TimedRotatingFileHandler,
                 when='midnight',
                 backupCount=5,
