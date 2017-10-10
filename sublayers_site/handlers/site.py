@@ -14,6 +14,16 @@ class SiteMainHandler(BaseSiteHandler):
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
 
+        # Редирект для переезда
+        log.debug('### engine/play:: host={self.request.host}; uri={self.request.uri}; path={self.request.path}; query={self.request.query}'.format(**locals()))
+        if self.request.host == 'roaddogs.ru':
+            if self.get_argument('mode', None) == 'electron':
+                self.redirect('{self.request.protocol}://eu.roaddogs.online/static/connection_trouble.html'.format(**locals()))
+            else:
+                self.redirect('{self.request.protocol}://eu.roaddogs.online'.format(**locals()))
+            return
+        ############################################
+
         # Если есть язык в параметрах, то убрать этот параметр и редиректнуть на сайт без этого параметра
         param_lang = self.get_argument("lang", "")
         if param_lang and param_lang in ["en", "ru"]:
