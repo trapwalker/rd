@@ -18,9 +18,9 @@ class SiteMainHandler(BaseSiteHandler):
         log.debug('### engine/play:: host={self.request.host}; uri={self.request.uri}; path={self.request.path}; query={self.request.query}'.format(**locals()))
         if self.request.host == 'roaddogs.ru':
             if self.get_argument('mode', None) == 'electron':
-                self.redirect('{self.request.protocol}://eu.roaddogs.online/static/connection_trouble.html'.format(**locals()))
+                self.redirect('https://eu.roaddogs.online/static/connection_trouble.html'.format(**locals()))
             else:
-                self.redirect('{self.request.protocol}://eu.roaddogs.online'.format(**locals()))
+                self.redirect('https://eu.roaddogs.online'.format(**locals()))
             return
         ############################################
 
