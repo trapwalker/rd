@@ -115,8 +115,14 @@ class BaseMotionState(object):
     def _fi(self, t):
         if self._c is None:
             return self._fi0
-        if self.a == 0.0:
-            return self._fi0 - self.s(t) / self.r(t) * self._turn_sign  # круг
+        if self.a == 0.0:  # круг
+            # todo: Разобраться что и почему из этого равно 0
+            d = self.r(t) * self._turn_sign
+            if d:
+                return self._fi0 - self.s(t) / d
+            else:
+                log.warning('State _fi division by zero: turn={}, r={}, t={}'.format(self._turn_sign, self.r(t), t))
+                return self._fi0
         return self._fi0 - (self.sp_fi(t) - self._sp_fi0) * self._turn_sign  # спираль
 
     def p(self, t):
