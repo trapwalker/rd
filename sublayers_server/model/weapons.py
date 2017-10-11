@@ -232,6 +232,9 @@ class WeaponDischarge(Weapon):
         self.area_dmg = area_dmg
         self.last_shoot = None
         self.t_rch = time_recharge
+        self.target_limit = 1 + self.owner.main_agent.example.profile.get_current_agent_shooting() // 10
+        self.sub_discharge_dmg = self.owner.main_agent.example.profile.get_current_sub_discharge_dmg()
+        self._cur_target_count = 0
 
         # сразу запоминаем шанс крита и силу крита, чтобы потом при каждом выстреле не пересчитывать
         self.crit_rate = 0.0
@@ -247,6 +250,10 @@ class WeaponDischarge(Weapon):
         d.update(
             dmg=self.dmg,
             time_recharge=self.t_rch,
+
+            target_limit=self.target_limit,
+            sub_discharge_dmg=self.sub_discharge_dmg,
+
         )
         return d
 
@@ -254,10 +261,15 @@ class WeaponDischarge(Weapon):
         return random() < self.crit_rate
 
     def calc_dmg(self, car, is_crit, time):
+        # Расчитываем множитель урона в зависимости от лимита целей
+        dmg_rate = 1
+        if self._cur_target_count != 0:
+            dmg_rate = self.sub_discharge_dmg
+
         # Крит игнорирует броню
         if is_crit:
-            return self.dmg * (1 + self.crit_power)
-        return self.dmg * self.calc_dmg_rate(car=car, time=time)
+            return (self.dmg * (1 + self.crit_power)) * dmg_rate
+        return (self.dmg * self.calc_dmg_rate(car=car, time=time)) * dmg_rate
 
     def calc_area_dmg(self, car, time):
         return self.area_dmg * self.calc_dmg_rate(car=car, time=time)
@@ -275,15 +287,28 @@ class WeaponDischarge(Weapon):
         self.last_shoot = time
         is_crit = self.calc_is_crit()
         is_damage_shoot = False
+        self._cur_target_count = 0
 
-        for car in self.sector.target_list:
+        for car in self.sector.target_list_sort:
+            # Если мы выбрали лимит по урону то вывалится из цикла
+            if self._cur_target_count >= self.target_limit:
+                break
+            else:
+                self.sector.real_target_list.append(car)
             dmg = self.calc_dmg(car=car, is_crit=is_crit, time=time)
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+            self._cur_target_count += 1
             is_damage_shoot = True
 
-        for car in self.sector.area_target_list:
+        for car in self.sector.area_target_list_sort:
+            # Если мы выбрали лимит по урону то вывалится из цикла
+            if self._cur_target_count >= self.target_limit:
+                break
+            else:
+                self.sector.real_target_list.append(car)
             dmg = self.calc_area_dmg(car=car, time=time)
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
+            self._cur_target_count += 1
             is_damage_shoot = True
 
         if is_crit:

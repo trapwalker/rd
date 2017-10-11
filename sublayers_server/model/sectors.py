@@ -62,7 +62,12 @@ class FireSector(Sector):
         super(FireSector, self).__init__(**kw)
         self.weapon_list = []
         self.target_list = []
-        self.area_target_list = []
+
+        # Параметры для расчета залповой стрельбы
+        self.real_target_list = []
+        self.target_list_sort = []
+        self.area_target_list_sort = []
+
         self._is_auto = 0
         self._is_discharge = 0
         self.side = get_side_by_angle(self.fi)
@@ -117,6 +122,18 @@ class FireSector(Sector):
         fi = self.owner.direction(time=time) + self.fi
         return shortest_angle(v.angle - fi) <= self.half_width
 
+    # Возвращает объект с радиус вектором и откланением от оси если цель в секторе иначе None
+    def _test_target_in_sector_obj(self, target, time):
+        if not self.owner.is_target(target=target):
+            return None
+        v = target.position(time=time) - self.owner.position(time=time)
+        if (v.x ** 2 + v.y ** 2) > self.radius ** 2:
+            return None
+        fi = shortest_angle(v.angle - (self.owner.direction(time=time) + self.fi))
+        if (self.width < 2 * pi) and (fi > self.half_width):
+            return None
+        return dict(v=v, fi=fi, obj=target)
+
     def fire_auto(self, target_list, time):
         old_target_list = set(self.target_list)
         # for target in (old_target_list - target_list):
@@ -144,24 +161,39 @@ class FireSector(Sector):
 
     def fire_discharge(self, time):
         # Формирование списка целей, по которым пройдёт полный дамаг
-        target_list = []
+        self.real_target_list = []
+        target_list_rec = []
+        area_target_list_rec = []
+
+        # Формируем список всех объектов которых видит агент
         temp_list = []
         if self.owner.main_agent is not None:
             temp_list = self.owner.main_agent.get_all_visible_objects()
         else:
             temp_list = self.owner.visible_objects
-        for vo in temp_list:
-            if self._test_target_in_sector(target=vo, time=time):
-                target_list.append(vo)
-        self.target_list = target_list
 
-        # Формирование списка целей, которых юнит не видит (осколочный дамаг)
-        target_list = []
+        # Формируем список тех кого мы видим и по кому можем попасть
+        self.target_list = []
+        for vo in temp_list:
+            rec = self._test_target_in_sector_obj(target=vo, time=time)
+            if rec:
+                self.target_list.append(vo)
+                target_list_rec.append(rec)
+
+        # Формирование списка тех кого мы не видим но по кому можем попасть
+        area_target_list_rec = []
         temp_list = self.owner.server.visibility_mng.get_around_objects(pos=self.owner.position(time=time), time=time)
         for vo in temp_list:
-            if (vo not in self.target_list) and self._test_target_in_sector(target=vo, time=time):
-                target_list.append(vo)
-        self.area_target_list = target_list
+            if vo not in self.target_list:
+                rec = self._test_target_in_sector_obj(target=vo, time=time)
+                if rec:
+                    area_target_list_rec.append(rec)
+
+        # Сортировка и сохранени полученых целей в секторе
+        target_list_rec.sort(key=lambda item: item['fi'])
+        area_target_list_rec.sort(key=lambda item: item['fi'])
+        self.target_list_sort = [rec['obj'] for rec in target_list_rec]
+        self.area_target_list_sort = [rec['obj'] for rec in area_target_list_rec]
 
         for wp in self.weapon_list:
             if isinstance(wp, WeaponDischarge):

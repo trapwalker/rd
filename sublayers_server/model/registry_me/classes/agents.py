@@ -68,6 +68,9 @@ class AgentProfile(Node):
     value_exp = FloatField(root_default=0, caption=u"Количество опыта")
     value_frag = IntField(root_default=0, caption=u"Количество убийств")
 
+    # Множитель саб залпового урона
+    sub_discharge_dmg = FloatField(caption=u"Множитель саб залпового урона ")  # значения от 0 до 1
+
     car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
         caption=u"Активный автомобиль",
@@ -332,8 +335,14 @@ class AgentProfile(Node):
         for name, attr, getter in self.iter_attrs(tags={'skill'}):
             yield name, getter().calc_value()
 
+    def get_current_sub_discharge_dmg(self):
+        return self.sub_discharge_dmg + self.get_quest_skill_modifier().get('sub_discharge_dmg', 0)
+
     def get_current_agent_trading(self):
         return self.trading.calc_value() + self.get_quest_skill_modifier().get('trading', 0)
+
+    def get_current_agent_shooting(self):
+        return self.shooting.calc_value() + self.get_quest_skill_modifier().get('shooting', 0)
 
     def get_perk_trader_margin_info(self):
         trader_buy = 1.0
