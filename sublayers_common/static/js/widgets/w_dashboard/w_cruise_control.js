@@ -1,6 +1,8 @@
 /*
  * Виджет круиз контроля
  */
+const MultiFakeSpeedValue = 0.5;
+
 var WCruiseControl = (function (_super) {
     __extends(WCruiseControl, _super);
 
@@ -274,10 +276,20 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype._setSpeedHandleText = function(prc) {
-        var currentSpeed = (this._getCurrentMaxSpeed() / 1000 * 3600) * prc;
-        currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
-        this.speedHandleDiv1.text(currentSpeedWords[0] + '.');
-        this.speedHandleDiv2.text(currentSpeedWords[1]);
+        var currentSpeed = MultiFakeSpeedValue * (this._getCurrentMaxSpeed() / 1000 * 3600) * prc;
+        var currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
+        if (prc < 0.99) {
+            this.speedHandleDiv1.text(currentSpeedWords[0] + '.');
+            this.speedHandleDiv2.text(currentSpeedWords[1]);
+            this.speedHandleDiv1.removeClass("max-speed");
+            this.speedHandleDiv2.removeClass("max-speed");
+        }
+        else {
+            this.speedHandleDiv1.addClass("max-speed");
+            this.speedHandleDiv2.addClass("max-speed");
+            this.speedHandleDiv1.text("");
+            this.speedHandleDiv2.text("MAX");
+        }
     };
 
     WCruiseControl.prototype.setSpeedHandleValue = function(prc) {
@@ -469,10 +481,11 @@ var WCruiseControl = (function (_super) {
             this._drawFillArea(prc);
 
             // Вывод текущей скорости
-            currentSpeed = (currentSpeed / 1000 * 3600);
-            currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
+            currentSpeed = MultiFakeSpeedValue * (currentSpeed / 1000 * 3600);
+            var currentSpeedWords = (currentSpeed.toFixed(1)).split('.');
             this.topTextDiv1.text(currentSpeedWords[0] + '.');
             this.topTextDiv2.text(currentSpeedWords[1]);
+
             this.compactViewSpeedTextDiv.text(currentSpeed.toFixed(1) + ' km/h');
             if (this.keyBoardControl) {
                 this.setSpeedHandleValue(prc);
