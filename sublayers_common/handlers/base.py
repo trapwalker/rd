@@ -143,10 +143,6 @@ class BaseHandler(AuthHandlerMixin):
     def prepare(self):
         super(BaseHandler, self).prepare()
         self.user_lang = self.current_user and self.current_user.lang or "en"
-        host = self.request.host
-        if host == 'roaddogs.ru':
-            self.redirect('https://eu.roaddogs.online')
-
 
 
 class FailUnauthorizedHandler(BaseHandler):
