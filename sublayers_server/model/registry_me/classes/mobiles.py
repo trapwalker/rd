@@ -100,8 +100,7 @@ class Mobile(Node):
     m_visibility_qg_pu   = FloatField(caption=u"Модификатор к заметности PowerUp", tags={'parameter', 'p_modifier', 'param_aggregate'})
 
     # атрибуты от Unit
-    p_defence            = FloatField(caption=u"Броня", tags={'parameter', 'param_aggregate'})
-    max_hp               = FloatField(caption=u"Максимальное значение HP", tags={'param_aggregate', 'client'})
+    max_hp               = FloatField(caption=u"Максимальное значение HP", tags={'param_aggregate', 'client', "param_randomize"})
     hp                   = FloatField(caption=u"Текущее значение HP", tags={'client', 'param_aggregate'})
     direction            = FloatField(caption=u"Текущее направление машины")
 
