@@ -8,7 +8,8 @@ var WFuelRadial = (function (_super) {
     function WFuelRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
-        this.value_prc = 0.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
+        this.value_prc = -1.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
+                               // -1 для того чтобы хотябы раз отработал change
         this.current_interface_size = interface_scale_big;
         this.alarm_sound = null;
 
@@ -25,7 +26,7 @@ var WFuelRadial = (function (_super) {
         this.compactText = $('#cruiseControlCompactViewFuelTextDiv');
 
         this._drawRadialScale();
-        this.draw_fill_area(0.75);
+        this.draw_fill_area(0.0);
         this.draw.dmove(0, 2);
         this.change(clock.getCurrentTime());
     }
@@ -279,7 +280,7 @@ var WFuelRadial = (function (_super) {
 
     WFuelRadial.prototype.change = function () {
         //console.log('WFuelRadial.prototype.change');
-        if(! user.userCar) return;
+        if(!user.userCar) return;
         var prc = this.car.getCurrentFuel(clock.getCurrentTime()) / (this.car._fuel_state && this.car._fuel_state.max_fuel || 1.0);
         if (prc < 0.0) prc = 0.0;
         if (Math.abs(this.value_prc - prc) > 0.005) {
@@ -309,7 +310,7 @@ var WFuelRadial = (function (_super) {
         this.current_interface_size = interface_scale_big;
 
         this._drawRadialScale();
-        this.value_prc = 0.0;
+        this.value_prc = -1.0; // -1 для того чтобы хотябы раз отработал change
         this.change();
     };
 

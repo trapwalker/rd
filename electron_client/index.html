@@ -38,6 +38,7 @@
     var current_window = require('electron').remote.getCurrentWindow();
     var ticket = current_window._ticket_steam;
     var steam_id = current_window._steam_id;
+    var auto_redirect = false;  //  Временная мера, пока не разберёмся как правильно чистить куки через электрон у всех пользователей
 
     // Установка языка клиента
     set_current_locale();
@@ -47,7 +48,7 @@
     var all_client_cookies = null;
     var servers = [
         //{name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
-        {name: "EU", address: "https://roaddogs.ru", pings: [], active: false, average_ping: 0, debug: false, account_name: ""},
+        {name: "EU", address: "https://eu.roaddogs.online", pings: [], active: false, average_ping: 0, debug: false, account_name: ""},
         {name: "US", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false, account_name: ""},
         //{name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
@@ -143,18 +144,7 @@
         }
 
         if (ticket && steam_id) {
-            // 1 - Проверить куку "steam_registration" - Она отвечает за ПЕРВУЮ авторизацию этого КЛИЕНТА через стим
-            var steam_registration_cookie = null;
-            for (var i = 0; i < all_client_cookies.length && !steam_registration_cookie; i++)
-                if (all_client_cookies[i].name == "steam_registration_cookie")
-                    steam_registration_cookie = all_client_cookies[i];
-            steam_registration_cookie = true; // OLD: Это значит, что всегда отображать список серверов для стим-клиента
-            if (steam_registration_cookie && (steam_registration_cookie.value == steam_id)) {
-                show_server_list();
-                return;
-            }
-
-            // Пройти по всем серверам и поискать там аккаунт, если он 1, то редиректнуть на тот сервер
+            // Пройти по всем серверам и поискать там аккаунты и вывести на экран
             var steam_account_count = 0;
             var last_server = null;
             servers.forEach(function(server) {
@@ -174,19 +164,13 @@
                             server.account_name = data.login;
                             server_name_max_l = get_max_servers_name_length();
                         }
-
                     }
                 });
             });
-            setTimeout(function() {
-                // Если у игрока "чистый" клиент и сервер на котором он раньше играл лежит, то тут ему создастся
-                // новый аккаунт, чтобы этого избежать надо юзать steam cloud
-                console.log(steam_account_count, last_server);
-                if (steam_account_count == 0) create_steam_account();
-                if (steam_account_count == 1) create_steam_account(last_server);
-                if (steam_account_count > 1) show_server_list();
-            }, ping_timeout + 100);
-        } else show_server_list();
+            setTimeout(function () {show_server_list();}, ping_timeout + 100);
+        }
+        else
+            show_server_list();
     }
 
     function try_connect_for_steam(address) {
@@ -198,7 +182,7 @@
             success: function (data) {
                 try_to_connect = false;
                 if (data == "OK") window_location_with_lang(address);
-                else console.log("Steam Auth Fail!", data);
+                else console.log(address, "Steam Auth Fail!", data);
             },
             error: function (dara) {
                 try_to_connect = false;
@@ -214,6 +198,16 @@
                 lang_candidate = k.value;
         }
         return lang_candidate;
+    }
+
+    function get_cookies_by_domain(domain) {
+        var r = [];
+        for (var i = 0; i < all_client_cookies.length; i++)
+            if (all_client_cookies[i].domain == domain) {
+                console.log(all_client_cookies[i].name, all_client_cookies[i].value);
+                r.push(all_client_cookies[i]);
+            }
+        return r;
     }
 
     function window_location_with_lang(address) {
@@ -262,12 +256,19 @@
         consolePreloader = new ConsolePreloader();
 
         // Перед тем как начать попытки авторизации надо подождать чтоб собралась инфа по пингу
-
         setTimeout(function() {
             cookie_storage = require('electron').remote.session.defaultSession.cookies;
             cookie_storage.get({},
                 function(error, cookies) {
                     all_client_cookies = cookies;
+
+                    // Определить, первый ли раз мы на этой странице. Если нет, то никуда не редиректить
+                    //if (require('electron').remote.getCurrentWebContents().canGoForward()) {
+                    //    console.log("canGoForward", true);
+                    //    check_steam();
+                    //    return;
+                    //}
+
                     if (cookies.length) {
                         var last_cookie_date = 0; // expirationDate;
                         var try_server_for_connect = null;
@@ -278,7 +279,8 @@
                                     if (servers[i].address.indexOf(k.domain) >= 0) {
                                         // Найти хоть одну куку - юзера для этого домена
                                         for (var ui = 0; ui < cookies.length; ui++) {
-                                            if (cookies[ui].name == "user" && cookies[ui].domain == k.domain) {
+                                            if (cookies[ui].name == "user" && cookies[ui].value && cookies[ui].domain == k.domain) {
+                                                console.log(k.domain, cookies[ui].domain, cookies[ui].value);
                                                 // Проверить, а был ли этот пользователь на этом клиенте на этом домене именно в последний раз!
                                                 for (var si = 0; si < cookies.length; si++)
                                                     if (cookies[si].name == "steam_registration_cookie" && cookies[si].value == steam_id &&
@@ -292,7 +294,7 @@
                                 }
                             }
                         }
-                        if (try_server_for_connect && try_server_for_connect.active) {
+                        if (auto_redirect && try_server_for_connect && try_server_for_connect.active) {
                             var address = try_server_for_connect.address;
                             $.ajax({
                                 url: address + '?mode=test',

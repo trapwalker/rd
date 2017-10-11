@@ -198,7 +198,15 @@ class Inventory(object):
             # log.debug('dobavlyaem item %s', item)
         if position is None:
             return False
-        assert (position < self.max_size) and (position >= 0)
+        # assert (position < self.max_size) and (position >= 0)
+        # todo: Разобраться почему такая ошибка могла возникнуть
+        if position >= self.max_size or position < 0:
+            log.warn("pos={}, max_size={}".format(position, self.max_size))
+            ag = self.owner and self.owner.main_agent
+            log.warning("Item {} not added for agent {}".format(item, ag))
+            if ag:
+                ag.log.info("Item {} not added".format(item))
+            return False
         if self.get_item(position=position) is not None:
             return False
         self._items.update({position: item})

@@ -139,7 +139,7 @@ class Die(Message):
         d = super(Die, self).as_dict()
         towns = self.agent.example.profile.insurance.get_respawn_towns(agent=self.agent.example, time=self.time)
         d.update(
-            towns=[dict(title=town.title) for town in towns],
+            towns=[dict(title=town.title, node_hash=town.node_hash()) for town in towns],
             insurance=self.agent.example.profile.insurance.as_client_dict(),
         )
         return d
