@@ -4,7 +4,7 @@
 ## Создание пользователя
 
 - useradd sl
-- usermod -aG sudo sl
+- usermod -aG sudo sl  ## useradd sl sudo
 
 ## Создание SWAP-файла
 
@@ -19,10 +19,10 @@
 
 ## Установка пакетов (от имени пользователя "sl")
 
-- sudo apt update
-- sudo apt upgrade -y
-- sudo apt install -y  mc python python-pip mercurial htop nginx mongodb
-- sudo pip install --upgrade pip
+- apt update
+- apt upgrade -y
+- apt install -y  mc python python-pip mercurial htop nginx mongodb
+- pip install --upgrade pip
 
 ## Deploy server soft
 
@@ -53,14 +53,10 @@
 - sudo -s
 - echo >> /etc/apt/sources.list
 - echo deb http://apt.izzysoft.de/ubuntu generic universe >> /etc/apt/sources.list
-- wget http://apt.izzysoft.de/izzysoft.asc
-- apt-key add izzysoft.asc
-- rm izzysoft.asc
-- apt update
-- apt install -y  monitorix
+- wget http://apt.izzysoft.de/izzysoft.asc && apt-key add izzysoft.asc && rm izzysoft.asc
+- apt update && apt install -y  monitorix
 - cp ~/rd/deploy/conf/etc/monitorix/monitorix.conf /etc/monitorix/monitorix.conf
-- sudo service monitorix restart
-- exit
+- service monitorix restart
 - echo "Теперь мониторинг доступен по ссылке http://127.0.0.1:8080/monitorix"
 
 
@@ -87,4 +83,4 @@
 
 - free -h  # Показать использование оперативной памяти
 - df -h    # Показать список разделов, занятое и свободное место на них
-- rsync -zaP sl@roaddogs.ru:/home/sl/rd/sublayers_world/tiles/ /home/sl/rd/sublayers_world/tiles/  # -nvi - тестовый режим
+- rsync -zaP sl@eu.roaddogs.online:/home/sl/rd/sublayers_world/tiles/ /home/sl/rd/sublayers_world/tiles/  # -nvi - тестовый режим
