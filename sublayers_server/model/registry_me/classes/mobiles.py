@@ -13,6 +13,7 @@ from sublayers_server.model.registry_me.tree import (
     RegistryLinkField, EmbeddedNodeField, PositionField, BooleanField,
     LocalizedStringField,
 )
+import random
 
 SLOT_LOCK = "reg:///registry/items/slot_item/_lock"
 
@@ -24,6 +25,18 @@ class SlotField(EmbeddedNodeField):
 class ModuleSlotField(SlotField):
     def __init__(self, root_default=SLOT_LOCK, **kw):
         super(ModuleSlotField, self).__init__(root_default=root_default, **kw)
+
+
+class ParamRange(Subdoc):
+    min = FloatField(default=1.0, doc=u"Минимальное значение генерации")
+    max = FloatField(default=1.0, doc=u"Максимальное значение генерации")
+
+    def __init__(self, **kw):
+        super(ParamRange, self).__init__(**kw)
+        self.min, self.max = min(self.max, self.min), max(self.max, self.min)
+
+    def get_random_value(self):
+        return self.min + random.random() * (self.max - self.min)
 
 
 class Mobile(Node):
@@ -63,7 +76,7 @@ class Mobile(Node):
     p_obs_range_rate_max = FloatField(caption=u"Коэффициент радиуса обзора при скорости = 0", tags={'parameter', 'param_aggregate'})
 
     # атрибуты от Unit
-    p_armor              = FloatField(caption=u"Броня машинки", tags={'parameter', 'param_aggregate'})
+    p_armor              = FloatField(caption=u"Броня машинки", tags={'parameter', 'param_aggregate', "param_randomize"})
     p_radiation_armor    = FloatField(caption=u"Уровень защиты от радиации (0-100)", tags={'parameter', 'param_aggregate'})
 
 
@@ -106,17 +119,17 @@ class Mobile(Node):
 
     # атрибуты Mobile
     r_min                = FloatField(caption=u"Минимальный радиус разворота", tags={'param_aggregate'})
-    mobility             = FloatField(root_default=0, caption=u"Манёвренность машинки", tags={'param_aggregate'})  # former ac_max
+    mobility             = FloatField(root_default=0, caption=u"Манёвренность машинки", tags={'param_aggregate', "param_randomize"})  # former ac_max
     max_control_speed    = FloatField(caption=u"Абсолютная максимальная скорость движения", tags={'param_aggregate'})
-    v_forward            = FloatField(caption=u"Максимальная скорость движения вперед", tags={'param_aggregate'})
+    v_forward            = FloatField(caption=u"Максимальная скорость движения вперед", tags={'param_aggregate', "param_randomize"})
     v_backward           = FloatField(caption=u"Максимальная скорость движения назад", tags={'param_aggregate'})
-    a_forward            = FloatField(caption=u"Ускорение разгона вперед", tags={'param_aggregate'})
+    a_forward            = FloatField(caption=u"Ускорение разгона вперед", tags={'param_aggregate', "param_randomize"})
     a_backward           = FloatField(caption=u"Ускорение разгона назад", tags={'param_aggregate'})
     a_braking            = FloatField(caption=u"Ускорение торможения", tags={'param_aggregate'})
 
     max_fuel             = FloatField(caption=u"Максимальное количество топлива", tags={'client', 'param_aggregate'})
     fuel                 = FloatField(caption=u"Текущее количество топлива", tags={'client', 'param_aggregate'})
-    p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)", tags={'param_aggregate'})
+    p_fuel_rate          = FloatField(caption=u"Расход топлива (л/с)", tags={'param_aggregate', "param_randomize"})
 
     # атрибуты влияющие на эффективность стрельбы
     dps_rate             = FloatField(root_default=1.0, caption=u"Множитель модификации урона автоматического оружия", tags={'param_aggregate'})
@@ -131,6 +144,23 @@ class Mobile(Node):
     # атрибуты, связанные с критами.
     crit_rate            = FloatField(root_default=1.0, caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={'param_aggregate'})
     crit_power           = FloatField(root_default=1.0, caption=u"Сила крита [0 .. сколько угодно]", tags={'param_aggregate'})
+
+
+    # Атрибуты для рандомных параметров
+    rand_range_max_hp = EmbeddedDocumentField(document_type=ParamRange)
+    rand_range_v_forward = EmbeddedDocumentField(document_type=ParamRange)
+    rand_range_a_forward = EmbeddedDocumentField(document_type=ParamRange)
+    rand_range_p_fuel_rate = EmbeddedDocumentField(document_type=ParamRange)
+    rand_range_p_armor = EmbeddedDocumentField(document_type=ParamRange)
+    rand_range_mobility = EmbeddedDocumentField(document_type=ParamRange)
+
+    rand_modifier_max_hp = FloatField(root_default=1.0)
+    rand_modifier_v_forward = FloatField(root_default=1.0)
+    rand_modifier_a_forward = FloatField(root_default=1.0)
+    rand_modifier_p_fuel_rate = FloatField(root_default=1.0)
+    rand_modifier_p_armor = FloatField(root_default=1.0)
+    rand_modifier_mobility = FloatField(root_default=1.0)
+
 
     slot_FL   = ModuleSlotField(caption=u'ForwardLeftSlot', doc=u'Передний левый слот', tags={'armorer'})
     slot_FL_f = StringField    (caption=u'Флаги переднего левого слота [FBLR]', tags={'client', 'slot_limit'})
@@ -219,6 +249,18 @@ class Mobile(Node):
 
     def get_modify_value(self, param_name, example_agent=None):
         original_value = getattr(self, param_name)
+        # если этот параметр является рандомизируемым (tag=param_randomize), то учесть это
+        attr = self.get_attribute(param_name)
+        if attr:
+            if "param_randomize" in attr.tags:
+                r_mod = getattr(self, "rand_modifier_{}".format(param_name), None)
+                if r_mod:
+                    original_value *= r_mod
+                else:
+                    log.warn("rand_modifier for {} not found".format(param_name))
+        else:
+            log.warn("Attr with name {} not found in object: {}".format(param_name, self))
+
         modifier_value = 1.0  # собирающий коэффициент по перкам, квест_итемам и механик_итемам, НО НЕ ПО СКИЛАМ
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):
@@ -250,6 +292,13 @@ class Mobile(Node):
         for param_name, attr, getter in self.iter_attrs(tags={'param_aggregate'}):
             d[param_name] = getattr(self, param_name)
             modifier_dict[param_name] = 1.0
+            # проверить, если этот параметр является рандомизируемым (tag=param_randomize), то учесть это
+            if "param_randomize" in attr.tags:
+                r_mod = getattr(self, "rand_modifier_{}".format(param_name), None)
+                if r_mod:
+                    d[param_name] *= r_mod
+                else:
+                    log.warn("rand_modifier for {} not found".format(param_name))
 
         for slot_name, slot_value in self.iter_slots(tags={'mechanic'}):
             if isinstance(slot_value, MechanicItem):

@@ -530,6 +530,10 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
                 getter = lambda: getattr(self, name)
                 yield name, attr, getter
 
+    # info: скорее всего не сосвем правильно, но как иначе получить непосредственно атрибут - не понял
+    def get_attribute(self, name):
+        return type(self)._fields.get(name, None)
+
     def __str__(self):
         return self.to_string()
 
