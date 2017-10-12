@@ -48,6 +48,12 @@
         <div class="car-info-block-body-right-list-text value even">{{ car.max_hp }}</div>
         <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_speed") }}</div>
         <div class="car-info-block-body-right-list-text value uneven">{{ str_value }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_acc") }}</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ "{:.1f}".format(all_params["a_forward"]) }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_mobility") }}</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ "{:.1f}".format(all_params["mobility"] * 10.0) }}</div>
+        <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_armor") }}</div>
+        <div class="car-info-block-body-right-list-text value uneven">{{ "{:.1f}".format(all_params["p_armor"]) }}</div>
         <div class="car-info-block-body-right-list-text name even">&nbsp{{ _("lcit_slot_count") }}</div>
         <div class="car-info-block-body-right-list-text value even">{{ car.get_count_slots(tags='armorer') }}</div>
         <div class="car-info-block-body-right-list-text name uneven">&nbsp{{ _("lcit_inventory_size") }}</div>
