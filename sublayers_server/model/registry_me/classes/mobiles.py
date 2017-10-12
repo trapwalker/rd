@@ -38,6 +38,9 @@ class ParamRange(Subdoc):
     def get_random_value(self):
         return self.min + random.random() * (self.max - self.min)
 
+    def in_range(self, value):
+        return self.min <= value <= self.max
+
 
 class Mobile(Node):
     u"""
@@ -376,6 +379,30 @@ class Mobile(Node):
 
     def is_target(self):
         return False
+
+    def randomize_params(self, options=None):
+        """
+        Устанавливает значения коэффициентов rand_modifier_*.
+        Устанавливает из options или выбирает случайно из rand_range_* диапазона
+        """
+        for param_name, attr, getter in self.iter_attrs(tags={"param_randomize"}):
+            param_range = getattr(self, "rand_range_{}".format(param_name))
+            if param_range:
+                mod_name = "rand_modifier_{}".format(param_name)
+                value = options and options.get(mod_name, None)
+                value = value if value is not None and param_range.in_range(value) else param_range.get_random_value()
+                setattr(self, mod_name, value)
+            else:
+                log.warn("randomize_params:: Range not found for {}".format(param_name))
+
+    def pre_buy_car(self, example_agent):
+        """
+        pre-sale preparation
+        Установка параметров-значений state'ов в максимальные значения, зависящие от агентов.
+        Выполняется после randomize_params
+        """
+        self.hp = self.get_modify_value("max_hp", example_agent=example_agent)
+        self.fuel = self.get_modify_value("max_fuel", example_agent=example_agent)
 
 
 class Car(Mobile):
