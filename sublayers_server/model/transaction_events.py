@@ -520,6 +520,21 @@ class TransactionHangarBuy(TransactionTownNPC):
             return
         car_example = car_lot.car_example
 
+        # Проверяем можно ли перенести инвентарь
+        if (self.agent.example.profile.car):
+            old_car = self.agent.example.profile.car
+            old_count = len(old_car.inventory.items)
+            old_capacity = old_car.inventory.size
+            new_count = len(car_example.inventory.items)
+            new_capacity = car_example.inventory.size
+            if (new_capacity - new_count) < old_count:
+                messages.NPCReplicaMessage(
+                    agent=self.agent,
+                    time=self.time,
+                    npc=npc,
+                    replica=locale(lang=self.lang, key="tr_thangar_inventory_trouble").format(old_count, old_capacity, new_count, new_capacity)).post()
+                return
+
         agent_balance = self.agent.balance
         skill_effect = npc.get_trading_effect(agent_example=self.agent.example)
         if self.agent.example.profile.car:
@@ -529,10 +544,18 @@ class TransactionHangarBuy(TransactionTownNPC):
         new_car_price = int(car_example.price * (1 + npc.margin * skill_effect))
 
         if (agent_balance + old_car_price) >= new_car_price:
+            # Сохраняем инвентарь в екзампл
+            self.agent.inventory.save_to_example(time=self.time)
+
             # Удаляем старый лот и добавляем новый
             npc.del_car_lot(car_lot=car_lot, time=self.time)
             if self.agent.example.profile.car:
                 npc.add_car_lot(car_lot=CarLot(car_example=self.agent.example.profile.car, group=None, hangar=npc, time=self.time), time=self.time)
+                # Переносим все можно между инвентарями
+                old_car = self.agent.example.profile.car
+                for item in old_car.inventory.items:
+                    car_example.inventory.items.append(item)
+                old_car.inventory.items = []
 
             # Отправка сообщения о транзакции
             now_date = datetime.now()
@@ -563,6 +586,9 @@ class TransactionHangarBuy(TransactionTownNPC):
             # Эвент квестов
             self.agent.example.profile.on_event(event=self, cls=quest_events.OnBuyCar)
             TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
+
+            # Перезагружаем модельный инвентарь
+            self.agent.reload_inventory(time=self.time, save=False, total_inventory=None)
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                        replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()

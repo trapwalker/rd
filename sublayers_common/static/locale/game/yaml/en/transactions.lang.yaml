@@ -18,6 +18,7 @@
 
 # TransactionHangarBuy
 "tr_thangarbuy_notcorrect_car": "Inaccessible car selected!"
+"tr_thangar_inventory_trouble": "The contents of your trunk do not fit into the new vehicle.</br>- Your vehicle: {}/{}</br>- Vehicle for exchange: {}/{}"
 "tr_thangar_swap": "Exchange for"
 "tr_thangar_buy": "Buy"
 "tr_tpark_swap": "Exchange for"

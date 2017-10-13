@@ -2333,7 +2333,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendHangarBuy = function (npc) {
-        console.log('ClientManager.prototype.sendHangarCarChoice', npc);
+        //console.log('ClientManager.prototype.sendHangarCarChoice', npc);
         var mes = {
             call: "buy_car_in_hangar",
             rpc_call_id: rpcCallList.getID(),
