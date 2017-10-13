@@ -8,6 +8,7 @@ var LocationHangarNPC = (function (_super) {
         this.current_car = null;
         this.skill_effect = 1;
         this.npc_margin = 0;
+        this.npc_trading = 0;
     }
 
     LocationHangarNPC.prototype.get_self_info = function () {
@@ -15,71 +16,108 @@ var LocationHangarNPC = (function (_super) {
         clientManager.sendGetHangarInfo(this);
     };
 
+    LocationHangarNPC.prototype._redraw = function () {
+        var jq_car_list = this.jq_main_div.find('.hangar-center').first();
+        var jq_car_list_inventory = this.jq_main_div.find('.hangar-car-list-list').first();
+        jq_car_list.empty();
+        jq_car_list_inventory.empty();
+
+        for (var i = 0; i < this.cars_list.length; i++) {
+            var car_rec = this.cars_list[i];
+            var jq_car = $('<div id="hangar-center-info-car-' + i + '" class="hangar-center-info-car-wrap"></div>');
+            var jq_car_content = $(
+                '<div class="car-info-block-main">' +
+                    '<div class="car-info-block-picture-hangar town-interlacing">' + car_rec.html_car_img + '</div>' +
+                    '<div class="car-info-block-car-name-hangar">' + _(car_rec.car.title) + '</div>' +
+                    '<div class="car-info-block-info-hangar">' +
+                        '<div class="town-back-interlacing"></div>' +
+                        car_rec.html_car_table +
+                    '</div>' +
+                '</div>');
+            jq_car.append(jq_car_content);
+            jq_car_list.append(jq_car);
+
+            var jq_inv_car = $(
+                '<div class="npcInventory-itemWrap" data-car_number="' + i + '">' +
+                    '<div class="npcInventory-item">' +
+                        '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
+                        '<div class="npcInventory-name">' + _(car_rec.car.title) + '</div>' +
+                    '</div>' +
+                '</div>'
+            );
+            jq_car_list_inventory.append(jq_inv_car);
+        }
+        this.resizeInventory(jq_car_list_inventory);
+
+        // Вешаем клики на машинки в инвентаре
+        var self = this;
+        this.jq_main_div.find('.npcInventory-itemWrap').click(function () {
+            // Сбросить предыдущее выделение и выджелить выбранный итем
+            self.jq_main_div.find('.npcInventory-itemWrap').removeClass('active');
+            $(this).addClass('active');
+
+            // Скрыть информационные окна всех машинок, показать выбранную
+            self.jq_main_div.find('.hangar-center-info-car-wrap').css('display', 'none');
+            self.jq_main_div.find('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
+
+            // Установить выбранную машинку в менеджер
+            self.current_car = $(this).data('car_number');
+            self.set_panels();
+            self.set_header_text();
+
+            // Обновление менеджера обучения
+            teachingManager.redraw();
+        });
+        if ((this.current_car >= 0) && (this.current_car < this.cars_list.length))
+            this.jq_main_div.find('.npcInventory-itemWrap')[this.current_car].click();
+    };
+
     LocationHangarNPC.prototype.update = function (data) {
         //console.log('LocationHangarNPC.prototype.update', data);
         if (data && data.hasOwnProperty('cars')) {
-            this.cars_list = data.cars;
-            var jq_car_list = this.jq_main_div.find('.hangar-center').first();
-            var jq_car_list_inventory = this.jq_main_div.find('.hangar-car-list-list').first();
-            jq_car_list.empty();
-            jq_car_list_inventory.empty();
-
+            this.cars_list = data.cars.sort(function(a, b) { return a.car.price - b.car.price });
             if (data.hasOwnProperty('npc_trading') && data.hasOwnProperty('npc_margin')) {
                 this.npc_margin = data.npc_margin;
-                this.skill_effect = 1 - (user.actual_trading - data.npc_trading + 100) / 200;
-                for (var i = 0; i < this.cars_list.length; i++)
-                    this.cars_list[i].car.price = this.get_trading_effect_price_sale(this.cars_list[i].car.price);
+                this.npc_trading = data.npc_trading;
             }
-
-            for (var i = 0; i < this.cars_list.length; i++) {
-                var car_rec = this.cars_list[i];
-                var jq_car = $('<div id="hangar-center-info-car-' + i + '" class="hangar-center-info-car-wrap"></div>');
-                var jq_car_content = $(
-                    '<div class="car-info-block-main">' +
-                        '<div class="car-info-block-picture-hangar town-interlacing">' + car_rec.html_car_img + '</div>' +
-                        '<div class="car-info-block-car-name-hangar">' + _(car_rec.car.title) + '</div>' +
-                        '<div class="car-info-block-info-hangar">' +
-                            '<div class="town-back-interlacing"></div>' +
-                            car_rec.html_car_table +
-                        '</div>' +
-                    '</div>');
-                jq_car.append(jq_car_content);
-                jq_car_list.append(jq_car);
-
-                var jq_inv_car = $(
-                    '<div class="npcInventory-itemWrap" data-car_number="' + i + '">' +
-                        '<div class="npcInventory-item">' +
-                            '<div class="npcInventory-pictureWrap town-interlacing" ' + 'style="background: url(' + car_rec.car.inv_icon_mid + ') no-repeat center"></div>' +
-                            '<div class="npcInventory-name">' + _(car_rec.car.title) + '</div>' +
-                        '</div>' +
-                    '</div>'
-                );
-                jq_car_list_inventory.append(jq_inv_car);
-            }
-            this.resizeInventory(jq_car_list_inventory);
-
-            // Вешаем клики на машинки в инвентаре
-            var self = this;
-            this.jq_main_div.find('.npcInventory-itemWrap').click(function () {
-                // Сбросить предыдущее выделение и выджелить выбранный итем
-                self.jq_main_div.find('.npcInventory-itemWrap').removeClass('active');
-                $(this).addClass('active');
-
-                // Скрыть информационные окна всех машинок, показать выбранную
-                self.jq_main_div.find('.hangar-center-info-car-wrap').css('display', 'none');
-                self.jq_main_div.find('#hangar-center-info-car-' + $(this).data('car_number')).css('display', 'block');
-
-                // Установить выбранную машинку в менеджер
-                self.current_car = $(this).data('car_number');
-                self.set_panels();
-                self.set_header_text();
-
-                // Обновление менеджера обучения
-                teachingManager.redraw();
-            });
-            this.jq_main_div.find('.npcInventory-itemWrap').first().click();
+            this.skill_effect = 1 - (user.actual_trading - this.npc_trading + 100) / 200;
+            for (var i = 0; i < this.cars_list.length; i++)
+                this.cars_list[i].car.price = this.get_trading_effect_price_sale(this.cars_list[i].car.price);
+            this.current_car = 0;
+            this._redraw();
         }
         _super.prototype.update.call(this, data);
+    };
+
+    LocationHangarNPC.prototype._get_index_by_uid = function (uid) {
+        var lot_index = -1;
+        for (var i = 0; (i < this.cars_list.length) && (lot_index < 0); i++)
+            if (this.cars_list[i].car.uid == uid)
+                lot_index = i;
+        return lot_index;
+    };
+
+    LocationHangarNPC.prototype.add_lot = function (data) {
+        //console.log('LocationHangarNPC.prototype.add_lot', this.cars_list.length);
+        var uid = this.cars_list[this.current_car].car.uid;
+        var index = this.cars_list.push(data.car_lot);
+        this.cars_list[index - 1].car.price = this.get_trading_effect_price_sale(this.cars_list[index - 1].car.price);
+        this.cars_list.sort(function(a, b) { return a.car.price - b.car.price });
+        this.current_car = Math.max(this._get_index_by_uid(uid), 0);
+        this._redraw();
+    };
+
+    LocationHangarNPC.prototype.del_lot = function (data) {
+        //console.log('LocationHangarNPC.prototype.del_lot', this.cars_list.length);
+        var uid = this.cars_list[this.current_car].car.uid;
+        var lot_index = this._get_index_by_uid(data.car_lot.car.uid);
+        if (lot_index >= 0) {
+            this.cars_list.splice(lot_index, 1);
+            this.current_car = Math.max(this._get_index_by_uid(uid), 0);
+        }
+        else
+            console.warn('Car not found', data.car_lot, this.cars_list);
+        this._redraw();
     };
 
     LocationHangarNPC.prototype.activate = function () {

@@ -779,9 +779,10 @@ class AgentAPI(API):
     @call_constrains(5)
     @basic_mode
     @public_method
-    def buy_car_in_hangar(self, car_number, npc_node_hash):
-        self.agent.log.info('agent %r want buy car, with number=%r', self.agent, car_number)
-        TransactionHangarBuy(time=self.agent.server.get_time(), agent=self.agent, car_number=car_number, npc_node_hash=npc_node_hash).post()
+    def buy_car_in_hangar(self, npc_node_hash, car_uid):
+        _car_uid = None if car_uid is None else UUID(car_uid)
+        self.agent.log.info('agent %r want buy car, with uid=%r', self.agent, _car_uid)
+        TransactionHangarBuy(time=self.agent.server.get_time(), agent=self.agent, car_uid=_car_uid, npc_node_hash=npc_node_hash).post()
 
     @basic_mode
     @public_method

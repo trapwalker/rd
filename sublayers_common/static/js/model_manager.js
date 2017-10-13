@@ -1444,6 +1444,20 @@ var ClientManager = (function () {
         }
     };
 
+    ClientManager.prototype.HangarAddLotMessage = function (event) {
+        //console.log('ClientManager.prototype.HangarAddLotMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
+            locationManager.npc[event.npc_html_hash].add_lot(event);
+        }
+    };
+
+    ClientManager.prototype.HangarDelLotMessage = function (event) {
+        //console.log('ClientManager.prototype.HangarAddLotMessage', event);
+        if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
+            locationManager.npc[event.npc_html_hash].del_lot(event);
+        }
+    };
+
     ClientManager.prototype.ParkingInfoMessage = function (event) {
         //console.log('ClientManager.prototype.ParkingInfoMessage', event);
         if (locationManager.npc.hasOwnProperty(event.npc_html_hash)) {
@@ -2319,13 +2333,13 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.sendHangarBuy = function (npc) {
-        //console.log('ClientManager.prototype.sendHangarCarChoice', car_number);
+        console.log('ClientManager.prototype.sendHangarCarChoice', npc);
         var mes = {
             call: "buy_car_in_hangar",
             rpc_call_id: rpcCallList.getID(),
             params: {
                 npc_node_hash: npc.npc_rec.node_hash,
-                car_number: npc.current_car
+                car_uid: npc.cars_list[npc.current_car].car.uid
             }
         };
         rpcCallList.add(mes);

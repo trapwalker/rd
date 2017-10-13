@@ -13,6 +13,7 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.events import ActivateLocationChats, event_deco
 from sublayers_server.model.chat_room import ChatRoom, PrivateChatRoom
 from sublayers_server.model.registry_me.classes.trader import TraderRefreshEvent, Trader
+from sublayers_server.model.registry_me.classes.hangar import Hangar
 from sublayers_server.model.inventory import Inventory
 
 from tornado.options import options
@@ -200,6 +201,9 @@ class Town(MapLocation):
             # todo: Спрятать инициализацию NPC в виртуальный метод, чтобы могли инициализироваться все
             if isinstance(npc, Trader) and not options.quick_debug and npc.refresh_time:
                 TraderRefreshEvent(time=time, trader=npc, location=self).post()
+            # Формируем первый завоз у продавца машин
+            if isinstance(npc, Hangar):
+                npc.init(location=self, time=time)
 
         self.enemy_agents = dict()  # Должны быть дикты с агентом и временем добавления
         self.enemy_objects = dict()  # Должны быть дикты с объектами и временами добавления
