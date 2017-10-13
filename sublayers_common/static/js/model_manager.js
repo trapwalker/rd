@@ -2553,6 +2553,20 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.sendSetNameCar = function (str) {
+        console.log('ClientManager.prototype.sendSetNameCar', str);
+        if (!str) return;
+        var mes = {
+            call: "set_name_car",
+            rpc_call_id: rpcCallList.getID(),
+            params: {
+                text: str
+            }
+        };
+        rpcCallList.add(mes);
+        this._sendMessage(mes);
+    };
+
     ClientManager.prototype.sendGetAboutSelf = function () {
         //console.log('ClientManager.prototype.sendSetAboutSelf', str);
         var mes = {

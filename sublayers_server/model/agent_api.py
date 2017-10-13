@@ -960,6 +960,19 @@ class AgentAPI(API):
         self.agent.example.profile.about_self = text
         messages.UserGetAboutSelf(agent=self.agent, time=self.agent.server.get_time()).post()
 
+    @call_constrains(1)
+    @public_method
+    def set_name_car(self, text):
+        if len(text) > 30:
+            self.agent.log.info('Try set name_car very long')
+            return
+        ex_car = self.agent.example.profile.car
+        if ex_car and ex_car.name_car != text:
+            self.agent.log.info('set_name_car text={!r}'.format(text))
+            ex_car.name_car = text
+            messages.UserExampleCarInfo(agent=self.agent, time=self.agent.server.get_time()).post()
+            print text
+
     # Квесты
     @call_constrains(2)
     @public_method
