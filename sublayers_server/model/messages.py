@@ -1555,7 +1555,7 @@ class InteractionInfoMessage(Message):
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")
                 d.update(
-                    car_name=player_profile.car.title,
+                    car_name=player_profile.car.name_car,
                     html_car_table=template_table.generate(car=player_profile.car, agent=player),
                     html_car_img=template_img.generate(car=player_profile.car)
                 )

@@ -544,14 +544,13 @@ class TransactionHangarBuy(TransactionTownNPC):
         new_car_price = int(car_example.price * (1 + npc.margin * skill_effect))
 
         if (agent_balance + old_car_price) >= new_car_price:
-            # Сохраняем инвентарь в екзампл
-            self.agent.inventory.save_to_example(time=self.time)
-
             # Удаляем старый лот и добавляем новый
             npc.del_car_lot(car_lot=car_lot, time=self.time)
             if self.agent.example.profile.car:
                 npc.add_car_lot(car_lot=CarLot(car_example=self.agent.example.profile.car, group=None, hangar=npc, time=self.time), time=self.time)
                 # Переносим все можно между инвентарями
+                if self.agent.inventory:
+                    self.agent.inventory.save_to_example(time=self.time)
                 old_car = self.agent.example.profile.car
                 for item in old_car.inventory.items:
                     car_example.inventory.items.append(item)

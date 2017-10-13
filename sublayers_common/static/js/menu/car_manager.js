@@ -38,11 +38,9 @@ var CarManager = (function () {
                 'type="text" maxlength="25" style="text-align: center; border: 0;" value="' + user.example_car.name_car + '"></div>');
             jq_car_block_table.append(user.templates['html_car_table']);
 
-
             carManager.timer_auto_save_car_name = null;
             carManager.jq_main_div.find('.car-window-name input').first().on('change keyup paste', function (event) {
                 // Поставить таймер на 3 секунды, если он сработает, то сохранить значение
-                console.log('aaaaaaaaaa');
                 if (carManager.timer_auto_save_car_name) {
                     clearTimeout(carManager.timer_auto_save_car_name);
                     carManager.timer_auto_save_car_name = null;

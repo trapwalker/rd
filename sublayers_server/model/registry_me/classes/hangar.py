@@ -34,6 +34,7 @@ class CarGroup(Subdoc):
         car_proto = random.choice(self.car_list)
         car_example = car_proto.instantiate()
         car_example.randomize_params()
+        car_example.name_car = car_example.title.en
         return car_example
 
 

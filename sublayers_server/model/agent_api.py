@@ -971,7 +971,6 @@ class AgentAPI(API):
             self.agent.log.info('set_name_car text={!r}'.format(text))
             ex_car.name_car = text
             messages.UserExampleCarInfo(agent=self.agent, time=self.agent.server.get_time()).post()
-            print text
 
     # Квесты
     @call_constrains(2)

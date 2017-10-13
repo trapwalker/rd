@@ -28,7 +28,7 @@ var LocationHangarNPC = (function (_super) {
             var jq_car_content = $(
                 '<div class="car-info-block-main">' +
                     '<div class="car-info-block-picture-hangar town-interlacing">' + car_rec.html_car_img + '</div>' +
-                    '<div class="car-info-block-car-name-hangar">' + _(car_rec.car.title) + '</div>' +
+                    '<div class="car-info-block-car-name-hangar">' + car_rec.car.name_car + '</div>' +
                     '<div class="car-info-block-info-hangar">' +
                         '<div class="town-back-interlacing"></div>' +
                         car_rec.html_car_table +

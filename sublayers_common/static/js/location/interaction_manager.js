@@ -167,7 +167,7 @@ var InteractionManager = (function (_super) {
 
         // Вставляем верстку автомобиля
         this.jq_main_div.find('.chat-interaction-car-photo-block').append(user_data.html_car_img);
-        this.jq_main_div.find('.chat-interaction-car-photo-name').text(_(user_data.car_name));
+        this.jq_main_div.find('.chat-interaction-car-photo-name').text(user_data.car_name);
         this.jq_main_div.find('.chat-interaction-car-info').append(user_data.html_car_table);
 
         for (var i = 0; i < this.field_name_list.length; i++) {
