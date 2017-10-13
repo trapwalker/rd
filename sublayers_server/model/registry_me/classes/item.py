@@ -305,7 +305,7 @@ class MechanicItem(SlotItem):
     p_observing_range = FloatField(caption=u"Радиус обзора")
     max_hp = FloatField(caption=u"Максимальное значение HP")
     r_min = FloatField(caption=u"Минимальный радиус разворота")
-    ac_max = FloatField(caption=u"Максимальная перегрузка при развороте")
+    mobility = FloatField(caption=u"Изменение манёвренности в поворотах")  # former ac_max
     max_control_speed = FloatField(caption=u"Абсолютная максимальная скорость движения")
     v_forward = FloatField(caption=u"Максимальная скорость движения вперед")
     v_backward = FloatField(caption=u"Максимальная скорость движения назад")
@@ -324,7 +324,6 @@ class MechanicItem(SlotItem):
         "p_observing_range",
         "max_hp",
         "r_min",
-        "ac_max",
         "v_forward",
         "v_backward",
         "a_forward",

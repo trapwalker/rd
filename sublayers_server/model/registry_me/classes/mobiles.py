@@ -107,7 +107,7 @@ class Mobile(Node):
 
     # атрибуты Mobile
     r_min                = FloatField(caption=u"Минимальный радиус разворота", tags={'param_aggregate'})
-    ac_max               = FloatField(caption=u"Максимальная перегрузка при развороте", tags={'param_aggregate'})
+    mobility             = FloatField(root_default=0, caption=u"Манёвренность машинки", tags={'param_aggregate'})  # former ac_max
     max_control_speed    = FloatField(caption=u"Абсолютная максимальная скорость движения", tags={'param_aggregate'})
     v_forward            = FloatField(caption=u"Максимальная скорость движения вперед", tags={'param_aggregate'})
     v_backward           = FloatField(caption=u"Максимальная скорость движения назад", tags={'param_aggregate'})
@@ -168,7 +168,7 @@ class Mobile(Node):
 
     # Влияние скилов
     driving_r_min             = FloatField(caption=u"Влияние Вождения на Минимальный радиус разворота")
-    driving_ac_max            = FloatField(caption=u"Влияние Вождения на Максимальную перегрузка при развороте")
+    driving_mobility          = FloatField(caption=u"Влияние Вождения на Манёвренность при поворотах")  # former ac_max
     driving_max_control_speed = FloatField(caption=u"Влияние Вождения на Абсолютную максимальную скорость движения")
     driving_v_forward         = FloatField(caption=u"Влияние Вождения на Максимальную скорость движения вперед")
     driving_v_backward        = FloatField(caption=u"Влияние Вождения на Максимальную скорость движения назад")
@@ -279,6 +279,18 @@ class Mobile(Node):
             d[param_name] *= max(modifier_dict[param_name], 0)
 
         return d
+
+    def ac_max(self, a=None, mobility=None, example_agent=None):
+        if a is None:
+            a_forward = self.get_modify_value('a_forward', example_agent)
+            a_backward = self.get_modify_value('a_backward', example_agent)
+            a_braking = self.get_modify_value('a_braking', example_agent)
+            a = max(abs(a_forward), abs(a_backward), abs(a_braking))
+
+        if mobility is None:
+            mobility = self.get_modify_value('mobility', example_agent)
+
+        return a * 2 * (1.01 + mobility)
 
     # Для того, чтобы "закрыть" поле
     @property

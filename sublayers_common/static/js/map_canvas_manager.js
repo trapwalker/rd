@@ -106,7 +106,14 @@ var MapCanvasManager = (function(_super){
         this._mouse_focus_widget = null;
         this._mouse_look = false;
         this._mouse_client = new Point(0, 0);
+        this.global_mouse_client = new Point(0, 0);
+        $(document).mousemove(function(event) { mapCanvasManager.global_mouse_client = new Point(event.clientX, event.clientY); });
 
+        this._central_point = new Point(0, 0);
+        this._lock_radius1 = 0;
+        this._lock_radius2 = 0;
+        this.current_mouse_shift = new Point(0, 0);
+        this.target_mouse_shift = new Point(0, 0);
 
         this._settings_particles_tail = settingsManager.options.particles_tail.value;  // Длина шлейфов
     }
@@ -136,10 +143,62 @@ var MapCanvasManager = (function(_super){
     };
 
     MapCanvasManager.prototype.redraw = function(time) {
+        function easeInQuart(x, t, b, c, d) { // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
+            //return c * (t /= d) * t * t * t + b;
+            return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+        }
+
         if(! this.is_canvas_render) return;
-        var a = mapManager.getMapSize();
+
+        var map_size = mapManager.getMapSize();
+        if (subVector(map_size, this.cur_map_size).abs() > 0.2) {
+            this.cur_map_size = map_size;
+            this._central_point = mulScalVector(mapManager.getMapSize(), 0.5);
+            var s = Math.min(map_size.x, map_size.y) * 0.5;
+            this._lock_radius1 = s * 1.3;
+            this._lock_radius2 = s * 1.8;
+        }
+
+        // Расчет сдвига карты от указателя мыши
+        var cursor_point = this.global_mouse_client;
+        this.target_mouse_shift = subVector(cursor_point, this._central_point);
+        var sqr_abs = this.target_mouse_shift.sqr_abs();
+
+        // Бублик
+        var d_len = this._lock_radius2 - this._lock_radius1;
+        if (sqr_abs < this._lock_radius1 * this._lock_radius1)
+            this.target_mouse_shift = new Point(0, 0);
+        else if (sqr_abs > this._lock_radius2 * this._lock_radius2)
+            this.target_mouse_shift = normVector(this.target_mouse_shift, d_len);  // потому что this._lock_radius1 = this._lock_radius2 / 2
+        else
+            this.target_mouse_shift = normVector(this.target_mouse_shift, (Math.sqrt(sqr_abs) - this._lock_radius1));
+
+        // Не бублик
+        //if (sqr_abs > this._lock_radius2 * this._lock_radius2)
+        //    this.target_mouse_shift = normVector(this.target_mouse_shift, this._lock_radius2);
+        //var d_len = this._lock_radius2;
+
+        // Градиент
+        var len = this.target_mouse_shift.abs();
+        var new_len = easeInQuart(0, len, 0, d_len, d_len);
+        this.target_mouse_shift = normVector(this.target_mouse_shift, new_len);
+
+        // Медленное движение
+        var d_shift = subVector(this.target_mouse_shift, this.current_mouse_shift);
+        if (settingsManager.options.dynamic_camera.currentValue)
+            if (d_shift.sqr_abs() > 10) {
+                d_shift.x = d_shift.x * 0.1; d_shift.y = d_shift.y * 0.1;
+                this.current_mouse_shift = summVector(this.current_mouse_shift, d_shift);
+            }
+            else
+                this.current_mouse_shift = this.target_mouse_shift;
+        else
+            this.current_mouse_shift = new Point(0, 0);
+
         //console.log('MapCanvasManager.prototype.redraw', time);
-        this.context.clearRect(0, 0, a.x, a.y);
+        this.context.clearRect(0, 0, map_size.x, map_size.y);
+
+        if (wMapPosition) wMapPosition.redraw(time);
 
         var focused_widget = this.mouse_test(time);
         // Заменить курсор и css, если нужно
@@ -154,10 +213,14 @@ var MapCanvasManager = (function(_super){
 
         this.zoom_koeff = mapManager.getZoomKoeff();
 
-        // Старый вариант - рабочий, но немного расходится с картой
+        // ������ ������� - �������, �� ������� ���������� � ������
         // this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
 
-        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
+        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // ��� ����� ������������� 0,0 �� �������
+        var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
+        var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
+        this.cur_ctx_car_pos = car_ctx_pos;
+
         var map_size = mapManager.getMapSize();
         if (subVector(map_size, this.cur_map_size).abs() > 0.2) {  // todo: ||  map.dragging._enabled
             var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);

@@ -40,7 +40,7 @@ var WFireController = (function (_super) {
 
         // Вставляем всю верстку тут, потому как при вход в город она нахуй сносится
         $('#fireControlArea').append(
-            '<div id="fireControlAreaRumble">' +
+            '<div id="fireControlRumble">' +
                 '<div id="fireControlTop">' +
                     '<div id="divForFireControlNotClick1" class="anti-click-class"></div>' +
                     '<div id="divForFireControlNotClick2" class="anti-click-class"></div>' +

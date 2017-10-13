@@ -297,10 +297,9 @@ class FireDischargeEffectEvent(Objective):
         for sector in self.obj.fire_sectors:
             if (sector.side == self.side) and sector.is_discharge():
                 max_radius = max(max_radius, sector.radius)
-                for target in sector.target_list:
+                for target in sector.real_target_list:
                     targets.append(target.position(time=self.time))
-                for target in sector.area_target_list:
-                    targets.append(target.position(time=self.time))
+
 
         # todo: добавить гео-позиционный фильтр агентов
         subj_position = self.obj.position(time=self.time)

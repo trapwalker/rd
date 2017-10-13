@@ -167,6 +167,10 @@
 "setman_opt_auto_resurrection_text_description" : "auto_resurrection."
 "setman_opt_auto_simple_bot_text_name" : "auto_simple_bot"
 "setman_opt_auto_simple_bot_text_description" : "auto_simple_bot."
+"dynamic_camera_name": "Динамическая камера"
+"dynamic_camera_description": "Динамическая камера."
+"rumble_name": "Тряска"
+"rumble_description": "Тряска."
 
 
 "setman_opt_zoom_step_value_list_1": "Медленно"

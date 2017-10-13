@@ -6,6 +6,12 @@
     bottom: 0;
 }
 
+#chatControlRumble {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
 #chatTownWrap {
     position: absolute;
     height: 535px;

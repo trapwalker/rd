@@ -78,6 +78,7 @@ class HPState(object):
         self.fix(t=t, dt=dt)
         self.t_die = None
         if dhp:
+            self.dhp = dhp
             self.hp0 -= dhp
             if self.hp0 <= 0:
                 self.t_die = self.t0
@@ -100,13 +101,17 @@ class HPState(object):
         self._is_die = True
 
     def export(self):
+        dhp = self.dhp
+        self.dhp = 0
         return dict(
             cls=self.classname,
             t0=self.t0,
             max_hp=self.max_hp,
             hp0=self.hp0,
             dps=self.dps,
+            dhp=dhp
         )
+
 
     def __copy__(self):
         # todo: use standart pickling methods like __getinitargs__(), __getstate__() and __setstate__()
@@ -118,33 +123,3 @@ class HPState(object):
             hp=self.hp0,
             dps=self.dps,
             )
-
-
-# class DeathlessHPState(HPState):
-#     def __init__(self, deathless_mode=False, **kw):
-#         self.deathless_mode = deathless_mode
-#         super(DeathlessHPState, self).__init__(**kw)
-#
-#     def hp(self, t):
-#         if self.deathless_mode:
-#             return self.hp0
-#         else:
-#             return super(DeathlessHPState, self).hp(t)
-#
-#     def update(self, t=None, dt=0.0, dhp=None, dps=None):
-#         self.fix(t=t, dt=dt)
-#         hp0 = self.hp0
-#         super(DeathlessHPState, self).update(t, dt, dhp, dps)
-#         if self.deathless_mode:
-#             self.hp0 = hp0
-#             self.t_die = None
-#         return self.t_die
-#
-#     def __copy__(self):
-#         return self.__class__(
-#             t=self.t0,
-#             max_hp=self.max_hp,
-#             hp=self.hp0,
-#             dps=self.dps,
-#             deathless_mode=self.deathless_mode,
-#         )

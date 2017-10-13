@@ -14,14 +14,13 @@ from sublayers_server.model.fuel_task import FuelTask
 from sublayers_server.model.sectors import FireSector
 from sublayers_server.model.weapons import WeaponDischarge, WeaponAuto
 from sublayers_server.model.events import (
-    Event, FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, event_deco,
-)
+    Event, FireDischargeEvent, FireAutoEnableEvent, SearchZones, FireAutoTestEvent, )
 from sublayers_server.model.parameters import Parameter
 from sublayers_server.model import messages
 from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POILoot, CreatePOICorpseEvent
 from sublayers_server.model.vectors import Point
 from sublayers_server.model.quick_consumer_panel import QuickConsumerPanel
-from sublayers_server.model.inventory import Inventory, ItemState
+from sublayers_server.model.inventory import ItemState
 
 from math import radians
 from tornado.options import options
@@ -453,17 +452,22 @@ class Mobile(Unit):
         return self.params.get('p_observing_range').value * value
 
     def init_state_params(self):
-        return dict(
+        params = dict(
             p=self._position,
             fi=self._direction,
             r_min=self._param_aggregate['r_min'],
-            ac_max=self._param_aggregate['ac_max'],
             v_forward=self._param_aggregate['max_control_speed'],
             v_backward=self._param_aggregate['v_backward'],
             a_forward=self._param_aggregate['a_forward'],
             a_backward=self._param_aggregate['a_backward'],
             a_braking=self._param_aggregate['a_braking'],
         )
+        # Рассчёт ac_max для бОльшей безопасности ввода контента с
+        ac_max = self.example.ac_max(a=max(abs(params["a_forward"]), abs(params["a_backward"]), abs(params["a_braking"])),
+                                                mobility=self._param_aggregate['mobility'])
+        # print('{}:: ac_max={}  | {}, {}, {}'.format(self.example.title, ac_max, params["a_forward"], params["a_backward"], params["a_braking"]))
+        params.update(ac_max=ac_max)
+        return params
 
     def as_dict(self, time):
         d = super(Mobile, self).as_dict(time=time)

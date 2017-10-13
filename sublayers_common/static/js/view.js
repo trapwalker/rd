@@ -30,7 +30,6 @@ $(document).ready(function () {
 
     ws_connector = new WSConnector({url: (location.protocol == "https:" ? "wss://" : "ws://") + location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
 
-
     rpcCallList = new RPCCallList();
 
     clientManager = new ClientManager();
@@ -223,7 +222,6 @@ $(document).ready(function () {
         else // По умолчанию будет играть vigilante 128
             if ($("#electron_mode").text()) radioPlayer.set_state(1, 0, 0, 0.2, 1);
     }, 1000);
-    
 
     // Интервал запроса пинга
     setInterval(function(){
@@ -256,7 +254,6 @@ var window_scaled_prc = 1.0;
 $(window).resize(resizeWindowHandler);
 $(window).bind('focus', function() {window_focused = true;});
 $(window).bind('blur', function() {window_focused = false;});
-
 
 function resizeWindowHandler() {
     //console.log('Произошёл ресайз окна!', $( window ).width(), '   ', $( window ).height());

@@ -524,7 +524,10 @@ var ClientManager = (function () {
             //new WCanvasCarMarker(mcar);
             var t = new WCanvasCarMarker(mcar);
             new WCanvasHPCarMarker(mcar, t);
-            new WMapPosition(mcar);  // виджет позиционирования карты
+
+            // Виджет позиционирования карты
+            if (!wMapPosition) wMapPosition = new WMapPosition();
+            wMapPosition.addModelObject(mcar);
 
             // Отирсовка щита, если нужно
             if (event.car.active_shield_effect) {
@@ -543,7 +546,8 @@ var ClientManager = (function () {
             wFireController = new WFireController(mcar);  // виджет радар и контроллер стрельбы
             wFireController.updateQuickConsumerPanel(event.car.quick_consumer_panel);
             wFireController.updateStateAutoShooting(event.auto_shooting_state);
-            //mapManager.widget_rumble = new WRumble(mcar); // виджет-тряски
+
+            wRumble = new WRumble(mcar); // виджет-тряски
 
             if (mapManager.current_route) mapManager.current_route.delFromVisualManager();
             mapManager.current_route = null;
@@ -571,7 +575,6 @@ var ClientManager = (function () {
 
             returnFocusToMap();
         }
-
 
         // Если авто-воскрешение включено, то включить автострельбу
         if (settingsManager.options["auto_resurrection"].value) {
@@ -620,8 +623,11 @@ var ClientManager = (function () {
             }
 
             // При попадании залповым орудием включить эффект тряски
-            if (hp_state.dhp)
-                mapManager.widget_rumble.startDischargeRumble();
+            if (hp_state.dhp && (hp_state.dhp > 0)) {
+                wRumble.startDischargeRumble();
+                wMapPosition.random_shift();
+                setTimeout(function () { wMapPosition.random_shift();}, 150);
+            }
 
             // Установка cc для круизконтроля
             if (event.object.params) wCruiseControl.setSpeedRange(event.object.params.p_cc);

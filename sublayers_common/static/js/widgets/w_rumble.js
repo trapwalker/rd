@@ -8,11 +8,32 @@ var ConstRumbleAutoDy = 1;      // Смещение при тряске по о�
 var ConstRumbleAutoRotate = 0;  // Вращение при тряске (автоматический огонь)
 var ConstRumbleAutoSpeed = 15;  // Интенсивность тряски (чем больше значение тем меньше интенсивность) (автоматический огонь)
 
-var ConstDurationRumbleDischarge = 250;  // Длительность тряски при попадании из залпового орудия
-var ConstRumbleDischargeDx =10;          // Смещение при тряске по оси X (залповый огонь)
-var ConstRumbleDischargeDy = 10;          // Смещение при тряске по оси Y (залповый огонь)
-var ConstRumbleDischargeRotate = 1;      // Вращение при тряске (залповый огонь)
-var ConstRumbleDischargeSpeed = 15;      // Интенсивность тряски (чем больше значение тем меньше интенсивность)(залповый огонь)
+var ConstRumbleDischarge = [{
+        duration: 50,    // Длительность тряски при попадании из залпового орудия
+        dx: 10,          // Смещение при тряске по оси X (залповый огонь)
+        dy: 10,          // Смещение при тряске по оси Y (залповый огонь)
+        rotate: 0,       // Вращение при тряске (залповый огонь)
+        speed: 0         // Интенсивность тряски (чем больше значение тем меньше интенсивность)(залповый огонь)
+    }, {
+        duration: 200,   // Длительность тряски при попадании из залпового орудия
+        dx: 3,           // Смещение при тряске по оси X (залповый огонь)
+        dy: 3,           // Смещение при тряске по оси Y (залповый огонь)
+        rotate: 0,       // Вращение при тряске (залповый огонь)
+        speed: 0         // Интенсивность тряски (чем больше значение тем меньше интенсивность)(залповый огонь)
+    }, {
+        duration: 200,   // Длительность тряски при попадании из залпового орудия
+        dx: 2,           // Смещение при тряске по оси X (залповый огонь)
+        dy: 2,           // Смещение при тряске по оси Y (залповый огонь)
+        rotate: 0,       // Вращение при тряске (залповый огонь)
+        speed: 0         // Интенсивность тряски (чем больше значение тем меньше интенсивность)(залповый огонь)
+    }, {
+        duration: 200,   // Длительность тряски при попадании из залпового орудия
+        dx: 1,           // Смещение при тряске по оси X (залповый огонь)
+        dy: 1,           // Смещение при тряске по оси Y (залповый огонь)
+        rotate: 0,       // Вращение при тряске (залповый огонь)
+        speed: 0         // Интенсивность тряски (чем больше значение тем меньше интенсивность)(залповый огонь)
+    }
+];
 
 var WRumble = (function (_super) {
     __extends(WRumble, _super);
@@ -23,17 +44,25 @@ var WRumble = (function (_super) {
         // Дивы которые надо трясти
         this.isStartAutoRumble = false;
         this.isStartDischargeRumble = false;
+        this.discharge_stage = 0;
         this.rumbleDivs = [];
         // todo: сделать возможность добавлять/удалять их динамически
-        this.rumbleDivs.push($('#zoomSetDivForZoomSliderRumble'));
-        this.rumbleDivs.push($('#divScaleCarHealthRumble'));
-        this.rumbleDivs.push($('#speedSetDivForSpeedSliderRumble'));
+
+        this.rumbleDivs.push($('#zoomControlRumble'));
+        this.rumbleDivs.push($('#cruiseControlRumble'));
+        this.rumbleDivs.push($('#chatControlRumble'));
+        this.rumbleDivs.push($('#fireControlRumble'));
+        this.rumbleDivs.push($('#map2'));
+
+        //this.rumbleDivs.push($('#allControlRumble'));
+
         for (var div_key in this.rumbleDivs)
             this.rumbleDivs[div_key].jrumble();
         this.change(clock.getCurrentTime());
     }
 
     WRumble.prototype._startAutoRumble = function () {
+        if (!settingsManager.options.rumble.currentValue) return;
         for (var div_key in this.rumbleDivs) {
             this.rumbleDivs[div_key].get(0).rumble_x = ConstRumbleAutoDx;
             this.rumbleDivs[div_key].get(0).rumble_y = ConstRumbleAutoDy;
@@ -43,12 +72,13 @@ var WRumble = (function (_super) {
         }
     };
 
-    WRumble.prototype._startDischargeRumble = function () {
+    WRumble.prototype._startDischargeRumble = function (rumble_x, rumble_y, rumble_rotate, rumble_speed) {
+        //console.log(rumble_x, rumble_y, rumble_rotate, rumble_speed);
         for (var div_key in this.rumbleDivs) {
-            this.rumbleDivs[div_key].get(0).rumble_x = ConstRumbleDischargeDx;
-            this.rumbleDivs[div_key].get(0).rumble_y = ConstRumbleDischargeDy;
-            this.rumbleDivs[div_key].get(0).rumble_rot = ConstRumbleDischargeRotate;
-            this.rumbleDivs[div_key].get(0).rumble_speed = ConstRumbleDischargeSpeed;
+            this.rumbleDivs[div_key].get(0).rumble_x = rumble_x;
+            this.rumbleDivs[div_key].get(0).rumble_y = rumble_y;
+            this.rumbleDivs[div_key].get(0).rumble_rot = rumble_rotate;
+            this.rumbleDivs[div_key].get(0).rumble_speed = rumble_speed;
             this.rumbleDivs[div_key].trigger('startRumble');
         }
     };
@@ -60,9 +90,23 @@ var WRumble = (function (_super) {
 
     WRumble.prototype.startDischargeRumble = function () {
         //console.log('WRumble.prototype.startDischargeRumble');
+        if (!settingsManager.options.rumble.currentValue) return;
+        if (this.isStartDischargeRumble) return;
         this.isStartDischargeRumble = true;
-        this._startDischargeRumble();
-        timeManager.addTimeoutEvent(this, 'finishDischargeRumble', ConstDurationRumbleDischarge);
+        this.discharge_stage = 0;
+        this._makeDischargeRumble()
+    };
+
+    WRumble.prototype._makeDischargeRumble = function () {
+        //console.log('WRumble.prototype._makeDischargeRumble', this.discharge_stage);
+        var rumble = ConstRumbleDischarge[this.discharge_stage];
+        this._stopAnyRumble();
+        this._startDischargeRumble(rumble.dx, rumble.dy, rumble.rotate, rumble.speed);
+        this.discharge_stage++;
+        if (this.discharge_stage < ConstRumbleDischarge.length)
+            timeManager.addTimeoutEvent(this, '_makeDischargeRumble', rumble.duration);
+        else
+            timeManager.addTimeoutEvent(this, 'finishDischargeRumble', rumble.duration);
     };
 
     WRumble.prototype.finishDischargeRumble = function () {
@@ -73,6 +117,7 @@ var WRumble = (function (_super) {
     };
 
     WRumble.prototype.change = function (t) {
+        return;
         //console.log('WRumble.prototype.change');
         if (this.car._hp_state.dps) {
             if (!this.isStartAutoRumble && !this.isStartDischargeRumble) this._startAutoRumble();
@@ -93,3 +138,6 @@ var WRumble = (function (_super) {
 
     return WRumble;
 })(VisualObject);
+
+var wRumble;
+

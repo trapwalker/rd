@@ -76,7 +76,7 @@ class QuestItem(Item):
     p_observing_range  = FloatField(caption=u"Радиус обзора", tags={"aggregate"})
     max_hp             = FloatField(caption=u"Максимальное значение HP", tags={"aggregate"})
     r_min              = FloatField(caption=u"Минимальный радиус разворота", tags={"aggregate"})
-    ac_max             = FloatField(caption=u"Максимальная перегрузка при развороте", tags={"aggregate"})
+    mobility           = FloatField(caption=u"Манёвренность при поворотах", tags={"aggregate"})  # former ac_max
     max_control_speed  = FloatField(caption=u"Абсолютная максимальная скорость движения", tags={"aggregate"})
     v_forward          = FloatField(caption=u"Максимальная скорость движения вперед", tags={"aggregate"})
     v_backward         = FloatField(caption=u"Максимальная скорость движения назад", tags={"aggregate"})
