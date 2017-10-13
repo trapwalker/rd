@@ -9,6 +9,10 @@ sm_description: Road Dogs official web-site. Mad Max – style combats featuring
 sm_title_electron: "Road Dogs: A Post Nuclear Privateer/Trader MMORPG"
 sm_description_electron: Road Dogs official client. Mad Max – style combats featuring post apocalyptic barren vehicles.
 
+# Модальное окно сброса персонажа
+mwdc_text: "This action will lead to the irretrievable removal of the character and the release of his nickname. Are you sure?"
+mw_btn_ok: "Ok"
+mw_btn_cancel: "Cancel"
 
 # Окно регистрации и авторизации  site_window_reg.html  # swr
 swr_Registration: "Registration"
@@ -64,6 +68,7 @@ swr3_perks : "Perks:"
 # Окно персональной информации site_personal_info.html
 spi_enter : Enter the game
 spi_out : Sign out
+spi_drop : Reset the character
 
 
 # Окно быстрой игры site_quick_game.html  # sqg

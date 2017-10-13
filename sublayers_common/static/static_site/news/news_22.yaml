@@ -1,0 +1,8 @@
+date: '13.10.2017'
+header:
+  ru: 'Обновление v0.132.4050'
+  en: 'Update v0.132.4050'
+link: 'update_v0_132_4050'
+content:
+  ru: '<div style="pointer-events: none;  font-size: 10pt; "><br>- Добавлена кнопка сброса персонажа в личном кабинете.<br>- Увеличена скорость и динамика транспорта.<br>- Убрано автоматическое распределение игроков по серверам.<br>- Услучшено железо на европейском сервере.<br>- Добавлен эффект тряски про попадании под крупнокалиберный огонь (опционально).<br>- Экран теперь слегка отвязан от центра (опционально).<br>- Добавлено деление повреждений при попадании в несколько целей неавтоматическими пушками.<br><br></div><div style="width: 400px; height: 176px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_22.png"></img></div>'
+  en: '<div style="pointer-events: none;  font-size: 10pt; "><br>- Added a character wipe button in the personal account.<br>- Increased speed and dynamics of vehicles.<br>- Automatic distribution of players by servers is removed.<br>- Improved hardware performance of the European server.<br>- Added the effect of shaking when get hit by a large-caliber fire (optional).<br>- The screen is now slightly untied from the center (optional).<br>- Added division of damage when hit in multiple targets by non-automatic guns.<br><br></div><div style="width: 400px; height: 176px; margin: 0 auto; pointer-events: none;"><img src="/static/static_site/news/news_img/news_22.png"></img></div>'

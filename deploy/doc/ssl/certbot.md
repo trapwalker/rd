@@ -3,11 +3,9 @@
 
 Get from [https://certbot.eff.org/all-instructions/#ubuntu-16-04-xenial-nginx]
 
-    $ sudo apt-get update
-    $ sudo apt-get install software-properties-common
-    $ sudo add-apt-repository ppa:certbot/certbot
-    $ sudo apt-get update
-    $ sudo apt-get install python-certbot-nginx 
+    $ sudo -s
+    $ apt-get install software-properties-common && add-apt-repository ppa:certbot/certbot && apt-get update && apt-get install -y python-certbot-nginx
+    $ exit
 
 
 Get started:
@@ -19,7 +17,7 @@ Need to seccure backup of /etc/letsencrypt folder.
 
 Use special command to update settings without nginx configuration:
 
-    $ sudo certbot --nginx certonly
+    $ sudo certbot --nginx certonly --email svpmailbox@gmail.com -d test.roaddogs.online
 
 # Automating renewal #
 

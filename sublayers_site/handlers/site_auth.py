@@ -76,8 +76,31 @@ class StandardLoginHandler(BaseSiteHandler):
             self._next_reg_step()
         elif action == 'back':
             self._back_reg_step()
+        elif action == 'drop':
+            self._drop_character()
         else:
             raise HTTPError(405, log_message='Wrong action {}.'.format(action))
+
+    def _drop_character(self):
+        clear_all_cookie(self)
+
+        # todo: дисконект с игрового сервера
+
+        user = self.current_user
+        user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+        user.save()
+
+        # Пытаемся удалить старых агентов
+        Agent.objects.filter(user_id=str(user.pk)).delete()
+        agent_example = Agent.objects.filter(user_id=str(user.pk)).first()
+        if agent_example is None:
+            agent_example = create_agent(registry=self.application.reg, user=user)
+        else:
+            log.error('Agent was not delete user={}'.format(user))
+
+        clear_all_cookie(self)
+        self.set_secure_cookie("user", str(user.id))
+        self.finish({'status': 'success'})
 
     def _registration(self):
         clear_all_cookie(self)
