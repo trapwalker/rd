@@ -8,6 +8,7 @@
         <div class="window-pi-content-block btn-block">
             <div class="window-qg-btn window-pi-btn window-pi-start-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="StartGame()">{{ _('spi_enter') }}</div>
             <div class="window-qg-btn window-pi-btn window-pi-logout-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="Logout()">{{ _('spi_out') }}</div>
+            <div class="window-qg-btn window-pi-btn window-pi-logout-btn box-shadow box-shadow-non-active buttons-and-headers" onclick="DropCharacter()">{{ _('spi_drop') }}</div>
         </div>
         <div class="window-pi-content-block game-info">
             <div id="RDSitePersonalInfoUserInfo" class="window-pi-user-info-table"></div>
@@ -51,6 +52,98 @@
                 audioManager.play('button_screen_press');
             }
         });
+    }
+
+    function DropCharacter() {
+
+        // Непосредственно сброс персонажа
+        function _drop() {
+            $.ajax({
+                url: location.protocol + '//' + location.host + '/login',
+                method: 'POST',
+                data: {
+                    action: 'drop',
+                    _xsrf: getCookie('_xsrf')
+                },
+                success: function (data) {
+                    // Google Analytics
+                    // try {ga('send', 'event', 'registration', 'view', 'finish');}
+                    // catch(e){console.warn('GA not defined');}
+                    if (data.status == 'success') GetUserInfo();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.warn('DropCharacter ajax error');
+                    audioManager.play('error_1');
+                }
+            });
+        }
+
+        function _centered_window() {
+            var jq_window = $('#modalDropCharacterPage');
+            var win_height = jq_window.height();
+            var win_width = jq_window.width();
+            var screen_height = $(window).height();
+            var screen_width = $(window).width();
+            jq_window.css('top', screen_height / 2 - win_height / 2);
+            jq_window.css('left', screen_width / 2 - win_width / 2);
+        }
+
+        function _open_window() {
+            var jq_modal_back = $('#modalBack');
+            var jq_modal_window = $('#modalDropCharacterPage');
+            var jq_btn_ok = jq_modal_window.find('#dropCharacterBtnOK');
+            var jq_btn_cancel = jq_modal_window.find('#dropCharacterBtnCancel');
+            var jq_btn_close = jq_modal_window.find('.windowDragCloseHeader-close');
+
+            // Включить фон модальных окон
+            jq_modal_back.removeClass('modal-window-hide');
+            jq_modal_back.addClass('modal-window-back-show');
+
+            // Включить модальное окно modalOptions
+            jq_modal_window.removeClass('modal-window-hide');
+            jq_modal_window.addClass('modal-window-show');
+
+            // Вешаем ивенты кнопок
+            jq_btn_ok.on('click', function() {
+                audioManager.play('button_screen_press');
+                _drop();
+                _close_window();
+            });
+            jq_btn_cancel.on('click', function() {
+                audioManager.play('button_screen_press');
+                _close_window();
+            });
+            jq_btn_close.on('click', function() {
+                audioManager.play('button_screen_press');
+                _close_window();
+            });
+        }
+
+        function _close_window() {
+            var jq_modal_back = $('#modalBack');
+            var jq_modal_window = $('#modalDropCharacterPage');
+            var jq_btn_ok = jq_modal_window.find('#dropCharacterBtnOK');
+            var jq_btn_cancel = jq_modal_window.find('#dropCharacterBtnCancel');
+            var jq_btn_close = jq_modal_window.find('.windowDragCloseHeader-close');
+
+            // Сбросить ивенты кнопок
+            jq_btn_ok.off('click');
+            jq_btn_cancel.off('click');
+            jq_btn_close.off('click');
+
+            // Выключить модальное окно modalOptions
+            jq_modal_window.addClass('modal-window-hide');
+            jq_modal_window.removeClass('modal-window-show');
+
+            // Выключить фон модальных окон
+            var jq_modal_back = $('#modalBack');
+            jq_modal_back.addClass('modal-window-hide');
+            jq_modal_back.removeClass('modal-window-back-show');
+        }
+
+        audioManager.play('button_screen_press');
+        _centered_window();
+        _open_window();
     }
 
     function insuranceClick() {

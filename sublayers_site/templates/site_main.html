@@ -65,6 +65,7 @@
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_quick_game.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_news.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('static_site/css/site_window_ratings.css') }}"/>
+    <link rel="stylesheet" href="{{ static_url('static_site/css/modal_window.css') }}"/>
     <link rel="stylesheet" href="{{ static_url('locale/site/css/locale_{}.css'.format(user_lang)) }}"/>
 
     <script src="{{ static_url('static_site/js/third_party/jquery.min.js') }}"></script>
@@ -379,6 +380,25 @@
         {% else %}
         <div class="copyright-block">All rights reserved. Road Dogs © 2016-2017.</br><span class="change-language" onclick="changeLanguage('ru');">Русская версия</span>.</div>
         {% end %}
+        <div id="modalDiv" class="modal-window-parent">
+            <div id="modalBack"></div>
+            <div id="modalDropCharacterPage" class="modal-window-hide">
+                <div class="mainDivModalWindow">
+                    <div class="windowDragCloseHeader-main">
+                        <div class="windowDragCloseHeader-caption">Nuke:\DropCharacter&gt;</div>
+                        <div class="windowDragCloseHeader-close sublayers-clickable"></div>
+                    </div>
+                    <div class="modal-window-wrap">
+                        <div class="modal-window-wrap-logo"></div>
+                        <div class="modal-window-wrap-text">{{ _('mwdc_text') }}</div>
+                        <div class="modal-window-wrap-bottom-block">
+                            <div id="dropCharacterBtnOK" class="window-qg-btn dialogBtnOK modal-window-footer-btn sublayers-clickable">{{ _('mw_btn_ok') }}</div>
+                            <div id="dropCharacterBtnCancel" class="window-qg-btn dialogBtnCancel modal-window-footer-btn sublayers-clickable">{{ _('mw_btn_cancel') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="preloaderBlock">
         <div id="consolePreloader"></div>

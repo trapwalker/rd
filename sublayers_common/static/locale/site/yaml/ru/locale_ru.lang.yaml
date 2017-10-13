@@ -9,6 +9,10 @@ sm_description: Официальный сайт игры Road Dogs. Сражен
 sm_title_electron: "Road Dogs: Постапокалиптическая MMORPG в стиле 80-х"
 sm_description_electron: Официальный клиент игры Road Dogs. Сражения на машинах постапокалиптической пустоши в стиле Безумного Макса.
 
+# Модальное окно сброса персонажа
+mwdc_text: "Это действие приведет к бесповоротному удалению персонажа и освобождению его никнейма. Вы уверены?"
+mw_btn_ok: "Ок"
+mw_btn_cancel: "Отмена"
 
 # Окно регистрации и авторизации  site_window_reg.html  # swr
 swr_Registration: "Регистрация"
@@ -65,6 +69,7 @@ swr3_perks : "Перки:"
 # Окно персональной информации site_personal_info.html
 spi_enter : Войти в игру
 spi_out : Покинуть систему
+spi_drop : Сбросить персонажа
 
 
 # Окно быстрой игры site_quick_game.html  # sqg
