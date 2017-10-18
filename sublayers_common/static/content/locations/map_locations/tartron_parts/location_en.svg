@@ -50,11 +50,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.84835631"
-     inkscape:cx="734.30563"
+     inkscape:zoom="0.88297872"
+     inkscape:cx="956.5"
      inkscape:cy="569.50001"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer2"
      showgrid="false"
      units="px"
      inkscape:window-width="1600"
@@ -96,24 +96,24 @@
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\tartron_parts\ground+circle.png"
        xlink:href="ground+circle.png"
-       style="display:inline"
-       y="136.86244"
-       x="485"
-       id="landscape"
-       preserveAspectRatio="none"
-       height="752"
-       width="943" />
-    <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\tartron_parts\tartron_bg.png"
-       xlink:href="tartron_bg.png"
-       class="building-back"
-       style="display:inline"
        width="943"
        height="752"
        preserveAspectRatio="none"
-       id="tartron-back"
+       id="landscape"
        x="485"
-       y="136.86244" />
+       y="136.86244"
+       style="display:inline" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\tartron_parts\tartron_bg.png"
+       xlink:href="tartron_bg.png"
+       y="136.86244"
+       x="485"
+       id="tartron-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:inline"
+       class="building-back" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -124,26 +124,26 @@
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\tartron_parts\tartron.png"
        xlink:href="tartron.png"
-       width="777"
-       height="323"
-       preserveAspectRatio="none"
-       id="img_house1_off"
-       x="565.5"
-       y="419.5"
+       style="display:inline"
        class="highlight-buildings"
-       style="display:inline" />
+       y="419.5"
+       x="564.5"
+       id="img_house1_off"
+       preserveAspectRatio="none"
+       height="323"
+       width="777" />
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\tartron_parts\tartron_hover.png"
        xlink:href="tartron_hover.png"
-       width="777"
-       height="323"
-       preserveAspectRatio="none"
-       id="img_house1_on"
-       x="564.5"
-       y="419.5"
-       class="highlight-buildings"
+       style="display:inline"
        data-building="tartron"
-       style="display:inline" />
+       class="highlight-buildings"
+       y="420.49976"
+       x="563.5"
+       id="img_house1_on"
+       preserveAspectRatio="none"
+       height="323"
+       width="777" />
     <g
        inkscape:groupmode="layer"
        id="layer6"
