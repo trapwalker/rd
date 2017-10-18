@@ -316,7 +316,8 @@ var WCanvasCarMarker = (function (_super) {
             ctx.save(); // для возврата от поворота
             var calc_time = Math.max(time, mobj._motion_state.t0);
             var speed_angle = mobj.getCurrentSpeed(calc_time) >= 0 ? 0 : Math.PI;
-            var car_direction_arrow_real = mobj.getCurrentDirection(time + 0.5) + Math.PI / 2. + speed_angle;
+            var diff_time = Math.min(0.5, 25.0 / (mobj._motion_state.ac_max || 100));
+            var car_direction_arrow_real = mobj.getCurrentDirection(time + diff_time) + Math.PI / 2. + speed_angle;
             var car_direction_arrow;
             var diff_angle_direction_arrow = car_direction_arrow_real - this._ps_last_direction_arrow;
             if (Math.abs(diff_angle_direction_arrow) > ConstMaxAngleToMoveMarker && Math.abs(diff_angle_direction_arrow) < Math.PI / 2.) {
@@ -524,6 +525,12 @@ var WCanvasStaticTownMarker = (function (_super) {
                         break;
                     case 'reg:///registry/poi/locations/towns/los_jetas':
                         icon_name = 'los_jetas';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/tartron_parts':
+                        icon_name = 'tartron';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/adriano_custom':
+                        icon_name = 'adriano';
                         break;
                     default:
                         console.log('Не найдена иконка. Установлена стандартная. ', mobj.example.node_hash);

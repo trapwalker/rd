@@ -36,6 +36,7 @@ from sublayers_server.model.game_log_messages import (TransactionGasStationLogMe
                                                       TransactionActivateMapRadarLogMessage)
 from sublayers_server.model.parking_bag import ParkingBagMessage
 from sublayers_server.model import quest_events
+from sublayers_server.model.registry_me.classes.hangar import CarLot
 
 from sublayers_common.site_locale import locale
 
@@ -466,7 +467,7 @@ class TransactionHangarSell(TransactionTownNPC):
     def on_perform(self):
         super(TransactionHangarSell, self).on_perform()
         npc = self.get_npc_available_transaction(npc_type='hangar')
-        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=True):
+        if (npc is None) or not self.is_agent_available_transaction(npc=npc, with_car=True):
             return
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
 
@@ -481,6 +482,9 @@ class TransactionHangarSell(TransactionTownNPC):
         info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangarsell_do_text"), locale(self.lang, self.agent.example.profile.car.title), str(price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+
+        npc.add_car_lot(car_lot=CarLot(car_example=self.agent.example.profile.car, group=None, hangar=npc, time=self.time), time=self.time)
+
         log_car = self.agent.example.profile.car
         self.agent.example.profile.set_balance(time=self.time, delta=price)
         self.agent.example.profile.car = None
@@ -495,26 +499,41 @@ class TransactionHangarSell(TransactionTownNPC):
 
 
 class TransactionHangarBuy(TransactionTownNPC):
-    def __init__(self, car_number, **kw):
+    def __init__(self, car_uid, **kw):
         super(TransactionHangarBuy, self).__init__(**kw)
-        self.car_number = car_number
+        self.car_uid = car_uid
 
     def on_perform(self):
         super(TransactionHangarBuy, self).on_perform()
 
         npc = self.get_npc_available_transaction(npc_type='hangar')
-        if npc is None or not self.is_agent_available_transaction(npc=npc, with_car=False):
+        if (npc is None) or not self.is_agent_available_transaction(npc=npc, with_car=False):
             return
-
         total_inventory_list = None if self.agent.inventory is None else self.agent.inventory.example.total_item_type_info()
+
         # Получение NPC и проверка валидности совершения транзакции
-        npc = self.agent.server.reg.get(self.npc_node_hash)
-        if len(npc.car_list) <= self.car_number:
-            log.warning('%r select not support car_number %s for agent %r', self, self.car_number, self.agent)
+        car_lot = npc.get_car_lot_by_uid(car_uid=self.car_uid)
+        if not car_lot:
+            log.warning('%r select not support car_uid %r for agent %r', self, self.car_uid, self.agent)
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=locale(lang=self.lang, key="tr_thangarbuy_notcorrect_car")).post()
+                                       replica=locale(lang=self.lang, key="tr_thangarbuy_notcorrect_car")).post()
             return
-        car_proto = npc.car_list[self.car_number]  # todo: Разобраться откуда может быть car_number is None
+        car_example = car_lot.car_example
+
+        # Проверяем можно ли перенести инвентарь
+        if (self.agent.example.profile.car):
+            old_car = self.agent.example.profile.car
+            old_count = len(old_car.inventory.items)
+            old_capacity = old_car.inventory.size
+            new_count = len(car_example.inventory.items)
+            new_capacity = car_example.inventory.size
+            if (new_capacity - new_count) < old_count:
+                messages.NPCReplicaMessage(
+                    agent=self.agent,
+                    time=self.time,
+                    npc=npc,
+                    replica=locale(lang=self.lang, key="tr_thangar_inventory_trouble").format(old_count, old_capacity, new_count, new_capacity)).post()
+                return
 
         agent_balance = self.agent.balance
         skill_effect = npc.get_trading_effect(agent_example=self.agent.example)
@@ -522,28 +541,40 @@ class TransactionHangarBuy(TransactionTownNPC):
             old_car_price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
         else:
             old_car_price = 0
-        new_car_price = int(car_proto.price * (1 + npc.margin * skill_effect))
+        new_car_price = int(car_example.price * (1 + npc.margin * skill_effect))
 
         if (agent_balance + old_car_price) >= new_car_price:
+            # Удаляем старый лот и добавляем новый
+            npc.del_car_lot(car_lot=car_lot, time=self.time)
+            if self.agent.example.profile.car:
+                npc.add_car_lot(car_lot=CarLot(car_example=self.agent.example.profile.car, group=None, hangar=npc, time=self.time), time=self.time)
+                # Переносим все можно между инвентарями
+                if self.agent.inventory:
+                    self.agent.inventory.save_to_example(time=self.time)
+                old_car = self.agent.example.profile.car
+                for item in old_car.inventory.items:
+                    car_example.inventory.items.append(item)
+                old_car.inventory.items = []
+
             # Отправка сообщения о транзакции
             now_date = datetime.now()
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if self.agent.example.profile.car:
-                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangar_swap"), locale(self.lang, car_proto.title),
+                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangar_swap"), locale(self.lang, car_example.title),
                                                                str(new_car_price - old_car_price))
                 TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.profile.car,
                                             price=self.agent.example.profile.car.price, action="sell").post()
             else:
-                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_thangar_buy"), locale(self.lang, car_proto.title), str(-new_car_price))
+                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_thangar_buy"), locale(self.lang, car_example.title), str(-new_car_price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
-            car_example = car_proto.instantiate()
             car_example.position = self.agent.current_location.example.position
             car_example.last_location = self.agent.current_location.example
             self.agent.example.profile.set_balance(time=self.time, delta=-new_car_price + old_car_price)
             self.agent.example.profile.car = car_example
+            car_example.pre_buy_car(example_agent=self.agent.example)
             self.agent.reload_inventory(time=self.time, total_inventory=total_inventory_list, make_game_log=False)
 
             messages.UserExampleCarNPCTemplates(agent=self.agent, time=self.time).post()
@@ -554,9 +585,12 @@ class TransactionHangarBuy(TransactionTownNPC):
             # Эвент квестов
             self.agent.example.profile.on_event(event=self, cls=quest_events.OnBuyCar)
             TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
+
+            # Перезагружаем модельный инвентарь
+            self.agent.reload_inventory(time=self.time, save=False, total_inventory=None)
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
+                                       replica=locale(lang=self.lang, key="tr_tnpc_no_money")).post()
 
 
 class TransactionGirlApply(TransactionTownNPC):

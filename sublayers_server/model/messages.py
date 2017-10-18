@@ -1406,37 +1406,6 @@ class NPCInfoMessage(Message):
 
 # Сообщение-ответ для клиента - информация об нпц-ангаре
 class HangarInfoMessage(NPCInfoMessage):
-    # info: данный мессадж кеширует свой результат
-    npc_cars = dict()  # key: npc.uri   val = [dict(car, html_car_table, html_car_img)]
-    template_table = None
-    template_img = None
-
-    def get_car_list(self, npc):
-        npc_key = '{}_{}'.format(npc.uri, self.agent.connection and self.agent.connection.user_lang or 'en')
-        car_list = HangarInfoMessage.npc_cars.get(npc_key, None)
-        if car_list is None:
-            namespace = self.agent.connection.get_template_namespace()
-            if HangarInfoMessage.template_table:
-                template_table = HangarInfoMessage.template_table
-            else:
-                template_table = Loader("templates/location").load("car_info_table.html")
-                HangarInfoMessage.template_table = template_table
-
-            if HangarInfoMessage.template_img:
-                template_img = HangarInfoMessage.template_img
-            else:
-                template_img = Loader("templates/location").load("car_info_img_ext.html")
-            HangarInfoMessage.template_img = template_img
-
-            car_list = [dict(
-                car=car.as_client_dict(),
-                html_car_table=template_table.generate(car=car, agent=None, **namespace),
-                html_car_img=template_img.generate(car=car, **namespace),
-            ) for car in npc.car_list or []]
-
-            HangarInfoMessage.npc_cars[npc_key] = car_list
-        return car_list
-
     def as_dict(self):
         d = super(HangarInfoMessage, self).as_dict()
         npc = self.npc
@@ -1444,8 +1413,30 @@ class HangarInfoMessage(NPCInfoMessage):
             d.update(
                 npc_margin=npc.margin,
                 npc_trading=npc.trading,
-                cars=self.get_car_list(npc),
+                cars=npc.get_all_lot_info(agent=self.agent),
             )
+        return d
+
+
+class HangarAddLotMessage(NPCInfoMessage):
+    def __init__(self, car_lot_info, **kw):
+        super(HangarAddLotMessage, self).__init__(**kw)
+        self.car_lot_info = car_lot_info
+
+    def as_dict(self):
+        d = super(HangarAddLotMessage, self).as_dict()
+        d.update(car_lot=self.car_lot_info)
+        return d
+
+
+class HangarDelLotMessage(NPCInfoMessage):
+    def __init__(self, car_lot_info, **kw):
+        super(HangarDelLotMessage, self).__init__(**kw)
+        self.car_lot_info = car_lot_info
+
+    def as_dict(self):
+        d = super(HangarDelLotMessage, self).as_dict()
+        d.update(car_lot=self.car_lot_info)
         return d
 
 
@@ -1564,7 +1555,7 @@ class InteractionInfoMessage(Message):
                     namespace=self.agent.connection.get_template_namespace()
                 ).load("car_info_img_ext.html")
                 d.update(
-                    car_name=player_profile.car.title,
+                    car_name=player_profile.car.name_car,
                     html_car_table=template_table.generate(car=player_profile.car, agent=player),
                     html_car_img=template_img.generate(car=player_profile.car)
                 )

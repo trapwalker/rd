@@ -30,7 +30,7 @@ from sublayers_site import settings
 
 import sublayers_site.handlers.site_auth
 from sublayers_site.handlers.site_auth import (StandardLoginHandler, LogoutHandler, GoogleLoginHandler, VKLoginHandler,
-                                               TwitterLoginHandler, FacebookLoginHandler, SteamLoginHandler)
+                                               TwitterLoginHandler, FacebookLoginHandler, SteamLoginHandler, SteamOpenIDHandler)
 from sublayers_site.handlers.site import SiteMainHandler, SitePingHandler, SiteCheckAuthId
 from sublayers_site.handlers.user_info import GetUserInfoHandler, GetUserInfoByIDHandler
 from sublayers_site.handlers.rpg_info import GetRPGInfoHandler, GetUserRPGInfoHandler
@@ -78,7 +78,7 @@ class Application(BaseApplication):
             log.warning('[Social Auth] Facebook OAuth params not found in options. Facebook Auth not work.')
 
         if options.auth_steam_key and options.auth_steam_appid:
-            settings["steam_auth"] = {"key": options.auth_steam_key, "appid": options.auth_steam_appid }
+            settings["steam_auth"] = {"key": options.auth_steam_key, "appid": options.auth_steam_appid, "wep_api": options.web_api_steam_key}
         else:
             log.warning('[Social Auth] Steam Auth params not found in options. Steam Auth not work.')
 
@@ -120,7 +120,8 @@ class Application(BaseApplication):
             (r"/site_api/auth/vk", VKLoginHandler),
             (r"/site_api/auth/twitter", TwitterLoginHandler),
             (r"/site_api/auth/facebook", FacebookLoginHandler),
-            (r"/site_api/auth/steam", SteamLoginHandler)
+            (r"/site_api/auth/steam", SteamLoginHandler),
+            (r"/site_api/auth/steam_openid", SteamOpenIDHandler)
             #(r"/site_api/forum_reg", RegisterOldUsersOnForum),
             #(r"/site_api/forum_auth", SetForumUserAuth),
         ])

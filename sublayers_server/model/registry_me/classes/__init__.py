@@ -16,6 +16,7 @@ import inventory
 import skills
 import world
 import trader
+import hangar
 import girl
 
 import quests

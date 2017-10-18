@@ -113,6 +113,7 @@ class RandomizeExamples(object):
         car_params = car_params or dict()
         p_fuel_rate = car_params.pop('p_fuel_rate', 0.0)
         car = car_proto.instantiate(p_fuel_rate=p_fuel_rate, **car_params)
+        car.randomize_params(options=dict(rand_modifier_p_armor=1.0))
 
         # Установка орудий
         for record in armorer_map:

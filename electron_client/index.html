@@ -47,13 +47,13 @@
     var re_ping_timeout = 500;
     var all_client_cookies = null;
     var servers = [
-        {name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true},
         {name: "EU", address: "https://eu.roaddogs.online", pings: [], active: false, average_ping: 0, debug: false, account_name: ""},
         {name: "US", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false, account_name: ""},
-        //{name: "Road Dogs Online", address: "https://roaddogs.online", pings: [], active: false, average_ping: 0, debug: false}
     ];
 
     if (current_window._debug_mode) {
+        servers.push({name: "test", address: "https://test.roaddogs.online", pings: [], active: false, average_ping: 0, debug: true});
+        servers.push({name: "localhost", address: "http://localhost", pings: [], active: false, average_ping: 0, debug: true});
         servers.push({name: "192.168.1.104", address: "http://192.168.1.104", pings: [], active: false, average_ping: 0, debug: true});
         servers.push({name: "192.168.1.105", address: "http://192.168.1.105", pings: [], active: false, average_ping: 0, debug: true});
     }
@@ -143,7 +143,7 @@
             else show_server_list();
         }
 
-        if (ticket && steam_id) {
+        if (steam_id) {
             // Пройти по всем серверам и поискать там аккаунты и вывести на экран
             var steam_account_count = 0;
             var last_server = null;
@@ -174,20 +174,24 @@
     }
 
     function try_connect_for_steam(address) {
-        $.ajax({
-            url: address + '/site_api/auth/steam',
-            method: 'GET',
-            data: {ticket: ticket},
-            timeout: ping_timeout,
-            success: function (data) {
-                try_to_connect = false;
-                if (data == "OK") window_location_with_lang(address);
-                else console.log(address, "Steam Auth Fail!", data);
-            },
-            error: function (dara) {
-                try_to_connect = false;
-            }
-        });
+        if (!ticket) {
+            window_location_with_lang(address + '/static/steam_auth_waiting.html');
+        }
+        else
+            $.ajax({
+                url: address + '/site_api/auth/steam',
+                method: 'GET',
+                data: {ticket: ticket},
+                timeout: ping_timeout,
+                success: function (data) {
+                    try_to_connect = false;
+                    if (data == "OK") window_location_with_lang(address);
+                    else console.log(address, "Steam Auth Fail!", data);
+                },
+                error: function (dara) {
+                    try_to_connect = false;
+                }
+            });
     }
 
     function get_lang_by_domain(address) {
@@ -227,7 +231,7 @@
         }
         $('#selected_server').text(index + 1);
         try_to_connect = true;
-        if (ticket && steam_id)
+        if (steam_id)
             try_connect_for_steam(server.address);
         else window_location_with_lang(server.address);
     }
@@ -303,7 +307,7 @@
                                 timeout: ping_timeout,
                                 success: function (data) {
                                     if (data == "OK") {
-                                        if (ticket && steam_id)
+                                        if (steam_id)
                                             try_connect_for_steam(address);
                                         else
                                             window_location_with_lang(address);

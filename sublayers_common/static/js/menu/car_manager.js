@@ -3,6 +3,7 @@ var CarManager = (function () {
     function CarManager() {
         this.is_active = false;
         this.jq_main_div = $();
+        this.timer_auto_save_car_name = null;
     }
 
     CarManager.prototype.get_info = function () {
@@ -12,7 +13,14 @@ var CarManager = (function () {
 
     CarManager.prototype.open_window = function () {
         this.is_active = false;
-        windowTemplateManager.openUniqueWindow('car_info', '/menu_car', null, this.redraw);
+        windowTemplateManager.openUniqueWindow('car_info', '/menu_car', null, this.redraw,
+            function () {carManager.update_car_name();});
+    };
+
+    CarManager.prototype.update_car_name = function () {
+        var new_text = this.jq_main_div.find('.car-window-name input').first().val();
+        if (user.example_car.name_car != new_text)
+            clientManager.sendSetNameCar(new_text);
     };
 
     CarManager.prototype.redraw = function (jq_main_div) {
@@ -26,8 +34,23 @@ var CarManager = (function () {
         jq_car_block_table.empty();
         if (user.example_car && user.templates.hasOwnProperty('html_car_img') && user.templates.hasOwnProperty('html_car_table')){
             jq_car_block_pic.append(user.templates['html_car_img']);
-            jq_car_block_pic.append('<div class="car-window-name">' + _(user.example_car.title) + '</div>');
+            jq_car_block_pic.append('<div class="car-window-name"><input class="party-page-create-name-input" ' +
+                'type="text" maxlength="25" style="text-align: center; border: 0;" value="' + user.example_car.name_car + '"></div>');
             jq_car_block_table.append(user.templates['html_car_table']);
+
+            carManager.timer_auto_save_car_name = null;
+            carManager.jq_main_div.find('.car-window-name input').first().on('change keyup paste', function (event) {
+                // Поставить таймер на 3 секунды, если он сработает, то сохранить значение
+                if (carManager.timer_auto_save_car_name) {
+                    clearTimeout(carManager.timer_auto_save_car_name);
+                    carManager.timer_auto_save_car_name = null;
+                }
+
+                carManager.timer_auto_save_car_name = setTimeout(function () {
+                    carManager.timer_auto_save_car_name = null;
+                    carManager.update_car_name();
+                }, 3000);
+            });
         }
 
         var jq_dynamic_value = jq_main_div.find('.car_dynamic_value');

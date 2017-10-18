@@ -18,6 +18,7 @@
 
 # TransactionHangarBuy
 "tr_thangarbuy_notcorrect_car": "Выбран недоступный автомобиль!"
+"tr_thangar_inventory_trouble": "Содержимое вашего багажника не влезает в новый транспорт.</br>- Ваш транспорт: {}/{}</br>- Транспорт для обмена: {}/{}"
 "tr_thangar_swap": "Обмен на"
 "tr_thangar_buy": "Покупка"
 "tr_tpark_swap": "Обмен на"

@@ -11,7 +11,7 @@ from sublayers_common import mailing
 
 import tornado.gen
 from tornado.web import RequestHandler, HTTPError
-from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin, FacebookGraphMixin, AuthError
+from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin, FacebookGraphMixin, AuthError, OpenIdMixin
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPClient, AsyncHTTPClient, HTTPError
 import json
@@ -441,6 +441,51 @@ class SteamLoginHandler(RequestHandler):
 
         # todo: self.send_error(5XX) или 4XX
         self.finish('Error')
+
+    def _on_get_user_info(self, user):
+        steam_id = user
+        if steam_id:
+            profile_user = User.get_by_steam_id(uid=steam_id)
+            if not profile_user:
+                # Регистрация
+                profile_user = User(steam_id=steam_id)
+                profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы
+                profile_user.save()
+
+                log.info('Register new Profile with SteamID: {}'.format(steam_id))
+
+            # Авторизация
+            return str(profile_user.pk)
+
+
+class SteamOpenIDHandler(RequestHandler, OpenIdMixin):
+    _OPENID_ENDPOINT = "https://steamcommunity.com/openid/login"
+
+    @tornado.gen.coroutine
+    def get(self):
+        req = self.request
+        electron = self.get_argument("mode", "") == "electron"
+        redirect_uri = '{p}://{h}/{path}{mode}'.format(
+            p=req.protocol,
+            h=req.host,
+            path="site_api/auth/steam_openid",
+            mode="?mode=electron" if electron else "",
+        )
+        if not self.settings.get('steam_auth', None):
+            self.send_error(status_code=501)
+            return
+
+        if self.get_argument("openid.mode", None):
+            user = yield self.get_authenticated_user()
+            cookie = self._on_get_user_info(user['claimed_id'].split('/')[-1])
+            if cookie is not None:
+                self.set_secure_cookie("user", cookie)
+                self.redirect("/static/steam_auth_finish.html")
+            else:
+                self.send_error(404, reason="User authorisation failed")
+            return
+        else:
+            yield self.authenticate_redirect(callback_uri=redirect_uri)
 
     def _on_get_user_info(self, user):
         steam_id = user
