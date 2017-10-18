@@ -66,6 +66,7 @@ define("auth_facebook_secret", default=None, help="Auth Facebook Secret Client",
 
 define("auth_steam_appid", default=None, help="Auth Steam Application ID", type=str)
 define("auth_steam_key", default=None, help="Auth Steam secret key", type=str)
+define("web_api_steam_key", default=None, help="Steam Web API key", type=str)
 
 
 

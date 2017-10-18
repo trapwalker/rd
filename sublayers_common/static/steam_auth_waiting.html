@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Steam OpenID</title>
+</head>
+<body style="background-color: #030f00;">
+
+<script>
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    window.onload = function () {
+        var BrowserWindow = require('electron').remote.BrowserWindow;
+        var mainWindow = new BrowserWindow({
+            backgroundColor: "#030f00",
+            webPreferences: {
+                nodeIntegration: false
+            },
+            width: 1100,
+            height: 830,
+            minWidth: 1100,
+            minHeight: 830
+
+        });
+        mainWindow.setMenu(null);
+
+        mainWindow.webContents.on('did-finish-load', function () {
+            mainWindow.show();
+            mainWindow.focus();
+        });
+
+        var u = window.location.protocol + "//" + window.location.host + '/site_api/auth/steam_openid';
+        mainWindow.loadURL(u);
+
+        mainWindow.on('closed', function () {
+            mainWindow = null;
+            if (getCookie('user')) {
+                window.location = window.location.protocol + "//" + window.location.host + "/" + window.location.search;
+            }
+            else {
+                var c = require('electron').remote.getCurrentWebContents();
+                if (c && c.canGoBack())
+                    c.goToIndex(0);
+            }
+        });
+
+        setInterval(function () {
+            // Проверять, не пора ли закрывать окно
+            if (getCookie('user')) {
+                mainWindow.close();
+            }
+        }, 3000);
+    };
+</script>
+
+
+
+</body>
+</html>

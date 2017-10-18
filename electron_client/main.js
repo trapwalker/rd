@@ -40,11 +40,15 @@ function createWindow() {
 
     mainWindow = new BrowserWindow(window_options);
     mainWindow.setMenu(null);
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
+
+    // Дать время на стим-тикет перед открытием окна
+    setTimeout(function () {
+        mainWindow.loadURL(url.format({
+            pathname: path.join(__dirname, 'index.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+    }, 1000);
 
     if (config.get('isMaximize', true)) mainWindow.maximize();
 
