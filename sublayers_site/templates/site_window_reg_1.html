@@ -130,7 +130,11 @@
             },
             success: function(data) {
                 // Google Analytics
-                try {ga('send', 'event', 'registration', 'view', 'nickname');}
+                try {
+                    ga('send', 'event', 'registration', 'view', 'nickname');
+                    if (window.__electron_mode)
+                        ga('send', 'event', 'registration-client', 'view', 'nickname');
+                }
                 catch(e){console.warn('GA not defined');}
 
                 reg1_last_input_click = null;

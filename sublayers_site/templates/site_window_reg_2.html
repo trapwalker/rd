@@ -127,7 +127,11 @@
             },
             success: function(data) {
                 // Google Analytics
-                try {ga('send', 'event', 'registration', 'view', 'skills');}
+                try {
+                    ga('send', 'event', 'registration', 'view', 'skills');
+                    if (window.__electron_mode)
+                        ga('send', 'event', 'registration-client', 'view', 'skills');
+                }
                 catch(e){console.warn('GA not defined');}
 
                 consoleWReg2.add_message('user', _('con_wreg_msg50'));

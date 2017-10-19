@@ -67,8 +67,8 @@
                 },
                 success: function (data) {
                     // Google Analytics
-                    // try {ga('send', 'event', 'registration', 'view', 'finish');}
-                    // catch(e){console.warn('GA not defined');}
+                    try {ga('send', 'event', 'btn_site', 'click', 'drop_agent');}
+                    catch(e){console.warn('GA not defined');}
                     if (data.status == 'success') GetUserInfo();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {

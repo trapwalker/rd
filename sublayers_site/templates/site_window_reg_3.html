@@ -75,7 +75,11 @@
             },
             success: function(data) {
                 // Google Analytics
-                try {ga('send', 'event', 'registration', 'view', 'finish');}
+                try {
+                    ga('send', 'event', 'registration', 'view', 'finish');
+                    if (window.__electron_mode)
+                        ga('send', 'event', 'registration-client', 'view', 'finish');
+                }
                 catch(e){console.warn('GA not defined');}
 
                 window.location = '/play' + (window.__electron_mode ? "?mode=electron" : "");
