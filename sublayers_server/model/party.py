@@ -556,8 +556,8 @@ class Party(object):
 
     def on_exp(self, agent, dvalue, event):
         dvalue *= self.party_exp_modifier  # Будет свегда повышенный опыт, даже когда не шарится опыт
-        if self.exp_share:
-            val = dvalue / len(self.members)
+        if self.exp_share and self.members:
+            val = round(dvalue / len(self.members))
             for member in self.members:
                 member.agent.example.profile.set_exp(dvalue=val, time=event.time)
         else:
