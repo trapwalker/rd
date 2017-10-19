@@ -73,7 +73,11 @@ class Inventory(Subdoc):
                     return
         while count > 0:
             d_amount = min(item.stack_size, count)
-            self.items.append(item.instantiate(amount=d_amount))
+            ii = item.instantiate(amount=d_amount)
+            if ii.amount == 0:  # todo: по какой-то прчине во время инстанцирования не учитывается amount
+                log.warn("Amount Warning after Instantiate: d_amount={}, item={!r}".format(d_amount, ii))
+                ii.amount = d_amount  # Странный баг. После инстанцирования не с нулём
+            self.items.append(ii)
             count -= d_amount
 
     def del_item(self, item, count):

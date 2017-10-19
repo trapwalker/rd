@@ -344,7 +344,7 @@ class Trader(Institution):
     def add_price_option(self, base_price_object, count, item, new_price=False):
         price_option = base_price_object.price_option
         price = base_price_object.price if not new_price else (price_option.price_min + random.random() * (price_option.price_max - price_option.price_min))
-        self._current_list.append(Price(
+        p = Price(
             trader=self,
             price=price,
             count=count,
@@ -352,4 +352,11 @@ class Trader(Institution):
             is_lot=True,
             price_option=price_option,
             item=item,
-        ))
+        )
+        self._current_list.append(p)
+
+        # Новый кусок кода для более оптимального поиска
+        # Добавить в price_record['prices'] или куда-то!
+        for record in self._price_options:
+            if record['price_option'] is base_price_object.price_option:
+                record["prices"].append(p)

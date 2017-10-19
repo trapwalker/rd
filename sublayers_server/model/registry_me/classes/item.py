@@ -148,6 +148,15 @@ class Item(Node):
     def can_activate(self, time, agent_model=None):
         return False
 
+    def __repr__(self):
+        uri = self_uri = self.uri
+        if not uri:
+            parent = self.parent
+            uri = parent and parent.uri
+
+        return '<{self.__class__.__name__}({mark}{uri}|{amount})>'.format(
+            self=self, uri=uri, mark='' if self_uri else '*', amount=self.amount)
+
     # def split(self, count):
     #     # count - Сколько отнять от текущего и сколько будет в новом
     #     temp_amount = self.amount - count
