@@ -154,8 +154,8 @@ class Item(Node):
             parent = self.parent
             uri = parent and parent.uri
 
-        return '<{self.__class__.__name__}({mark}{uri}|{amount})>'.format(
-            self=self, uri=uri, mark='' if self_uri else '*', amount=self.amount)
+        return '<{self.__class__.__name__}({mark}{uri}|{amount}/{stack_size})>'.format(
+            self=self, uri=uri, mark='' if self_uri else '*', amount=self.amount, stack_size=self.stack_size)
 
     # def split(self, count):
     #     # count - Сколько отнять от текущего и сколько будет в новом
