@@ -57,6 +57,10 @@
 
 #building_nukeoil .npc-text-block { width: 355px;  float: right; }
 
-#building_nukeoil .npc-text-block .npc-text { height: 100%;}
+#building_nukeoil .npc-text-block .npc-text { height: 100%; }
 
-.npc-text ul {margin: 3px 0;  padding-left: 18px; }
+.npc-text ul { margin: 3px 0;  padding-left: 18px; }
+
+@media screen and (max-width: 1530px), screen and (max-height: 930px) {
+    .npc-text-block { padding-top: 25px; }
+}
