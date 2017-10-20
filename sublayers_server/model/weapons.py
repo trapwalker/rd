@@ -289,6 +289,8 @@ class WeaponDischarge(Weapon):
         is_damage_shoot = False
         self._cur_target_count = 0
 
+        real_targets = []  # Машинки, реально получившие дамаг от залпа
+
         for car in self.sector.target_list_sort:
             # Если мы выбрали лимит по урону то вывалится из цикла
             if self._cur_target_count >= self.target_limit:
@@ -299,6 +301,7 @@ class WeaponDischarge(Weapon):
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
             self._cur_target_count += 1
             is_damage_shoot = True
+            real_targets.append(car)
 
         for car in self.sector.area_target_list_sort:
             # Если мы выбрали лимит по урону то вывалится из цикла
@@ -310,6 +313,7 @@ class WeaponDischarge(Weapon):
             car.set_hp(dhp=dmg, shooter=self.owner, time=time)
             self._cur_target_count += 1
             is_damage_shoot = True
+            real_targets.append(car)
 
         if is_crit:
             # todo: Отправить сообщение self.owner о том, что произошёл критический выстрел
@@ -328,7 +332,7 @@ class WeaponDischarge(Weapon):
                 car_id=self.owner.uid
             ).post()
 
-        self.owner.on_discharge_shoot(targets=self.sector.target_list, is_damage_shoot=is_damage_shoot, time=time)
+        self.owner.on_discharge_shoot(targets=real_targets, is_damage_shoot=is_damage_shoot, time=time)
 
     def can_fire(self, time):
         return (self.last_shoot is None) or (self.last_shoot + self.t_rch <= time)

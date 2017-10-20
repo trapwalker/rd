@@ -784,36 +784,51 @@ class Agent(Object):
         user.save()
         self.log.info('teaching state for user <{!r}> changed: {!r}'.format(self._login, state))
 
+    @staticmethod
+    def check_users_in_target_cars(targets):
+        for t in targets:
+            if isinstance(t.main_agent, User):
+                return True
+        return False
+
     def on_discharge_shoot(self, obj, targets, is_damage_shoot, time):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
         if is_damage_shoot:  # todo: пробросить сюда Ивент
             self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
-        for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time, damage=is_damage_shoot)
+        # info: 20-10-17 Ракеты города наказывают только за атаку по живым игрокам
+        if is_damage_shoot and targets and self.check_users_in_target_cars(targets):
+            for poi in self.watched_locations:
+                poi.on_enemy_candidate(agent=self, time=time, damage=is_damage_shoot)
 
     def on_autofire_start(self, obj, target, time):
         # log.info('on_autofire_start for {}'.format(target))
-        for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time, damage=True)
+        # info: 20-10-17 Ракеты города наказывают только за атаку по живым игрокам
+        if self.check_users_in_target_cars([target]):
+            for poi in self.watched_locations:
+                poi.on_enemy_candidate(agent=self, time=time, damage=True)
 
         # todo: пробросить сюда Ивент
         self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
 
     def on_setup_map_weapon(self, obj, time):
         # log.info('on_setup_map_weapon for {}'.format(obj))
-        if not obj.example.is_target():
-            return
-        for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time, damage=False)
+        # info: 20-10-17 Ракеты города наказывают только за атаку по живым игрокам
+        pass
+        # if not obj.example.is_target():
+        #     return
+        # for poi in self.watched_locations:
+        #     poi.on_enemy_candidate(agent=self, time=time, damage=False)
 
     def on_bang_damage(self, obj, targets, time):
         # log.info('on_extramobile_damage for {}'.format(obj))
         len_targets = len(targets)
-        damage = len_targets > 1 or len_targets > 0 and self.car not in targets  # Дамаг по себе не считается дамагом для города
-        for poi in self.watched_locations:
-            poi.on_enemy_candidate(agent=self, time=time, damage=damage)
+        damage = len_targets > 1 or len_targets == 1 and self.car not in targets  # Дамаг по себе не считается дамагом для города
+        # info: 20-10-17 Ракеты города наказывают только за атаку по живым игрокам
+        if targets and self.check_users_in_target_cars(targets):
+            for poi in self.watched_locations:
+                poi.on_enemy_candidate(agent=self, time=time, damage=damage)
 
         # Если был дамаг, то сообщить об этом в квесты
         if damage:  # todo: пробросить сюда Ивент
