@@ -5,7 +5,7 @@
 
 // Максимальный и минимальный зумы карты
 var ConstMaxMapZoom = 18;
-var ConstMinMapZoom = 10.01;
+var ConstMinMapZoom = 11.01;
 var ConstDurationAnimation = 500;
 var last_right_click_on_map = {x: 12517154, y:27028830};
 
