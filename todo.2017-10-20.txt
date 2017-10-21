@@ -1,0 +1,8 @@
+
+"""
+2017-10-20 14:48:31,775 ERROR   [            agents.py:487 ] Trying to start unknown quest by uid UUID('31ee6fab-b5c7-11e7-8226-00163e99fc85'). Agent: <AgentProfile(*reg:///registry/agents/user)>
+"""
+
+- agent representation FIX to show more details (username, _id, e-mail)
+- more detalization by unknown quest
+
