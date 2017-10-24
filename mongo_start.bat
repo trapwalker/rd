@@ -1,5 +1,5 @@
 
 c:
-mkdir /data/db
-cd "C:\Program Files\MongoDB\Server\3.4\bin"
+mkdir \data
+mkdir \data\db
 start mongod.exe %*
