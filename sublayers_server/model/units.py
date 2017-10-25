@@ -605,20 +605,20 @@ class Bot(Mobile):
         super(Bot, self).on_kill(event=event, obj=obj)
 
     def post_die_loot(self, event):
-        # Если есть киллер, значит труп был убит залповой стрельбой или взрывом
         killer = event.killer
+        is_bang = event.is_bang
         time = event.time
 
         items = []
         if self.owner:
             items_examples = self.owner.example.profile.insurance.on_car_die(agent=self.owner.example, car=self.example,
-                                                                     is_bang=killer is not None, time=event.time)
+                                                                             event=event)
             items = [ItemState(server=self.server, time=event.time, example=item, count=item.amount)
                      for item in items_examples if item.amount > 0]
         else:
             items = self.inventory.get_items()
 
-        if killer:
+        if killer and is_bang:
             # Отправить сообщение об анимации направленного убийства
             direction = killer.position(time).direction(self.position(time))
             for agent in self.subscribed_agents:

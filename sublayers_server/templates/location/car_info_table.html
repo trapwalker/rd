@@ -96,7 +96,7 @@
         <div class="car-info-block-body-right-list-text value even dynamic_car_frag">{{ car.frag }}</div>
         <div class="car-info-block-body-right-list-bonuses">{{ _("lcit_exp") }}</div>
         <div class="car-info-block-body-right-exp-block">
-            {% set lvl = car.exp_table.car_lvl_by_exp(car.exp) %}
+            {% set lvl = car.get_real_lvl() %}
             {% for temp_lvl in range(1, 6) %}
                 <div class="car-info-block-body-right-exp-icon {{ 'active' if lvl >= temp_lvl else '' }} {{ 'last' if temp_lvl == 5 else '' }}"></div>
             {% end %}

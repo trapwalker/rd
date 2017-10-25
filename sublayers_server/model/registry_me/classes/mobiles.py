@@ -348,6 +348,12 @@ class Mobile(Node):
     def exp(self):
         return self.value_exp
 
+    def get_real_lvl(self):
+        if self.exp_table:
+            return self.exp_table.car_lvl_by_exp(self.exp)
+        log.warn("Not found exp_table for {!r}".format(self))
+        return 0
+
     def set_exp(self, time=None, value=None, dvalue=None):
         assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
