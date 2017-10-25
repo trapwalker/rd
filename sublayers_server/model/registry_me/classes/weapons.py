@@ -88,6 +88,15 @@ class Weapon(ArmorerItem):
             self.set_condition()
         return super(Weapon, self).title_with_condition
 
+    @property
+    def real_width(self):
+        return self.width * self.rand_modifier_width
+
+    @property
+    def real_radius(self):
+        return self.radius * self.rand_modifier_radius
+
+
 
 class Cannon(Weapon):
     is_auto = False
@@ -106,13 +115,17 @@ class Cannon(Weapon):
                 3: _('w__weight_class__heavy'),
             }.get(this.weight_class, _('w__weight_class__undefined')) }}
         </div>
-        <div class="description-line left-align">{{ _('w__damage') }}:</div><div class="description-line right-align">{{ this.dmg }}</div>
+        <div class="description-line left-align">{{ _('w__damage') }}:</div><div class="description-line right-align">{{ "{0:.2f}".format(this.real_dmg) }}</div>
         <div class="description-line left-align">{{ _('w__time_recharge') }}:</div><div class="description-line right-align">{{ this.time_recharge }} s</div>
-        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.radius) }} m</div>
-        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.width) }}°</div>
+        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{0:.2f}'.format(this.real_radius) }} m</div>
+        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{0:.2f}'.format(this.real_width) }}°</div>
         <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:.0f}'.format(this.power_penetration) }}</div>
         <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.title).replace("<br>", " ") }}</div>
     """, whitespace='oneline')
+
+    @property
+    def real_dmg(self):
+        return self.dmg * self.rand_modifier_dmg
 
 
 class MachineGun(Weapon):
@@ -131,9 +144,13 @@ class MachineGun(Weapon):
                 3: _('w__weight_class__heavy'),
             }.get(this.weight_class, _('w__weight_class__undefined')) }}
         </div>
-        <div class="description-line left-align small">{{ _('w__dps') }}:</div><div class="description-line right-align small">{{ this.dps }}</div>
-        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.radius) }} m</div>
-        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{:.0f}'.format(this.width) }}°</div>
+        <div class="description-line left-align small">{{ _('w__dps') }}:</div><div class="description-line right-align small">{{ "{0:.2f}".format(this.real_dps) }}</div>
+        <div class="description-line left-align small">{{ _('w__radius') }}:</div><div class="description-line right-align small">{{ '{0:.2f}'.format(this.real_radius) }} m</div>
+        <div class="description-line left-align small">{{ _('w__sector') }}:</div><div class="description-line right-align small">{{ '{0:.2f}'.format(this.real_width) }}°</div>
         <div class="description-line left-align">{{ _('w__power_penetration') }}:</div><div class="description-line right-align">{{ '{:.0f}'.format(this.power_penetration) }}</div>
         <div class="description-line left-align small">{{ _('w__ammo') }}:</div><div class="description-line right-align small">{{ this.ammo and _(this.ammo.title).replace("<br>", " ") }}</div>
     """, whitespace='oneline')
+
+    @property
+    def real_dps(self):
+        return self.dps * self.rand_modifier_dps
