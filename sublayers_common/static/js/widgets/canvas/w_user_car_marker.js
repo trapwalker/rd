@@ -1,4 +1,4 @@
-var ConstMaxLengthToMoveMarker = 2;
+var ConstMaxLengthToMoveMarker = 6;
 var ConstMaxAngleToMoveMarker = Math.PI / 90.;
 
 
