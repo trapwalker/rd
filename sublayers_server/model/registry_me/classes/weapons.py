@@ -40,6 +40,8 @@ class Weapon(ArmorerItem):
     def set_condition(self):
         rating = 0
         count_of_rating = 0
+        max_count_ration = 5
+
 
         def get_rating(value, min_value, max_value, rating_count):
             lvl_distance = (max_value - min_value) / rating_count
@@ -56,13 +58,15 @@ class Weapon(ArmorerItem):
                     mod_value = max(param_range.min, min(param_range.max, mod_value))
                     setattr(self, mod_name, mod_value)
                     log.warn("Change {} for {!r}. New value is {}".format(mod_name, self, mod_value))
-                rating += get_rating(mod_value, param_range.min, param_range.max, 5)
+                rating += get_rating(mod_value, param_range.min, param_range.max, max_count_ration)
                 count_of_rating += 1
             else:
                 log.warn("randomize_params:: Range not found for {}".format(param_name))
 
         if count_of_rating > 0:
             self.condition = int(floor(rating / count_of_rating) + 1)
+            if self.condition > max_count_ration:
+                self.condition = max_count_ration
 
     def randomize_params(self, options=None):
         """
