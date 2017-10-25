@@ -54,7 +54,7 @@ class DropTable(Node):
             item_rec = random.choice(loot_rec_list)
             if item_rec.chance * chance_up >= random.random():
                 item = item_rec.item.instantiate()
-                # todo: Если это weapon, то прорандомить его дополнительно
+                item.randomize_params()  # Если это оружие, то оно срандомит свои характеристики
                 items.append(item)
                 count_loot -= 1
         return items
