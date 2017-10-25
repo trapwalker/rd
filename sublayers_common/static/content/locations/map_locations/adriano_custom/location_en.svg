@@ -50,11 +50,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.1223404"
-     inkscape:cx="788.54739"
-     inkscape:cy="712.05925"
+     inkscape:zoom="2.9462205"
+     inkscape:cx="1342.0482"
+     inkscape:cy="630.25301"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="svg_town"
      showgrid="false"
      units="px"
      inkscape:window-width="1600"
@@ -96,24 +96,24 @@
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\adriano_custom\ground+circle.png"
        xlink:href="ground+circle.png"
-       width="943"
-       height="752"
-       preserveAspectRatio="none"
-       id="landscape"
-       x="485"
+       style="display:inline"
        y="136.86244"
-       style="display:inline" />
+       x="485"
+       id="landscape"
+       preserveAspectRatio="none"
+       height="752"
+       width="943" />
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\adriano_custom\..\adriano_custom\adriano_bg.png"
        xlink:href="..\adriano_custom\adriano_bg.png"
-       y="136.86244"
-       x="485"
-       id="adriano-back"
-       preserveAspectRatio="none"
-       height="752"
-       width="943"
+       class="building-back"
        style="display:inline"
-       class="building-back" />
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="adriano-back"
+       x="485"
+       y="136.86244" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -124,37 +124,38 @@
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\adriano_custom\..\adriano_custom\adriano.png"
        xlink:href="..\adriano_custom\adriano.png"
-       style="display:inline"
-       class="highlight-buildings"
-       y="466.99976"
-       x="558"
-       id="img_house1_off"
-       preserveAspectRatio="none"
+       width="806"
        height="264"
-       width="806" />
+       preserveAspectRatio="none"
+       id="img_house1_off"
+       x="558"
+       y="466.99976"
+       class="highlight-buildings"
+       style="display:inline" />
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\adriano_custom\..\adriano_custom\adriano_hover.png"
        xlink:href="..\adriano_custom\adriano_hover.png"
-       style="display:inline"
-       data-building="adriano"
-       class="highlight-buildings"
-       y="466.99976"
-       x="558"
-       id="img_house1_on"
-       preserveAspectRatio="none"
+       width="806"
        height="264"
-       width="806" />
+       preserveAspectRatio="none"
+       id="img_house1_on"
+       x="558"
+       y="466.99976"
+       class="highlight-buildings"
+       data-building="adriano"
+       style="display:inline" />
     <g
        inkscape:groupmode="layer"
        id="layer6"
-       inkscape:label="build_path">
+       inkscape:label="build_path"
+       transform="translate(0,2.2997666)">
       <path
          style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 h -43 a 374,374 0 1 1 680.363,214.518 z"
          id="path_h1"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
-         data-building="tartron" />
+         data-building="adriano" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:15px;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
