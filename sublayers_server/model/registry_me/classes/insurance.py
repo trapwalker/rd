@@ -186,3 +186,14 @@ class InsuranceQuick(Insurance):
     def on_car_die(self, agent, car, is_bang, time):
         self.car = None
         return self.get_drop_items(car=car)
+
+
+class InsuranceTableDrop(Insurance):
+    def get_drop_items(self, car):
+        items = car.inventory.items
+        car.inventory.items = []
+        return items
+
+    def on_car_die(self, agent, car, is_bang, time):
+        self.car = None
+        return self.get_drop_items(car=car)
