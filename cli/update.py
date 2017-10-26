@@ -71,7 +71,7 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles, host, no_reload, no_r
             reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
         if not no_restart:
             start()
-        # todo: Сохранять версии реестров в файле на момент запуска, чтоьы понимать требуется ли перезагрузка
+        # todo: Сохранять версии реестров в файле на момент запуска, чтобы понимать требуется ли перезагрузка
 
     if ctx.invoked_subcommand:
         return
