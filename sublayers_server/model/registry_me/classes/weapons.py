@@ -38,6 +38,7 @@ class Weapon(ArmorerItem):
     rand_modifier_width = FloatField(root_default=1.0)
 
     def set_condition(self):
+        self._condition = 0
         rating = 0
         count_of_rating = 0
         max_count_ration = 5
@@ -64,21 +65,27 @@ class Weapon(ArmorerItem):
                 log.warn("randomize_params:: Range not found for {}".format(param_name))
 
         if count_of_rating > 0:
-            self.condition = int(floor(rating / count_of_rating) + 1)
-            if self.condition > max_count_ration:
-                self.condition = max_count_ration
+            self._condition = int(floor(rating / count_of_rating) + 1)
+            if self._condition > max_count_ration:
+                self._condition = max_count_ration
+            self.condition = self._condition
 
     def randomize_params(self, options=None):
         """
         Устанавливает значения коэффициентов rand_modifier_*.
         Устанавливает из options или выбирает случайно из rand_range_* диапазона
         """
+        from_trader = options and options.get("from_trader", None)  # Вызвано из транзакции торговца (значит не рандомим, а ставим как у родителя)
         for param_name, attr, getter in self.iter_attrs(tags={"param_randomize"}):
             param_range = getattr(self, "rand_range_{}".format(param_name))
             if param_range:
                 mod_name = "rand_modifier_{}".format(param_name)
-                value = options and options.get(mod_name, None)
-                value = value if value is not None and param_range.in_range(value) else param_range.get_random_value()
+                options_value = options and options.get(mod_name, None)
+                if from_trader:
+                    value = getattr(self, mod_name)
+                else:
+                    value = param_range.get_random_value()
+                value = options_value if options_value is not None and param_range.in_range(value) else value
                 setattr(self, mod_name, value)
             else:
                 log.warn("randomize_params:: Range not found for {}".format(param_name))
@@ -88,7 +95,7 @@ class Weapon(ArmorerItem):
 
     @property
     def title_with_condition(self):
-        if not self.condition:
+        if not getattr(self, "_condition", None):
             self.set_condition()
         return super(Weapon, self).title_with_condition
 
