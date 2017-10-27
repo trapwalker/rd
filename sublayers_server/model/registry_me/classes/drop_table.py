@@ -48,14 +48,23 @@ class DropTable(Node):
             log.warn("Not found drop items for levels=%s", (min_level, max_level))
             return items
 
+        total_chance = 0
+        for item_rec in loot_rec_list:
+            total_chance += item_rec.chance
+
         while count_loot >= 1:
-            iter_count += 0.1
-            chance_up = max(iter_count / count, 1.0)  # Если какое-то время не получается набрать нужное кол-во итемов, то увеличиваем шансы выпадения
-            item_rec = random.choice(loot_rec_list)
-            if item_rec.chance * chance_up >= random.random():
-                item = item_rec.item.instantiate()
+            random_item = None
+            chance = random.random() * total_chance
+            cur_chance = 0
+            for item_rec in loot_rec_list:
+                cur_chance += item_rec.chance
+                if chance <= cur_chance:
+                    random_item = item_rec
+                    break
+            if random_item:
+                item = random_item.item.instantiate()
                 item.randomize_params()  # Если это оружие, то оно срандомит свои характеристики
                 items.append(item)
                 count_loot -= 1
-        return items
 
+        return items
