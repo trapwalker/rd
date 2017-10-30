@@ -222,8 +222,8 @@ class AgentProfile(Node):
     )
     class_quest = RegistryLinkField(
         caption=u"Прототип классового квеста",
-        document_type='sublayers_server.model.registry_me.classes.quests.class_quest.ClassQuest',
-        root_default='reg:///registry/quests/class_quest'
+        document_type='sublayers_server.model.registry_me.classes.quests.Quest',
+        root_default='reg:///registry/quests/class_quests/start_quest'
     )
 
     notes = ListField(
