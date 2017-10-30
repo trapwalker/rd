@@ -97,8 +97,8 @@ class NPCTypePageNote(Note):
 class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass
 
-
 class GetClassCarQuestNote(NPCPageNote): pass
+class MaskingTastQuestNote(NPCPageNote): pass
 
 # Ноты обучения
 class GetQuestTeachingNote(Note):
