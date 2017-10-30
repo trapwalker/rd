@@ -1,0 +1,37 @@
+"locale": "ru"
+
+# Классовый квест Start Quest
+"q_cq_started": "Начат Классовый квест."
+"q_cq_caption_1": "Основать поселение"
+"q_cq_caption_2": "Создать клан"
+"q_cq_caption_3": "Получить стелс-технологию"
+"q_cq_caption_4": "Открыть магазин"
+"q_cq_caption_5": "Получить суперкар"
+"q_cq_caption_6": "Открыть сервисный центр"
+"q_cq_caption_get_new_task": "Получено новое задание."
+"q_cq_class_target_note": "Классовая цель"
+"q_cq_visit_trainer": "Посещен тренер."
+"q_cq_select_teacher_note_caption": "Наставник"
+"q_cq_select_teacher_note_btn": "<br>Принять"
+"q_cq_phrase_1": "Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как минимум в 75, дальнейшего разговора не будет.<//br> Отношение можно повысить близостью в карме и выполнением моих заданий."
+"q_cq_phrase_2": "Хорошо, вот мои требования к ученикам:<//br>- Взнос 3000 NC.<//br>- Уровень не менее 4."
+"q_cq_final": "Квест выполнен."
+
+
+# GetClassCarQuest
+"q_cq_get_car_started": "Посетить наставника"
+"q_cq_get_car_note_page": "Классовый автомобиль"
+"q_cq_get_car_note_btn": "Далее"
+"q_cq_get_car_note_page": "Этот автомобиль не твоего класса"
+"q_cq_get_car_not_car": "Без автомобиля нельзя"
+"q_cq_get_car_finished": "Квест завершён"
+
+# ClassQuestVisitTowns
+"q_cq_visit_towns_started": "Посетите города"
+"q_cq_visit_towns_visit_one_template": |
+    Город {{ town and town.title or 'N' }} посещён. Осталось: {{ '{:.0f}'.format(towns_left) }}.
+"q_cq_visit_towns_finished_page": "Города"
+"q_cq_visit_towns_finished_btn": "Далее"
+"q_cq_visit_towns_replica_not_finish": "Ещё не посещены все города"
+"q_cq_visit_towns_finished": "Квест завершён"
+
