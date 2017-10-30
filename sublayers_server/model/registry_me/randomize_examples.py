@@ -119,6 +119,7 @@ class RandomizeExamples(object):
         for record in armorer_map:
             # Не нужно делать isinstance (Canon или MachineGun) из-за особенностей наследования
             weapon_ex = record['weapon'].instantiate(direction=record['direction'], ammo_per_shot=0, ammo_per_second=0)
+            weapon_ex.randomize_params()
             setattr(car, record['slot_name'], weapon_ex)
 
         # Закидывание патронов в инвентарь машинки

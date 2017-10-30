@@ -142,15 +142,15 @@ class Unit(Observer):
         for w_ex in self.example.iter_weapons():
             sector = FireSector(
                 owner=self,
-                radius=w_ex.radius * radius_rate,
-                width=radians(w_ex.width),
+                radius=w_ex.real_radius * radius_rate,
+                width=radians(w_ex.real_width),
                 fi=direction_by_symbol(w_ex.direction),
             )
             if w_ex.is_auto:
                 WeaponAuto(
                     owner=self,
                     sector=sector,
-                    dps=w_ex.dps * dps_rate,
+                    dps=w_ex.real_dps * dps_rate,
                     items_cls_list=[w_ex.ammo],
                     dv=w_ex.ammo_per_shot,
                     ddvs=w_ex.ammo_per_second,
@@ -160,7 +160,7 @@ class Unit(Observer):
                 WeaponDischarge(
                     owner=self,
                     sector=sector,
-                    dmg=w_ex.dmg * damage_rate,
+                    dmg=w_ex.real_dmg * damage_rate,
                     area_dmg=w_ex.area_dmg * damage_rate,
                     items_cls_list=[w_ex.ammo],
                     dv=w_ex.ammo_per_shot,
@@ -605,20 +605,20 @@ class Bot(Mobile):
         super(Bot, self).on_kill(event=event, obj=obj)
 
     def post_die_loot(self, event):
-        # Если есть киллер, значит труп был убит залповой стрельбой или взрывом
         killer = event.killer
+        is_bang = event.is_bang
         time = event.time
 
         items = []
         if self.owner:
             items_examples = self.owner.example.profile.insurance.on_car_die(agent=self.owner.example, car=self.example,
-                                                                     is_bang=killer is not None, time=event.time)
+                                                                             event=event)
             items = [ItemState(server=self.server, time=event.time, example=item, count=item.amount)
                      for item in items_examples if item.amount > 0]
         else:
             items = self.inventory.get_items()
 
-        if killer:
+        if killer and is_bang:
             # Отправить сообщение об анимации направленного убийства
             direction = killer.position(time).direction(self.position(time))
             for agent in self.subscribed_agents:

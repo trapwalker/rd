@@ -67,7 +67,7 @@ class Insurance(QuestItem):
         # Установка города, если это позволяет страховка
         pass
 
-    def on_car_die(self, agent, car, is_bang, time):
+    def on_car_die(self, agent, car, event):
         pass
 
     def random_filter_drop(self, items, is_bang):
@@ -100,7 +100,7 @@ class InsuranceBase(Insurance):
         else:
             log.warning('For {} with insurance <{}> not found respawn town. Last Town Used.'.format(agent, self))
 
-    def get_drop_items(self, car):
+    def get_drop_items(self, victim, car, event):
         items = []
         # Итемы инвентаря
         for item in car.inventory.items:
@@ -111,10 +111,11 @@ class InsuranceBase(Insurance):
                 items.append(slot_value)
         return items
 
-    def on_car_die(self, agent, car, is_bang, time):
+    def on_car_die(self, agent, car, event):
         self.car = None
-        agent.profile.set_balance(time=time, delta=car.price)
-        items = self.get_drop_items(car=car)
+        is_bang = getattr(event, "is_bang", None)
+        agent.profile.set_balance(time=event.time, delta=car.price)
+        items = self.get_drop_items(victim=agent, car=car, event=event)
         return self.random_filter_drop(items=items, is_bang=is_bang)
 
 
@@ -128,7 +129,7 @@ class InsurancePremium(Insurance):
         else:
             log.warning('For {} with insurance <{}> not found respawn town. Last Town Used.'.format(agent, self))
 
-    def get_drop_items(self, car):
+    def get_drop_items(self, victim, car, event):
         items = []
         # Итемы инвентаря
         for item in car.inventory.items:
@@ -142,9 +143,10 @@ class InsurancePremium(Insurance):
             items.append(slot_value)
         return items
 
-    def on_car_die(self, agent, car, is_bang, time):
-        items = self.get_drop_items(car=car)
-        car.set_exp(time=time, value=0)
+    def on_car_die(self, agent, car, event):
+        items = self.get_drop_items(victim=agent, car=car, event=event)
+        is_bang = getattr(event, "is_bang", None)
+        car.set_exp(time=event.time, value=0)
         car.hp = car.max_hp
         car.fuel = car.max_fuel
         self.car = car
@@ -165,7 +167,7 @@ class InsuranceShareholder(InsurancePremium):
         # Метод для вывода списка доступных городов для респавна на клиенте
         return self._get_available_towns(agent, time)
 
-    def get_drop_items(self, car):
+    def get_drop_items(self, victim, car, event):
         items = []
         inventory_items = []  # Те итемы, которые останутся в инвентаре потом
         for item in car.inventory.items:
@@ -178,11 +180,34 @@ class InsuranceShareholder(InsurancePremium):
 
 
 class InsuranceQuick(Insurance):
-    def get_drop_items(self, car):
+    def get_drop_items(self, victim, car, event):
         items = car.inventory.items
         car.inventory.items = []
         return items
 
-    def on_car_die(self, agent, car, is_bang, time):
+    def on_car_die(self, agent, car, event):
+        # log.debug("InsuranceQuick:: on_car_die => {!r}".format(agent))
         self.car = None
-        return self.get_drop_items(car=car)
+        return self.get_drop_items(victim=agent, car=car, event=event)
+
+
+class InsuranceTableDrop(Insurance):
+    def get_drop_items(self, victim, car, event):
+        victim_lvl = victim.profile.get_real_lvl()
+        killer = getattr(event, "killer", None)  # Это бот, а не агент!
+        killer_lvl = killer and killer.main_agent and killer.main_agent.example.profile.get_real_lvl() or victim_lvl  # Если нет killer, то возьмётся уровень жертвы
+        max_items_count = killer and killer.example.get_real_lvl() or 1
+        count = random.randint(1, max_items_count)  # сделано от уровня тачки
+        items = event.server.table_drop and event.server.table_drop.get_items(levels=(victim_lvl, killer_lvl), count=count) or []
+
+        # log.debug("InsuranceTableDrop levels=({}..{}) count={} items:".format(victim_lvl, killer_lvl, count))
+        # for i in items:
+        #     log.debug("----- {!r}".format(i))
+
+        car.inventory.items = []
+        return items
+
+    def on_car_die(self, agent, car, event):
+        # log.debug("InsuranceTableDrop:: on_car_die => {!r}".format(agent))
+        self.car = None
+        return self.get_drop_items(victim=agent, car=car, event=event)

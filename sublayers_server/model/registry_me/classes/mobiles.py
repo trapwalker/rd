@@ -8,7 +8,7 @@ from sublayers_server.model.registry_me.classes.weapons import Weapon  # todo: �
 from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry_me.classes.inventory import InventoryField
 from sublayers_server.model.registry_me.tree import (
-    Node, Subdoc,
+    Node, Subdoc, ParamRange,
     IntField, StringField, FloatField, EmbeddedDocumentField, ListField,
     RegistryLinkField, EmbeddedNodeField, PositionField, BooleanField,
     LocalizedStringField,
@@ -25,21 +25,6 @@ class SlotField(EmbeddedNodeField):
 class ModuleSlotField(SlotField):
     def __init__(self, root_default=SLOT_LOCK, **kw):
         super(ModuleSlotField, self).__init__(root_default=root_default, **kw)
-
-
-class ParamRange(Subdoc):
-    min = FloatField(default=1.0, doc=u"Минимальное значение генерации")
-    max = FloatField(default=1.0, doc=u"Максимальное значение генерации")
-
-    def __init__(self, **kw):
-        super(ParamRange, self).__init__(**kw)
-        self.min, self.max = min(self.max, self.min), max(self.max, self.min)
-
-    def get_random_value(self):
-        return self.min + random.random() * (self.max - self.min)
-
-    def in_range(self, value):
-        return self.min <= value <= self.max
 
 
 class Mobile(Node):
@@ -347,6 +332,12 @@ class Mobile(Node):
     @property
     def exp(self):
         return self.value_exp
+
+    def get_real_lvl(self):
+        if self.exp_table:
+            return self.exp_table.car_lvl_by_exp(self.exp)
+        log.warn("Not found exp_table for {!r}".format(self))
+        return 0
 
     def set_exp(self, time=None, value=None, dvalue=None):
         assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)

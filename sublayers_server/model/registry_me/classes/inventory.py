@@ -63,7 +63,7 @@ class Inventory(Subdoc):
                 new_items.append(add_item)
         self.items = new_items
 
-    def add_item(self, item, count):
+    def add_item(self, item, count, additional_options=None):
         for add_item in self.items:
             if (add_item.amount < add_item.stack_size) and (add_item.node_hash() == item.node_hash()):
                 d_amount = min((add_item.stack_size - add_item.amount), count)
@@ -74,6 +74,7 @@ class Inventory(Subdoc):
         while count > 0:
             d_amount = min(item.stack_size, count)
             ii = item.instantiate(amount=d_amount)
+            ii.randomize_params(options=additional_options and additional_options.get("randomize_options", None))
             if ii.amount == 0:  # todo: по какой-то прчине во время инстанцирования не учитывается amount
                 log.warn("Amount Warning after Instantiate: d_amount={}, item={!r}".format(d_amount, ii))
                 ii.amount = d_amount  # Странный баг. После инстанцирования не с нулём
