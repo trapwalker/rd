@@ -97,6 +97,9 @@ class NPCTypePageNote(Note):
 class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass
 
+
+class GetClassCarQuestNote(NPCPageNote): pass
+
 # Ноты обучения
 class GetQuestTeachingNote(Note):
     target_quest_uid = UUIDField(tags={'client'})

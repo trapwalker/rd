@@ -206,13 +206,10 @@ class AgentConsoleNamespace(Namespace):
 
     def npc_rel(self, dvalue):
         time = self.agent.server.get_time()
-        print dvalue
         town = self.agent.current_location
         npcs = town and town.example.get_npc_list()
         int_dval = int(dvalue)
-        print int_dval
-        for npc in npcs:
-            print npc, int_dval
+        for npc in npcs:            
             self.agent.example.profile.set_relationship(time=time, npc=npc, dvalue=int_dval)
 
 
