@@ -443,6 +443,9 @@ var ClientManager = (function () {
             case 'MapActivationRadarsNoteFinish':
                 new MapActivationRadarsNoteFinish(note);
                 break;
+            case 'GetClassCarQuestNote':
+                new QuestNoteNPCBtn(note);
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }

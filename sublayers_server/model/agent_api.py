@@ -209,7 +209,7 @@ class AgentConsoleNamespace(Namespace):
         town = self.agent.current_location
         npcs = town and town.example.get_npc_list()
         int_dval = int(dvalue)
-        for npc in npcs:            
+        for npc in npcs:
             self.agent.example.profile.set_relationship(time=time, npc=npc, dvalue=int_dval)
 
 
