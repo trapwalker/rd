@@ -446,6 +446,9 @@ var ClientManager = (function () {
             case 'GetClassCarQuestNote':
                 new QuestNoteNPCBtn(note);
                 break;
+            case 'NPCPageNote':
+                new QuestNoteNPCBtn(note);
+                break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
         }
