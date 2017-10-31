@@ -71,7 +71,10 @@ class OnCancel(QuestEvent): pass
 class OnDie(QuestEvent): pass
 
 
-class OnMakeDmg(QuestEvent): pass
+class OnMakeDmg(QuestEvent):
+    def __init__(self, targets, **kw):
+        super(OnMakeDmg, self).__init__(**kw)
+        self.targets = targets
 
 
 class OnGetDmg(QuestEvent):

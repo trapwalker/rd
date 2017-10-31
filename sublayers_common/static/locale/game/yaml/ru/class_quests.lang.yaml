@@ -36,3 +36,29 @@
 "q_cq_visit_towns_replica_return_to_teacher": "Все города посещены. Вернитесь к наставнику"
 "q_cq_visit_towns_finished": "Квест завершён"
 
+# ClassQuestAccumulateNucoins
+"q_cq_acc_summ_started": "Начат квест"
+"q_cq_acc_summ_finished_page": "Накопить"
+"q_cq_acc_summ_finished_btn": "Далее"
+"q_cq_acc_summ_replica_not_finish": "Недостаточно денег"
+"q_cq_acc_summ_finished": "Квест завершён"
+
+
+# ClassQuestKillsQuest
+"q_cq_kills_started": "Начат квест"
+"q_cq_kills_finished_page": "Убийства"
+"q_cq_kills_finished_btn": "Далее"
+"q_cq_kills_replica_not_finish": "Ещё не убиты все"
+"q_cq_kills_finished": "Квест завершён"
+"q_cq_kills_target_killed": "убит"
+
+
+# ClassQuestInvisibleAttack
+"q_cq_inv_attack_one_template": Скрытая атака по {{ target_login }} совершена. {% if left %}Осталось: {{ '{:.0f}'.format(left) }}.{% end %}
+"q_cq_inv_attack_started": "Начат квест"
+"q_cq_inv_attack_done": "Атаки завершены. Вернитесь к наставнику."
+"q_cq_inv_attack_finished_page": "Скрытые атаки"
+"q_cq_inv_attack_finished_btn": "Далее"
+"q_cq_inv_attack_replica_not_finish": "Ещё не атакованы все"
+"q_cq_inv_attack_finished": "Квест завершён"
+
