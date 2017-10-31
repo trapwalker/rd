@@ -187,3 +187,108 @@
     height: 100%;
     background: url(../img/quests/notes/select_teacher.png) no-repeat center;
 }
+
+
+
+/* Общее для классовых квестов */
+
+.note-class-img {
+    position: relative;
+    width: 100%;
+    height: 125px;
+    box-sizing: border-box;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, #30fc00, #30fc00, transparent);
+    border-image-slice: 1;
+}
+
+.note-class-text {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 125px);
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+/* Нота на классовую машинку */
+.note-class-img.class-car-note {
+    height: 116px;
+    background: url(../img/quests/notes/visit_trainer.png) no-repeat center;
+}
+
+.note-class-text.class-car-note {
+    height: calc(100% - 116px);
+}
+
+
+/* Нота на максимальный уровень машинки */
+.note-class-img.car-max-lvl-note {
+    height: 116px;
+    background: url(../img/quests/notes/visit_trainer.png) no-repeat center;
+}
+
+.note-class-text.car-max-lvl-note {
+    height: calc(100% - 116px);
+}
+
+
+
+/* AccumulateNucoinsQuestNote */
+.note-class-img.accum-nucoins {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/accum_nucoins.png) no-repeat center;
+}
+.note-class-text.accum-nucoins {
+    height: calc(100% - 116px);
+}
+
+/* KillsClassQuestNote */
+.note-class-img.killer-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/killer.png) no-repeat center;
+}
+.note-class-text.killer-class-quest {
+    height: calc(100% - 116px);
+}
+
+/* GetPartyExpQuestNote */
+.note-class-img.get-party-exp {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/party_exp.png) no-repeat center;
+}
+.note-class-text.get-party-exp {
+    height: calc(100% - 116px);
+}
+
+/* SetMechanicItemsQuestNote */
+.note-class-img.set-mechanic-items {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/mechanic_items.png) no-repeat center;
+}
+.note-class-text.set-mechanic-items {
+    height: calc(100% - 116px);
+}
+
+/* InvisibleAttackQuestNote */
+.note-class-img.invisible-attack {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/invisible_attack.png) no-repeat center;
+}
+.note-class-text.invisible-attack {
+    height: calc(100% - 116px);
+}
+
+/* VisitTownsQuestNote */
+.note-class-img.visit-towns-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/visit_towns.png) no-repeat center;
+}
+.note-class-text.visit-towns-class-quest {
+    height: calc(100% - 116px);
+}
+

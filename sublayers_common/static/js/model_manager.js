@@ -443,9 +443,32 @@ var ClientManager = (function () {
             case 'MapActivationRadarsNoteFinish':
                 new MapActivationRadarsNoteFinish(note);
                 break;
+
             case 'GetClassCarQuestNote':
-                new QuestNoteNPCBtn(note);
+                new QuestNoteNPCBtnClassCar(note);
                 break;
+            case 'GetMaxCarLvlQuestNote':
+                new QuestNoteNPCBtnCarMaxLevel(note);
+                break;
+            case 'AccumulateNucoinsQuestNote':
+                new AccumulateNucoinsQuestNote(note);
+                break;
+            case 'KillsClassQuestNote':
+                new KillsClassQuestNote(note);
+                break;
+            case 'GetPartyExpQuestNote':
+                new GetPartyExpQuestNote(note);
+                break;
+            case 'SetMechanicItemsQuestNote':
+                new SetMechanicItemsQuestNote(note);
+                break;
+            case 'InvisibleAttackQuestNote':
+                new InvisibleAttackQuestNote(note);
+                break;
+            case 'VisitTownsQuestNote':
+                new VisitTownsQuestNote(note);
+                break;
+
             case 'NPCPageNote':
                 new QuestNoteNPCBtn(note);
                 break;

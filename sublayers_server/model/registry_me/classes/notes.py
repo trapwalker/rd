@@ -98,6 +98,14 @@ class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass
 
 class GetClassCarQuestNote(NPCPageNote): pass
+class AccumulateNucoinsQuestNote(NPCPageNote): pass
+class KillsClassQuestNote(NPCPageNote): pass
+class GetPartyExpQuestNote(NPCPageNote): pass
+class SetMechanicItemsQuestNote(NPCPageNote): pass
+class InvisibleAttackQuestNote(NPCPageNote): pass
+class VisitTownsQuestNote(NPCPageNote): pass
+class GetMaxCarLvlQuestNote(NPCPageNote): pass
+
 class MaskingTastQuestNote(NPCPageNote): pass
 
 # Ноты обучения
