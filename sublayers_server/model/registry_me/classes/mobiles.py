@@ -213,7 +213,7 @@ class Mobile(Node):
         return (v for attr, v in self.iter_slots(tags={'armorer'}) if isinstance(v, Weapon))
 
     def iter_mechanic_items(self):
-        return (v for attr, v in self.iter_slots(tags={'mechanic'}) if isinstance(v, MechanicItem))
+        return [v for attr, v in self.iter_slots(tags={'mechanic'}) if isinstance(v, MechanicItem)]
 
     def iter_armorer_slots_name(self):
         return (attr for attr, v in self.iter_slots(tags={'armorer'}))

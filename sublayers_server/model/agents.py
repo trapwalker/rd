@@ -590,7 +590,7 @@ class Agent(Object):
         pass
 
     def on_kill(self, event, target, killer):
-        # log.debug('%s:: on_kill(%s)', self, obj)
+        # log.debug('%s:: on_kill(%s)', self, target)
         self.log.info('{}:: on_kill {} killer={} time={}'.format(self, target, killer, event.time))
         # todo: registry fix?
         self.example.profile.set_frag(dvalue=1)  # начисляем фраг агенту
@@ -635,9 +635,7 @@ class Agent(Object):
             if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.profile.karma_norm >= -0.1):
                 self.example.profile.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
-        # Отправить сообщение на клиент о начисленной экспе
         self.example.profile.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
-        # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
         # todo: Разобраться с именем этого метода
