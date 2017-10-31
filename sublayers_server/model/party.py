@@ -9,6 +9,7 @@ from sublayers_server.model.messages import (
     PartyIncludeMessageForIncluded, PartyErrorMessage, PartyKickMessageForKicked, PartyInviteDeleteMessage,
     PartyUserInfoMessage)
 from sublayers_server.model.chat_room import PartyChatRoom
+from sublayers_server.model.quest_events import OnPartyExp
 
 
 def inc_name_number(name):
@@ -486,6 +487,10 @@ class Party(object):
         return '<Party {self.name!r}/{n}>'.format(self=self, n=len(self))
 
     @property
+    def all_agents(self):
+        return [m.agent for m in self.members]
+
+    @property
     def slug(self):
         # todo: cache it #optimize
         return 'party__{}'.format(id(self))  # todo: use slug of name
@@ -560,8 +565,13 @@ class Party(object):
             val = round(dvalue / len(self.members))
             for member in self.members:
                 member.agent.example.profile.set_exp(dvalue=val, time=event.time)
+
+            # Отправка лидеру пати квестового эвента с количеством экспы заработанным агентом
+            self.owner.example.profile.on_event(event=event, cls=OnPartyExp, agents=self.all_agents, exp=val, party=self)
         else:
             agent.example.profile.set_exp(dvalue=dvalue, time=event.time)
+            # Отправка лидеру пати квестового эвента с количеством экспы заработанным агентом
+            self.owner.example.profile.on_event(event=event, cls=OnPartyExp, agents=agent, exp=dvalue, party=self)
 
     @event_deco
     def change_share_option(self, event, agent, share_exp):

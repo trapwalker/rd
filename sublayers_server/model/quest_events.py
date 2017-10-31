@@ -142,6 +142,14 @@ class OnKill(QuestEvent):
         self.agent = agent  # todo: weakref?
 
 
+class OnPartyExp(QuestEvent):
+    def __init__(self, exp, agents, party, **kw):
+        super(OnPartyExp, self).__init__(**kw)
+        self.agents = agents
+        self.exp = exp
+        self.party = party
+
+
 class OnPartyInclude(QuestEvent):
     def __init__(self, agent, **kw):
         server = kw.pop('server', None) or agent.server
