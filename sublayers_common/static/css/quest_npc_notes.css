@@ -1,4 +1,4 @@
-/* Нота для квеста доставки */
+/* РќРѕС‚Р° РґР»СЏ РєРІРµСЃС‚Р° РґРѕСЃС‚Р°РІРєРё */
 
 .notes-npc-delivery-up {
     position: relative;
@@ -47,7 +47,7 @@
     color: #2ffa00;
 }
 
-/* Нота для квеста убийства списка игроков */
+/* РќРѕС‚Р° РґР»СЏ РєРІРµСЃС‚Р° СѓР±РёР№СЃС‚РІР° СЃРїРёСЃРєР° РёРіСЂРѕРєРѕРІ */
 
 .notes-npc-killer-up {
     position: relative;
@@ -94,7 +94,7 @@
     color: #2ffa00;
 }
 
-/* Нота для убийства босса */
+/* РќРѕС‚Р° РґР»СЏ СѓР±РёР№СЃС‚РІР° Р±РѕСЃСЃР° */
 
 .notes-npc-kill-boss {
     position: relative;
@@ -138,7 +138,7 @@
     text-align: center;
 }
 
-/* Нота для доставки машины */
+/* РќРѕС‚Р° РґР»СЏ РґРѕСЃС‚Р°РІРєРё РјР°С€РёРЅС‹ */
 
 .notes-npc-delivery-car-up {
     position: relative;
@@ -154,7 +154,7 @@
     background-position: center;
 }
 
-/* Нота на посещение тренера */
+/* РќРѕС‚Р° РЅР° РїРѕСЃРµС‰РµРЅРёРµ С‚СЂРµРЅРµСЂР° */
 
 .notes-visit-trainer-img {
     position: relative;
@@ -179,7 +179,7 @@
     overflow-y: auto;
 }
 
-/* Нота на посещение тренера */
+/* РќРѕС‚Р° РЅР° РїРѕСЃРµС‰РµРЅРёРµ С‚СЂРµРЅРµСЂР° */
 
 .notes-select-teacher-img {
     position: relative;
