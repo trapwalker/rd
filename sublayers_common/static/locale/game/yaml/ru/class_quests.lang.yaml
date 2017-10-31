@@ -73,3 +73,12 @@
 "q_cq_party_exp_finished": "Квест завершён"
 "q_cq_party_exp_one_template": |
     Опыт: {{ '{:.0f}'.format(exp) }} / {{ '{:.0f}'.format(max_exp) }}.
+
+
+# ClassQuestSetMechanicItems
+"q_cq_mech_items_replica_not_fin": |
+    Всё ещё недостаточно айтемов. Осталось: {{ '{:.0f}'.format(left) }}.
+"q_cq_mech_items_started": "Квест начат"
+"q_cq_mech_items_finished_page": "Итемы механика"
+"q_cq_mech_items_finished_btn": "Далее"
+"q_cq_mech_items_finished": "Квест завершён"
