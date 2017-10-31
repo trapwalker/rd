@@ -83,3 +83,11 @@
 "q_cq_mech_items_finished_page": "Итемы механика"
 "q_cq_mech_items_finished_btn": "Далее"
 "q_cq_mech_items_finished": "Квест завершён"
+
+
+# GetCarMaxLevelQuest
+"q_cq_get_car_lvl_started": "Квест начат"
+"q_cq_get_car_lvl_note_page": "Максимальная машинка"
+"q_cq_get_car_lvl_note_btn": "Далее"
+"q_cq_get_car_lvl_bad": "Предоставь машинку с максимальным уровнем"
+"q_cq_get_car_lvl_finished": "Квест завершён"
