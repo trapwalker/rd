@@ -7,6 +7,7 @@ from sublayers_server.model.messages import Message
 from sublayers_server.model.game_log_messages import BarterLogMessage
 from sublayers_server.model.base import Object
 from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer
+from sublayers_server.model.quest_events import OnBarterSuccess
 
 
 class InitBarterEvent(Event):
@@ -343,6 +344,9 @@ class Barter(object):
 
         BarterLogMessage(agent=self.initiator, time=event.time, action="end", apponent=self.recipient).post()
         BarterLogMessage(agent=self.recipient, time=event.time, action="end", apponent=self.initiator).post()
+
+        self.initiator.example.profile.on_event(event=event, cls=OnBarterSuccess, barter=self)
+        self.recipient.example.profile.on_event(event=event, cls=OnBarterSuccess, barter=self)
 
         # Удалить бартер
         self.state = 'success'

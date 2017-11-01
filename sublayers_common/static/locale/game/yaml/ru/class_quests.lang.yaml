@@ -102,3 +102,12 @@
 "q_cq_party_members_finished": "Квест завершён"
 
 
+# ClassQuestBarterCount
+"q_cq_barters_add_one": |
+    Совершён бартер с {{ agent_login }}.
+"q_cq_barters_started": "Квест начат"
+"q_cq_barters_finished_page": "Совершение бартеров"
+"q_cq_barters_finished_btn": "<br>Далее"
+"q_cq_barters_replica_not_finish": "Ещё на совершено нужное кол-во бартеров"
+"q_cq_barters_back_to_teacher": "Вернитесь к наставнику"
+"q_cq_barters_finished": "Квест завершён"

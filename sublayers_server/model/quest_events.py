@@ -142,6 +142,12 @@ class OnKill(QuestEvent):
         self.agent = agent  # todo: weakref?
 
 
+class OnBarterSuccess(QuestEvent):
+    def __init__(self, barter, **kw):
+        super(OnBarterSuccess, self).__init__(**kw)
+        self.barter = barter
+
+
 class OnPartyExp(QuestEvent):
     def __init__(self, exp, agents, party, **kw):
         super(OnPartyExp, self).__init__(**kw)
