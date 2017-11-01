@@ -64,17 +64,11 @@
 "q_cq_inv_attack_replica_not_finish": "Ещё не атакованы все"
 "q_cq_inv_attack_finished": "Квест завершён"
 
-
-# ClassQuestPartyExp
-"q_cq_party_exp_started": "Квест начат"
-"q_cq_party_exp_finished_page": "Опыт Группы"
-"q_cq_party_exp_finished_btn": "Далее"
-"q_cq_party_exp_replica_not_finish": "Ещё не заработано достаточно"
-"q_cq_party_exp_done_text": "Опыта достаточно. Вернитесь к наставнику."
-"q_cq_party_exp_finished": "Квест завершён"
-"q_cq_party_exp_one_template": |
-    Опыт: {{ '{:.0f}'.format(exp) }} / {{ '{:.0f}'.format(max_exp) }}.
-
+# MaskingQuest
+"q_cq_masking_started": "Посетить наставника"
+"q_cq_masking_npc_note_caption": "Маскировка"
+"q_cq_masking_npc_note_text": "Есть вещи, которые мы носим с собой, а не бросаем в багажник. Можно называть их артефактами, талисманами, квестовыми предметами или просто хламом, который жалко выкинуть. И я знаю, где найти такую штуку, которая тебе действительно понравится. Она спрятана в тайнике. Но он хорошо защищен. Я знаю парня, который оставил этот тайник, лезть напролом туда точно бесполезно. Но если прокрасться мимо охранной турели, используя свою скрытность - может сработать. Когда будешь рядом с тайником - сбавь скорость, чтобы стать менее заметным и держись подальше от турели!"
+"q_cq_masking_npc_note_btn": "<br>Отчитаться"
 
 # ClassQuestSetMechanicItems
 "q_cq_mech_items_replica_not_fin": |

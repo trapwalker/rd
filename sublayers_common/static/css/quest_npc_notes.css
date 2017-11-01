@@ -292,3 +292,12 @@
     height: calc(100% - 116px);
 }
 
+/* QuestNoteMaskingNPC */
+.note-class-img.masking-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/masking.png) no-repeat center;
+}
+.note-class-text.masking-class-quest {
+    height: calc(100% - 116px);
+}
+

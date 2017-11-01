@@ -124,6 +124,115 @@ var QuestMapMarkerNote = (function (_super) {
     return QuestMapMarkerNote;
 })(SimpleNote);
 
+// Нота сейфа в квесте маскировки
+var QuestMCMapMarkerNote = (function (_super) {
+    __extends(QuestMCMapMarkerNote, _super);
 
-// var a = new QuestMapMarkerNote({uid: -5551328, position: {x: 12517600, y: 27028834}, range: 50, list_icon: "static/img/quests/icons/delivery.png"});
-// a.is_active = true;
+    function QuestMCMapMarkerNote(options) {
+        _super.call(this, options);
+        this.img_width = 20;
+        this.img_height = 20;
+        this.offset_x = -0.5;
+        this.offset_y = -0.5;
+    }
+
+     // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    QuestMCMapMarkerNote.prototype.redraw = function(ctx, time, client_time) {
+        //console.log("QuestMapMarkerNote.prototype.redraw");
+        if (! this.is_active) return;
+
+        var focused = mapCanvasManager._mouse_focus_widget == this;
+
+        ctx.save();
+        var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        this._last_ctx_pos = ctx_pos;
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+
+        // Отрисовка иконки
+        if (this.icon_circle && this.icon_circle.complete) {
+            ctx.drawImage(this.icon_circle, 0, 0, this.img_width, this.img_height,
+                this.offset_x * this.img_width * this.scale_icon_x, this.offset_y * this.img_height * this.scale_icon_y,
+                this.img_width * this.scale_icon_x, this.img_height * this.scale_icon_y);
+
+            var opacity = mapCanvasManager.real_zoom - 14.;
+            if (focused)
+                opacity = 1;
+            else
+                opacity = Math.max(Math.min(1, opacity), 0);
+
+            if (this.icon_full && this.icon_full.complete && opacity > 0) {
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.drawImage(this.icon_full, 0, 0, this.img_width, this.img_height,
+                    this.offset_x * this.img_width * this.scale_icon_x, this.offset_y * this.img_height * this.scale_icon_y,
+                    this.img_width * this.scale_icon_x, this.img_height * this.scale_icon_y);
+                ctx.restore();
+            }
+        }
+
+        // Отрисовка круга и текста, если нота находится в фокусе
+        if (mapManager.getZoom() > 15 && this.radius > 0 && focused) {
+            // Если мы в зумировании, то рисовать круг с прозрачностью
+            var opacity = mapCanvasManager.real_zoom - 15.;
+            opacity = Math.max(Math.min(1, opacity), 0);
+            opacity *= 0.5; // Max opacity
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.beginPath();
+            ctx.strokeStyle = "#00cc81";
+            //ctx.setLineDash([10, 10]);
+            ctx.lineWidth = 2;
+            ctx.arc(0, 0, (this.radius / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+
+        ctx.restore();  // Возврат транслейта
+    };
+
+    return QuestMCMapMarkerNote;
+})(QuestMapMarkerNote);
+
+
+var QuestMTMapMarkerNote = (function (_super) {
+    __extends(QuestMTMapMarkerNote, _super);
+
+    function QuestMTMapMarkerNote(options) {
+        _super.call(this, options);
+    }
+
+     // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    QuestMTMapMarkerNote.prototype.redraw = function(ctx, time, client_time) {
+        console.log("QuestMTMapMarkerNote.prototype.redraw", this.radius);
+        if (! this.is_active) return;
+
+        ctx.save();
+        var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        this._last_ctx_pos = ctx_pos;
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+
+        // Отрисовка круга и текста, если нота находится в фокусе
+        if (mapManager.getZoom() > 15 && this.radius > 0) {
+            // Если мы в зумировании, то рисовать круг с прозрачностью
+            var opacity = mapCanvasManager.real_zoom - 15.;
+            opacity = Math.max(Math.min(1, opacity), 0);
+            opacity *= 0.5; // Max opacity
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.beginPath();
+            ctx.strokeStyle = "#00cc81";
+            //ctx.setLineDash([10, 10]);
+            ctx.lineWidth = 2;
+            ctx.arc(0, 0, (this.radius / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+
+        ctx.restore();  // Возврат транслейта
+    };
+
+    return QuestMTMapMarkerNote;
+})(QuestMapMarkerNote);
+

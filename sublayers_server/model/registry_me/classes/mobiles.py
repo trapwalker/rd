@@ -591,6 +591,8 @@ class ExtraMobile(Mobile):
 
 
 class MapRadar(ExtraMobile):pass
+
+
 class MapWeaponTurret(ExtraMobile):pass
 
 

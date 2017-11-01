@@ -206,7 +206,7 @@ var ClientManager = (function () {
                 new WCanvasMarker(car);
             }
 
-            if (car.cls == "Turret") {
+            if ((car.cls == "Turret") || (car.cls == 'MaskingQuestTurret')) {
                 var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
             }
@@ -434,6 +434,34 @@ var ClientManager = (function () {
                 });
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
+            case 'MaskingMapMarkerNote':
+                // console.log('MaskingMapMarkerNote', note.position);
+                var quest = journalManager.quests.getQuest(note.quest_uid);
+                var rad_note = new QuestMCMapMarkerNote({
+                    quest_uid: note.quest_uid,
+                    uid: note.uid,
+                    position: note.position,
+                    radius: note.radius,
+                    icon_full: quest && quest.map_icon_full,
+                    icon_circle: quest && quest.map_icon_circle,
+                    focus_caption: ''
+                });
+                rad_note.is_active = quest && quest.active_notes_view;
+                break;
+            case 'MaskingTurretMapMarkerNote':
+                // console.log('MaskingTurretMapMarkerNote', note.position);
+                var quest = journalManager.quests.getQuest(note.quest_uid);
+                var rad_note = new QuestMTMapMarkerNote({
+                    quest_uid: note.quest_uid,
+                    uid: note.uid,
+                    position: note.position,
+                    radius: note.radius,
+                    icon_full: quest && quest.map_icon_full,
+                    icon_circle: quest && quest.map_icon_circle,
+                    focus_caption: ''
+                });
+                rad_note.is_active = quest && quest.active_notes_view;
+                break;
             case 'QuestRadiationNPCFinish':
                 new QuestNoteNPCBtnRadiation(note);
                 break;
@@ -443,7 +471,6 @@ var ClientManager = (function () {
             case 'MapActivationRadarsNoteFinish':
                 new MapActivationRadarsNoteFinish(note);
                 break;
-
             case 'GetClassCarQuestNote':
                 new QuestNoteNPCBtnClassCar(note);
                 break;
@@ -468,7 +495,9 @@ var ClientManager = (function () {
             case 'VisitTownsQuestNote':
                 new VisitTownsQuestNote(note);
                 break;
-
+            case 'MaskingNPCQuestNote':
+                new QuestNoteMaskingNPC(note);
+                break;
             case 'NPCPageNote':
                 new QuestNoteNPCBtn(note);
                 break;
@@ -680,6 +709,7 @@ var ClientManager = (function () {
             case 'Rocket':
             case 'ScoutDroid':
             case 'Turret':
+            case 'MaskingQuestTurret':
             case 'Radar':
             case 'SlowMine':
             case 'BangMine':

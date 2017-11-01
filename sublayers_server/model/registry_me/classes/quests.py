@@ -986,16 +986,18 @@ class MarkerMapObject(Subdoc):
     position = PositionField(caption=u"Координаты объекта")
     radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags={'client'})
 
-    def is_near(self, position):
+    def is_near(self, position, radius=None):
+        radius = radius or self.radius
         if isinstance(position, PositionField):
             position = position.as_point()
         if isinstance(position, Point):
             distance = self.position.as_point().distance(target=position)
-            return distance <= self.radius
+            return distance <= radius
         return False
 
-    def generate_random_point(self):
-        return Point.random_point(radius=self.radius, center=self.position.as_point())
+    def generate_random_point(self, radius=None):
+        radius = radius or self.radius
+        return Point.random_point(radius=radius, center=self.position.as_point())
 
     def as_client_dict(self):
         d = super(MarkerMapObject, self).as_client_dict()

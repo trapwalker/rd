@@ -1,0 +1,41 @@
+"locale": "en"
+
+# Классовый квест
+"q_cq_started": "Started a class quest."
+"q_cq_caption_1": "Establish a settlement"
+"q_cq_caption_2": "Create a clan"
+"q_cq_caption_3": "Get stealth technology"
+"q_cq_caption_4": "Open shop"
+"q_cq_caption_5": "Get supercar"
+"q_cq_caption_6": "Open a service center"
+"q_cq_caption_get_new_task": "Received a new assignment."
+"q_cq_class_target_note": "Class goal"
+"q_cq_visit_trainer": "Coach was visited."
+"q_cq_select_teacher_note_caption": "Mentor"
+"q_cq_select_teacher_note_btn": "<br>Accept"
+"q_cq_phrase_1": "Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как минимум в 75, дальнейшего разговора не будет.<//br> Отношение можно повысить близостью в карме и выполнением моих заданий."
+"q_cq_phrase_2": "Хорошо, вот мои требования к ученикам:<//br>- Взнос 3000 NC.<//br>- Уровень не менее 4."
+"q_cq_final": "Quest completed."
+
+# GetClassCarQuest
+"q_cq_get_car_started": "Посетить наставника"
+"q_cq_get_car_note_page": "Классовый автомобиль"
+"q_cq_get_car_note_btn": "Далее"
+"q_cq_get_car_note_page": "Этот автомобиль не твоего класса"
+"q_cq_get_car_not_car": "Без автомобиля нельзя"
+"q_cq_get_car_finished": "Квест завершён"
+
+# ClassQuestVisitTowns
+"q_cq_visit_towns_started": "Посетите города"
+"q_cq_visit_towns_visit_one_template": |
+    Город {{ town and town.title or 'N' }} посещён. Осталось: {{ '{:.0f}'.format(towns_left) }}.
+"q_cq_visit_towns_finished_page": "Города"
+"q_cq_visit_towns_finished_btn": "Далее"
+"q_cq_visit_towns_replica_not_finish": "Ещё не посещены все города"
+"q_cq_visit_towns_finished": "Квест завершён"
+
+# MaskingQuest
+"q_cq_masking_started": "Посетить наставника"
+"q_cq_masking_npc_note_caption": "Маскировка"
+"q_cq_masking_npc_note_text": "Есть вещи, которые мы носим с собой, а не бросаем в багажник. Можно называть их артефактами, талисманами, квестовыми предметами или просто хламом, который жалко выкинуть. И я знаю, где найти такую штуку, которая тебе действительно понравится. Она спрятана в тайнике. Но он хорошо защищен. Я знаю парня, который оставил этот тайник, лезть напролом туда точно бесполезно. Но если прокрасться мимо охранной турели, используя свою скрытность - может сработать. Когда будешь рядом с тайником - сбавь скорость, чтобы стать менее заметным и держись подальше от турели!"
+"q_cq_masking_npc_note_btn": "<br>Отчитаться"

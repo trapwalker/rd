@@ -228,3 +228,31 @@ var VisitTownsQuestNote = (function (_super) {
 
     return VisitTownsQuestNote;
 })(QuestNoteNPCBtn);
+
+
+var QuestNoteMaskingNPC = (function (_super) {
+    __extends(QuestNoteMaskingNPC, _super);
+
+    function QuestNoteMaskingNPC(options) {
+        _super.call(this, options);
+    }
+
+    QuestNoteMaskingNPC.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="note-class-img masking-class-quest"></div>' +
+            '<div class="note-class-text masking-class-quest">' + _("q_cq_masking_npc_note_text") + '</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return QuestNoteMaskingNPC;
+})(QuestNoteNPCBtn);

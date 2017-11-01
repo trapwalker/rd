@@ -52,6 +52,7 @@ var WCanvasMarker = (function (_super) {
         var icon_name = '';
         switch (mobj.cls) {
             case 'Turret':
+            case 'MaskingQuestTurret':
                 icon_name = 'turret_001';
                 break;
             case "SlowMine":
