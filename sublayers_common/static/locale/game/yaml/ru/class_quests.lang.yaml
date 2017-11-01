@@ -111,3 +111,14 @@
 "q_cq_barters_replica_not_finish": "Ещё на совершено нужное кол-во бартеров"
 "q_cq_barters_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_barters_finished": "Квест завершён"
+
+
+# ClassQuestSetMapWeapon
+"q_cq_set_map_weapon_add_one": |
+    Активирован предмет: {{ title }}.
+"q_cq_set_map_weapon_started": "Квест начат"
+"q_cq_set_map_weapon_finished_page": "Мины и Турели"
+"q_cq_set_map_weapon_finished_btn": "<br>Далее"
+"q_cq_set_map_weapon_replica_not_finish": "Поставлено недостаточно мин и турелей"
+"q_cq_set_map_weapon_back_to_teacher": "Вернитесь к наставнику"
+"q_cq_set_map_weapon_finished": "Квест завершён"
