@@ -72,9 +72,10 @@ class OnDie(QuestEvent): pass
 
 
 class OnMakeDmg(QuestEvent):
-    def __init__(self, targets, **kw):
+    def __init__(self, targets, damager, **kw):
         super(OnMakeDmg, self).__init__(**kw)
         self.targets = targets
+        self.damager = damager
 
 
 class OnGetDmg(QuestEvent):

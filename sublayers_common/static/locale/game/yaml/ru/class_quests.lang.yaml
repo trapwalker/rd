@@ -122,3 +122,14 @@
 "q_cq_set_map_weapon_replica_not_finish": "Поставлено недостаточно мин и турелей"
 "q_cq_set_map_weapon_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_set_map_weapon_finished": "Квест завершён"
+
+
+# ClassQuestDamageMapWeapon
+"q_cq_dmg_map_weapon_add_one": |
+    Нанесён урон: {{ title }}.
+"q_cq_dmg_map_weapon_started": "Квест начат"
+"q_cq_dmg_map_weapon_finished_page": "Атаки"
+"q_cq_dmg_map_weapon_finished_btn": "<br>Далее"
+"q_cq_dmg_map_weapon_replica_not_finish": "Произведено недостаточно атак"
+"q_cq_dmg_map_weapon_back_to_teacher": "Вернитесь к наставнику"
+"q_cq_dmg_map_weapon_finished": "Квест завершён"

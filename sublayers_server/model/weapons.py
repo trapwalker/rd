@@ -7,9 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
 from sublayers_server.model.game_log_messages import WeaponAmmoFinishedLogMessage
 from sublayers_server.model.inventory import Consumer
-from sublayers_server.model.events import Event, FireDischargeEffectEvent, event_deco
-from sublayers_server.model.quest_events import OnMakeDmg
-
+from sublayers_server.model.events import FireDischargeEffectEvent, event_deco
 
 from random import random
 

@@ -807,7 +807,8 @@ class Agent(Object):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
         if is_damage_shoot:  # todo: пробросить сюда Ивент
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg, targets=targets)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg,
+                                          targets=targets, damager=obj)
 
         # info: 20-10-17 Ракеты города наказывают только за атаку по живым игрокам
         if is_damage_shoot and targets and self.check_users_in_target_cars(targets):
@@ -822,7 +823,8 @@ class Agent(Object):
                 poi.on_enemy_candidate(agent=self, time=time, damage=True)
 
         # todo: пробросить сюда Ивент
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg, targets=[target])
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg,
+                                      targets=[target], damager=obj)
 
     def on_setup_map_weapon(self, obj, time):
         # log.info('on_setup_map_weapon for {}'.format(obj))
@@ -844,7 +846,8 @@ class Agent(Object):
 
         # Если был дамаг, то сообщить об этом в квесты
         if damage:  # todo: пробросить сюда Ивент
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg, targets=targets)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg,
+                                          targets=targets, damager=obj)
 
     def on_activated_item(self, item, inventory, event):
         # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
