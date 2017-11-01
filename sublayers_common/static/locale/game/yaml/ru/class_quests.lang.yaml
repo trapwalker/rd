@@ -91,3 +91,14 @@
 "q_cq_get_car_lvl_note_btn": "Далее"
 "q_cq_get_car_lvl_bad": "Предоставь машинку с максимальным уровнем"
 "q_cq_get_car_lvl_finished": "Квест завершён"
+
+
+# ClassQuestPartyMembers
+"q_cq_party_members_started": "Квест начат"
+"q_cq_party_members_finished_page": "Большой отряд"
+"q_cq_party_members_finished_btn": "<br>Далее"
+"q_cq_party_members_replica_not_finish": "Ещё не собран отряд нужного размера"
+"q_cq_party_members_back_to_teacher": "Вернитесь к наставнику"
+"q_cq_party_members_finished": "Квест завершён"
+
+

@@ -452,8 +452,12 @@ class Agent(Object):
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
         # Пробросить событие в квест ##quest
-        if new_member is self:  # Если исключили себя
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyInclude, agent=self)
+        if new_member is self:  # Если включили себя
+            e = Event(server=self.server, time=time)
+            self.example.profile.on_event(event=e, cls=quest_events.OnPartyInclude, agent=self)
+            # Ещё отправить это же owner'у party
+            if party.owner is not self:
+                party.owner.example.profile.on_event(event=e, cls=quest_events.OnPartyInclude, agent=self)
 
     def party_before_exclude(self, party, old_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on ##refactor
@@ -486,7 +490,11 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
         # Пробросить событие в квест ##quest
         if old_member is self:  # Если исключили себя
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyExclude, agent=self)
+            e = Event(server=self.server, time=time)
+            self.example.profile.on_event(event=e, cls=quest_events.OnPartyExclude, agent=self)
+            # Ещё отправить это же owner'у party
+            if party.owner is not self:
+                party.owner.example.profile.on_event(event=e, cls=quest_events.OnPartyExclude, agent=self)
 
 
     def _invite_by_id(self, invite_id):
