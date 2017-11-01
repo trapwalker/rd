@@ -574,9 +574,11 @@ class Quest(Node):
         self.do_state_enter(next_state, event)
 
     def _on_end_quest(self, event):
+
         agent_example = self.agent and self.agent.profile
         if agent_example:
             agent_example.quests_ended.append(self)
+            agent_example.on_event(event=event, cls=quest_events.OnQuestChange, target_quest_uid=self.uid)
             try:
                 agent_example.quests_active.remove(self)
             except ValueError as e:

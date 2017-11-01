@@ -133,3 +133,13 @@
 "q_cq_dmg_map_weapon_replica_not_finish": "Произведено недостаточно атак"
 "q_cq_dmg_map_weapon_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_dmg_map_weapon_finished": "Квест завершён"
+
+# ClassQuestNPCsTasksComplete
+"q_cq_npc_tasks_add_one": |
+    Выполнен квест для {{ npc_title }}.
+"q_cq_npc_tasks_started": "Начало квеста по выполнению квестов"
+"q_cq_npc_tasks_finished_page": "Квесты"
+"q_cq_npc_tasks_finished_btn": "<br>Далее"
+"q_cq_npc_tasks_replica_not_finish": "Ещё не все задания выполнены"
+"q_cq_npc_tasks_back_to_teacher": "Вернитесь к наставнику"
+"q_cq_npc_tasks_finished": "Квест завершён"
