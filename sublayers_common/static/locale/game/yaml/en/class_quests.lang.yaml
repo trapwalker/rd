@@ -146,3 +146,13 @@
 "q_cq_npc_tasks_replica_not_finish": "Ещё не все задания выполнены"
 "q_cq_npc_tasks_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_npc_tasks_finished": "Квест завершён"
+
+# ClassQuestShadowing
+"q_cq_shadowing_one_template":
+  Выполнена слежка за {{ target_login }}.
+"q_cq_shadowing_started": "Начало квеста Слежка"
+"q_cq_shadowing_finished_page": "Слежка"
+"q_cq_shadowing_finished_btn": "<br>Далее"
+"q_cq_shadowing_replica_not_finish": "Мало слежек!"
+"q_cq_shadowing_back_to_teacher": "Вернитесь к наставнику"
+"q_cq_shadowing_finished": "Квест завершён"
