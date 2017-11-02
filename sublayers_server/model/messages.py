@@ -634,6 +634,19 @@ class ChangeAltitude(Message):
         return d
 
 
+class ChangeStealthIndicator(Message):
+    def __init__(self, stealth, **kw):
+        super(ChangeStealthIndicator, self).__init__(**kw)
+        self.stealth = stealth
+
+    def as_dict(self):
+        d = super(ChangeStealthIndicator, self).as_dict()
+        d.update(
+            stealth=self.stealth,
+        )
+        return d
+
+
 def patch_svg_links(src, pth):
     import re
     r = re.compile(r'(xlink:href=")(.*.(jpg|png)")')  # todo: opimize

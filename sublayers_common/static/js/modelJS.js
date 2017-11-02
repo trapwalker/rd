@@ -182,6 +182,7 @@ var UserCar = (function (_super) {
         this.fireSidesMng = new FireSideMng();
         this.altitude = 0.0;
         this.radiation_dps = 0.0;
+        this.stealth_indicator = 0.0;
         this.radius_visible = aObservingRange;  // todo: поискать и стереть
 
         // устанавливается при инициализации UserCar в мессадже InitCar
