@@ -18,6 +18,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 from sublayers_server.model.messages import (
     PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage, TraderAgentAssortmentMessage,
     SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo, TraderInfoMessage,
+    ChangeStealthIndicator,
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -571,6 +572,9 @@ class Agent(Object):
             obj=obj,
             is_first=is_first,
         ).post()
+
+        obj.start_see_me(agent=self, time=time)  # Сообщить объекту, что его начали видеть
+
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=True, time=time)
         # self.subscriptions.on_see(agent=self, time=time, subj=subj, obj=obj)
@@ -588,10 +592,30 @@ class Agent(Object):
             obj=obj,
             is_last=is_last,
         ).post()
+
+        obj.finish_see_me(agent=self, time=time)  # Сообщить объекту, что его перестали видеть
+
         if isinstance(obj, Unit):
             obj.send_auto_fire_messages(agent=self, action=False, time=time)
         # self.subscriptions.on_out(agent=self, time=time, subj=subj, obj=obj)
         self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnQuestOut, obj=obj)
+
+    def start_see_me(self, agent, time):
+        pass
+
+    def finish_see_me(self, agent, time):
+        pass
+
+    @property
+    def stealth_indicator(self):
+        if not self.car or not self.car.is_alive:
+            return 0
+        count = len(self.watched_locations)  # Сразу учитываем все города, которые нас видят
+        car = self.car
+        for agent in car.subscribed_agents.keys():
+            if agent is not self:  # info: пати можно будет учесть здесь
+                count += 1
+        return count
 
     def on_message(self, connection, message):
         # todo: delivery for subscribers ##quest
@@ -921,6 +945,18 @@ class User(Agent):
         handlers = self._logger.handlers[:]
         for h in handlers:
             self._logger.removeHandler(h)
+
+    def start_see_me(self, agent, time):
+        super(User, self).start_see_me(agent=agent, time=time)
+        # Пересчитать сколько меня видят и отправить информацию на клиент
+        if self.car and self.car.is_alive:
+            ChangeStealthIndicator(agent=self, time=time, stealth=self.stealth_indicator).post()
+
+    def finish_see_me(self, agent, time):
+        super(User, self).finish_see_me(agent=agent, time=time)
+        # Пересчитать сколько меня видят и отправить информацию на клиент
+        if self.car and self.car.is_alive:
+            ChangeStealthIndicator(agent=self, time=time, stealth=self.stealth_indicator).post()
 
 
 class AI(Agent):

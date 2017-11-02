@@ -715,6 +715,16 @@ class Bot(Mobile):
         # todo: убедиться, что отрицательное значение получается путём подставления минуса - хорошо
         self.set_hp(time=event.time, dps=-self.repair_rate_on_stay)
 
+    def start_see_me(self, agent, time):
+        super(Bot, self).start_see_me(agent=agent, time=time)
+        # Отправить своему агенту, что его начали видеть
+        self.main_agent.start_see_me(agent=agent, time=time)
+
+    def finish_see_me(self, agent, time):
+        super(Bot, self).finish_see_me(agent=agent, time=time)
+        # Отправить своему агенту, что его перестали видеть
+        self.main_agent.finish_see_me(agent=agent, time=time)
+
 
 class ExtraMobile(Mobile):
     def __init__(self, starter, **kw):

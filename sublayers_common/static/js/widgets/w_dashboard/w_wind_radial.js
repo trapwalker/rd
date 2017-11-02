@@ -8,6 +8,9 @@ var WWindRadial = (function (_super) {
     function WWindRadial(car, div_parent) {
         _super.call(this, [car]);
         this.car = car;
+        this.last_prc = 0;
+        this.current_value = 0;
+        this.max_observers = 20;
         this.current_interface_size = interface_scale_big;
         this.alarm_sound = null;
 
@@ -24,7 +27,7 @@ var WWindRadial = (function (_super) {
         this.compactText = $('#cruiseControlCompactViewWindTextDiv');
 
         this._drawRadialScale();
-        this.draw_fill_area(0.75);
+        this.draw_fill_area(this.last_prc);
         this.draw.dmove(0, 2);
         this.change(clock.getCurrentTime());
     }
@@ -78,7 +81,7 @@ var WWindRadial = (function (_super) {
                     family:   'MICRADI',
                     size:     this.current_interface_size ? 9 : 7,
                     anchor:   'middle',
-                    leading:  '0.2em'
+                    leading:  '0.4em'
                 },
                 fill: {color: this.svg_colors.main2, opacity: 1}
             },
@@ -186,7 +189,7 @@ var WWindRadial = (function (_super) {
             .dmove(size, 3 * this.d_radius);
 
         // текст HEALTH
-        draw.text("WIND")
+        draw.text("OBSRV")
             .font(this.svg_params.text_WIND.font)
             .fill(this.svg_params.text_WIND.fill)
             .dmove(size, this.d_radius);
@@ -197,14 +200,14 @@ var WWindRadial = (function (_super) {
             .fill(this.svg_params.text_digits_fill)
             .dmove(size - this.max_r - this.d_radius * 1.5, 0);
 
-        // текст 30
-        draw.text("30")
+        // текст max_observers
+        draw.text(this.max_observers.toFixed(0))
             .font(this.svg_params.text_digits_font)
             .fill(this.svg_params.text_digits_fill)
             .dmove(size + this.max_r + this.d_radius * 1.5, 0);
 
-        // текст 15
-        draw.text("15")
+        // текст max_observers / 2
+        draw.text((this.max_observers / 2.).toFixed(0))
             .font(this.svg_params.text_digits_font)
             .fill(this.svg_params.text_digits_fill)
             .dmove(size, this.max_r);
@@ -271,16 +274,22 @@ var WWindRadial = (function (_super) {
                 });
 
         // Изменение текста (проценты)
-        this.text_prc.text(Math.round(prc * 30.) + ' m/s');
-        this.compactText.text(Math.round(prc * 30.) + ' m/s');
+        this.text_prc.text(this.current_value.toFixed(0));
+        this.compactText.text(this.current_value.toFixed(0));
     };
 
     WWindRadial.prototype.change = function () {
         //console.log('WWindRadial.prototype.change');
         if(! user.userCar) return;
-        //var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
-        // todo: определить способ плавного изменения области заливки
-        //this.draw_fill_area(prc);
+
+        var value = Math.max(this.car._hp_state.dps ? 1 : 0, user.userCar.stealth_indicator);
+        if (value != this.current_value) {
+            this.current_value = value;
+            this.last_prc = Math.min(value / this.max_observers, 1.0);
+            this.draw_fill_area(this.last_prc);
+            if (this.last_prc >= 0.9)
+                this.draw_alarmLamp()
+        }
     };
 
     WWindRadial.prototype.delFromVisualManager = function () {
@@ -296,7 +305,7 @@ var WWindRadial = (function (_super) {
         this.current_interface_size = interface_scale_big;
 
         this._drawRadialScale();
-        this.draw_fill_area(0.75);
+        this.draw_fill_area(this.last_prc);
     };
 
     return WWindRadial;
