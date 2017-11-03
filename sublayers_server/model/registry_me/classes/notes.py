@@ -101,6 +101,7 @@ class SelectTeacherNote(NPCTypePageNote): pass
 class GetClassCarQuestNote(NPCPageNote): pass
 class MaskingNPCQuestNote(NPCPageNote): pass
 class KillsClassQuestNote(NPCPageNote): pass
+class AccumulateNucoinsQuestNote(NPCPageNote): pass
 class GetPartyExpQuestNote(NPCPageNote): pass
 class SetMechanicItemsQuestNote(NPCPageNote): pass
 class InvisibleAttackQuestNote(NPCPageNote): pass

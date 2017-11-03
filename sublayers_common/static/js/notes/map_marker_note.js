@@ -204,7 +204,7 @@ var QuestMTMapMarkerNote = (function (_super) {
 
      // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
     QuestMTMapMarkerNote.prototype.redraw = function(ctx, time, client_time) {
-        console.log("QuestMTMapMarkerNote.prototype.redraw", this.radius);
+        // console.log("QuestMTMapMarkerNote.prototype.redraw", this.radius);
         if (! this.is_active) return;
 
         ctx.save();
