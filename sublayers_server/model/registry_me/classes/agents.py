@@ -595,3 +595,44 @@ class Agent(RLResolveMixin, Document):
             qf=u'Q' if self.quick_flag else 'q',
             tf=u'T' if self.teaching_flag else 't',
         )
+
+    def check_class_quests(self, event):
+        # Попробовать найти активный классовый квест
+        from sublayers_world.registry.quests.class_quests import ClassTypeQuest
+        from sublayers_world.registry.quests.class_quest import ClassQuest
+        from sublayers_world.registry.quests.class_quests.start_quest import StartQuest
+        profile = self.profile
+
+        if not isinstance(profile, AgentProfile):
+            log.warning("profile in %s not instance of AgentProfile", self)
+            return
+
+        # Значит ещё ни разу не генерировался квест. Всё нормально.
+        if profile.class_quest:
+            return
+
+        for q in profile.quests_active:
+            if isinstance(q, (ClassTypeQuest, ClassQuest)):
+                return
+
+        # Если же активного классового квеста не найдено, то попробовать найти в выполненых и от него продолжить
+        old_class_quest = None
+        for q in profile.quests_ended:
+            if isinstance(q, (ClassTypeQuest, ClassQuest)):
+                if old_class_quest is None or old_class_quest.endtime < q.endtime:
+                    old_class_quest = q
+
+        hirer = old_class_quest and old_class_quest.hirer
+        if hirer is None and old_class_quest and isinstance(old_class_quest, StartQuest):
+            hirer = old_class_quest.dc.teacher_uri and event.server.reg.get(old_class_quest.dc.teacher_uri)
+
+        # Если и там ничего нет, то выдать самый первый квест
+        if old_class_quest is None or old_class_quest.next_quest is None:
+            old_class_quest = event.server.reg.get('/registry/quests/class_quests/start_quest')
+
+        new_quest = old_class_quest.next_quest.instantiate(abstract=False, hirer=hirer)
+        if new_quest.generate(event=event, agent=self):
+            profile.add_quest(quest=new_quest, time=event.time)
+            new_quest.start(server=event.server, time=event.time + 0.1)
+        else:
+            del new_quest

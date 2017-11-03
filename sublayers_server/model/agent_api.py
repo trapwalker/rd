@@ -144,6 +144,29 @@ class AgentConsoleNamespace(Namespace):
         # self.agent.on_save(time=t)
         messages.RefreshMessage(agent=self.agent, time=t + 1, comment='Quests cleared').post()
 
+    def cqf(self):  # Fix Class Quest
+        from sublayers_world.registry.quests.class_quests import ClassTypeQuest
+        from sublayers_world.registry.quests.class_quest import ClassQuest
+
+        for_delete_quests = []
+        for_delete_notes = []
+        for q in self.agent.example.profile.quests_active:
+            if isinstance(q, (ClassTypeQuest, ClassQuest)):
+                for_delete_quests.append(q)
+                for note in self.agent.example.profile.notes:
+                    if note.quest_uid == q.uid:
+                        for_delete_notes.append(note)
+
+        for q in for_delete_quests:
+            self.agent.example.profile.quests_active.remove(q)
+
+        for note in for_delete_notes:
+            self.agent.example.profile.notes.remove(note)
+
+        messages.RefreshMessage(agent=self.agent, time=self.agent.server.get_time() + 1, comment='Class Quests cleared').post()
+        self.regenerate_quests()
+
+
     def regenerate_quests(self):
         agent = self.agent
         location = agent.current_location
