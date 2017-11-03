@@ -310,6 +310,7 @@ class Quest(Node):
         ),
     )
     active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', root_default=True, tags={'client'})
+    build_view = BooleanField(caption=u'Отрисовывать ли данный квест в квестах задния.', root_default=True, tags={'client'})
 
     @property
     def agent(self):
@@ -399,6 +400,7 @@ class Quest(Node):
         d.update(
             uid=self.uid,
             status=self.status,
+            build_view=self.build_view,
             result=self.result,
             hirer=dict(node_hash=self.hirer and self.hirer.node_hash()),
             caption=self.caption,

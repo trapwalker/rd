@@ -18,7 +18,11 @@ var QuestNoteNPCBtnClassCar = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img class-car-note"></div>' +
-            '<div class="note-class-text class-car-note">QuestNoteNPCBtnClassCar</div>'
+            '<div class="note-class-text class-car-note">' +
+            _("q_cq_get_car_note_1") +
+            _(user.example_agent.role_class) +
+            _("q_cq_get_car_note_2") +
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -47,7 +51,7 @@ var QuestNoteNPCBtnCarMaxLevel = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img car-max-lvl-note"></div>' +
-            '<div class="note-class-text car-max-lvl-note">QuestNoteNPCBtnCarMaxLevel</div>'
+            '<div class="note-class-text car-max-lvl-note">' + _("q_cq_get_car_lvl_note") + '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -256,3 +260,10 @@ var QuestNoteMaskingNPC = (function (_super) {
 
     return QuestNoteMaskingNPC;
 })(QuestNoteNPCBtn);
+
+
+
+
+
+
+

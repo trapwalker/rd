@@ -629,8 +629,10 @@ class Agent(RLResolveMixin, Document):
         # Если и там ничего нет, то выдать самый первый квест
         if old_class_quest is None or old_class_quest.next_quest is None:
             old_class_quest = event.server.reg.get('/registry/quests/class_quests/start_quest')
+        else:
+            old_class_quest = old_class_quest.next_quest
 
-        new_quest = old_class_quest.next_quest.instantiate(abstract=False, hirer=hirer)
+        new_quest = old_class_quest.instantiate(abstract=False, hirer=hirer)
         if new_quest.generate(event=event, agent=self):
             profile.add_quest(quest=new_quest, time=event.time)
             new_quest.start(server=event.server, time=event.time + 0.1)

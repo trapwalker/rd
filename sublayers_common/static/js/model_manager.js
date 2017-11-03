@@ -954,7 +954,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ChangeStealthIndicator = function(event){
-        console.log('ClientManager.prototype.ChangeStealthIndicator ', event.stealth);
+        // console.log('ClientManager.prototype.ChangeStealthIndicator ', event.stealth);
         if (user.userCar) {
             user.userCar.stealth_indicator = event.stealth;
             user.userCar.change();
