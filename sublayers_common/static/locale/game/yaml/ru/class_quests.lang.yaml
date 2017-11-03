@@ -73,7 +73,7 @@
 "q_cq_kills_finished": "Квест завершён"
 "q_cq_kills_target_killed": "убит"
 "q_cq_kills_back_to_teacher": "Возвращайтесь к наставнику"
-"q_cq_kills_task_text": "Воин дорог – уничтожь 12 тачек уровнем не ниже своего."
+"q_cq_kills_task_text": "Воин дорог – уничтожь 12 тачек уровнем не ниже своего (пока любых 12 тачек)."
 
 
 # ClassQuestPartyExp
@@ -85,7 +85,7 @@
 "q_cq_party_exp_finished": "Квест завершён"
 "q_cq_party_exp_one_template": |
     Опыт: {{ '{:.0f}'.format(exp) }} / {{ '{:.0f}'.format(max_exp) }}.
-"q_cq_party_exp_task_text": "Альфа-волк – создай собственный отряд и заработай в нём 3000 exp."
+"q_cq_party_exp_task_text": "Альфа-волк – создай собственный отряд и заработай в нём 1000 exp."
 
 
 # ClassQuestSetMechanicItems
