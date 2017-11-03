@@ -1,5 +1,4 @@
 #/bin/bash
 
 cd /home/sl
-/usr/local/bin/rd backup -s -d /home/sl/rd/.backup/local >> /home/sl/rd_restart.log 2>&1
-/usr/local/bin/rd restart                                >> /home/sl/rd_restart.log 2>&1
+/usr/local/bin/rd backup -s -d /home/sl/rd/.backup/local --restart >> /home/sl/rd_restart.log 2>&1
