@@ -66,8 +66,7 @@ def restart_command(ctx, host):
     if ctx.invoked_subcommand:
         return
 
-    stop(host=host)  # todo: configure server host
-    start()
+    restart(host=host)
 
 
 # @start.command(name='site')
@@ -107,6 +106,11 @@ def stop(host='http://localhost:8000'):
         log.debug(run('screen -S rd -X quit'.split()))
     except subprocess.CalledProcessError as e:
         log.error(e)
+
+
+def restart(host='http://localhost:8000'):
+    stop(host=host)  # todo: configure server host
+    start()
 
 
 def save(host='http://localhost:8000'):
