@@ -220,12 +220,12 @@ var WWindRadial = (function (_super) {
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('windAlarmLamp-off');
             this.alarmLamp.addClass('windAlarmLamp-on');
-            this.alarm_sound = audioManager.play({name: "alarm", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
+            //this.alarm_sound = audioManager.play({name: "alarm", gain: 1.0 * audioManager._settings_interface_gain, priority: 1.0, loop: true});
         }
         else {
             this.alarmLamp.removeClass('windAlarmLamp-on');
             this.alarmLamp.addClass('windAlarmLamp-off');
-            if (this.alarm_sound) this.alarm_sound.stop();
+            //if (this.alarm_sound) this.alarm_sound.stop();
         }
     };
 
@@ -290,10 +290,10 @@ var WWindRadial = (function (_super) {
             this.current_value = value;
             this.last_prc = Math.min(value / this.max_observers, 1.0);
             this.draw_fill_area(this.last_prc);
-            if (this.last_prc >= 0.9)
-                this.draw_alarmLamp(true)
+            if (this.last_prc >= 0)
+                this.draw_alarmLamp(true);
             else
-                this.draw_alarmLamp(false)
+                this.draw_alarmLamp(false);
         }
     };
 
