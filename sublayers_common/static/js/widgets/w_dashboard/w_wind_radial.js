@@ -213,7 +213,10 @@ var WWindRadial = (function (_super) {
             .dmove(size, this.max_r);
     };
 
-    WWindRadial.prototype.draw_alarmLamp = function() {
+    WWindRadial.prototype.draw_alarmLamp = function(state) {
+        if (state == this.alarmLampState)
+            return;
+        this.alarmLampState = state;
         if (this.alarmLampState) {
             this.alarmLamp.removeClass('windAlarmLamp-off');
             this.alarmLamp.addClass('windAlarmLamp-on');
@@ -288,7 +291,9 @@ var WWindRadial = (function (_super) {
             this.last_prc = Math.min(value / this.max_observers, 1.0);
             this.draw_fill_area(this.last_prc);
             if (this.last_prc >= 0.9)
-                this.draw_alarmLamp()
+                this.draw_alarmLamp(true)
+            else
+                this.draw_alarmLamp(false)
         }
     };
 
