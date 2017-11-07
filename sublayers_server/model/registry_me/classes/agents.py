@@ -623,11 +623,12 @@ class Agent(RLResolveMixin, Document):
                     old_class_quest = q
 
         hirer = old_class_quest and old_class_quest.hirer
-        if hirer is None and old_class_quest and isinstance(old_class_quest, StartQuest):
-            hirer = old_class_quest.dc.teacher_uri and event.server.reg.get(old_class_quest.dc.teacher_uri)
+        if hirer is None and old_class_quest and isinstance(old_class_quest, (StartQuest, ClassQuest)):
+            teacher_uri = old_class_quest.dc.get("teacher_uri", None)
+            hirer = teacher_uri and event.server.reg.get(teacher_uri)
 
         # Если и там ничего нет, то выдать самый первый квест
-        if old_class_quest is None or old_class_quest.next_quest is None:
+        if old_class_quest is None or old_class_quest.next_quest is None or hirer is None:
             old_class_quest = event.server.reg.get('/registry/quests/class_quests/start_quest')
         else:
             old_class_quest = old_class_quest.next_quest
