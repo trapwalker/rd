@@ -290,7 +290,7 @@ var WWindRadial = (function (_super) {
             this.current_value = value;
             this.last_prc = Math.min(value / this.max_observers, 1.0);
             this.draw_fill_area(this.last_prc);
-            if (this.last_prc >= 0)
+            if (this.last_prc > 0)
                 this.draw_alarmLamp(true);
             else
                 this.draw_alarmLamp(false);
