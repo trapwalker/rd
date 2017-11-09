@@ -179,9 +179,12 @@ class AgentConsoleNamespace(Namespace):
 
     def watching(self):
         if self.agent.car and self.agent.car.is_alive:
+            log.debug("%s stealth_indicator = %s", self.agent, self.agent.stealth_indicator)
             for agent in self.agent.car.subscribed_agents.keys():
-                if agent is not self:  # info: пати можно будет учесть здесь
+                if agent is not self.agent:  # info: пати можно будет учесть здесь
                     log.debug("%s", agent)
+            for town in self.agent.watched_locations:
+                log.debug("%s", town)
 
     def param(self, name=None):
         if name and self.agent.car:
