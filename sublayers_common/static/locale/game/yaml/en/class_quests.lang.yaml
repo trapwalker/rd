@@ -186,3 +186,13 @@
 "q_cq_npc_tasks_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_npc_tasks_finished": "Квест завершён"
 "q_cq_npc_tasks_task_text": "(Избранный) выполнить по 2 квеста у всех мэров."
+
+
+# ClassQuestKarmaLimit
+"q_cq_karmic_started":  "Начало на карму"
+"q_cq_karmic_journal_text": "Что-то там про карму не хуже чего-то"
+"q_cq_karmic_page": "Кармический<br>квест"
+"q_cq_karmic_btn": "<br>Далее"
+"q_cq_karmic_replica_not_finish": |
+    Необходимо минимум {{name_needed}}, а ты только {{name_karma_agent}}.
+"q_cq_karmic_finished": "Квест завершён"

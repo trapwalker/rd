@@ -392,4 +392,9 @@ def getKarmaName(karma, lang):
     return karma_names[32]
 
 
+def getKarmaNameLocalizedString(karma):
+    from sublayers_server.model.registry_me.tree import LocalizedString
+    return LocalizedString(ru=getKarmaName(karma=karma, lang='ru'), en=getKarmaName(karma=karma, lang='en'))
+
+
 __all__ = [get_uid, get_time, TimelineQueue]

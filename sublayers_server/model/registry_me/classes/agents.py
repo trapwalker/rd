@@ -19,7 +19,7 @@ from sublayers_server.model.registry_me.tree import (
 from sublayers_server.model.registry_me.classes.perks import (PerkActivateItemsPassive, PerkPartyPassive,
                                                               PerkTraderPassive)
 
-from sublayers_server.model.utils import getKarmaName
+from sublayers_server.model.utils import getKarmaName, getKarmaNameLocalizedString
 from sublayers_common import yaml_tools
 
 from itertools import chain
@@ -267,7 +267,9 @@ class AgentProfile(Node):
     def karma_norm(self):
         return min(max(self.karma / 100., -1), 1)
 
-    def karma_name(self, lang='ru'):
+    def karma_name(self, lang=None):
+        if lang is None:
+            return getKarmaNameLocalizedString(self.karma_norm)
         return getKarmaName(self.karma_norm, lang)
 
     @property
