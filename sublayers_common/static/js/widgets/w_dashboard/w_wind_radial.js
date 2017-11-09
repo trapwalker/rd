@@ -285,7 +285,7 @@ var WWindRadial = (function (_super) {
         //console.log('WWindRadial.prototype.change');
         if(! user.userCar) return;
 
-        var value = Math.max(this.car._hp_state.dps ? 1 : 0, user.userCar.stealth_indicator);
+        var value = Math.max(this.car._hp_state.dps > 0.0 ? 1 : 0, user.userCar.stealth_indicator);
         if (value != this.current_value) {
             this.current_value = value;
             this.last_prc = Math.min(value / this.max_observers, 1.0);
