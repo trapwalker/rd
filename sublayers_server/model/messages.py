@@ -1069,6 +1069,19 @@ class UserExampleCarInfo(Message):
         d = super(UserExampleCarInfo, self).as_dict()
         ex_car = self.agent.example.profile.car
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
+        if ex_car:
+            d['rpg_car_info'] = dict(uid=ex_car.uid, lvl=ex_car.get_real_lvl(), way=ex_car.way)
+        return d
+
+
+class CarRPGInfo(Message):
+    def as_dict(self):
+        d = super(CarRPGInfo, self).as_dict()
+        ex_car = self.agent.example.profile.car
+        if ex_car:
+            d['uid'] = ex_car.uid
+            d['lvl'] = ex_car.get_real_lvl()
+            d['way'] = ex_car.way
         return d
 
 
@@ -1279,6 +1292,8 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
 
         if ex_car:
+            # RPG-информация по машинке
+            d['rpg_car_info'] = dict(uid=ex_car.uid, lvl=ex_car.get_real_lvl(), way=ex_car.way)
             # Шаблоны машинки
             templates = dict()
             template_car_img = Loader(
