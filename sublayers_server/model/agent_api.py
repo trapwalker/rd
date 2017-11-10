@@ -150,6 +150,11 @@ class AgentConsoleNamespace(Namespace):
         if location:
             Event(server=agent.server, time=agent.server.get_time(), callback_after=ttt).post()
 
+    def watching(self):
+        if self.agent.car and self.agent.car.is_alive:
+            for agent in self.agent.car.subscribed_agents.keys():
+                if agent is not self:  # info: пати можно будет учесть здесь
+                    log.debug("%s", agent)
 
     def param(self, name=None):
         if name and self.agent.car:
@@ -420,6 +425,9 @@ class AgentAPI(API):
         # отправить зоны
         for zone in self.agent.car.zones:
             messages.ZoneMessage(agent=self.agent, subj=self.agent.car, name=zone.name, is_start=True, time=time).post()
+
+        # Отправить текущее состояние StealthIndicator
+        messages.ChangeStealthIndicator(agent=self.agent, time=time, stealth=self.agent.stealth_indicator).post()
 
         # отправить активные бартеры на клиент
         for barter in self.agent.barters:

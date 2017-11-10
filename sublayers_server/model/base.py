@@ -215,6 +215,12 @@ class VisibleObject(PointObject):
     def can_see_me(self, subj, time, obj_pos=None, subj_pos=None):
         return True
 
+    def start_see_me(self, agent, time):
+        pass
+
+    def finish_see_me(self, agent, time):
+        pass
+
 
 class Observer(VisibleObject):
     def __init__(self, time, **kw):
