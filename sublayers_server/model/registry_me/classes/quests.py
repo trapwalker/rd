@@ -15,7 +15,7 @@ from sublayers_server.model.registry_me.tree import (
 )
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
+from sublayers_server.model.game_log_messages import QuestStartStopLogMessage, QuestLogMessage
 from sublayers_common.site_locale import locale
 
 from ctx_timer import Timer
@@ -691,6 +691,7 @@ class Quest(Node):
         self.history.append(log_record)
         if event and self.agent and self.agent.profile._agent_model:
             QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
+            QuestLogMessage(time=event.time, record=log_record, agent=self.agent.profile._agent_model).post()
         return True
 
     def go(self, new_state, event):
@@ -927,19 +928,6 @@ class QuestDelMessage(messages.Message):
         d = super(QuestDelMessage, self).as_dict()
         d.update(
             quest_uid=self.quest.uid,
-        )
-        return d
-
-
-class QuestLogMessage(messages.Message):
-    def __init__(self, event_record, **kw):
-        super(QuestLogMessage, self).__init__(**kw)
-        self.event_record = event_record  # todo: weakref #refactor
-
-    def as_dict(self):
-        d = super(QuestLogMessage, self).as_dict()
-        d.update(
-            quest_event=self.event_record.as_dict(),
         )
         return d
 

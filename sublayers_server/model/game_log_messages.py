@@ -57,6 +57,17 @@ class QuestStartStopLogMessage(Message):
         return d
 
 
+class QuestLogMessage(Message):
+    def __init__(self, record, **kw):
+        super(QuestLogMessage, self).__init__(**kw)
+        self.record = record  # todo: weakref #refactor
+
+    def as_dict(self):
+        d = super(QuestLogMessage, self).as_dict()
+        d.update(record=self.record.as_client_dict())
+        return d
+
+
 class ExpLogMessage(Message):
     __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
 

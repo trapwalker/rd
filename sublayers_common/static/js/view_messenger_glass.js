@@ -724,6 +724,11 @@ var ViewMessengerGlass = (function () {
                         }
                     }
                     break;
+                case 'QuestLogMessage':
+                    var q = journalManager.quests.getQuest(msg.record.quest_uid);
+                    if (q)
+                        this.addMessageToLog(_(q.caption) +': ' + msg.record.text);
+                    break;
                 case 'InventoryChangeLogMessage':
                     // console.log('InventoryChangeLogMessage', msg);
                     if (msg.outgoings && msg.outgoings.length) {
