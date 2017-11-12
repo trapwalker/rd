@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1920"
+   height="1080"
+   viewBox="0 0 1920 1080"
+   id="svg_town"
+   version="1.1"
+   inkscape:version="0.92.0 r15299"
+   sodipodi:docname="location_ru.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5974">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop5976" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop5978" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5964">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop5966" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop5968" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5956">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop5958" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop5960" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5936">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop5938" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop5940" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4309">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop4311" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop4313" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5976"
+       inkscape:collect="always">
+      <stop
+         id="stop4222"
+         offset="0"
+         style="stop-color:#00ff00;stop-opacity:0.6" />
+      <stop
+         id="stop4224"
+         offset="1"
+         style="stop-color:#00ff00;stop-opacity:0;" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5936"
+       id="radialGradient5944"
+       cx="861.57013"
+       cy="368.65485"
+       fx="861.57013"
+       fy="368.65485"
+       r="159.5"
+       gradientTransform="matrix(0,0.64327507,-1.5794063,0,1447.8986,-142.15513)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4309"
+       id="radialGradient5954"
+       cx="1087.073"
+       cy="375.66336"
+       fx="1087.073"
+       fy="375.66336"
+       r="202.50157"
+       gradientTransform="matrix(-1.6419386,0,1.0996904e-8,-1.3255014,2871.9802,890.03589)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5956"
+       id="radialGradient5962"
+       cx="755.90387"
+       cy="341.88986"
+       fx="755.90387"
+       fy="341.88986"
+       r="245"
+       gradientTransform="matrix(-1.5610809e-7,1.1778426,-1.6246364,-2.1532494e-7,1361.0897,-539.30014)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5964"
+       id="radialGradient5970"
+       cx="1120.8092"
+       cy="237.1181"
+       fx="1120.8092"
+       fy="237.1181"
+       r="287.452"
+       gradientTransform="matrix(-1.5692942,5.8466558e-7,-2.7552994e-7,-0.73954677,2888.0583,485.28512)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5976"
+       id="radialGradient5972"
+       cx="735.25629"
+       cy="237.51605"
+       fx="735.25629"
+       fy="237.51605"
+       r="331.5"
+       gradientTransform="matrix(0,0.67038781,-1.6708854,0,1132.1184,-195.98547)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5974"
+       id="radialGradient5980"
+       cx="746.02844"
+       cy="-94.399826"
+       fx="746.02844"
+       fy="-94.399826"
+       r="374"
+       gradientTransform="matrix(-1.5813598,1.5152451e-8,-1.262635e-8,-1.3177276,2356.8108,118.72312)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.91223404"
+     inkscape:cx="956.5"
+     inkscape:cy="568.00001"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1600"
+     inkscape:window-height="847"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-nodes="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:measure-start="0,0"
+     inkscape:measure-end="0,0">
+    <sodipodi:guide
+       position="961.09798,555.32222"
+       orientation="1,0"
+       id="guide3754"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="background"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-2.362448)">
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\ground+circle.png"
+       xlink:href="..\painted_rock\ground+circle.png"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="landscape"
+       x="485"
+       y="138.36244" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\library_bg.png"
+       xlink:href="..\painted_rock\library_bg.png"
+       class="building-back"
+       style="display:none"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="library-back"
+       x="485"
+       y="138.36244" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\market_bg.png"
+       xlink:href="..\painted_rock\market_bg.png"
+       y="138.36244"
+       x="485"
+       id="market-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none"
+       class="building-back" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\parking_bg.png"
+       xlink:href="..\painted_rock\parking_bg.png"
+       class="building-back"
+       y="138.36244"
+       x="485"
+       id="parking-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\mayor_bg.png"
+       xlink:href="..\painted_rock\mayor_bg.png"
+       class="building-back"
+       y="138.36244"
+       x="485"
+       id="mayor-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\service_bg.png"
+       xlink:href="..\painted_rock\service_bg.png"
+       class="building-back"
+       y="138.36244"
+       x="485"
+       id="service-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\bar_bg.png"
+       xlink:href="..\painted_rock\bar_bg.png"
+       class="building-back"
+       y="138.36244"
+       x="485"
+       id="bar-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="building"
+     class="townPageWrap"
+     transform="translate(0,2.3339844e-4)">
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\bonita_vista\city_logo.png"
+       xlink:href="..\bonita_vista\city_logo.png"
+       style="display:none"
+       class="highlight-logo"
+       y="458"
+       x="899"
+       id="img_logo_off"
+       preserveAspectRatio="none"
+       height="120"
+       width="120" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\bonita_vista\city_logo_hover.png"
+       xlink:href="..\bonita_vista\city_logo_hover.png"
+       class="highlight-logo"
+       y="458"
+       x="899"
+       id="img_logo_on"
+       preserveAspectRatio="none"
+       height="120"
+       width="120"
+       style="display:none" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\service.png"
+       xlink:href="..\painted_rock\service.png"
+       class="highlight-buildings"
+       y="603"
+       x="984"
+       id="img_house1_off"
+       preserveAspectRatio="none"
+       height="232"
+       width="356" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\service_hover.png"
+       xlink:href="..\painted_rock\service_hover.png"
+       style="display:none"
+       data-building="service"
+       class="highlight-buildings"
+       y="603"
+       x="984"
+       id="img_house1_on"
+       preserveAspectRatio="none"
+       height="232"
+       width="356" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\parking.png"
+       xlink:href="..\painted_rock\parking.png"
+       class="highlight-buildings"
+       width="272"
+       height="304"
+       preserveAspectRatio="none"
+       id="img_house2_off"
+       x="565.16113"
+       y="500.54977" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\parking_hover.png"
+       xlink:href="..\painted_rock\parking_hover.png"
+       data-building="parking"
+       class="highlight-buildings"
+       style="display:none"
+       width="272"
+       height="304"
+       preserveAspectRatio="none"
+       id="img_house2_on"
+       x="565.16113"
+       y="500.54977" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\bar.png"
+       xlink:href="..\painted_rock\bar.png"
+       width="220"
+       height="300"
+       preserveAspectRatio="none"
+       id="img_house3_off"
+       x="1171.8152"
+       y="345.26068"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\bar_hover.png"
+       xlink:href="..\painted_rock\bar_hover.png"
+       style="display:none"
+       width="220"
+       height="300"
+       preserveAspectRatio="none"
+       id="img_house3_on"
+       x="1171.8152"
+       y="345.26068"
+       class="highlight-buildings"
+       data-building="bar" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\market.png"
+       xlink:href="..\painted_rock\market.png"
+       y="410.99051"
+       x="551.4455"
+       id="img_house4_off"
+       preserveAspectRatio="none"
+       height="240"
+       width="246"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\market_hover.png"
+       xlink:href="..\painted_rock\market_hover.png"
+       y="410.99051"
+       x="551.4455"
+       id="img_house4_on"
+       preserveAspectRatio="none"
+       height="240"
+       width="246"
+       style="display:none"
+       class="highlight-buildings"
+       data-building="market" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\library.png"
+       xlink:href="library.png"
+       width="262"
+       height="146"
+       preserveAspectRatio="none"
+       id="img_house5_off"
+       x="1073.0048"
+       y="423.58768"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\library_hover.png"
+       xlink:href="..\painted_rock\library_hover.png"
+       style="display:none"
+       width="262"
+       height="146"
+       preserveAspectRatio="none"
+       id="img_house5_on"
+       x="1073.0048"
+       y="423.58768"
+       class="highlight-buildings"
+       data-building="library" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\mayor.png"
+       xlink:href="..\painted_rock\mayor.png"
+       y="436.58295"
+       x="628.2796"
+       id="img_house6_off"
+       preserveAspectRatio="none"
+       height="114"
+       width="276"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\painted_rock\..\painted_rock\mayor_hover.png"
+       xlink:href="..\painted_rock\mayor_hover.png"
+       y="436.58295"
+       x="628.2796"
+       id="img_house6_on"
+       preserveAspectRatio="none"
+       height="114"
+       width="276"
+       style="display:none"
+       class="highlight-buildings"
+       data-building="mayor" />
+    <g
+       inkscape:groupmode="layer"
+       id="layer6"
+       inkscape:label="build_path">
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1229.639,709.854 A 331,331 0 1 0 627.5,520 h -43 a 374,374 0 1 1 680.363,214.518 z"
+         id="path_h1"
+         inkscape:connector-curvature="0"
+         class="highlight-buildings"
+         data-building="service" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5972);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="m 670.5,520 a 288,288 0 0 1 576,0 h 43 a 331,331 0 0 0 -662,0 z"
+         id="path_h2"
+         inkscape:connector-curvature="0"
+         data-building="parking"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5970);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 1201.8697,519.63981 a 245.00001,245.00001 0 0 0 -490.00003,0 h -43 a 288.00002,288.00002 0 0 1 576.00003,0 z"
+         id="path_h3"
+         inkscape:connector-curvature="0"
+         data-building="bar"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5962);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 783.563,619 A 202,202 0 1 1 1160.5,518 h 43 A 245,245 0 1 0 746.324,640.5 Z"
+         id="path_h4"
+         inkscape:connector-curvature="0"
+         data-building="market"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5954);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="M 1070.93,630.43 A 159,159 0 1 0 799.5,518 h -43 a 202,202 0 1 1 344.836,142.836 z"
+         id="path_h5"
+         inkscape:connector-curvature="0"
+         data-building="library"
+         class="highlight-buildings" />
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5944);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="m 841.5,518 a 117,117 0 0 1 234,0 h 42 a 159,159 0 0 0 -318,0 z"
+         id="path_h6"
+         inkscape:connector-curvature="0"
+         class="highlight-buildings"
+         data-building="mayor" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:15px;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="959.83246"
+         y="174"
+         id="path_text_h1"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-9-7"
+           x="959.83246"
+           y="174"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:15px;font-family:Nouveau_IBM;text-align:center;text-anchor:middle;fill:#00ff00;fill-opacity:1">Сервис</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="961.64899"
+         y="218.85757"
+         id="path_text_h2"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-9"
+           x="961.64899"
+           y="218.85757"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;text-align:center;text-anchor:middle;fill:#00ff00;fill-opacity:1">Автодилер</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="960.57245"
+         y="258.95251"
+         id="path_text_h3"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4-2"
+           x="960.57245"
+           y="258.95251"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;text-align:center;text-anchor:middle;fill:#00ff00;fill-opacity:1">Бар</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:15px;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="962.3252"
+         y="304.90033"
+         id="path_text_h4"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4"
+           x="962.3252"
+           y="304.90033"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:15px;font-family:Nouveau_IBM;text-align:center;text-anchor:middle;fill:#00ff00;fill-opacity:1">Торговец</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="961.45007"
+         y="348"
+         id="path_text_h5"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204"
+           x="961.45007"
+           y="348"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;text-align:center;text-anchor:middle;fill:#00ff00;fill-opacity:1">Тренер</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="940"
+         y="390"
+         id="path_text_h6"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-4-9-0"
+           x="940"
+           y="390"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Мэр</tspan></text>
+    </g>
+  </g>
+</svg>
