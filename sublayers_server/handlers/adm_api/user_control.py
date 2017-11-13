@@ -55,6 +55,6 @@ class UserAccessLevelSetup(AdmAPIHandler):
         if user is None:
             self.finish('User <{}> not found'.format(username))
             return
-        user.access = access
+        user.access_level = access
         user.save()
         self.finish("Access level for {} changed to: {}".format(user, access))

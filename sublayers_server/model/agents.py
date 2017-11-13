@@ -921,6 +921,11 @@ class Agent(Object):
     def get_lang(self):
         return self.user and self.user.lang or 'en'
 
+    @property
+    def access_level(self):
+        return self.user and self.user.access_level or 0
+
+
 # todo: Переименовать в UserAgent
 class User(Agent):
     @event_deco
