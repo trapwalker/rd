@@ -498,6 +498,24 @@ var ClientManager = (function () {
             case 'MaskingNPCQuestNote':
                 new QuestNoteMaskingNPC(note);
                 break;
+            case 'ShadowingQuestNote':
+                new ShadowingQuestNote(note);
+                break;
+            case 'BarterSuccessQuestNote':
+                new BarterSuccessQuestNote(note);
+                break;
+            case 'DamageMapWeaponQuestNote':
+                new DamageMapWeaponQuestNote(note);
+                break;
+            case 'PartyMembersQuestNote':
+                new PartyMembersQuestNote(note);
+                break;
+            case 'SetMapWeaponQuestNote':
+                new SetMapWeaponQuestNote(note);
+                break;
+            case 'NPCsTasksCompleteQuestNote':
+                new NPCsTasksCompleteQuestNote(note);
+                break;
             case 'NPCPageNote':
                 new QuestNoteNPCBtn(note);
                 break;

@@ -98,6 +98,12 @@ class NPCTypePageNote(Note):
 class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass
 
+class NPCsTasksCompleteQuestNote(NPCPageNote): pass
+class SetMapWeaponQuestNote(NPCPageNote): pass
+class PartyMembersQuestNote(NPCPageNote): pass
+class DamageMapWeaponQuestNote(NPCPageNote): pass
+class BarterSuccessQuestNote(NPCPageNote): pass
+class ShadowingQuestNote(NPCPageNote): pass
 class GetClassCarQuestNote(NPCPageNote): pass
 class MaskingNPCQuestNote(NPCPageNote): pass
 class KillsClassQuestNote(NPCPageNote): pass

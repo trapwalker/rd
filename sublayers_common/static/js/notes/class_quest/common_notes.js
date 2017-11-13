@@ -261,9 +261,173 @@ var QuestNoteMaskingNPC = (function (_super) {
     return QuestNoteMaskingNPC;
 })(QuestNoteNPCBtn);
 
+var ShadowingQuestNote = (function (_super) {
+    __extends(ShadowingQuestNote, _super);
 
+    function ShadowingQuestNote(options) {
+        _super.call(this, options);
+    }
 
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    ShadowingQuestNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
 
+        var jq_up_path = $(
+            '<div class="note-class-img killer-class-quest"></div>' +
+            '<div class="note-class-text killer-class-quest">ShadowingQuestNote</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return ShadowingQuestNote;
+})(QuestNoteNPCBtn);
+
+var BarterSuccessQuestNote = (function (_super) {
+    __extends(BarterSuccessQuestNote, _super);
+
+    function BarterSuccessQuestNote(options) {
+        _super.call(this, options);
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    BarterSuccessQuestNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="note-class-img killer-class-quest"></div>' +
+            '<div class="note-class-text killer-class-quest">BarterSuccessQuestNote</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return BarterSuccessQuestNote;
+})(QuestNoteNPCBtn);
+
+var DamageMapWeaponQuestNote = (function (_super) {
+    __extends(DamageMapWeaponQuestNote, _super);
+
+    function DamageMapWeaponQuestNote(options) {
+        _super.call(this, options);
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    DamageMapWeaponQuestNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="note-class-img killer-class-quest"></div>' +
+            '<div class="note-class-text killer-class-quest">DamageMapWeaponQuestNote</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return DamageMapWeaponQuestNote;
+})(QuestNoteNPCBtn);
+
+var PartyMembersQuestNote = (function (_super) {
+    __extends(PartyMembersQuestNote, _super);
+
+    function PartyMembersQuestNote(options) {
+        _super.call(this, options);
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    PartyMembersQuestNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="note-class-img killer-class-quest"></div>' +
+            '<div class="note-class-text killer-class-quest">PartyMembersQuestNote</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return PartyMembersQuestNote;
+})(QuestNoteNPCBtn);
+
+var SetMapWeaponQuestNote = (function (_super) {
+    __extends(SetMapWeaponQuestNote, _super);
+
+    function SetMapWeaponQuestNote(options) {
+        _super.call(this, options);
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    SetMapWeaponQuestNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="note-class-img killer-class-quest"></div>' +
+            '<div class="note-class-text killer-class-quest">SetMapWeaponQuestNote</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return SetMapWeaponQuestNote;
+})(QuestNoteNPCBtn);
+
+var NPCsTasksCompleteQuestNote = (function (_super) {
+    __extends(NPCsTasksCompleteQuestNote, _super);
+
+    function NPCsTasksCompleteQuestNote(options) {
+        _super.call(this, options);
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    NPCsTasksCompleteQuestNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var jq_up_path = $(
+            '<div class="note-class-img killer-class-quest"></div>' +
+            '<div class="note-class-text killer-class-quest">NPCsTasksCompleteQuestNote</div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return NPCsTasksCompleteQuestNote;
+})(QuestNoteNPCBtn);
 
 
 
