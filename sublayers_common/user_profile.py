@@ -100,6 +100,14 @@ class User(Document):
             access_level=self.access_level,
         )
 
+    @property
+    def auth_info(self):
+        info = self.auth.adm_info
+        info["email"] = "{}|{}".format(info["email"], info["confirmed"])
+        del info["confirmed"]
+        return '; '.join("{}:{}".format(key, value) for key, value in info.items() if value)
+
+
     def __init__(self, raw_password=None, email=None,
         google_id=None, vk_id=None, twitter_id=None, fb_id=None, steam_id=None, **kw):
         super(User, self).__init__(**kw)

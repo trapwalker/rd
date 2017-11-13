@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>User: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="{{ static_url('js/third_party/bootstrap/css/bootstrap.min.css') }}"/>
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
+            <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img src="{{ "/{}".format(user.avatar_link) }}"></div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-8 h4">
+            <div class="row">Login: {{ user.name }}</div>
+            <div class="row">Auth: {{ user.auth_info }}</div>
+            <div class="row">
+                RoleClassUri:
+                <div class="col input-group">
+                    <input type="text" id="find" class="form-control" value="{{ user.role_class_uri }}" placeholder="role_class"
+                           aria-label="Role Class">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="postRoleClass()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">registration_status: {{ user.registration_status }}</div>
+            <div class="row">teaching_state: {{ user.teaching_state }}</div>
+            <div class="row">access_level: {{ user.access_level }}</div>
+            <div class="row">Created: {{ user.date_created }}</div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+<script>
+
+   function postRoleClass() {
+       var role_class = document.getElementById('find').value;
+       console.log("Try change role class to", role_class);
+       // todo: ajax with post to change role_class link
+   }
+
+</script>
+
+
+</body>
+</html>
