@@ -27,19 +27,23 @@ from hgapi import HgException
 @click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
 @click.option('--no_reload', is_flag=True, default=False, help='Do not reload registry')
 @click.option('--no_restart', is_flag=True, default=False, help='Do not restart services')
+@click.option('--no_pull', is_flag=True, default=False, help='Do not pull before update')
 @click.pass_context
-def update(ctx, dest, no_db, clean_agents, reset_profiles, host, no_reload, no_restart):
+def update(ctx, dest, no_db, clean_agents, reset_profiles, host, no_reload, no_restart, no_pull):
     """Update version"""
     main_repo = ctx.obj['main_repo']
     world_repo = ctx.obj['world_repo']
     world = ctx.obj['world']
 
-    try:
-        main_repo.hg_pull()
-        world_repo.hg_pull()
-    except HgException as e:
-        log.error(e)
-        return ctx.exit(e.exit_code)
+    if not no_pull:
+        try:
+            main_repo.hg_pull()
+            world_repo.hg_pull()
+        except HgException as e:
+            log.error(e)
+            return ctx.exit(e.exit_code)
+    else:
+        log.debug('Pull disabled')
 
     def upd(title, repo):
         old_id = repo.hg_id()
@@ -61,12 +65,13 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles, host, no_reload, no_r
             log.info('Source updated')
 
         if not no_restart:
+            # todo: save and backup before stop (optionaly)
             stop(host=host)  # todo: configure server host
         if not no_reload:
             reg_reload(world=world, dest=dest, no_db=no_db, clean_agents=clean_agents, reset_profiles=reset_profiles)
         if not no_restart:
             start()
-        # todo: Сохранять версии реестров в файле на момент запуска, чтоьы понимать требуется ли перезагрузка
+        # todo: Сохранять версии реестров в файле на момент запуска, чтобы понимать требуется ли перезагрузка
 
     if ctx.invoked_subcommand:
         return

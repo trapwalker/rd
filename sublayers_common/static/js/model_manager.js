@@ -894,6 +894,14 @@ var ClientManager = (function () {
             console.warn('Error! Пришла высота на неизветную машинку!')
     };
 
+    ClientManager.prototype.ChangeStealthIndicator = function(event){
+        console.log('ClientManager.prototype.ChangeStealthIndicator ', event.stealth);
+        if (user.userCar) {
+            user.userCar.stealth_indicator = event.stealth;
+            user.userCar.change();
+        }
+    };
+
     ClientManager.prototype.ChangeRadiation = function(event){
          //console.log('ClientManager.prototype.ChangeRadiation ', event);
         if (user.userCar && event.obj_id == user.userCar.ID){

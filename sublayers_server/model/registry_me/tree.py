@@ -23,6 +23,7 @@ import copy
 from uuid import uuid1 as get_uuid
 from collections import deque, Counter, Hashable
 from fnmatch import fnmatch
+import random
 
 from mongoengine import connect, Document, EmbeddedDocument, ValidationError
 from mongoengine.queryset.queryset import QuerySetNoDeRef
@@ -699,6 +700,20 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     def is_field_inherited(self, name):
         return False
 
+
+class ParamRange(Subdoc):
+    min = FloatField(default=1.0, doc=u"Минимальное значение генерации")
+    max = FloatField(default=1.0, doc=u"Максимальное значение генерации")
+
+    def __init__(self, **kw):
+        super(ParamRange, self).__init__(**kw)
+        self.min, self.max = min(self.max, self.min), max(self.max, self.min)
+
+    def get_random_value(self):
+        return self.min + random.random() * (self.max - self.min)
+
+    def in_range(self, value):
+        return self.min <= value <= self.max
 
 ########################################################################################################################
 class Node(Subdoc, SubdocToolsMixin):

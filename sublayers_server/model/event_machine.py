@@ -528,6 +528,9 @@ class BasicLocalServer(LocalServer):
             example=dispatcher_exemplar,
             quest_example=self.reg.get('/registry/quests/ai_dispatcher')
         )
+
+        # ссылка на таблицу дропа
+        self.table_drop = self.reg.get('/registry/rpg_settings/drop_table')
        # todo: Сделать загрузку стационарных точек радиации
 
 ########################################################################################################################

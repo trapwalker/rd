@@ -253,20 +253,21 @@ class Town(MapLocation):
 
     def on_contact_in(self, time, obj):
         super(Town, self).on_contact_in(time=time, obj=obj)
-        if self.can_attack():
-            if isinstance(obj, ExtraMobile) and obj.example.is_target():  # Мины, дроны, ракеты, радары
+        if isinstance(obj, ExtraMobile) and obj.example.is_target():  # Мины, дроны, ракеты, радары
+            if self.can_attack():
                 self.need_start_attack(obj=obj, time=time)
-            elif isinstance(obj, Unit) and obj.owner:
-                if self not in obj.owner.watched_locations:
-                    obj.owner.watched_locations.append(self)
-                if obj.owner.print_login() in self.enemy_agents:
-                    self.need_start_attack(obj=obj, time=time)
+        elif isinstance(obj, Unit) and obj.owner:
+            if self not in obj.owner.watched_locations:
+                obj.owner.watched_locations.append(self)
+                obj.start_see_me(agent=None, time=time)  # Сообщить объекту, что его начали видеть
+            if obj.owner.print_login() in self.enemy_agents:
+                self.need_start_attack(obj=obj, time=time)
 
     def on_contact_out(self, time, obj):
         super(Town, self).on_contact_out(time=time, obj=obj)
-        if not self.can_attack():
-            if isinstance(obj, Unit) and obj.owner and self in obj.owner.watched_locations:
-                obj.owner.watched_locations.remove(self)
+        if isinstance(obj, Unit) and obj.owner and self in obj.owner.watched_locations:
+            obj.owner.watched_locations.remove(self)
+            obj.finish_see_me(agent=None, time=time)  # Сообщить объекту, что его перестали видеть
 
     def on_enemy_candidate(self, agent, damage, time):
         # log.info('{} on_enemy_candidate: {}'.format(self, agent))

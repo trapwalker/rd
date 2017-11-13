@@ -1229,7 +1229,8 @@ class TransactionTraderApply(TransactionTownNPC):
             tr_msg_list.append(u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_buy"), locale(self.lang, price.item.title), str(int(item_buy_price))))
 
             # Добавляем итемы в инвентарь игрока
-            ex_car.inventory.add_item(item=price.item, count=table_rec['count'])
+            ex_car.inventory.add_item(item=price.item, count=table_rec['count'],
+                                      additional_options=dict(randomize_options=dict(from_trader=True)))
             total_items_buy_sale.append((price.item, -table_rec['count']))
         buy_price = math.ceil(buy_price)
 

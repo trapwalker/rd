@@ -127,7 +127,7 @@ class Item(Node):
 
     def as_assortment_dict(self):
         d = dict(
-            title=self.title,
+            title=self.title_with_condition,
             description=self.html_description,
             inv_icon_mid=self.inv_icon_mid,
             stack_size=self.stack_size,
@@ -172,6 +172,9 @@ class Item(Node):
 
         if self.amount > self.stack_size:
             log.warning('Stack of items is owerflow: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=self))
+
+    def randomize_params(self, options=None):
+        pass
 
 
 class ItemUsable(Item):

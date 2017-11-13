@@ -201,9 +201,10 @@ class Init(Objective):
 
 
 class Die(Objective):
-    def __init__(self, killer, **kw):
+    def __init__(self, killer, is_bang, **kw):
         super(Die, self).__init__(**kw)
         self.killer = killer
+        self.is_bang = is_bang
 
     def on_perform(self):
         super(Die, self).on_perform()

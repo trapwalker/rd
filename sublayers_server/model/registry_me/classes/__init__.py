@@ -32,5 +32,6 @@ import insurance
 
 import disttable
 import partytable
+import drop_table
 
 #import _test
