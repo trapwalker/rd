@@ -683,14 +683,16 @@ class Quest(Node):
     def reset_timers(self):
         pass  # todo: ##IMPLEMENTATION
 
-    def log(self, text, event=None, position=None, **kw):
+    def log(self, text, event=None, position=None, game_log_only=False, **kw):
         if isinstance(text, LocalizedString):
             text = self.locale(text)
         rendered_text = self._template_render(text, position=position, **kw)
         log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
-        self.history.append(log_record)
+        if not game_log_only:
+            self.history.append(log_record)
         if event and self.agent and self.agent.profile._agent_model:
-            QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
+            if not game_log_only:
+                QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
             QuestLogMessage(time=event.time, record=log_record, agent=self.agent.profile._agent_model).post()
         return True
 

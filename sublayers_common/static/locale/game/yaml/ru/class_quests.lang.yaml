@@ -108,6 +108,9 @@
 "q_cq_shadowing_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_shadowing_finished": "Квест завершён"
 "q_cq_shadowing_task_text": "Ночной ездок – соверши 3 слежеки по 1 минуте, оставаясь незамеченным."
+"q_cq_shadowing_start_target": "Слежка начата за {{ target_login }}."
+"q_cq_shadowing_break_target": "Вас заметил {{ target_login }}."
+"q_cq_shadowing_lost_target": "Объект слежки потерян: {{ target_login }}."
 
 
 # GetCarMaxLevelQuest
