@@ -178,7 +178,7 @@ class MotionTask(TaskSingleton):
             owner.example.set_way(dvalue=way)
             if owner.example.k_way_exp is None:
                 log.warning('Exp by riding rate is None: owner.example.k_way_exp')
-            owner.example.set_exp(dvalue=way * (owner.example.k_way_exp or 0), time=event.time)
+            owner.example.set_exp(dvalue=way * (owner.example.k_way_exp or 0), time=event.time, model_agent=owner.main_agent)
 
         state.update(t=event.time, cc=event.cc, turn=event.turn, stop_a=event.stop_a)
         is_moving_after = state.is_moving

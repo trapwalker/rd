@@ -1440,6 +1440,8 @@ var ClientManager = (function () {
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
+        if (event.rpg_car_info)
+            user.example_car.car_rpg_info = event.rpg_car_info;
         setOptions(event.example_agent, user.example_agent);
         user.avatar_link = event.avatar_link;
         if (event.example_car && event.templates) {
@@ -1494,9 +1496,23 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleCarInfo = function(event) {
-        //console.log('ClientManager.prototype.UserExampleCarInfo', event);
+        // console.log('ClientManager.prototype.UserExampleCarInfo', event);
         user.example_car = event.example_car;
+        if (event.rpg_car_info)
+            user.example_car.car_rpg_info = event.rpg_car_info;
         locationManager.update();
+    };
+
+    ClientManager.prototype.CarRPGInfo = function(event) {
+        // console.log('ClientManager.prototype.CarRPGInfo', event);
+        if (user.example_car && user.example_car.car_rpg_info && user.example_car.uid == event.uid) {
+            user.example_car.car_rpg_info["lvl"] = event.lvl;
+            user.example_car.car_rpg_info["way"] = event.way;
+        }
+        else
+            console.warning("Miss Message:", event);
+
+        if (locationManager.in_location_flag)locationManager.update();
     };
 
     ClientManager.prototype.UserExampleCarView = function(event) {

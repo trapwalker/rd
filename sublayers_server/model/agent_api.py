@@ -129,7 +129,7 @@ class AgentConsoleNamespace(Namespace):
 
     def car_exp(self, value):
         if self.agent.example.profile.car:
-            self.agent.example.profile.car.set_exp(value=int(value), time=self.agent.server.get_time())
+            self.agent.example.profile.car.set_exp(value=int(value), time=self.agent.server.get_time(), model_agent=self.agent)
 
     def karma(self, value):
         self.agent.example.profile.set_karma(value=int(value), time=self.agent.server.get_time())

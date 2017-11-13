@@ -18,7 +18,7 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 from sublayers_server.model.messages import (
     PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage, TraderAgentAssortmentMessage,
     SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo, TraderInfoMessage,
-    ChangeStealthIndicator,
+    ChangeStealthIndicator, CarRPGInfo
 )
 from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
 from sublayers_server.model.vectors import Point
@@ -914,6 +914,9 @@ class Agent(Object):
         if self.current_location:
             return self.current_location.position(time)
         return self.example.profile.last_town.position.as_point()
+
+    def on_change_car_lvl(self, time):
+        CarRPGInfo(agent=self, time=time).post()
 
     def get_lang(self):
         return self.user and self.user.lang or 'en'

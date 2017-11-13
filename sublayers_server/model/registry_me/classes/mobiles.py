@@ -342,14 +342,17 @@ class Mobile(Node):
         log.warn("Not found exp_table for {!r}".format(self))
         return 0
 
-    def set_exp(self, time=None, value=None, dvalue=None):
+    def set_exp(self, time=None, value=None, dvalue=None, model_agent=None):
         assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
+        old_lvl = self.get_real_lvl()
         if value is not None:
             self.value_exp = value
         if dvalue is not None:
             self.value_exp += dvalue
         assert self.value_exp >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
+        if model_agent and time and old_lvl != self.get_real_lvl() and getattr(model_agent, "on_change_car_lvl", None):
+            model_agent.on_change_car_lvl(time=time)
 
     @property
     def frag(self):
