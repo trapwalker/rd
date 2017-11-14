@@ -4,63 +4,68 @@
     <meta charset="UTF-8"/>
     <title>Find Users</title>
 
-    <link rel="stylesheet" href="{{ static_url('js/third_party/bootstrap/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
 
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
-    <script src="{{ static_url('js/third_party/bootstrap/js/bootstrap.min.js') }}"></script>
 
 </head>
 <body>
 
 {% include "main_menu_template.html" %}
 
-<div class="input-group">
-    <input type="text" id="find" class="form-control" value="{{ find }}" placeholder="Search for..."
-           aria-label="Search for...">
-    <span class="input-group-btn">
+<div class="container">
+    <div class="row input-group">
+        <input type="text" id="find" class="form-control" value="{{ find }}" placeholder="Search for..."
+               aria-label="Search for...">
+        <span class="input-group-btn">
         <button class="btn btn-secondary" type="button"
                 onclick="window.location = location.origin + location.pathname + '?find=' + document.getElementById('find').value">Go!</button>
       </span>
+    </div>
+
+    <div class="row">
+        <button class="btn btn-success" type="button"
+                onclick="window.location = location.origin + location.pathname + '?online=1'">Online Only
+        </button>
+    </div>
+
+    <div class="row">
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Login</th>
+                <th scope="col">Auth Info</th>
+                <th scope="col">Reg Status</th>
+                <th scope="col">Role Class</th>
+                <th scope="col">Teaching</th>
+                <th scope="col">Access Level</th>
+                <th scope="col">Online</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set index = 1 %}
+            {% for user in users %}
+            <tr onclick="location = location.origin + '/adm/api/html/user_info?username=' + '{{ user.name }}'">
+                <th scope="row">{{ index }}</th>
+                <td>{{ user.name }}</td>
+                <td>{{ user.auth_info }}</td>
+                <td>{{ user.registration_status }}</td>
+
+                {% set role_class = server.reg.get(user.role_class_uri) %}
+                <td>{{ role_class and role_class.title.en or "" }}</td>
+
+                <td>{{ user.teaching_state }}</td>
+                <td>{{ user.access_level }}</td>
+                <td>{{ '+' if user.name in server.agents_by_name else '' }}</td>
+            </tr>
+            {% set index += 1 %}
+            {% end %}
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<div class="row">
-    <button class="btn btn-success" type="button"
-            onclick="window.location = location.origin + location.pathname + '?online=1'">Online Only</button>
-</div>
-
-<table class="table table-striped table-hover">
-    <thead class="thead-light">
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">Login</th>
-        <th scope="col">Auth Info</th>
-        <th scope="col">Reg Status</th>
-        <th scope="col">Role Class</th>
-        <th scope="col">Teaching</th>
-        <th scope="col">Access Level</th>
-        <th scope="col">Online</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% set index = 1 %}
-    {% for user in users %}
-    <tr onclick="location = location.origin + '/adm/api/html/user_info?username=' + '{{ user.name }}'">
-        <th scope="row">{{ index }}</th>
-        <td>{{ user.name }}</td>
-        <td>{{ user.auth_info }}</td>
-        <td>{{ user.registration_status }}</td>
-
-        {% set role_class = server.reg.get(user.role_class_uri) %}
-        <td>{{ role_class and role_class.title.en or "" }}</td>
-
-        <td>{{ user.teaching_state }}</td>
-        <td>{{ user.access_level }}</td>
-        <td>{{ '+' if user.name in server.agents_by_name else '' }}</td>
-    </tr>
-    {% set index += 1 %}
-    {% end %}
-    </tbody>
-</table>
 
 </body>
 </html>

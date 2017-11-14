@@ -4,10 +4,10 @@
     <meta charset="UTF-8"/>
     <title>Find Users</title>
 
-    <link rel="stylesheet" href="{{ static_url('js/third_party/bootstrap/css/bootstrap.min.css') }}"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
 
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
-    <script src="{{ static_url('js/third_party/bootstrap/js/bootstrap.min.js') }}"></script>
 
 </head>
 <body>
@@ -17,9 +17,11 @@
 
 <div class="container">
     <div class="row h4">
-        Block Server:
-        {{ ' Yes | {:.0f} min'.format((server.blocked_ws_connect_time - server.get_time()) // 60) if server.is_closed_for_agents  else 'No' }}
-        <div class="col input-group">
+        <div class="row">
+            Block Server:
+            {{ ' Yes | {:.0f} min'.format((server.blocked_ws_connect_time - server.get_time()) // 60) if server.is_closed_for_agents  else 'No' }}
+        </div>
+        <div class="row input-group">
             <input type="number" id="block_to" class="form-control" value="10" placeholder="role_class"
                    aria-label="Block in minutes">
             <span class="input-group-btn">

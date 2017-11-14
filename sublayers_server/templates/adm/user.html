@@ -4,10 +4,9 @@
     <meta charset="UTF-8"/>
     <title>User: {{ user.name }}</title>
 
-    <link rel="stylesheet" href="{{ static_url('js/third_party/bootstrap/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 
     <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 
 </head>
 <body>
@@ -49,9 +48,9 @@
             {% end %}
             <div class="col">Throw in Ban for Minutes:</div>
             <div class="col input-group">
-                <input type="number" id="ban_to" class="form-control" value="10" placeholder="role_class"
+                <input type="number" id="ban_to" class="form-control" value="10" placeholder="minutes of ban"
                        aria-label="Ban in minutes">
-                <input type="text" id="ban_reason" class="form-control" value="Ban reason..." placeholder="role_class"
+                <input type="text" id="ban_reason" class="form-control" value="Ban reason..." placeholder="reason"
                        aria-label="Ban reason">
                 <span class="input-group-btn">
                         <button class="btn btn-secondary" type="button" onclick="banUser()">Ban!</button>
@@ -72,13 +71,14 @@
     </div>
 
 
+    <div style="display: None">
+        <div id="data-username">{{ user.name }}</div>
+        <div id="data-active-ban">{{ '1' if ban_seconds_left > 0 else '' }}</div>
+    </div>
 </div>
 
 
-<div style="display: None">
-    <div id="data-username">{{ user.name }}</div>
-    <div id="data-active-ban">{{ '1' if ban_seconds_left > 0 else '' }}</div>
-</div>
+
 
 <script>
 
