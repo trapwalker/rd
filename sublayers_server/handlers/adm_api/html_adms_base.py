@@ -42,7 +42,7 @@ class AdmFindUsers(AdmEngineHandler):
         server = self.application.srv
         users = []
         if online_only:
-            users = [agent.user for agent in server.agents_by_name.values() if agent.user]
+            users = [agent.user for agent in server.agents_by_name.values() if agent.user and agent.connection]
         elif find_str and LOGIN_TEST.match(find_str):
             users = User.objects(name__contains=find_str).limit(50)
         self.render("adm/find.html", users=users, find=find_str, server=server)
