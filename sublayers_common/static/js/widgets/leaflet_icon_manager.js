@@ -23,6 +23,9 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_city_bonita_vista_full', '/static/content/locations/map_locations/bonita_vista/map_icons/full.png', [125, 114]);
         this.load_new_icon('icon_city_bonita_vista_circle', '/static/content/locations/map_locations/bonita_vista/map_icons/circle.png', [125, 114]);
 
+        this.load_new_icon('icon_city_painted_rock_full', '/static/content/locations/map_locations/painted_rock/map_icons/full.png', [125, 114]);
+        this.load_new_icon('icon_city_painted_rock_circle', '/static/content/locations/map_locations/painted_rock/map_icons/circle.png', [125, 114]);
+
         // Иконки заправочной станции
         this.load_new_icon('icon_gas_station_full', '/static/content/locations/map_locations/gas_station/map_icons/full.png', [80, 66]);
         this.load_new_icon('icon_gas_station_circle', '/static/content/locations/map_locations/gas_station/map_icons/circle.png', [80, 66]);
