@@ -49,8 +49,9 @@ var QuestNoteNPCBtnCarMaxLevel = (function (_super) {
             return;
         }
 
+        var starsCount = (user.example_car.car_rpg_info.lvl < 6) ? (1 + user.example_car.car_rpg_info.lvl*30) : 151;
         var jq_up_path = $(
-            '<div class="note-class-img car-max-lvl-note"></div>' +
+            '<div class="note-class-img car-max-lvl-note"><div class="set-car-max-lvl-stars" style="width: ' + starsCount + 'px"></div></div>' +
             '<div class="note-class-text car-max-lvl-note">' + _("q_cq_get_car_lvl_note") + '</div>'
         );
         this.jq_main_div.append(jq_up_path);

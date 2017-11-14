@@ -218,7 +218,7 @@
 /* Нота на классовую машинку */
 .note-class-img.class-car-note {
     height: 116px;
-    background: url(../img/quests/notes/visit_trainer.png) no-repeat center;
+    background: url(../img/quests/notes/class_notes/class-car.png) no-repeat center;
 }
 
 .note-class-text.class-car-note {
@@ -229,7 +229,15 @@
 /* Нота на максимальный уровень машинки */
 .note-class-img.car-max-lvl-note {
     height: 116px;
-    background: url(../img/quests/notes/visit_trainer.png) no-repeat center;
+    background: url(../img/quests/notes/class_notes/set_car_max_lvl_car.png) no-repeat center;
+}
+.set-car-max-lvl-stars{
+    position: absolute;
+    left: 256px;
+    top: 30px;
+    height: 38px;
+    overflow: hidden;
+    background: url(../img/quests/notes/class_notes/set_car_max_lvl_stars.png) no-repeat left;
 }
 
 .note-class-text.car-max-lvl-note {
