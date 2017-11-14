@@ -82,7 +82,7 @@ class User(Document):
 
     access_level = IntField(default=0, caption=u"0 - Игрок, 1 - Гейм-мастер, 2 - Модератор, 10 - Администратор") # Просто на будущее задел
 
-    ban_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=False)  # Время, до которого игрок не может зайти в игру
+    ban_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)  # Время, до которого игрок не может зайти в игру
     ban_reason = StringField(default='', max_length=255)  # todo: заменить на LocalizedStringField
 
 
@@ -204,6 +204,13 @@ class User(Document):
             self.save()
 
         return self.ordinal_number
+
+    @property
+    def is_banned(self):
+        return datetime.datetime.now() < self.ban_time
+
+    def get_banned_seconds(self):
+        return (self.ban_time - datetime.datetime.now()).total_seconds()
 
 
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):

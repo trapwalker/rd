@@ -34,6 +34,17 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         self.agent = None
         user = self.current_user
         assert user
+
+        if user.is_banned:
+            log.warning('%s banned before %s  (reason: %s)', user, user.ban_time, user.ban_reason)
+            self.close(reason='User is Banned')
+            return
+
+        if self.application.srv.is_closed_for_agents:
+            log.warning('Server Closed')
+            self.close(reason='Server Closed')
+            return
+
         log.info('!!! Open client connection: %s (mode: %s)', self.current_user, 'quick' if user.quick else 'basic')
         self.application.clients.append(self)
         # log.debug('Cookies: %s', self.cookies)
@@ -68,7 +79,8 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         if self.agent:
             self.agent.on_disconnect(self)
 
-        self.application.clients.remove(self)
+        if self in self.application.clients:
+            self.application.clients.remove(self)
 
     def on_message(self, message):
         # log.debug("Got message from %s: %r", self.agent, message)

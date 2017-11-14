@@ -308,6 +308,22 @@ class Server(object):
             #     agents.append(agent_rec['agent'])
         return agents
 
+    @property
+    def is_closed_for_agents(self):
+        # todo: Нужно для того, чтобы можно было всех дисконнектить на какое-то время и потом не пускать
+        return False
+
+    def disconnect_agent_by_name(self, name):
+        agent = self.agents_by_name.get(name, None)
+        if agent and agent.connection:
+            agent.connection.close()
+            return True
+        return False
+
+    def disconnect_all_agents(self):
+        # info: не тестил, но оно должно сработать
+        map(self.disconnect_agent_by_name, self.agents_by_name.keys())
+
 ########################################################################################################################
 class LocalServer(Server):
     def __init__(self, app=None, **kw):

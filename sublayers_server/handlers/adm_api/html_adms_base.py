@@ -23,6 +23,17 @@ class AdmEngineHandler(AuthHandlerMixin):
             log.warning('%s ACCESS DENIED!', self.classname)
             raise HTTPError(403)
 
+    def user_online(self, username):
+        return self.application.srv.agents_by_name.get(username, None)
+
+    def get_user(self, username):
+        if username and LOGIN_TEST.match(username):
+            for agent in self.application.srv.agents_by_name.values():
+                if agent.user and agent.user.name == username:
+                    return agent.user
+            return User.get_by_name(username)
+        return None
+
 
 class AdmFindUsers(AdmEngineHandler):
     def get(self):
@@ -32,7 +43,6 @@ class AdmFindUsers(AdmEngineHandler):
         users = []
         if online_only:
             users = [agent.user for agent in server.agents_by_name.values() if agent.user]
-            print len(users)
         elif find_str and LOGIN_TEST.match(find_str):
             users = User.objects(name__contains=find_str).limit(50)
         self.render("adm/find.html", users=users, find=find_str, server=server)

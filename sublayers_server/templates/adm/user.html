@@ -23,10 +23,10 @@
             <div class="row">
                 RoleClassUri:
                 <div class="col input-group">
-                    <input type="text" id="find" class="form-control" value="{{ user.role_class_uri }}" placeholder="role_class"
+                    <input type="text" id="role_class" class="form-control" value="{{ user.role_class_uri }}" placeholder="role_class"
                            aria-label="Role Class">
                     <span class="input-group-btn">
-                        <button class="btn btn-secondary" type="button" onclick="postRoleClass()">Save</button>
+                        <button class="btn btn-secondary" type="button" onclick="changeRoleClass()">Save</button>
                     </span>
                 </div>
             </div>
@@ -36,20 +36,85 @@
             <div class="row">Created: {{ user.date_created }}</div>
         </div>
     </div>
+    <div class="row h4">
+        <div class="col-12">
+            <div class="col">Throw in Ban for Minutes:
+                {{ 'Banned before: {}  |  {:.0f}s'.format(user.ban_time or 0, ban_seconds_left) if ban_seconds_left > 0 else 'Agent not banned'}}
+            </div>
+            {% if ban_seconds_left > 0 %}
+                <div class="col">Ban reason: {{ user.ban_reason}}</div>
+            {% end %}
+            <div class="col input-group">
+                <input type="number" id="ban_to" class="form-control" value="10" placeholder="role_class"
+                       aria-label="Ban in minutes">
+                <input type="text" id="ban_reason" class="form-control" value="Ban reason..." placeholder="role_class"
+                       aria-label="Ban reason">
+                <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="banUser()">Ban!</button>
+            </span>
+            </div>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = -1"> Cancel </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 15"> 15 min</button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60"> 60 min </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 24 * 60"> 24 h </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60 * 24 * 7"> 1 week </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <button class="btn btn-primary" type="button" onclick="viewAgent()"> View Agent </button>
+    </div>
 
 
 </div>
 
 
-
+<div style="display: None">
+    <div id="data-username">{{ user.name }}</div>
+    <div id="data-active-ban">{{ '1' if ban_seconds_left > 0 else '' }}</div>
+</div>
 
 <script>
 
-   function postRoleClass() {
-       var role_class = document.getElementById('find').value;
-       console.log("Try change role class to", role_class);
-       // todo: ajax with post to change role_class link
-   }
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function changeRoleClass() {
+        var role_class = document.getElementById('role_class').value;
+        console.log("postRoleClass:: Try change role class to", role_class);
+        // todo: ajax with post to change role_class link
+    }
+
+    function banUser() {
+        var minutes = parseInt(document.getElementById('ban_to').value);
+        var reason = document.getElementById('ban_reason').value;
+        console.log("banUser:: Ban User to: ", minutes, ' reason: ', reason);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                minutes: minutes,
+                reason: reason,
+                action: 'ban',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments);}
+        });
+    }
+
+    function viewAgent() {
+        var username = $("#data-username").text();
+        console.log("try view", username);
+
+    }
 
 </script>
 

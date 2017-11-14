@@ -109,6 +109,14 @@ class PlayHandler(BaseHandler):
             self.redirect(self.get_login_url())
             return
 
+        if self.application.srv.is_closed_for_agents:
+            self.render("banned.html", user=self.current_user, is_server_closed=True, reason='Technical timeout')
+            return
+
+        if self.current_user.is_banned:
+            self.render("banned.html", user=self.current_user, is_server_closed=False, reason='')
+            return
+
         _time_to_sleep = self._frequency_delay(user_id)
         if _time_to_sleep:
             yield tornado.gen.sleep(_time_to_sleep)
