@@ -96,6 +96,8 @@ class Server(object):
 
         self.reg = get_global_registry(path=options.world_path, reload=options.reg_reload, save_loaded=True)
 
+        self.blocked_ws_connect_time = 0
+
     def __getstate__(self):
         d = self.__dict__.copy()
         return d
@@ -308,10 +310,23 @@ class Server(object):
             #     agents.append(agent_rec['agent'])
         return agents
 
+    def block_connects(self, seconds):
+        min_block_seconds = 120
+        if seconds <= 0:
+            log.debug('Server unblocked.')
+            self.blocked_ws_connect_time = 0
+            return
+
+        self.blocked_ws_connect_time = self.get_time() + seconds
+        log.debug('Server blocked: unblock in %s', seconds)
+        if seconds <= min_block_seconds:
+            log.warning('Min recommended block time is {}s'.format(min_block_seconds))
+        else:
+            self.disconnect_all_agents()
+
     @property
     def is_closed_for_agents(self):
-        # todo: Нужно для того, чтобы можно было всех дисконнектить на какое-то время и потом не пускать
-        return False
+        return self.blocked_ws_connect_time > self.get_time()
 
     def disconnect_agent_by_name(self, name):
         agent = self.agents_by_name.get(name, None)

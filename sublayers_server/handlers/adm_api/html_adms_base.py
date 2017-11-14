@@ -46,3 +46,19 @@ class AdmFindUsers(AdmEngineHandler):
         elif find_str and LOGIN_TEST.match(find_str):
             users = User.objects(name__contains=find_str).limit(50)
         self.render("adm/find.html", users=users, find=find_str, server=server)
+
+
+class AdmMain(AdmEngineHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        self.render("adm/main.html", server=self.application.srv)
+
+    def post(self):
+        action = self.get_argument('action', '')
+
+        if action == 'server_block':
+            minutes = int(self.get_argument('minutes', 0))
+            self.application.srv.block_connects(seconds=minutes * 60)
+            self.finish('Server blocked')
+            return
+        self.finish('OK')

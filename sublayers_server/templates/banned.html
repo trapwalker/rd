@@ -46,5 +46,5 @@
 </div>
 <script>
     {% set ban_secons = user.get_banned_seconds() %}
-    setTimeout(function () {location.reload()}, {{ max(10, ban_secons) * 1000 }});
+    setTimeout(function () {location.reload()}, {{ max(30, ban_secons) * 1000 }});
 </script>
