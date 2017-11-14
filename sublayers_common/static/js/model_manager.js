@@ -516,6 +516,9 @@ var ClientManager = (function () {
             case 'NPCsTasksCompleteQuestNote':
                 new NPCsTasksCompleteQuestNote(note);
                 break;
+            case 'KarmaLimitQuestNote':
+                new KarmaLimitQuestNote(note);
+                break;
             case 'NPCPageNote':
                 new QuestNoteNPCBtn(note);
                 break;

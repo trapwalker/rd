@@ -218,7 +218,7 @@
 /* Нота на классовую машинку */
 .note-class-img.class-car-note {
     height: 116px;
-    background: url(../img/quests/notes/visit_trainer.png) no-repeat center;
+    background: url(../img/quests/notes/class_notes/class-car.png) no-repeat center;
 }
 
 .note-class-text.class-car-note {
@@ -229,13 +229,20 @@
 /* Нота на максимальный уровень машинки */
 .note-class-img.car-max-lvl-note {
     height: 116px;
-    background: url(../img/quests/notes/visit_trainer.png) no-repeat center;
+    background: url(../img/quests/notes/class_notes/set_car_max_lvl_car.png) no-repeat center;
+}
+.set-car-max-lvl-stars{
+    position: absolute;
+    left: 256px;
+    top: 30px;
+    height: 38px;
+    overflow: hidden;
+    background: url(../img/quests/notes/class_notes/set_car_max_lvl_stars.png) no-repeat left;
 }
 
 .note-class-text.car-max-lvl-note {
     height: calc(100% - 116px);
 }
-
 
 
 /* AccumulateNucoinsQuestNote */
@@ -301,3 +308,65 @@
     height: calc(100% - 116px);
 }
 
+/*ShadowingQuestNote*/
+.note-class-img.shadowing-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/shadowing.png) no-repeat center;
+}
+.note-class-text.shadowing-class-quest {
+    height: calc(100% - 116px);
+}
+
+/*BarterSuccessQuestNote*/
+.note-class-img.barter-success-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/barter_success.png) no-repeat center;
+}
+.note-class-text.barter-success-class-quest {
+    height: calc(100% - 116px);
+}
+
+/*DamageMapWeaponQuestNote*/
+.note-class-img.damage-map-weapon-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/barter_success.png) no-repeat center;
+}
+.note-class-text.damage-map-weapon-class-quest {
+    height: calc(100% - 116px);
+}
+
+/*PartyMembersQuestNote*/
+.note-class-img.party-members-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/party_members.png) no-repeat center;
+}
+.note-class-text.party-members-class-quest {
+    height: calc(100% - 116px);
+}
+
+/*SetMapWeaponQuestNote*/
+.note-class-img.set-map-weapon-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/set_map_weapon.png) no-repeat center;
+}
+.note-class-text.set-map-weapon-class-quest {
+    height: calc(100% - 116px);
+}
+
+/*NPCsTasksCompleteQuestNote*/
+.note-class-img.npcs-tasks-complete-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/npcs_tasks_complete.png) no-repeat center;
+}
+.note-class-text.npcs-tasks-complete-class-quest {
+    height: calc(100% - 116px);
+}
+
+/*KarmaLimitQuestNote*/
+.note-class-img.karma-limit-class-quest {
+    height: 116px;
+    background: url(../img/quests/notes/class_notes/karma_limit.png) no-repeat center;
+}
+.note-class-text.karma-limit-class-quest {
+    height: calc(100% - 116px);
+}
