@@ -571,7 +571,7 @@ class Party(object):
         else:
             agent.example.profile.set_exp(dvalue=dvalue, time=event.time)
             # Отправка лидеру пати квестового эвента с количеством экспы заработанным агентом
-            self.owner.example.profile.on_event(event=event, cls=OnPartyExp, agents=agent, exp=dvalue, party=self)
+            self.owner.example.profile.on_event(event=event, cls=OnPartyExp, agents=[agent], exp=dvalue, party=self)
 
     @event_deco
     def change_share_option(self, event, agent, share_exp):
