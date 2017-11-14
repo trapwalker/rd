@@ -98,6 +98,7 @@ class NPCTypePageNote(Note):
 class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass
 
+class KarmaLimitQuestNote(NPCPageNote): pass
 class NPCsTasksCompleteQuestNote(NPCPageNote): pass
 class SetMapWeaponQuestNote(NPCPageNote): pass
 class PartyMembersQuestNote(NPCPageNote): pass
