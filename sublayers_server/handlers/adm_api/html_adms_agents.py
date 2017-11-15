@@ -10,6 +10,8 @@ from sublayers_server.handlers.adm_api.html_adms_base import AdmEngineHandler
 from sublayers_common.user_profile import User
 from datetime import datetime, timedelta
 
+from sublayers_server.model.registry_me.classes.agents import Agent
+
 
 
 class AdmUserInfoHandler(AdmEngineHandler):
@@ -76,5 +78,35 @@ class AdmUserInfoHandler(AdmEngineHandler):
 
 
 class AdmAgentInfoHandler(AdmEngineHandler):
+    def get_agent(self, user):
+        online_agent = self.application.srv.agents_by_name.get(user.name, None)
+        return online_agent and online_agent.example or Agent.objects.filter(user_id=str(user.pk), quick_flag=False).first()
+
     def get(self):
-        pass
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        username = self.get_argument("username", "")
+        server = self.application.srv
+        user = self.get_user(username=username)
+        agent = user and self.get_agent(user)
+        if user and agent:
+            self.render("adm/agent.html", user=user, agent=agent, server=server)
+        else:
+            self.send_error(404)
+
+    def post(self):
+        username = self.get_argument("username", "")
+        user = self.get_user(username=username)
+        if user is None:
+            self.send_error(404)  # Ненайдено
+            return
+        if self.user_online(username=user.name):
+            self.send_error(503)  # Запрещено менять пользователей, которые онлайн
+            return
+        agent = user and self.get_agent(user)
+        if agent is None:
+            self.send_error(404, reason='Agent <{}> not found'.format(user.name))
+            return
+
+        action = self.get_argument('action', '')
+
+        self.finish('OK')

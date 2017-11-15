@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Agent: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+
+
+<div class="container">
+    <div class="row">
+        <button class="btn btn-primary" type="button" onclick="location = '/adm/api/html/user_info?username={{ user.name }}'"> Return to User info </button>
+    </div>
+    <div class="row">
+        {{ user.name }}
+    </div>
+
+
+</div>
+
+
+
+
+<div style="display: None">
+     <div id="data-username">{{ user.name }}</div>
+</div>
+
+<script>
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+</script>
+
+
+</body>
+</html>

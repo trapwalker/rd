@@ -16,6 +16,9 @@
 
 <div class="container">
     <div class="row">
+        <button class="btn btn-primary" type="button" onclick="viewAgent()"> View Agent Info</button>
+    </div>
+    <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
             <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img src="{{ "/{}".format(user.avatar_link) }}"></div>
         </div>
@@ -73,10 +76,6 @@
             <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 24 * 60"> 24 h </button>
             <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60 * 24 * 7"> 1 week </button>
         </div>
-    </div>
-
-    <div class="row">
-        <button class="btn btn-primary" type="button" onclick="viewAgent()"> View Agent </button>
     </div>
 
     <div style="display: None">
@@ -143,7 +142,7 @@
     function viewAgent() {
         var username = $("#data-username").text();
         console.log("try view", username);
-
+        location = location.origin + '/adm/api/html/agent_info?username=' + username;
     }
 
 </script>
