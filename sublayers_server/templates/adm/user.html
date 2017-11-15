@@ -34,7 +34,16 @@
             </div>
             <div class="row">registration_status: {{ user.registration_status }}</div>
             <div class="row">teaching_state: {{ user.teaching_state }}</div>
-            <div class="row">access_level: {{ user.access_level }}</div>
+            <div class="row">access_level:
+                <div class="col input-group">
+                    <input type="number" id="access_level" class="form-control" max="10" value="{{ user.access_level }}" placeholder="0"
+                           aria-label="Ban in minutes">
+                    <span class="input-group-btn">
+                            <button class="btn btn-secondary" type="button" onclick="setAccessLevel()">Save</button>
+                </span>
+                </div>
+
+            </div>
             <div class="row">Created: {{ user.date_created }}</div>
         </div>
     </div>
@@ -70,7 +79,6 @@
         <button class="btn btn-primary" type="button" onclick="viewAgent()"> View Agent </button>
     </div>
 
-
     <div style="display: None">
         <div id="data-username">{{ user.name }}</div>
         <div id="data-active-ban">{{ '1' if ban_seconds_left > 0 else '' }}</div>
@@ -95,6 +103,24 @@
         // todo: ajax with post to change role_class link
     }
 
+
+    function setAccessLevel() {
+        var new_level = parseInt(document.getElementById('access_level').value);
+        console.log("setAccessLevel:: new level: ", new_level);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                new_level: new_level,
+                action: 'access_level',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
     function banUser() {
         var minutes = parseInt(document.getElementById('ban_to').value);
         var reason = document.getElementById('ban_reason').value;
@@ -110,7 +136,7 @@
                 _xsrf: getCookie('_xsrf')
             },
             success: function (data) { alert(data); window.location.reload();},
-            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments);}
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
         });
     }
 

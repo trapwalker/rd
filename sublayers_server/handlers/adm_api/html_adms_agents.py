@@ -35,6 +35,9 @@ class AdmUserInfoHandler(AdmEngineHandler):
         action = self.get_argument('action', '')
 
         if action == 'ban':
+            if self.current_user.access_level < user.access_level:
+                self.send_error(503, reason='You access level < target_user access level')
+                return
             minutes = int(self.get_argument('minutes', 0))
             reason = self.get_argument('reason', "")
             if minutes > 0:
@@ -51,6 +54,22 @@ class AdmUserInfoHandler(AdmEngineHandler):
                 user.save()
                 self.finish('{} unbanned'.format(user.name))
                 return
+
+        if action == 'access_level':
+            cu_access_level = self.current_user.access_level
+            if cu_access_level <= user.access_level:
+                self.send_error(503, reason='You access level <= target_user access level')
+                return
+            new_level = max(int(self.get_argument('new_level', 0)), 0)
+            if new_level >= cu_access_level:
+                self.send_error(503, reason='You access level {}, You will set max level = {}'.format(cu_access_level, cu_access_level - 1))
+                return
+
+            # todo: поставить через post запрос к локальному серверу, чтобы всё работало через елиные механизмы
+            user.access_level = new_level
+            user.save()
+            self.finish("Access level for {} changed to: {}".format(user, new_level))
+            return
 
         self.finish('OK')
 

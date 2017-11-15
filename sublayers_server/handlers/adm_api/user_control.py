@@ -43,7 +43,7 @@ class UserAccessLevelSetup(AdmAPIHandler):
         if not username or access is None:
             self.finish('Bad arguments')
             return
-        access = int(access)
+        access = max(int(access), 0)
         user = None
         srv = self.application.srv
         for a in srv.agents_by_name.values():  # Поискать юзера с таким именем на сервере, если нет, то в базе
