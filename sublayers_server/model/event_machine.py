@@ -648,6 +648,7 @@ class QuickLocalServer(LocalServer):
                     email='quick_bot_{}@1'.format(i),
                     raw_password='1',
                     avatar_link=random.choice(avatar_list),
+                    quick=True,
                 ).save()
 
             # Создать AIQuickAgent
