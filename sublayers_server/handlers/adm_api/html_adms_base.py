@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-from sublayers_common.handlers.base import AuthHandlerMixin
+from sublayers_common.handlers.base import BaseHandler
 from tornado.web import HTTPError
 
 from sublayers_common.user_profile import User
@@ -14,7 +14,7 @@ from sublayers_site.handlers.site_auth import LOGIN_RE
 import re
 LOGIN_TEST = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_-]{2,19}$')  # Взят из from sublayers_site.handlers.site_auth. LOGIN_RE
 
-class AdmEngineHandler(AuthHandlerMixin):
+class AdmEngineHandler(BaseHandler):
     access_level = 1
 
     def prepare(self):
