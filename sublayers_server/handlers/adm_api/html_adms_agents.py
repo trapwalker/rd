@@ -89,7 +89,7 @@ class AdmAgentInfoHandler(AdmEngineHandler):
         user = self.get_user(username=username)
         agent = user and self.get_agent(user)
         if user and agent:
-            self.render("adm/agent.html", user=user, agent=agent, server=server)
+            self.render("adm/agent.html", user=user, agent=agent.profile, server=server)
         else:
             self.send_error(404)
 

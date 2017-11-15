@@ -15,14 +15,72 @@
 
 
 <div class="container">
-    <div class="row">
-        <button class="btn btn-primary" type="button" onclick="location = '/adm/api/html/user_info?username={{ user.name }}'"> Return to User info </button>
+    <div class="col-12">
+        <button class="btn btn-info" type="button" onclick="location = '/adm/api/html/user_info?username={{ user.name }}'"> Return to User info </button>
+        <button class="btn btn-info" type="button" onclick=""> Quests </button>
+        <button class="btn btn-info" type="button" onclick=""> Quest Inventory </button>
     </div>
     <div class="row">
-        {{ user.name }}
+        <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
+            <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img
+                    src="{{ "/{}".format(user.avatar_link) }}"></div>
+            <div class="row text-center">Online: {{ server.agents_by_name.get(user.name, None) is not None }}</div>
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-8 h6">
+            <div class="row text-center">Login: {{ user.name }}</div>
+            <div class="row">Class: {{ _(agent.role_class.title) }}</div>
+            <div class="row">Level: {{ agent.get_real_lvl() }}</div>
+            <div class="row">Exp: {{ agent.exp }}</div>
+            <div class="row">Karma: {{ _(agent.karma_name()) }}  |  {{ agent.karma_norm }}</div>
+            <div class="row">Balance: {{ agent.balance }}</div>
+            <div class="row">Insurance: {{ _(agent.insurance.title) }}</div>
+            <div class="row">Frags: {{ agent.frag }}</div>
+            <div class="row">in_location_flag: {{ agent.in_location_flag }}</div>
+            <div class="row">Last Town: {{ agent.last_town and _(agent.last_town.title) }}</div>
+            <div class="row">Current Location: {{ agent.current_location and _(agent.current_location.title) }}</div>
+            <div class="row">
+                <div class="row">About</div>
+                <div class="row">{{ agent.about_self }}</div>
+            </div>
+
+        </div>
     </div>
 
+    <div class="col-12 h6">
+        <div class="row h3">Skills</div>
+        <div class="row">driving: clear: {{ agent.driving.calc_value() }}  |  buy: {{ agent.driving.value }}</div>
+        <div class="row">shooting: clear: {{ agent.shooting.calc_value() }}  |  buy: {{ agent.shooting.value }}  |  real : {{ agent.get_current_agent_shooting() }}</div>
+        <div class="row">masking: clear: {{ agent.masking.calc_value() }}  |  buy: {{ agent.masking.value }}</div>
+        <div class="row">leading: clear: {{ agent.leading.calc_value() }}  |  buy: {{ agent.leading.value }}</div>
+        <div class="row">trading: clear: {{ agent.trading.calc_value() }}  |  buy: {{ agent.trading.value }}  |  real: {{ agent.get_current_agent_trading() }}</div>
+        <div class="row">engineering: clear: {{ agent.engineering.calc_value() }}  |  buy: {{ agent.engineering.value }}</div>
+        <div class="row">Free: {{ agent.get_lvl() + agent.role_class.start_free_point_skills - agent.skill_point_summ() }}</div>
+    </div>
 
+    <div class="col-12 h6">
+        <div class="row h3">Perks</div>
+        {% for perk in agent.perks %}
+        <div class="col">{{ _(perk.title) }}</div>
+        {% end %}
+        <div class="row">Free: {{ agent.get_real_lvl() + agent.role_class.start_free_point_perks - len(agent.perks)}}</div>
+    </div>
+
+    <div class="col-12 h4">
+        <div class="row h3">Cars</div>
+        <div class="row"
+             {% if agent.car %}onclick="viewCarInfo('{{ agent.car.uid }}')" {% end %}
+        >Current Car: {{ agent.car and _(agent.car.title) }}
+        </div>
+
+        {% set car_list = sorted(agent.car_list, key=lambda car: car.last_parking_npc) %}
+        {% for car in car_list %}
+        <div class="row h5" onclick="viewCarInfo('{{ car.uid }}')" > {{ _(car.title) }}  |  {{ car.last_parking_npc }}
+        </div>
+        {% end %}
+        
+        <div class="row"></div>
+    </div>
 </div>
 
 
@@ -38,6 +96,12 @@
             "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
         ));
         return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+
+    function viewCarInfo(car_id) {
+        var username = $("#data-username").text();
+        console.log("viewCarInfo:: ", username, car_id);
     }
 
 </script>

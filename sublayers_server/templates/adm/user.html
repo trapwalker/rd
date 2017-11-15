@@ -53,7 +53,7 @@
     <div class="row h4">
         <div class="col-12">
             <div class="col">
-                {{ 'Banned before: {}  |  {:.0f}s'.format(user.ban_time or 0, ban_seconds_left) if ban_seconds_left > 0 else 'Agent not banned'}}
+                {{ 'Banned before: {}  |  {:.0f}s'.format(user.ban_time or 0, ban_seconds_left) if ban_seconds_left > 0 else 'User not banned'}}
             </div>
             {% if ban_seconds_left > 0 %}
                 <div class="col">Ban reason: {{ user.ban_reason}}</div>
