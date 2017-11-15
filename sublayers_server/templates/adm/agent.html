@@ -19,8 +19,9 @@
         <button class="btn btn-info" type="button" onclick="location = '/adm/api/html/user_info?username={{ user.name }}'"> Return to User info </button>
         <button class="btn btn-info" type="button" onclick=""> Quests </button>
         <button class="btn btn-info" type="button" onclick=""> Quest Inventory </button>
+        <button class="btn btn-info" type="button" onclick=""> NPCs Relation </button>
     </div>
-    <div class="row">
+    <div class="row border">
         <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
             <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img
                     src="{{ "/{}".format(user.avatar_link) }}"></div>
@@ -47,7 +48,7 @@
         </div>
     </div>
 
-    <div class="col-12 h6">
+    <div class="col-12 h6 border">
         <div class="row h3">Skills</div>
         <div class="row">driving: clear: {{ agent.driving.calc_value() }}  |  buy: {{ agent.driving.value }}</div>
         <div class="row">shooting: clear: {{ agent.shooting.calc_value() }}  |  buy: {{ agent.shooting.value }}  |  real : {{ agent.get_current_agent_shooting() }}</div>
@@ -58,7 +59,7 @@
         <div class="row">Free: {{ agent.get_lvl() + agent.role_class.start_free_point_skills - agent.skill_point_summ() }}</div>
     </div>
 
-    <div class="col-12 h6">
+    <div class="col-12 h6 border">
         <div class="row h3">Perks</div>
         {% for perk in agent.perks %}
         <div class="col">{{ _(perk.title) }}</div>
@@ -66,20 +67,17 @@
         <div class="row">Free: {{ agent.get_real_lvl() + agent.role_class.start_free_point_perks - len(agent.perks)}}</div>
     </div>
 
-    <div class="col-12 h4">
+    <div class="col-12 h4 border">
         <div class="row h3">Cars</div>
         <div class="row"
              {% if agent.car %}onclick="viewCarInfo('{{ agent.car.uid }}')" {% end %}
         >Current Car: {{ agent.car and _(agent.car.title) }}
         </div>
-
         {% set car_list = sorted(agent.car_list, key=lambda car: car.last_parking_npc) %}
         {% for car in car_list %}
         <div class="row h5" onclick="viewCarInfo('{{ car.uid }}')" > {{ _(car.title) }}  |  {{ car.last_parking_npc }}
         </div>
         {% end %}
-        
-        <div class="row"></div>
     </div>
 </div>
 

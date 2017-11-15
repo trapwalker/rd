@@ -18,7 +18,7 @@
     <div class="row">
         <button class="btn btn-primary" type="button" onclick="viewAgent()"> View Agent Info</button>
     </div>
-    <div class="row">
+    <div class="row border">
         <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
             <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img src="{{ "/{}".format(user.avatar_link) }}"></div>
         </div>
@@ -50,7 +50,7 @@
             <div class="row">Created: {{ user.date_created }}</div>
         </div>
     </div>
-    <div class="row h4">
+    <div class="row h4 border">
         <div class="col-12">
             <div class="col">
                 {{ 'Banned before: {}  |  {:.0f}s'.format(user.ban_time or 0, ban_seconds_left) if ban_seconds_left > 0 else 'User not banned'}}
