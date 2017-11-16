@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 from sublayers_server.model.registry_me.classes.agents import Agent
 
+import uuid
 
 
 class AdmUserInfoHandler(AdmEngineHandler):
@@ -108,5 +109,60 @@ class AdmAgentInfoHandler(AdmEngineHandler):
             return
 
         action = self.get_argument('action', '')
+
+        self.finish('OK')
+
+
+class AdmAgentQuestsInfoHandler(AdmAgentInfoHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        username = self.get_argument("username", "")
+        server = self.application.srv
+        user = self.get_user(username=username)
+        agent = user and self.get_agent(user)
+        if user and agent:
+            self.render("adm/quests.html", user=user, agent=agent.profile, server=server)
+        else:
+            self.send_error(404)
+
+    def post(self):
+        username = self.get_argument("username", "")
+        user = self.get_user(username=username)
+        if user is None:
+            self.send_error(404)  # Ненайдено
+            return
+        if self.user_online(username=user.name):
+            self.send_error(503)  # Запрещено менять пользователей, которые онлайн
+            return
+        agent = user and self.get_agent(user)
+        if agent is None:
+            self.send_error(404, reason='Agent <{}> not found'.format(user.name))
+            return
+
+        action = self.get_argument('action', '')
+
+        if action == 'del':
+            quest_uid = self.get_argument('quest_uid', "")
+            profile = agent.profile
+            quest = quest_uid and profile.get_quest(uuid.UUID(quest_uid))
+            if quest is not None:
+                # Если найден квест, то удалить его и все его ноты
+                if quest in profile.quests_unstarted:
+                    profile.quests_unstarted.remove(quest)
+                if quest in profile.quests_active:
+                    profile.quests_active.remove(quest)
+                if quest in profile.quests_ended:
+                    profile.quests_ended.remove(quest)
+                # Удаление всех нот этого квеста
+                notes = [note for note in profile.notes if note.quest_uid == quest.uid]
+                for note in notes:
+                    profile.notes.remove(note)
+                agent.save()
+                self.finish('Quest <{}> deleted.'.format(quest.caption and quest.caption.en))
+            else:
+                self.finish('Quest with uid <{}> not found.'.format(quest_uid))
+            return
+
+
 
         self.finish('OK')

@@ -12,12 +12,9 @@
 <body>
 
 {% include "main_menu_template.html" %}
-
+{% include "agent_menu_template.html" %}
 
 <div class="container">
-    <div class="row">
-        <button class="btn btn-primary" type="button" onclick="viewAgent()"> View Agent Info</button>
-    </div>
     <div class="row border">
         <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
             <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img src="{{ "/{}".format(user.avatar_link) }}"></div>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Quests: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+
+    <style>
+        .read_del{display: None;}
+    </style>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+{% include "agent_menu_template.html" %}
+
+
+<div class="container">
+
+    <div class="row">
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Caption</th>
+                <th scope="col">Parent</th>
+                <th scope="col">Status</th>
+                <th scope="col">State</th>
+                <th scope="col">Hirer</th>
+                <th scope="col">Date Start</th>
+                <th scope="col">Date End</th>
+                <th scope="col">Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set index = 1 %}
+            {% for quest in agent.quests %}
+            <tr>
+                <th scope="row">{{ index }}</th>
+                <td>{{ _(quest.caption)}}</td>
+                <td>{{ quest.parent.uri }}</td>
+                <td>{{ quest.status }}</td>
+                <td>{{ quest.current_state }}</td>
+                <td>{{ quest.hirer and _(quest.hirer.title) }}</td>
+
+                <td>{{ quest.starttime }}</td>
+                <td>{{ quest.endtime }}</td>
+                <td>
+                    <button class="btn btn-warning" type="button" onclick="preDelQuest(event)">Delete</button>
+                    <button class="btn btn-danger read_del" type="button" onclick="delQuest('{{ quest.uid }}')">Delete</button>
+                </td>
+            </tr>
+            {% set index += 1 %}
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+<div style="display: None">
+     <div id="data-username">{{ user.name }}</div>
+</div>
+
+<script>
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+
+    function preDelQuest(event) {
+        alert('Для удаления квеста нажмите повторно в течении 5 секунд');
+        var jq_target = $(event.target);
+        jq_target.css('display', 'none');
+        jq_target.parent().find('.read_del').first().css('display', 'block');
+        setTimeout(function () {
+            jq_target.css('display', 'block');
+            jq_target.parent().find('.read_del').first().css('display', 'none');
+        }, 5000);
+    }
+
+    function delQuest(quest_uid) {
+        var username = $("#data-username").text();
+        console.log("delQuest:: ", username, quest_uid);
+
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                quest_uid: quest_uid,
+                action: 'del',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+</script>
+
+
+</body>
+</html>
