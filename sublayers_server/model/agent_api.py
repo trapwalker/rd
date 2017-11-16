@@ -239,7 +239,7 @@ class AgentConsoleNamespace(Namespace):
         for quest in self.agent.example.profile.quests:
             log.info('QUEST: {}'.format(quest))
 
-    @access_level(2)
+    @access_level(3)
     def sys_message(self, message):
         time = self.agent.server.get_time()
         for agent in self.agent.server.agents.values():
@@ -1088,7 +1088,7 @@ class AgentAPI(API):
                                         player_nick=player_nick).post()
 
     # Административные методы
-    @access_level(2)
+    @access_level(4)
     @public_method
     def get_tiles_admin(self, tile_name, x, y):
         log.info('{} get_tiles_admin for: {} / {} : {}'.format(self.agent, tile_name, x, y))

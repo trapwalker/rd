@@ -391,6 +391,7 @@
         <span id="settings_user_position">{{ '{}: {}'.format(start_coord.x, start_coord.y) if start_coord else _("play_position_none") }}</span>
         <span id="settings_connection_delay">{{ connection_delay }}</span>
         <span id="electron_mode">{{ "electron" if electron else "" }}</span>
+        <span id="user_access_level">{{ current_user.access_level }}</span>
     </div>
     <div id="textConsoleDivWrap" tabindex="0">
         <div id="textConsoleDiv" tabindex="0">
