@@ -22,6 +22,10 @@ var QuestMapMarkerNote = (function (_super) {
         this.scale_icon_x = 1.0;
         this.scale_icon_y = 1.0;
 
+        this.canvasMapRadiusMin = 20;
+        this.canvasMapRadiusMiddle = this.canvasMapRadiusMin;
+        this.canvasMapOpacity = 1;
+
         mapCanvasManager.add_vobj(this, 8);
 
         // Для рассчёта клика по ноте
@@ -223,11 +227,27 @@ var QuestMTMapMarkerNote = (function (_super) {
             ctx.beginPath();
             ctx.strokeStyle = "#00cc81";
             //ctx.setLineDash([10, 10]);
-            ctx.lineWidth = 2;
-            ctx.arc(0, 0, (this.radius / mapCanvasManager.zoom_koeff).toFixed(5), 0, 2 * Math.PI);
+            ctx.lineWidth = 0;
+            var canvasMapRadius = (this.radius / mapCanvasManager.zoom_koeff).toFixed(5);
+            this.canvasMapRadiusMiddle++;
+            this.canvasMapOpacity = (this.canvasMapRadiusMiddle/(canvasMapRadius/100))/100;
+            ctx.arc(0, 0, canvasMapRadius, 0, 2 * Math.PI);
+
+            var grd=ctx.createRadialGradient(0, 0, this.canvasMapRadiusMiddle-20, 0, 0, this.canvasMapRadiusMiddle+15);
+            grd.addColorStop(0,"rgba(255,255,255, 0)");
+            grd.addColorStop(0.2,"rgba(0,200,80, " + (1-this.canvasMapOpacity)*0.9 + ")");
+            grd.addColorStop(0.6,"rgba(0,255,111, "+(1-this.canvasMapOpacity)+")");
+            grd.addColorStop(1,"rgba(0,255,111, 0)");
+            ctx.fillStyle = grd;
+
+            ctx.fill();
             ctx.stroke();
             ctx.closePath();
             ctx.restore();
+
+            if (this.canvasMapRadiusMiddle > canvasMapRadius){
+                this.canvasMapRadiusMiddle = this.canvasMapRadiusMin;
+            }
         }
 
         ctx.restore();  // Возврат транслейта
