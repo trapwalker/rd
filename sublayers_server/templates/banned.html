@@ -41,7 +41,7 @@
     {% else %}
         You account is blocked: {{ user.ban_reason }}
         <br>
-        Unblock in {{ user.ban_time }}
+        Unblock in {{ user.ban_time and user.ban_time.strftime("%Y-%m-%d %H:%M:%S") }}
     {% end %}
 </div>
 <script>

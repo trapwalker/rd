@@ -33,7 +33,7 @@ class AdmUserInfoHandler(AdmEngineHandler):
             self.send_error(404)  # Ненайдено
             return
         # if self.user_online(username=user.name):
-        #     self.send_error(503)  # Запрещено менять пользователей, которые онлайн
+        #     self.send_error(503, reason="Agent Online. You should banned user for sometime.")  # Запрещено менять пользователей, которые онлайн
         #     return
         action = self.get_argument('action', '')
 
@@ -101,7 +101,7 @@ class AdmAgentInfoHandler(AdmEngineHandler):
             self.send_error(404)  # Ненайдено
             return
         if self.user_online(username=user.name):
-            self.send_error(503)  # Запрещено менять пользователей, которые онлайн
+            self.send_error(503, reason="Agent Online. You should banned user for sometime.")  # Запрещено менять пользователей, которые онлайн
             return
         agent = user and self.get_agent(user)
         if agent is None:
@@ -132,7 +132,7 @@ class AdmAgentQuestsInfoHandler(AdmAgentInfoHandler):
             self.send_error(404)  # Ненайдено
             return
         if self.user_online(username=user.name):
-            self.send_error(503)  # Запрещено менять пользователей, которые онлайн
+            self.send_error(503, reason="Agent Online. You should banned user for sometime.")  # Запрещено менять пользователей, которые онлайн
             return
         agent = user and self.get_agent(user)
         if agent is None:
@@ -164,5 +164,55 @@ class AdmAgentQuestsInfoHandler(AdmAgentInfoHandler):
             return
 
 
+
+        self.finish('OK')
+
+
+class AdmAgentQuestsInventoryHandler(AdmAgentInfoHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        username = self.get_argument("username", "")
+        server = self.application.srv
+        user = self.get_user(username=username)
+        agent = user and self.get_agent(user)
+        if user and agent:
+            self.render("adm/quests_inventory.html", user=user, agent=agent.profile, server=server)
+        else:
+            self.send_error(404)
+
+    def post(self):
+        username = self.get_argument("username", "")
+        user = self.get_user(username=username)
+        if user is None:
+            self.send_error(404)  # Ненайдено
+            return
+        if self.user_online(username=user.name):
+            self.send_error(503, reason="Agent Online. You should banned user for sometime.")  # Запрещено менять пользователей, которые онлайн
+            return
+        agent = user and self.get_agent(user)
+        if agent is None:
+            self.send_error(404, reason='Agent <{}> not found'.format(user.name))
+            return
+
+        action = self.get_argument('action', '')
+
+        if action == 'del':
+            item_uid = self.get_argument('item_uid', "")
+            profile = agent.profile
+            item = item_uid and profile.quest_inventory.get_item_by_uid(uuid.UUID(item_uid))
+            if item:
+                print "item"
+                print item
+                print "items:"
+                print profile.quest_inventory.items
+                if item is profile.insurance:
+                    self.send_error(503, reason="Delete insurance item not access")
+                    return
+                profile.quest_inventory.items.remove(item)
+                agent.save()
+                self.finish('QuestItem <{}> deleted.'.format(item.title and item.title.en))
+            else:
+                self.finish('QuestItem with uid <{}> not found.'.format(item_uid))
+            return
 
         self.finish('OK')
