@@ -19,7 +19,7 @@ class AdmEngineHandler(BaseHandler):
 
     def prepare(self):
         super(AdmEngineHandler, self).prepare()
-        if self.current_user.access_level < self.access_level:
+        if not self.current_user or self.current_user.access_level < self.access_level:
             log.warning('%s ACCESS DENIED!', self.classname)
             raise HTTPError(403)
 
