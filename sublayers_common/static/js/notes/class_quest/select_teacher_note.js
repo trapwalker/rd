@@ -44,7 +44,7 @@ var QuestNoteSelectTeacher = (function (_super) {
         var curr_place = locationManager.get_current_active_place();
         if (locationManager.in_location_flag && (curr_place instanceof LocationPlaceBuilding)) {
             var relation = locationManager.get_relation(curr_place.building_rec.head.node_hash);
-            if (relation < 0.5) result = $(_("stn_text1"));
+            if (relation < 0.6) result = $(_("stn_text1"));
             else result = $(_("stn_text2"));
         }
         return result;
