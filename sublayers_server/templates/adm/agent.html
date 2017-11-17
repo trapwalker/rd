@@ -92,9 +92,10 @@
     }
 
 
-    function viewCarInfo(car_id) {
+    function viewCarInfo(car_uid) {
         var username = $("#data-username").text();
-        console.log("viewCarInfo:: ", username, car_id);
+        console.log("viewCarInfo:: ", username, car_uid);
+        location = location.origin + '/adm/api/html/car_info?username=' + username + '&car_uid=' + car_uid;
     }
 
 </script>

@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
-from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
+from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem, TunerItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry_me.classes.inventory import InventoryField
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, ParamRange,
@@ -214,6 +214,9 @@ class Mobile(Node):
 
     def iter_mechanic_items(self):
         return [v for attr, v in self.iter_slots(tags={'mechanic'}) if isinstance(v, MechanicItem)]
+
+    def iter_tuner_items(self):
+        return [v for attr, v in self.iter_slots(tags={'tuner'}) if isinstance(v, TunerItem)]
 
     def iter_armorer_slots_name(self):
         return (attr for attr, v in self.iter_slots(tags={'armorer'}))
