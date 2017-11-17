@@ -22,9 +22,11 @@ var QuestMapMarkerNote = (function (_super) {
         this.scale_icon_x = 1.0;
         this.scale_icon_y = 1.0;
 
-        this.canvasMapRadiusMin = 20;
-        this.canvasMapRadiusMiddle = this.canvasMapRadiusMin;
+        this.canvasMapRadarRadiusMin = 5;
+        this.canvasMapRadarRadiusMiddle = this.canvasMapRadarRadiusMin;
         this.canvasMapOpacity = 1;
+        this.timeRADuration = 4000;
+        this.timeRadarAnimateStart = 0;
 
         mapCanvasManager.add_vobj(this, 8);
 
@@ -211,6 +213,10 @@ var QuestMTMapMarkerNote = (function (_super) {
         // console.log("QuestMTMapMarkerNote.prototype.redraw", this.radius);
         if (! this.is_active) return;
 
+        if (!this.timeRadarAnimateStart){
+            this.timeRadarAnimateStart = (time*1000).toFixed();
+        }
+        var timeRAD = this.timeRADuration;
         ctx.save();
         var ctx_pos = mulScalVector(subVector(this.position, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
         this._last_ctx_pos = ctx_pos;
@@ -225,19 +231,33 @@ var QuestMTMapMarkerNote = (function (_super) {
             ctx.save();
             ctx.globalAlpha = opacity;
             ctx.beginPath();
-            ctx.strokeStyle = "#00cc81";
+            ctx.strokeStyle = "#222";
             //ctx.setLineDash([10, 10]);
             ctx.lineWidth = 0;
-            var canvasMapRadius = (this.radius / mapCanvasManager.zoom_koeff).toFixed(5);
-            this.canvasMapRadiusMiddle++;
-            this.canvasMapOpacity = (this.canvasMapRadiusMiddle/(canvasMapRadius/100))/100;
-            ctx.arc(0, 0, canvasMapRadius, 0, 2 * Math.PI);
 
-            var grd=ctx.createRadialGradient(0, 0, this.canvasMapRadiusMiddle-20, 0, 0, this.canvasMapRadiusMiddle+15);
+            var timeFormated = (time*1000).toFixed();//текущее время
+            var timeOnePercent = timeRAD/100;//1% от длительности анимации
+            var timePercent = ((timeFormated-this.timeRadarAnimateStart)/timeOnePercent).toFixed();//текущая позиция во времени анимации
+            var canvasMapRadius = (this.radius / mapCanvasManager.zoom_koeff).toFixed(5);
+            var canvasMapRadiusOnePercent = canvasMapRadius/100;//1% от радиуса турели
+            var canvasInPercent = (this.canvasMapRadarRadiusMiddle/100)*7;//скорость изменения внутреннего радиуса
+            var canvasOutPercent = (this.canvasMapRadarRadiusMiddle/100)*5;//скорость изменения внешнего радиума
+            var canvasMapRadiusIn = Math.abs(this.canvasMapRadarRadiusMiddle-canvasMapRadiusOnePercent*canvasInPercent);//внутренний радиус
+            var canvasMapRadiusOut = Math.abs(this.canvasMapRadarRadiusMiddle+canvasMapRadiusOnePercent*canvasOutPercent);//внешний радиус
+
+            this.canvasMapRadarRadiusMiddle = Math.abs((Math.round(canvasMapRadiusOnePercent*timePercent))+this.canvasMapRadarRadiusMin);
+            this.canvasMapOpacity = (timePercent/100 > 1)? 1 : timePercent/100;
+
+            ctx.arc(0, 0, canvasMapRadius, 0, 2 * Math.PI);
+            var grd=ctx.createRadialGradient(0, 0, canvasMapRadiusIn, 0, 0, canvasMapRadiusOut);
+            //градинт эмитирующий волну
             grd.addColorStop(0,"rgba(255,255,255, 0)");
-            grd.addColorStop(0.2,"rgba(0,200,80, " + (1-this.canvasMapOpacity)*0.9 + ")");
-            grd.addColorStop(0.6,"rgba(0,255,111, "+(1-this.canvasMapOpacity)+")");
-            grd.addColorStop(1,"rgba(0,255,111, 0)");
+            grd.addColorStop(0.1,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.1)+")");
+            grd.addColorStop(0.4,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.2)+")");
+            grd.addColorStop(0.7,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.6)+")");
+            grd.addColorStop(0.8,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.9)+")");
+            grd.addColorStop(0.9,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.8)+")");
+            grd.addColorStop(1,"rgba(255,255,255, 0)");
             ctx.fillStyle = grd;
 
             ctx.fill();
@@ -245,8 +265,11 @@ var QuestMTMapMarkerNote = (function (_super) {
             ctx.closePath();
             ctx.restore();
 
-            if (this.canvasMapRadiusMiddle > canvasMapRadius){
-                this.canvasMapRadiusMiddle = this.canvasMapRadiusMin;
+            if (this.canvasMapRadarRadiusMiddle > canvasMapRadius){
+                this.canvasMapRadarRadiusMiddle = this.canvasMapRadarRadiusMin;
+            }
+            if((Number(this.timeRadarAnimateStart)+timeRAD) < Number(timeFormated)){
+                this.timeRadarAnimateStart = timeFormated;
             }
         }
 
