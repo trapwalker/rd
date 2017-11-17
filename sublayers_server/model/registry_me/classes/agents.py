@@ -396,6 +396,16 @@ class AgentProfile(Node):
             self.engineering.value
         )
 
+    def buy_skill_point_summ(self):
+        return (
+            self.buy_driving.value +
+            self.buy_shooting.value +
+            self.buy_masking.value +
+            self.buy_leading.value +
+            self.buy_trading.value +
+            self.buy_engineering.value
+        )
+
     def as_client_dict(self):
         d = super(AgentProfile, self).as_client_dict()
         d['role_class'] = '' if self.role_class is None else self.role_class.description

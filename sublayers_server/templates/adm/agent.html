@@ -36,8 +36,8 @@
             <div class="row">Last Town: {{ agent.last_town and _(agent.last_town.title) }}</div>
             <div class="row">Current Location: {{ agent.current_location and _(agent.current_location.title) }}</div>
             <div class="row">
-                <div class="row">About</div>
-                <div class="row">{{ agent.about_self }}</div>
+                <div class="col-2">About</div>
+                <div class="col-10">{{ agent.about_self }}</div>
             </div>
 
         </div>
@@ -51,7 +51,7 @@
         <div class="row">leading: clear: {{ agent.leading.calc_value() }}  |  buy: {{ agent.leading.value }}</div>
         <div class="row">trading: clear: {{ agent.trading.calc_value() }}  |  buy: {{ agent.trading.value }}  |  real: {{ agent.get_current_agent_trading() }}</div>
         <div class="row">engineering: clear: {{ agent.engineering.calc_value() }}  |  buy: {{ agent.engineering.value }}</div>
-        <div class="row">Free: {{ agent.get_lvl() + agent.role_class.start_free_point_skills - agent.skill_point_summ() }}</div>
+        <div class="row">Free: {{ agent.get_lvl() + agent.role_class.start_free_point_skills - agent.skill_point_summ() + agent.buy_skill_point_summ() }}</div>
     </div>
 
     <div class="col-12 h6 border">

@@ -77,7 +77,6 @@ class AdmUserInfoHandler(AdmEngineHandler):
         self.finish('OK')
 
 
-
 class AdmAgentInfoHandler(AdmEngineHandler):
     def get_agent(self, user):
         online_agent = self.application.srv.agents_by_name.get(user.name, None)
@@ -201,10 +200,6 @@ class AdmAgentQuestsInventoryHandler(AdmAgentInfoHandler):
             profile = agent.profile
             item = item_uid and profile.quest_inventory.get_item_by_uid(uuid.UUID(item_uid))
             if item:
-                print "item"
-                print item
-                print "items:"
-                print profile.quest_inventory.items
                 if item is profile.insurance:
                     self.send_error(503, reason="Delete insurance item not access")
                     return
