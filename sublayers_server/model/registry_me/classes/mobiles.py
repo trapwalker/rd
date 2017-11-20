@@ -221,6 +221,12 @@ class Mobile(Node):
     def iter_armorer_slots_name(self):
         return (attr for attr, v in self.iter_slots(tags={'armorer'}))
 
+    def get_slot_name_by_item(self, item_uid, tags=None):
+        tags = tags or {'mechanic', 'tuner', 'armorer'}
+        for name, v in self.iter_slots(tags=tags):
+            if v and v.uid == item_uid:
+                return name
+
     def iter_slots(self, tags=None):
         for name, attr, getter in self.iter_attrs(tags=tags, classes=SlotField):
             v = getter()

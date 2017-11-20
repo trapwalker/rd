@@ -17,6 +17,8 @@
             height: 170px;
             background-color: #030f00;
         }
+
+        .read_del{display: None;}
     </style>
 
 </head>
@@ -54,6 +56,7 @@
                 <th scope="col">Direction</th>
                 <th scope="col">Type</th>
                 <th scope="col">URI</th>
+                <th scope="col">Delete</th>
             </tr>
             </thead>
             <tbody>
@@ -64,8 +67,14 @@
                 <td>{% raw _(weapon.title) %}</td>
                 <td>{% raw _(weapon.title_with_condition) %}</td>
                 <td>{{ weapon.direction }}</td>
-                <td>{{ 'MachineGun' if weapon.is_auto else 'Cannon'}}</td>
+                <td>{{ 'MachineGun' if weapon.is_auto else 'Cannon' }}</td>
                 <td>{{ weapon.node_hash() }}</td>
+                <td>
+                    <button class="btn btn-warning" type="button" onclick="preDelItem(event)">Delete</button>
+                    <button class="btn btn-danger read_del" type="button" onclick="delWeaponItem('{{ weapon.uid }}')">
+                        Delete
+                    </button>
+                </td>
             </tr>
             {% set index += 1 %}
             {% end %}
@@ -81,6 +90,7 @@
                 <th scope="col">Title</th>
                 <th scope="col">Tags</th>
                 <th scope="col">URI</th>
+                <th scope="col">Delete</th>
             </tr>
             </thead>
             <tbody>
@@ -91,6 +101,12 @@
                 <td>{% raw _(item.title) %}</td>
                 <td>{{ item.tag_set }}</td>
                 <td>{{ item.node_hash() }}</td>
+                <td>
+                    <button class="btn btn-warning" type="button" onclick="preDelItem(event)">Delete</button>
+                    <button class="btn btn-danger read_del" type="button" onclick="delMechanicItem('{{ item.uid }}')">
+                        Delete
+                    </button>
+                </td>
             </tr>
             {% set index += 1 %}
             {% end %}
@@ -106,6 +122,7 @@
                 <th scope="col">Title</th>
                 <th scope="col">Tags</th>
                 <th scope="col">URI</th>
+                <th scope="col">Delete</th>
             </tr>
             </thead>
             <tbody>
@@ -116,6 +133,10 @@
                 <td>{% raw _(item.title) %}</td>
                 <td>{{ item.tag_set }}</td>
                 <td>{{ item.node_hash() }}</td>
+                <td>
+                    <button class="btn btn-warning" type="button" onclick="preDelItem(event)">Delete</button>
+                    <button class="btn btn-danger read_del" type="button" onclick="delTunerItem('{{ item.uid }}')">Delete</button>
+                </td>
             </tr>
             {% set index += 1 %}
             {% end %}
@@ -130,6 +151,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Title</th>
                 <th scope="col">URI</th>
+                <th scope="col">Delete</th>
             </tr>
             </thead>
             <tbody>
@@ -139,6 +161,10 @@
                 <th scope="row">{{ index }}</th>
                 <td>{% raw _(item.title) %}</td>
                 <td>{{ item.node_hash() }}</td>
+                <td>
+                    <button class="btn btn-warning" type="button" onclick="preDelItem(event)">Delete</button>
+                    <button class="btn btn-danger read_del" type="button" onclick="delInventoryItem('{{ item.uid }}')">Delete</button>
+                </td>
             </tr>
             {% set index += 1 %}
             {% end %}
@@ -159,6 +185,53 @@
             "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
         ));
         return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function preDelItem(event) {
+        alert('Для удаления айтема нажмите повторно в течении 5 секунд');
+        var jq_target = $(event.target);
+        jq_target.css('display', 'none');
+        jq_target.parent().find('.read_del').first().css('display', 'block');
+        setTimeout(function () {
+            jq_target.css('display', 'block');
+            jq_target.parent().find('.read_del').first().css('display', 'none');
+        }, 5000);
+    }
+
+    function delItem(item_uid, type) {
+        var username = $("#data-username").text();
+        var car_uid = $("#data-car_uid").text();
+        console.log("delItem:: ", type, username, car_uid, item_uid);
+
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: username,
+                item_uid: item_uid,
+                car_uid: car_uid,
+                action: type,
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function delInventoryItem(item_uid) {
+        delItem(item_uid, 'del_inventory_item');
+    }
+
+    function delWeaponItem(item_uid) {
+        delItem(item_uid, 'del_weapon_item');
+    }
+
+    function delMechanicItem(item_uid) {
+        delItem(item_uid, 'del_mechanic_item');
+    }
+
+    function delTunerItem(item_uid) {
+        delItem(item_uid, 'del_tuner_item');
     }
 
 

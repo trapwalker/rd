@@ -53,14 +53,35 @@ class AdmCarInfoHandler(AdmAgentInfoHandler):
         if agent is None:
             self.send_error(404, reason='Agent <{}> not found'.format(user.name))
             return
-
         car_uid = self.get_argument("car_uid", None)
         car = car_uid and self.get_car(profile=agent.profile, car_uid=uuid.UUID(car_uid))
         if car is None:
             self.send_error(404, reason='Car <{}> not found'.format(car_uid))
             return
 
-
         action = self.get_argument('action', '')
+
+        if action == 'del_inventory_item':
+            item_uid = self.get_argument('item_uid', "")
+            item = item_uid and car.inventory.get_item_by_uid(uuid.UUID(item_uid))
+            if item:
+                car.inventory.items.remove(item)
+                agent.save()
+                self.finish('Item <{}> deleted.'.format(item))
+            else:
+                self.finish('Item with uid <{}> not found.'.format(item_uid))
+            return
+
+        if action in {'del_weapon_item', 'del_mechanic_item', 'del_tuner_item'}:
+            item_uid = self.get_argument('item_uid', "")
+            slot_name = item_uid and car.get_slot_name_by_item(item_uid=uuid.UUID(item_uid))
+            item = slot_name and getattr(car, slot_name, None)
+            if item and slot_name:
+                setattr(car, slot_name, None)
+                agent.save()
+                self.finish('Item <{}> deleted from slot: {}.'.format(item, slot_name))
+            else:
+                self.finish('Item with uid <{}> not found.'.format(item_uid))
+            return
 
         self.finish('OK')
