@@ -211,3 +211,17 @@ class AdmAgentQuestsInventoryHandler(AdmAgentInfoHandler):
             return
 
         self.finish('OK')
+
+
+class AdmAgentNPCRelationsHandler(AdmAgentInfoHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        username = self.get_argument("username", "")
+        server = self.application.srv
+        user = self.get_user(username=username)
+        agent = user and self.get_agent(user)
+        if user and agent:
+            self.render("adm/npc_relations.html", user=user, agent=agent.profile, server=server)
+        else:
+            self.send_error(404)
+

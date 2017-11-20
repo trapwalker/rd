@@ -5,7 +5,9 @@ from sublayers_server.handlers.adm_api.srv_control import ServerSaveHandler, Ser
 from sublayers_server.handlers.adm_api.user_control import UserStatusHandler, UserAccessLevelSetup
 from sublayers_server.handlers.adm_api.html_adms_base import AdmFindUsers, AdmMain
 from sublayers_server.handlers.adm_api.html_adms_agents import (AdmUserInfoHandler, AdmAgentInfoHandler,
-                                                                AdmAgentQuestsInfoHandler, AdmAgentQuestsInventoryHandler)
+                                                                AdmAgentQuestsInfoHandler,
+                                                                AdmAgentQuestsInventoryHandler,
+                                                                AdmAgentNPCRelationsHandler)
 from sublayers_server.handlers.adm_api.html_adms_cars import AdmCarInfoHandler
 
 
@@ -23,6 +25,7 @@ handlers = [
     (r"/adm/api/html/agent_info_quests", AdmAgentQuestsInfoHandler,),
     (r"/adm/api/html/agent_info_quests_inventory", AdmAgentQuestsInventoryHandler,),
     (r"/adm/api/html/car_info", AdmCarInfoHandler,),
+    (r"/adm/api/html/npc_relations", AdmAgentNPCRelationsHandler,),
 
 
 ]
