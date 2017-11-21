@@ -329,7 +329,7 @@
 /*DamageMapWeaponQuestNote*/
 .note-class-img.damage-map-weapon-class-quest {
     height: 116px;
-    background: url(../img/quests/notes/class_notes/barter_success.png) no-repeat center;
+    background: url(../img/quests/notes/class_notes/damage_map_weapon.png) no-repeat center;
 }
 .note-class-text.damage-map-weapon-class-quest {
     height: calc(100% - 116px);
