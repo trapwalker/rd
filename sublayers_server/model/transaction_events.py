@@ -329,11 +329,13 @@ class TransactionBuyInsurance(TransactionEvent):
             # Продлить страховку
             agent_insurance.prolong(delta=target_insurance.deadline)
             example_agent.profile.change_quest_inventory(event=self)  # Отправить мессадж об изменении квестового инвентаря
+            self.agent.adm_log(type="insurance", text="prolong insurance: {}  => {}".format(agent_insurance, target_insurance.deadline))
         else:
             # Заменить страховку
             # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
             new_insurance = target_insurance.instantiate()
             example_agent.profile.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
+            self.agent.adm_log(type="insurance", text="new insurance: {}".format(new_insurance))
         messages.UserExampleChangeInsurance(agent=self.agent, time=self.time).post()
 
 

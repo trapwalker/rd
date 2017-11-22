@@ -554,12 +554,14 @@ class AgentAPI(API):
         assert description is None or isinstance(description, unicode)
         assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("send_create_party_from_template name={!r}".format(name))
+        self.agent.adm_log(type="party", text="send_create_party_from_template name={!r}".format(name))
         self.set_party(name=name, description=description, exp_share_type=exp_share_type)
 
     @public_method
     def send_join_party_from_template(self, name):
         assert name is None or isinstance(name, unicode)
         self.agent.log.info("send_join_party_from_template name={!r}".format(name))
+        self.agent.adm_log(type="party", text="send_join_party_from_template name={!r}".format(name))
         self.set_party(name=name)
 
     @public_method
@@ -569,6 +571,7 @@ class AgentAPI(API):
         assert description is None or isinstance(description, unicode)
         assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("set_party name={!r}".format(name))
+        self.agent.adm_log(type="party", text="set_party name={!r}".format(name))
         SetPartyEvent(agent=self.agent, name=name, description=description, exp_share_type=exp_share_type,
                       time=self.agent.server.get_time()).post()
 
@@ -612,6 +615,7 @@ class AgentAPI(API):
         if not self.agent.party:
             return
         self.agent.log.info("change_party_share_option party={}".format(self.agent.party))
+        self.agent.adm_log(type="party", text="change_party_share_option party={}".format(self.agent.party))
         self.agent.party.change_share_option(time=self.agent.server.get_time(), share_exp=share_exp, agent=self.agent)
 
     @public_method

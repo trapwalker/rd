@@ -29,7 +29,7 @@ from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
 from sublayers_server.model.utils import NameGenerator
 from sublayers_common.site_locale import locale
-
+from sublayers_common.adm_mongo_logs import AdminLogRecord
 
 from ctx_timer import Timer
 from tornado.options import options
@@ -70,6 +70,7 @@ class Agent(Object):
                 raise Exception(text='Not uniq agent name')
 
         self._logger = self.setup_logger()
+        self._adm_logs = []  # Список логов для сохранения в базу при сохранении агента
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -154,6 +155,10 @@ class Agent(Object):
     @property
     def log(self):
         return self._logger
+
+    def adm_log(self, type, text):
+        if self.user:
+            AdminLogRecord(user=self.user, type=type, text=text).post(server=self.server)
 
     def setup_logger(self, level=logging.ERROR):
         from sublayers_server.log_setup import (
@@ -250,7 +255,17 @@ class Agent(Object):
             # agent_example.delete()  # TODO: Добиться правильного пересохранения агента
             agent_example.save()
             #agent_example.save(force_insert=True)
-            log.debug('Agent %r saved (%.4fs)', agent_example.login, tm.duration)
+
+            # Сохранение накопленных логов
+            with Timer() as tmlogs:
+                for l in self._adm_logs:
+                    l.post()  # post without params = save to db
+                    log.info('post: {}'.format(l))
+                self._adm_logs = []
+
+            log.debug('Agent %r saved (%.4fs): logs: %.4fs', agent_example.login, tm.duration, tmlogs.duration)
+
+
 
     @property
     def is_online(self):
@@ -363,7 +378,9 @@ class Agent(Object):
         return connection_delay
 
     def on_connect(self, connection):
-        self.log.info('on_connect {}'.format(connection))
+        self.log.info('on_connect {}'.format(connection.request.remote_ip))
+        self.adm_log(type="connect", text='on_connect IP: {}'.format(connection.request.remote_ip))
+
         self.connection = connection
         time = self.server.get_time()
         if self._disconnect_timeout_event:
@@ -691,6 +708,10 @@ class Agent(Object):
         # пары node_hash и кол-во
         if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
             InventoryChangeLogMessage(agent=self, time=event.time, **diff_inventories).post()
+            if diff_inventories.get('incomings', None):
+                self.adm_log(type='inventory', text="inc: {}".format(diff_inventories['incomings']))
+            if diff_inventories.get('outgoings', None):
+                self.adm_log(type='inventory', text="out: {}".format(diff_inventories['outgoings']))
 
         self.example.profile.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
