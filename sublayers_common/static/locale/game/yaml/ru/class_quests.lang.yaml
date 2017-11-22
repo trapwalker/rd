@@ -146,6 +146,7 @@
 "q_cq_inv_attack_replica_not_finish": "Ещё не атакованы все"
 "q_cq_inv_attack_finished": "Квест завершён"
 "q_cq_inv_attack_task_text": "(Ночной ездок) провести 10 внезапных атак."
+"q_cq_inv_attack_phrase_success": "Отлично, ты скрытно нанес удар! продолжай в том же дукхе :)"
 
 # ClassQuestPartyMembers
 "q_cq_party_members_started": "Квест начат"
@@ -155,6 +156,7 @@
 "q_cq_party_members_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_party_members_finished": "Квест завершён"
 "q_cq_party_members_task_text": "(Альфа-волк) собрать пати из 5 человек."
+"q_cq_party_members_phrase_success": "Отлично, ты собрал банду! продолжай в том же дукхе :)"
 
 
 # ClassQuestBarterCount
@@ -167,6 +169,7 @@
 "q_cq_barters_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_barters_finished": "Квест завершён"
 "q_cq_barters_task_text": "(Нефтяной Магнат) совершить 3 бартеров с разными игроками."
+"q_cq_barters_phrase_success": "Отлично, обмен состоялся! продолжай в том же дукхе :)"
 
 
 # ClassQuestSetMapWeapon
@@ -179,6 +182,7 @@
 "q_cq_set_map_weapon_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_set_map_weapon_finished": "Квест завершён"
 "q_cq_set_map_weapon_task_text": "(Механик) установить 20 инженерных конструкций: мин, радаров, турелей."
+"q_cq_set_map_weapon_phrase_success": "Отлично, орудия установлены! продолжай в том же дукхе :)"
 
 
 # ClassQuestDamageMapWeapon
@@ -191,6 +195,7 @@
 "q_cq_dmg_map_weapon_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_dmg_map_weapon_finished": "Квест завершён"
 "q_cq_dmg_map_weapon_task_text": "(Воин дорог) произвести 10 попаданий ракетами."
+"q_cq_dmg_map_weapon_phrase_success": "Отлично! продолжай в том же дукхе :)"
 
 # ClassQuestNPCsTasksComplete
 "q_cq_npc_tasks_add_one": |
@@ -217,3 +222,4 @@
 "q_cq_karmic_task_text": |
   Мизантропы привели человечество к сегодняшнему состоянию, поэтому я не питаю симпатий к разного рода грабителям, убийцам и прочим отбросам пустоши. Я учу тебя, чтобы ты совершал великие поступки во имя выживания человеческого вида. У каждого человека есть карма или репутация. Карма падает и растет от твоих действий, таких как прохождение заданий или уничтожение других водителей. Кроме этого, карму можно поднять, жертвуя деньги поселениям. Низкая карма сделает тебя более заметным для остальных, города будут назначать награду за твою голову, а у твоих убийц карма снижаться не будет.
   Возвращайся, когда повысишь свою карму до:
+"q_cq_karmic_phrase_success": "Молодец, ты крамически великолепен!"
