@@ -26,6 +26,8 @@ handlers = [
     (r"/adm/api/html/agent_info_quests_inventory", AdmAgentQuestsInventoryHandler,),
     (r"/adm/api/html/car_info", AdmCarInfoHandler,),
     (r"/adm/api/html/npc_relations", AdmAgentNPCRelationsHandler,),
+    (r"/adm/api/html/gamelogs", AdmUserHystoryHandler,),
+
 
 
 ]

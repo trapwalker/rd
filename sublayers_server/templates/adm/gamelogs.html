@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>History: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+{% include "agent_menu_template.html" %}
+
+
+<div class="container">
+    <h3>History: {{ user.name }}</h3>
+    <div class="row">
+        <table class="table table-sm table-striped table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Type</th>
+                <th scope="col">Time</th>
+                <th scope="col">Text</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% import datetime %}
+            {% for record in adm_logs %}
+            <tr>
+                <td>{{ record.type }}</td>
+                <td>{{ record.created.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                <td>{{ record.text }}</td>
+            </tr>
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="display: None">
+     <div id="data-username">{{ user.name }}</div>
+</div>
+
+</body>
+</html>

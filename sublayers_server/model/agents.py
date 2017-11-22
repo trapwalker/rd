@@ -260,7 +260,6 @@ class Agent(Object):
             with Timer() as tmlogs:
                 for l in self._adm_logs:
                     l.post()  # post without params = save to db
-                    log.info('post: {}'.format(l))
                 self._adm_logs = []
 
             log.debug('Agent %r saved (%.4fs): logs: %.4fs', agent_example.login, tm.duration, tmlogs.duration)
@@ -379,7 +378,7 @@ class Agent(Object):
 
     def on_connect(self, connection):
         self.log.info('on_connect {}'.format(connection.request.remote_ip))
-        self.adm_log(type="connect", text='on_connect IP: {}'.format(connection.request.remote_ip))
+        self.adm_log(type="connect", text='Connect IP: {}'.format(connection.request.remote_ip))
 
         self.connection = connection
         time = self.server.get_time()
@@ -405,6 +404,7 @@ class Agent(Object):
             self.log.info('on_disconnect {}'.format(connection))
             timeout = options.disconnect_timeout
             log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
+            self.adm_log(type="connect", text='Disconnect IP: {}'.format(connection.request.remote_ip))
             # todo: Измерять длительность подключения ##defend ##realize
             t = self.server.get_time()
             self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)

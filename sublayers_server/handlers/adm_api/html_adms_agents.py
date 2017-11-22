@@ -11,6 +11,9 @@ from sublayers_common.user_profile import User
 from datetime import datetime, timedelta
 
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.adm_mongo_logs import AdminLogRecord
+
+from ctx_timer import Timer
 
 import uuid
 
@@ -225,3 +228,28 @@ class AdmAgentNPCRelationsHandler(AdmAgentInfoHandler):
         else:
             self.send_error(404)
 
+
+class AdmUserHystoryHandler(AdmEngineHandler):
+    def get(self):
+        self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
+        username = self.get_argument("username", "")
+        server = self.application.srv
+        user = self.get_user(username=username)
+        if user:
+            types = filter(lambda x: x, self.get_argument("types", "").split('.'))
+            limit = int(self.get_argument("limit", 20))
+
+            with Timer() as tm:
+                if types:
+                    adm_logs = AdminLogRecord.objects.filter(user_uid=str(user.pk),
+                                                             type__in=types).order_by('-created').limit(limit)
+                else:
+                    adm_logs = AdminLogRecord.objects.filter(user_uid=str(user.pk)).order_by('-created').limit(limit)
+
+            if tm.duration > 0.3:
+                log.debug('Warning! AdmUserHystoryHandler works %.4fs', tm.duration)
+                # info: если это будет возникать часто, то заменить на обычное обращение к монге через collection.find
+
+            self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs)
+        else:
+            self.send_error(404)
