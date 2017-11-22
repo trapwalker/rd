@@ -41,7 +41,7 @@
 "q_cq_masking_text": "И я знаю, где найти штуку, которая тебе действительно понравится. Она спрятана в тайнике. Но он хорошо защищен. Я знаю парня, который оставил этот тайник, лезть напролом там точно бесполезно. Но если прокрасться мимо охранной турели, используя свою скрытность - может получиться. Когда будешь рядом с тайником - сбавь скорость, чтобы стать менее заметным и держись подальше от турели."
 "q_cq_masking_replica_not_finish": "Возвращайся когда добудешь артефакт!"
 "q_cq_masking_warning": "Вы вьезжаете в опасную область. Снизьте скорость ниже 20 км/ч!"
-"q_cq_masking_phrase_success": "Хорошо, ученик. Теперь тебе нужно посетить города."
+"q_cq_masking_phrase_success": "Продолжим..."
 
 
 # Common Text
@@ -77,7 +77,8 @@
 "q_cq_kills_started": "Начат квест"
 "q_cq_kills_finished_page": "Займись делом!"
 "q_cq_kills_finished_btn": "<br>Далее"
-"q_cq_kills_replica_not_finish": "Ещё не убиты все"
+"q_cq_kills_replica_not_finish": |
+  Не достаточное количествой убийств!<br>Статистика: {{complete}}/{{count}}
 "q_cq_kills_finished": "Квест завершён"
 "q_cq_kills_target_killed": "убит"
 "q_cq_kills_back_to_teacher": "Возвращайтесь к наставнику"
@@ -89,7 +90,8 @@
 "q_cq_party_exp_started": "Квест начат"
 "q_cq_party_exp_finished_page": "Займись делом!"
 "q_cq_party_exp_finished_btn": "<br>Далее"
-"q_cq_party_exp_replica_not_finish": "Вы накопили не достаточное количество опыта."
+"q_cq_party_exp_replica_not_finish": |
+  Вы накопили не достаточное количество опыта.<br>Статистика: {{xp}}/{{max_exp}}
 "q_cq_party_exp_done_text": "Опыта достаточно. Вернитесь к наставнику."
 "q_cq_party_exp_finished": "Квест завершён"
 "q_cq_party_exp_one_template": |
@@ -100,7 +102,7 @@
 
 # ClassQuestSetMechanicItems
 "q_cq_mech_items_replica_not_fin": |
-    Всё ещё недостаточно айтемов. Осталось: {{ '{:.0f}'.format(left) }}.
+    Всё ещё недостаточно айтемов.<br>Статистика: {{complete}}/{{count}}.
 "q_cq_mech_items_started": "Квест начат"
 "q_cq_mech_items_finished_page": "Займись делом!"
 "q_cq_mech_items_finished_btn": "<br>Далее"
@@ -115,7 +117,8 @@
 "q_cq_shadowing_started": "Начало квеста Слежка"
 "q_cq_shadowing_finished_page": "Займись делом!"
 "q_cq_shadowing_finished_btn": "<br>Далее"
-"q_cq_shadowing_replica_not_finish": "Мало слежек!"
+"q_cq_shadowing_replica_not_finish": |
+  Выполните достаточное количество слежек!<br>Осуществленное количество слежек: {{complete}}/{{count}}
 "q_cq_shadowing_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_shadowing_finished": "Квест завершён"
 "q_cq_shadowing_task_text": "Ночной ездок – соверши 3 слежеки по 1 минуте, оставаясь незамеченным."
@@ -143,7 +146,8 @@
 "q_cq_inv_attack_done": "Атаки завершены. Вернитесь к наставнику."
 "q_cq_inv_attack_finished_page": "Займись делом! #2"
 "q_cq_inv_attack_finished_btn": "<br>Далее"
-"q_cq_inv_attack_replica_not_finish": "Ещё не атакованы все"
+"q_cq_inv_attack_replica_not_finish": |
+  Вы атаковали не достаточное количество раз!<br>Количество атак: {{attack_done}}/{{attack_count}}
 "q_cq_inv_attack_finished": "Квест завершён"
 "q_cq_inv_attack_task_text": "(Ночной ездок) провести 10 внезапных атак."
 "q_cq_inv_attack_phrase_success": "Отлично, ты скрытно нанес удар! продолжай в том же дукхе :)"
@@ -165,7 +169,8 @@
 "q_cq_barters_started": "Квест начат"
 "q_cq_barters_finished_page": "Займись делом! #2"
 "q_cq_barters_finished_btn": "<br>Далее"
-"q_cq_barters_replica_not_finish": "Ещё на совершено нужное кол-во бартеров"
+"q_cq_barters_replica_not_finish": |
+  Не достаточное количество бартеров!<br>Статистика: {{complete}}/{{count}}
 "q_cq_barters_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_barters_finished": "Квест завершён"
 "q_cq_barters_task_text": "(Нефтяной Магнат) совершить 3 бартеров с разными игроками."
@@ -178,7 +183,8 @@
 "q_cq_set_map_weapon_started": "Квест начат"
 "q_cq_set_map_weapon_finished_page": "Займись делом! #2"
 "q_cq_set_map_weapon_finished_btn": "<br>Далее"
-"q_cq_set_map_weapon_replica_not_finish": "Поставлено недостаточно мин и турелей"
+"q_cq_set_map_weapon_replica_not_finish": |
+  Установлено не достаточное количество инженерных конструкций!<br>Статистика: {{complete}}/{{count}}
 "q_cq_set_map_weapon_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_set_map_weapon_finished": "Квест завершён"
 "q_cq_set_map_weapon_task_text": "(Механик) установить 20 инженерных конструкций: мин, радаров, турелей."
@@ -191,7 +197,8 @@
 "q_cq_dmg_map_weapon_started": "Квест начат"
 "q_cq_dmg_map_weapon_finished_page": "Займись делом! #2"
 "q_cq_dmg_map_weapon_finished_btn": "<br>Далее"
-"q_cq_dmg_map_weapon_replica_not_finish": "Произведено недостаточно атак"
+"q_cq_dmg_map_weapon_replica_not_finish": |
+  Произведено недостаточно атак!<br>Статистика: {{compete}}/{{count}}
 "q_cq_dmg_map_weapon_back_to_teacher": "Вернитесь к наставнику"
 "q_cq_dmg_map_weapon_finished": "Квест завершён"
 "q_cq_dmg_map_weapon_task_text": "(Воин дорог) произвести 10 попаданий ракетами."
@@ -222,4 +229,5 @@
 "q_cq_karmic_task_text": |
   Мизантропы привели человечество к сегодняшнему состоянию, поэтому я не питаю симпатий к разного рода грабителям, убийцам и прочим отбросам пустоши. Я учу тебя, чтобы ты совершал великие поступки во имя выживания человеческого вида. У каждого человека есть карма или репутация. Карма падает и растет от твоих действий, таких как прохождение заданий или уничтожение других водителей. Кроме этого, карму можно поднять, жертвуя деньги поселениям. Низкая карма сделает тебя более заметным для остальных, города будут назначать награду за твою голову, а у твоих убийц карма снижаться не будет.
   Возвращайся, когда повысишь свою карму до:
+"q_cq_karmic_phrase_to_be_continued": "Продолжение следует!"
 "q_cq_karmic_phrase_success": "Молодец, ты крамически великолепен!"
