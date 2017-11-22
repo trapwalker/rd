@@ -5,7 +5,7 @@ from sublayers_server.handlers.adm_api.srv_control import ServerSaveHandler, Ser
 from sublayers_server.handlers.adm_api.user_control import UserStatusHandler, UserAccessLevelSetup
 from sublayers_server.handlers.adm_api.html_adms_base import AdmFindUsers, AdmMain
 from sublayers_server.handlers.adm_api.html_adms_agents import (AdmUserInfoHandler, AdmAgentInfoHandler,
-                                                                AdmAgentQuestsInfoHandler,
+                                                                AdmAgentQuestsInfoHandler, AdmUserHystoryHandler,
                                                                 AdmAgentQuestsInventoryHandler,
                                                                 AdmAgentNPCRelationsHandler)
 from sublayers_server.handlers.adm_api.html_adms_cars import AdmCarInfoHandler
