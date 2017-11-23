@@ -225,7 +225,7 @@ var QuestMTMapMarkerNote = (function (_super) {
         // Отрисовка круга и текста, если нота находится в фокусе
         if (mapManager.getZoom() > 15 && this.radius > 0) {
             // Если мы в зумировании, то рисовать круг с прозрачностью
-            var opacity = mapCanvasManager.real_zoom - 15.;
+            var opacity = mapCanvasManager.real_zoom - 14.;
             opacity = Math.max(Math.min(1, opacity), 0);
             opacity *= 0.5; // Max opacity
             ctx.save();
@@ -240,7 +240,7 @@ var QuestMTMapMarkerNote = (function (_super) {
             var timePercent = ((timeFormated-this.timeRadarAnimateStart)/timeOnePercent).toFixed();//текущая позиция во времени анимации
             var canvasMapRadius = (this.radius / mapCanvasManager.zoom_koeff).toFixed(5);
             var canvasMapRadiusOnePercent = canvasMapRadius/100;//1% от радиуса турели
-            var canvasInPercent = (this.canvasMapRadarRadiusMiddle/100)*3;//скорость изменения внутреннего радиуса
+            var canvasInPercent = (this.canvasMapRadarRadiusMiddle/100)*15;//скорость изменения внутреннего радиуса
             var canvasOutPercent = (this.canvasMapRadarRadiusMiddle/100)*2;//скорость изменения внешнего радиума
             var canvasMapRadiusIn = this.canvasMapRadarRadiusMiddle-canvasMapRadiusOnePercent*canvasInPercent;//внутренний радиус
             var canvasMapRadiusOut = this.canvasMapRadarRadiusMiddle+canvasMapRadiusOnePercent*canvasOutPercent;//внешний радиус
@@ -249,16 +249,18 @@ var QuestMTMapMarkerNote = (function (_super) {
 
             this.canvasMapRadarRadiusMiddle = Math.abs((Math.round(canvasMapRadiusOnePercent*timePercent))+this.canvasMapRadarRadiusMin);
             this.canvasMapOpacity = (timePercent/100 > 1)? 1 : timePercent/100;
+            this.canvasMapOpacity = Math.acos(this.canvasMapOpacity)/2;
 
             ctx.arc(0, 0, canvasMapRadius, 0, 2 * Math.PI);
             var grd=ctx.createRadialGradient(0, 0, canvasMapRadiusIn, 0, 0, canvasMapRadiusOut);
             //градинт эмитирующий волну
             grd.addColorStop(0,"rgba(0,0,0, 0)");
-            grd.addColorStop(0.1,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.1)+")");
-            grd.addColorStop(0.4,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.2)+")");
-            grd.addColorStop(0.7,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.6)+")");
-            grd.addColorStop(0.8,"rgba(100, 255, 211, "+((0.9-this.canvasMapOpacity)*0.9)+")");
-            grd.addColorStop(0.9,"rgba(0, 255, 161, "+((0.9-this.canvasMapOpacity)*0.8)+")");
+            grd.addColorStop(0.05,"rgba(0, 175, 60, "+(this.canvasMapOpacity*0.05)+")");
+            grd.addColorStop(0.1,"rgba(0, 195, 80, "+(this.canvasMapOpacity*0.1)+")");
+            grd.addColorStop(0.4,"rgba(0, 215, 100, "+(this.canvasMapOpacity*0.2)+")");
+            grd.addColorStop(0.7,"rgba(0, 235, 120, "+(this.canvasMapOpacity*0.4)+")");
+            grd.addColorStop(0.9,"rgba(50, 255, 161, "+(this.canvasMapOpacity*0.6)+")");
+            grd.addColorStop(0.97,"rgba(0, 235, 120, "+(this.canvasMapOpacity*0.4)+")");
             grd.addColorStop(1,"rgba(0,0,0, 0)");
             ctx.fillStyle = grd;
 
