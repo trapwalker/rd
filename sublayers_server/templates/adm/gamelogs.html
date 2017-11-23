@@ -32,7 +32,7 @@
       </span>
     </div>
     <div class="row">
-        {% for type in ['inventory', 'connect', 'barter', 'party'] %}
+        {% for type in all_types %}
         <button type="button" class="btn btn-primary" onclick="ToggleTypeClick(event)" data-type="{{ type }}">{{ type }}</button>
         {% end %}
     </div>

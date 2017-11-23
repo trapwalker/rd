@@ -20,6 +20,10 @@ class AdminLogRecord(Document):
     def __str__(self):
         return '{self.user_uid}({self.type}|{self.created}): {self.text}'.format(self=self)
 
+    @classmethod
+    def all_used_types(cls):
+        return cls.objects.distinct('type')
+
     def as_dict(self):
         return dict(user_uid=self.user_uid,
                     created=self.created.strftime("%Y-%m-%d %H:%M:%S"),

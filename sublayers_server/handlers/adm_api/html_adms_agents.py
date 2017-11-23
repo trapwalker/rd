@@ -230,6 +230,8 @@ class AdmAgentNPCRelationsHandler(AdmAgentInfoHandler):
 
 
 class AdmUserHystoryHandler(AdmEngineHandler):
+    all_types = AdminLogRecord.all_used_types()
+
     def get_adm_logs(self, user):
         types = filter(lambda x: x, self.get_argument("types", "").split('.'))
         limit = int(self.get_argument("limit", 100))
@@ -258,7 +260,6 @@ class AdmUserHystoryHandler(AdmEngineHandler):
             # info: если это будет возникать часто, то заменить на обычное обращение к монге через collection.find
         return adm_logs
 
-
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
         username = self.get_argument("username", "")
@@ -266,7 +267,7 @@ class AdmUserHystoryHandler(AdmEngineHandler):
         user = self.get_user(username=username)
         if user:
             adm_logs = self.get_adm_logs(user)
-            self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs)
+            self.render("adm/gamelogs.html", user=user, server=server, all_types=self.all_types, adm_logs=adm_logs)
         else:
             self.send_error(404)
 
