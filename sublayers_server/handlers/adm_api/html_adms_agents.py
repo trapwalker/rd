@@ -230,38 +230,51 @@ class AdmAgentNPCRelationsHandler(AdmAgentInfoHandler):
 
 
 class AdmUserHystoryHandler(AdmEngineHandler):
+    def get_adm_logs(self, user):
+        types = filter(lambda x: x, self.get_argument("types", "").split('.'))
+        limit = int(self.get_argument("limit", 100))
+        dstart_sec = int(self.get_argument("ds", 0))
+        dfin_sec = int(self.get_argument("df", 0))
+
+        ds = dstart_sec and datetime.fromtimestamp(dstart_sec)
+        df = dfin_sec and datetime.fromtimestamp(dfin_sec)
+
+        if ds and df:
+            ds, df = min(ds, df), max(ds, df)
+
+        query = dict(user_uid=str(user.pk))
+        if types:
+            query.update(type__in=types)
+        if ds:
+            query.update(created__gte=ds)
+        if df:
+            query.update(created__lte=df)
+
+        with Timer() as tm:
+            adm_logs = AdminLogRecord.objects.filter(**query).order_by('-created').limit(limit)
+
+        if tm.duration > 0.3:
+            log.warning('Warning! AdmUserHystoryHandler works %.4fs  for query: %s', tm.duration, query)
+            # info: если это будет возникать часто, то заменить на обычное обращение к монге через collection.find
+        return adm_logs
+
+
     def get(self):
         self.xsrf_token  # info: Вызывается, чтобы положить в куку xsrf_token - странно!
         username = self.get_argument("username", "")
         server = self.application.srv
         user = self.get_user(username=username)
         if user:
-            types = filter(lambda x: x, self.get_argument("types", "").split('.'))
-            limit = int(self.get_argument("limit", 20))
-            dstart_sec = int(self.get_argument("ds", 0))
-            dfin_sec = int(self.get_argument("df", 0))
+            adm_logs = self.get_adm_logs(user)
+            self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs)
+        else:
+            self.send_error(404)
 
-            ds = dstart_sec and datetime.fromtimestamp(dstart_sec)
-            df = dfin_sec and datetime.fromtimestamp(dfin_sec)
-
-            if ds and df:
-                ds, df = min(ds, df), max(ds, df)
-
-            query = dict(user_uid=str(user.pk))
-            if types:
-                query.update(type__in=types)
-            if ds:
-                query.update(created__gte=ds)
-            if df:
-                query.update(created__lte=df)
-
-            with Timer() as tm:
-                adm_logs = AdminLogRecord.objects.filter(**query).order_by('-created').limit(limit)
-
-            if tm.duration > 0.3:
-                log.warning('Warning! AdmUserHystoryHandler works %.4fs  for query: %s', tm.duration, query)
-                # info: если это будет возникать часто, то заменить на обычное обращение к монге через collection.find
-
-            self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs, df=dstart_sec, ds=dfin_sec)
+    def post(self):
+        username = self.get_argument("username", "")
+        user = self.get_user(username=username)
+        if user:
+            adm_logs = self.get_adm_logs(user)
+            self.finish(dict(adm_logs=[l.as_dict() for l in adm_logs]))
         else:
             self.send_error(404)

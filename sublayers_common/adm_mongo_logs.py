@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import datetime
-from mongoengine import Document, StringField, DateTimeField, UUIDField
+from mongoengine import Document, StringField, DateTimeField
 
 
 class AdminLogRecord(Document):
@@ -19,6 +19,13 @@ class AdminLogRecord(Document):
 
     def __str__(self):
         return '{self.user_uid}({self.type}|{self.created}): {self.text}'.format(self=self)
+
+    def as_dict(self):
+        return dict(user_uid=self.user_uid,
+                    created=self.created.strftime("%Y-%m-%d %H:%M:%S"),
+                    type=self.type,
+                    text=self.text,
+                    )
 
     def post(self, server=None):
         agent = server and server.agents.get(self.user_uid, None)

@@ -37,7 +37,6 @@
         {% end %}
     </div>
     <div class="row">
-        {% if adm_logs %}
         <table class="table table-sm table-striped table-hover">
             <thead class="thead-light">
             <tr>
@@ -46,20 +45,21 @@
                 <th scope="col">Text</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="logtable">
             {% import datetime %}
-            {% for record in adm_logs %}
-            <tr>
-                <td>{{ record.type }}</td>
-                <td>{{ record.created.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-                <td>{{ record.text }}</td>
-            </tr>
-            {% end %}
+            {% if adm_logs %}
+                {% for record in adm_logs %}
+                <tr>
+                    <td>{{ record.type }}</td>
+                    <td>{{ record.created.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                    <td>{{ record.text }}</td>
+                </tr>
+                {% end %}
             </tbody>
+            {% else %}
+            <h3> No Results </h3>
+            {% end %}
         </table>
-        {% else %}
-        <h3>No Results </h3>
-        {% end %}
     </div>
 </div>
 
@@ -69,6 +69,13 @@
 
 
 <script>
+
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
 
     function ToggleTypeClick(event) {
         var type = $(event.target).data("type");
@@ -97,18 +104,44 @@
         var search = "?username=" + user_name + '&types=' + types;
         if (ds) search = search + '&ds=' + ds;
         if (df) search = search + '&df=' + df;
-        location = location.origin + location.pathname + search;
+        console.log("search link: ", location.origin + location.pathname + search);
+        // location = location.origin + location.pathname + search;
+
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: user_name,
+                types: types,
+                ds: ds || 0,
+                df: df || 0,
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) {
+                console.log(data);
+                var jq_table = $('#logtable');
+                jq_table.empty();
+                if (data.adm_logs && data.adm_logs.length)
+                    for (var i = 0; i < data.adm_logs.length; i++)
+                        jq_table.append(
+                            "<tr>\n" +
+                            "   <td>" + data.adm_logs[i].type + "</td>" +
+                            "   <td>" + data.adm_logs[i].created + "</td>"+
+                            "   <td>" + data.adm_logs[i].text + "</td>"+
+                            "</tr>"
+                        )
+                else {
+                    jq_table.append("<h3> No Results </h3>")
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+
     }
 
     // todo: При загрузке документа проанализировать location.search и выставить проэмулировать нажатие кнопок текущих выбранных типов
+    $(document).ready(function () {});
 
-    document.onload = function () {
-        {% if ds %}
-        var ds = new Date({{ ds * 1000 }}).toISOString();
-        $('#date_start').val(ds);
-        {% end %}
-        {% if df %}$('#date_finish').val(new Date({{ df * 1000 }})); {% end %}
-    }
 
 </script>
 
