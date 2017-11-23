@@ -247,7 +247,7 @@ class AdmUserHystoryHandler(AdmEngineHandler):
                     adm_logs = AdminLogRecord.objects.filter(user_uid=str(user.pk)).order_by('-created').limit(limit)
 
             if tm.duration > 0.3:
-                log.debug('Warning! AdmUserHystoryHandler works %.4fs', tm.duration)
+                log.warning('Warning! AdmUserHystoryHandler works %.4fs', tm.duration)
                 # info: если это будет возникать часто, то заменить на обычное обращение к монге через collection.find
 
             self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs)

@@ -17,7 +17,21 @@
 
 <div class="container">
     <h3>History: {{ user.name }}</h3>
+    <div class="row input-group">
+        <input type="text" id="types" class="form-control" value="" placeholder=""
+               aria-label="">
+        <span class="input-group-btn">
+        <button class="btn btn-secondary" type="button"
+                onclick="GoFind()">Find</button>
+      </span>
+    </div>
     <div class="row">
+        {% for type in ['inventory', 'connect', 'barter', 'party'] %}
+        <button type="button" class="btn btn-primary" onclick="ToggleTypeClick(event)" data-type="{{ type }}">{{ type }}</button>
+        {% end %}
+    </div>
+    <div class="row">
+        {% if adm_logs %}
         <table class="table table-sm table-striped table-hover">
             <thead class="thead-light">
             <tr>
@@ -37,12 +51,46 @@
             {% end %}
             </tbody>
         </table>
+        {% else %}
+        <h3>No Results </h3>
+        {% end %}
     </div>
 </div>
 
 <div style="display: None">
      <div id="data-username">{{ user.name }}</div>
 </div>
+
+
+<script>
+
+    function ToggleTypeClick(event) {
+        var type = $(event.target).data("type");
+        var jq_types = $("#types").first();
+        var types = jq_types.val().split('.');
+        var index = types.indexOf(type);
+        if (index >= 0){
+            types.splice(index, 1);
+            $(event.target).removeClass('btn-success');
+        }
+        else {
+            types.push(type);
+            $(event.target).addClass('btn-success');
+        }
+        types = types.filter(function (x) {return x != ""});
+        jq_types.val(types.join('.'));
+    }
+
+    function GoFind() {
+        var user_name = $("#data-username").text();
+        var types = $("#types").val();
+        location = location.origin + location.pathname + "?username=" + user_name + '&types=' + types;
+    }
+
+    // todo: При загрузке документа проанализировать location.search и выставить проэмулировать нажатие кнопок текущих выбранных типов
+
+
+</script>
 
 </body>
 </html>
