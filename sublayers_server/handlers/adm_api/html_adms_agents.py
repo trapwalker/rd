@@ -238,18 +238,30 @@ class AdmUserHystoryHandler(AdmEngineHandler):
         if user:
             types = filter(lambda x: x, self.get_argument("types", "").split('.'))
             limit = int(self.get_argument("limit", 20))
+            dstart_sec = int(self.get_argument("ds", 0))
+            dfin_sec = int(self.get_argument("df", 0))
+
+            ds = dstart_sec and datetime.fromtimestamp(dstart_sec)
+            df = dfin_sec and datetime.fromtimestamp(dfin_sec)
+
+            if ds and df:
+                ds, df = min(ds, df), max(ds, df)
+
+            query = dict(user_uid=str(user.pk))
+            if types:
+                query.update(type__in=types)
+            if ds:
+                query.update(created__gte=ds)
+            if df:
+                query.update(created__lte=df)
 
             with Timer() as tm:
-                if types:
-                    adm_logs = AdminLogRecord.objects.filter(user_uid=str(user.pk),
-                                                             type__in=types).order_by('-created').limit(limit)
-                else:
-                    adm_logs = AdminLogRecord.objects.filter(user_uid=str(user.pk)).order_by('-created').limit(limit)
+                adm_logs = AdminLogRecord.objects.filter(**query).order_by('-created').limit(limit)
 
             if tm.duration > 0.3:
-                log.warning('Warning! AdmUserHystoryHandler works %.4fs', tm.duration)
+                log.warning('Warning! AdmUserHystoryHandler works %.4fs  for query: %s', tm.duration, query)
                 # info: если это будет возникать часто, то заменить на обычное обращение к монге через collection.find
 
-            self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs)
+            self.render("adm/gamelogs.html", user=user, server=server, adm_logs=adm_logs, df=dstart_sec, ds=dfin_sec)
         else:
             self.send_error(404)

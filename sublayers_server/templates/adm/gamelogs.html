@@ -18,6 +18,12 @@
 <div class="container">
     <h3>History: {{ user.name }}</h3>
     <div class="row input-group">
+        <input type="datetime-local" id="date_start" class="form-control" value="" placeholder=""
+               aria-label="">
+        <input type="datetime-local" id="date_finish" class="form-control" value="" placeholder=""
+               aria-label="">
+    </div>
+    <div class="row input-group">
         <input type="text" id="types" class="form-control" value="" placeholder=""
                aria-label="">
         <span class="input-group-btn">
@@ -84,11 +90,25 @@
     function GoFind() {
         var user_name = $("#data-username").text();
         var types = $("#types").val();
-        location = location.origin + location.pathname + "?username=" + user_name + '&types=' + types;
+        var ds = 0;
+        var df = 0;
+        try{ds = Math.floor(new Date($('#date_start').val()).getTime() / 1000.);}catch(e){}
+        try{df = Math.floor(new Date($('#date_finish').val()).getTime() / 1000.);}catch(e){}
+        var search = "?username=" + user_name + '&types=' + types;
+        if (ds) search = search + '&ds=' + ds;
+        if (df) search = search + '&df=' + df;
+        location = location.origin + location.pathname + search;
     }
 
     // todo: При загрузке документа проанализировать location.search и выставить проэмулировать нажатие кнопок текущих выбранных типов
 
+    document.onload = function () {
+        {% if ds %}
+        var ds = new Date({{ ds * 1000 }}).toISOString();
+        $('#date_start').val(ds);
+        {% end %}
+        {% if df %}$('#date_finish').val(new Date({{ df * 1000 }})); {% end %}
+    }
 
 </script>
 
