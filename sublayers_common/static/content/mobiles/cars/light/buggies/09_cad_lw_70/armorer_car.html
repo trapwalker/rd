@@ -1,0 +1,38 @@
+<style>
+    {% if need_css_only is False %}
+    .armorer-car-main-top {
+        position: relative;
+        opacity: 0.4;
+        background: transparent url(static/content/mobiles/cars/light/buggies/09_cad_lw_70/top.png) no-repeat 100% 100%;
+        height: 158px;
+        width: 492px;
+        margin: 5px auto 0px auto;
+        overflow: hidden;
+    }
+
+    .armorer-car-main-side {
+        position: relative;
+        opacity: 0.4;
+        background: transparent url(static/content/mobiles/cars/light/buggies/09_cad_lw_70/side.png) no-repeat 100% 100%;
+        height: 170px;
+        width: 492px;
+        margin: 5px auto 0px auto;
+        overflow: hidden;
+    }
+    {% end %}
+
+    .shift-for-journal_{{ car.node_html() }} {margin: -169px 0 0 0; }
+
+    .top_slot_FC_{{ car.node_html() }} { top: 66px; left: 279px; }
+    .side_slot_FC_{{ car.node_html() }} { top: 211px; left: 279px; }
+</style>
+
+{% if need_css_only is False %}
+<div class="armorer-car-main">
+    <div class="armorer-car-main-top"></div>
+    <div class="armorer-car-main-side"></div>
+    <div class="town-back-interlacing"></div>
+    <div id="top_slot_FC" class="armorer-slot top_slot_FC_{{ car.node_html() }}"></div>
+    <div id="side_slot_FC" class="armorer-slot side_slot_FC_{{ car.node_html() }}"></div>
+</div>
+{% end %}
