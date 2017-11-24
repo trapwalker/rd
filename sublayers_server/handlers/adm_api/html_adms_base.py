@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
 import logging
 
 log = logging.getLogger(__name__)
@@ -9,7 +10,6 @@ from sublayers_common.handlers.base import BaseHandler
 from tornado.web import HTTPError
 
 from sublayers_common.user_profile import User
-from sublayers_site.handlers.site_auth import LOGIN_RE
 
 import re
 LOGIN_TEST = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_-]{2,19}$')  # Взят из from sublayers_site.handlers.site_auth. LOGIN_RE
@@ -39,12 +39,31 @@ class AdmFindUsers(AdmEngineHandler):
     def get(self):
         find_str = self.get_argument("find", "")
         online_only = self.get_argument("online", "")
+        regexp_find = self.get_argument("regexp", "")
         server = self.application.srv
         users = []
         if online_only:
             users = [agent.user for agent in server.agents_by_name.values() if agent.user and agent.connection]
+        elif regexp_find and len(find_str) >= 3:
+            reg_ex_str = u".*{}.*".format(find_str)
+            users = User.objects(
+                __raw__={
+                    "$and": [{"quick": False},
+                             {"$or": [
+                                 {"name": {"$regex": reg_ex_str}},
+                                 {"auth.standard.email": {"$regex": reg_ex_str}},
+                                 {"auth.google.social_id": {"$regex": reg_ex_str}},
+                                 {"auth.vk.social_id": {"$regex": reg_ex_str}},
+                                 {"auth.twitter.social_id": {"$regex": reg_ex_str}},
+                                 {"auth.fb.social_id": {"$regex": reg_ex_str}},
+                                 {"auth.steam.social_id": {"$regex": reg_ex_str}},
+                             ]}
+                             ]}
+            ).limit(50)
+
         elif find_str and LOGIN_TEST.match(find_str):
             users = User.objects(name__contains=find_str, quick=False).limit(50)
+
         self.render("adm/find.html", users=users, find=find_str, server=server)
 
 
