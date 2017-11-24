@@ -20,7 +20,12 @@
             <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img src="{{ "/{}".format(user.avatar_link) }}"></div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-8 h4">
-            <div class="row">Login: {{ user.name }}</div>
+            <div class="row">
+                Login: {{ user.name }}
+                {% if current_user.access_level > 5 and current_user.access_level > user.access_level %}
+                    <button class="btn btn-secondary" type="button" onclick="AuthorizeAsUser()">Authorize as {{ user.name }}</button>
+                {% end %}
+            </div>
             <div class="row">Auth: {{ user.auth_info }}</div>
             <div class="row">
                 RoleClassUri:
@@ -132,6 +137,23 @@
                 _xsrf: getCookie('_xsrf')
             },
             success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+
+
+    function AuthorizeAsUser() {
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                action: 'authorize',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location = "/";},
             error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
         });
     }

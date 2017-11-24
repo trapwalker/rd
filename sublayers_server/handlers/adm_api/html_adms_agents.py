@@ -77,6 +77,19 @@ class AdmUserInfoHandler(AdmEngineHandler):
             self.finish("Access level for {} changed to: {}".format(user, new_level))
             return
 
+        if action == 'authorize':
+            cu_access_level = self.current_user.access_level
+            if self.user_online(username=user.name):
+                self.send_error(503, reason="Agent Online. You should banned user for sometime.")  # Запрещено менять пользователей, которые онлайн
+                return
+            if cu_access_level < 5 or cu_access_level <= user.access_level:
+                self.send_error(503, reason='You access level <= target_user access level or < 5')
+                return
+            log.warning("ADM: {} authorized as {}".format(self.current_user.name, user.name))
+            self.set_secure_cookie("user", str(user.id))
+            self.finish('You are authorized as {}'.format(username))
+            return
+
         self.finish('OK')
 
 
