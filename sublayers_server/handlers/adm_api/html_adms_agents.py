@@ -125,6 +125,26 @@ class AdmAgentInfoHandler(AdmEngineHandler):
 
         action = self.get_argument('action', '')
 
+        if action == 'balance':
+            balance = max(int(self.get_argument('balance', 0)), 0)
+            agent.profile.set_balance(new_balance=balance)
+            agent.save()
+            self.finish("Balance changed for {}. New balance: {}".format(user, balance))
+            return
+        if action == 'karma':
+            karma = int(self.get_argument('karma', 0))
+            karma = max(min(karma, 100), -100)
+            agent.profile.set_karma(value=karma)
+            agent.save()
+            self.finish("Karma changed for {}. New karma: {}".format(user, karma))
+            return
+        if action == 'exp':
+            exp = max(int(self.get_argument('exp', 0)), 0)
+            agent.profile.set_exp(value=exp)
+            agent.save()
+            self.finish("Exp changed for {}. New exp: {}".format(user, exp))
+            return
+
         self.finish('OK')
 
 

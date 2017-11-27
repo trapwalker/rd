@@ -27,9 +27,36 @@
             <div class="row text-center">Login: {{ user.name }}</div>
             <div class="row">Class: {{ _(agent.role_class.title) }}</div>
             <div class="row">Level: {{ agent.get_real_lvl() }}</div>
-            <div class="row">Exp: {{ agent.exp }}</div>
-            <div class="row">Karma: {{ _(agent.karma_name()) }}  |  {{ agent.karma_norm }}</div>
-            <div class="row">Balance: {{ agent.balance }}</div>
+            <div class="row">Exp:
+                <div class="col input-group" style="max-width: 300px">
+                    <input type="number" min="0" id="agent_exp" class="form-control" value="{{ agent.exp }}"
+                           placeholder="exp"
+                           aria-label="exp">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeExp()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">Karma: {{ _(agent.karma_name()) }}  |  {{ agent.karma_norm }}  |
+                <div class="col input-group" style="max-width: 300px">
+                    <input type="number" min="-100" max="100" id="agent_karma" class="form-control" value="{{ agent.karma }}"
+                           placeholder="karma"
+                           aria-label="karma">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeKarma()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">Balance:
+                 <div class="col input-group" style="max-width: 300px">
+                    <input type="number" min="0" id="agent_balance" class="form-control" value="{{ agent.balance }}"
+                           placeholder="balance"
+                           aria-label="balance">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeBalance()">Save</button>
+                    </span>
+                </div>
+            </div>
             <div class="row">Insurance: {{ _(agent.insurance.title) }}</div>
             <div class="row">Frags: {{ agent.frag }}</div>
             <div class="row">in_location_flag: {{ agent.in_location_flag }}</div>
@@ -97,6 +124,56 @@
         console.log("viewCarInfo:: ", username, car_uid);
         location = location.origin + '/adm/api/html/car_info?username=' + username + '&car_uid=' + car_uid;
     }
+
+
+    function changeExp() {
+        var exp = parseInt(document.getElementById('agent_exp').value);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                exp: exp,
+                action: 'exp',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function changeKarma() {
+        var karma = parseInt(document.getElementById('agent_karma').value);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                karma: karma,
+                action: 'karma',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function changeBalance() {
+        var balance = parseInt(document.getElementById('agent_balance').value);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                balance: balance,
+                action: 'balance',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
 
 </script>
 

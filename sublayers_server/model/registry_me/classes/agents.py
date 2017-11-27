@@ -321,7 +321,7 @@ class AgentProfile(Node):
             if self._agent_model and old_norm_index != relation.get_index_norm():
                 ChangeAgentKarma(agent=self._agent_model, time=time).post()
 
-    def set_balance(self, time, new_balance=None, delta=None):
+    def set_balance(self, time=None, new_balance=None, delta=None):
         if new_balance is not None:
             self.balance = new_balance
 
@@ -329,8 +329,14 @@ class AgentProfile(Node):
             self.balance += delta
 
         agent_model = self._agent_model
-        if agent_model and (delta or new_balance is not None):
+        if agent_model and time and (delta or new_balance is not None):
             ChangeAgentBalance(agent=agent_model, time=time).post()
+            # adm logs
+            agent_model.adm_log("balance", "{value}{dvalue} balance={balance}".format(
+                value="in_new_balance={} ".format(new_balance) if new_balance else "",
+                dvalue="in_dvalue={} ".format(delta) if delta else "",
+                balance=self.balance,
+            ))
         return self.balance
 
     def iter_skills(self):  # todo: need review
@@ -428,7 +434,7 @@ class AgentProfile(Node):
     def exp(self):
         return self.value_exp
 
-    def set_exp(self, time, value=None, dvalue=None):
+    def set_exp(self, time=None, value=None, dvalue=None):
         assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         old_lvl = self.get_lvl()
@@ -436,7 +442,7 @@ class AgentProfile(Node):
             self.value_exp = value
         if dvalue is not None:
             self.value_exp += dvalue
-        if self._agent_model:
+        if self._agent_model and time:
             ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
 
             # Подуровень игрока (количество очков навыков)
@@ -460,15 +466,15 @@ class AgentProfile(Node):
                                                                                   perk_lvl > old_perk_lvl) if lvl > old_lvl or perk_lvl > old_perk_lvl else "",
                                       ))
 
-        UserChangeEXP(agent=self._agent_model, time=time).post()
+            UserChangeEXP(agent=self._agent_model, time=time).post()
         assert self.value_exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
-    def set_karma(self, time, value=None, dvalue=None):
+    def set_karma(self, time=None, value=None, dvalue=None):
         if value is not None:
             self.karma = value
         if dvalue is not None:
             self.karma += dvalue
-        if self._agent_model:
+        if self._agent_model and time:
             ChangeAgentKarma(agent=self._agent_model, time=time).post()
             # adm logs
             self._agent_model.adm_log("karma", "{value}{dvalue} karma={karma}".format(
