@@ -760,6 +760,8 @@ class Agent(Object):
         # todo: review quest_inventory
         self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
+        self.adm_log("location", "Enter to {}".format(location.example.title.en))
+
     def on_exit_location(self, location, event):
         # log.debug('%s:: on_exit_location(%s)', self, location)
         self.example.profile.in_location_flag = False
@@ -779,6 +781,8 @@ class Agent(Object):
         # Сообщаем всем квестам что мы вышли из города
         self.example.profile.on_event(event=event, cls=quest_events.OnExitFromLocation, location=location)
 
+        self.adm_log("location", "Exit from {}".format(location.example.title.en))
+
     def on_enter_npc(self, event):
         # log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
         self.example.profile.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
@@ -791,6 +795,7 @@ class Agent(Object):
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
         self.log.info('on_die unit={}'.format(unit))
+        self.adm_log("die", "Die unit<{}>".format(unit))
         self.example.profile.position = unit.position(event.time)  # Запоминаем последние координаты агента
 
         # Перестать всем городам злиться на уже убитого агента:

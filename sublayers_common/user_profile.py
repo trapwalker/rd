@@ -14,6 +14,7 @@ from mongoengine import (
 )
 
 from sublayers_server.model.registry_me.odm_position import PositionField
+from sublayers_common.adm_mongo_logs import AdminLogRecord
 
 
 class User(Document):
@@ -211,6 +212,9 @@ class User(Document):
 
     def get_banned_seconds(self):
         return (self.ban_time - datetime.datetime.now()).total_seconds()
+
+    def adm_log(self, type, text):
+        AdminLogRecord(user=self, type=type, text=text).post()
 
 
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):

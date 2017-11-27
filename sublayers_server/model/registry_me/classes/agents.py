@@ -449,6 +449,17 @@ class AgentProfile(Node):
             old_perk_lvl = int(old_lvl / 10)
             if perk_lvl > old_perk_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=perk_lvl).post()
+
+            # adm logs
+            self._agent_model.adm_log("exp",
+                                      "{value}{dvalue} exp={exp}{skill_perk}".format(
+                                          value="in_value={} ".format(value) if value else "",
+                                          dvalue="in_dvalue={} ".format(dvalue) if dvalue else "",
+                                          exp=self.value_exp,
+                                          skill_perk="[skill={}, perk={}]".format(lvl > old_lvl,
+                                                                                  perk_lvl > old_perk_lvl) if lvl > old_lvl or perk_lvl > old_perk_lvl else "",
+                                      ))
+
         UserChangeEXP(agent=self._agent_model, time=time).post()
         assert self.value_exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
@@ -459,6 +470,12 @@ class AgentProfile(Node):
             self.karma += dvalue
         if self._agent_model:
             ChangeAgentKarma(agent=self._agent_model, time=time).post()
+            # adm logs
+            self._agent_model.adm_log("karma", "{value}{dvalue} karma={karma}".format(
+                value="in_value={} ".format(value) if value else "",
+                dvalue="in_dvalue={} ".format(dvalue) if dvalue else "",
+                karma=self.karma,
+            ))
 
     @property
     def frag(self):
