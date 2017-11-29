@@ -9,7 +9,9 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.registry_me import classes  # Не удалять этот импорт! Авторегистрация классов.
 from sublayers_server.model.registry_me.tree import get_global_registry
 from sublayers_server.model.registry_me.classes.agents import Agent
+from sublayers_common.user_profile import User
 from cli.agents_adm import Select
+from collections import Counter
 
 from mongoengine import connect
 import click
@@ -71,7 +73,6 @@ def agents_clean(ctx):
 @click.pass_context
 def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, details):
     from sublayers_server.model.registry_me.tree import GRLPC, RegistryNodeIsNotFound
-    from collections import Counter
 
     world = ctx.obj['world']
 
@@ -166,6 +167,54 @@ def agents_perks_reset(ctx):
             a.save()
             count += 1
     click.echo('Perks reseted for {} agents'.format(count))
+
+
+@agents.command(name='teaching_reset')
+@click.pass_context
+def agents_teaching_reset(ctx):
+    world = ctx.obj['world']
+    counter = Counter()
+    reg = get_global_registry(path=world)
+
+    n = 50
+    count = 0
+    all_count = Agent.objects.count()
+    part_count = all_count / n
+    part = 0
+
+    counter['1. TOTAL'] = all_count
+    agents = Agent.objects.as_pymongo()
+    while True:
+        try:
+            a_raw = agents.next()
+        except StopIteration:
+            break
+
+        qf = a_raw.get('quick_flag', None)
+        flags = {True: 'Q', False: 'B', None: '-'}.get(qf, '?==={!r}==='.format(qf))
+        login = a_raw.get('login', '--- UNDEFINED --- ' + str(a_raw.get('_id')))
+
+        a = None
+        try:
+            a = Agent._from_son(a_raw)
+            user = User.get_by_id(a.user_id)
+            if user is None or a.teaching_flag is True and a.quick_flag is True and user.teaching_state != 'map' and user.teaching_state != 'map_start':
+                a.delete()
+                counter['2. Was delete'] += 1
+        except Exception as e:
+            counter['3. Not loaded'] += 1
+            click.echo('{count:5}: [{flags}] {login:32}'.format(**locals()))
+
+        count += 1
+        if count >= part_count:
+            count = 0
+            part += 1
+            click.echo('|' + '#' * part + ' ' * (n - part) + '|' + "{:.0f}%".format(part * 100 / n))
+    click.echo('|' + '#' * n + '|')
+
+    k_max = max(map(len, counter.keys()))
+    for k, v in sorted(counter.items()):
+        click.echo('{k:{k_max}}: {v:6}'.format(**locals()))
 
 
 DEFAULT_FN_TEMPLATE = '{agent.pk}.{agent.login}.yaml'

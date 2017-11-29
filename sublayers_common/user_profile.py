@@ -15,6 +15,7 @@ from mongoengine import (
 
 from sublayers_server.model.registry_me.odm_position import PositionField
 from sublayers_common.adm_mongo_logs import AdminLogRecord
+from bson.objectid import ObjectId
 
 
 class User(Document):
@@ -148,6 +149,10 @@ class User(Document):
     def email(self):
         if self.auth and self.auth.standard:
             return self.auth.standard.email
+
+    @classmethod
+    def get_by_id(cls, user_id):
+        return cls.objects.filter(pk=ObjectId(user_id)).first()
 
     @classmethod
     def get_by_name(cls, name):
