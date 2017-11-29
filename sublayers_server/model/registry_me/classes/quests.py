@@ -581,8 +581,7 @@ class Quest(Node):
 
         self.do_state_enter(next_state, event)
 
-    def _on_end_quest(self, event):
-
+    def _on_end_quest(self, event, save_old_quests=True):
         agent_example = self.agent and self.agent.profile
         if agent_example:
             # Чистим список завершенных квестов и все "ненужные" выкидываем в отдельную коллекцию
@@ -594,11 +593,11 @@ class Quest(Node):
                         (q.generation_group == self.generation_group) and \
                         ((q.endtime + q.generation_cooldown) < event.time):
                     old_quest_list.append(q)
-            print len(old_quest_list)
+
             for q in old_quest_list:
                 agent_example.quests_ended.remove(q)
-                QuestEndRec(quest=self, user_id=self.agent.user_id).save()
-                print q.uid
+                if save_old_quests:
+                    QuestEndRec(quest=self, user_id=self.agent.user_id).save()
 
             # Обязательно добавляем ПОСЛЕДНИЙ завершенный (текущий) квест
             agent_example.quests_ended.append(self)
