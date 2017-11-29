@@ -241,6 +241,8 @@ class Agent(Object):
                     name=timer.name,
                 ).post()
 
+        agent_profile.delete_old_quests(Event(server=self.server, time=self.server.get_time()))
+
     def on_save(self, time):
         with Timer() as tm:
             agent_example = self.example

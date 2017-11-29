@@ -581,6 +581,36 @@ class AgentProfile(Node):
                 return item
         assert False, 'for {} not found Insurance'.format(self)
 
+    def delete_old_quests(self, event):
+        from sublayers_server.model.registry_me.classes.quests import QuestEndRec
+        user_id = self._agent_model and self._agent_model.example.user_id
+        if not user_id:
+            log.warning('User not Loaded for agent %s', self)
+            return
+
+        quests_map = dict()
+        quests = self.quests_ended
+        old_quests = []
+
+        for q in quests:
+            if not q.hirer:
+                continue
+            key = (q.hirer.node_hash(), q.parent.node_hash, q.generation_group)
+            map_q = quests_map.get(key, None)
+            if map_q:
+                if q.starttime > map_q.starttime:
+                    quests_map[key] = q
+                    q = map_q
+                if q.endtime + q.generation_cooldown < event.time:
+                    old_quests.append(q)
+            else:
+                quests_map[key] = q
+
+        for q in old_quests:
+            self.quests_ended.remove(q)
+            QuestEndRec(quest=q, user_id=user_id).save()
+        return len(old_quests)
+
 
 class AIAgentProfile(AgentProfile):
     ai_quest = EmbeddedNodeField(
