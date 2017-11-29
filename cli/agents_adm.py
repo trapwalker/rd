@@ -81,7 +81,11 @@ class Select(object):
             except StopIteration:
                 break
 
-            flags = 'Q' if a_raw['quick_flag'] else 'B'
+            quick_flag = a_raw.get('quick_flag', None)
+            if quick_flag is not None:
+                flags = 'Q' if quick_flag else 'B'
+            else:
+                flags = 'E'
             login = a_raw.get('login', '--- UNDEFINED --- ' + str(a_raw.get('_id')))
 
             a, problems, e = None, None, None
@@ -107,7 +111,7 @@ class Select(object):
                                 stat['5. FIXED'] += 1
                 yield i, a_raw, a
 
-            except RegistryNodeIsNotFound as e:
+            except (RegistryNodeIsNotFound, AttributeError, KeyError) as e:
                 stat['6. Need to delete'] += 1
                 if wipe_unsolved:
                     wipe_try = True

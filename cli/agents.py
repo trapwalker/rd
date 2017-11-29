@@ -35,7 +35,7 @@ def agents(ctx):
 @click.option('--limit', '-l', 'limit', default=None, type=click.INT, help='Count records to limit')
 @click.option('--filter', '-f', 'fltr', default=None, type=click.STRING, help='Filter agents')
 
-@click.option('--format', '-m', 'fmt', default='{i:5}: {it.login}', type=click.STRING, help='Item echo format')
+@click.option('--format', '-m', 'fmt', default='{i:5}: {it.login} #{it.user_id}  (t={it.teaching_flag}, q={it.quick_flag})', type=click.STRING, help='Agent echo format')
 
 def agents_find(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, fltr, fmt):
     world = ctx.obj['world']
@@ -48,6 +48,8 @@ def agents_find(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, fltr, fmt):
         )
         for i, raw, it in sel:
             click.echo(fmt.format(**locals()))
+
+        click.echo(sel.stat)
 
 
 @agents.command(name='clean')
@@ -91,7 +93,7 @@ def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, details):
         except StopIteration:
             break
 
-        qf = a_raw.get('quick_flag')
+        qf = a_raw.get('quick_flag', None)
         flags = {True: 'Q', False: 'B', None: '-'}.get(qf, '?==={!r}==='.format(qf))
         login = a_raw.get('login', '--- UNDEFINED --- ' + str(a_raw.get('_id')))
 
