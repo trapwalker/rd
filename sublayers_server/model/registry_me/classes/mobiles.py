@@ -579,6 +579,7 @@ class Car(Mobile):
     slot_t15 = SlotField(caption=u't1', doc=u'Слот тюнера доп. багажник', tags={'tuner', 'trunk'})
     slot_t16 = SlotField(caption=u't1', doc=u'Слот тюнера козырек', tags={'tuner', 'visor'})
     slot_t17 = SlotField(caption=u't1', doc=u'Слот тюнера защита стёкол', tags={'tuner', 'win_prot'})
+    slot_t18 = SlotField(caption=u't1', doc=u'Слот тюнера защита стёкол', tags={'tuner', 'win_prot'})
 
 
 class Drone(Mobile):
