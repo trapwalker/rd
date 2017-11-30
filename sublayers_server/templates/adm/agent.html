@@ -71,7 +71,7 @@
     </div>
 
     <div class="col-12 h6 border">
-        <div class="row h3">Skills</div>
+        <div class="row h3">Skills <button class="btn btn-secondary" type="button" onclick="SkillsReset()">Reset (include Perks)</button> </div>
         <div class="row">driving: clear: {{ agent.driving.calc_value() }}  |  buy: {{ agent.driving.value }}</div>
         <div class="row">shooting: clear: {{ agent.shooting.calc_value() }}  |  buy: {{ agent.shooting.value }}  |  real : {{ agent.get_current_agent_shooting() }}</div>
         <div class="row">masking: clear: {{ agent.masking.calc_value() }}  |  buy: {{ agent.masking.value }}</div>
@@ -82,7 +82,7 @@
     </div>
 
     <div class="col-12 h6 border">
-        <div class="row h3">Perks</div>
+        <div class="row h3">Perks <button class="btn btn-secondary" type="button" onclick="PerksReset()">Reset</button> </div>
         {% for perk in agent.perks %}
         <div class="col">{{ _(perk.title) }}</div>
         {% end %}
@@ -167,6 +167,36 @@
                 username: $("#data-username").text(),
                 balance: balance,
                 action: 'balance',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+    function SkillsReset() {
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                action: 'reset_skills',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+    function PerksReset() {
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                action: 'reset_perks',
                 _xsrf: getCookie('_xsrf')
             },
             success: function (data) { alert(data); window.location.reload();},

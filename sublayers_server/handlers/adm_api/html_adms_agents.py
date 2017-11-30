@@ -62,6 +62,10 @@ class AdmUserInfoHandler(AdmEngineHandler):
                 return
 
         if action == 'access_level':
+            if self.user_online(username=user.name):
+                self.send_error(503,
+                                reason="Agent Online. You should banned user for sometime.")  # Запрещено менять пользователей, которые онлайн
+                return
             cu_access_level = self.current_user.access_level
             if cu_access_level <= user.access_level:
                 self.send_error(503, reason='You access level <= target_user access level')
@@ -143,6 +147,29 @@ class AdmAgentInfoHandler(AdmEngineHandler):
             agent.profile.set_exp(value=exp)
             agent.save()
             self.finish("Exp changed for {}. New exp: {}".format(user, exp))
+            return
+        if action == 'reset_skills':
+            profile = agent.profile
+            profile.perks = []
+            profile.driving.value = 0
+            profile.shooting.value = 0
+            profile.masking.value = 0
+            profile.leading.value = 0
+            profile.trading.value = 0
+            profile.engineering.value = 0
+            profile.buy_driving.value = 0
+            profile.buy_shooting.value = 0
+            profile.buy_masking.value = 0
+            profile.buy_leading.value = 0
+            profile.buy_trading.value = 0
+            profile.buy_engineering.value = 0
+            agent.save()
+            self.finish("Skills and Perks reseted for {}.".format(user))
+            return
+        if action == 'reset_perks':
+            agent.profile.perks = []
+            agent.save()
+            self.finish("Perks reseted for {}.".format(user))
             return
 
         self.finish('OK')
