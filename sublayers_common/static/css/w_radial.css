@@ -103,10 +103,10 @@
     height: 33px;
 }
 .windAlarmLamp-off {
-    background: transparent url('/static/img/cruise/wind_lamp_off.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/cruise/obsrv_lamp_off.png') 100% 100% no-repeat;
 }
 .windAlarmLamp-on {
-    background: transparent url('/static/img/cruise/wind_lamp_on.png') 100% 100% no-repeat;
+    background: transparent url('/static/img/cruise/obsrv_lamp_on.png') 100% 100% no-repeat;
 }
 
 .w-alt-radial-parent {
@@ -163,8 +163,8 @@
         width: 29px;
         height: 25px;
     }
-    .windAlarmLamp-off { background: transparent url('/static/img/cruise/cruise_768/wind_lamp_off.png') 100% 100% no-repeat; }
-    .windAlarmLamp-on { background: transparent url('/static/img/cruise/cruise_768/wind_lamp_on.png') 100% 100% no-repeat; }
+    .windAlarmLamp-off { background: transparent url('/static/img/cruise/cruise_768/obsrv_lamp_off.png') 100% 100% no-repeat; }
+    .windAlarmLamp-on { background: transparent url('/static/img/cruise/cruise_768/obsrv_lamp_on.png') 100% 100% no-repeat; }
 
     #radiationAlarmLamp {
         top: 85px;
