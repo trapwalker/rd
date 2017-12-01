@@ -511,7 +511,8 @@ var ViewMessengerGlass = (function () {
             this.page_global.pageControl.append(chat.pageButton);
 
         var self = this;
-        setTimeout(function () {self._resizePageControl(self.page_global.pageControl);}, 100);
+        self._resizePageControl(self.page_global.pageControl);
+        setTimeout(function () {self._resizePageControl(self.page_global.pageControl);}, 300);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
         this.chats.push(chat);
