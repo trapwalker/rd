@@ -67,16 +67,11 @@ class AdmUserInfoHandler(AdmEngineHandler):
                 return
             minutes = int(self.get_argument('minutes', 0))
             if minutes > 0:
-                silent_time = datetime.now() + timedelta(minutes=minutes)
-                user.silent_time = silent_time
-                user.save()
-                self.finish('{} silent before {}.'.format(user.name, silent_time))
-            if minutes < 0:
-                user.silent_time = datetime.fromtimestamp(0)
-                user.save()
+                user.silent(minutes=minutes, need_reload=self.user_online(username=user.name))
+                self.finish('{} silent before {}.'.format(user.name, user.silent_time))
+            else:
+                user.silent(minutes=0, need_reload=self.user_online(username=user.name))
                 self.finish('{} silent off'.format(user.name))
-            if self.user_online(username=user.name):
-                user.reload()
             return
 
         if action == 'access_level':

@@ -222,6 +222,15 @@ class User(Document):
     def get_silent_seconds(self):
         return (self.silent_time - datetime.datetime.now()).total_seconds()
 
+    def silent(self, minutes, need_reload=True):
+        if minutes > 0:
+            self.silent_time = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
+        else:
+            self.silent_time = datetime.datetime.fromtimestamp(0)
+        self.save()
+        if need_reload:
+            self.reload()
+
     def adm_log(self, type, text):
         AdminLogRecord(user=self, type=type, text=text).post()
 

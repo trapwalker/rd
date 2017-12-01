@@ -112,6 +112,11 @@ class ChatRoom(object):
     rooms = {}
     history_len = 50
 
+    # login: {times: [time, time, time], silent: 2}
+    # Если больше 5 сообщений за 5 секунд - бан на silent минут, затем silent * 2.
+    # И так до перезагрузки клиента (можно сделать до перезагрузки сервера)
+    silent_candidate = {}
+
     def __init__(self, time, name=None, description=''):
         if (name is None) or (name == ''):
             name = self.classname
@@ -194,8 +199,9 @@ class ChatRoom(object):
 
     def on_message(self, agent, msg_text, time):
         if agent.user and agent.user.get_silent_seconds() <= 0:
+            login = agent.print_login()
             # формирование мессаджа
-            msg = ChatMessage(time=time, text=msg_text, sender_login=agent.print_login(),
+            msg = ChatMessage(time=time, text=msg_text, sender_login=login,
                               recipients_login=[member.print_login() for member in self.members], chat_name=self.name)
             # добавление в историю
             self.history.append(msg)
@@ -203,11 +209,27 @@ class ChatRoom(object):
                 self.history.pop(0)
             for member in self.members:
                 ChatRoomMessage(agent=member, msg=msg, time=time).post()
+
+            silent_info = self.silent_candidate.get(login, None)
+            if not silent_info:
+                self.silent_candidate[login] = dict(times=[], silent=2)
+            else:
+                times = silent_info["times"]
+                times.append(time)
+                times = filter(lambda t: t > time - 5.0, times)
+                silent_info["times"] = times
+                if len(times) > 5:
+                    if agent.user:
+                        agent.user.silent(minutes=silent_info["silent"])
+                        log.info("AutoSilent %s for %s min.", agent, silent_info["silent"])
+                    silent_info["silent"] *= 2
         else:
             # Значит на пользователе Silent
             msg = ChatMessage(time=time, text="You are silent.", sender_login=agent.print_login(),
                               recipients_login=[agent.print_login()], chat_name=self.name)
             ChatRoomMessage(agent=agent, msg=msg, time=time).post()
+
+
 
 
     def send_history(self, recipient, time):
@@ -278,3 +300,6 @@ class GlobalChatRoom(ChatRoom):
             self.members.remove(agent)
         self._send_exclude_message(agent=agent, time=time)
         log.info("GlobalChatRoom: exclude %s", agent)
+
+        # Если агент отключился, то удалить из списка
+        ChatRoom.silent_candidate.pop(agent.print_login(), None)
