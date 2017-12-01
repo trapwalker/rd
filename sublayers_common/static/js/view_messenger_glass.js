@@ -475,7 +475,7 @@ var ViewMessengerGlass = (function () {
 
     // Добавление произвольной чат-комнаты
     ViewMessengerGlass.prototype.addChat = function (room_jid, chat_type) {
-        //console.log('ViewMessengerGlass.prototype.addChat');
+        // console.log('ViewMessengerGlass.prototype.addChat', room_jid, chat_type);
         if (this._getChatByJID(room_jid)) {
             console.warn('Попытка повторного создания чат-комнаты.');
             return;
@@ -505,14 +505,13 @@ var ViewMessengerGlass = (function () {
 
         this.page_global.chatArea.append(chat.chatArea);
 
-        if (room_jid === 'Global')
+        if (chat_type === "GlobalChatRoom")
             this.page_global.pageControl.prepend(chat.pageButton);
         else
             this.page_global.pageControl.append(chat.pageButton);
 
-        // Вот такая вот хуйня малята
-        this._resizePageControl(this.page_global.pageControl);
-        this._resizePageControl(this.page_global.pageControl);
+        var self = this;
+        setTimeout(function () {self._resizePageControl(self.page_global.pageControl);}, 100);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
         this.chats.push(chat);
