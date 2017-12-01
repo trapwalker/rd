@@ -26,6 +26,11 @@ class QuestInventory(Subdoc):
         if item.del_from_inventory(inventory=self, event=event) and need_change:
             agent.profile.change_quest_inventory(event)
 
+    def del_all_items_by_group(self, group, event):
+        items_delete = [item for item in self.items if item.group_id == group]
+        for item in items_delete:
+            self.del_item(agent=None, item=item, event=event, need_change=False)
+
     def refresh(self, agent, event):
         temp_items = self.items[:]
         need_change = False
@@ -98,6 +103,8 @@ class QuestItem(Item):
     crit_power          = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={"aggregate"})
 
     def add_to_inventory(self, inventory, event):
+        if self.group_id:
+            inventory.del_all_items_by_group(group=self.group_id, event=event)
         inventory.items.append(self)
         self.starttime = event.time
         return True
