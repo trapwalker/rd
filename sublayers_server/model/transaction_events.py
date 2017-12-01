@@ -1027,13 +1027,15 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
 
         agent = self.agent
         ex_car = agent.example.profile.car
-        if ex_car.max_hp < ex_car.hp + self.hp:
-            log.warning('%s Try to lie in repair transaction', agent)
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
-            return
+        ex_car_max_hp = ex_car.get_modify_value('max_hp', example_agent=agent.example)
+        if ex_car_max_hp < ex_car.hp + self.hp:
+            log.warning('%s Try to lie in repair transaction: max_hp={:.4f} < transaction_hp={:.4f} + car_hp={:.4f} ', agent, ex_car_max_hp, self.hp, ex_car.hp)
+            self.hp = ex_car_max_hp - ex_car.hp
+            # messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+            #                          replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
+            # return
 
-        hp_price = ex_car.price * npc.repair_cost / ex_car.max_hp
+        hp_price = ex_car.price * npc.repair_cost / ex_car_max_hp
         skill_effect = npc.get_trading_effect(agent_example=agent.example)
         repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin_repair * skill_effect))
         if agent.balance < repair_cost:
@@ -1045,7 +1047,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
             return
-        ex_car.hp = ex_car.hp + self.hp
+        ex_car.hp = min(ex_car.hp + self.hp, ex_car_max_hp)
         agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
         messages.UserExampleCarInfo(agent=agent, time=self.time).post()
 

@@ -88,13 +88,14 @@ var LocationServiceBuilding = (function (_super) {
         this.jq_repair_carette.animate({'left': this.rail_width * prc}, 100);
     };
 
-    LocationServiceBuilding.prototype._get_hp_by_prc = function (prc) {
-        return Math.round(prc * user.example_car.max_hp);
+    LocationServiceBuilding.prototype._get_hp_by_prc = function (prc, clear_result) {
+        var res_hp = prc > 0.99 ? user.example_car.max_hp : prc * user.example_car.max_hp;
+        return clear_result ? res_hp : Math.floor(res_hp);
     };
 
     LocationServiceBuilding.prototype._show_text_hp = function () {
-        var hp = this._get_hp_by_prc(this.current_prc_hp);
-        this.jq_hp_value.text(hp);
+        var hp = this._get_hp_by_prc(this.current_prc_hp, true);
+        this.jq_hp_value.text(Math.floor(hp));
 
         // заполнить в шапку стоимость ремонта
         var current_hp = hp - user.example_car.hp;
@@ -181,7 +182,7 @@ var LocationServiceBuilding = (function (_super) {
         if (this.active_central_page == 'buildingPageRepair_service') {
             if (btnIndex == '1') {
                 //console.log('Попытка отремонтировать машину');
-                var hp = this._get_hp_by_prc(this.current_prc_hp);
+                var hp = this._get_hp_by_prc(this.current_prc_hp, true);
                 if (hp > user.example_car.max_hp) hp = user.example_car.max_hp;
                 hp = hp - user.example_car.hp;
                 clientManager.sendMechanicRepairApply(this.building_rec.head.node_hash, hp);
