@@ -504,7 +504,11 @@ var ViewMessengerGlass = (function () {
         };
 
         this.page_global.chatArea.append(chat.chatArea);
-        this.page_global.pageControl.append(chat.pageButton);
+
+        if (room_jid === 'Global')
+            this.page_global.pageControl.prepend(chat.pageButton);
+        else
+            this.page_global.pageControl.append(chat.pageButton);
 
         // Вот такая вот хуйня малята
         this._resizePageControl(this.page_global.pageControl);

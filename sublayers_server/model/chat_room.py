@@ -157,10 +157,12 @@ class ChatRoom(object):
         return agent in self.members
 
     def include(self, agent, time):
+        if not agent or agent.agent_type == 'ai':
+            return
         ChatRoomIncludeEvent(room=self, agent=agent, time=time).post()
 
     def on_include(self, agent, time):
-        if agent in self.members:
+        if agent in self:
             log.warning('Agent %s is already in chat-room %s', agent, self)
             return
         self.members.append(agent)
@@ -172,14 +174,19 @@ class ChatRoom(object):
         ChatRoomIncludeMessage(agent=agent, room_name=self.name, chat_type=self.classname, time=time).post()
 
     def exclude(self, agent, time):
+        if not agent or agent.agent_type == 'ai':
+            return
         ChatRoomExcludeEvent(room=self, agent=agent, time=time).post()
 
     def on_exclude(self, agent, time):
-        if agent not in self.members:
+        if agent not in self:
             log.warning('Agent %s not in chat-room %s', agent, self)
-            return
-        self.members.remove(agent)
-        agent.chats.remove(self)
+        else:
+            self.members.remove(agent)
+        if self not in agent.chats:
+            log.warning('Chat %s not in agent-chats %s', self, agent)
+        else:
+            agent.chats.remove(self)
         self._send_exclude_message(agent=agent, time=time)
 
     def _send_exclude_message(self, agent, time):
@@ -249,3 +256,18 @@ class PrivateChatRoom(ChatRoom):
             del self.rooms[self.name]
 
         self.on_message(agent=agent, msg_text=u'Пользователь покинул чат', time=time)
+
+
+class GlobalChatRoom(ChatRoom):
+    def on_include(self, agent, time):
+        if agent not in self:
+            self.members.append(agent)
+        self._send_include_message(agent=agent, time=time)
+        self.send_history(recipient=agent, time=time)
+        log.info("GlobalChatRoom: include %s", agent)
+
+    def on_exclude(self, agent, time):
+        if agent in self:
+            self.members.remove(agent)
+        self._send_exclude_message(agent=agent, time=time)
+        log.info("GlobalChatRoom: exclude %s", agent)

@@ -339,6 +339,15 @@ class Server(object):
         # info: не тестил, но оно должно сработать
         map(self.disconnect_agent_by_name, self.agents_by_name.keys())
 
+    def on_agent_connect(self, agent, time):
+        pass
+
+    def on_agent_disconnect(self, agent, time):
+        pass
+
+    def on_agent_out(self, agent, time):  # disconnect_timeout
+        pass
+
 ########################################################################################################################
 class LocalServer(Server):
     def __init__(self, app=None, **kw):
@@ -512,6 +521,7 @@ class BasicLocalServer(LocalServer):
     def load_world(self):
         from sublayers_server.model.ai_dispatcher import AIDispatcher
         from sublayers_server.model.registry_me.classes.agents import Agent
+        from sublayers_server.model.chat_room import GlobalChatRoom
 
         super(BasicLocalServer, self).load_world()
 
@@ -562,7 +572,19 @@ class BasicLocalServer(LocalServer):
 
         # ссылка на таблицу дропа
         self.table_drop = self.reg.get('/registry/rpg_settings/drop_table')
+
+        # глобальный чат
+        self.global_chat_room = GlobalChatRoom(time=t, name="Global")
        # todo: Сделать загрузку стационарных точек радиации
+
+    def on_agent_connect(self, agent, time):
+        super(BasicLocalServer, self).on_agent_connect(agent, time)
+        self.global_chat_room.include(agent=agent, time=time)
+
+    def on_agent_disconnect(self, agent, time):
+        super(BasicLocalServer, self).on_agent_disconnect(agent, time)
+        self.global_chat_room.exclude(agent=agent, time=time)
+
 
 ########################################################################################################################
 class QuickLocalServer(LocalServer):

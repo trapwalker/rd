@@ -383,13 +383,14 @@ class Agent(Object):
         self.adm_log(type="connect", text='Connect IP: {}'.format(connection.request.remote_ip))
 
         self.connection = connection
-        time = self.server.get_time()
+        server = self.server
+        time = server.get_time()
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
             self._disconnect_timeout_event = None
             log.info('Connection of agent %s restored. Disconnect timeout cancelled.', self)
         else:
-            log.info('Agent %s connected. Agents on server: %s', self, len(self.server.agents))
+            log.info('Agent %s connected. Agents on server: %s', self, len(server.agents))
 
         if self.api:
             connection.api = self.api
@@ -399,7 +400,8 @@ class Agent(Object):
         self.api.update_agent_api(time=time + 0.2)  # info: чтобы с клиента успело придти разрешение экрана
 
         # обновление статистики по онлайну агентов
-        self.server.stat_log.s_agents_on(time=time, delta=1.0)
+        server.stat_log.s_agents_on(time=time, delta=1.0)
+        server.on_agent_connect(agent=self, time=time + 0.4)  # Чтобы на клиент успели отправиться update_agent_api
 
     def on_disconnect(self, connection):
         if self.connection is connection:
@@ -410,6 +412,7 @@ class Agent(Object):
             # todo: Измерять длительность подключения ##defend ##realize
             t = self.server.get_time()
             self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
+            self.server.on_agent_disconnect(agent=self, time=t)
         else:
             log.warn('Disconnected for agent %s. But agent have another connection', self)
 
@@ -441,8 +444,8 @@ class Agent(Object):
         self.after_delete(event.time)
 
     def after_delete(self, time):
-        # for clear logger
-        pass
+        if self.server:
+            self.server.on_agent_out(agent=self, time=time)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -953,6 +956,9 @@ class Agent(Object):
     def access_level(self):
         return self.user and self.user.access_level or 0
 
+    @property
+    def agent_type(self):
+        return 'abstract'
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -994,6 +1000,9 @@ class User(Agent):
         if self.car and self.car.is_alive:
             ChangeStealthIndicator(agent=self, time=time, stealth=self.stealth_indicator).post()
 
+    @property
+    def agent_type(self):
+        return 'user'
 
 class AI(Agent):
     u""" Класс-родитель для всех агентов-ботов """
@@ -1012,6 +1021,9 @@ class AI(Agent):
     def on_save(self, time):
         pass
 
+    @property
+    def agent_type(self):
+        return 'ai'
 
 class QuickUser(User):
     quick_game_koeff_kills = 30
