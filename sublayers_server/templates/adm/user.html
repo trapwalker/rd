@@ -53,6 +53,8 @@
         </div>
     </div>
     <div class="row h4 border">
+        {% set ban_seconds_left = user.get_banned_seconds() %}
+        <h3>Ban: </h3>
         <div class="col-12">
             <div class="col">
                 {{ 'Banned before: {}  |  {:.0f}s'.format(user.ban_time.strftime("%Y-%m-%d %H:%M:%S") or 0, ban_seconds_left) if ban_seconds_left > 0 else 'User not banned'}}
@@ -77,6 +79,30 @@
             <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60"> 60 min </button>
             <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 24 * 60"> 24 h </button>
             <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60 * 24 * 7"> 1 week </button>
+        </div>
+    </div>
+
+    <div class="row h4 border">
+        {% set silent_seconds_left = user.get_silent_seconds() %}
+        <h3>Silent: </h3>
+        <div class="col-12">
+            <div class="col">
+                {{ 'Silent before: {}  |  {:.0f}s'.format(user.silent_time.strftime("%Y-%m-%d %H:%M:%S") or 0, silent_seconds_left) if silent_seconds_left > 0 else 'User not silent'}}
+            </div>
+            <div class="col">Silent(Minutes):</div>
+            <div class="col input-group">
+                <input type="number" id="silent_to" class="form-control" value="10" placeholder="minutes of ban"
+                       aria-label="Ban in minutes">
+                <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="silentUser()">Silent!</button>
+            </span>
+            </div>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = -1"> Cancel </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = 15"> 15 min</button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = 60"> 60 min </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = 24 * 60"> 24 h </button>
         </div>
     </div>
 
@@ -134,6 +160,23 @@
                 minutes: minutes,
                 reason: reason,
                 action: 'ban',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function silentUser() {
+        var minutes = parseInt(document.getElementById('silent_to').value);
+        console.log("silentUser:: Silent User to: ", minutes);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                minutes: minutes,
+                action: 'silent',
                 _xsrf: getCookie('_xsrf')
             },
             success: function (data) { alert(data); window.location.reload();},

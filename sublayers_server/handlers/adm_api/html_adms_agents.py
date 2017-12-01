@@ -25,7 +25,7 @@ class AdmUserInfoHandler(AdmEngineHandler):
         server = self.application.srv
         user = self.get_user(username=username)
         if user:
-            self.render("adm/user.html", user=user, server=server, ban_seconds_left=user.get_banned_seconds())
+            self.render("adm/user.html", user=user, server=server)
         else:
             self.send_error(404)
 
@@ -60,6 +60,24 @@ class AdmUserInfoHandler(AdmEngineHandler):
                 user.save()
                 self.finish('{} unbanned'.format(user.name))
                 return
+
+        if action == 'silent':
+            if self.current_user.access_level < user.access_level:
+                self.send_error(503, reason='You access level < target_user access level')
+                return
+            minutes = int(self.get_argument('minutes', 0))
+            if minutes > 0:
+                silent_time = datetime.now() + timedelta(minutes=minutes)
+                user.silent_time = silent_time
+                user.save()
+                self.finish('{} silent before {}.'.format(user.name, silent_time))
+            if minutes < 0:
+                user.silent_time = datetime.fromtimestamp(0)
+                user.save()
+                self.finish('{} silent off'.format(user.name))
+            if self.user_online(username=user.name):
+                user.reload()
+            return
 
         if action == 'access_level':
             if self.user_online(username=user.name):

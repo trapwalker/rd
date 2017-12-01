@@ -86,6 +86,7 @@ class User(Document):
 
     ban_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)  # Время, до которого игрок не может зайти в игру
     ban_reason = StringField(default='', max_length=255)  # todo: заменить на LocalizedStringField
+    silent_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)  # Время, до которого игрок не может писать в чат
 
 
     @property
@@ -217,6 +218,9 @@ class User(Document):
 
     def get_banned_seconds(self):
         return (self.ban_time - datetime.datetime.now()).total_seconds()
+
+    def get_silent_seconds(self):
+        return (self.silent_time - datetime.datetime.now()).total_seconds()
 
     def adm_log(self, type, text):
         AdminLogRecord(user=self, type=type, text=text).post()

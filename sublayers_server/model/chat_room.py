@@ -193,15 +193,22 @@ class ChatRoom(object):
         ChatRoomExcludeMessage(agent=agent, room_name=self.name, time=time).post()
 
     def on_message(self, agent, msg_text, time):
-        # формирование мессаджа
-        msg = ChatMessage(time=time, text=msg_text, sender_login=agent.print_login(),
-                          recipients_login=[member.print_login() for member in self.members], chat_name=self.name)
-        # добавление в историю
-        self.history.append(msg)
-        if len(self.history) > self.history_len:
-            self.history.pop(0)
-        for member in self.members:
-            ChatRoomMessage(agent=member, msg=msg, time=time).post()
+        if agent.user and agent.user.get_silent_seconds() <= 0:
+            # формирование мессаджа
+            msg = ChatMessage(time=time, text=msg_text, sender_login=agent.print_login(),
+                              recipients_login=[member.print_login() for member in self.members], chat_name=self.name)
+            # добавление в историю
+            self.history.append(msg)
+            if len(self.history) > self.history_len:
+                self.history.pop(0)
+            for member in self.members:
+                ChatRoomMessage(agent=member, msg=msg, time=time).post()
+        else:
+            # Значит на пользователе Silent
+            msg = ChatMessage(time=time, text="You are silent.", sender_login=agent.print_login(),
+                              recipients_login=[agent.print_login()], chat_name=self.name)
+            ChatRoomMessage(agent=agent, msg=msg, time=time).post()
+
 
     def send_history(self, recipient, time):
         for msg in self.history:
