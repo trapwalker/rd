@@ -186,10 +186,11 @@
                 success: function (data) {
                     try_to_connect = false;
                     if (data == "OK") window_location_with_lang(address);
-                    else console.log(address, "Steam Auth Fail!", data);
+                    else window_location_with_lang(address + '/static/steam_auth_waiting.html');
                 },
                 error: function (dara) {
                     try_to_connect = false;
+                    console.log('Server return Error Auth');
                 }
             });
     }

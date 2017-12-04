@@ -212,7 +212,7 @@ class ChatRoom(object):
 
             silent_info = self.silent_candidate.get(login, None)
             if not silent_info:
-                self.silent_candidate[login] = dict(times=[], silent=2)
+                self.silent_candidate[login] = dict(times=[time], silent=2)
             else:
                 times = silent_info["times"]
                 times.append(time)
@@ -228,9 +228,6 @@ class ChatRoom(object):
             msg = ChatMessage(time=time, text="You are silent.", sender_login=agent.print_login(),
                               recipients_login=[agent.print_login()], chat_name=self.name)
             ChatRoomMessage(agent=agent, msg=msg, time=time).post()
-
-
-
 
     def send_history(self, recipient, time):
         for msg in self.history:
