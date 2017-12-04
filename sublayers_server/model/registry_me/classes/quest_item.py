@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import Item
+from tornado.template import Template
 from sublayers_server.model.registry_me.tree import (
     Subdoc, 
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField,
@@ -101,6 +102,13 @@ class QuestItem(Item):
 
     crit_rate           = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={"aggregate"})
     crit_power          = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={"aggregate"})
+
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""            
+        {% set text_description = _(this.description) %}
+        {% if text_description %}
+            <div class="description-line">{{ text_description }}</div>
+        {% end %}
+    """, whitespace='oneline')
 
     def add_to_inventory(self, inventory, event):
         if self.group_id:
