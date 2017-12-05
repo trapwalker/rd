@@ -3,6 +3,7 @@ var WTextArcade = (function () {
 
     WTextArcade.prototype.settings = {
         priority: 0,
+        single_long: true,
         phases_duration_preset : {
             fast: {
                 start: 400,
@@ -64,7 +65,8 @@ var WTextArcade = (function () {
         };
 
         this.phase = null;
-        this._font = "italic 42px DS-Crystal";
+        var font_size = mapCanvasManager.canvas.width > 1366 ? 42 : 28;
+        this._font = "italic " + font_size.toString() + "px DS-Crystal";
         this.play_object = null;
     }
 
@@ -85,12 +87,9 @@ var WTextArcade = (function () {
             };
             this.phases_dur = this.settings.phases_duration_preset.fast;
         }
-        // Финальная настройка шрифта перед запуском анимации
-        var font_size = mapCanvasManager.canvas.width > 1366 ? 42 : 28;
-        this._font = "italic " + font_size.toString() + "px DS-Crystal";
 
         this.start_time = clock.getClientTime();
-        mapCanvasManager.add_vobj(this, 96);
+        mapCanvasManager.add_vobj(this, 0.5);
         this.phase = "start";
 
         if (this.settings.audio)
@@ -118,8 +117,9 @@ var WTextArcade = (function () {
 
         if (this.phase == "freeze") {
             if (this.phases_dur.freeze >= 0) {
-                var phaze_dur = this.queue.length == 1 ? 3 * this.phases_dur.freeze : this.phases_dur.freeze; // если нет других сообщений, то увеличить длину этой фазы
-                //var phaze_dur = this.phases_dur.freeze;
+                // если нет других сообщений, то увеличить длину этой фазы
+                var phaze_dur = this.settings.single_long && this.queue.length == 1 ? 3 * this.phases_dur.freeze :
+                                                                                      this.phases_dur.freeze;
                 prc = this._phase_progress(phaze_dur, time);
                 if (prc < 0 || prc >= 1.0) { // Смена фазы
                     this.phase = "finish";
@@ -210,12 +210,13 @@ var WTextArcade = (function () {
     return WTextArcade
 })();
 
-
+// Общий класс для не выезжающих сообщений
 var WTextArcadeStat = (function (_super) {
     __extends(WTextArcadeStat, _super);
 
     WTextArcadeStat.prototype.settings = {
         priority: 0,
+        single_long: false,
         phases_duration_preset : {
             fast: {
                 start: 400,
@@ -248,44 +249,193 @@ var WTextArcadeStat = (function (_super) {
     return WTextArcadeStat
 })(WTextArcade);
 
+// Класс для выезжающих сообщений в рамке (абстрактный)
+var WTextArcadeStatRect = (function (_super) {
+    __extends(WTextArcadeStatRect, _super);
 
-var WTextArcadeStatWarning = (function (_super) {
-    __extends(WTextArcadeStatWarning, _super);
+    function WTextArcadeStatRect() {
+        _super.call(this, '');
 
-    WTextArcadeStatWarning.prototype.settings = {
-        priority: 1,
-        phases_duration_preset : {
-            fast: {
-                start: 400,
-                freeze: -1,
-                finish: 400
-                },
-            slow: {
-                start: 400,
-                freeze: -1,
-                finish: 400
-            }
-        },
-        text_color: '#ff461c',
-        shadow_color: '#ff0000',
-        audio: null
-    };
+        // var font_size = mapCanvasManager.canvas.width > 1366 ? 42 : 28;
+        var font_size = 42;
+        this._font1 = font_size.toString() + "px Nouveau_IBM";
+        this._font2 = (font_size - 6).toString() + "px Nouveau_IBM";
 
-    function WTextArcadeStatWarning(text){
-        _super.call(this, text);
+        this.first_line = '';
+        this.second_line = '';
+        this.rect_param = { x: -230, y: -100, w: 460, h: 130 }
     }
 
-    return WTextArcadeStatWarning
+    WTextArcadeStatRect.prototype.redraw = function (ctx, time) {
+        time = clock.getClientTime(); // Здесь нужно именно клиентское время для плавности
+        var prc = this._test_phase(time);
+        //console.log(prc, this.start_time);
+        if (!this.start_time) return;
+        ctx.save();
+        var pos = this._get_position(prc, time);
+        ctx.globalAlpha = this._get_alpha(prc, time, pos);
+        ctx.translate(this.center.x + pos, this.center.y);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "center";
+        ctx.font = this._font1;
+        ctx.fillStyle = this.settings.text_color;
+        ctx.shadowColor = this.settings.shadow_color;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowBlur = 10;
+        ctx.fillText(this.first_line, 0, 0);
+        ctx.translate(0, 50);
+        ctx.font = this._font2;
+        ctx.fillText(this.second_line, 0, 0);
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = this.settings.text_color;
+        ctx.rect(this.rect_param.x, this.rect_param.y, this.rect_param.w, this.rect_param.h);
+        ctx.stroke();
+
+        ctx.restore();
+    };
+
+    return WTextArcadeStatRect
 })(WTextArcadeStat);
 
+// ========================= Красная группа не выезжающих
+var WTextArcadeStatAttackWarning = (function (_super) {
+    __extends(WTextArcadeStatAttackWarning, _super);
+
+    WTextArcadeStatAttackWarning.prototype.settings = {
+        priority: 1,
+        single_long: false,
+        phases_duration_preset : {
+            fast: {
+                start: 350,
+                freeze: 2100,
+                finish: 350
+                },
+            slow: {
+                start: 350,
+                freeze: 2100,
+                finish: 350
+            }
+        },
+        text_color: '#ff0000',
+        shadow_color: '#ff0000',
+        audio: 'red_alert'
+    };
+
+    function WTextArcadeStatAttackWarning(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_attack_warning_1');
+        this.second_line = _('msg_attack_warning_2');
+        this.rect_param = { x: -230, y: -100, w: 460, h: 130 }
+    }
+
+    WTextArcadeStatAttackWarning.prototype._get_alpha = function (prc, time, pos) {
+        if (this.phase == "start") return prc;
+        if (this.phase == "finish") return 1.0 - prc;
+        var blinc_prc = (prc % 0.25) / 0.25;
+        if (blinc_prc <= 0.5) return 1.0;
+        else return 0.5;
+    };
+
+    return WTextArcadeStatAttackWarning
+})(WTextArcadeStatRect);
+
+
+var WTextArcadeStatTurretWarning = (function (_super) {
+    __extends(WTextArcadeStatTurretWarning, _super);
+
+    function WTextArcadeStatTurretWarning(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_turret_warning_1');
+        this.second_line = _('msg_turret_warning_2');
+
+        this.rect_param = { x: -380, y: -100, w: 760, h: 130 }
+    }
+
+    return WTextArcadeStatTurretWarning
+})(WTextArcadeStatAttackWarning);
+// ========================= Красная группа не выезжающих (конец)
+// ========================= Зеленая группа не выезжающих
+var WTextArcadeStatQuestItem = (function (_super) {
+    __extends(WTextArcadeStatQuestItem, _super);
+
+    WTextArcadeStatQuestItem.prototype.settings = {
+        priority: 0.5,
+        single_long: false,
+        phases_duration_preset : {
+            fast: {
+                start: 570,
+                freeze: 1140,
+                finish: 570
+                },
+            slow: {
+                start: 570,
+                freeze: 1140,
+                finish: 570
+            }
+        },
+        text_color: '#00ffa1',
+        shadow_color: '#00cc81',
+        audio: 'green_alert'
+    };
+
+    function WTextArcadeStatQuestItem(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_quest_item_1');
+        this.second_line = _('msg_quest_item_2');
+        this.rect_param = { x: -300, y: -100, w: 600, h: 130 }
+    }
+
+    WTextArcadeStatQuestItem.prototype._get_alpha = function (prc, time, pos) {
+        if (this.phase == "start") return prc;
+        if (this.phase == "finish") return 1.0 - prc;
+        var blinc_prc = (prc % 0.5) / 0.5;
+        if (blinc_prc <= 0.66) return 1.0;
+        else return 0.5;
+    };
+
+    return WTextArcadeStatQuestItem
+})(WTextArcadeStatRect);
+
+
+var WTextArcadeStatSkillPoint = (function (_super) {
+    __extends(WTextArcadeStatSkillPoint, _super);
+
+    function WTextArcadeStatSkillPoint(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_skill_point_1');
+        this.second_line = _('msg_skill_point_2');
+        this.rect_param = { x: -350, y: -100, w: 700, h: 130 }
+    }
+
+    return WTextArcadeStatSkillPoint
+})(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatNewLVL = (function (_super) {
+    __extends(WTextArcadeStatNewLVL, _super);
+
+    function WTextArcadeStatNewLVL(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_new_lvl_1');
+        this.second_line = _('msg_new_lvl_2');
+        this.rect_param = { x: -320, y: -100, w: 640, h: 130 }
+    }
+
+    return WTextArcadeStatNewLVL
+})(WTextArcadeStatQuestItem);
+// ========================= Зеленая группа не выезжающих (конец)
 
 function TextArcadeTest() {
-    new WTextArcadeStat("Двойное убийство").start();
-    new WTextArcadeStat("40 очков!").start();
-    new WTextArcadeStat("Тройное убийство").start();
-    new WTextArcade("60 очков!").start();
-    new WTextArcade("Щит активирован").start();
-    new WTextArcade("20 очков!").start();
-    var msg = new WTextArcadeStatWarning("Опасность").start();
-    setTimeout(function() {msg.finish()}, 10000);
+    new WTextArcadeStatQuestItem().start();
+    // new WTextArcadeStatSkillPoint().start();
+    // new WTextArcadeStatNewLVL().start();
+    // new WTextArcadeStatAttackWarning().start();
+    new WTextArcadeStatTurretWarning().start();
 }

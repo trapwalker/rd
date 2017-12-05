@@ -676,7 +676,7 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
-        //console.log('ViewMessengerGlass.prototype.receiveMessage', params);
+        console.log('ViewMessengerGlass.prototype.receiveMessage');
         if (params.message_type === "push") {
             var msg = params.events[0];
             if (msg.cls === "ChatRoomMessage")
@@ -703,11 +703,13 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "LvlLogMessage":
                     this.addMessageToLog(_("chat_log_exp_lvl_1") + msg.lvl + _("chat_log_exp_lvl_2"), true);
+                    new WTextArcadeStatNewLVL().start();
                     // Google Analytics
                     analytics.get_level(msg.lvl);
                     break;
                 case "SkillLogMessage":
                     this.addMessageToLog(_("chat_log_skills_get") + ': ' + msg.skill, true);
+                    new WTextArcadeStatSkillPoint().start();
                     break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action) {

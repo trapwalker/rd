@@ -11,6 +11,7 @@ var WHPRadial = (function (_super) {
         this.value_prc = 0.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
         this.current_interface_size = interface_scale_big;
         this.alarm_sound = null;
+        this.last_msg_time = 0;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WHPRadial' + (-generator_ID.getID());
@@ -275,9 +276,15 @@ var WHPRadial = (function (_super) {
     WHPRadial.prototype.change = function () {
         //console.log('WHPRadial.prototype.change');
         if(! user.userCar) return;
-        var prc = this.car.getCurrentHP(clock.getCurrentTime()) / this.car._hp_state.max_hp;
+        var time = clock.getCurrentTime();
+        var prc = this.car.getCurrentHP(time) / this.car._hp_state.max_hp;
         // todo: определить способ плавного изменения области заливки
         if (Math.abs(this.value_prc - prc) > 0.005) {
+            // Сообщение о том что нас атакуют не чаще чем раз в 30с.
+            if ((time - this.last_msg_time) > 30) {
+                this.last_msg_time = time;
+                new WTextArcadeStatAttackWarning().start();
+            }
             this.value_prc = prc;
             this.draw_fill_area(prc);
             if ((prc > 0.1) && (this.alarmLampState)) {
@@ -288,6 +295,8 @@ var WHPRadial = (function (_super) {
                 this.alarmLampState = true;
                 this.draw_alarmLamp();
             }
+
+
         }
     };
 
