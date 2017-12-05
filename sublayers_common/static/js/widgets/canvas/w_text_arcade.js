@@ -1,6 +1,25 @@
 var WTextArcade = (function () {
     WTextArcade.prototype.queue = [];
 
+    WTextArcade.prototype.settings = {
+        priority: 0,
+        phases_duration_preset : {
+            fast: {
+                start: 400,
+                freeze: 100,
+                finish: 400
+            },
+            slow: {
+                start: 1700,
+                freeze: 200,
+                finish: 600
+            }
+        },
+        text_color: '#00ffa1',
+        shadow_color: '#00cc81',
+        audio: null
+    };
+
     WTextArcade.prototype.position_functions = {
         easeOutElastic: function(x, t, b, c, d) {
             // x: percent of animate, t: current time, b: begInnIng value, c: change In value, d: duration
@@ -37,11 +56,7 @@ var WTextArcade = (function () {
 
         this.center = new Point(mapCanvasManager.canvas.width / 2.0, 150);
 
-        this.phases_dur = {
-            start: 1700,
-            freeze: 200,
-            finish: 600
-        };
+        this.phases_dur = this.settings.phases_duration_preset.slow;
 
         this.phases_func = {
             start: this.position_functions['easeOutElastic'],
@@ -50,12 +65,15 @@ var WTextArcade = (function () {
 
         this.phase = null;
         this._font = "italic 42px DS-Crystal";
+        this.play_object = null;
     }
 
     WTextArcade.prototype.start = function() {
-        if (basic_server_mode) return;
+        // if (basic_server_mode) return;
         this.queue.push(this);
+        this.queue.sort(function(a, b) {return a.settings.priority < b.settings.priority});
         if (this.queue.length == 1) setTimeout(this._start.bind(this), 10);
+        return this;
     };
 
     WTextArcade.prototype._start = function () {
@@ -65,11 +83,7 @@ var WTextArcade = (function () {
                 start: this.position_functions['easeOutCirc'],
                 finish: this.position_functions['easeInCirc']
             };
-            this.phases_dur = {
-                start: 400,
-                freeze: 100,
-                finish: 400
-            };
+            this.phases_dur = this.settings.phases_duration_preset.fast;
         }
         // Финальная настройка шрифта перед запуском анимации
         var font_size = mapCanvasManager.canvas.width > 1366 ? 42 : 28;
@@ -78,6 +92,14 @@ var WTextArcade = (function () {
         this.start_time = clock.getClientTime();
         mapCanvasManager.add_vobj(this, 96);
         this.phase = "start";
+
+        if (this.settings.audio)
+            this.play_object = audioManager.play({
+                name: this.settings.audio,
+                gain: 1.0 * audioManager._settings_interface_gain,
+                priority: 1.0,
+                loop: true
+            });
     };
 
     WTextArcade.prototype._phase_progress = function (phase_dur, time) {
@@ -95,13 +117,20 @@ var WTextArcade = (function () {
         }
 
         if (this.phase == "freeze") {
-            var phaze_dur = this.queue.length == 1 ? 3 * this.phases_dur.freeze : this.phases_dur.freeze; // если нет других сообщений, то увеличить длину этой фазы
-            //var phaze_dur = this.phases_dur.freeze;
-            prc = this._phase_progress(phaze_dur, time);
-            if (prc < 0 || prc >= 1.0) { // Смена фазы
-                this.phase = "finish";
-                this.start_time = time;
+            if (this.phases_dur.freeze >= 0) {
+                var phaze_dur = this.queue.length == 1 ? 3 * this.phases_dur.freeze : this.phases_dur.freeze; // если нет других сообщений, то увеличить длину этой фазы
+                //var phaze_dur = this.phases_dur.freeze;
+                prc = this._phase_progress(phaze_dur, time);
+                if (prc < 0 || prc >= 1.0) { // Смена фазы
+                    this.phase = "finish";
+                    this.start_time = time;
+                }
             }
+        }
+
+        if (this.phase == "force_finish") {
+            this.phase = "finish";
+            this.start_time = time;
         }
 
         if (this.phase == "finish") {
@@ -143,11 +172,18 @@ var WTextArcade = (function () {
     };
 
     WTextArcade.prototype.finish = function () {
-        //console.log("WTextArcade.prototype.finish");
+        // console.log("WTextArcade.prototype.finish", this.phase);
+
+        // Это надо для "бесконечных" эффектов, чтобы они корректно завершались
+        if (this.phase) { this.phase = "force_finish"; return; }
+
         mapCanvasManager.del_vobj(this);
         var index = this.queue.indexOf(this);
         if (index >=0) this.queue.splice(index, 1);
         if (this.queue.length > 0) this.queue[0]._start();
+
+        if (this.play_object)
+            audioManager.stop(null, this.play_object);
     };
 
     WTextArcade.prototype.redraw = function (ctx, time) {
@@ -162,8 +198,8 @@ var WTextArcade = (function () {
         ctx.textAlign = "center";
         ctx.textBaseline = "center";
         ctx.font = this._font;
-        ctx.fillStyle = '#00ffa1';
-        ctx.shadowColor = '#00cc81';
+        ctx.fillStyle = this.settings.text_color;
+        ctx.shadowColor = this.settings.shadow_color;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         ctx.shadowBlur = 10;
@@ -175,12 +211,81 @@ var WTextArcade = (function () {
 })();
 
 
+var WTextArcadeStat = (function (_super) {
+    __extends(WTextArcadeStat, _super);
+
+    WTextArcadeStat.prototype.settings = {
+        priority: 0,
+        phases_duration_preset : {
+            fast: {
+                start: 400,
+                freeze: 200,
+                finish: 400
+                },
+            slow: {
+                start: 400,
+                freeze: 500,
+                finish: 400
+            }
+        },
+        text_color: '#00ffa1',
+        shadow_color: '#00cc81',
+        audio: null
+    };
+
+    function WTextArcadeStat(text){
+        _super.call(this, text);
+    }
+
+    WTextArcadeStat.prototype._get_alpha = function (prc, time, pos) {
+        if (this.phase == "start") return prc;
+        if (this.phase == "finish") return 1.0 - prc;
+        return 0.5 + Math.random() * 0.5;
+    };
+
+    WTextArcadeStat.prototype._get_position = function (prc, time) { return 0; };
+
+    return WTextArcadeStat
+})(WTextArcade);
+
+
+var WTextArcadeStatWarning = (function (_super) {
+    __extends(WTextArcadeStatWarning, _super);
+
+    WTextArcadeStatWarning.prototype.settings = {
+        priority: 1,
+        phases_duration_preset : {
+            fast: {
+                start: 400,
+                freeze: -1,
+                finish: 400
+                },
+            slow: {
+                start: 400,
+                freeze: -1,
+                finish: 400
+            }
+        },
+        text_color: '#ff461c',
+        shadow_color: '#ff0000',
+        audio: null
+    };
+
+    function WTextArcadeStatWarning(text){
+        _super.call(this, text);
+    }
+
+    return WTextArcadeStatWarning
+})(WTextArcadeStat);
+
 
 function TextArcadeTest() {
-    new WTextArcade("Двойное убийство").start();
-    new WTextArcade("40 очков!").start();
-    new WTextArcade("Тройное убийство").start();
+    new WTextArcadeStat("Двойное убийство").start();
+    new WTextArcadeStat("40 очков!").start();
+    new WTextArcadeStat("Тройное убийство").start();
     new WTextArcade("60 очков!").start();
     new WTextArcade("Щит активирован").start();
     new WTextArcade("20 очков!").start();
+    var msg = new WTextArcadeStatWarning("Опасность").start();
+    setTimeout(function() {msg.finish()}, 10000);
 }
