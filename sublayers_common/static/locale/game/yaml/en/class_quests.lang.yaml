@@ -65,7 +65,7 @@
   You were not everywhere. {{towns_left}} towns left.
 "q_cq_visit_towns_replica_return_to_teacher": "All towns are visited. Come back to the mentor."
 "q_cq_visit_towns_finished": "Quest is completed."
-"q_cq_visit_towns_task_text": "You'll have to find a route to all the cities of the Nuke Commander system. What accomplishments to expect from the Chosen one if he only saw his yard? Breathe in some road dust, find out what it's like to drive through the woods, mountains and off-road, rape the bloody odometer, your engine be blasted!" Come back when you've been everywhere..."
+"q_cq_visit_towns_task_text": "You'll have to find a route to all the cities of the Nuke Commander system. What accomplishments to expect from the Chosen one if he only saw his yard? Breathe in some road dust, find out what it's like to drive through the woods, mountains and off-road, rape the bloody odometer, your engine be blasted! Come back when you've been everywhere..."
 "q_cq_visit_towns_phrase_success": "Now that you've seen the world, let's continue to make you a pro."
 
 
@@ -131,7 +131,7 @@
 "q_cq_shadowing_start_target": "Surveillance on a {{ target_login }} is started."
 "q_cq_shadowing_break_target": "{{ target_login }} is detect you!"
 "q_cq_shadowing_lost_target": "{{ target_login }} is left from you!"
-"q_cq_shadowing_phrase_success": "Great. You learned to go on the leeward side. But there is still much to learn." Now I'll show you a secret."
+"q_cq_shadowing_phrase_success": "Great. You learned to go on the leeward side. But there is still much to learn. Now I'll show you a secret."
 
 
 # GetCarMaxLevelQuest
