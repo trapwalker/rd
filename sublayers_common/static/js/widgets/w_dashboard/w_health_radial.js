@@ -299,6 +299,7 @@ var WHPRadial = (function (_super) {
             if ((prc <= 0.1) && (!this.alarmLampState)) {
                 this.alarmLampState = true;
                 this.draw_alarmLamp();
+                new WTextArcadeStatCriticalCondition().start();
             }
         }
     };
