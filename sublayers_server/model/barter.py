@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Event, event_deco
-from sublayers_server.model.messages import Message
+from sublayers_server.model.messages import Message, ArcadeTextMessage
 from sublayers_server.model.game_log_messages import BarterLogMessage
 from sublayers_server.model.base import Object
 from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer

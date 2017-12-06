@@ -462,6 +462,21 @@ var WTextArcadeStatNewLVL = (function (_super) {
 
     return WTextArcadeStatNewLVL
 })(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatBarterSucces = (function (_super) {
+    __extends(WTextArcadeStatBarterSucces, _super);
+
+    function WTextArcadeStatBarterSucces(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_barter_success_1');
+        this.second_line = '';
+        this.rect_param = { x: -430, y: -100, w: 860, h: 70 }
+    }
+
+    return WTextArcadeStatBarterSucces
+})(WTextArcadeStatQuestItem);
 // ========================= Зеленая группа не выезжающих (конец)
 
 function TextArcadeTest() {
@@ -472,4 +487,5 @@ function TextArcadeTest() {
     // new WTextArcadeStatTurretWarning().start();
     // new WTextArcadeStatCriticalCondition().start();
     // new WTextArcadeStatAmmoFinish().start();
+    // new WTextArcadeStatBarterSucces().start();
 }

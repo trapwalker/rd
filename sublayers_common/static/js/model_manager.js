@@ -1375,6 +1375,7 @@ var ClientManager = (function () {
     ClientManager.prototype.SuccessBarterMessage = function (event) {
         //console.log('ClientManager.prototype.SuccessBarterMessage', event);
         barterManager.SuccessBarter(event.barter_id);
+        new WTextArcadeStatBarterSucces().start();
     };
 
     ClientManager.prototype.LockBarterMessage = function (event) {
@@ -2926,6 +2927,15 @@ var ClientManager = (function () {
                 break;
             case 'turret_warning':
                 new WTextArcadeStatTurretWarning().start();
+                break;
+            case 'critical_condition':
+                new WTextArcadeStatCriticalCondition().start();
+                break;
+            case 'ammo_finish':
+                new WTextArcadeStatAmmoFinish().start();
+                break;
+            case 'barter_succes':
+                new new WTextArcadeStatBarterSucces().start();
                 break;
             default:
                 console.warn('Неизвестный тип текста: event.message_type')
