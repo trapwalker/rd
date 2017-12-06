@@ -25,26 +25,29 @@
 
     .shift-for-journal_{{ car.node_html() }} {margin: -158px 0 0 0;}
 
-    .top_slot_FL_{{ car.node_html() }} { top: 82px; left: 285px; }
-    .side_slot_FL_{{ car.node_html() }} { top: 204px; left: 285px; }
+    .top_slot_FL_{{ car.node_html() }} { top: 82px; left: 285px; display: none; }
+    .side_slot_FL_{{ car.node_html() }} { top: 204px; left: 285px; display: none; }
 
-    .top_slot_FR_{{ car.node_html() }} { top: 82px; left: 215px; }
-    .side_slot_FR_{{ car.node_html() }} { top: 204px; left: 215px; }
+    .top_slot_FC_{{ car.node_html() }} { top: 82px; left: 295px; }
+    .side_slot_FC_{{ car.node_html() }} { top: 195px; left: 295px; }
 
-    .top_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .top_slot_FR_{{ car.node_html() }} { top: 82px; left: 215px; display: none; }
+    .side_slot_FR_{{ car.node_html() }} { top: 204px; left: 215px; display: none; }
+
+    .top_slot_CL_{{ car.node_html() }} { top: 55px; left: 225px; }
     .side_slot_CL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
-    .top_slot_CC_{{ car.node_html() }} { top: 82px; left: 155px; }
-    .side_slot_CC_{{ car.node_html() }} { top: 204px; left: 155px; }
+    .top_slot_CC_{{ car.node_html() }} { top: 82px; left: 155px; display: none; }
+    .side_slot_CC_{{ car.node_html() }} { top: 204px; left: 155px; display: none; }
 
-    .top_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
-    .side_slot_CR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
+    .top_slot_CR_{{ car.node_html() }} { top: 188px; left: 225px; }
+    .side_slot_CR_{{ car.node_html() }} { top: 107px; left: 225px; }
 
     .top_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
     .side_slot_BL_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
 
-    .top_slot_BC_{{ car.node_html() }} { top: 82px; left: 95px; }
-    .side_slot_BC_{{ car.node_html() }} { top: 204px; left: 95px; }
+    .top_slot_BC_{{ car.node_html() }} { top: 82px; left: 145px; }
+    .side_slot_BC_{{ car.node_html() }} { top: 189px; left: 145px; }
 
     .top_slot_BR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
     .side_slot_BR_{{ car.node_html() }} { top: 0px; left: 0px; display: none; }
@@ -56,6 +59,7 @@
     <div class="armorer-car-main-side"></div>
     <div class="town-back-interlacing"></div>
     <div id="top_slot_FL" class="armorer-slot top_slot_FL_{{ car.node_html() }}"></div>
+    <div id="top_slot_FC" class="armorer-slot top_slot_FC_{{ car.node_html() }}"></div>
     <div id="top_slot_FR" class="armorer-slot top_slot_FR_{{ car.node_html() }}"></div>
     <div id="top_slot_CL" class="armorer-slot top_slot_CL_{{ car.node_html() }}"></div>
     <div id="top_slot_CC" class="armorer-slot top_slot_CC_{{ car.node_html() }}"></div>
