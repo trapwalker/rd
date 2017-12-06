@@ -492,6 +492,36 @@ var WTextArcadeStatReceiveExp = (function (_super) {
 
     return WTextArcadeStatReceiveExp
 })(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatReceiveKarma = (function (_super) {
+    __extends(WTextArcadeStatReceiveKarma, _super);
+
+    function WTextArcadeStatReceiveKarma(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_receive_karma_1');
+        this.second_line = '';
+        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+    }
+
+    return WTextArcadeStatReceiveKarma
+})(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatLostKarma = (function (_super) {
+    __extends(WTextArcadeStatLostKarma, _super);
+
+    function WTextArcadeStatLostKarma(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_lost_karma_1');
+        this.second_line = '';
+        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+    }
+
+    return WTextArcadeStatLostKarma
+})(WTextArcadeStatQuestItem);
 // ========================= Зеленая группа не выезжающих (конец)
 
 function TextArcadeTest() {
@@ -504,4 +534,6 @@ function TextArcadeTest() {
     // new WTextArcadeStatAmmoFinish().start();
     // new WTextArcadeStatBarterSucces().start();
     // new WTextArcadeStatReceiveExp().start();
+    new WTextArcadeStatReceiveKarma().start();
+    new WTextArcadeStatLostKarma().start();
 }

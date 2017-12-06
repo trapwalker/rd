@@ -1207,11 +1207,16 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ChangeAgentKarma = function (event) {
-        console.log('ClientManager.prototype.ChangeAgentKarma', event);
+        // console.log('ClientManager.prototype.ChangeAgentKarma', event);
         if (locationManager.in_location_flag)
             locationManager.npc_relations = event.relations;
+        var old_karma = user.example_agent.rpg_info.karma;
         user.example_agent.rpg_info.karma = event.karma;
         characterManager.redraw();
+        if (event.karma > old_karma)
+            new WTextArcadeStatReceiveKarma().start();
+        else
+            new WTextArcadeStatLostKarma().start();
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
