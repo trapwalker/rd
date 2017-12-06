@@ -2909,6 +2909,29 @@ var ClientManager = (function () {
         this._sendMessage(mes);
     };
 
+    ClientManager.prototype.ArcadeTextMessage = function (event) {
+        // console.log('ClientManager.prototype.ArcadeTextMessage', event);
+        switch(event.arcade_message_type) {
+            case 'quest_item':
+                new WTextArcadeStatQuestItem().start();
+                break;
+            case 'skill_point':
+                new WTextArcadeStatSkillPoint().start();
+                break;
+            case 'new_lwl':
+                new WTextArcadeStatNewLVL().start();
+                break;
+            case 'attack_warning':
+                new WTextArcadeStatAttackWarning().start();
+                break;
+            case 'turret_warning':
+                new WTextArcadeStatTurretWarning().start();
+                break;
+            default:
+                console.warn('Неизвестный тип текста: event.message_type')
+        }
+    };
+
     return ClientManager;
 })();
 

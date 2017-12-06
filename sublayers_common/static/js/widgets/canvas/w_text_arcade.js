@@ -437,5 +437,5 @@ function TextArcadeTest() {
     // new WTextArcadeStatSkillPoint().start();
     // new WTextArcadeStatNewLVL().start();
     // new WTextArcadeStatAttackWarning().start();
-    new WTextArcadeStatTurretWarning().start();
+    // new WTextArcadeStatTurretWarning().start();
 }

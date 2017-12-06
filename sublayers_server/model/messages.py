@@ -1743,3 +1743,14 @@ class TownAttackMessage(Message):
             duration=self.duration
         )
         return d
+
+
+class ArcadeTextMessage(Message):
+    def __init__(self, arcade_message_type, **kw):
+        super(ArcadeTextMessage, self).__init__(**kw)
+        self.arcade_message_type = arcade_message_type
+
+    def as_dict(self):
+        d = super(ArcadeTextMessage, self).as_dict()
+        d.update(arcade_message_type=self.arcade_message_type)
+        return d

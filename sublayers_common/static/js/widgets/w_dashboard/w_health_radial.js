@@ -11,7 +11,9 @@ var WHPRadial = (function (_super) {
         this.value_prc = 0.0; // старое значение. Перерисовывать лишь в случае изменения на 0,005 (пол процента)
         this.current_interface_size = interface_scale_big;
         this.alarm_sound = null;
+
         this.last_msg_time = 0;
+        this.first_msg = true;
 
         // создание дива-контейнера, чтобы при его удалении всё верно очистилось
         this.div_id = 'WHPRadial' + (-generator_ID.getID());
@@ -282,8 +284,11 @@ var WHPRadial = (function (_super) {
         if (Math.abs(this.value_prc - prc) > 0.005) {
             // Сообщение о том что нас атакуют не чаще чем раз в 30с.
             if ((time - this.last_msg_time) > 30) {
-                this.last_msg_time = time;
-                new WTextArcadeStatAttackWarning().start();
+                if (this.first_msg) this.first_msg = false;
+                else {
+                    this.last_msg_time = time;
+                    new WTextArcadeStatAttackWarning().start();
+                }
             }
             this.value_prc = prc;
             this.draw_fill_area(prc);
@@ -295,8 +300,6 @@ var WHPRadial = (function (_super) {
                 this.alarmLampState = true;
                 this.draw_alarmLamp();
             }
-
-
         }
     };
 

@@ -676,7 +676,7 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
-        console.log('ViewMessengerGlass.prototype.receiveMessage');
+        // console.log('ViewMessengerGlass.prototype.receiveMessage');
         if (params.message_type === "push") {
             var msg = params.events[0];
             if (msg.cls === "ChatRoomMessage")

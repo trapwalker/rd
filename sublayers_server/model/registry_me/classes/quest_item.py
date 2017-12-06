@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import Item
+from sublayers_server.model.messages import ArcadeTextMessage
 from tornado.template import Template
 from sublayers_server.model.registry_me.tree import (
     Subdoc, 
@@ -22,6 +23,7 @@ class QuestInventory(Subdoc):
     def add_item(self, agent, item, event, need_change=True):
         if item.add_to_inventory(inventory=self, event=event) and need_change:
             agent.profile.change_quest_inventory(event)
+            ArcadeTextMessage(agent=agent.profile._agent_model, time=event.time, arcade_message_type='quest_item').post()
 
     def del_item(self, agent, item, event, need_change=True):
         if item.del_from_inventory(inventory=self, event=event) and need_change:
