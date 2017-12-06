@@ -321,7 +321,7 @@ class AgentProfile(Node):
             if self._agent_model and old_norm_index != relation.get_index_norm():
                 ChangeAgentKarma(agent=self._agent_model, time=time).post()
 
-    def set_balance(self, time, new_balance=None, delta=None):
+    def set_balance(self, time=None, new_balance=None, delta=None):
         if new_balance is not None:
             self.balance = new_balance
 
@@ -329,8 +329,14 @@ class AgentProfile(Node):
             self.balance += delta
 
         agent_model = self._agent_model
-        if agent_model and (delta or new_balance is not None):
+        if agent_model and time and (delta or new_balance is not None):
             ChangeAgentBalance(agent=agent_model, time=time).post()
+            # adm logs
+            agent_model.adm_log("balance", "{value}{dvalue} balance={balance}".format(
+                value="in_new_balance={} ".format(new_balance) if new_balance else "",
+                dvalue="in_dvalue={} ".format(delta) if delta else "",
+                balance=self.balance,
+            ))
         return self.balance
 
     def iter_skills(self):  # todo: need review
@@ -396,6 +402,16 @@ class AgentProfile(Node):
             self.engineering.value
         )
 
+    def buy_skill_point_summ(self):
+        return (
+            self.buy_driving.value +
+            self.buy_shooting.value +
+            self.buy_masking.value +
+            self.buy_leading.value +
+            self.buy_trading.value +
+            self.buy_engineering.value
+        )
+
     def as_client_dict(self):
         d = super(AgentProfile, self).as_client_dict()
         d['role_class'] = '' if self.role_class is None else self.role_class.description
@@ -418,7 +434,7 @@ class AgentProfile(Node):
     def exp(self):
         return self.value_exp
 
-    def set_exp(self, time, value=None, dvalue=None):
+    def set_exp(self, time=None, value=None, dvalue=None):
         assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         old_lvl = self.get_lvl()
@@ -426,7 +442,7 @@ class AgentProfile(Node):
             self.value_exp = value
         if dvalue is not None:
             self.value_exp += dvalue
-        if self._agent_model:
+        if self._agent_model and time:
             ExpLogMessage(agent=self._agent_model, d_exp=dvalue, time=time).post()
 
             # Подуровень игрока (количество очков навыков)
@@ -439,16 +455,33 @@ class AgentProfile(Node):
             old_perk_lvl = int(old_lvl / 10)
             if perk_lvl > old_perk_lvl:
                 LvlLogMessage(agent=self._agent_model, time=time, lvl=perk_lvl).post()
-        UserChangeEXP(agent=self._agent_model, time=time).post()
+
+            # adm logs
+            self._agent_model.adm_log("exp",
+                                      "{value}{dvalue} exp={exp}{skill_perk}".format(
+                                          value="in_value={} ".format(value) if value else "",
+                                          dvalue="in_dvalue={} ".format(dvalue) if dvalue else "",
+                                          exp=self.value_exp,
+                                          skill_perk="[skill={}, perk={}]".format(lvl > old_lvl,
+                                                                                  perk_lvl > old_perk_lvl) if lvl > old_lvl or perk_lvl > old_perk_lvl else "",
+                                      ))
+
+            UserChangeEXP(agent=self._agent_model, time=time).post()
         assert self.value_exp >= 0, 'value={}, dvalue={}'.format(value, dvalue)
 
-    def set_karma(self, time, value=None, dvalue=None):
+    def set_karma(self, time=None, value=None, dvalue=None):
         if value is not None:
             self.karma = value
         if dvalue is not None:
             self.karma += dvalue
-        if self._agent_model:
+        if self._agent_model and time:
             ChangeAgentKarma(agent=self._agent_model, time=time).post()
+            # adm logs
+            self._agent_model.adm_log("karma", "{value}{dvalue} karma={karma}".format(
+                value="in_value={} ".format(value) if value else "",
+                dvalue="in_dvalue={} ".format(dvalue) if dvalue else "",
+                karma=self.karma,
+            ))
 
     @property
     def frag(self):
@@ -547,6 +580,36 @@ class AgentProfile(Node):
             if isinstance(item, Insurance):
                 return item
         assert False, 'for {} not found Insurance'.format(self)
+
+    def delete_old_quests(self, event):
+        from sublayers_server.model.registry_me.classes.quests import QuestEndRec
+        user_id = self._agent_model and self._agent_model.example.user_id
+        if not user_id:
+            log.warning('User not Loaded for agent %s', self)
+            return
+
+        quests_map = dict()
+        quests = self.quests_ended
+        old_quests = []
+
+        for q in quests:
+            if not q.hirer:
+                continue
+            key = (q.hirer.node_hash(), q.parent.node_hash, q.generation_group)
+            map_q = quests_map.get(key, None)
+            if map_q:
+                if q.starttime > map_q.starttime:
+                    quests_map[key] = q
+                    q = map_q
+                if q.endtime + q.generation_cooldown < event.time:
+                    old_quests.append(q)
+            else:
+                quests_map[key] = q
+
+        for q in old_quests:
+            self.quests_ended.remove(q)
+            QuestEndRec(quest=q, user_id=user_id).save()
+        return len(old_quests)
 
 
 class AIAgentProfile(AgentProfile):

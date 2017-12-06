@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Find Users</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+
+
+<div class="container">
+    <div class="row h4">
+        <div class="row">
+            Block Server:
+            {{ ' Yes | {:.0f} min'.format((server.blocked_ws_connect_time - server.get_time()) // 60) if server.is_closed_for_agents  else 'No' }}
+        </div>
+        <div class="row input-group">
+            <input type="number" id="block_to" class="form-control" value="10" placeholder="role_class"
+                   aria-label="Block in minutes">
+            <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="blockServer()">Block</button>
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function blockServer() {
+        var minutes = parseInt(document.getElementById('block_to').value);
+        console.log("blockServer:: Block Server to: ", minutes);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                minutes: minutes,
+                action: 'server_block',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) {
+                alert(data);
+                window.location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(arguments);
+            }
+        });
+    }
+
+
+
+</script>
+
+</body>
+</html>

@@ -7,7 +7,7 @@ import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry_me.classes import notes
 from sublayers_server.model.registry_me.tree import (
-    Node, Subdoc, UUIDField,
+    Node, Subdoc, UUIDField, Document,
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField, MapField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
     GenericEmbeddedDocumentField, DynamicSubdoc,
@@ -215,6 +215,12 @@ class QuestState(Node):
 # - ask(variants={True: 'Yes', False: 'None'}, text=None, title=None)
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
+
+class QuestEndRec(Document):
+    user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
+    quest = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.quests.Quest',
+    )
 
 
 class Quest(Node):
@@ -575,12 +581,28 @@ class Quest(Node):
 
         self.do_state_enter(next_state, event)
 
-    def _on_end_quest(self, event):
-
+    def _on_end_quest(self, event, save_old_quests=True):
         agent_example = self.agent and self.agent.profile
         if agent_example:
+            # Чистим список завершенных квестов и все "ненужные" выкидываем в отдельную коллекцию
+            quests = agent_example.quests_ended
+            old_quest_list = []
+            for q in quests:
+                if (q.parent == self.parent) and \
+                        (q.hirer == self.hirer) and \
+                        (q.generation_group == self.generation_group) and \
+                        ((q.endtime + q.generation_cooldown) < event.time):
+                    old_quest_list.append(q)
+
+            for q in old_quest_list:
+                agent_example.quests_ended.remove(q)
+                if save_old_quests:
+                    QuestEndRec(quest=self, user_id=self.agent.user_id).save()
+
+            # Обязательно добавляем ПОСЛЕДНИЙ завершенный (текущий) квест
             agent_example.quests_ended.append(self)
             agent_example.on_event(event=event, cls=quest_events.OnQuestChange, target_quest_uid=self.uid)
+
             try:
                 agent_example.quests_active.remove(self)
             except ValueError as e:
@@ -853,7 +875,7 @@ class Quest(Node):
             target_group = target_quest.generation_group
             for q in quests:
                 if q.parent == target_parent and q.hirer == target_hirer and q.generation_group == target_group:
-                    if not q.endtime or q.endtime + q.generation_cooldown > current_time:  # todo: правильно проверять завершённые квестов
+                    if not q.endtime or ((q.endtime + q.generation_cooldown) > current_time):  # todo: правильно проверять завершённые квестов
                         res += 1
             return res
 

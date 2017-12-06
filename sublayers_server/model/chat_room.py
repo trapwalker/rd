@@ -112,6 +112,11 @@ class ChatRoom(object):
     rooms = {}
     history_len = 50
 
+    # login: {times: [time, time, time], silent: 2}
+    # Если больше 5 сообщений за 5 секунд - бан на silent минут, затем silent * 2.
+    # И так до перезагрузки клиента (можно сделать до перезагрузки сервера)
+    silent_candidate = {}
+
     def __init__(self, time, name=None, description=''):
         if (name is None) or (name == ''):
             name = self.classname
@@ -157,10 +162,12 @@ class ChatRoom(object):
         return agent in self.members
 
     def include(self, agent, time):
+        if not agent or agent.agent_type == 'ai':
+            return
         ChatRoomIncludeEvent(room=self, agent=agent, time=time).post()
 
     def on_include(self, agent, time):
-        if agent in self.members:
+        if agent in self:
             log.warning('Agent %s is already in chat-room %s', agent, self)
             return
         self.members.append(agent)
@@ -172,29 +179,55 @@ class ChatRoom(object):
         ChatRoomIncludeMessage(agent=agent, room_name=self.name, chat_type=self.classname, time=time).post()
 
     def exclude(self, agent, time):
+        if not agent or agent.agent_type == 'ai':
+            return
         ChatRoomExcludeEvent(room=self, agent=agent, time=time).post()
 
     def on_exclude(self, agent, time):
-        if agent not in self.members:
+        if agent not in self:
             log.warning('Agent %s not in chat-room %s', agent, self)
-            return
-        self.members.remove(agent)
-        agent.chats.remove(self)
+        else:
+            self.members.remove(agent)
+        if self not in agent.chats:
+            log.warning('Chat %s not in agent-chats %s', self, agent)
+        else:
+            agent.chats.remove(self)
         self._send_exclude_message(agent=agent, time=time)
 
     def _send_exclude_message(self, agent, time):
         ChatRoomExcludeMessage(agent=agent, room_name=self.name, time=time).post()
 
     def on_message(self, agent, msg_text, time):
-        # формирование мессаджа
-        msg = ChatMessage(time=time, text=msg_text, sender_login=agent.print_login(),
-                          recipients_login=[member.print_login() for member in self.members], chat_name=self.name)
-        # добавление в историю
-        self.history.append(msg)
-        if len(self.history) > self.history_len:
-            self.history.pop(0)
-        for member in self.members:
-            ChatRoomMessage(agent=member, msg=msg, time=time).post()
+        if agent.user and agent.user.get_silent_seconds() <= 0:
+            login = agent.print_login()
+            # формирование мессаджа
+            msg = ChatMessage(time=time, text=msg_text, sender_login=login,
+                              recipients_login=[member.print_login() for member in self.members], chat_name=self.name)
+            # добавление в историю
+            self.history.append(msg)
+            if len(self.history) > self.history_len:
+                self.history.pop(0)
+            for member in self.members:
+                ChatRoomMessage(agent=member, msg=msg, time=time).post()
+
+            silent_info = self.silent_candidate.get(login, None)
+            if not silent_info:
+                self.silent_candidate[login] = dict(times=[time], silent=2)
+            else:
+                times = silent_info["times"]
+                times.append(time)
+                times = filter(lambda t: t > time - 5.0, times)
+                silent_info["times"] = times
+                if len(times) > 5:
+                    if agent.user:
+                        agent.user.silent(minutes=silent_info["silent"])
+                        log.info("AutoSilent %s for %s min.", agent, silent_info["silent"])
+                    silent_info["silent"] *= 2
+        else:
+            # Значит на пользователе Silent
+            msg = ChatMessage(time=time, text="You are silent.", sender_login=agent.print_login(),
+                              recipients_login=[agent.print_login()], chat_name=self.name)
+            ChatRoomMessage(agent=agent, msg=msg, time=time).post()
 
     def send_history(self, recipient, time):
         for msg in self.history:
@@ -249,3 +282,21 @@ class PrivateChatRoom(ChatRoom):
             del self.rooms[self.name]
 
         self.on_message(agent=agent, msg_text=u'Пользователь покинул чат', time=time)
+
+
+class GlobalChatRoom(ChatRoom):
+    def on_include(self, agent, time):
+        if agent not in self:
+            self.members.append(agent)
+        self._send_include_message(agent=agent, time=time)
+        self.send_history(recipient=agent, time=time)
+        log.info("GlobalChatRoom: include %s", agent)
+
+    def on_exclude(self, agent, time):
+        if agent in self:
+            self.members.remove(agent)
+        self._send_exclude_message(agent=agent, time=time)
+        log.info("GlobalChatRoom: exclude %s", agent)
+
+        # Если агент отключился, то удалить из списка
+        ChatRoom.silent_candidate.pop(agent.print_login(), None)

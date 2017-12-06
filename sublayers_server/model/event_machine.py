@@ -96,6 +96,8 @@ class Server(object):
 
         self.reg = get_global_registry(path=options.world_path, reload=options.reg_reload, save_loaded=True)
 
+        self.blocked_ws_connect_time = 0
+
     def __getstate__(self):
         d = self.__dict__.copy()
         return d
@@ -308,6 +310,44 @@ class Server(object):
             #     agents.append(agent_rec['agent'])
         return agents
 
+    def block_connects(self, seconds):
+        min_block_seconds = 120
+        if seconds <= 0:
+            log.debug('Server unblocked.')
+            self.blocked_ws_connect_time = 0
+            return
+
+        self.blocked_ws_connect_time = self.get_time() + seconds
+        log.debug('Server blocked: unblock in %s', seconds)
+        if seconds <= min_block_seconds:
+            log.warning('Min recommended block time is {}s'.format(min_block_seconds))
+        else:
+            self.disconnect_all_agents()
+
+    @property
+    def is_closed_for_agents(self):
+        return self.blocked_ws_connect_time > self.get_time()
+
+    def disconnect_agent_by_name(self, name):
+        agent = self.agents_by_name.get(name, None)
+        if agent and agent.connection:
+            agent.connection.close()
+            return True
+        return False
+
+    def disconnect_all_agents(self):
+        # info: не тестил, но оно должно сработать
+        map(self.disconnect_agent_by_name, self.agents_by_name.keys())
+
+    def on_agent_connect(self, agent, time):
+        pass
+
+    def on_agent_disconnect(self, agent, time):
+        pass
+
+    def on_agent_out(self, agent, time):  # disconnect_timeout
+        pass
+
 ########################################################################################################################
 class LocalServer(Server):
     def __init__(self, app=None, **kw):
@@ -481,6 +521,7 @@ class BasicLocalServer(LocalServer):
     def load_world(self):
         from sublayers_server.model.ai_dispatcher import AIDispatcher
         from sublayers_server.model.registry_me.classes.agents import Agent
+        from sublayers_server.model.chat_room import GlobalChatRoom
 
         super(BasicLocalServer, self).load_world()
 
@@ -531,7 +572,19 @@ class BasicLocalServer(LocalServer):
 
         # ссылка на таблицу дропа
         self.table_drop = self.reg.get('/registry/rpg_settings/drop_table')
+
+        # глобальный чат
+        self.global_chat_room = GlobalChatRoom(time=t, name="Global")
        # todo: Сделать загрузку стационарных точек радиации
+
+    def on_agent_connect(self, agent, time):
+        super(BasicLocalServer, self).on_agent_connect(agent, time)
+        self.global_chat_room.include(agent=agent, time=time)
+
+    def on_agent_disconnect(self, agent, time):
+        super(BasicLocalServer, self).on_agent_disconnect(agent, time)
+        self.global_chat_room.exclude(agent=agent, time=time)
+
 
 ########################################################################################################################
 class QuickLocalServer(LocalServer):
@@ -617,6 +670,7 @@ class QuickLocalServer(LocalServer):
                     email='quick_bot_{}@1'.format(i),
                     raw_password='1',
                     avatar_link=random.choice(avatar_list),
+                    quick=True,
                 ).save()
 
             # Создать AIQuickAgent

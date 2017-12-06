@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 from sublayers_server.model.inventory import Inventory
 from sublayers_server.model.events import Event, event_deco
-from sublayers_server.model.messages import Message
+from sublayers_server.model.messages import Message, ArcadeTextMessage
 from sublayers_server.model.game_log_messages import BarterLogMessage
 from sublayers_server.model.base import Object
 from sublayers_server.model.poi_loot_objects import CreatePOILootEvent, POIContainer
@@ -269,6 +269,10 @@ class Barter(object):
         self.recipient.on_trade_enter(contragent=self.initiator, time=event.time, is_init=True)
         self.initiator.on_trade_enter(contragent=self.recipient, time=event.time, is_init=False)
 
+        # Logs
+        adm_log_s = "{}: Activate".format(self)
+        self.initiator.adm_log("barter", adm_log_s)
+        self.recipient.adm_log("barter", adm_log_s)
         # todo: остановить обе машинки
 
     @event_deco
@@ -319,6 +323,11 @@ class Barter(object):
                                  other_money=self.recipient_money, time=event.time).post()
         ChangeMoneyBarterMessage(agent=self.recipient, barter=self, my_money=self.recipient_money,
                                  other_money=self.initiator_money, time=event.time).post()
+
+        # Logs
+        adm_log_s = "{}: {} set money: {}".format(self, agent, money)
+        self.initiator.adm_log("barter", adm_log_s)
+        self.recipient.adm_log("barter", adm_log_s)
 
     @event_deco
     def success(self, event):
@@ -404,10 +413,15 @@ class Barter(object):
             # Удаление объектов-owner'ов для столов
             self.initiator_table_obj.delete(time=event.time)
             self.recipient_table_obj.delete(time=event.time)
+        # Logs
+        adm_log_s = "{}: Done. Status: {}".format(self, 'cancel' if self.is_cancel else self.state)
+        self.initiator.adm_log("barter", adm_log_s)
+        self.recipient.adm_log("barter", adm_log_s)
 
     def as_dict(self):
         pass
 
-
+    def __str__(self):
+        return "Barter: {self.initiator} <=> {self.recipient}".format(self=self)
 
 

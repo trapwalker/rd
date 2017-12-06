@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 from uuid import UUID
 from sublayers_server.model import messages
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.api_tools import API, public_method, basic_mode, call_constrains
+from sublayers_server.model.api_tools import API, public_method, basic_mode, call_constrains, access_level
 from sublayers_server.model.party import Party, PartyGetPartyInfoEvent, PartyGetAllInvitesEvent, \
     PartyGetPartyUserInfoEvent
 from sublayers_server.model.events import (
@@ -56,6 +56,7 @@ class AgentConsoleNamespace(Namespace):
     agent = None
     api = None
 
+    @access_level(2)
     def test(self, *av, **kw):
         self.write('test command:: {}, {}'.format(repr(av), repr(kw)))
 
@@ -84,6 +85,7 @@ class AgentConsoleNamespace(Namespace):
     def gg(self):  # good game
         self.agent.die(time=self.agent.server.get_time())
 
+    @access_level(2)
     def damage(self, value=0):
         self.agent.hit(time=self.agent.server.get_time(), value=int(value))
 
@@ -95,6 +97,7 @@ class AgentConsoleNamespace(Namespace):
         self.api.delete_car()
 
     # todo: Завернуть сообщения консоли в отдельные события
+    @access_level(2)
     def money(self, value=None, user=None):
         agent = None
         if user is None:
@@ -124,13 +127,16 @@ class AgentConsoleNamespace(Namespace):
         self.write('User {agent._login} have {agent.balance} money.'.format(agent=agent))
         return agent.balance
 
+    @access_level(2)
     def exp(self, value):
         self.agent.example.profile.set_exp(dvalue=int(value), time=self.agent.server.get_time())
 
+    @access_level(2)
     def car_exp(self, value):
         if self.agent.example.profile.car:
             self.agent.example.profile.car.set_exp(value=int(value), time=self.agent.server.get_time(), model_agent=self.agent)
 
+    @access_level(2)
     def karma(self, value):
         self.agent.example.profile.set_karma(value=int(value), time=self.agent.server.get_time())
 
@@ -233,12 +239,14 @@ class AgentConsoleNamespace(Namespace):
         for quest in self.agent.example.profile.quests:
             log.info('QUEST: {}'.format(quest))
 
+    @access_level(3)
     def sys_message(self, message):
         time = self.agent.server.get_time()
         for agent in self.agent.server.agents.values():
             if agent.connection:
                 messages.SystemChatMessage(text=message, agent=agent, time=time).post()
 
+    @access_level(2)
     def npc_rel(self, dvalue):
         time = self.agent.server.get_time()
         town = self.agent.current_location
@@ -546,12 +554,14 @@ class AgentAPI(API):
         assert description is None or isinstance(description, unicode)
         assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("send_create_party_from_template name={!r}".format(name))
+        self.agent.adm_log(type="party", text="send_create_party_from_template name={!r}".format(name))
         self.set_party(name=name, description=description, exp_share_type=exp_share_type)
 
     @public_method
     def send_join_party_from_template(self, name):
         assert name is None or isinstance(name, unicode)
         self.agent.log.info("send_join_party_from_template name={!r}".format(name))
+        self.agent.adm_log(type="party", text="send_join_party_from_template name={!r}".format(name))
         self.set_party(name=name)
 
     @public_method
@@ -561,6 +571,7 @@ class AgentAPI(API):
         assert description is None or isinstance(description, unicode)
         assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("set_party name={!r}".format(name))
+        self.agent.adm_log(type="party", text="set_party name={!r}".format(name))
         SetPartyEvent(agent=self.agent, name=name, description=description, exp_share_type=exp_share_type,
                       time=self.agent.server.get_time()).post()
 
@@ -604,6 +615,7 @@ class AgentAPI(API):
         if not self.agent.party:
             return
         self.agent.log.info("change_party_share_option party={}".format(self.agent.party))
+        self.agent.adm_log(type="party", text="change_party_share_option party={}".format(self.agent.party))
         self.agent.party.change_share_option(time=self.agent.server.get_time(), share_exp=share_exp, agent=self.agent)
 
     @public_method
@@ -1080,6 +1092,7 @@ class AgentAPI(API):
                                         player_nick=player_nick).post()
 
     # Административные методы
+    @access_level(4)
     @public_method
     def get_tiles_admin(self, tile_name, x, y):
         log.info('{} get_tiles_admin for: {} / {} : {}'.format(self.agent, tile_name, x, y))
@@ -1122,6 +1135,7 @@ class AgentAPI(API):
     def get_strategy_mode_info_objects(self):
         StrategyModeInfoObjectsEvent(agent=self.agent, time=self.agent.server.get_time()).post()
 
+    @access_level(2)
     @public_method
     def teleport(self, x, y):
         self.agent.log.info('teleport x={}, y={}'.format(x, y))

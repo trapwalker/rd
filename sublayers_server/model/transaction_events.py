@@ -69,6 +69,7 @@ class TransactionActivateItem(TransactionEvent):
         # Отправка мессаджа об активации итема, пока используется для
         messages.SuccessActivateItem(agent=self.agent, time=self.time, item=self.item).post()
         self.agent.on_activated_item(item=self.item, inventory=self.inventory, event=self)
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(self.item))
 
 
 # todo: ##REFACTOR IT
@@ -98,6 +99,7 @@ class TransactionActivateTank(TransactionActivateItem):
         item.set_inventory(time=self.time, inventory=None)
         # Отправить сообщение в игровой лог об активации Канистры
         TransactionActivateTankLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
         # todo: Сделать у активируемого итема ссылку на итем, в который он трансформируется после активации
         tank_proto = item.example.post_activate_items[0]
         if tank_proto:
@@ -128,6 +130,7 @@ class TransactionActivatePackage(TransactionActivateItem):
 
         # Отправить сообщение в игровой лог о вскрытии посылки
         TransactionActivatePackageLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
         # Кладем в инвентарь содержимое посылки
         for item in item.example.post_activate_items:
@@ -163,6 +166,7 @@ class TransactionActivateRebuildSet(TransactionActivateItem):
 
         # Отправить сообщение в игровой лог
         TransactionActivateRebuildSetLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
 
 class TransactionActivateMine(TransactionActivateItem):
@@ -190,6 +194,7 @@ class TransactionActivateMine(TransactionActivateItem):
 
         # Отправка сообщения в игровой лог
         TransactionActivateMineLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
 
 class TransactionActivateRocket(TransactionActivateItem):
@@ -218,6 +223,7 @@ class TransactionActivateRocket(TransactionActivateItem):
 
         # Отправка сообщения в игровой лог
         TransactionActivateRocketLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
 
 class TransactionActivateTurret(TransactionActivateItem):
@@ -246,6 +252,7 @@ class TransactionActivateTurret(TransactionActivateItem):
 
         # Отправка сообщения в игровой лог
         TransactionActivateTurretLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
 
 class TransactionActivateMapRadar(TransactionActivateItem):
@@ -274,6 +281,7 @@ class TransactionActivateMapRadar(TransactionActivateItem):
 
         # Отправка сообщения в игровой лог
         TransactionActivateMapRadarLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
 
 class TransactionActivateAmmoBullets(TransactionActivateItem):
@@ -301,6 +309,7 @@ class TransactionActivateAmmoBullets(TransactionActivateItem):
 
         # Отправка сообщения о зарядке патроново # если нужно отправлять в какие оружия заряжены, то список можно сформировать в цикле выше
         TransactionActivateAmmoBulletsLogMessage(agent=self.agent, time=self.time, item=item.example).post()
+        self.agent.adm_log(type="activate_item", text="Activated: {}".format(item.example))
 
 
 class TransactionBuyInsurance(TransactionEvent):
@@ -329,11 +338,13 @@ class TransactionBuyInsurance(TransactionEvent):
             # Продлить страховку
             agent_insurance.prolong(delta=target_insurance.deadline)
             example_agent.profile.change_quest_inventory(event=self)  # Отправить мессадж об изменении квестового инвентаря
+            self.agent.adm_log(type="insurance", text="prolong insurance: {}  => {}".format(agent_insurance, target_insurance.deadline))
         else:
             # Заменить страховку
             # todo: сделать проверку, чтобы игрок не мог купить более дешёвую страховку при наличии более дорогой
             new_insurance = target_insurance.instantiate()
             example_agent.profile.quest_inventory.add_item(agent=example_agent, item=new_insurance, event=self)
+            self.agent.adm_log(type="insurance", text="new insurance: {}".format(new_insurance))
         messages.UserExampleChangeInsurance(agent=self.agent, time=self.time).post()
 
 
@@ -461,6 +472,7 @@ class TransactionGasStation(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionGasStationLogMessage(agent=agent, time=self.time, d_fuel=self.fuel, tank_list=tank_list_log).post()
+        self.agent.adm_log(type="npc_transaction", text=u"GasStation<{}>: d_fuel={}  tanks={}".format(npc.node_hash(), self.fuel, tank_list_log))
 
 
 class TransactionHangarSell(TransactionTownNPC):
@@ -496,6 +508,7 @@ class TransactionHangarSell(TransactionTownNPC):
         messages.UserExampleCarSlots(agent=self.agent, time=self.time).post()
 
         TransactionHangarLogMessage(agent=self.agent, time=self.time, car=log_car, price=log_car.price, action="sell").post()
+        self.agent.adm_log(type="npc_transaction", text=u"Hangar<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionHangarBuy(TransactionTownNPC):
@@ -585,7 +598,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             # Эвент квестов
             self.agent.example.profile.on_event(event=self, cls=quest_events.OnBuyCar)
             TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
-
+            self.agent.adm_log(type="npc_transaction", text=u"Hangar<{}>: {}".format(npc.node_hash(), info_string))
             # Перезагружаем модельный инвентарь
             self.agent.reload_inventory(time=self.time, save=False, total_inventory=None)
         else:
@@ -627,6 +640,7 @@ class TransactionGirlApply(TransactionTownNPC):
         info_string = u'{}: {} {}, {}NC.'.format(date_str, locale(self.lang, "tr_tgirl_service_text"), locale(self.lang, service.title), str(-service.price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
+        self.agent.adm_log(type="npc_transaction", text=u"Girl<{}>: {}".format(npc.node_hash(), info_string))
 
         messages.GirlInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash(), items=bonus_list).post()
 
@@ -689,7 +703,7 @@ class TransactionParkingSelect(TransactionTownNPC):
 
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
-
+            self.agent.adm_log(type="npc_transaction", text=u"Parking<{}>: {}".format(npc.node_hash(), info_string))
             TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=summ_for_paying, action="select").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -732,6 +746,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         TransactionParkingLogMessage(agent=self.agent, time=self.time, car=car_example, price=0,
                                      action="leave").post()
+        self.agent.adm_log(type="npc_transaction", text=u"Parking<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionArmorerApply(TransactionTownNPC):
@@ -868,6 +883,7 @@ class TransactionArmorerApply(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
+        self.agent.adm_log(type="npc_transaction", text=u"Armorer<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionMechanicApply(TransactionTownNPC):
@@ -995,6 +1011,7 @@ class TransactionMechanicApply(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
+        self.agent.adm_log(type="npc_transaction", text=u"Mechanic<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionMechanicRepairApply(TransactionTownNPC):
@@ -1010,13 +1027,15 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
 
         agent = self.agent
         ex_car = agent.example.profile.car
-        if ex_car.max_hp < ex_car.hp + self.hp:
-            log.warning('%s Try to lie in repair transaction', agent)
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
-            return
+        ex_car_max_hp = ex_car.get_modify_value('max_hp', example_agent=agent.example)
+        if ex_car_max_hp < ex_car.hp + self.hp:
+            log.warning('%s Try to lie in repair transaction: max_hp={:.4f} < transaction_hp={:.4f} + car_hp={:.4f} ', agent, ex_car_max_hp, self.hp, ex_car.hp)
+            self.hp = ex_car_max_hp - ex_car.hp
+            # messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
+            #                          replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
+            # return
 
-        hp_price = ex_car.price * npc.repair_cost / ex_car.max_hp
+        hp_price = ex_car.price * npc.repair_cost / ex_car_max_hp
         skill_effect = npc.get_trading_effect(agent_example=agent.example)
         repair_cost = math.ceil((self.hp * hp_price) * (1 + npc.margin_repair * skill_effect))
         if agent.balance < repair_cost:
@@ -1028,7 +1047,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
                                      replica=locale(self.lang, "tr_tmechrepair_bad_repair")).post()
             return
-        ex_car.hp = ex_car.hp + self.hp
+        ex_car.hp = min(ex_car.hp + self.hp, ex_car_max_hp)
         agent.example.profile.set_balance(time=self.time, delta=-repair_cost)
         messages.UserExampleCarInfo(agent=agent, time=self.time).post()
 
@@ -1042,6 +1061,7 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicRepairLogMessage(agent=self.agent, time=self.time, hp=self.hp, price=repair_cost).post()
+        self.agent.adm_log(type="npc_transaction", text=u"MechanicRepair<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionTunerApply(TransactionTownNPC):
@@ -1144,6 +1164,7 @@ class TransactionTunerApply(TransactionTownNPC):
                                        info_string=info_string).post()
         TransactionTunerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list,
                                    price=0, pont_point=0).post()
+        self.agent.adm_log(type="npc_transaction", text=u"Tuner<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionTraderApply(TransactionTownNPC):
@@ -1269,6 +1290,7 @@ class TransactionTraderApply(TransactionTownNPC):
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         TransactionTraderLogMessage(agent=agent, time=self.time, buy_list=buy_list, sell_list=sell_list,
                                     price=(buy_price - sale_price)).post()
+        self.agent.adm_log(type="npc_transaction", text=u"Trader<{}>: price={}".format(npc.node_hash(), buy_price - sale_price))
 
         # Эвент для квестов
         self.agent.example.profile.on_event(event=self, cls=quest_events.OnTraderTransaction)
@@ -1434,6 +1456,7 @@ class TransactionSetRPGState(TransactionTownNPC):
                                        info_string=info_string).post()
         TransactionTrainerLogMessage(agent=self.agent, time=self.time, skill_count=cur_sp - old_sp,
                                      buy_skill_count=buy_skill_count, perk_count=perk_count, price=price).post()
+        self.agent.adm_log(type="npc_transaction", text=u"Trainer<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class BagExchangeStartEvent(TransactionTownNPC):
@@ -1488,3 +1511,4 @@ class BagExchangeStartEvent(TransactionTownNPC):
         # todo: Сделать сообщение-обновление цен машинок у парковщика
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
+        self.agent.adm_log(type="npc_transaction", text=u"ParkingBagAccess<{}>: price = {}".format(npc.node_hash(), car_price))

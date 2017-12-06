@@ -208,6 +208,8 @@ function init_sound() {
 
     // interface
 
+    audioManager.load('red_alert', {url: '/static/audio/interface/red_alert.m4a'}, 0.1);
+    audioManager.load('green_alert', {url: '/static/audio/interface/green_alert.m4a'}, 0.1);
     audioManager.load('interface_hover', {url: '/static/audio/interface/hover_001.m4a'}, 0.1);
     audioManager.load('interface_click', {url: '/static/audio/interface/click_001.m4a'}, 0.1);
     audioManager.load('npc_transaction_fail', {url: '/static/audio/signals/error_001.m4a'}, 0.3);

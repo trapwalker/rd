@@ -4,6 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import Item
+from sublayers_server.model.messages import ArcadeTextMessage
+from tornado.template import Template
 from sublayers_server.model.registry_me.tree import (
     Subdoc, 
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField,
@@ -21,10 +23,16 @@ class QuestInventory(Subdoc):
     def add_item(self, agent, item, event, need_change=True):
         if item.add_to_inventory(inventory=self, event=event) and need_change:
             agent.profile.change_quest_inventory(event)
+            ArcadeTextMessage(agent=agent.profile._agent_model, time=event.time, arcade_message_type='quest_item').post()
 
     def del_item(self, agent, item, event, need_change=True):
         if item.del_from_inventory(inventory=self, event=event) and need_change:
             agent.profile.change_quest_inventory(event)
+
+    def del_all_items_by_group(self, group, event):
+        items_delete = [item for item in self.items if item.group_id == group]
+        for item in items_delete:
+            self.del_item(agent=None, item=item, event=event, need_change=False)
 
     def refresh(self, agent, event):
         temp_items = self.items[:]
@@ -97,7 +105,16 @@ class QuestItem(Item):
     crit_rate           = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={"aggregate"})
     crit_power          = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={"aggregate"})
 
+    HTML_DESCRIPTION_TEMPLATE = Template(u"""            
+        {% set text_description = _(this.description) %}
+        {% if text_description %}
+            <div class="description-line">{{ text_description }}</div>
+        {% end %}
+    """, whitespace='oneline')
+
     def add_to_inventory(self, inventory, event):
+        if self.group_id:
+            inventory.del_all_items_by_group(group=self.group_id, event=event)
         inventory.items.append(self)
         self.starttime = event.time
         return True

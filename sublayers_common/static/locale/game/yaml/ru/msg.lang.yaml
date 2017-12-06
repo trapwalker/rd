@@ -1,0 +1,32 @@
+"locale": "ru"
+
+"msg_turret_warning_1": "Внимание!"
+"msg_turret_warning_2": "Снизьте скорость до 20 км/ч"
+
+"msg_attack_warning_1": "Опасность!"
+"msg_attack_warning_2": "Вы атакованы!"
+
+"msg_skill_point_1": "Поздравления!"
+"msg_skill_point_2": "Получен новый скиллпоинт"
+
+"msg_new_lvl_1": "Поздравления!"
+"msg_new_lvl_2": "Получен новый уровень"
+
+"msg_quest_item_1": "Получена новая вещь!"
+"msg_quest_item_2": "Проверьте инвентарь"
+
+"msg_critical_conditiong_1": "Опасность!"
+"msg_critical_conditiong_2": "Критическое состояние транспорта"
+
+"msg_ammo_finish_1": "Внимание!"
+"msg_ammo_finish_2": "Закончились патроны."
+
+"msg_barter_success_1": "Бартер успешно завершен!"
+
+"msg_receive_exp_1": "Получены очки опыта!"
+
+"msg_receive_karma_1": "Вы заработали Карму!"
+
+"msg_lost_karma_1": "Вы потеряли карму!"
+
+

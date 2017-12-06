@@ -29,7 +29,7 @@ from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
 from sublayers_server.model.utils import NameGenerator
 from sublayers_common.site_locale import locale
-
+from sublayers_common.adm_mongo_logs import AdminLogRecord
 
 from ctx_timer import Timer
 from tornado.options import options
@@ -70,6 +70,7 @@ class Agent(Object):
                 raise Exception(text='Not uniq agent name')
 
         self._logger = self.setup_logger()
+        self._adm_logs = []  # Список логов для сохранения в базу при сохранении агента
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -155,6 +156,10 @@ class Agent(Object):
     def log(self):
         return self._logger
 
+    def adm_log(self, type, text):
+        if self.user:
+            AdminLogRecord(user=self.user, type=type, text=text).post(server=self.server)
+
     def setup_logger(self, level=logging.ERROR):
         from sublayers_server.log_setup import (
             logger, handler, formatter_simple_for_agent, local_path, SUFFIX_BY_MODE, handler_errors_file, handler_screen,
@@ -236,6 +241,8 @@ class Agent(Object):
                     name=timer.name,
                 ).post()
 
+        agent_profile.delete_old_quests(Event(server=self.server, time=self.server.get_time()))
+
     def on_save(self, time):
         with Timer() as tm:
             agent_example = self.example
@@ -250,7 +257,16 @@ class Agent(Object):
             # agent_example.delete()  # TODO: Добиться правильного пересохранения агента
             agent_example.save()
             #agent_example.save(force_insert=True)
-            log.debug('Agent %r saved (%.4fs)', agent_example.login, tm.duration)
+
+            # Сохранение накопленных логов
+            with Timer() as tmlogs:
+                for l in self._adm_logs:
+                    l.post()  # post without params = save to db
+                self._adm_logs = []
+
+            log.debug('Agent %r saved (%.4fs): logs: %.4fs', agent_example.login, tm.duration, tmlogs.duration)
+
+
 
     @property
     def is_online(self):
@@ -363,15 +379,18 @@ class Agent(Object):
         return connection_delay
 
     def on_connect(self, connection):
-        self.log.info('on_connect {}'.format(connection))
+        self.log.info('on_connect {}'.format(connection.request.remote_ip))
+        self.adm_log(type="connect", text='Connect IP: {}'.format(connection.request.remote_ip))
+
         self.connection = connection
-        time = self.server.get_time()
+        server = self.server
+        time = server.get_time()
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
             self._disconnect_timeout_event = None
             log.info('Connection of agent %s restored. Disconnect timeout cancelled.', self)
         else:
-            log.info('Agent %s connected. Agents on server: %s', self, len(self.server.agents))
+            log.info('Agent %s connected. Agents on server: %s', self, len(server.agents))
 
         if self.api:
             connection.api = self.api
@@ -381,16 +400,19 @@ class Agent(Object):
         self.api.update_agent_api(time=time + 0.2)  # info: чтобы с клиента успело придти разрешение экрана
 
         # обновление статистики по онлайну агентов
-        self.server.stat_log.s_agents_on(time=time, delta=1.0)
+        server.stat_log.s_agents_on(time=time, delta=1.0)
+        server.on_agent_connect(agent=self, time=time + 0.4)  # Чтобы на клиент успели отправиться update_agent_api
 
     def on_disconnect(self, connection):
         if self.connection is connection:
             self.log.info('on_disconnect {}'.format(connection))
             timeout = options.disconnect_timeout
             log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
+            self.adm_log(type="connect", text='Disconnect IP: {}'.format(connection.request.remote_ip))
             # todo: Измерять длительность подключения ##defend ##realize
             t = self.server.get_time()
             self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
+            self.server.on_agent_disconnect(agent=self, time=t)
         else:
             log.warn('Disconnected for agent %s. But agent have another connection', self)
 
@@ -422,8 +444,8 @@ class Agent(Object):
         self.after_delete(event.time)
 
     def after_delete(self, time):
-        # for clear logger
-        pass
+        if self.server:
+            self.server.on_agent_out(agent=self, time=time)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -691,6 +713,10 @@ class Agent(Object):
         # пары node_hash и кол-во
         if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
             InventoryChangeLogMessage(agent=self, time=event.time, **diff_inventories).post()
+            if diff_inventories.get('incomings', None):
+                self.adm_log(type='inventory', text="inc: {}".format(diff_inventories['incomings']))
+            if diff_inventories.get('outgoings', None):
+                self.adm_log(type='inventory', text="out: {}".format(diff_inventories['outgoings']))
 
         self.example.profile.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
@@ -739,6 +765,8 @@ class Agent(Object):
         # todo: review quest_inventory
         self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
+        self.adm_log("location", "Enter to {}".format(location.example.title.en))
+
     def on_exit_location(self, location, event):
         # log.debug('%s:: on_exit_location(%s)', self, location)
         self.example.profile.in_location_flag = False
@@ -758,6 +786,8 @@ class Agent(Object):
         # Сообщаем всем квестам что мы вышли из города
         self.example.profile.on_event(event=event, cls=quest_events.OnExitFromLocation, location=location)
 
+        self.adm_log("location", "Exit from {}".format(location.example.title.en))
+
     def on_enter_npc(self, event):
         # log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
         self.example.profile.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
@@ -770,6 +800,7 @@ class Agent(Object):
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
         self.log.info('on_die unit={}'.format(unit))
+        self.adm_log("die", "Die unit<{}>".format(unit))
         self.example.profile.position = unit.position(event.time)  # Запоминаем последние координаты агента
 
         # Перестать всем городам злиться на уже убитого агента:
@@ -921,6 +952,14 @@ class Agent(Object):
     def get_lang(self):
         return self.user and self.user.lang or 'en'
 
+    @property
+    def access_level(self):
+        return self.user and self.user.access_level or 0
+
+    @property
+    def agent_type(self):
+        return 'abstract'
+
 # todo: Переименовать в UserAgent
 class User(Agent):
     @event_deco
@@ -961,6 +1000,9 @@ class User(Agent):
         if self.car and self.car.is_alive:
             ChangeStealthIndicator(agent=self, time=time, stealth=self.stealth_indicator).post()
 
+    @property
+    def agent_type(self):
+        return 'user'
 
 class AI(Agent):
     u""" Класс-родитель для всех агентов-ботов """
@@ -979,6 +1021,9 @@ class AI(Agent):
     def on_save(self, time):
         pass
 
+    @property
+    def agent_type(self):
+        return 'ai'
 
 class QuickUser(User):
     quick_game_koeff_kills = 30

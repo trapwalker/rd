@@ -1069,7 +1069,8 @@ class UserExampleCarInfo(Message):
         d = super(UserExampleCarInfo, self).as_dict()
         ex_car = self.agent.example.profile.car
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
-        if ex_car:
+        if ex_car and self.agent.example:
+            d['example_car']['max_hp'] = ex_car.get_modify_value('max_hp', example_agent=self.agent.example)
             d['rpg_car_info'] = dict(uid=ex_car.uid, lvl=ex_car.get_real_lvl(), way=ex_car.way)
         return d
 
@@ -1292,6 +1293,7 @@ class UserExampleSelfShortMessage(UserExampleSelfRPGMessage):
         d['example_car'] = None if ex_car is None else ex_car.as_client_dict()
 
         if ex_car:
+            d['example_car']['max_hp'] = ex_car.get_modify_value('max_hp', example_agent=self.agent.example)
             # RPG-информация по машинке
             d['rpg_car_info'] = dict(uid=ex_car.uid, lvl=ex_car.get_real_lvl(), way=ex_car.way)
             # Шаблоны машинки
@@ -1740,4 +1742,15 @@ class TownAttackMessage(Message):
             target_pos=self.target_pos,
             duration=self.duration
         )
+        return d
+
+
+class ArcadeTextMessage(Message):
+    def __init__(self, arcade_message_type, **kw):
+        super(ArcadeTextMessage, self).__init__(**kw)
+        self.arcade_message_type = arcade_message_type
+
+    def as_dict(self):
+        d = super(ArcadeTextMessage, self).as_dict()
+        d.update(arcade_message_type=self.arcade_message_type)
         return d

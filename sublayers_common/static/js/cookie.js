@@ -10,7 +10,11 @@ var SettingsManager = (function() {
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
-        this.cht_bGod = this.getCookie("cht_bGod") == "1" ? 1 : 0; // Определяет можно ли телепортироваться и загружать тайлы
+        this.cht_bGod = 0;
+
+        setTimeout(function() {
+            try {settingsManager.cht_bGod = parseInt($("#user_access_level").text());} catch (e) {}
+        }, 1000);
 
         this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
 
@@ -959,8 +963,6 @@ var SettingsManager = (function() {
         // Сохранение разных значений
         // Зум
         this.setCookie("current_zoom", mapManager.getZoom().toFixed(2), {expires: 365 * 24 * 60 * 60});
-        // Админский режим
-        this.setCookie("cht_bGod", this.cht_bGod ? "1" : "0", {expires: 365 * 24 * 60 * 60});
         // Сохранить значение "восстановления палитры"
         this.setCookie("_game_color_return_to_def_from_green", this._game_color_return_to_def_from_green ? "1" : "0",
             {expires: 365 * 24 * 60 * 60});

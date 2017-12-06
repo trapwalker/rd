@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Agent: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+{% include "agent_menu_template.html" %}
+
+<div class="container">
+
+    <div class="row border">
+        <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
+            <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img
+                    src="{{ "/{}".format(user.avatar_link) }}"></div>
+            <div class="row text-center">Online: {{ server.agents_by_name.get(user.name, None) is not None }}</div>
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-8 h6">
+            <div class="row text-center">Login: {{ user.name }}</div>
+            <div class="row">Class: {{ _(agent.role_class.title) }}</div>
+            <div class="row">Level: {{ agent.get_real_lvl() }}</div>
+            <div class="row">Exp:
+                <div class="col input-group" style="max-width: 300px">
+                    <input type="number" min="0" id="agent_exp" class="form-control" value="{{ agent.exp }}"
+                           placeholder="exp"
+                           aria-label="exp">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeExp()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">Karma: {{ _(agent.karma_name()) }}  |  {{ agent.karma_norm }}  |
+                <div class="col input-group" style="max-width: 300px">
+                    <input type="number" min="-100" max="100" id="agent_karma" class="form-control" value="{{ agent.karma }}"
+                           placeholder="karma"
+                           aria-label="karma">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeKarma()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">Balance:
+                 <div class="col input-group" style="max-width: 300px">
+                    <input type="number" min="0" id="agent_balance" class="form-control" value="{{ agent.balance }}"
+                           placeholder="balance"
+                           aria-label="balance">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeBalance()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">Insurance: {{ _(agent.insurance.title) }}</div>
+            <div class="row">Frags: {{ agent.frag }}</div>
+            <div class="row">in_location_flag: {{ agent.in_location_flag }}</div>
+            <div class="row">Last Town: {{ agent.last_town and _(agent.last_town.title) }}</div>
+            <div class="row">Current Location: {{ agent.current_location and _(agent.current_location.title) }}</div>
+            <div class="row">
+                <div class="col-2">About</div>
+                <div class="col-10">{{ agent.about_self }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-12 h6 border">
+        <div class="row h3">Skills <button class="btn btn-secondary" type="button" onclick="SkillsReset()">Reset (include Perks)</button> </div>
+        <div class="row">driving: clear: {{ agent.driving.calc_value() }}  |  buy: {{ agent.driving.value }}</div>
+        <div class="row">shooting: clear: {{ agent.shooting.calc_value() }}  |  buy: {{ agent.shooting.value }}  |  real : {{ agent.get_current_agent_shooting() }}</div>
+        <div class="row">masking: clear: {{ agent.masking.calc_value() }}  |  buy: {{ agent.masking.value }}</div>
+        <div class="row">leading: clear: {{ agent.leading.calc_value() }}  |  buy: {{ agent.leading.value }}</div>
+        <div class="row">trading: clear: {{ agent.trading.calc_value() }}  |  buy: {{ agent.trading.value }}  |  real: {{ agent.get_current_agent_trading() }}</div>
+        <div class="row">engineering: clear: {{ agent.engineering.calc_value() }}  |  buy: {{ agent.engineering.value }}</div>
+        <div class="row">Free: {{ agent.get_lvl() + agent.role_class.start_free_point_skills - agent.skill_point_summ() + agent.buy_skill_point_summ() }}</div>
+    </div>
+
+    <div class="col-12 h6 border">
+        <div class="row h3">Perks <button class="btn btn-secondary" type="button" onclick="PerksReset()">Reset</button> </div>
+        {% for perk in agent.perks %}
+        <div class="col">{{ _(perk.title) }}</div>
+        {% end %}
+        <div class="row">Free: {{ agent.get_real_lvl() + agent.role_class.start_free_point_perks - len(agent.perks)}}</div>
+    </div>
+
+    <div class="col-12 h4 border">
+        <div class="row h3">Cars</div>
+        <div class="row"
+             {% if agent.car %}onclick="viewCarInfo('{{ agent.car.uid }}')" {% end %}
+        >Current Car: {{ agent.car and _(agent.car.title) }}
+        </div>
+        {% set car_list = sorted(agent.car_list, key=lambda car: car.last_parking_npc) %}
+        {% for car in car_list %}
+        <div class="row h5" onclick="viewCarInfo('{{ car.uid }}')" > {{ _(car.title) }}  |  {{ car.last_parking_npc }}
+        </div>
+        {% end %}
+    </div>
+</div>
+
+
+
+
+<div style="display: None">
+     <div id="data-username">{{ user.name }}</div>
+</div>
+
+<script>
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+
+    function viewCarInfo(car_uid) {
+        var username = $("#data-username").text();
+        console.log("viewCarInfo:: ", username, car_uid);
+        location = location.origin + '/adm/api/html/car_info?username=' + username + '&car_uid=' + car_uid;
+    }
+
+
+    function changeExp() {
+        var exp = parseInt(document.getElementById('agent_exp').value);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                exp: exp,
+                action: 'exp',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function changeKarma() {
+        var karma = parseInt(document.getElementById('agent_karma').value);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                karma: karma,
+                action: 'karma',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function changeBalance() {
+        var balance = parseInt(document.getElementById('agent_balance').value);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                balance: balance,
+                action: 'balance',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+    function SkillsReset() {
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                action: 'reset_skills',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+    function PerksReset() {
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                action: 'reset_perks',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+</script>
+
+
+</body>
+</html>

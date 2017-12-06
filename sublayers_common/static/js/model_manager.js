@@ -1207,11 +1207,16 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ChangeAgentKarma = function (event) {
-        console.log('ClientManager.prototype.ChangeAgentKarma', event);
+        // console.log('ClientManager.prototype.ChangeAgentKarma', event);
         if (locationManager.in_location_flag)
             locationManager.npc_relations = event.relations;
+        var old_karma = user.example_agent.rpg_info.karma;
         user.example_agent.rpg_info.karma = event.karma;
         characterManager.redraw();
+        if (event.karma > old_karma)
+            new WTextArcadeStatReceiveKarma().start();
+        else
+            new WTextArcadeStatLostKarma().start();
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
@@ -1375,6 +1380,7 @@ var ClientManager = (function () {
     ClientManager.prototype.SuccessBarterMessage = function (event) {
         //console.log('ClientManager.prototype.SuccessBarterMessage', event);
         barterManager.SuccessBarter(event.barter_id);
+        new WTextArcadeStatBarterSucces().start();
     };
 
     ClientManager.prototype.LockBarterMessage = function (event) {
@@ -1468,6 +1474,7 @@ var ClientManager = (function () {
         setOptions(event.data, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
+        new WTextArcadeStatReceiveExp().start();
     };
 
     ClientManager.prototype.UserChangePerkSkill = function(event) {
@@ -2004,8 +2011,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
-
 
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
         //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
@@ -2907,6 +2912,38 @@ var ClientManager = (function () {
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.ArcadeTextMessage = function (event) {
+        // console.log('ClientManager.prototype.ArcadeTextMessage', event);
+        switch(event.arcade_message_type) {
+            case 'quest_item':
+                new WTextArcadeStatQuestItem().start();
+                break;
+            case 'skill_point':
+                new WTextArcadeStatSkillPoint().start();
+                break;
+            case 'new_lwl':
+                new WTextArcadeStatNewLVL().start();
+                break;
+            case 'attack_warning':
+                new WTextArcadeStatAttackWarning().start();
+                break;
+            case 'turret_warning':
+                new WTextArcadeStatTurretWarning().start();
+                break;
+            case 'critical_condition':
+                new WTextArcadeStatCriticalCondition().start();
+                break;
+            case 'ammo_finish':
+                new WTextArcadeStatAmmoFinish().start();
+                break;
+            case 'barter_succes':
+                new new WTextArcadeStatBarterSucces().start();
+                break;
+            default:
+                console.warn('Неизвестный тип текста: event.message_type')
+        }
     };
 
     return ClientManager;
