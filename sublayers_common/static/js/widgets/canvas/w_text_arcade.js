@@ -373,6 +373,22 @@ var WTextArcadeStatCriticalCondition = (function (_super) {
 
     return WTextArcadeStatCriticalCondition
 })(WTextArcadeStatAttackWarning);
+
+
+var WTextArcadeStatAmmoFinish = (function (_super) {
+    __extends(WTextArcadeStatAmmoFinish, _super);
+
+    function WTextArcadeStatAmmoFinish(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_ammo_finish_1');
+        this.second_line = _('msg_ammo_finish_2');
+
+        this.rect_param = { x: -300, y: -100, w: 600, h: 130 }
+    }
+
+    return WTextArcadeStatAmmoFinish
+})(WTextArcadeStatAttackWarning);
 // ========================= Красная группа не выезжающих (конец)
 // ========================= Зеленая группа не выезжающих
 var WTextArcadeStatQuestItem = (function (_super) {
@@ -454,5 +470,6 @@ function TextArcadeTest() {
     // new WTextArcadeStatNewLVL().start();
     // new WTextArcadeStatAttackWarning().start();
     // new WTextArcadeStatTurretWarning().start();
-    new WTextArcadeStatCriticalCondition().start();
+    // new WTextArcadeStatCriticalCondition().start();
+    // new WTextArcadeStatAmmoFinish().start();
 }
