@@ -1469,6 +1469,7 @@ var ClientManager = (function () {
         setOptions(event.data, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
+        new WTextArcadeStatReceiveExp().start();
     };
 
     ClientManager.prototype.UserChangePerkSkill = function(event) {
@@ -2005,8 +2006,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
-
 
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
         //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
