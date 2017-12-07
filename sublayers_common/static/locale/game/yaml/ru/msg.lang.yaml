@@ -29,4 +29,12 @@
 
 "msg_lost_karma_1": "Вы потеряли карму!"
 
+"msg_spy_start_1": "Слежка начата!"
 
+"msg_spy_failed_1": "Слежка провалена!"
+
+"msg_quest_reward_1": "Задачи квеста выполнены!"
+"msg_quest_reward_2": "Вернитесь за наградой"
+
+"msg_quest_failed_1": "Предупреждение!"
+"msg_quest_failed_2": "Квест провален!"

@@ -2939,7 +2939,28 @@ var ClientManager = (function () {
                 new WTextArcadeStatAmmoFinish().start();
                 break;
             case 'barter_succes':
-                new new WTextArcadeStatBarterSucces().start();
+                new WTextArcadeStatBarterSucces().start();
+                break;
+            case 'receive_exp':
+                new WTextArcadeStatReceiveExp().start();
+                break;
+            case 'receive_karma':
+                new WTextArcadeStatReceiveKarma().start();
+                break;
+            case 'lost_karma':
+                new WTextArcadeStatLostKarma().start();
+                break;
+            case 'spy_start':
+                new WTextArcadeStatSpyStart().start();
+                break;
+            case 'spy_failed':
+                new WTextArcadeStatSpyFailed().start();
+                break;
+            case 'quest_reward':
+                new WTextArcadeStatQuestReward().start();
+                break;
+            case 'quest_failed':
+                new WTextArcadeStatQuestFailed().start();
                 break;
             default:
                 console.warn('Неизвестный тип текста: event.message_type')

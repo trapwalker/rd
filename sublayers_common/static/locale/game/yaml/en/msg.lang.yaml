@@ -29,23 +29,12 @@
 
 "msg_lost_karma_1": "You've lost Karma!"
 
+"msg_spy_start_1": "Surveillance is started!"
 
+"msg_spy_failed_1": "Surveillance is failed!"
 
+"msg_quest_reward_1": "Quest tasks are completed!"
+"msg_quest_reward_2": "Return for the reward"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+"msg_quest_failed_1": "Warning!"
+"msg_quest_failed_2": "The quest has been failed!"

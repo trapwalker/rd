@@ -71,7 +71,7 @@ var WTextArcade = (function () {
     }
 
     WTextArcade.prototype.start = function() {
-        // if (basic_server_mode) return;
+        if (basic_server_mode) return;
         this.queue.push(this);
         this.queue.sort(function(a, b) {return a.settings.priority < b.settings.priority});
         if (this.queue.length == 1) setTimeout(this._start.bind(this), 10);
@@ -238,6 +238,14 @@ var WTextArcadeStat = (function (_super) {
         _super.call(this, text);
     }
 
+    WTextArcadeStat.prototype.start = function() {
+        if (locationManager.in_location_flag) return;
+        this.queue.push(this);
+        this.queue.sort(function(a, b) {return a.settings.priority < b.settings.priority});
+        if (this.queue.length == 1) setTimeout(this._start.bind(this), 10);
+        return this;
+    };
+
     WTextArcadeStat.prototype._get_alpha = function (prc, time, pos) {
         if (this.phase == "start") return prc;
         if (this.phase == "finish") return 1.0 - prc;
@@ -390,6 +398,7 @@ var WTextArcadeStatAmmoFinish = (function (_super) {
     return WTextArcadeStatAmmoFinish
 })(WTextArcadeStatAttackWarning);
 // ========================= Красная группа не выезжающих (конец)
+
 // ========================= Зеленая группа не выезжающих
 var WTextArcadeStatQuestItem = (function (_super) {
     __extends(WTextArcadeStatQuestItem, _super);
@@ -522,6 +531,66 @@ var WTextArcadeStatLostKarma = (function (_super) {
 
     return WTextArcadeStatLostKarma
 })(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatSpyStart = (function (_super) {
+    __extends(WTextArcadeStatReceiveKarma, _super);
+
+    function WTextArcadeStatReceiveKarma(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_spy_start_1');
+        this.second_line = '';
+        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+    }
+
+    return WTextArcadeStatReceiveKarma
+})(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatSpyFailed = (function (_super) {
+    __extends(WTextArcadeStatLostKarma, _super);
+
+    function WTextArcadeStatLostKarma(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_spy_failed_1');
+        this.second_line = '';
+        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+    }
+
+    return WTextArcadeStatLostKarma
+})(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatQuestReward = (function (_super) {
+    __extends(WTextArcadeStatQuestReward, _super);
+
+    function WTextArcadeStatQuestReward(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_quest_reward_1');
+        this.second_line = _('msg_quest_reward_2');
+        this.rect_param = { x: -350, y: -100, w: 700, h: 130 }
+    }
+
+    return WTextArcadeStatQuestReward
+})(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatQuestFailed = (function (_super) {
+    __extends(WTextArcadeStatQuestFailed, _super);
+
+    function WTextArcadeStatQuestFailed(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_quest_failed_1');
+        this.second_line = _('msg_quest_failed_2');
+        this.rect_param = { x: -320, y: -100, w: 640, h: 130 }
+    }
+
+    return WTextArcadeStatQuestFailed
+})(WTextArcadeStatQuestItem);
 // ========================= Зеленая группа не выезжающих (конец)
 
 function TextArcadeTest() {
@@ -534,6 +603,10 @@ function TextArcadeTest() {
     // new WTextArcadeStatAmmoFinish().start();
     // new WTextArcadeStatBarterSucces().start();
     // new WTextArcadeStatReceiveExp().start();
-    new WTextArcadeStatReceiveKarma().start();
-    new WTextArcadeStatLostKarma().start();
+    // new WTextArcadeStatReceiveKarma().start();
+    // new WTextArcadeStatLostKarma().start();
+    // new WTextArcadeStatSpyStart().start();
+    // new WTextArcadeStatSpyFailed().start();
+    // new WTextArcadeStatQuestReward().start();
+    // new WTextArcadeStatQuestFailed().start();
 }
