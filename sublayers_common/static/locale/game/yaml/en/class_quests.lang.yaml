@@ -8,40 +8,40 @@
 "q_cq_caption_4": "Open a store"
 "q_cq_caption_5": "Get a supercar"
 "q_cq_caption_6": "Open a service center"
-"q_cq_caption_get_new_task": "Started a new quest."
+"q_cq_caption_get_new_task": "Started a new quest: find a mentor."
 "q_cq_class_target_note": "Class subject"
 "q_cq_visit_trainer": "Trainer was visited."
 "q_cq_select_teacher_note_caption": "Mentor"
 "q_cq_select_teacher_note_btn": "<br>Accept"
-"q_cq_phrase_1": "We don't know each other well enough. Until the relationship level is at least 60, there will be no further conversation.<//br> The relationship level can be increased by karmic affinity and completion of the tasks I give you."
+"q_cq_phrase_1": "We don't know each other well enough. Until the relationship level is at least 55, there will be no further conversation.<//br> The relationship level can be increased by karmic affinity and completion of the tasks I give you."
 "q_cq_phrase_2": "All right, these are my requirements for apprentices:<//br>- A contribution of 3000 NC.<//br>- Level 2 or higher."
 "q_cq_phrase_success": "All right, apprentice. Let's look at your car."
 "q_cq_final": "Quest is completed."
 
 
 # GetClassCarQuest
-"q_cq_get_car_started": "Visit a mentor"
+"q_cq_get_car_started": "Quest is started."
 "q_cq_get_car_note_page": "Right<br>vehicle"
 "q_cq_get_car_note_btn": "<br>Continue"
 "q_cq_get_car_not_u_cl": |
   A self-respecting {{classname}} can not ride it.
 "q_cq_get_car_not_car": "Dude, where's your car?"
 "q_cq_get_car_finished": "Quest is completed."
-"q_cq_get_car_text_template": |
-    To begin, we need to make sure that you are driving the right vehicle, {{role_class_name}}.
+"q_cq_get_car_text_template": "To begin, we need to make sure that you are driving the right vehicle, {{role_class_name}}.<br>Reward: 750 exp."
 "q_cq_get_car_note_1": "Each specialist has particular preferences when choosing vehicles. It makes sense to trade using something with a large trunk, to conduct reconnaissance using something light and undistinguished and to fight using a powerful vehicle with a large number of weapon slots on its body. To begin with, we need to make sure that you drive the right car,"
 "q_cq_get_car_note_2": "."
 "q_cq_get_car_note_phrase_success": "Fine. Now I've got a present for you."
 
 # MaskingQuest
-"q_cq_masking_started": "Visit a mentor"
+"q_cq_masking_started": "Quest is started."
 "q_cq_masking_npc_note_caption": "Artefact"
 "q_cq_masking_npc_note_text": "There are some things that we don't throw into a trunk but carry around with us. They are called artifacts, talismans, quest items or simply junk that we can't bring ourselves to throw away. I know where to find something that you're gonna really like. It's hidden in a cache. But it's well protected. I know the guy whose cache it is and it's useless to just ram into it. But if you secretly sneak past the sentry gun, it can work out. When you are near the cache, slow down to become less noticeable and stay away from the sentry gun!"
 "q_cq_masking_npc_note_btn": "<br>Continue"
-"q_cq_masking_text": "I know where to find something that you're gonna really like. It's hidden in a cache. But it's well protected. I know the guy whose cache it is and it's useless to just ram into it. But if you secretly sneak past the sentry gun, it can work out. The faster you go, the more noticeable you are. When you are near the cache, slow down to 20 km/h to become less noticeable and stay away from the sentry gun!"
+"q_cq_masking_text": "I know where to find something that you're gonna really like. It's hidden in a cache. But it's well protected. I know the guy whose cache it is and it's useless to just ram into it. But if you secretly sneak past the sentry gun, it can work out. The faster you go, the more noticeable you are. When you are near the cache, slow down to 20 km/h to become less noticeable and stay away from the sentry gun!<br>Reward: 1000 exp."
 "q_cq_masking_replica_not_finish": "Come back when you have an artifact!"
 "q_cq_masking_warning": "Attention! Slow down to 20 km/h."
 "q_cq_masking_phrase_success": "And what we have..."
+"q_cq_masking_get_artefact": "Artefact received."
 "q_cq_masking_phrase_to_chosen_one": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where you're going to travel a lot."
 "q_cq_masking_phrase_to_alpha_wolf": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where it will be necessary to show leadership qualities."
 "q_cq_masking_phrase_to_night_rider": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where you will learn to be invisible, like a road cat."

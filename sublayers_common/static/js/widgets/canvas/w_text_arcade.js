@@ -1,3 +1,6 @@
+var const_one_line_rect_height = 75;
+var const_two_line_rect_height = 130;
+
 var WTextArcade = (function () {
     WTextArcade.prototype.queue = [];
 
@@ -271,7 +274,7 @@ var WTextArcadeStatRect = (function (_super) {
 
         this.first_line = '';
         this.second_line = '';
-        this.rect_param = { x: -230, y: -100, w: 460, h: 130 }
+        this.rect_param = { x: -230, y: -100, w: 460, h: const_two_line_rect_height }
     }
 
     WTextArcadeStatRect.prototype.redraw = function (ctx, time) {
@@ -336,7 +339,7 @@ var WTextArcadeStatAttackWarning = (function (_super) {
 
         this.first_line = _('msg_attack_warning_1');
         this.second_line = _('msg_attack_warning_2');
-        this.rect_param = { x: -230, y: -100, w: 460, h: 130 }
+        this.rect_param = { x: -230, y: -100, w: 460, h: const_two_line_rect_height }
     }
 
     WTextArcadeStatAttackWarning.prototype._get_alpha = function (prc, time, pos) {
@@ -360,7 +363,7 @@ var WTextArcadeStatTurretWarning = (function (_super) {
         this.first_line = _('msg_turret_warning_1');
         this.second_line = _('msg_turret_warning_2');
 
-        this.rect_param = { x: -380, y: -100, w: 760, h: 130 }
+        this.rect_param = { x: -380, y: -100, w: 760, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatTurretWarning
@@ -376,7 +379,7 @@ var WTextArcadeStatCriticalCondition = (function (_super) {
         this.first_line = _('msg_critical_conditiong_1');
         this.second_line = _('msg_critical_conditiong_2');
 
-        this.rect_param = { x: -380, y: -100, w: 760, h: 130 }
+        this.rect_param = { x: -380, y: -100, w: 760, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatCriticalCondition
@@ -392,7 +395,7 @@ var WTextArcadeStatAmmoFinish = (function (_super) {
         this.first_line = _('msg_ammo_finish_1');
         this.second_line = _('msg_ammo_finish_2');
 
-        this.rect_param = { x: -300, y: -100, w: 600, h: 130 }
+        this.rect_param = { x: -300, y: -100, w: 600, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatAmmoFinish
@@ -418,8 +421,8 @@ var WTextArcadeStatQuestItem = (function (_super) {
                 finish: 570
             }
         },
-        text_color: '#00ffa1',
-        shadow_color: '#00cc81',
+        text_color: '#2ffa00',
+        shadow_color: '#2ffa00',
         audio: 'green_alert'
     };
 
@@ -428,7 +431,7 @@ var WTextArcadeStatQuestItem = (function (_super) {
 
         this.first_line = _('msg_quest_item_1');
         this.second_line = _('msg_quest_item_2');
-        this.rect_param = { x: -300, y: -100, w: 600, h: 130 }
+        this.rect_param = { x: -300, y: -100, w: 600, h: const_two_line_rect_height }
     }
 
     WTextArcadeStatQuestItem.prototype._get_alpha = function (prc, time, pos) {
@@ -451,7 +454,7 @@ var WTextArcadeStatSkillPoint = (function (_super) {
 
         this.first_line = _('msg_skill_point_1');
         this.second_line = _('msg_skill_point_2');
-        this.rect_param = { x: -350, y: -100, w: 700, h: 130 }
+        this.rect_param = { x: -350, y: -100, w: 700, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatSkillPoint
@@ -466,7 +469,7 @@ var WTextArcadeStatNewLVL = (function (_super) {
 
         this.first_line = _('msg_new_lvl_1');
         this.second_line = _('msg_new_lvl_2');
-        this.rect_param = { x: -320, y: -100, w: 640, h: 130 }
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatNewLVL
@@ -481,7 +484,7 @@ var WTextArcadeStatBarterSucces = (function (_super) {
 
         this.first_line = _('msg_barter_success_1');
         this.second_line = '';
-        this.rect_param = { x: -430, y: -100, w: 860, h: 70 }
+        this.rect_param = { x: -430, y: -100, w: 860, h: const_one_line_rect_height }
     }
 
     return WTextArcadeStatBarterSucces
@@ -496,7 +499,7 @@ var WTextArcadeStatReceiveExp = (function (_super) {
 
         this.first_line = _('msg_receive_exp_1');
         this.second_line = '';
-        this.rect_param = { x: -400, y: -100, w: 800, h: 70 }
+        this.rect_param = { x: -400, y: -100, w: 800, h: const_one_line_rect_height }
     }
 
     return WTextArcadeStatReceiveExp
@@ -511,7 +514,7 @@ var WTextArcadeStatReceiveKarma = (function (_super) {
 
         this.first_line = _('msg_receive_karma_1');
         this.second_line = '';
-        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_one_line_rect_height }
     }
 
     return WTextArcadeStatReceiveKarma
@@ -526,7 +529,7 @@ var WTextArcadeStatLostKarma = (function (_super) {
 
         this.first_line = _('msg_lost_karma_1');
         this.second_line = '';
-        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_one_line_rect_height }
     }
 
     return WTextArcadeStatLostKarma
@@ -541,7 +544,7 @@ var WTextArcadeStatSpyStart = (function (_super) {
 
         this.first_line = _('msg_spy_start_1');
         this.second_line = '';
-        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_one_line_rect_height }
     }
 
     return WTextArcadeStatReceiveKarma
@@ -556,7 +559,7 @@ var WTextArcadeStatSpyFailed = (function (_super) {
 
         this.first_line = _('msg_spy_failed_1');
         this.second_line = '';
-        this.rect_param = { x: -320, y: -100, w: 640, h: 70 }
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_one_line_rect_height }
     }
 
     return WTextArcadeStatLostKarma
@@ -571,7 +574,7 @@ var WTextArcadeStatQuestReward = (function (_super) {
 
         this.first_line = _('msg_quest_reward_1');
         this.second_line = _('msg_quest_reward_2');
-        this.rect_param = { x: -350, y: -100, w: 700, h: 130 }
+        this.rect_param = { x: -350, y: -100, w: 700, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatQuestReward
@@ -586,7 +589,7 @@ var WTextArcadeStatQuestFailed = (function (_super) {
 
         this.first_line = _('msg_quest_failed_1');
         this.second_line = _('msg_quest_failed_2');
-        this.rect_param = { x: -320, y: -100, w: 640, h: 130 }
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_two_line_rect_height }
     }
 
     return WTextArcadeStatQuestFailed
@@ -603,10 +606,10 @@ function TextArcadeTest() {
     // new WTextArcadeStatAmmoFinish().start();
     // new WTextArcadeStatBarterSucces().start();
     // new WTextArcadeStatReceiveExp().start();
-    // new WTextArcadeStatReceiveKarma().start();
-    // new WTextArcadeStatLostKarma().start();
+    new WTextArcadeStatReceiveKarma().start();
+    new WTextArcadeStatLostKarma().start();
     // new WTextArcadeStatSpyStart().start();
     // new WTextArcadeStatSpyFailed().start();
     // new WTextArcadeStatQuestReward().start();
-    // new WTextArcadeStatQuestFailed().start();
+    new WTextArcadeStatQuestFailed().start();
 }
