@@ -299,6 +299,7 @@ var WTextArcadeStatRect = (function (_super) {
         ctx.font = this._font2;
         ctx.fillText(this.second_line, 0, 0);
 
+        ctx.beginPath();
         ctx.lineWidth = 2;
         ctx.strokeStyle = this.settings.text_color;
         ctx.rect(this.rect_param.x, this.rect_param.y, this.rect_param.w, this.rect_param.h);
@@ -603,11 +604,11 @@ function TextArcadeTest() {
     // new WTextArcadeStatAttackWarning().start();
     // new WTextArcadeStatTurretWarning().start();
     // new WTextArcadeStatCriticalCondition().start();
-    // new WTextArcadeStatAmmoFinish().start();
+    new WTextArcadeStatAmmoFinish().start();
     // new WTextArcadeStatBarterSucces().start();
     // new WTextArcadeStatReceiveExp().start();
-    new WTextArcadeStatReceiveKarma().start();
-    new WTextArcadeStatLostKarma().start();
+    // new WTextArcadeStatReceiveKarma().start();
+    // new WTextArcadeStatLostKarma().start();
     // new WTextArcadeStatSpyStart().start();
     // new WTextArcadeStatSpyFailed().start();
     // new WTextArcadeStatQuestReward().start();
