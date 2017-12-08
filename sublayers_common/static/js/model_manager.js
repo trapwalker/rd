@@ -435,16 +435,15 @@ var ClientManager = (function () {
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
             case 'MaskingMapMarkerNote':
-                // console.log('MaskingMapMarkerNote', note.position);
                 var quest = journalManager.quests.getQuest(note.quest_uid);
-                var rad_note = new QuestMCMapMarkerNote({
+                var rad_note = new QuestMapMarkerNote({
                     quest_uid: note.quest_uid,
                     uid: note.uid,
                     position: note.position,
                     radius: note.radius,
                     icon_full: quest && quest.map_icon_full,
                     icon_circle: quest && quest.map_icon_circle,
-                    focus_caption: ''
+                    focus_caption: quest && quest.caption
                 });
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
