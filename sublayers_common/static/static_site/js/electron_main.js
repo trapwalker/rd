@@ -20,7 +20,9 @@ var videoPlayerReadyState = false;
 var lastRadioPlayerVolumeBeforeVideoActive = 0.15;
 
 var cut_radio_player = null;
-
+var radio_load_channel = null;
+var radio_load_quality = null;
+var radio_is_playing = null;
 
 function SetImageOnLoad(img, onLoadHandler) {
     if (img.complete) {
@@ -106,7 +108,7 @@ function main() {
         if (audioManager.general_gain == 0.0) {
             // Отключено, нужно включить звук
             audioManager.gain_all(GlobalGeneralSiteGain);
-            set_radio_volume(GlobalGeneralSiteGain);
+            set_radio_volume(GlobalGeneralSiteGain || 0.05);
             $(this).removeClass('off');
         }
         else {
@@ -157,6 +159,31 @@ function getCookie(name) {
     "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
   ));
   return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+
+function setCookie(name, value, options) {
+    options = options || {};
+    var expires = options.expires;
+
+    if (typeof expires == "number" && expires) {
+        var d = new Date();
+        d.setTime(d.getTime() + expires * 1000);
+        expires = options.expires = d;
+    }
+    if (expires && expires.toUTCString) {
+        options.expires = expires.toUTCString();
+    }
+    value = encodeURIComponent(value);
+    var updatedCookie = name + "=" + value;
+    for (var propName in options) {
+        updatedCookie += "; " + propName;
+        var propValue = options[propName];
+        if (propValue !== true) {
+            updatedCookie += "=" + propValue;
+        }
+    }
+    document.cookie = updatedCookie;
 }
 
 
@@ -252,17 +279,17 @@ function init_radio_cut() {
 
     //play, channel_index, quality_index, volume
     var radio_volume = 0.2;
-    var play = 1;
+    radio_is_playing = 1;
     var radio_name = "r_ch0_128";
     var radio_settings = getCookie('radio_player');
     if (radio_settings) {
         try {
             var settings = radio_settings.split('_');
-            play = parseInt(settings[0]);
-            var channel = parseInt(settings[1]);
-            var quality = parseInt(settings[2]);
+            radio_is_playing = parseInt(settings[0]);
+            radio_load_channel = parseInt(settings[1]);
+            radio_load_quality = parseInt(settings[2]);
             radio_volume = parseFloat(settings[3]);
-            radio_name = "r_" + radio_map.channel_map[channel] + "_" + radio_map.quality_map[quality];
+            radio_name = "r_" + radio_map.channel_map[radio_load_channel] + "_" + radio_map.quality_map[radio_load_quality];
         }
         catch (err) {
             console.error('Incorrect RadioPlayer settings: ', radio_settings);
@@ -270,12 +297,12 @@ function init_radio_cut() {
         }
     }
 
-    if (!play) return;
-
     var radio_object = radio_map.channels.hasOwnProperty(radio_name) && radio_map.channels[radio_name] || radio_map.channels["r_ch0_128"];
-
-    audioManager.load(radio_object.name, {url: radio_object.link}, true, TagAudioObject, 1.0);
+    audioManager.load(radio_object.name, {url: radio_object.link}, false, TagAudioObject, 1.0);
     cut_radio_player = audioManager.get(radio_object.name);
+
+    if (radio_is_playing)
+        cut_radio_player.play();
 
     $(".electron-sound-volume-diagram").click(function (event) {
         var max_width = event.target.offsetWidth || 1;
@@ -292,11 +319,29 @@ function set_radio_volume(value) {
     value = Math.min(Math.max(value, 0.0), 1.0);
     jj.find(".electron-sound-volume-diagram-hover").first().width(value * max_width);
     audioManager.gain_all(value);
+    // console.log("set_radio_volume2 =  ", value);
+    // cut_radio_player.gain(value);
 
-    if (value == 0)
+    if (value == 0) {
         $('.site-sound-switch').first().addClass("off");
-    else
+        if (radio_is_playing) {
+            radio_is_playing = 0;
+            cut_radio_player.stop();
+        }
+    }
+    else {
         $('.site-sound-switch').first().removeClass("off");
+        if (!radio_is_playing) {
+            radio_is_playing = 1;
+            cut_radio_player.play();
+        }
+    }
+
+
+
+    var radio_player_cookie = [value > 0 ? '1':'0', radio_load_channel || 0, radio_load_quality || 0, value.toFixed(2), 1].join('_');
+    console.log(radio_player_cookie);
+    setCookie("radio_player", radio_player_cookie, {path: "/", expires: 365 * 24 * 60 * 60});
 }
 
 
