@@ -767,8 +767,8 @@ class Quest(Node):
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
-    def locale(self, key):
-        lang = self.agent and self.agent.profile._agent_model and self.agent.profile._agent_model.user and self.agent.profile._agent_model.user.lang or 'en'
+    def locale(self, key, loc=None):
+        lang = loc or self.agent and self.agent.profile._agent_model and self.agent.profile._agent_model.user and self.agent.profile._agent_model.user.lang or 'en'
         return locale(lang=lang, key=key)
 
     def npc_replica(self, npc, replica, event, replica_type='Error'):

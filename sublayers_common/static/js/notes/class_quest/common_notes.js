@@ -81,7 +81,11 @@ var AccumulateNucoinsQuestNote = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img accum-nucoins"></div>' +
-            '<div class="note-class-text accum-nucoins">' + _("q_cq_acc_summ_task_text") + '</div>'
+            '<div class="note-class-text accum-nucoins">' +
+                user.login + ',' +
+                _("q_cq_journal_text") +
+                _("q_cq_acc_summ_task_text") +
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -110,7 +114,11 @@ var KillsClassQuestNote = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img killer-class-quest"></div>' +
-            '<div class="note-class-text killer-class-quest">'+_("q_cq_kills_task_text")+'</div>'
+            '<div class="note-class-text killer-class-quest">' +
+                user.login + ',' +
+                _("q_cq_journal_text") +
+                _("q_cq_kills_task_text") +
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -139,7 +147,11 @@ var GetPartyExpQuestNote = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img get-party-exp"></div>' +
-            '<div class="note-class-text get-party-exp">' + _("q_cq_party_exp_task_text") + '</div>'
+            '<div class="note-class-text get-party-exp">' +
+                user.login + ',' +
+                _("q_cq_journal_text") +
+                _("q_cq_party_exp_task_text") +
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -168,7 +180,11 @@ var SetMechanicItemsQuestNote = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img set-mechanic-items"></div>' +
-            '<div class="note-class-text set-mechanic-items">'+_("q_cq_mech_items_task_text")+'</div>'
+            '<div class="note-class-text set-mechanic-items">' +
+                user.login + ',' +
+                _("q_cq_journal_text") +
+                _("q_cq_mech_items_task_text")+
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -223,10 +239,13 @@ var VisitTownsQuestNote = (function (_super) {
             console.warn('quest not found:', this.quest_uid);
             return;
         }
-
         var jq_up_path = $(
             '<div class="note-class-img visit-towns-class-quest"></div>' +
-            '<div class="note-class-text visit-towns-class-quest">'+_("q_cq_visit_towns_task_text")+'</div>'
+            '<div class="note-class-text visit-towns-class-quest">' +
+                user.login + ',' +
+                _("q_cq_journal_text") +
+                _("q_cq_visit_towns_task_text") +
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
@@ -283,7 +302,11 @@ var ShadowingQuestNote = (function (_super) {
 
         var jq_up_path = $(
             '<div class="note-class-img shadowing-class-quest"></div>' +
-            '<div class="note-class-text shadowing-class-quest">'+_("q_cq_shadowing_task_text")+'</div>'
+            '<div class="note-class-text shadowing-class-quest">' +
+                user.login + ',' +
+                _("q_cq_journal_text") +
+                _("q_cq_shadowing_task_text") +
+            '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };
