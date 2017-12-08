@@ -516,6 +516,7 @@ var WCanvasStaticTownMarker = (function (_super) {
                     case 'reg:///registry/poi/locations/towns/painted_rock':
                         icon_name = 'city_painted_rock';
                         break;
+                    case 'reg:///registry/poi/locations/towns/nukeoil_006':
                     case 'reg:///registry/poi/locations/towns/nukeoil_005':
                     case 'reg:///registry/poi/locations/towns/nukeoil_004':
                     case 'reg:///registry/poi/locations/towns/nukeoil_003':
