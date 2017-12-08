@@ -51,9 +51,8 @@
 
 
 # Common Text
-"q_cq_journal_text": |
-    {{player_name}}, now you have a wheels, a class artifact, if you want to know the secrets of the profession you will have to get a little experience. To start, {{task_text}}
-
+"q_cq_journal_text": " now you have a wheels, a class artifact, if you want to know the secrets of the profession you will have to get a little experience. To start, "
+"q_cq_journal_reward_1": "Reward: 3000 exp."
 
 # ClassQuestVisitTowns
 "q_cq_visit_towns_started": "Quest is started."
@@ -61,11 +60,10 @@
     {{ town and town.title or 'N' }} town is visited. {% if towns_left %}Left: {{ '{:.0f}'.format(towns_left) }}.{% end %}
 "q_cq_visit_towns_finished_page": "Get busy!"
 "q_cq_visit_towns_finished_btn": "<br>Continue"
-"q_cq_visit_towns_replica_not_finish": |
-  You were not everywhere. {{towns_left}} towns left.
+"q_cq_visit_towns_replica_not_finish": "You were not everywhere. Go visit:"
 "q_cq_visit_towns_replica_return_to_teacher": "All towns are visited. Come back to the mentor."
 "q_cq_visit_towns_finished": "Quest is completed."
-"q_cq_visit_towns_task_text": "You'll have to find a route to all the cities of the Nuke Commander system. What accomplishments to expect from the Chosen one if he only saw his yard? Breathe in some road dust, find out what it's like to drive through the woods, mountains and off-road, rape the bloody odometer, your engine be blasted! Come back when you've been everywhere..."
+"q_cq_visit_towns_task_text": "you'll have to find a route to all the cities of the Nuke Commander system. What accomplishments to expect from the Chosen one if he only saw his yard? Breathe in some road dust, find out what it's like to drive through the woods, mountains and off-road, rape the bloody odometer, your engine be blasted! Come back when you've been everywhere..."
 "q_cq_visit_towns_phrase_success": "Now that you've seen the world, let's continue to make you a pro."
 
 
@@ -75,7 +73,7 @@
 "q_cq_acc_summ_finished_btn": "<br>Continue"
 "q_cq_acc_summ_replica_not_finish": "Where's the money? Come back when you earn 25 000 NC."
 "q_cq_acc_summ_finished": "Quest is completed."
-"q_cq_acc_summ_task_text": "You like money, and I have a lesson for you that I learned from my father. Earn it. Show me that you've got at least 25,000 NC. Accomplish tasks, buy for less, sell for more; rob, steal — it's all the same, nucoins don't stink. Until you understand the cost of a startup capital, you won't make a good capitalist, mister."
+"q_cq_acc_summ_task_text": "you like money, and I have a lesson for you that I learned from my father. Earn it. Show me that you've got at least 25,000 NC. Accomplish tasks, buy for less, sell for more; rob, steal — it's all the same, nucoins don't stink. Until you understand the cost of a startup capital, you won't make a good capitalist, mister."
 "q_cq_acc_summ_task_phrase_success": "Now that you aren't a beggar, we've begun to speak the same language. Let's continue."
 
 
@@ -86,9 +84,9 @@
 "q_cq_kills_replica_not_finish": |
   In your log only {{complete}}/{{count}} burned vehicles.
 "q_cq_kills_finished": "Quest is completed."
-"q_cq_kills_target_killed": "Kill is counted."
-"q_cq_kills_back_to_teacher": "Get busy: quest tasks are completed."
-"q_cq_kills_task_text": "You need to come to terms with the idea that your lane is a main road always and everywhere, at any intersection. Ruin a dozen cars. A rabid road dog rules this world. Until he tastes blood, adrenaline and splashes of fuel and hears the roar of a crazed engine and the crunch of a synchromesh, he isn't ready for dog fights. Return with 12 notches on your steering wheel."
+"q_cq_kills_target_killed": "The kill of {} is counted."
+"q_cq_kills_back_to_teacher": "Quest tasks are completed."
+"q_cq_kills_task_text": "you need to come to terms with the idea that your lane is a main road always and everywhere, at any intersection. Ruin a dozen cars. A rabid road dog rules this world. Until he tastes blood, adrenaline and splashes of fuel and hears the roar of a crazed engine and the crunch of a synchromesh, he isn't ready for dog fights. Return with 12 notches on your steering wheel."
 "q_cq_kills_task_phrase_success": "Have you smelled gunpowder? It's just a start. You're going to learn not only how to win, but also how not to lose."
 
 
@@ -98,11 +96,11 @@
 "q_cq_party_exp_finished_btn": "<br>Continue"
 "q_cq_party_exp_replica_not_finish": |
   Your party have earn only {{xp}}/{{max_exp}} experience points.
-"q_cq_party_exp_done_text": "Get busy: quest tasks are completed."
+"q_cq_party_exp_done_text": "Quest tasks are completed."
 "q_cq_party_exp_finished": "Quest is completed."
 "q_cq_party_exp_one_template": |
     Experience points: {{ '{:.0f}'.format(exp) }} / {{ '{:.0f}'.format(max_exp) }}.
-"q_cq_party_exp_task_text": "A true leader starts from himself. Create a squad and, being its part, gain 1000 experience points. Squads are created mainly for sharing experience, which allows each member to focus on their field. But to share experience with your fellows, you first need to obtain it. Create a squad, choose its name and define its objectives. Accomplish tasks or burn strangers' cars — in fact, I don't care."
+"q_cq_party_exp_task_text": "a true leader starts from himself. Create a squad and, being its part, gain 1000 experience points. Squads are created mainly for sharing experience, which allows each member to focus on their field. But to share experience with your fellows, you first need to obtain it. Create a squad, choose its name and define its objectives. Accomplish tasks or burn strangers' cars — in fact, I don't care."
 "q_cq_party_exp_phrase_success": "Congrats, now you understand what your fellows will face. But there is also another kind of experience..."
 
 
@@ -113,7 +111,7 @@
 "q_cq_mech_items_finished_page": "Get busy!"
 "q_cq_mech_items_finished_btn": "<br>Continue"
 "q_cq_mech_items_finished": "Quest is completed."
-"q_cq_mech_items_task_text": "Look and learn. Don't mess with a mechanism if you don't understand how it's arranged. Find 6 details that fit for tuning your vehicle and have them installed by an experienced mechanic. Each detail can add bonuses and penalties to the specifications of your car and replace its stock counterpart, which returns to its place if necessary. Check out changes in specifications after installing everything at once."
+"q_cq_mech_items_task_text": "look and learn. Don't mess with a mechanism if you don't understand how it's arranged. Find 6 details that fit for tuning your vehicle and have them installed by an experienced mechanic. Each detail can add bonuses and penalties to the specifications of your car and replace its stock counterpart, which returns to its place if necessary. Check out changes in specifications after installing everything at once."
 "q_cq_mech_items_phrase_success": "All right. Do you feel that parental affection when you look at those hot wheels? Now I'm gonna tell you how to use your car to the full."
 
 
@@ -127,7 +125,7 @@
   On your logs, I see only {{complete}}/{{count}} completed snoops.
 "q_cq_shadowing_back_to_teacher": "Get busy: quest tasks are completed."
 "q_cq_shadowing_finished": "Quest is completed."
-"q_cq_shadowing_task_text": "You sneaked past that stupid sentry gun. I knew about its defect so that wasn't difficult. But it's not always so seamless. You outta learn to disappear from sight of real hounds to overcome a more audacious or numerous adversary. Follow three people for at least one minute. Use the noticeability sensor on your dashboard. The rules are the same: the lighter your vehicle is and the lower your speed is, the less noticeable you are."
+"q_cq_shadowing_task_text": "you sneaked past that stupid sentry gun. I knew about its defect so that wasn't difficult. But it's not always so seamless. You outta learn to disappear from sight of real hounds to overcome a more audacious or numerous adversary. Follow three people for at least one minute. Use the noticeability sensor on your dashboard. The rules are the same: the lighter your vehicle is and the lower your speed is, the less noticeable you are."
 "q_cq_shadowing_start_target": "Surveillance on a {{ target_login }} is started."
 "q_cq_shadowing_break_target": "{{ target_login }} is detect you!"
 "q_cq_shadowing_lost_target": "{{ target_login }} is left from you!"
