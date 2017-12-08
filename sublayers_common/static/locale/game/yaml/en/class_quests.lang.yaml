@@ -28,7 +28,7 @@
 "q_cq_get_car_not_car": "Dude, where's your car?"
 "q_cq_get_car_finished": "Quest is completed."
 "q_cq_get_car_text_template": "To begin, we need to make sure that you are driving the right vehicle, {{role_class_name}}.<br>Reward: 750 exp."
-"q_cq_get_car_note_1": "Each specialist has particular preferences when choosing vehicles. It makes sense to trade using something with a large trunk, to conduct reconnaissance using something light and undistinguished and to fight using a powerful vehicle with a large number of weapon slots on its body. To begin with, we need to make sure that you drive the right car,"
+"q_cq_get_car_note_1": "Each specialist has particular preferences when choosing vehicles. It makes sense to trade using something with a large trunk, to conduct reconnaissance using something light and undistinguished and to fight using a powerful vehicle with a large number of weapon slots on its body. To begin with, we need to make sure that you drive the right car, "
 "q_cq_get_car_note_2": "."
 "q_cq_get_car_note_phrase_success": "Fine. Now I've got a present for you."
 
