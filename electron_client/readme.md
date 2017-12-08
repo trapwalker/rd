@@ -18,6 +18,13 @@
 
 5. Билдим приложение, кладём steam_appid.txt в папки с билдами
 
+6. Загрузка в стим через steamworks sdk:
+6.1. Настроить скрипт steam-sdk/tools/ContentBuilder/scripts/app_build_622470.vdf - здесь выбираем хранилища, в которые будем проталкивать билды
+6.2. Настроить скрипт steam-sdk/tools/ContentBuilder/scripts/depot_build_62247X.vdf - выбираем номер хранилища и внутри настраиваем путь к папке с билдом 
+6.3. Запускаем steamcmd в steam-sdk/tools/ContentBuilder/builder<win=""|osx="_osx"|linux="_linux">
+6.4. Через steamcmd выполняем команду login и но путь должен быть абсолютным "run_app_build /steam-sdk/tools/ContentBuilder/scripts/app_build_622470.vdf"
+6.4.1 win = C:\Projects\steam-sdk\tools\ContentBuilder\scripts\app_build_622470.vdf
+6.4.2 mac/linux = /Users/<username>/Desktop/ele/steam-sdk/tools/ContentBuilder/scripts/app_build_622470.vdf
 
 
 # Особенности Windows
@@ -35,6 +42,7 @@
 
 3. После билда приложения папки greenworks может не оказаться в сбилденной папке. Поэтому скопировать папку greenworks в билд.
 
+4. Заливать версию для линукса можно из под windows версии steamworks sdk 
 
 
 
@@ -45,9 +53,5 @@
 
 3. steam_appid.txt положить в RoadDogs.app/Contents/MacOS/ (Рядом непосредственно с запускающимся файлом)
 
-4. 
-
-
-
-
+4. Загружать в стим нужно только через steam_sdk на macOS. Только тогда оно, скачиваясь через стим, запускается.
 
