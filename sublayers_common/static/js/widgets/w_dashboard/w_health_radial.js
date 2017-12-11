@@ -283,7 +283,7 @@ var WHPRadial = (function (_super) {
         // todo: определить способ плавного изменения области заливки
         if (Math.abs(this.value_prc - prc) > 0.005) {
             // Сообщение о том что нас атакуют не чаще чем раз в 30с.
-            if ((time - this.last_msg_time) > 30) {
+            if (((time - this.last_msg_time) > 30) && (prc < this.value_prc)) {
                 if (this.first_msg) this.first_msg = false;
                 else {
                     this.last_msg_time = time;
