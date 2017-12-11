@@ -616,7 +616,7 @@ function TextArcadeTest() {
     // new WTextArcadeStatQuestItem().start();
     // new WTextArcadeStatSkillPoint().start();
     // new WTextArcadeStatNewLVL().start();
-    // new WTextArcadeStatAttackWarning().start();
+    new WTextArcadeStatAttackWarning().start();
     // new WTextArcadeStatTurretWarning().start();
     // new WTextArcadeStatCriticalCondition().start();
     // new WTextArcadeStatAmmoFinish().start();
@@ -624,8 +624,8 @@ function TextArcadeTest() {
     // new WTextArcadeStatReceiveExp().start();
     // new WTextArcadeStatReceiveKarma().start();
     // new WTextArcadeStatLostKarma().start();
-    new WTextArcadeStatSpyStart().start();
-    new WTextArcadeStatSpyFailed().start();
+    // new WTextArcadeStatSpyStart().start();
+    // new WTextArcadeStatSpyFailed().start();
     new WTextArcadeStatSpyFinish().start();
     // new WTextArcadeStatQuestReward().start();
     // new WTextArcadeStatQuestFailed().start();
