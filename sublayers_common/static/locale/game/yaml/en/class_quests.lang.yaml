@@ -100,7 +100,7 @@
 "q_cq_party_exp_finished": "Quest is completed."
 "q_cq_party_exp_one_template": |
     Experience points: {{ '{:.0f}'.format(exp) }} / {{ '{:.0f}'.format(max_exp) }}.
-"q_cq_party_exp_task_text": "a true leader starts from himself. Create a squad and, being its part, gain 1000 experience points. Squads are created mainly for sharing experience, which allows each member to focus on their field. But to share experience with your fellows, you first need to obtain it. Create a squad, choose its name and define its objectives. Accomplish tasks or burn strangers' cars — in fact, I don't care."
+"q_cq_party_exp_task_text": "a true leader starts from himself. Create a squad and, being its part, gain 1000 exp. Squads are created mainly for sharing experience and vision, which allows each member to focus on their field. But to share experience with your fellows, you first need to obtain it. Create a squad, choose its name and define its objectives. Accomplish tasks or burn strangers' cars — in fact, I don't care."
 "q_cq_party_exp_phrase_success": "Congrats, now you understand what your fellows will face. But there is also another kind of experience..."
 
 
