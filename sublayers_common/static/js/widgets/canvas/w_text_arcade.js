@@ -567,6 +567,21 @@ var WTextArcadeStatSpyFailed = (function (_super) {
 })(WTextArcadeStatQuestItem);
 
 
+var WTextArcadeStatSpyFinish = (function (_super) {
+    __extends(WTextArcadeStatSpyFinish, _super);
+
+    function WTextArcadeStatSpyFinish(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_spy_finish_1');
+        this.second_line = '';
+        this.rect_param = { x: -320, y: -100, w: 640, h: const_one_line_rect_height }
+    }
+
+    return WTextArcadeStatSpyFinish
+})(WTextArcadeStatQuestItem);
+
+
 var WTextArcadeStatQuestReward = (function (_super) {
     __extends(WTextArcadeStatQuestReward, _super);
 
@@ -604,13 +619,14 @@ function TextArcadeTest() {
     // new WTextArcadeStatAttackWarning().start();
     // new WTextArcadeStatTurretWarning().start();
     // new WTextArcadeStatCriticalCondition().start();
-    new WTextArcadeStatAmmoFinish().start();
+    // new WTextArcadeStatAmmoFinish().start();
     // new WTextArcadeStatBarterSucces().start();
     // new WTextArcadeStatReceiveExp().start();
     // new WTextArcadeStatReceiveKarma().start();
     // new WTextArcadeStatLostKarma().start();
-    // new WTextArcadeStatSpyStart().start();
-    // new WTextArcadeStatSpyFailed().start();
+    new WTextArcadeStatSpyStart().start();
+    new WTextArcadeStatSpyFailed().start();
+    new WTextArcadeStatSpyFinish().start();
     // new WTextArcadeStatQuestReward().start();
-    new WTextArcadeStatQuestFailed().start();
+    // new WTextArcadeStatQuestFailed().start();
 }

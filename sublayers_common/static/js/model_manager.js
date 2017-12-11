@@ -2955,6 +2955,9 @@ var ClientManager = (function () {
             case 'spy_failed':
                 new WTextArcadeStatSpyFailed().start();
                 break;
+            case 'spy_finish':
+                new WTextArcadeStatSpyFinish().start();
+                break;
             case 'quest_reward':
                 new WTextArcadeStatQuestReward().start();
                 break;
