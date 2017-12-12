@@ -184,7 +184,7 @@
   This is not enough!<br>You have only {{complete}}/{{count}} barter.
 "q_cq_barters_back_to_teacher": "The required barter is produced."
 "q_cq_barters_finished": "Quest is completed."
-"q_cq_barters_task_text": "Trade is the most profitable business of all times. You don't need to produce or create anything, just make money out of thin air while it's still there. And even if it's not there — make money! Go and barter 3 times with people like you. Try to make those barters as profitable for you as possible. This is the most primitive type of trade, but it will give you an idea of the psychology and mechanics of the value exchange. The barter window is opened by clicking a light bulb in the upper right corner of the Nuke Commander when you approach someone. Remember to turn the combat mode off!"
+"q_cq_barters_task_text": "Trade is the most profitable business of all times. You don't need to produce or create anything, just make money out of thin air while it's still there. And even if it's not there — make money! Go and barter 30 times with people like you. Try to make those barters as profitable for you as possible. This is the most primitive type of trade, but it will give you an idea of the psychology and mechanics of the value exchange. The barter window is opened by clicking a light bulb in the upper right corner of the Nuke Commander when you approach someone. Remember to turn the combat mode off!"
 "q_cq_barters_phrase_success": "All right, I see that you will go far. Big money means big opportunities. And I'd like to dwell on that..."
 
 
@@ -224,7 +224,7 @@
 "q_cq_npc_tasks_replica_not_finish": "I know that you have not fulfilled all the tasks of the mayors."
 "q_cq_npc_tasks_back_to_teacher": "The tasks of the mayors are fulfilled."
 "q_cq_npc_tasks_finished": "Quest is completed."
-"q_cq_npc_tasks_task_text": "Now let's try to introduce you to the high society. For big achievements you need to know big people well, so we'll work on your social capital. You must get acquainted with all the mayors of cities and heads of settlements. Accomplish a couple of tasks for each of them. You'll earn some money, gain experience and, most importantly, establish valuable connections. Well, one more point. You won't be let into raider settlements, such as Los Jetas, unless you have a fitting reputation. But one of the heads is there..."
+"q_cq_npc_tasks_task_text": "Now let's try to introduce you to the high society. For big achievements you need to know big people well, so we'll work on your social capital. You must get acquainted with all the mayors of cities and heads of settlements. Accomplish few tasks for each of them. You'll earn some money, gain experience and, most importantly, establish valuable connections. Well, one more point. You won't be let into raider settlements, such as Los Jetas, unless you have a fitting reputation. But one of the heads is there..."
 "q_cq_npc_tasks_phrase_success": "Great, now you're well-known. To make them remember you, you'll have to refresh their memory on a regular basis. However, now we'll talk not about your business reputation, but about your karma."
 
 
