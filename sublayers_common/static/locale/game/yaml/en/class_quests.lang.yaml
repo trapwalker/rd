@@ -53,6 +53,7 @@
 # Common Text
 "q_cq_journal_text": " now you have a wheels, a class artifact, if you want to know the secrets of the profession you will have to get a little experience. To start, "
 "q_cq_journal_reward_1": "Reward: 3000 exp."
+"q_cq_journal_reward_1": "Reward: 5000 exp."
 
 # ClassQuestVisitTowns
 "q_cq_visit_towns_started": "Quest is started."
@@ -138,7 +139,7 @@
 "q_cq_get_car_lvl_note_btn": "<br>Continue"
 "q_cq_get_car_lvl_bad": "Show me the vehicle with the maximum level."
 "q_cq_get_car_lvl_finished": "Quest is completed."
-"q_cq_get_car_lvl_text": "So your task is to show me a tested five-star vehicle!"
+"q_cq_get_car_lvl_text": "So your task is to show me a tested five-star vehicle!<br>Reward: {{reward_exp}} exp."
 "q_cq_get_car_lvl_note": During a nuclear winter you are what your vehicle is. Your vehicle is part of you. I bet it was hard to gain experience in my previous task. But I'll teach you one trick to get experience faster. Each car is ranked according to its performance. It's five stars in a vehicle's specifications. The higher the mileage is and the larger number of enemies was destroyed by the vehicle, the more stars it has. The number of stars defines the amount of experience you gain for killing and how much loot you'll find in the trunk of your fallen enemy. Moreover, the experience points gained by someone destroying your vehicle also depend on the number of stars. So your task is to show me a tested five-star vehicle!"
 "q_cq_get_car_lvl_phrase_success": "Great!"
 "q_cq_get_car_lvl_phrase_to_chosen_one": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to impress the high and the mighty. And you can do something for me, too."
