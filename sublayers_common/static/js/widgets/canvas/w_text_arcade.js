@@ -610,13 +610,28 @@ var WTextArcadeStatQuestFailed = (function (_super) {
 
     return WTextArcadeStatQuestFailed
 })(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatRocketHit = (function (_super) {
+    __extends(WTextArcadeStatRocketHit, _super);
+
+    function WTextArcadeStatRocketHit(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_rocket_hit_1');
+        this.second_line = '';
+        this.rect_param = { x: -350, y: -100, w: 700, h: const_one_line_rect_height }
+    }
+
+    return WTextArcadeStatRocketHit
+})(WTextArcadeStatQuestItem);
 // ========================= Зеленая группа не выезжающих (конец)
 
 function TextArcadeTest() {
     // new WTextArcadeStatQuestItem().start();
     // new WTextArcadeStatSkillPoint().start();
     // new WTextArcadeStatNewLVL().start();
-    new WTextArcadeStatAttackWarning().start();
+    // new WTextArcadeStatAttackWarning().start();
     // new WTextArcadeStatTurretWarning().start();
     // new WTextArcadeStatCriticalCondition().start();
     // new WTextArcadeStatAmmoFinish().start();
@@ -626,7 +641,8 @@ function TextArcadeTest() {
     // new WTextArcadeStatLostKarma().start();
     // new WTextArcadeStatSpyStart().start();
     // new WTextArcadeStatSpyFailed().start();
-    new WTextArcadeStatSpyFinish().start();
+    // new WTextArcadeStatSpyFinish().start();
     // new WTextArcadeStatQuestReward().start();
     // new WTextArcadeStatQuestFailed().start();
+    new WTextArcadeStatRocketHit().start();
 }

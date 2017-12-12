@@ -2964,6 +2964,9 @@ var ClientManager = (function () {
             case 'quest_failed':
                 new WTextArcadeStatQuestFailed().start();
                 break;
+            case 'rocket_hit':
+                new WTextArcadeStatRocketHit().start();
+                break;
             default:
                 console.warn('Неизвестный тип текста: event.message_type')
         }

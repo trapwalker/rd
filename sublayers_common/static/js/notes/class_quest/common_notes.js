@@ -361,10 +361,10 @@ var DamageMapWeaponQuestNote = (function (_super) {
             console.warn('quest not found:', this.quest_uid);
             return;
         }
-
+        var text = _("q_cq_dmg_map_weapon_task_text").replace(/{{role_class_name}}/g, _(user.example_agent.role_class));
         var jq_up_path = $(
             '<div class="note-class-img damage-map-weapon-class-quest"></div>' +
-            '<div class="note-class-text damage-map-weapon-class-quest">'+_("q_cq_dmg_map_weapon_task_text")+'</div>'
+            '<div class="note-class-text damage-map-weapon-class-quest">' + text + '</div>'
         );
         this.jq_main_div.append(jq_up_path);
     };

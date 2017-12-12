@@ -198,7 +198,7 @@
   Not enough engineering structures have been installed!<br>{{complete}}/{{count}} judging by your logs.
 "q_cq_set_map_weapon_back_to_teacher": "The required number of objects are installed."
 "q_cq_set_map_weapon_finished": "Quest is completed."
-"q_cq_set_map_weapon_task_text": "It's skills of a mechanic that determine the speed with which engineering structures are assembled. That directly influences the success of combat actions, both solo and in a group. Engineers are a hidden and often underestimated power. You're going to suit your action to my word. Put 20 objects on the map, no matter what they will be: mines, sentry guns or radars. See how it works and come back."
+"q_cq_set_map_weapon_task_text": "It's skills of a mechanic that determine the speed with which engineering structures are assembled. That directly influences the success of combat actions, both solo and in a group. Engineers are a hidden and often underestimated power. You're going to suit your action to my word. Put 50 objects on the map, no matter what they will be: mines, sentry guns or radars. See how it works and come back."
 "q_cq_set_map_weapon_phrase_success": "Great. This knowledge can make you a very dangerous person. I wonder how you're gonna use it."
 
 
