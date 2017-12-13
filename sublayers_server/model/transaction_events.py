@@ -427,9 +427,9 @@ class TransactionGasStation(TransactionTownNPC):
         # посчитать суммарную стоимость, если не хватает денег - прервать транзакцию
         sum_fuel = self.fuel
         for item in ex_car.inventory.items:
-            if item.position and (item.position in tank_list) and ('empty_fuel_tank' in item.tag_set):
+            if item.position is not None and (item.position in tank_list) and ('empty_fuel_tank' in item.tag_set):
                 sum_fuel += item.value_fuel
-        sum_fuel = math.ceil(sum_fuel)
+        sum_fuel = math.ceil(sum_fuel * npc.fuel_cost)
         if sum_fuel > agent.balance:
             self.repair_example_inventory()
             messages.NPCReplicaMessage(

@@ -81,7 +81,7 @@ var LocationGasStationNPC = (function (_super) {
             '<div class="npcInventory-pictureWrap">' +
                 '<div class="npcInventory-picture town-interlacing"></div>' +
             '</div>' +
-            '<div class="npcInventory-name">' + item.example.value_fuel + ' л</div>');
+            '<div class="npcInventory-name">' + item.example.value_fuel + ' ' + _("loc_ngs_liter") + '</div>');
         itemDiv.append(emptyItemDiv);
 
         itemDiv.find('.npcInventory-picture')
@@ -104,7 +104,7 @@ var LocationGasStationNPC = (function (_super) {
             '<div class="npcInventory-pictureWrap">' +
                 '<div class="npcInventory-picture town-interlacing"></div>' +
             '</div>' +
-            '<div class="npcInventory-name">' + item.example.value_fuel + ' л</div>' +
+            '<div class="npcInventory-name">' + item.example.value_fuel + ' ' + _("loc_ngs_liter") + '</div>' +
             '<div class="gs-checkbox">[ ]</div>');
         itemDiv.append(emptyItemDiv);
 
@@ -172,6 +172,8 @@ var LocationGasStationNPC = (function (_super) {
 
             this.jq_main_div.find('.npcInventory-label').first()
                 .text(_("loc_gas_full_tanks") + ': ' + info_full_tanks.str);
+
+            this.selected_items = {};
         }
         else {
             this.jq_repair_page.text(_("loc_arm_sht_car_off_warning"));
@@ -226,7 +228,7 @@ var LocationGasStationNPC = (function (_super) {
         for (var i = 0; i < info.volumes.length; i++) {
             var volume = info.volumes[i];
             var count = info.dict[volume];
-            res = res + volume + 'л × ' + count + '; '
+            res = res + volume + _("loc_ngs_liter") + ' × ' + count + '; '
         }
         return {str: res, summ_volume: info.summ_volume};
     };
@@ -259,9 +261,12 @@ var LocationGasStationNPC = (function (_super) {
             var current_gas = this._get_gas_by_prc(this.current_prc_gas) - user.example_car.fuel;
             if (current_gas < 0) current_gas = 0;
             current_gas += this._get_selected_volume();
+            var npc_fuel_cost = this.npc_rec.fuel_cost;
+            current_gas = Math.ceil(current_gas * npc_fuel_cost);  // Стоимость 1 литра бензина в нукойнах
+            var full_gas = Math.ceil((user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) * npc_fuel_cost);
             html_text =
-                _("loc_gas_sht_fuel") + ': ' + Math.ceil(current_gas) + ' NC</br>' +
-                _("loc_gas_sht_fuel_full") + ': ' + Math.ceil(user.example_car.max_fuel - user.example_car.fuel + this.volume_all_empty_tanks) + 'NC';
+                _("loc_gas_sht_fuel") + ': ' + current_gas + ' NC</br>' +
+                _("loc_gas_sht_fuel_full") + ': ' + full_gas + 'NC';
         }
         _super.prototype.set_header_text.call(this, html_text);
     };
