@@ -625,7 +625,23 @@ var WTextArcadeStatRocketHit = (function (_super) {
 
     return WTextArcadeStatRocketHit
 })(WTextArcadeStatQuestItem);
+
+
+var WTextArcadeStatInvisibleAttack = (function (_super) {
+    __extends(WTextArcadeStatInvisibleAttack, _super);
+
+    function WTextArcadeStatInvisibleAttack(){
+        _super.call(this, '');
+
+        this.first_line = _('msg_invisible_attack_1');
+        this.second_line = '';
+        this.rect_param = { x: -350, y: -100, w: 700, h: const_one_line_rect_height }
+    }
+
+    return WTextArcadeStatInvisibleAttack
+})(WTextArcadeStatQuestItem);
 // ========================= Зеленая группа не выезжающих (конец)
+
 
 function TextArcadeTest() {
     // new WTextArcadeStatQuestItem().start();
@@ -644,5 +660,6 @@ function TextArcadeTest() {
     // new WTextArcadeStatSpyFinish().start();
     // new WTextArcadeStatQuestReward().start();
     // new WTextArcadeStatQuestFailed().start();
-    new WTextArcadeStatRocketHit().start();
+    // new WTextArcadeStatRocketHit().start();
+    new WTextArcadeStatInvisibleAttack().start();
 }
