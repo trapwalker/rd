@@ -242,3 +242,12 @@
   Come back when you raise your karma to:
 "q_cq_karmic_phrase_to_be_continued": "To be continued..."
 "q_cq_karmic_phrase_success": "I'm glad that I'm teaching you something right and not just fostering a maniac. At the moment I haven't any tasks for you, return later."
+
+
+# DummyClassQuest
+"q_cq_dummy_1_text": "Coming soon"
+"q_cq_dummy_1_started": "Quest is started."
+"q_cq_dummy_1_note_page": "Coming<br>soon"
+"q_cq_dummy_1_note_btn": "<br>Continue"
+"q_cq_dummy_1_waiting_replica": "To be continued..."
+"q_cq_dummy_1_finished": "Quest is completed."

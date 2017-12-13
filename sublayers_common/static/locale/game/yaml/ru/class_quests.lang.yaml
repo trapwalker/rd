@@ -244,3 +244,12 @@
   Возвращайся, когда повысишь свою карму до:
 "q_cq_karmic_phrase_to_be_continued": "Продолжение следует!"
 "q_cq_karmic_phrase_success": "Я рад, что я занимаюсь с тобой чем-то действительно правильным, а не ращу маньяка. Но пока у меня не для тебя заданий, возвращайся позже."
+
+
+# DummyClassQuest
+"q_cq_dummy_1_text": "Продолжение скоро"
+"q_cq_dummy_1_started": "Квест начат"
+"q_cq_dummy_1_note_page": "Продолжение<br>скоро"
+"q_cq_dummy_1_note_btn": "<br>Продолжить"
+"q_cq_dummy_1_waiting_replica": "Ожидайте продолжения."
+"q_cq_dummy_1_finished": "Квест завершён"

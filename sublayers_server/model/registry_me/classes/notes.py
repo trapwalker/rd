@@ -114,6 +114,7 @@ class SetMechanicItemsQuestNote(NPCPageNote): pass
 class InvisibleAttackQuestNote(NPCPageNote): pass
 class VisitTownsQuestNote(NPCPageNote): pass
 class GetMaxCarLvlQuestNote(NPCPageNote): pass
+class DummyClassQuestNote(NPCPageNote): pass
 
 # Ноты обучения
 class GetQuestTeachingNote(Note):
