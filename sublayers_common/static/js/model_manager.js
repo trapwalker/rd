@@ -2967,6 +2967,9 @@ var ClientManager = (function () {
             case 'rocket_hit':
                 new WTextArcadeStatRocketHit().start();
                 break;
+            case 'invisible_attack':
+                new WTextArcadeStatInvisibleAttack().start();
+                break;
             default:
                 console.warn('Неизвестный тип текста: event.message_type')
         }
