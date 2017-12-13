@@ -491,3 +491,39 @@ var KarmaLimitQuestNote = (function (_super) {
 
     return KarmaLimitQuestNote;
 })(QuestNoteNPCBtn);
+
+
+var ClassQuestDummyNote = (function (_super) {
+    __extends(ClassQuestDummyNote, _super);
+
+    function ClassQuestDummyNote(options) {
+        _super.call(this, options);
+    }
+
+    // функция перерисовки текущей ноты - просто перерисовка внутренностей в здании
+    ClassQuestDummyNote.prototype.redraw = function() {
+        this.clear();
+        if (!this.jq_main_div || !this.jq_menu_div || !this.build) return;
+        if (this.quest_uid == null) return;
+        var quest = journalManager.quests.getQuest(this.quest_uid);
+        if (! quest) {
+            console.warn('quest not found:', this.quest_uid);
+            return;
+        }
+
+        var class_name = '';
+        if (user.example_agent.role_class['ru'] == "Избранный") class_name = 'co';
+        else if (user.example_agent.role_class['ru'] == "Альфа-волк") class_name = 'aw';
+        else if (user.example_agent.role_class['ru'] == "Ночной ездок") class_name = 'nr';
+        else if (user.example_agent.role_class['ru'] == "Нефтяной магнат") class_name = 'om';
+        else if (user.example_agent.role_class['ru'] == "Воин дорог") class_name = 'rw';
+        else if (user.example_agent.role_class['ru'] == "Технокинетик") class_name = 'tk';
+
+        var jq_up_path = $(
+            '<div class="note-class-img class-quest-dummy-note ' + class_name + '"></div>'
+        );
+        this.jq_main_div.append(jq_up_path);
+    };
+
+    return ClassQuestDummyNote;
+})(QuestNoteNPCBtn);

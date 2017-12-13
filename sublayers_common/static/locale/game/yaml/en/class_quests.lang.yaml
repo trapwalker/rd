@@ -230,8 +230,7 @@
 
 # ClassQuestKarmaLimit
 "q_cq_karmic_started":  "Quest is started."
-"q_cq_karmic_journal_text": |
-  Come back when you raise your karma to {{name_needed}}.
+"q_cq_karmic_journal_text": "Come back when you raise your karma to {{name_needed}}.<br>Reward: 7000 exp."
 "q_cq_karmic_page": "Johnny, be<br> good!"
 "q_cq_karmic_btn": "<br>Continue"
 "q_cq_karmic_replica_not_finish": |
@@ -239,7 +238,7 @@
 "q_cq_karmic_finished": "Quest is completed."
 "q_cq_karmic_task_text": |
   Misanthropes brought humanity to its today's state, so I don't sympathize with various robbers, killers and other scum of the wasteland. I'm teaching you to do great things for survival of the human species. All humans have their karma, or reputation. The karma level rises and falls with your actions, such as accomplishment of tasks or destroying other drivers. Moreover, your karma can be improved through donating money to settlements. A low karma will make your more noticeable to others, towns will offer a bounty for your head and the karma levels of your killers won't decrease.
-  Come back when you raise your karma to:
+  Come back when you raise your karma to
 "q_cq_karmic_phrase_to_be_continued": "To be continued..."
 "q_cq_karmic_phrase_success": "I'm glad that I'm teaching you something right and not just fostering a maniac. At the moment I haven't any tasks for you, return later."
 
@@ -249,5 +248,5 @@
 "q_cq_dummy_1_started": "Quest is started."
 "q_cq_dummy_1_note_page": "Coming<br>soon"
 "q_cq_dummy_1_note_btn": "<br>Continue"
-"q_cq_dummy_1_waiting_replica": "To be continued..."
+"q_cq_dummy_1_waiting_replica": "At the moment I haven't any tasks for you, return later."
 "q_cq_dummy_1_finished": "Quest is completed."

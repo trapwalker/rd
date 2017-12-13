@@ -518,6 +518,9 @@ var ClientManager = (function () {
             case 'KarmaLimitQuestNote':
                 new KarmaLimitQuestNote(note);
                 break;
+            case 'ClassQuestDummyNote':
+                new ClassQuestDummyNote(note);
+                break;
             case 'NPCPageNote':
                 new QuestNoteNPCBtn(note);
                 break;
