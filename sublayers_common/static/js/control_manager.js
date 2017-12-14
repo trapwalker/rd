@@ -204,7 +204,7 @@ var ControlManager = (function () {
         // Горячие клавиши админских возможностей (показываются только при cht_bGod = 1)
         use_teleport: {
             up: function () {
-                if (settingsManager.cht_bGod && mapCanvasManager && mapManager) {
+                if (settingsManager.cht_bGod() && mapCanvasManager && mapManager) {
                     var target = mapManager.getMouseCoords();
                     clientManager.sendTeleportCoord(target.x, target.y);
                 }
@@ -212,7 +212,7 @@ var ControlManager = (function () {
         },
         save_tiles: {
             up: function () {
-                if (settingsManager.cht_bGod && mapCanvasManager && mapManager) {
+                if (settingsManager.cht_bGod() && mapCanvasManager && mapManager) {
                     var target = mapManager.getMouseCoords();
                     clientManager.sendTileCoord(target.x, target.y);
                 }

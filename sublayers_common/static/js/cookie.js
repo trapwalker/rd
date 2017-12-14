@@ -10,11 +10,9 @@ var SettingsManager = (function() {
         this.jq_btn_cancel = null;
         this.jq_btn_apply = null;
 
-        this.cht_bGod = 0;
+        this._cht_bGod = null;
 
-        setTimeout(function() {
-            try {settingsManager.cht_bGod = parseInt($("#user_access_level").text());} catch (e) {}
-        }, 1000);
+        setTimeout(function() {settingsManager.cht_bGod();}, 1000);
 
         this.load(); // Загрузка из куков, затем с сервера, затем из дефаулта
 
@@ -25,7 +23,6 @@ var SettingsManager = (function() {
             settings_page_other: _("setman_page_descriptions_other"),
         };
 
-
         // Если включён авто-бот
         setTimeout(function () {
             if (settingsManager.options["auto_simple_bot"].value)
@@ -34,6 +31,18 @@ var SettingsManager = (function() {
 
         this._game_color_return_to_def_from_green = this.getCookie("_game_color_return_to_def_from_green") == "1";  // Для восстановления фильтра карты при переключениях режима отображения карты
     }
+
+    SettingsManager.prototype.cht_bGod = function () {
+        if (this._cht_bGod && Number.isInteger(this._cht_bGod)) return this._cht_bGod;
+        try {
+            var text = $("#user_access_level").text();
+            this._cht_bGod = parseInt(text);
+        } catch (e) {
+            console.log("Dont convert to number: user_access_level => ", text);
+            this._cht_bGod = null;
+        }
+        return 0;
+    };
 
     // Список всех-всех настроек, их имён, описаний, типов, их значений по-умолчанию и их значений
     SettingsManager.prototype.options = {
@@ -987,7 +996,7 @@ var SettingsManager = (function() {
         for (var opt_name in this.options)
             if (this.options.hasOwnProperty(opt_name)){
                 var option = this.options[opt_name];
-                if (!option.admin_mode || this.cht_bGod) {
+                if (!option.admin_mode || this.cht_bGod()) {
                     var page = this.jq_pages.find(".settings_page_" + option.page).first();
                     var jq_option = $('<div class="settings-elem ' + option.type + '" onmouseenter="settingsManager._handler_mouse_over(`' + opt_name + '`)" onmouseleave="settingsManager._handler_mouse_over()"></div>');
                     option.jq_div = jq_option;
