@@ -131,7 +131,7 @@ var PlayAudioObject = (function () {
         value = value > 1.0 ? 1.0 : value;
         value = value < 0.0 ? 0.0 : value;
         if (this.gain_node.gain.value != value)
-            this.gain_node.gain.value = value;
+            this.gain_node.gain.value = value;  // todo: по идее заменить на это просит хром this.gain_node.gain.setValueAtTime(value, audioManager.get_ctx().currentTime)
         return true;
     };
 
