@@ -400,3 +400,18 @@ class PowerUPLogMessage(Message):
             position=self.position,
         )
         return d
+
+
+class CarDieLogMessage(Message):
+    __str_template__ = '<msg::{self.classname} #{self.id}[{self.time_str}] {self.agent}>'
+
+    def __init__(self, init_event, **kw):
+        super(CarDieLogMessage, self).__init__(**kw)
+        self.init_event = init_event
+
+    def as_dict(self):
+        d = super(CarDieLogMessage, self).as_dict()
+        killer_name = getattr(self.init_event, 'killer', None)
+        killer_name = killer_name and killer_name.main_agent.print_login()
+        d.update(killer_name=killer_name)
+        return d

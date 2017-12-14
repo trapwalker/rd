@@ -806,7 +806,6 @@ var ClientManager = (function () {
             alert('Bad Insurance: ' + event.insurance);
             location.reload();
         }
-
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
