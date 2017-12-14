@@ -20,7 +20,7 @@ from sublayers_server.model.messages import (
     SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo, TraderInfoMessage,
     ChangeStealthIndicator, CarRPGInfo
 )
-from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
+from sublayers_server.model.game_log_messages import InventoryChangeLogMessage, CarDieLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
@@ -819,6 +819,7 @@ class Agent(Object):
 
     def send_die_message(self, event, unit):
         Die(agent=self, time=event.time).post()
+        CarDieLogMessage(agent=self, time=event.time, init_event=event).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -960,6 +961,7 @@ class Agent(Object):
     def agent_type(self):
         return 'abstract'
 
+
 # todo: Переименовать в UserAgent
 class User(Agent):
     @event_deco
@@ -1004,6 +1006,7 @@ class User(Agent):
     def agent_type(self):
         return 'user'
 
+
 class AI(Agent):
     u""" Класс-родитель для всех агентов-ботов """
     # def setup_logger(self, level=logging.INFO):
@@ -1024,6 +1027,7 @@ class AI(Agent):
     @property
     def agent_type(self):
         return 'ai'
+
 
 class QuickUser(User):
     quick_game_koeff_kills = 30
@@ -1084,6 +1088,7 @@ class QuickUser(User):
     def send_die_message(self, event, unit):
         points = self.get_quick_game_points(event.time)
         self._add_quick_game_record(points=points, time=event.time)
+        CarDieLogMessage(agent=self, time=event.time, init_event=event).post()
         QuickGameDie(agent=self, obj=unit, points=points, time=event.time).post()
 
     def on_kill(self, event, target, killer):

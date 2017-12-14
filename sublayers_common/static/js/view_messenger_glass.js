@@ -901,8 +901,15 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog(_("chat_log_loot_get") + _(msg.comment) + '.');
                     new WTextArcade(_(msg.comment)).start();
                     break;
+                case 'CarDieLogMessage':
+                    if (msg.killer_name)
+                        this.addMessageToLog(_("chat_log_die_killer") + msg.killer_name);
+                    else
+                        this.addMessageToLog(_("chat_log_die"));
+                    break;
                 case 'SystemChatMessage':
                     this.addMessageToSys(msg.text);
+
             }
         }
         return true;
