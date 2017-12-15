@@ -154,6 +154,11 @@ var audioManager = new AudioManager();
 
 
 function init_sound() {
+    
+    // console
+
+    audioManager.load('key_cl_1', {url: '/static/audio/final_v1_mp3/type.mp3'}, 0.2);
+    audioKeyboard = new AudioKeyboard(['key_cl_1']);
 
     // radio
 
@@ -232,5 +237,4 @@ function init_sound() {
     audioManager.load('click', {url: '/static/audio/interface/click_001.m4a'}, 0.1);
     audioManager.load('autofire_enable', {url: '/static/audio/interface/autofire_enable_001.m4a'}, 0.15);
     audioManager.load('autofire_disable', {url: '/static/audio/interface/autofire_disable_001.m4a'}, 0.15);
-
 }
