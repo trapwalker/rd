@@ -973,6 +973,17 @@ var LocationPlaceBuilding = (function (_super) {
                         "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
 
+                // TODO: Это всё мелкие POI - у них неверно названы здания. Правильно назвать здения и оно заработает
+                case 'mine':
+                case 'adriano':
+                case 'tartron':
+                case 'base':
+                case 'parking':
+                    html_text = _("loc_sht_hello") + _(locationManager.example.title) + "." +
+                        "<ul><li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
+                    break;
+
                 default:
                     console.warn('Not found description for ', this.building_rec.name)
             }
