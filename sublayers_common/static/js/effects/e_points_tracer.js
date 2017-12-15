@@ -269,3 +269,66 @@ var ETownRocket = (function (_super) {
 
     return ETownRocket;
 })(ECanvasPointsTracerAnimation);
+
+
+var ECarDisappearing = (function () {
+    function ECarDisappearing(motion_state, icon) {
+        this.icon = icon;
+        this.motion_state = motion_state;
+        this.duration = 2500.;
+        this.start_time = 0;
+    }
+
+    ECarDisappearing.prototype.opacity = function (client_time) {
+        var prc = Math.min(Math.max((client_time - this.start_time) / this.duration, 0.0), 1.0);
+        return 1.0 - prc;
+        // info: Ниже код для мигания во время исчезновения машинки
+        var opacity = 0;
+        function linaear(a, b, dstart, dfin, prc) {
+            if (a < b)
+                return a + (b - a) * (prc - dstart) / (dfin - dstart);
+            else
+                return b + (a - b) * (1.0 - (prc - dstart) / (dfin - dstart));
+        }
+
+        if (prc >= 1.0) return 0.0;
+
+        if (prc < 0.15)  // 1 => 0.4 [0, 0.15]
+            opacity = linaear(1.0, 0.4, 0.0, 0.15, prc);
+        else if (prc < 0.3)  // 0.4 => 0.75 [0.15, 0.3]
+            opacity = linaear(0.4, 0.75, 0.15, 0.3, prc);
+        else if (prc < 0.5)  // 0.75 => 0.2 [0.3, 0.5]
+            opacity = linaear(0.75, 0.2, 0.3, 0.5, prc);
+        else if (prc < 0.65)  // 0.2 => 0.4 [0.5, 0.65]
+            opacity = linaear(0.2, 0.4, 0.5, 0.65, prc);
+        else  // 0.4 => 0.0 [0.65, 1.0]
+            opacity = linaear(0.4, 0.0, 0.65, 1.0, prc);
+
+        return opacity;
+    };
+
+    ECarDisappearing.prototype.redraw = function (ctx, time, client_time) {
+        ctx.save();
+        var pos = this.motion_state.p(time);
+        var ctx_pos = mulScalVector(subVector(pos, mapCanvasManager.map_tl), 1.0 / mapCanvasManager.zoom_koeff);
+        ctx.globalAlpha = this.opacity(client_time);
+        ctx.translate(ctx_pos.x, ctx_pos.y);
+        if (this.icon)
+            ctx.drawImage(this.icon.img, -this.icon.iconSize[0] >> 1, -this.icon.iconSize[1] >> 1);
+        ctx.restore();
+    };
+
+    ECarDisappearing.prototype.start = function () {
+        timeManager.addTimeoutEvent(this, 'finish', this.duration);
+        this.start_time = clock.getClientTime();
+        mapCanvasManager.add_vobj(this, 50);
+    };
+
+    ECarDisappearing.prototype.finish = function () {
+        this.icon = null;
+        this.motion_state = null;
+        mapCanvasManager.del_vobj(this);
+    };
+
+    return ECarDisappearing;
+})();
