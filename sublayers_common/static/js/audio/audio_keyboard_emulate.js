@@ -15,10 +15,10 @@ var AudioKeyboard = (function () {
             return;
         }
         this.started = true;
-        var audio_obj = this.audio_list[Math.floor(Math.random() * 0.99 * this.audio_list.length)];
+        var audio_obj = this.audio_list[Math.floor(Math.random() * 0.99 * this.audio_list.length)];          
         audioManager.play({
             name: audio_obj,
-            gain: this.gain ? this.gain : audioManager.general_gain,
+            gain: (this.gain ? this.gain : audioManager.general_gain) * audioManager._settings_interface_gain,
             callback: AudioKeyboard.prototype.play.bind(this)
         });
     };
