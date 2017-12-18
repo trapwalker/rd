@@ -192,17 +192,15 @@ class Inventory(object):
         return self._items.values()
 
     def add_item(self, item, time, position=None, make_change=True):
+        if position >= self.max_size or position < 0:
+            position = None
         if position is None:
             # todo: сначала поискать такой же стак, чтобы оно влезло в один стак
             position = self.get_free_position()
-            # log.debug('dobavlyaem item %s', item)
         if position is None:
-            return False
-        # assert (position < self.max_size) and (position >= 0)
-        # todo: Разобраться почему такая ошибка могла возникнуть
-        if position >= self.max_size or position < 0:
+            from sublayers_server.model.agents import Agent
             log.warn("pos={}, max_size={}".format(position, self.max_size))
-            ag = self.owner and self.owner.main_agent
+            ag = self.owner if isinstance(self.owner, Agent) else self.owner.main_agent
             log.warning("Item {} not added for agent {}".format(item, ag))
             if ag:
                 ag.log.info("Item {} not added".format(item))
