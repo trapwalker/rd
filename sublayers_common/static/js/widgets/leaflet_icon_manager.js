@@ -45,6 +45,12 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_luke_war_full', '/static/content/locations/map_locations/luke_war_house/map_icons/full.png', [128, 73]);
         this.load_new_icon('icon_luke_war_circle', '/static/content/locations/map_locations/luke_war_house/map_icons/circle.png', [128, 73]);
 
+        this.load_new_icon('icon_trevors_full', '/static/content/locations/map_locations/trevors_armor/map_icons/full.png', [80, 73]);
+        this.load_new_icon('icon_trevors_circle', '/static/content/locations/map_locations/trevors_armor/map_icons/circle.png', [80, 73]);
+
+        this.load_new_icon('icon_walker_full', '/static/content/locations/map_locations/walker_parts/map_icons/full.png', [80, 73]);
+        this.load_new_icon('icon_walker_circle', '/static/content/locations/map_locations/walker_parts/map_icons/circle.png', [80, 73]);
+
         // Создание иконки движущейся машинки V 1
         this.load_new_icon('icon_moving_V1', '/static/img/map_icons/map_icon_player_v1_moving.png', [51, 28]);
 
