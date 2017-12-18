@@ -356,22 +356,23 @@ class TransactionTownNPC(TransactionEvent):
     def get_npc_available_transaction(self, npc_type):
         # Получение NPC и проверка валидности совершения транзакции
         # todo: ##REFACTORING
-        npc = self.agent.server.reg.get(self.npc_node_hash, None)
+        agent = self.agent
+        npc = agent.server.reg.get(self.npc_node_hash, None)
         error = False
         if npc is None:
             log.warning('%r NPC not found: %s', self, self.npc_node_hash)
             error = True
-        if npc.type != npc_type:
+        elif npc.type != npc_type:
             log.warning('%r NPC not equal type: %s  ==>  %s', self, self.npc_node_hash, npc_type)
             error = True
-        if self.agent.current_location is None:
-            log.warning('%r Agent not in location', self)
+        elif agent.current_location is None:
+            log.warning('%r Agent %s not in location', self, agent)
             error = True
-        if npc not in self.agent.current_location.example.get_npc_list():
-            log.warning('%r Does not math npc (%s) and agent location (%r)', self, self.npc_node_hash, self.agent.current_location)
+        elif npc not in agent.current_location.example.get_npc_list():
+            log.warning('%r Does not math npc (%s) and agent location (%r)', self, self.npc_node_hash, agent.current_location)
             error = True
         if error is True:
-            messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=None,
+            messages.NPCReplicaMessage(agent=agent, time=self.time, npc=None,
                                        replica=locale(lang=self.lang, key="tr_tnpc_npc_not_found")).post()
             return None
         return npc
