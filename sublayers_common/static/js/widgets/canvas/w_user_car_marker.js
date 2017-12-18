@@ -542,6 +542,12 @@ var WCanvasStaticTownMarker = (function (_super) {
                     case 'reg:///registry/poi/locations/towns/luke_war_house':
                         icon_name = 'luke_war';
                         break;
+                    case 'reg:///registry/poi/locations/towns/trevors_armor':
+                        icon_name = 'trevors';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/walker_parts':
+                        icon_name = 'walker';
+                        break;
                     default:
                         console.log('Не найдена иконка. Установлена стандартная. ', mobj.example.node_hash);
                         icon_name = 'city';
