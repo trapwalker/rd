@@ -130,7 +130,12 @@ class BaseHandler(AuthHandlerMixin):
         self.set_secure_cookie("user", str(user.id))
 
     def get_template_namespace(self):
-        namespace = super(BaseHandler, self).get_template_namespace()
+        try:
+            namespace = super(BaseHandler, self).get_template_namespace()
+        except TypeError as e:
+            namespace = dict(current_user=self.current_user, static_url=self.static_url,)
+            log.warning('get_template_namespace Error for %s. User is %s', self, self.current_user)
+            log.warning(e)
         namespace.update(
             revision=self.application.revision,
             version=self.application.version,

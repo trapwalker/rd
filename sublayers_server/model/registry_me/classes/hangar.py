@@ -50,9 +50,7 @@ class CarLot(object):
         self.lot_message = dict()
 
     def get_message_info(self, agent):
-        if not agent.connection or agent.connection._finished:
-            if agent.connection and agent.connection._finished:
-                log.warning('CarLot %s try send for %s, but Connection Finished', self, agent)
+        if not agent.connection:
             return None
         lot_locale = '{}'.format(agent.connection and agent.connection.user_lang or 'en')
         lot_info = self.lot_message.get(lot_locale, None)
