@@ -180,6 +180,12 @@ var TextConsole = (function(){
         this._timeout = null;
     }
 
+    TextConsole.prototype.initTargetDiv=function(jq) {
+        this.target_div = jq;
+        var self = this;
+        this.target_div.on("keydown", function(event){ self.user_input(event) });
+    };
+
     TextConsole.prototype._replaceAt=function(str, index, character) {
         return str.substr(0, index) + character + str.substr(index + character.length);
     };
@@ -201,21 +207,6 @@ var TextConsole = (function(){
             return;
         }
     };
-
-    // TextConsole.prototype.interrupt = function() {
-    //     this._messages = [];
-    //
-    //     if (((this._cur_message_len - this._cur_symbol) > 3) && (this._cur_message) && (this._cur_message.message)) {
-    //         this._cur_message_len = this._cur_symbol + 3;
-    //         this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 0, '.');
-    //         this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 1, '.');
-    //         this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 2, '.');
-    //         this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
-    //     }
-    //
-    //     if ((this._cur_message) && (this._cur_message.message))
-    //         this._messages.push({sender: 'system', message: _("con_interrupt")});
-    // };
 
     TextConsole.prototype._state_wait_user_input = function(self) {
         //console.log('_state_wait_user_input');
@@ -383,7 +374,6 @@ var TextConsole = (function(){
             return;
         }
         var self = this;
-        this.target_div.on("keydown", function(event){ self.user_input(event) });
         if (!this._is_started) {
             this._is_started = true;
             this._state_selector(this);
@@ -460,7 +450,7 @@ var ConsoleFirstEnter = (function (_super) {
     function ConsoleFirstEnter() {
         _super.call(this);
 
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this.first_input = true;
         this.teaching_answer_value = false;
 
@@ -620,7 +610,7 @@ var ConsoleEnter = (function (_super) {
     function ConsoleEnter() {
         _super.call(this);
 
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
 
         this.add_message(
             'welcome',
@@ -651,7 +641,7 @@ var ConsoleEnterToLocation = (function (_super) {
 
     function ConsoleEnterToLocation() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._init_messages();
         textConsoleManager.add(this, 'enter_location');
     }
@@ -680,7 +670,7 @@ var ConsoleEnterToMap = (function (_super) {
 
     function ConsoleEnterToMap() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._init_messages();
         textConsoleManager.add(this, 'enter_map');
     }
@@ -707,7 +697,7 @@ var ConsoleDisconnectFromServer = (function (_super) {
 
     function ConsoleDisconnectFromServer() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._init_messages();
         textConsoleManager.add(this, 'dc_console');
     }
@@ -734,7 +724,7 @@ var ConsoleDieBase = (function (_super) {
 
     function ConsoleDieBase() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this.add_to_console_manager();
     }
 
@@ -798,7 +788,7 @@ var ConsoleDiePremium = (function (_super) {
 
     function ConsoleDiePremium() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
     }
 
     ConsoleDiePremium.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_premium');};
@@ -837,7 +827,7 @@ var ConsoleDieShareholder = (function (_super) {
 
     function ConsoleDieShareholder() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._current_towns = [];
     }
 
