@@ -407,7 +407,7 @@ var QuestJournalManager = (function () {
         var quest = this.quests[quest_id];
 
         // Отрисовываем квесты у NPC
-        if (locationManager.in_location_flag && quest.hirer) {
+        if (locationManager.in_location_flag && quest.hirer && quest.build_view) {
             var build = locationManager.get_building_by_node_hash(quest.hirer.node_hash);
             if (build) {
                 var jq_build_quest_list = null;

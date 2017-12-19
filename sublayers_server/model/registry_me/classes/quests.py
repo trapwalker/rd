@@ -7,7 +7,7 @@ import sublayers_server.model.messages as messages
 from sublayers_server.model import quest_events
 from sublayers_server.model.registry_me.classes import notes
 from sublayers_server.model.registry_me.tree import (
-    Node, Subdoc, UUIDField,
+    Node, Subdoc, UUIDField, Document,
     StringField, IntField, FloatField, ListField, EmbeddedDocumentField, DateTimeField, BooleanField, MapField,
     EmbeddedNodeField, RegistryLinkField, PositionField,
     GenericEmbeddedDocumentField, DynamicSubdoc,
@@ -15,7 +15,7 @@ from sublayers_server.model.registry_me.tree import (
 )
 from sublayers_server.model.events import event_deco
 from sublayers_server.model.vectors import Point
-from sublayers_server.model.game_log_messages import QuestStartStopLogMessage
+from sublayers_server.model.game_log_messages import QuestStartStopLogMessage, QuestLogMessage
 from sublayers_common.site_locale import locale
 
 from ctx_timer import Timer
@@ -216,6 +216,12 @@ class QuestState(Node):
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
+class QuestEndRec(Document):
+    user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
+    quest = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.quests.Quest',
+    )
+
 
 class Quest(Node):
     first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
@@ -310,6 +316,7 @@ class Quest(Node):
         ),
     )
     active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', root_default=True, tags={'client'})
+    build_view = BooleanField(caption=u'Отрисовывать ли данный квест в квестах задния.', root_default=True, tags={'client'})
 
     @property
     def agent(self):
@@ -399,6 +406,7 @@ class Quest(Node):
         d.update(
             uid=self.uid,
             status=self.status,
+            build_view=self.build_view,
             result=self.result,
             hirer=dict(node_hash=self.hirer and self.hirer.node_hash()),
             caption=self.caption,
@@ -573,10 +581,28 @@ class Quest(Node):
 
         self.do_state_enter(next_state, event)
 
-    def _on_end_quest(self, event):
+    def _on_end_quest(self, event, save_old_quests=True):
         agent_example = self.agent and self.agent.profile
         if agent_example:
+            # Чистим список завершенных квестов и все "ненужные" выкидываем в отдельную коллекцию
+            quests = agent_example.quests_ended
+            old_quest_list = []
+            for q in quests:
+                if (q.parent == self.parent) and \
+                        (q.hirer == self.hirer) and \
+                        (q.generation_group == self.generation_group) and \
+                        ((q.endtime + q.generation_cooldown) < event.time):
+                    old_quest_list.append(q)
+
+            for q in old_quest_list:
+                agent_example.quests_ended.remove(q)
+                if save_old_quests:
+                    QuestEndRec(quest=self, user_id=self.agent.user_id).save()
+
+            # Обязательно добавляем ПОСЛЕДНИЙ завершенный (текущий) квест
             agent_example.quests_ended.append(self)
+            agent_example.on_event(event=event, cls=quest_events.OnQuestChange, target_quest_uid=self.uid)
+
             try:
                 agent_example.quests_active.remove(self)
             except ValueError as e:
@@ -679,14 +705,17 @@ class Quest(Node):
     def reset_timers(self):
         pass  # todo: ##IMPLEMENTATION
 
-    def log(self, text, event=None, position=None, **kw):
+    def log(self, text, event=None, position=None, game_log_only=False, **kw):
         if isinstance(text, LocalizedString):
             text = self.locale(text)
         rendered_text = self._template_render(text, position=position, **kw)
         log_record = LogRecord(quest=self, time=event and event.time, text=rendered_text, position=position, **kw)
-        self.history.append(log_record)
+        if not game_log_only:
+            self.history.append(log_record)
         if event and self.agent and self.agent.profile._agent_model:
-            QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
+            if not game_log_only:
+                QuestUpdateMessage(time=event.time, quest=self, agent=self.agent.profile._agent_model).post()
+            QuestLogMessage(time=event.time, record=log_record, agent=self.agent.profile._agent_model).post()
         return True
 
     def go(self, new_state, event):
@@ -738,8 +767,8 @@ class Quest(Node):
             self.agent.profile._agent_model.reload_inventory(time=event.time, save=False, total_inventory=total_inventory_list)
         return True
 
-    def locale(self, key):
-        lang = self.agent and self.agent.profile._agent_model and self.agent.profile._agent_model.user and self.agent.profile._agent_model.user.lang or 'en'
+    def locale(self, key, loc=None):
+        lang = loc or self.agent and self.agent.profile._agent_model and self.agent.profile._agent_model.user and self.agent.profile._agent_model.user.lang or 'en'
         return locale(lang=lang, key=key)
 
     def npc_replica(self, npc, replica, event, replica_type='Error'):
@@ -846,7 +875,7 @@ class Quest(Node):
             target_group = target_quest.generation_group
             for q in quests:
                 if q.parent == target_parent and q.hirer == target_hirer and q.generation_group == target_group:
-                    if not q.endtime or q.endtime + q.generation_cooldown > current_time:  # todo: правильно проверять завершённые квестов
+                    if not q.endtime or ((q.endtime + q.generation_cooldown) > current_time):  # todo: правильно проверять завершённые квестов
                         res += 1
             return res
 
@@ -927,19 +956,6 @@ class QuestDelMessage(messages.Message):
         return d
 
 
-class QuestLogMessage(messages.Message):
-    def __init__(self, event_record, **kw):
-        super(QuestLogMessage, self).__init__(**kw)
-        self.event_record = event_record  # todo: weakref #refactor
-
-    def as_dict(self):
-        d = super(QuestLogMessage, self).as_dict()
-        d.update(
-            quest_event=self.event_record.as_dict(),
-        )
-        return d
-
-
 class AIQuickQuest(Quest):
     route = ListField(
         root_default=list,
@@ -984,16 +1000,18 @@ class MarkerMapObject(Subdoc):
     position = PositionField(caption=u"Координаты объекта")
     radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags={'client'})
 
-    def is_near(self, position):
+    def is_near(self, position, radius=None):
+        radius = radius or self.radius
         if isinstance(position, PositionField):
             position = position.as_point()
         if isinstance(position, Point):
             distance = self.position.as_point().distance(target=position)
-            return distance <= self.radius
+            return distance <= radius
         return False
 
-    def generate_random_point(self):
-        return Point.random_point(radius=self.radius, center=self.position.as_point())
+    def generate_random_point(self, radius=None):
+        radius = radius or self.radius
+        return Point.random_point(radius=radius, center=self.position.as_point())
 
     def as_client_dict(self):
         d = super(MarkerMapObject, self).as_client_dict()

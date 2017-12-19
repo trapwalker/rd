@@ -108,7 +108,6 @@ class Weapon(ArmorerItem):
         return self.radius * self.rand_modifier_radius
 
 
-
 class Cannon(Weapon):
     is_auto = False
     dmg = FloatField(caption=u'Урон за выстрел', tags={"param_randomize"})

@@ -227,3 +227,7 @@ class Nukeoil(Institution):
         caption=u"Список продаваемых страховок", tags={'client'},
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.insurance.Insurance'),
     )
+
+
+class GasStationNPC(Institution):
+    fuel_cost = FloatField(caption=u'Стоимость одного литра топлива', tags={'client'})

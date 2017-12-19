@@ -1,15 +1,15 @@
 var PreloaderImage = (function(){
     function PreloaderImage() {
-        this.count_loading = 0;  // Счётчик сколько грузится  (в идеале должен быть  = 0)
-        this.count_image = 0;   // Счётчик изображений всего
-        this.count_all = 0; // Сколько изображений пытаются загрузиться
-        this.task_id = 0; //  Счётчик для формирования id тасков
-        this.images = {}; // Список всех предзагруженных изображений
+        this.count_loading = 0;  // РЎС‡С‘С‚С‡РёРє СЃРєРѕР»СЊРєРѕ РіСЂСѓР·РёС‚СЃСЏ  (РІ РёРґРµР°Р»Рµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ  = 0)
+        this.count_image = 0;   // РЎС‡С‘С‚С‡РёРє РёР·РѕР±СЂР°Р¶РµРЅРёР№ РІСЃРµРіРѕ
+        this.count_all = 0; // РЎРєРѕР»СЊРєРѕ РёР·РѕР±СЂР°Р¶РµРЅРёР№ РїС‹С‚Р°СЋС‚СЃСЏ Р·Р°РіСЂСѓР·РёС‚СЊСЃСЏ
+        this.task_id = 0; //  РЎС‡С‘С‚С‡РёРє РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ id С‚Р°СЃРєРѕРІ
+        this.images = {}; // РЎРїРёСЃРѕРє РІСЃРµС… РїСЂРµРґР·Р°РіСЂСѓР¶РµРЅРЅС‹С… РёР·РѕР±СЂР°Р¶РµРЅРёР№
 
-        this.tasks = []; // Список объектов вида: {id, img_url, callback, maxdelay_timer}
-        this.callbacks = []; // Список коллбеков
+        this.tasks = []; // РЎРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ РІРёРґР°: {id, img_url, callback, maxdelay_timer}
+        this.callbacks = []; // РЎРїРёСЃРѕРє РєРѕР»Р»Р±РµРєРѕРІ
 
-        this.max_loading_count = 5;  // Максимальное количество одновременно загружаемых объектов
+        this.max_loading_count = 5;  // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ Р·Р°РіСЂСѓР¶Р°РµРјС‹С… РѕР±СЉРµРєС‚РѕРІ
     }
 
     PreloaderImage.prototype.get_tasks_by_url = function(img_url) {
@@ -73,19 +73,19 @@ var PreloaderImage = (function(){
         this.count_image++;
         this.count_loading--;
 
-        // Получить все таски по данной ссылке
+        // РџРѕР»СѓС‡РёС‚СЊ РІСЃРµ С‚Р°СЃРєРё РїРѕ РґР°РЅРЅРѕР№ СЃСЃС‹Р»РєРµ
         var tasks = this.get_tasks_by_url(img_url);
         //console.log('tasks = ', tasks);
         for (var i = 0; i < tasks.length; i++) {
-            var task = this.del_task(tasks[i].id); // удаляем таск
+            var task = this.del_task(tasks[i].id); // СѓРґР°Р»СЏРµРј С‚Р°СЃРє
             if (task) {
                 //console.log('task = ', task);
-                if (task.maxdelay_timer) clearTimeout(task.maxdelay_timer); // очищаем таймер, если он ещё не вызывался
-                if (this.can_call_callback(task.callback)) task.callback(true); // вызываем конкретный коллбек, если больше нет картинок на этот коллбек
+                if (task.maxdelay_timer) clearTimeout(task.maxdelay_timer); // РѕС‡РёС‰Р°РµРј С‚Р°Р№РјРµСЂ, РµСЃР»Рё РѕРЅ РµС‰С‘ РЅРµ РІС‹Р·С‹РІР°Р»СЃСЏ
+                if (this.can_call_callback(task.callback)) task.callback(true); // РІС‹Р·С‹РІР°РµРј РєРѕРЅРєСЂРµС‚РЅС‹Р№ РєРѕР»Р»Р±РµРє, РµСЃР»Рё Р±РѕР»СЊС€Рµ РЅРµС‚ РєР°СЂС‚РёРЅРѕРє РЅР° СЌС‚РѕС‚ РєРѕР»Р»Р±РµРє
             }
         }
 
-        // Взять следующий таск и попробовать загрузить:
+        // Р’Р·СЏС‚СЊ СЃР»РµРґСѓСЋС‰РёР№ С‚Р°СЃРє Рё РїРѕРїСЂРѕР±РѕРІР°С‚СЊ Р·Р°РіСЂСѓР·РёС‚СЊ:
         if(this.tasks.length) {
             var t = this.tasks[0];
             this.set_image_on_load(t.img, this.load_complete.bind(this, t.img_url));

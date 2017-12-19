@@ -7,6 +7,8 @@
 "chat_log_barter_player_inv": " invites you to barter."
 "chat_log_barter_activate": "Activated barter with player - "
 "chat_log_barter_ended": "Completed barter with player - "
+"chat_log_die_killer": "You are killed by player - "
+"chat_log_die": "You are killed"
 
 "chat_log_exp_1": "Received "
 "chat_log_exp_2": " experience points."

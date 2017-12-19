@@ -7,9 +7,7 @@ log = logging.getLogger(__name__)
 from sublayers_server.model.messages import FireAutoEffect, FireDischarge
 from sublayers_server.model.game_log_messages import WeaponAmmoFinishedLogMessage
 from sublayers_server.model.inventory import Consumer
-from sublayers_server.model.events import Event, FireDischargeEffectEvent, event_deco
-from sublayers_server.model.quest_events import OnMakeDmg
-
+from sublayers_server.model.events import FireDischargeEffectEvent, event_deco
 
 from random import random
 
@@ -150,7 +148,8 @@ class WeaponAuto(Weapon):
         for agent in self.owner.subscribed_agents:
             FireAutoEffect(agent=agent, subj=self.owner, obj=car, weapon=self, sector=self.sector, action=True, time=time).post()
         self.owner.on_autofire_start(target=car, time=time)
-        self.owner.main_agent.example.profile.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg)
+        # info: почему тут этот эвент? ведь в units.py это уже проброшено!
+        # self.owner.main_agent.example.profile.on_event(event=Event(server=self.owner.server, time=time), cls=OnMakeDmg, targets=[car])
 
     def _stop_fire_to_car(self, car, time):
         # assert car in self.targets, 'Error: car<{}> not in targets<{}>'.format(car, self.targets)

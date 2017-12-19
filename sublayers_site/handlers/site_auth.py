@@ -307,6 +307,7 @@ class StandardLoginHandler(BaseSiteHandler):
 
             user.avatar_link = avatar_link
             user.name = username
+            agent_ex.login = username
             user.registration_status = 'settings'
             agent_ex.save()
             user.save()

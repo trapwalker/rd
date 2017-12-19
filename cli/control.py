@@ -116,3 +116,29 @@ def restart(host='http://localhost:8000'):
 def save(host='http://localhost:8000'):
     log.info('Server SAVE (host: %r)', host)
     log.info(requests.post('{host}/adm/api/save'.format(host=host)))
+
+
+@root.group(name='user_access', invoke_without_command=True)
+@click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
+@click.option('--username' ,'-u', 'username', default='', type=click.STRING, help='Username')
+@click.option('--access' ,'-a', 'access', default=0, type=click.INT, help='New Access Level')
+@click.pass_context
+def user_access_command(ctx, host, username, access):
+    """user_access command"""
+    if ctx.invoked_subcommand:
+        return
+
+    user_access(host=host, username=username, access=access)  # todo: configure server host
+
+
+def user_access(host='http://localhost:8000', username='', access=0):
+    log.info('Change User Access Level (host: %r) for %s: new access = %s', host, username, access)
+    if not username:
+        log.info('Username is bad: %s', username)
+        return
+    try:
+        response = requests.post('{host}/adm/api/user_access'.format(host=host),
+                                 data=dict(username=username, access=access))
+        log.info(response.text)
+    except requests.ConnectionError as e:
+        log.info(e)

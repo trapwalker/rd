@@ -52,6 +52,7 @@ var WCanvasMarker = (function (_super) {
         var icon_name = '';
         switch (mobj.cls) {
             case 'Turret':
+            case 'MaskingQuestTurret':
                 icon_name = 'turret_001';
                 break;
             case "SlowMine":
@@ -358,7 +359,9 @@ var WCanvasCarMarker = (function (_super) {
     };
 
     WCanvasCarMarker.prototype.delFromVisualManager = function () {
-        //console.log('WCanvasCarMarker.prototype.delFromVisualManager');
+        // console.log('WCanvasCarMarker.prototype.delFromVisualManager', this.mobj);
+        if (this.mobj.getCurrentHP(clock.getCurrentTime()))
+            new ECarDisappearing(this.mobj._motion_state, this.icon_obj).start();  // запуск специального исчезающего маркера (2-3 секунды)
         this.nickname_marker = null;
         if (this.audio_object)
             audioManager.stop(0.0, this.audio_object);

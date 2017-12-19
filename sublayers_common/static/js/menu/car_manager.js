@@ -24,7 +24,7 @@ var CarManager = (function () {
     };
 
     CarManager.prototype.redraw = function (jq_main_div) {
-        //console.log('SelfInfoManager.prototype.redraw', $(jq_main_div));
+        // console.log('SelfInfoManager.prototype.redraw', user.example_car.car_rpg_info);
         var self = carManager;
         if (jq_main_div)
             self.jq_main_div = $(jq_main_div).first();
@@ -51,8 +51,18 @@ var CarManager = (function () {
                     carManager.update_car_name();
                 }, 3000);
             });
-        }
 
+            var car_way = (user.example_car.car_rpg_info.way / 1000).toFixed(2);
+            var car_frag = user.example_car.car_rpg_info.frag;
+            var car_lvl = user.example_car.car_rpg_info.lvl;
+
+            jq_main_div.find('.dynamic_car_way').html(car_way);
+            jq_main_div.find('.dynamic_car_frag').html(car_frag);
+            var jq_start_list = jq_main_div.find('.car-info-block-body-right-exp-icon');
+            jq_start_list.removeClass('active');
+            for (var i = 0; i < car_lvl; i++)
+                $(jq_start_list[i]).addClass('active');
+        }
         var jq_dynamic_value = jq_main_div.find('.car_dynamic_value');
         if (jq_dynamic_value.length !== 0) {
             jq_dynamic_value = jq_dynamic_value.first();

@@ -248,6 +248,13 @@ var WFireController = (function (_super) {
         this.canvas_radar_point.height = 190;
         this.radarCTX = this.canvas_radar.getContext("2d");
         this.radarPointCTX = this.canvas_radar_point.getContext("2d");
+
+        // Временный скрытый канвас для "остывания" точек
+        this.canvas_radar_point_temp = this.canvas_radar_point_temp || document.createElement("canvas");
+        this.canvas_radar_point_temp.width = this.canvas_radar_point.width;
+        this.canvas_radar_point_temp.height = this.canvas_radar_point.height;
+        this.radarPointCTXTemp = this.canvas_radar_point_temp.getContext("2d");
+
         this._difRadarRadius = constRadarRadiusOut - constRadarRadiusIn;
         this._difRadarWidth = constRadarMaxWidth - constRadarMinWidth;
         this._difRadarOpacity = constRadarMaxOpacity - constRadarMinOpacity;
@@ -507,11 +514,13 @@ var WFireController = (function (_super) {
 
     WFireController.prototype._updateCarPointCanvas = function () {
         this.radarPointCTX.save();
-        this.radarPointCTX.globalCompositeOperation = "copy";
+        var w = this.canvas_radar_point.width;
+        var h = this.canvas_radar_point.height;
+        var old_data = this.radarPointCTX.getImageData(0, 0, w, h);
+        this.radarPointCTXTemp.putImageData(old_data, 0, 0);
+        this.radarPointCTX.clearRect(0, 0, w, h);
         this.radarPointCTX.globalAlpha = 0.97;
-        this.radarPointCTX.drawImage(this.canvas_radar_point, 0, 0);
-        //this.radarPointCTX.globalCompositeOperation = "source-over";
-        //this.radarPointCTX.globalAlpha = 1;
+        this.radarPointCTX.drawImage(this.canvas_radar_point_temp, 0, 0);
         this.radarPointCTX.restore();
         //stackBlurCanvasRGBA('fireControlRadarPointCanvas', 0, 0, 190, 190, 1);
     };

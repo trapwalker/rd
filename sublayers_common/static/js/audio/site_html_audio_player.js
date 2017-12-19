@@ -336,7 +336,7 @@ var RadioPlayer = (function () {
             }
             this.power_on = true;
             // Отстроить звук
-            this.set_volume(this.current_volume, true);
+            this.set_volume(Math.max(this.current_volume, 0.05), true);
             this.ticker_create(this.news_text);
         }
 

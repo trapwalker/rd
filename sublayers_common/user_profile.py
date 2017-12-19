@@ -14,6 +14,8 @@ from mongoengine import (
 )
 
 from sublayers_server.model.registry_me.odm_position import PositionField
+from sublayers_common.adm_mongo_logs import AdminLogRecord
+from bson.objectid import ObjectId
 
 
 class User(Document):
@@ -80,6 +82,13 @@ class User(Document):
     teaching_state = StringField(default="", max_length=30)  # "" - не известно, "cancel" - отменено, "done" - завершено, "map" - карта, "city" - город
     start_position = PositionField(caption=u"Стартовые координаты")
 
+    access_level = IntField(default=0, caption=u"0 - Игрок, 1 - Гейм-мастер, 2 - Модератор, 10 - Администратор") # Просто на будущее задел
+
+    ban_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)  # Время, до которого игрок не может зайти в игру
+    ban_reason = StringField(default='', max_length=255)  # todo: заменить на LocalizedStringField
+    silent_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)  # Время, до которого игрок не может писать в чат
+
+
     @property
     def adm_info(self):
         return dict(
@@ -91,7 +100,16 @@ class User(Document):
             date_created=self.date_created,
             rating=self.ordinal_number,
             auth=self.auth.adm_info,
+            access_level=self.access_level,
         )
+
+    @property
+    def auth_info(self):
+        info = self.auth.adm_info
+        info["email"] = "{}|{}".format(info["email"], info["confirmed"])
+        del info["confirmed"]
+        return '; '.join("{}:{}".format(key, value) for key, value in info.items() if value)
+
 
     def __init__(self, raw_password=None, email=None,
         google_id=None, vk_id=None, twitter_id=None, fb_id=None, steam_id=None, **kw):
@@ -132,6 +150,10 @@ class User(Document):
     def email(self):
         if self.auth and self.auth.standard:
             return self.auth.standard.email
+
+    @classmethod
+    def get_by_id(cls, user_id):
+        return cls.objects.filter(pk=ObjectId(user_id)).first()
 
     @classmethod
     def get_by_name(cls, name):
@@ -189,6 +211,28 @@ class User(Document):
             self.save()
 
         return self.ordinal_number
+
+    @property
+    def is_banned(self):
+        return datetime.datetime.now() < self.ban_time
+
+    def get_banned_seconds(self):
+        return (self.ban_time - datetime.datetime.now()).total_seconds()
+
+    def get_silent_seconds(self):
+        return (self.silent_time - datetime.datetime.now()).total_seconds()
+
+    def silent(self, minutes, need_reload=True):
+        if minutes > 0:
+            self.silent_time = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
+        else:
+            self.silent_time = datetime.datetime.fromtimestamp(0)
+        self.save()
+        if need_reload:
+            self.reload()
+
+    def adm_log(self, type, text):
+        AdminLogRecord(user=self, type=type, text=text).post()
 
 
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):

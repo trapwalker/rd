@@ -78,30 +78,16 @@ var WSConnector = (function(_super){
             };
 
             self.connection.onclose = function (event) {
-                //console.log('onclose ', event);
+                // console.log('onclose ', event);
                 // websocket is closed.
                 self.isConnected = false;
                 timeManager.timerStop();
                 if (event.wasClean) {
-                    //alert('Соединение закрыто сервером ', event);
-                    //console.log('Соединение закрыто чисто ', event);
-                    var reason = event.reason;
-                    if (reason.search('min_connection_time') >= 0) {
-                        setTimeout(function(){ ws_connector.connect();}, 60000); // Сразу ставим максимальный таймаут
-                    }
-
-                } else {
-                    // modalWindow.modalDialogInfoShow({
-                    //     caption: 'Disconnect',
-                    //     header: _("window_disconnect_caption"),
-                    //     body_text: _("window_disconnect_text"),
-                    //     callback_ok: function () {
-                    //         window.location.reload();
-                    //     }
-                    // });
-                    // todo: именно здесь вызвать консоль. Выключать её не нужно, так как будет location.reload()
+                    // console.log('Соединение закрыто чисто ', event);
+                    setTimeout(function(){ location.reload();}, 60000); // Сразу ставим максимальный таймаут
                     textConsoleManager.start('dc_console');
-
+                } else {
+                    textConsoleManager.start('dc_console');
                     // Автореконнект
                     var ping_link = window.location.protocol + "//" + location.hostname +
                                     $('#settings_server_mode_link_path').text() + '/site_stat';

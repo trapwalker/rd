@@ -638,7 +638,7 @@ var LocationPanelInfo = (function () {
     };
 
     LocationPanelInfo.prototype.show_building_quest = function (options) {
-        //console.log('LocationPanelInfo.prototype.show_building_quest', options);
+        // console.log('LocationPanelInfo.prototype.show_building_quest', options);
         var jq_panel = this.jq_main_div.find('.pi-building-quest').first();
         var width = Math.floor(316 * (options.respect / 100));
         jq_panel.find('.respect').first().width(width);
@@ -831,6 +831,11 @@ var LocationPlaceBuilding = (function (_super) {
                 console.warn('Специалист ' + npc_rec.title + ' находится в нескольких зданиях одновременно');
         }
 
+        // Добавляем главу т.к. он может не находиться в списке специалистов
+        var npc_rec = this.building_rec.head;
+        if (!locationManager.npc.hasOwnProperty(npc_rec.html_hash))
+            locationManager.npc[npc_rec.html_hash] = this._getNPCByType(npc_rec.type, npc_rec, jq_town_div, this.building_rec.name);
+
         this.resizeInventory(this.jq_main_div.find('.building-npc-list'));
 
         this.active_screen_name = 'location_screen';
@@ -965,6 +970,17 @@ var LocationPlaceBuilding = (function (_super) {
                     html_text = _("loc_sht_mayor_hello") + _(locationManager.example.title) + "." +
                         "<ul><li>" + _("loc_sht_mayor_text") + "</li>" +
                         "<li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
+                        "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
+                    break;
+
+                // TODO: Это всё мелкие POI - у них неверно названы здания. Правильно назвать здения и оно заработает
+                case 'mine':
+                case 'adriano':
+                case 'tartron':
+                case 'base':
+                case 'parking':
+                    html_text = _("loc_sht_hello") + _(locationManager.example.title) + "." +
+                        "<ul><li>" + _("loc_sht_quests_available") + ": " + quest_info.available_count + "</li>" +
                         "<li>" + _("loc_sht_quests_active") + ": " + quest_info.active_count + "</li></ul>";
                     break;
 

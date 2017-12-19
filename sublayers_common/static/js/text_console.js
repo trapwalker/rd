@@ -1,7 +1,15 @@
 var TextConsoleManager = (function(){
     function TextConsoleManager() {
+        // Управление звуками печати
+        this.start_audio = false;
+        this.enabled_audio = false;
+
         this.jq_main_div_wrap = $('#textConsoleDivWrap');
         this.jq_main_div = $('#textConsoleDiv');
+        // this.jq_main_div.on("blur", function(event) {console.log('-')});
+        // this.jq_main_div.on("focus", function() {console.log('+')});
+        this.jq_main_div.on("keydown", function(event) { textConsoleManager.interrupt(event) });
+
         this.active_console = null;
         this.consoles = {};
         this.app_version = $('#settings_app_version').text();
@@ -14,7 +22,6 @@ var TextConsoleManager = (function(){
 
         // todo: передалать этот костыль !
         this.jq_main_div_wrap.click(function(){$('#textConsoleDiv').focus();})
-
     }
 
     TextConsoleManager.prototype.add = function(con, name) {
@@ -36,6 +43,9 @@ var TextConsoleManager = (function(){
     };
 
     TextConsoleManager.prototype.start = function(name, min_view_time, options) {
+        // console.log('TextConsoleManager.prototype.start', name, min_view_time, options);
+        this.enabled_audio = true;
+
         // Останавливаем все консоли
         for (var key in this.consoles)
             if (this.consoles.hasOwnProperty(key) && this.consoles[key])
@@ -45,14 +55,13 @@ var TextConsoleManager = (function(){
         if (this.consoles.hasOwnProperty(name) && this.consoles[name]) {
             this.jq_main_div_wrap.addClass('show');
             this.active_console = this.consoles[name];
+            this.jq_main_div.focus();
             this.active_console.start(options);
-
             if (min_view_time != undefined && min_view_time > 0) {
                 this.min_view_time = min_view_time;
                 if (! this.first_start_time)
                     this.first_start_time = clock.getClientTime();
             }
-
         }
     };
 
@@ -61,12 +70,20 @@ var TextConsoleManager = (function(){
             this.consoles[i].stop();
         this.active_console = null;
         this.jq_main_div_wrap.removeClass('show');
+        audioKeyboard.stop();
 
         this.first_start_time = null;
         this.min_view_time = 0;
+
+        returnFocusToMap();
     };
 
     TextConsoleManager.prototype.stop = function() {
+        // console.log('TextConsoleManager.prototype.stop');
+
+        this.enabled_audio = false;
+        this.start_audio = false;
+
         var self = this;
         var curr_time = clock.getClientTime();
         if (this.first_start_time && curr_time - this.first_start_time < this.min_view_time) {
@@ -77,6 +94,7 @@ var TextConsoleManager = (function(){
     };
 
     TextConsoleManager.prototype.async_stop = function() {
+        // console.log('TextConsoleManager.prototype.async_stop');
         var self = this;
         setTimeout(function(){self.stop();}, 10);
     };
@@ -88,6 +106,12 @@ var TextConsoleManager = (function(){
         old_text = old_text.substr(old_text.length - 4000, 4000); // хранить последение 4000 символов
         old_text = old_text + '\n> ' + message;
         jq_old_text.text(old_text);
+    };
+
+    TextConsoleManager.prototype.interrupt = function(event) {
+        if ((event.keyCode == 32) && this.active_console) {
+            this.active_console.interrupt();
+        }
     };
 
     return TextConsoleManager;
@@ -156,6 +180,12 @@ var TextConsole = (function(){
         this._timeout = null;
     }
 
+    TextConsole.prototype.initTargetDiv=function(jq) {
+        this.target_div = jq;
+        var self = this;
+        this.target_div.on("keydown", function(event){ self.user_input(event) });
+    };
+
     TextConsole.prototype._replaceAt=function(str, index, character) {
         return str.substr(0, index) + character + str.substr(index + character.length);
     };
@@ -169,18 +199,13 @@ var TextConsole = (function(){
     };
 
     TextConsole.prototype.interrupt = function() {
-        this._messages = [];
-
-        if (((this._cur_message_len - this._cur_symbol) > 3) && (this._cur_message) && (this._cur_message.message)) {
-            this._cur_message_len = this._cur_symbol + 3;
-            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 0, '.');
-            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 1, '.');
-            this._cur_message.message = this._replaceAt(this._cur_message.message, this._cur_symbol + 2, '.');
-            this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
+        if ((this._cur_symbol > 0) && (this._cur_symbol < this._cur_message_len)) {
+            this._text += this._cur_message.message.substring(this._cur_symbol);
+            this.target_div.find('.console-new-text').text(this._text + '█');
+            this._cur_symbol = this._cur_message_len;
+            this._scroll_top();
+            return;
         }
-
-        if ((this._cur_message) && (this._cur_message.message))
-            this._messages.push({sender: 'system', message: _("con_interrupt")});
     };
 
     TextConsole.prototype._state_wait_user_input = function(self) {
@@ -307,7 +332,6 @@ var TextConsole = (function(){
 
             if (self._cur_message.sender == 'user_input') {
                 this._wait_input = true;
-                self.target_div.on("keydown", function(event){ self.user_input(event) });
                 self.target_div.focus();
                 self._state_wait_user_input(self);
                 return;
@@ -337,7 +361,8 @@ var TextConsole = (function(){
 
     TextConsole.prototype.user_input = function(event) {
         //console.log('TextConsole.prototype.user_input', event);
-        this.target_div.off("keydown");
+        if (!this._wait_input) return;
+        // this.target_div.off("keydown");
         this._cur_message = null;
         this._wait_input = false;
     };
@@ -348,6 +373,7 @@ var TextConsole = (function(){
             console.warn('Не задан контейнер консоли!');
             return;
         }
+        var self = this;
         if (!this._is_started) {
             this._is_started = true;
             this._state_selector(this);
@@ -396,34 +422,21 @@ var TextConsoleAudio = (function (_super) {
 
     function TextConsoleAudio() {
         _super.call(this);
-        this.start_audio = false;
     }
 
-    // Вызывать тогда, когда консоль становится невидимой
-    TextConsoleAudio.prototype.focus_interrupt = function() {
-        //console.log('TextConsoleAudio.prototype.focus_interrupt');
-        if (! this._is_started) return;
-        this._messages = [];
-        if (((this._cur_message_len - this._cur_symbol) > 3) && (this._cur_message) && (this._cur_message.message)) {
-            this._cur_message_len = this._cur_symbol;
-            this._cur_message.message = this._cur_message.message.substr(0, this._cur_message_len);
-        }
-        if ((this._cur_message) && (this._cur_message.message)) {
-            this._messages.push({sender: 'interrupt', message: _("con_interrupt")});
-        }
-    };
-
     TextConsoleAudio.prototype._state_print_text = function(self) {
-        if (! this.start_audio) {
-            this.start_audio = true;
+        if (audioKeyboard && textConsoleManager.enabled_audio && !textConsoleManager.start_audio) {
+            textConsoleManager.start_audio = true;
             audioKeyboard.play();
         }
         _super.prototype._state_print_text.call(this, self);
     };
 
     TextConsoleAudio.prototype._state_after_print_delay = function(self) {
-        this.start_audio = false;
-        audioKeyboard.stop();
+        if (audioKeyboard && textConsoleManager.enabled_audio && textConsoleManager.start_audio) {
+            textConsoleManager.start_audio = false;
+            audioKeyboard.stop();
+        }
         _super.prototype._state_after_print_delay.call(this, self);
     };
 
@@ -437,7 +450,7 @@ var ConsoleFirstEnter = (function (_super) {
     function ConsoleFirstEnter() {
         _super.call(this);
 
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this.first_input = true;
         this.teaching_answer_value = false;
 
@@ -468,6 +481,7 @@ var ConsoleFirstEnter = (function (_super) {
     }
 
     ConsoleFirstEnter.prototype.user_input = function(event) {
+        if (!this._wait_input) return;
         if (this.first_input)
             switch (event.keyCode) {
                 case 89:
@@ -483,7 +497,7 @@ var ConsoleFirstEnter = (function (_super) {
                         '--------------------------------------------------------------'
                     );
                     this.add_message('user_input', ' ');
-                    this.target_div.off("keydown");
+                    // this.target_div.off("keydown");
                     this._cur_message = null;
                     this.first_input = false;
                     this._wait_input = false;
@@ -501,7 +515,7 @@ var ConsoleFirstEnter = (function (_super) {
                         '--------------------------------------------------------------'
                     );
                     this.add_message('user_input', ' ');
-                    this.target_div.off("keydown");
+                    // this.target_div.off("keydown");
                     this._cur_message = null;
                     this.first_input = false;
                     this._wait_input = false;
@@ -522,7 +536,7 @@ var ConsoleFirstEnter = (function (_super) {
                             '--------------------------------------------------------------'
                         );
                         this.add_message('user_input', ' ');
-                        this.target_div.off("keydown");
+                        // this.target_div.off("keydown");
                         this._cur_message = null;
                         this.first_input = false;
                         this._wait_input = false;
@@ -540,7 +554,7 @@ var ConsoleFirstEnter = (function (_super) {
                             '--------------------------------------------------------------'
                         );
                         this.add_message('user_input', ' ');
-                        this.target_div.off("keydown");
+                        // this.target_div.off("keydown");
                         this._cur_message = null;
                         this.first_input = false;
                         this._wait_input = false;
@@ -554,7 +568,7 @@ var ConsoleFirstEnter = (function (_super) {
                             resourceLoadManager.del(this);  // Произошёл отказ от обучения, поэтому коннект по ws
                         else
                             console.log('Redirect to teaching map');
-                        this.target_div.off("keydown");
+                        // this.target_div.off("keydown");
                         break;
             }
     };
@@ -587,7 +601,7 @@ var ConsoleFirstEnter = (function (_super) {
     };
 
     return ConsoleFirstEnter;
-})(TextConsole);
+})(TextConsoleAudio);
 
 
 var ConsoleEnter = (function (_super) {
@@ -596,7 +610,7 @@ var ConsoleEnter = (function (_super) {
     function ConsoleEnter() {
         _super.call(this);
 
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
 
         this.add_message(
             'welcome',
@@ -619,7 +633,7 @@ var ConsoleEnter = (function (_super) {
     }
 
     return ConsoleEnter;
-})(TextConsole);
+})(TextConsoleAudio);
 
 
 var ConsoleEnterToLocation = (function (_super) {
@@ -627,7 +641,7 @@ var ConsoleEnterToLocation = (function (_super) {
 
     function ConsoleEnterToLocation() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._init_messages();
         textConsoleManager.add(this, 'enter_location');
     }
@@ -645,8 +659,10 @@ var ConsoleEnterToLocation = (function (_super) {
         _super.prototype.start.call(this);
     };
 
+    // ConsoleEnterToLocation.prototype.interrupt = function() {};
+
     return ConsoleEnterToLocation;
-})(TextConsole);
+})(TextConsoleAudio);
 
 
 var ConsoleEnterToMap = (function (_super) {
@@ -654,7 +670,7 @@ var ConsoleEnterToMap = (function (_super) {
 
     function ConsoleEnterToMap() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._init_messages();
         textConsoleManager.add(this, 'enter_map');
     }
@@ -673,7 +689,7 @@ var ConsoleEnterToMap = (function (_super) {
     };
 
     return ConsoleEnterToMap;
-})(TextConsole);
+})(TextConsoleAudio);
 
 
 var ConsoleDisconnectFromServer = (function (_super) {
@@ -681,7 +697,7 @@ var ConsoleDisconnectFromServer = (function (_super) {
 
     function ConsoleDisconnectFromServer() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._init_messages();
         textConsoleManager.add(this, 'dc_console');
     }
@@ -700,7 +716,7 @@ var ConsoleDisconnectFromServer = (function (_super) {
     };
 
     return ConsoleDisconnectFromServer;
-})(TextConsole);
+})(TextConsoleAudio);
 
 
 var ConsoleDieBase = (function (_super) {
@@ -708,11 +724,11 @@ var ConsoleDieBase = (function (_super) {
 
     function ConsoleDieBase() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this.add_to_console_manager();
     }
 
-    ConsoleDieBase.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_base');};
+    ConsoleDieBase.prototype.add_to_console_manager = function() { textConsoleManager.add(this, 'die_base'); };
 
     ConsoleDieBase.prototype.get_insurance_deadline_info = function (options) {
         var res = '';
@@ -727,9 +743,10 @@ var ConsoleDieBase = (function (_super) {
     };
 
     ConsoleDieBase.prototype.user_input = function(event) {
-        //console.log('Нажата кнопка. Пытаемся войти в город');
+        // console.log('Нажата кнопка. Пытаемся войти в город');
+        if (!this._wait_input) return;
+        this._wait_input = false;
         clientManager.sendGoToRespawn(null);
-        this.target_div.off("keydown");
     };
 
     ConsoleDieBase.prototype._init_messages = function(options) {
@@ -763,7 +780,7 @@ var ConsoleDieBase = (function (_super) {
     };
 
     return ConsoleDieBase;
-})(TextConsole);
+})(TextConsoleAudio);
 
 
 var ConsoleDiePremium = (function (_super) {
@@ -771,12 +788,13 @@ var ConsoleDiePremium = (function (_super) {
 
     function ConsoleDiePremium() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
     }
 
     ConsoleDiePremium.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_premium');};
 
     ConsoleDiePremium.prototype._init_messages = function(options) {
+        console.log('ConsoleDiePremium.prototype._init_messages');
         this._messages = [];
         this.add_message(
             'system',
@@ -809,13 +827,14 @@ var ConsoleDieShareholder = (function (_super) {
 
     function ConsoleDieShareholder() {
         _super.call(this);
-        this.target_div = textConsoleManager.jq_main_div;
+        this.initTargetDiv(textConsoleManager.jq_main_div);
         this._current_towns = [];
     }
 
     ConsoleDieShareholder.prototype.add_to_console_manager = function() {textConsoleManager.add(this, 'die_shareholder');};
 
     ConsoleDieShareholder.prototype.user_input = function(event) {
+        if (!this._wait_input) return;
         //console.log('Нажата кнопка. Пытаемся войти в город');
         var index = null;
         if (event.keyCode >= 49 && event.keyCode < 49 + this._current_towns.length)
@@ -826,7 +845,7 @@ var ConsoleDieShareholder = (function (_super) {
 
         if (index != null) {
             clientManager.sendGoToRespawn(this._current_towns[index].node_hash);
-            this.target_div.off("keydown");
+            // this.target_div.off("keydown");
         }
     };
 
@@ -866,7 +885,6 @@ var ConsoleDieShareholder = (function (_super) {
 
     return ConsoleDieShareholder;
 })(ConsoleDieBase);
-
 
 //var ConsoleWPI = (function (_super) {
 //    __extends(ConsoleWPI, _super);

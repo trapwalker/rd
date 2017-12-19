@@ -1,0 +1,252 @@
+"locale": "en"
+
+# Классовый квест Start Quest
+"q_cq_started": "Class quest is started."
+"q_cq_caption_1": "Found a settlement"
+"q_cq_caption_2": "Make a clan"
+"q_cq_caption_3": "Get a stealth technology"
+"q_cq_caption_4": "Open a store"
+"q_cq_caption_5": "Get a supercar"
+"q_cq_caption_6": "Open a service center"
+"q_cq_caption_get_new_task": "Started a new quest: find a mentor."
+"q_cq_class_target_note": "Class subject"
+"q_cq_visit_trainer": "Trainer was visited."
+"q_cq_select_teacher_note_caption": "Mentor"
+"q_cq_select_teacher_note_btn": "<br>Accept"
+"q_cq_phrase_1": "We don't know each other well enough. Until the relationship level is at least 55, there will be no further conversation.<//br> The relationship level can be increased by karmic affinity and completion of the tasks I give you."
+"q_cq_phrase_2": "All right, these are my requirements for apprentices:<//br>- A contribution of 3000 NC.<//br>- Level 2 or higher."
+"q_cq_phrase_success": "All right, apprentice. Let's look at your car."
+"q_cq_final": "Quest is completed."
+
+
+# GetClassCarQuest
+"q_cq_get_car_started": "Quest is started."
+"q_cq_get_car_note_page": "Right<br>vehicle"
+"q_cq_get_car_note_btn": "<br>Continue"
+"q_cq_get_car_not_u_cl": |
+  A self-respecting {{classname}} can not ride it.
+"q_cq_get_car_not_car": "Dude, where's your car?"
+"q_cq_get_car_finished": "Quest is completed."
+"q_cq_get_car_text_template": "To begin, we need to make sure that you are driving the right vehicle, {{role_class_name}}.<br>Reward: 750 exp."
+"q_cq_get_car_note_1": "Each specialist has particular preferences when choosing vehicles. It makes sense to trade using something with a large trunk, to conduct reconnaissance using something light and undistinguished and to fight using a powerful vehicle with a large number of weapon slots on its body. To begin with, we need to make sure that you drive the right car, "
+"q_cq_get_car_note_2": "."
+"q_cq_get_car_note_phrase_success": "Fine. Now I've got a present for you."
+
+# MaskingQuest
+"q_cq_masking_started": "Quest is started."
+"q_cq_masking_npc_note_caption": "Artefact"
+"q_cq_masking_npc_note_text": "There are some things that we don't throw into a trunk but carry around with us. They are called artifacts, talismans, quest items or simply junk that we can't bring ourselves to throw away. I know where to find something that you're gonna really like. It's hidden in a cache. But it's well protected. I know the guy whose cache it is and it's useless to just ram into it. But if you secretly sneak past the sentry gun, it can work out. When you are near the cache, slow down to become less noticeable and stay away from the sentry gun!"
+"q_cq_masking_npc_note_btn": "<br>Continue"
+"q_cq_masking_text": "I know where to find something that you're gonna really like. It's hidden in a cache. But it's well protected. I know the guy whose cache it is and it's useless to just ram into it. But if you secretly sneak past the sentry gun, it can work out. The faster you go, the more noticeable you are. When you are near the cache, slow down to 20 km/h to become less noticeable and stay away from the sentry gun!<br>Reward: 1000 exp."
+"q_cq_masking_replica_not_finish": "Come back when you have an artifact!"
+"q_cq_masking_warning": "Attention! Slow down to 20 km/h."
+"q_cq_masking_phrase_success": "And what we have..."
+"q_cq_masking_get_artefact": "Artefact received."
+"q_cq_masking_phrase_to_chosen_one": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where you're going to travel a lot."
+"q_cq_masking_phrase_to_alpha_wolf": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where it will be necessary to show leadership qualities."
+"q_cq_masking_phrase_to_night_rider": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where you will learn to be invisible, like a road cat."
+"q_cq_masking_phrase_to_oil_magnate": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where you have to earn some money."
+"q_cq_masking_phrase_to_road_warrior": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where you have to shoot a little."
+"q_cq_masking_phrase_to_techno_kinetic": "Congrats on obtaining a real class artifact, {{role_class_name}}!<br>It will definitely help you in your next task, where it is necessary to get acquainted with the work of experienced mechanics."
+
+
+# Common Text
+"q_cq_journal_text": " now you have a wheels, a class artifact, if you want to know the secrets of the profession you will have to get a little experience. To start, "
+"q_cq_journal_reward_1": "Reward: 3000 exp."
+"q_cq_journal_reward_2": "Reward: 5000 exp."
+
+# ClassQuestVisitTowns
+"q_cq_visit_towns_started": "Quest is started."
+"q_cq_visit_towns_visit_one_template": |
+    {{ town and town.title or 'N' }} town is visited. {% if towns_left %}Left: {{ '{:.0f}'.format(towns_left) }}.{% end %}
+"q_cq_visit_towns_finished_page": "Get busy!"
+"q_cq_visit_towns_finished_btn": "<br>Continue"
+"q_cq_visit_towns_replica_not_finish": "You were not everywhere. Go visit:"
+"q_cq_visit_towns_replica_return_to_teacher": "All towns are visited. Come back to the mentor."
+"q_cq_visit_towns_finished": "Quest is completed."
+"q_cq_visit_towns_task_text": "you'll have to find a route to all the cities of the Nuke Commander system. What accomplishments to expect from the Chosen one if he only saw his yard? Breathe in some road dust, find out what it's like to drive through the woods, mountains and off-road, rape the bloody odometer, your engine be blasted! Come back when you've been everywhere..."
+"q_cq_visit_towns_phrase_success": "Now that you've seen the world, let's continue to make you a pro."
+
+
+# ClassQuestAccumulateNucoins
+"q_cq_acc_summ_started": "Quest is started."
+"q_cq_acc_summ_finished_page": "Get busy!"
+"q_cq_acc_summ_finished_btn": "<br>Continue"
+"q_cq_acc_summ_replica_not_finish": "Where's the money? Come back when you earn 40 000 NC."
+"q_cq_acc_summ_finished": "Quest is completed."
+"q_cq_acc_summ_task_text": "you like money, and I have a lesson for you that I learned from my father: just earn it! Show me that you've got at least 40,000 NC. Accomplish tasks, buy for less, sell for more; rob, steal — it's all the same, nucoins don't stink. Until you understand the cost of a startup capital, you won't make a good capitalist, mister."
+"q_cq_acc_summ_task_phrase_success": "Now that you aren't a beggar, we've begun to speak the same language. Let's continue."
+
+
+# ClassQuestKillsQuest
+"q_cq_kills_started": "Quest is started."
+"q_cq_kills_finished_page": "Get busy!"
+"q_cq_kills_finished_btn": "<br>Continue"
+"q_cq_kills_replica_not_finish": |
+  In your log only {{complete}}/{{count}} burned vehicles.
+"q_cq_kills_finished": "Quest is completed."
+"q_cq_kills_target_killed": "The kill of {} is counted."
+"q_cq_kills_back_to_teacher": "Quest tasks are completed."
+"q_cq_kills_task_text": "you need to come to terms with the idea that your lane is a main road always and everywhere, at any intersection. Ruin a dozen cars at level not lower than yours. A rabid road dog rules this world. Until he tastes blood, adrenaline and splashes of fuel and hears the roar of a crazed engine and the crunch of a synchromesh, he isn't ready for dog fights. Return with 12 notches on your steering wheel."
+"q_cq_kills_task_phrase_success": "Have you smelled gunpowder? It's just a start. You're going to learn not only how to win, but also how not to lose."
+
+
+# ClassQuestPartyExp
+"q_cq_party_exp_started": "Quest is started."
+"q_cq_party_exp_finished_page": "Get busy!"
+"q_cq_party_exp_finished_btn": "<br>Continue"
+"q_cq_party_exp_replica_not_finish": |
+  Your party have earn only {{xp}}/{{max_exp}} experience points.
+"q_cq_party_exp_done_text": "Quest tasks are completed."
+"q_cq_party_exp_finished": "Quest is completed."
+"q_cq_party_exp_one_template": |
+    Experience points: {{ '{:.0f}'.format(exp) }} / {{ '{:.0f}'.format(max_exp) }}.
+"q_cq_party_exp_task_text": "a true leader starts from himself. Create a squad and, being its part, gain 1000 exp. Squads are created mainly for sharing experience and vision, which allows each member to focus on their field. But to share experience with your fellows, you first need to obtain it. Create a squad, choose its name and define its objectives. Accomplish tasks or burn strangers' cars — in fact, I don't care."
+"q_cq_party_exp_phrase_success": "Congrats, now you understand what your fellows will face. But there is also another kind of experience..."
+
+
+# ClassQuestSetMechanicItems
+"q_cq_mech_items_replica_not_fin": |
+    There are still not enough items..<br>Stats: {{complete}}/{{count}}.
+"q_cq_mech_items_started": "Quest is started."
+"q_cq_mech_items_finished_page": "Get busy!"
+"q_cq_mech_items_finished_btn": "<br>Continue"
+"q_cq_mech_items_finished": "Quest is completed."
+"q_cq_mech_items_task_text": "look and learn. Don't mess with a mechanism if you don't understand how it's arranged. Find 18 details that fit for tuning your vehicle and have them installed by an experienced mechanic. Each detail can add bonuses and penalties to the specifications of your car and replace its stock counterpart, which returns to its place if necessary. Check out changes in specifications after installing everything at once."
+"q_cq_mech_items_phrase_success": "All right. Do you feel that parental affection when you look at those hot wheels? Now I'm gonna tell you how to use your car to the full."
+
+
+# ClassQuestShadowing
+"q_cq_shadowing_one_template":
+  Surveillance on a {{ target_login }} is completed.
+"q_cq_shadowing_started": "Quest is started."
+"q_cq_shadowing_finished_page": "Get busy!"
+"q_cq_shadowing_finished_btn": "<br>Continue"
+"q_cq_shadowing_replica_not_finish": |
+  On your logs, I see only {{complete}}/{{count}} completed snoops.
+"q_cq_shadowing_back_to_teacher": "Get busy: quest tasks are completed."
+"q_cq_shadowing_finished": "Quest is completed."
+"q_cq_shadowing_task_text": "you sneaked past that stupid sentry gun. I knew about its defect so that wasn't difficult. But it's not always so seamless. You outta learn to disappear from sight of real hounds to overcome a more audacious or numerous adversary. Follow three people for at least one minute. Use the noticeability sensor on your dashboard. The rules are the same: the lighter your vehicle is and the lower your speed is, the less noticeable you are."
+"q_cq_shadowing_start_target": "Surveillance on a {{ target_login }} is started."
+"q_cq_shadowing_break_target": "{{ target_login }} is detect you!"
+"q_cq_shadowing_lost_target": "{{ target_login }} is left from you!"
+"q_cq_shadowing_phrase_success": "Great. You learned to go on the leeward side. But there is still much to learn. Now I'll show you a secret."
+
+
+# GetCarMaxLevelQuest
+"q_cq_get_car_lvl_started": "Quest is started."
+"q_cq_get_car_lvl_note_page": "Taming"
+"q_cq_get_car_lvl_note_btn": "<br>Continue"
+"q_cq_get_car_lvl_bad": "Show me the vehicle with the maximum level."
+"q_cq_get_car_lvl_finished": "Quest is completed."
+"q_cq_get_car_lvl_text": "So your task is to show me a tested five-star vehicle!<br>Reward: {{reward_exp}} exp."
+"q_cq_get_car_lvl_note": During a nuclear winter you are what your vehicle is. Your vehicle is part of you. I bet it was hard to gain experience in my previous task. But I'll teach you one trick to get experience faster. Each car is ranked according to its performance. It's five stars in a vehicle's specifications. The higher the mileage is and the larger number of enemies was destroyed by the vehicle, the more stars it has. The number of stars defines the amount of experience you gain for killing and how much loot you'll find in the trunk of your fallen enemy. Moreover, the experience points gained by someone destroying your vehicle also depend on the number of stars. So your task is to show me a tested five-star vehicle!"
+"q_cq_get_car_lvl_phrase_success": "Great!"
+"q_cq_get_car_lvl_phrase_to_chosen_one": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to impress the high and the mighty. And you can do something for me, too."
+"q_cq_get_car_lvl_phrase_to_alpha_wolf": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to impress your potential associates."
+"q_cq_get_car_lvl_phrase_to_night_rider": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to terrify the neighborhood."
+"q_cq_get_car_lvl_phrase_to_oil_magnate": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to impress your trade partners."
+"q_cq_get_car_lvl_phrase_to_road_warrior": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to get to grips with something new."
+"q_cq_get_car_lvl_phrase_to_techno_kinetic": "Mastery of something is true beauty, {{role_class_name}}. A tested car will come in handy to get to grips with something new."
+
+
+# ClassQuestInvisibleAttack
+"q_cq_inv_attack_one_template": |
+    Sudden attack on {{ target_login }} is complete. {% if left %}Left: {{ '{:.0f}'.format(left) }}.{% end %}
+"q_cq_inv_attack_started": "Quest is started."
+"q_cq_inv_attack_done": "All sudden attacks are done."
+"q_cq_inv_attack_finished_page": "Get busy! #2"
+"q_cq_inv_attack_finished_btn": "<br>Continue"
+"q_cq_inv_attack_replica_not_finish": |
+  Количество успешных скрытых атак: {{attack_done}}/{{attack_count}}.
+"q_cq_inv_attack_finished": "Quest is completed."
+"q_cq_inv_attack_task_text": "Not so long ago you learned to do surveillance, and it ended well for the people you followed. It mustn't be like that anymore. It's time to master the art of a sudden attack. An unexpected attack always means critical damage and discouragement for the victim. Any night cat can put a whole herd of buffalo to flight thanks to this skill. The art of ninja is mastered by those who wait. Float like a butterfly, sting like a bee! Damn, I'd even go with you to recall what real hunt is but they'll take all the booze from the bar, so maybe some other time. Good luck!"
+"q_cq_inv_attack_phrase_success": "Excellent. Now you're a real phantom menace. It's time to find out on which side of the Force you are, {{role_class_name}}."
+
+# ClassQuestPartyMembers
+"q_cq_party_members_started": "Quest is started."
+"q_cq_party_members_finished_page": "Get busy! #2"
+"q_cq_party_members_finished_btn": "<br>Continue"
+"q_cq_party_members_replica_not_finish": "Your party is way too small, chief."
+"q_cq_party_members_back_to_teacher": "Party is manned."
+"q_cq_party_members_finished": "Quest is completed."
+"q_cq_party_members_task_text": "Well, it's time to start your gang. Get at least five people together. Trust the words of your mentor, this world is not ruled by guns and cars, but by associations of people. As in the ancient war the Cro-Magnons beat the Neanderthals, so today a numerical superiority and discipline outweigh everything: it's all the same whether your car is more expensive or cheaper, your gun is first-rate or not; for a real leader, it doesn't matter. And don't forget that every 10 leadership points allow you to take 1 person into your squad."
+"q_cq_party_members_phrase_success": "Now you are a true leader. It's a great responsibility and I'd like to talk about that..."
+
+
+# ClassQuestBarterCount
+"q_cq_barters_add_one": |
+    Совершён бартер с {{ agent_login }}.
+"q_cq_barters_started": "Quest is started."
+"q_cq_barters_finished_page": "Get busy! #2"
+"q_cq_barters_finished_btn": "<br>Continue."
+"q_cq_barters_replica_not_finish": |
+  This is not enough!<br>You have only {{complete}}/{{count}} barter.
+"q_cq_barters_back_to_teacher": "The required barter is produced."
+"q_cq_barters_finished": "Quest is completed."
+"q_cq_barters_task_text": "Trade is the most profitable business of all times. You don't need to produce or create anything, just make money out of thin air while it's still there. And even if it's not there — make money! Go and barter 30 times with people like you. Try to make those barters as profitable for you as possible. This is the most primitive type of trade, but it will give you an idea of the psychology and mechanics of the value exchange. The barter window is opened by clicking a light bulb in the upper right corner of the Nuke Commander when you approach someone. Remember to turn the combat mode off!"
+"q_cq_barters_phrase_success": "All right, I see that you will go far. Big money means big opportunities. And I'd like to dwell on that..."
+
+
+# ClassQuestSetMapWeapon
+"q_cq_set_map_weapon_add_one": |
+    {{ title }} is installed.
+"q_cq_set_map_weapon_started": "Quest is started."
+"q_cq_set_map_weapon_finished_page": "Get busy! #2"
+"q_cq_set_map_weapon_finished_btn": "<br>Continue"
+"q_cq_set_map_weapon_replica_not_finish": |
+  Not enough engineering structures have been installed!<br>{{complete}}/{{count}} judging by your logs.
+"q_cq_set_map_weapon_back_to_teacher": "The required number of objects are installed."
+"q_cq_set_map_weapon_finished": "Quest is completed."
+"q_cq_set_map_weapon_task_text": "It's skills of a mechanic that determine the speed with which engineering structures are assembled. That directly influences the success of combat actions, both solo and in a group. Engineers are a hidden and often underestimated power. You're going to suit your action to my word. Put 50 objects on the map, no matter what they will be: mines, sentry guns or radars. See how it works and come back."
+"q_cq_set_map_weapon_phrase_success": "Great. This knowledge can make you a very dangerous person. I wonder how you're gonna use it."
+
+
+# ClassQuestDamageMapWeapon
+"q_cq_dmg_map_weapon_add_one": |
+    Нанесён урон: {{ title }}.
+"q_cq_dmg_map_weapon_started": "Quest is started."
+"q_cq_dmg_map_weapon_finished_page": "Get busy! #2"
+"q_cq_dmg_map_weapon_finished_btn": "<br>Continue"
+"q_cq_dmg_map_weapon_replica_not_finish": |
+  Fixed missile hits: {{compete}}/{{count}}.
+"q_cq_dmg_map_weapon_back_to_teacher": "The necessary number of rocket hits is fixed."
+"q_cq_dmg_map_weapon_finished": "Quest is completed."
+"q_cq_dmg_map_weapon_task_text": "It's time to adopt new types of weapons, {{role_class_name}}. Today we'll talk about missile launchers. Missiles can be guided, unguided and homing. To fight your enemy with missiles, you need to mount a missile launcher on your vehicle and find missiles or buy a single-use launcher. On the left and right sides of the Nuke Commander combat widget there are 4 quick launch slots. Drag a missile from your trunk there and discharge it to your adversary. Come back when you hit 30 targets."
+"q_cq_dmg_map_weapon_phrase_success": "The task is accomplished. You're turning into a real combatant. I don't want to train another thoughtless killer so we should discuss some other points."
+
+# ClassQuestNPCsTasksComplete
+"q_cq_npc_tasks_add_one": |
+    Выполнен квест для {{ npc_title }}.
+"q_cq_npc_tasks_started": "Quest is started."
+"q_cq_npc_tasks_finished_page": "Get busy! #2"
+"q_cq_npc_tasks_finished_btn": "<br>Continue"
+"q_cq_npc_tasks_replica_not_finish": "I know that you have not fulfilled all the tasks of the mayors."
+"q_cq_npc_tasks_back_to_teacher": "The tasks of the mayors are fulfilled."
+"q_cq_npc_tasks_finished": "Quest is completed."
+"q_cq_npc_tasks_task_text": "Now let's try to introduce you to the high society. For big achievements you need to know big people well, so we'll work on your social capital. You must get acquainted with all the mayors of cities and heads of settlements. Accomplish few tasks for each of them. You'll earn some money, gain experience and, most importantly, establish valuable connections. Well, one more point. You won't be let into raider settlements, such as Los Jetas, unless you have a fitting reputation. But one of the heads is there..."
+"q_cq_npc_tasks_phrase_success": "Great, now you're well-known. To make them remember you, you'll have to refresh their memory on a regular basis. However, now we'll talk not about your business reputation, but about your karma."
+
+
+# ClassQuestKarmaLimit
+"q_cq_karmic_started":  "Quest is started."
+"q_cq_karmic_journal_text": "Come back when you raise your karma to {{name_needed}}.<br>Reward: 7000 exp."
+"q_cq_karmic_page": "Johnny, be<br> good!"
+"q_cq_karmic_btn": "<br>Continue"
+"q_cq_karmic_replica_not_finish": |
+    It is necessary to be no worse than a {{name_needed}}, but you're only a {{name_karma_agent}}.
+"q_cq_karmic_finished": "Quest is completed."
+"q_cq_karmic_task_text": |
+  Misanthropes brought humanity to its today's state, so I don't sympathize with various robbers, killers and other scum of the wasteland. I'm teaching you to do great things for survival of the human species. All humans have their karma, or reputation. The karma level rises and falls with your actions, such as accomplishment of tasks or destroying other drivers. Moreover, your karma can be improved through donating money to settlements. A low karma will make your more noticeable to others, towns will offer a bounty for your head and the karma levels of your killers won't decrease.
+  Come back when you raise your karma to
+"q_cq_karmic_phrase_to_be_continued": "To be continued..."
+"q_cq_karmic_phrase_success": "I'm glad that I'm teaching you something right and not just fostering a maniac. At the moment I haven't any tasks for you, return later."
+
+
+# DummyClassQuest
+"q_cq_dummy_1_text": "Coming soon"
+"q_cq_dummy_1_started": "Quest is started."
+"q_cq_dummy_1_note_page": "Coming<br>soon"
+"q_cq_dummy_1_note_btn": "<br>Continue"
+"q_cq_dummy_1_waiting_replica": "At the moment I haven't any tasks for you, return later."
+"q_cq_dummy_1_finished": "Quest is completed."

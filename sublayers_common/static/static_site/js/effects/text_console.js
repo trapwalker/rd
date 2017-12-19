@@ -389,7 +389,7 @@ var ConsoleWPI = (function (_super) {
     }
 
     return ConsoleWPI;
-})(TextConsole);
+})(TextConsoleAudio);
 
 var ConsolePreloader = (function (_super) {
     __extends(ConsolePreloader, _super);
@@ -485,6 +485,3 @@ function initConsoles() {
 
     consolePreloader = new ConsolePreloader();
 }
-
-
-

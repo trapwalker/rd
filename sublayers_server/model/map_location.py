@@ -83,6 +83,9 @@ class MapLocation(Observer):
         while for_del_quests:
             agent_profile.del_quest(quest=for_del_quests.pop(), time=event.time)
 
+        # Проверка/Восстановление классового квеста
+        agent.example.check_class_quests(event=event)
+
         # Генерация классового квеста
         if agent_profile.class_quest:
             new_quest = agent_profile.class_quest.instantiate(abstract=False)

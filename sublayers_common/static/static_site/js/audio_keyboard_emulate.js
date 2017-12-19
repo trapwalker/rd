@@ -5,7 +5,7 @@ var AudioKeyboard = (function () {
         this.need_stop = false;
     }
 
-    // Воспроизведение
+    // Р’РѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ
     AudioKeyboard.prototype.play = function () {
         if (!preloaderImage || !preloaderImage.ready_images) return;
 
@@ -21,13 +21,14 @@ var AudioKeyboard = (function () {
         this.need_stop = true;
     };
 
-    // Установка громкости
+    // РЈСЃС‚Р°РЅРѕРІРєР° РіСЂРѕРјРєРѕСЃС‚Рё
     AudioKeyboard.prototype.gain = function (value) {
         this.gain = value;
     };
 
     return AudioKeyboard;
 })();
+
 
 var audioKeyboard;
 

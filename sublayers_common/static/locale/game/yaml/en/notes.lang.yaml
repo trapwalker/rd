@@ -1,7 +1,7 @@
 "locale": "en"
 
-"stn_text1": "<div>Мы недостаточно хорошо знакомы. Пока уровень отношений не будет на отметке как минимум в 75, дальнейшего разговора не будет.<//br> Отношение можно повысить близостью в карме и выполнением моих заданий.<//div>"
-"stn_text2": "<div>Хорошо, вот мои требования к ученикам:<//br>- Взнос 3000 NC.<//br>- Уровень не менее 4.<//div>"
+"stn_text1": "<div>We don't know each other well enough. Until the relationship level is at least 55, there will be no further conversation.<//br> The relationship level can be increased by karmic affinity and completion of the tasks I give you.<//div>"
+"stn_text2": "<div>All right, these are my requirements for apprentices:<//br>- A contribution of 3000 NC.<//br>- Level 2 or higher.<//div>"
 
 "vtn_skill_1": "Driving"
 "vtn_skill_2": "Leadership"
@@ -11,7 +11,7 @@
 "vtn_skill_6": "Engineering"
 "vtn_npc_1": "mayor"
 "vtn_npc_2": "mayor"
-"vtn_npc_3": "barman"
+"vtn_npc_3": "bartender"
 "vtn_npc_4": "trader"
 "vtn_npc_5": "auto dealer"
 "vtn_npc_6": "mechanic"

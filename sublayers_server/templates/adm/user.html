@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>User: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+{% include "agent_menu_template.html" %}
+
+<div class="container">
+    <div class="row border">
+        <div class="col-xs-12 col-sm-12 col-md-4 align-self-center">
+            <div style="background-color: black; width: 170px; height: 146px; padding: 0;"><img src="{{ "/{}".format(user.avatar_link) }}"></div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-8 h4">
+            <div class="row">
+                Login: {{ user.name }}
+                {% if current_user.access_level > 5 and current_user.access_level > user.access_level %}
+                    <button class="btn btn-secondary" type="button" onclick="AuthorizeAsUser()">Authorize as {{ user.name }}</button>
+                {% end %}
+            </div>
+            <div class="row">Auth: {{ user.auth_info }}</div>
+            <div class="row">
+                RoleClassUri:
+                <div class="col input-group">
+                    <input type="text" id="role_class" class="form-control" value="{{ user.role_class_uri }}" placeholder="role_class"
+                           aria-label="Role Class">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="changeRoleClass()">Save</button>
+                    </span>
+                </div>
+            </div>
+            <div class="row">registration_status: {{ user.registration_status }}</div>
+            <div class="row">teaching_state: {{ user.teaching_state }}</div>
+            <div class="row">access_level:
+                <div class="col input-group">
+                    <input type="number" id="access_level" class="form-control" max="10" value="{{ user.access_level }}" placeholder="0"
+                           aria-label="Ban in minutes">
+                    <span class="input-group-btn">
+                            <button class="btn btn-secondary" type="button" onclick="setAccessLevel()">Save</button>
+                </span>
+                </div>
+
+            </div>
+            <div class="row">Created: {{ user.date_created.strftime("%Y-%m-%d %H:%M:%S") }}</div>
+        </div>
+    </div>
+    <div class="row h4 border">
+        {% set ban_seconds_left = user.get_banned_seconds() %}
+        <h3>Ban: </h3>
+        <div class="col-12">
+            <div class="col">
+                {{ 'Banned before: {}  |  {:.0f}s'.format(user.ban_time.strftime("%Y-%m-%d %H:%M:%S") or 0, ban_seconds_left) if ban_seconds_left > 0 else 'User not banned'}}
+            </div>
+            {% if ban_seconds_left > 0 %}
+                <div class="col">Ban reason: {{ user.ban_reason}}</div>
+            {% end %}
+            <div class="col">Throw in Ban for Minutes:</div>
+            <div class="col input-group">
+                <input type="number" id="ban_to" class="form-control" value="10" placeholder="minutes of ban"
+                       aria-label="Ban in minutes">
+                <input type="text" id="ban_reason" class="form-control" value="Ban reason..." placeholder="reason"
+                       aria-label="Ban reason">
+                <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="banUser()">Ban!</button>
+            </span>
+            </div>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = -1"> Cancel </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 15"> 15 min</button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60"> 60 min </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 24 * 60"> 24 h </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('ban_to').value = 60 * 24 * 7"> 1 week </button>
+        </div>
+    </div>
+
+    <div class="row h4 border">
+        {% set silent_seconds_left = user.get_silent_seconds() %}
+        <h3>Silent: </h3>
+        <div class="col-12">
+            <div class="col">
+                {{ 'Silent before: {}  |  {:.0f}s'.format(user.silent_time.strftime("%Y-%m-%d %H:%M:%S") or 0, silent_seconds_left) if silent_seconds_left > 0 else 'User not silent'}}
+            </div>
+            <div class="col">Silent(Minutes):</div>
+            <div class="col input-group">
+                <input type="number" id="silent_to" class="form-control" value="10" placeholder="minutes of ban"
+                       aria-label="Ban in minutes">
+                <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" onclick="silentUser()">Silent!</button>
+            </span>
+            </div>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = -1"> Cancel </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = 15"> 15 min</button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = 60"> 60 min </button>
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('silent_to').value = 24 * 60"> 24 h </button>
+        </div>
+    </div>
+
+    <div style="display: None">
+        <div id="data-username">{{ user.name }}</div>
+        <div id="data-active-ban">{{ '1' if ban_seconds_left > 0 else '' }}</div>
+    </div>
+</div>
+
+
+
+
+<script>
+
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function changeRoleClass() {
+        var role_class = document.getElementById('role_class').value;
+        console.log("postRoleClass:: Try change role class to", role_class);
+        // todo: ajax with post to change role_class link
+    }
+
+
+    function setAccessLevel() {
+        var new_level = parseInt(document.getElementById('access_level').value);
+        console.log("setAccessLevel:: new level: ", new_level);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                new_level: new_level,
+                action: 'access_level',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function banUser() {
+        var minutes = parseInt(document.getElementById('ban_to').value);
+        var reason = document.getElementById('ban_reason').value;
+        console.log("banUser:: Ban User to: ", minutes, ' reason: ', reason);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                minutes: minutes,
+                reason: reason,
+                action: 'ban',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function silentUser() {
+        var minutes = parseInt(document.getElementById('silent_to').value);
+        console.log("silentUser:: Silent User to: ", minutes);
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                minutes: minutes,
+                action: 'silent',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location.reload();},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+
+
+
+    function AuthorizeAsUser() {
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: $("#data-username").text(),
+                action: 'authorize',
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) { alert(data); window.location = "/";},
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+    }
+
+    function viewAgent() {
+        var username = $("#data-username").text();
+        console.log("try view", username);
+        location = location.origin + '/adm/api/html/agent_info?username=' + username;
+    }
+
+</script>
+
+
+</body>
+</html>

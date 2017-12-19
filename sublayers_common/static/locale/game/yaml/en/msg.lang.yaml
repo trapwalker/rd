@@ -1,0 +1,46 @@
+"locale": "en"
+
+"msg_turret_warning_1": "Attention!"
+"msg_turret_warning_2": "Slow down to 20 km/h"
+
+"msg_attack_warning_1": "Alert!"
+"msg_attack_warning_2": "You are attacked!"
+
+"msg_skill_point_1": "Congratulations!"
+"msg_skill_point_2": "New skill point is earned"
+
+"msg_new_lvl_1": "Congratulations!"
+"msg_new_lvl_2": "Level up!"
+
+"msg_quest_item_1": "You have a new item"
+"msg_quest_item_2": "Check the inventory"
+
+"msg_critical_conditiong_1": "Danger!"
+"msg_critical_conditiong_2": "Critical condition of vehicle"
+
+"msg_ammo_finish_1": "Attention!"
+"msg_ammo_finish_2": "Out of ammo"
+
+"msg_barter_success_1": "Barter was successfully completed!"
+
+"msg_receive_exp_1": "Experience points is earned!"
+
+"msg_receive_karma_1": "You've earn Karma!"
+
+"msg_lost_karma_1": "You've lost Karma!"
+
+"msg_spy_start_1": "Surveillance is started!"
+
+"msg_spy_failed_1": "Surveillance is failed!"
+
+"msg_spy_finish_1": "Surveillance is complete!"
+
+"msg_quest_reward_1": "Quest tasks are completed!"
+"msg_quest_reward_2": "Return for the reward"
+
+"msg_quest_failed_1": "Warning!"
+"msg_quest_failed_2": "The quest has been failed!"
+
+"msg_rocket_hit_1": "Missile hit counted!"
+
+"msg_invisible_attack_1": "Sudden strike counted!"

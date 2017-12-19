@@ -475,7 +475,7 @@ var ViewMessengerGlass = (function () {
 
     // Добавление произвольной чат-комнаты
     ViewMessengerGlass.prototype.addChat = function (room_jid, chat_type) {
-        //console.log('ViewMessengerGlass.prototype.addChat');
+        // console.log('ViewMessengerGlass.prototype.addChat', room_jid, chat_type);
         if (this._getChatByJID(room_jid)) {
             console.warn('Попытка повторного создания чат-комнаты.');
             return;
@@ -504,11 +504,15 @@ var ViewMessengerGlass = (function () {
         };
 
         this.page_global.chatArea.append(chat.chatArea);
-        this.page_global.pageControl.append(chat.pageButton);
 
-        // Вот такая вот хуйня малята
-        this._resizePageControl(this.page_global.pageControl);
-        this._resizePageControl(this.page_global.pageControl);
+        if (chat_type === "GlobalChatRoom")
+            this.page_global.pageControl.prepend(chat.pageButton);
+        else
+            this.page_global.pageControl.append(chat.pageButton);
+
+        var self = this;
+        self._resizePageControl(self.page_global.pageControl);
+        setTimeout(function () {self._resizePageControl(self.page_global.pageControl);}, 300);
 
         chat.pageButton.on('click', {self: this, chat: chat}, this.onClickChatButton);
         this.chats.push(chat);
@@ -672,7 +676,7 @@ var ViewMessengerGlass = (function () {
     };
 
     ViewMessengerGlass.prototype.receiveMessage = function (params) {
-        //console.log('ViewMessengerGlass.prototype.receiveMessage', params);
+        // console.log('ViewMessengerGlass.prototype.receiveMessage');
         if (params.message_type === "push") {
             var msg = params.events[0];
             if (msg.cls === "ChatRoomMessage")
@@ -699,11 +703,13 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "LvlLogMessage":
                     this.addMessageToLog(_("chat_log_exp_lvl_1") + msg.lvl + _("chat_log_exp_lvl_2"), true);
+                    new WTextArcadeStatNewLVL().start();
                     // Google Analytics
                     analytics.get_level(msg.lvl);
                     break;
                 case "SkillLogMessage":
                     this.addMessageToLog(_("chat_log_skills_get") + ': ' + msg.skill, true);
+                    new WTextArcadeStatSkillPoint().start();
                     break;
                 case 'QuestStartStopLogMessage':
                     if (msg.action) {
@@ -723,6 +729,11 @@ var ViewMessengerGlass = (function () {
                             analytics.end_quest();
                         }
                     }
+                    break;
+                case 'QuestLogMessage':
+                    var q = journalManager.quests.getQuest(msg.record.quest_uid);
+                    if (q)
+                        this.addMessageToLog(_(q.caption) +': ' + msg.record.text);
                     break;
                 case 'InventoryChangeLogMessage':
                     // console.log('InventoryChangeLogMessage', msg);
@@ -745,7 +756,7 @@ var ViewMessengerGlass = (function () {
                     break;
                 case "WeaponAmmoFinishedLogMessage":
                     this.addMessageToLog(_("chat_log_ammo_off") + _(msg.weapon_name) + '.', true);
-                    new WTextArcade(_("ta_ammo_off") + _(msg.weapon_name)).start();
+                    new WTextArcadeStatAmmoFinish().start();
                     break;
                 case "TransactionActivateItemLogMessage":
                     this.addMessageToLog(_("chat_log_act_item") + _(msg.item_title) + '.');
@@ -890,8 +901,15 @@ var ViewMessengerGlass = (function () {
                     this.addMessageToLog(_("chat_log_loot_get") + _(msg.comment) + '.');
                     new WTextArcade(_(msg.comment)).start();
                     break;
+                case 'CarDieLogMessage':
+                    if (msg.killer_name)
+                        this.addMessageToLog(_("chat_log_die_killer") + msg.killer_name);
+                    else
+                        this.addMessageToLog(_("chat_log_die"));
+                    break;
                 case 'SystemChatMessage':
                     this.addMessageToSys(msg.text);
+
             }
         }
         return true;

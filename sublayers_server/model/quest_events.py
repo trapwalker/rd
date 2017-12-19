@@ -71,7 +71,11 @@ class OnCancel(QuestEvent): pass
 class OnDie(QuestEvent): pass
 
 
-class OnMakeDmg(QuestEvent): pass
+class OnMakeDmg(QuestEvent):
+    def __init__(self, targets, damager, **kw):
+        super(OnMakeDmg, self).__init__(**kw)
+        self.targets = targets
+        self.damager = damager
 
 
 class OnGetDmg(QuestEvent):
@@ -137,6 +141,20 @@ class OnKill(QuestEvent):
         super(OnKill, self).__init__(**kw)
         self.unit = unit  # todo: weakref?
         self.agent = agent  # todo: weakref?
+
+
+class OnBarterSuccess(QuestEvent):
+    def __init__(self, barter, **kw):
+        super(OnBarterSuccess, self).__init__(**kw)
+        self.barter = barter
+
+
+class OnPartyExp(QuestEvent):
+    def __init__(self, exp, agents, party, **kw):
+        super(OnPartyExp, self).__init__(**kw)
+        self.agents = agents
+        self.exp = exp
+        self.party = party
 
 
 class OnPartyInclude(QuestEvent):

@@ -206,7 +206,7 @@ var ClientManager = (function () {
                 new WCanvasMarker(car);
             }
 
-            if (car.cls == "Turret") {
+            if ((car.cls == "Turret") || (car.cls == 'MaskingQuestTurret')) {
                 var t = new WCanvasMarker(car);
                 new WCanvasHPCarMarker(car, t);
             }
@@ -434,6 +434,33 @@ var ClientManager = (function () {
                 });
                 rad_note.is_active = quest && quest.active_notes_view;
                 break;
+            case 'MaskingMapMarkerNote':
+                var quest = journalManager.quests.getQuest(note.quest_uid);
+                var rad_note = new QuestMapMarkerNote({
+                    quest_uid: note.quest_uid,
+                    uid: note.uid,
+                    position: note.position,
+                    radius: note.radius,
+                    icon_full: quest && quest.map_icon_full,
+                    icon_circle: quest && quest.map_icon_circle,
+                    focus_caption: quest && quest.caption
+                });
+                rad_note.is_active = quest && quest.active_notes_view;
+                break;
+            case 'MaskingTurretMapMarkerNote':
+                // console.log('MaskingTurretMapMarkerNote', note.position);
+                var quest = journalManager.quests.getQuest(note.quest_uid);
+                var rad_note = new QuestMTMapMarkerNote({
+                    quest_uid: note.quest_uid,
+                    uid: note.uid,
+                    position: note.position,
+                    radius: note.radius,
+                    icon_full: quest && quest.map_icon_full,
+                    icon_circle: quest && quest.map_icon_circle,
+                    focus_caption: ''
+                });
+                rad_note.is_active = quest && quest.active_notes_view;
+                break;
             case 'QuestRadiationNPCFinish':
                 new QuestNoteNPCBtnRadiation(note);
                 break;
@@ -442,6 +469,60 @@ var ClientManager = (function () {
                 break;
             case 'MapActivationRadarsNoteFinish':
                 new MapActivationRadarsNoteFinish(note);
+                break;
+            case 'GetClassCarQuestNote':
+                new QuestNoteNPCBtnClassCar(note);
+                break;
+            case 'GetMaxCarLvlQuestNote':
+                new QuestNoteNPCBtnCarMaxLevel(note);
+                break;
+            case 'AccumulateNucoinsQuestNote':
+                new AccumulateNucoinsQuestNote(note);
+                break;
+            case 'KillsClassQuestNote':
+                new KillsClassQuestNote(note);
+                break;
+            case 'GetPartyExpQuestNote':
+                new GetPartyExpQuestNote(note);
+                break;
+            case 'SetMechanicItemsQuestNote':
+                new SetMechanicItemsQuestNote(note);
+                break;
+            case 'InvisibleAttackQuestNote':
+                new InvisibleAttackQuestNote(note);
+                break;
+            case 'VisitTownsQuestNote':
+                new VisitTownsQuestNote(note);
+                break;
+            case 'MaskingNPCQuestNote':
+                new QuestNoteMaskingNPC(note);
+                break;
+            case 'ShadowingQuestNote':
+                new ShadowingQuestNote(note);
+                break;
+            case 'BarterSuccessQuestNote':
+                new BarterSuccessQuestNote(note);
+                break;
+            case 'DamageMapWeaponQuestNote':
+                new DamageMapWeaponQuestNote(note);
+                break;
+            case 'PartyMembersQuestNote':
+                new PartyMembersQuestNote(note);
+                break;
+            case 'SetMapWeaponQuestNote':
+                new SetMapWeaponQuestNote(note);
+                break;
+            case 'NPCsTasksCompleteQuestNote':
+                new NPCsTasksCompleteQuestNote(note);
+                break;
+            case 'KarmaLimitQuestNote':
+                new KarmaLimitQuestNote(note);
+                break;
+            case 'ClassQuestDummyNote':
+                new ClassQuestDummyNote(note);
+                break;
+            case 'NPCPageNote':
+                new QuestNoteNPCBtn(note);
                 break;
             default:
                 console.warn('Неопределён тип ноты:', note.cls)
@@ -651,6 +732,7 @@ var ClientManager = (function () {
             case 'Rocket':
             case 'ScoutDroid':
             case 'Turret':
+            case 'MaskingQuestTurret':
             case 'Radar':
             case 'SlowMine':
             case 'BangMine':
@@ -724,7 +806,6 @@ var ClientManager = (function () {
             alert('Bad Insurance: ' + event.insurance);
             location.reload();
         }
-
     };
 
     ClientManager.prototype.QuickGameDie = function (event) {
@@ -895,7 +976,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ChangeStealthIndicator = function(event){
-        console.log('ClientManager.prototype.ChangeStealthIndicator ', event.stealth);
+        // console.log('ClientManager.prototype.ChangeStealthIndicator ', event.stealth);
         if (user.userCar) {
             user.userCar.stealth_indicator = event.stealth;
             user.userCar.change();
@@ -1097,7 +1178,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PreEnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.PreEnterToLocation', event);
+        // console.log('ClientManager.prototype.PreEnterToLocation', event);
         locationManager.load_city_image = false;
 
         function complete(load) {
@@ -1127,11 +1208,16 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.ChangeAgentKarma = function (event) {
-        console.log('ClientManager.prototype.ChangeAgentKarma', event);
+        // console.log('ClientManager.prototype.ChangeAgentKarma', event);
         if (locationManager.in_location_flag)
             locationManager.npc_relations = event.relations;
+        var old_karma = user.example_agent.rpg_info.karma;
         user.example_agent.rpg_info.karma = event.karma;
         characterManager.redraw();
+        if (event.karma > old_karma)
+            new WTextArcadeStatReceiveKarma().start();
+        else
+            new WTextArcadeStatLostKarma().start();
     };
 
     ClientManager.prototype.ExitFromLocation = function () {
@@ -1295,6 +1381,7 @@ var ClientManager = (function () {
     ClientManager.prototype.SuccessBarterMessage = function (event) {
         //console.log('ClientManager.prototype.SuccessBarterMessage', event);
         barterManager.SuccessBarter(event.barter_id);
+        new WTextArcadeStatBarterSucces().start();
     };
 
     ClientManager.prototype.LockBarterMessage = function (event) {
@@ -1363,6 +1450,8 @@ var ClientManager = (function () {
     ClientManager.prototype.UserExampleSelfShortMessage = function(event) {
         //console.log('ClientManager.prototype.UserExampleSelfShortMessage', event);
         user.example_car = event.example_car;
+        if (event.rpg_car_info)
+            user.example_car.car_rpg_info = event.rpg_car_info;
         setOptions(event.example_agent, user.example_agent);
         user.avatar_link = event.avatar_link;
         if (event.example_car && event.templates) {
@@ -1386,6 +1475,7 @@ var ClientManager = (function () {
         setOptions(event.data, user.example_agent.rpg_info);
         characterManager.redraw();
         locationManager.update();
+        new WTextArcadeStatReceiveExp().start();
     };
 
     ClientManager.prototype.UserChangePerkSkill = function(event) {
@@ -1417,9 +1507,23 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.UserExampleCarInfo = function(event) {
-        //console.log('ClientManager.prototype.UserExampleCarInfo', event);
+        // console.log('ClientManager.prototype.UserExampleCarInfo', event);
         user.example_car = event.example_car;
+        if (event.rpg_car_info)
+            user.example_car.car_rpg_info = event.rpg_car_info;
         locationManager.update();
+    };
+
+    ClientManager.prototype.CarRPGInfo = function(event) {
+        // console.log('ClientManager.prototype.CarRPGInfo', event);
+        if (user.example_car && user.example_car.car_rpg_info && user.example_car.uid == event.uid) {
+            user.example_car.car_rpg_info["lvl"] = event.lvl;
+            user.example_car.car_rpg_info["way"] = event.way;
+        }
+        else
+            console.warning("Miss Message:", event);
+
+        if (locationManager.in_location_flag)locationManager.update();
     };
 
     ClientManager.prototype.UserExampleCarView = function(event) {
@@ -1908,8 +2012,6 @@ var ClientManager = (function () {
         rpcCallList.add(mes);
         this._sendMessage(mes);
     };
-
-
 
     ClientManager.prototype.sendEnterToLocation = function (location_id) {
         //console.log('ClientManager.prototype.sendEnterToLocation', location_id);
@@ -2811,6 +2913,68 @@ var ClientManager = (function () {
         };
         rpcCallList.add(mes);
         this._sendMessage(mes);
+    };
+
+    ClientManager.prototype.ArcadeTextMessage = function (event) {
+        // console.log('ClientManager.prototype.ArcadeTextMessage', event);
+        switch(event.arcade_message_type) {
+            case 'quest_item':
+                new WTextArcadeStatQuestItem().start();
+                break;
+            case 'skill_point':
+                new WTextArcadeStatSkillPoint().start();
+                break;
+            case 'new_lwl':
+                new WTextArcadeStatNewLVL().start();
+                break;
+            case 'attack_warning':
+                new WTextArcadeStatAttackWarning().start();
+                break;
+            case 'turret_warning':
+                new WTextArcadeStatTurretWarning().start();
+                break;
+            case 'critical_condition':
+                new WTextArcadeStatCriticalCondition().start();
+                break;
+            case 'ammo_finish':
+                new WTextArcadeStatAmmoFinish().start();
+                break;
+            case 'barter_succes':
+                new WTextArcadeStatBarterSucces().start();
+                break;
+            case 'receive_exp':
+                new WTextArcadeStatReceiveExp().start();
+                break;
+            case 'receive_karma':
+                new WTextArcadeStatReceiveKarma().start();
+                break;
+            case 'lost_karma':
+                new WTextArcadeStatLostKarma().start();
+                break;
+            case 'spy_start':
+                new WTextArcadeStatSpyStart().start();
+                break;
+            case 'spy_failed':
+                new WTextArcadeStatSpyFailed().start();
+                break;
+            case 'spy_finish':
+                new WTextArcadeStatSpyFinish().start();
+                break;
+            case 'quest_reward':
+                new WTextArcadeStatQuestReward().start();
+                break;
+            case 'quest_failed':
+                new WTextArcadeStatQuestFailed().start();
+                break;
+            case 'rocket_hit':
+                new WTextArcadeStatRocketHit().start();
+                break;
+            case 'invisible_attack':
+                new WTextArcadeStatInvisibleAttack().start();
+                break;
+            default:
+                console.warn('Неизвестный тип текста: event.message_type')
+        }
     };
 
     return ClientManager;

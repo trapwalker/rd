@@ -63,8 +63,8 @@ var AudioManager = (function () {
         return this.audio_context;
     };
 
-
     return AudioManager;
 })();
+
 
 var audioManager = new AudioManager();

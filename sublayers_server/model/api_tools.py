@@ -44,6 +44,9 @@ class EUnexpectedError(EAPIError):
 class ECallFrequencyConstrain(EAPIError):
     """Unexpected internal error while calling API-function"""
 
+class ECallAccessDenied(EAPIError):
+    """Calling Denied API-function for agent access level"""
+
 
 def public_method(func):
     """API public method decorator"""
@@ -110,6 +113,26 @@ def call_constrains(delay=0):
         return cover
     return deco
 
+
+def access_level(min_level=0):
+    """ call frequency constraining decorator """
+    def deco(func):
+        def cover(self, *av, **kw):
+            func_name = func.__name__
+            if self.agent.access_level >= min_level:
+                return func(self, *av, **kw)
+            else:
+                raise ECallAccessDenied('Access Denied for {agent} called <{func_name}>. Agent Level={a_lvl}, min_level={min_level}'.format(
+                    agent=self.agent,
+                    func_name=func_name,
+                    a_lvl=self.agent.access_level,
+                    min_level=min_level,
+                ))
+        functools.update_wrapper(cover, func)
+        return cover
+    return deco
+
+
 class API(object):
     """Base API provider class"""
     def __call__(self, method, params):
@@ -141,6 +164,10 @@ class API(object):
         try:
             result = self(method, params)
         except ECallFrequencyConstrain as e:
+            log.warning(e)
+            # info: говорим на клиент, что всё норм, а сами ничего не сделали
+            return self._make_respond(result=True, rpc_call_id=rpc_call_id)
+        except ECallAccessDenied as e:
             log.warning(e)
             # info: говорим на клиент, что всё норм, а сами ничего не сделали
             return self._make_respond(result=True, rpc_call_id=rpc_call_id)

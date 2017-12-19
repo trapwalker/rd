@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.weapons import Weapon  # todo: осторожно с рекуррентным импортом
-from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem  # tpodo: перенести к описанию слота
+from sublayers_server.model.registry_me.classes.item import SlotLock, MechanicItem, TunerItem  # tpodo: перенести к описанию слота
 from sublayers_server.model.registry_me.classes.inventory import InventoryField
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, ParamRange,
@@ -212,8 +212,20 @@ class Mobile(Node):
     def iter_weapons(self):
         return (v for attr, v in self.iter_slots(tags={'armorer'}) if isinstance(v, Weapon))
 
+    def iter_mechanic_items(self):
+        return [v for attr, v in self.iter_slots(tags={'mechanic'}) if isinstance(v, MechanicItem)]
+
+    def iter_tuner_items(self):
+        return [v for attr, v in self.iter_slots(tags={'tuner'}) if isinstance(v, TunerItem)]
+
     def iter_armorer_slots_name(self):
         return (attr for attr, v in self.iter_slots(tags={'armorer'}))
+
+    def get_slot_name_by_item(self, item_uid, tags=None):
+        tags = tags or {'mechanic', 'tuner', 'armorer'}
+        for name, v in self.iter_slots(tags=tags):
+            if v and v.uid == item_uid:
+                return name
 
     def iter_slots(self, tags=None):
         for name, attr, getter in self.iter_attrs(tags=tags, classes=SlotField):
@@ -339,14 +351,17 @@ class Mobile(Node):
         log.warn("Not found exp_table for {!r}".format(self))
         return 0
 
-    def set_exp(self, time=None, value=None, dvalue=None):
+    def set_exp(self, time=None, value=None, dvalue=None, model_agent=None):
         assert dvalue is None or dvalue >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
         assert value is None or value >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
+        old_lvl = self.get_real_lvl()
         if value is not None:
             self.value_exp = value
         if dvalue is not None:
             self.value_exp += dvalue
         assert self.value_exp >= 0, 'value_exp={} value={}, dvalue={}'.format(self.value_exp, value, dvalue)
+        if model_agent and time and old_lvl != self.get_real_lvl() and getattr(model_agent, "on_change_car_lvl", None):
+            model_agent.on_change_car_lvl(time=time)
 
     @property
     def frag(self):
@@ -589,6 +604,8 @@ class ExtraMobile(Mobile):
 
 
 class MapRadar(ExtraMobile):pass
+
+
 class MapWeaponTurret(ExtraMobile):pass
 
 

@@ -495,5 +495,9 @@
 
 
 @media screen and (max-width: 1250px), screen and (max-height: 670px) {
-    .slider-zoom-parent {transform: scale(0.75);}
+    .slider-zoom-parent {
+        transform: scale(0.75);
+        top: -53px;
+        left: -15px;
+    }
 }

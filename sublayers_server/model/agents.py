@@ -18,9 +18,9 @@ from sublayers_server.model.registry_me.classes.trader import Trader
 from sublayers_server.model.messages import (
     PartyErrorMessage, See, Out, QuickGameChangePoints, QuickGameArcadeTextMessage, TraderAgentAssortmentMessage,
     SetObserverForClient, Die, QuickGameDie, StartQuickGame, SetMapCenterMessage, UserExampleCarInfo, TraderInfoMessage,
-    ChangeStealthIndicator,
+    ChangeStealthIndicator, CarRPGInfo
 )
-from sublayers_server.model.game_log_messages import InventoryChangeLogMessage
+from sublayers_server.model.game_log_messages import InventoryChangeLogMessage, CarDieLogMessage
 from sublayers_server.model.vectors import Point
 from sublayers_server.model import quest_events
 from sublayers_server.model.events import event_deco, Event, AgentTestEvent
@@ -29,7 +29,7 @@ from sublayers_server.model.agent_api import AgentAPI
 from sublayers_server.model.quest_events import OnMakeDmg, OnActivateItem, OnGetDmg
 from sublayers_server.model.utils import NameGenerator
 from sublayers_common.site_locale import locale
-
+from sublayers_common.adm_mongo_logs import AdminLogRecord
 
 from ctx_timer import Timer
 from tornado.options import options
@@ -70,6 +70,7 @@ class Agent(Object):
                 raise Exception(text='Not uniq agent name')
 
         self._logger = self.setup_logger()
+        self._adm_logs = []  # Список логов для сохранения в базу при сохранении агента
         self.car = None
         self.slave_objects = []  # дроиды
         """@type: list[sublayers_server.model.units.Bot]"""
@@ -155,6 +156,10 @@ class Agent(Object):
     def log(self):
         return self._logger
 
+    def adm_log(self, type, text):
+        if self.user:
+            AdminLogRecord(user=self.user, type=type, text=text).post(server=self.server)
+
     def setup_logger(self, level=logging.ERROR):
         from sublayers_server.log_setup import (
             logger, handler, formatter_simple_for_agent, local_path, SUFFIX_BY_MODE, handler_errors_file, handler_screen,
@@ -236,6 +241,8 @@ class Agent(Object):
                     name=timer.name,
                 ).post()
 
+        agent_profile.delete_old_quests(Event(server=self.server, time=self.server.get_time()))
+
     def on_save(self, time):
         with Timer() as tm:
             agent_example = self.example
@@ -250,7 +257,16 @@ class Agent(Object):
             # agent_example.delete()  # TODO: Добиться правильного пересохранения агента
             agent_example.save()
             #agent_example.save(force_insert=True)
-            log.debug('Agent %r saved (%.4fs)', agent_example.login, tm.duration)
+
+            # Сохранение накопленных логов
+            with Timer() as tmlogs:
+                for l in self._adm_logs:
+                    l.post()  # post without params = save to db
+                self._adm_logs = []
+
+            log.debug('Agent %r saved (%.4fs): logs: %.4fs', agent_example.login, tm.duration, tmlogs.duration)
+
+
 
     @property
     def is_online(self):
@@ -363,15 +379,18 @@ class Agent(Object):
         return connection_delay
 
     def on_connect(self, connection):
-        self.log.info('on_connect {}'.format(connection))
+        self.log.info('on_connect {}'.format(connection.request.remote_ip))
+        self.adm_log(type="connect", text='Connect IP: {}'.format(connection.request.remote_ip))
+
         self.connection = connection
-        time = self.server.get_time()
+        server = self.server
+        time = server.get_time()
         if self._disconnect_timeout_event:
             self._disconnect_timeout_event.cancel()
             self._disconnect_timeout_event = None
             log.info('Connection of agent %s restored. Disconnect timeout cancelled.', self)
         else:
-            log.info('Agent %s connected. Agents on server: %s', self, len(self.server.agents))
+            log.info('Agent %s connected. Agents on server: %s', self, len(server.agents))
 
         if self.api:
             connection.api = self.api
@@ -381,16 +400,19 @@ class Agent(Object):
         self.api.update_agent_api(time=time + 0.2)  # info: чтобы с клиента успело придти разрешение экрана
 
         # обновление статистики по онлайну агентов
-        self.server.stat_log.s_agents_on(time=time, delta=1.0)
+        server.stat_log.s_agents_on(time=time, delta=1.0)
+        server.on_agent_connect(agent=self, time=time + 0.4)  # Чтобы на клиент успели отправиться update_agent_api
 
     def on_disconnect(self, connection):
         if self.connection is connection:
             self.log.info('on_disconnect {}'.format(connection))
             timeout = options.disconnect_timeout
             log.info('Agent %s disconnected. Set timeout to %ss', self, timeout)  # todo: log disconnected ip
+            self.adm_log(type="connect", text='Disconnect IP: {}'.format(connection.request.remote_ip))
             # todo: Измерять длительность подключения ##defend ##realize
             t = self.server.get_time()
             self._disconnect_timeout_event = self.on_disconnect_timeout(time=t + timeout)
+            self.server.on_agent_disconnect(agent=self, time=t)
         else:
             log.warn('Disconnected for agent %s. But agent have another connection', self)
 
@@ -422,8 +444,8 @@ class Agent(Object):
         self.after_delete(event.time)
 
     def after_delete(self, time):
-        # for clear logger
-        pass
+        if self.server:
+            self.server.on_agent_out(agent=self, time=time)
 
     def party_before_include(self, party, new_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on
@@ -453,8 +475,12 @@ class Agent(Object):
             if isinstance(obj, Unit):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
         # Пробросить событие в квест ##quest
-        if new_member is self:  # Если исключили себя
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyInclude, agent=self)
+        if new_member is self:  # Если включили себя
+            e = Event(server=self.server, time=time)
+            self.example.profile.on_event(event=e, cls=quest_events.OnPartyInclude, agent=self)
+            # Ещё отправить это же owner'у party
+            if party.owner is not self:
+                party.owner.example.profile.on_event(event=e, cls=quest_events.OnPartyInclude, agent=self)
 
     def party_before_exclude(self, party, old_member, time):
         # todo: Если это событие, назвать соответственно с приставкой on ##refactor
@@ -487,7 +513,11 @@ class Agent(Object):
                 obj.fire_auto_enable(enable=True, time=time + 0.01)
         # Пробросить событие в квест ##quest
         if old_member is self:  # Если исключили себя
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=quest_events.OnPartyExclude, agent=self)
+            e = Event(server=self.server, time=time)
+            self.example.profile.on_event(event=e, cls=quest_events.OnPartyExclude, agent=self)
+            # Ещё отправить это же owner'у party
+            if party.owner is not self:
+                party.owner.example.profile.on_event(event=e, cls=quest_events.OnPartyExclude, agent=self)
 
 
     def _invite_by_id(self, invite_id):
@@ -545,6 +575,12 @@ class Agent(Object):
                 if v_o not in obj_list:
                     obj_list.append(v_o)
         return obj_list
+
+    def check_visible(self, obj):
+        for observer in self.observers:
+            if obj in observer.visible_objects:
+                return True
+        return False
 
     def on_see(self, time, subj, obj):
         # todo: delivery for subscribers ##quest
@@ -608,7 +644,7 @@ class Agent(Object):
         pass
 
     def on_kill(self, event, target, killer):
-        # log.debug('%s:: on_kill(%s)', self, obj)
+        # log.debug('%s:: on_kill(%s)', self, target)
         self.log.info('{}:: on_kill {} killer={} time={}'.format(self, target, killer, event.time))
         # todo: registry fix?
         self.example.profile.set_frag(dvalue=1)  # начисляем фраг агенту
@@ -653,9 +689,7 @@ class Agent(Object):
             if ((self_lvl - killed_lvl) >= 3) and (target.owner_example.profile.karma_norm >= -0.1):
                 self.example.profile.set_karma(dvalue=-1, time=event.time)  # todo: пробрасываать event? Переименовать в change_karma?
 
-        # Отправить сообщение на клиент о начисленной экспе
         self.example.profile.on_event(event=event, cls=quest_events.OnKill, agent=target.owner_example, unit=target.example)
-        # self.subscriptions.on_kill(agent=self, event=event, obj=obj)
 
     def on_change_inventory_cb(self, inventory, time):
         # todo: Разобраться с именем этого метода
@@ -679,6 +713,10 @@ class Agent(Object):
         # пары node_hash и кол-во
         if make_game_log and diff_inventories and (diff_inventories['incomings'] or diff_inventories['outgoings']):
             InventoryChangeLogMessage(agent=self, time=event.time, **diff_inventories).post()
+            if diff_inventories.get('incomings', None):
+                self.adm_log(type='inventory', text="inc: {}".format(diff_inventories['incomings']))
+            if diff_inventories.get('outgoings', None):
+                self.adm_log(type='inventory', text="out: {}".format(diff_inventories['outgoings']))
 
         self.example.profile.on_event(event=event, cls=quest_events.OnChangeInventory, diff_inventories=diff_inventories)
         # self.subscriptions.on_inv_change(agent=self, time=time, **diff_inventories)
@@ -727,6 +765,8 @@ class Agent(Object):
         # todo: review quest_inventory
         self.example.profile.quest_inventory.refresh(agent=self.example, event=event)
 
+        self.adm_log("location", "Enter to {}".format(location.example.title.en))
+
     def on_exit_location(self, location, event):
         # log.debug('%s:: on_exit_location(%s)', self, location)
         self.example.profile.in_location_flag = False
@@ -746,6 +786,8 @@ class Agent(Object):
         # Сообщаем всем квестам что мы вышли из города
         self.example.profile.on_event(event=event, cls=quest_events.OnExitFromLocation, location=location)
 
+        self.adm_log("location", "Exit from {}".format(location.example.title.en))
+
     def on_enter_npc(self, event):
         # log.debug('{self}:: on_enter_npc({event.npc})'.format(**locals()))
         self.example.profile.on_event(event=event, cls=quest_events.OnEnterNPC, npc=event.npc)  # todo: ##quest send NPC as param
@@ -758,6 +800,7 @@ class Agent(Object):
     def on_die(self, event, unit):
         # log.debug('%s:: on_die()', self)
         self.log.info('on_die unit={}'.format(unit))
+        self.adm_log("die", "Die unit<{}>".format(unit))
         self.example.profile.position = unit.position(event.time)  # Запоминаем последние координаты агента
 
         # Перестать всем городам злиться на уже убитого агента:
@@ -776,6 +819,7 @@ class Agent(Object):
 
     def send_die_message(self, event, unit):
         Die(agent=self, time=event.time).post()
+        CarDieLogMessage(agent=self, time=event.time, init_event=event).post()
 
     def on_trade_enter(self, contragent, time, is_init):
         log.debug('%s:: on_trade_enter(%s)', self, contragent)
@@ -819,7 +863,8 @@ class Agent(Object):
         # log.info('on_discharge_shoot for {}'.format(targets))
         # Если был дамаг, то сообщить об этом в квесты
         if is_damage_shoot:  # todo: пробросить сюда Ивент
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg,
+                                          targets=targets, damager=obj)
 
         # info: 20-10-17 Ракеты города наказывают только за атаку по живым игрокам
         if is_damage_shoot and targets and self.check_users_in_target_cars(targets):
@@ -834,7 +879,8 @@ class Agent(Object):
                 poi.on_enemy_candidate(agent=self, time=time, damage=True)
 
         # todo: пробросить сюда Ивент
-        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+        self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg,
+                                      targets=[target], damager=obj)
 
     def on_setup_map_weapon(self, obj, time):
         # log.info('on_setup_map_weapon for {}'.format(obj))
@@ -856,7 +902,8 @@ class Agent(Object):
 
         # Если был дамаг, то сообщить об этом в квесты
         if damage:  # todo: пробросить сюда Ивент
-            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg)
+            self.example.profile.on_event(event=Event(server=self.server, time=time), cls=OnMakeDmg,
+                                          targets=targets, damager=obj)
 
     def on_activated_item(self, item, inventory, event):
         # log.info('{} on_activated_item {} from {}'.format(self, item, inventory))
@@ -900,8 +947,20 @@ class Agent(Object):
             return self.current_location.position(time)
         return self.example.profile.last_town.position.as_point()
 
+    def on_change_car_lvl(self, time):
+        CarRPGInfo(agent=self, time=time).post()
+
     def get_lang(self):
         return self.user and self.user.lang or 'en'
+
+    @property
+    def access_level(self):
+        return self.user and self.user.access_level or 0
+
+    @property
+    def agent_type(self):
+        return 'abstract'
+
 
 # todo: Переименовать в UserAgent
 class User(Agent):
@@ -943,6 +1002,10 @@ class User(Agent):
         if self.car and self.car.is_alive:
             ChangeStealthIndicator(agent=self, time=time, stealth=self.stealth_indicator).post()
 
+    @property
+    def agent_type(self):
+        return 'user'
+
 
 class AI(Agent):
     u""" Класс-родитель для всех агентов-ботов """
@@ -960,6 +1023,10 @@ class AI(Agent):
 
     def on_save(self, time):
         pass
+
+    @property
+    def agent_type(self):
+        return 'ai'
 
 
 class QuickUser(User):
@@ -1021,6 +1088,7 @@ class QuickUser(User):
     def send_die_message(self, event, unit):
         points = self.get_quick_game_points(event.time)
         self._add_quick_game_record(points=points, time=event.time)
+        CarDieLogMessage(agent=self, time=event.time, init_event=event).post()
         QuickGameDie(agent=self, obj=unit, points=points, time=event.time).post()
 
     def on_kill(self, event, target, killer):

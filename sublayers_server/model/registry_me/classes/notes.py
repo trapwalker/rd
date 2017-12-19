@@ -62,7 +62,8 @@ class MapMarkerNote(Note):
             distance = self.position.as_point().distance(target=position)
             return distance <= radius
         return False
-
+class MaskingMapMarkerNote(MapMarkerNote): pass
+class MaskingTurretMapMarkerNote(MapMarkerNote): pass
 
 class NPCPageNote(Note):
     page_caption = LocalizedStringField(caption=u'Название кнопки у нпц', tags={'client'})
@@ -96,6 +97,24 @@ class NPCTypePageNote(Note):
 
 class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass
+
+class KarmaLimitQuestNote(NPCPageNote): pass
+class NPCsTasksCompleteQuestNote(NPCPageNote): pass
+class SetMapWeaponQuestNote(NPCPageNote): pass
+class PartyMembersQuestNote(NPCPageNote): pass
+class DamageMapWeaponQuestNote(NPCPageNote): pass
+class BarterSuccessQuestNote(NPCPageNote): pass
+class ShadowingQuestNote(NPCPageNote): pass
+class GetClassCarQuestNote(NPCPageNote): pass
+class MaskingNPCQuestNote(NPCPageNote): pass
+class KillsClassQuestNote(NPCPageNote): pass
+class AccumulateNucoinsQuestNote(NPCPageNote): pass
+class GetPartyExpQuestNote(NPCPageNote): pass
+class SetMechanicItemsQuestNote(NPCPageNote): pass
+class InvisibleAttackQuestNote(NPCPageNote): pass
+class VisitTownsQuestNote(NPCPageNote): pass
+class GetMaxCarLvlQuestNote(NPCPageNote): pass
+class ClassQuestDummyNote(NPCPageNote): pass
 
 # Ноты обучения
 class GetQuestTeachingNote(Note):

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>History: {{ user.name }}</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="{{ static_url('js/third_party/jquery.min.js') }}"></script>
+
+</head>
+<body>
+
+{% include "main_menu_template.html" %}
+{% include "agent_menu_template.html" %}
+
+
+<div class="container">
+    <h3>History: {{ user.name }}</h3>
+    <div class="row input-group">
+        <input type="datetime-local" id="date_start" class="form-control" value="" placeholder=""
+               aria-label="">
+        <input type="datetime-local" id="date_finish" class="form-control" value="" placeholder=""
+               aria-label="">
+    </div>
+    <div class="row input-group">
+        <input type="text" id="types" class="form-control" value="" placeholder=""
+               aria-label="">
+        <span class="input-group-btn">
+        <button class="btn btn-secondary" type="button"
+                onclick="GoFind()">Find</button>
+      </span>
+    </div>
+    <div class="row">
+        {% for type in all_types %}
+        <button type="button" class="btn btn-primary" onclick="ToggleTypeClick(event)" data-type="{{ type }}">{{ type }}</button>
+        {% end %}
+    </div>
+    <div class="row">
+        <table class="table table-sm table-striped table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Type</th>
+                <th scope="col">Time</th>
+                <th scope="col">Text</th>
+            </tr>
+            </thead>
+            <tbody id="logtable">
+            {% import datetime %}
+            {% if adm_logs %}
+                {% for record in adm_logs %}
+                <tr>
+                    <td>{{ record.type }}</td>
+                    <td>{{ record.created.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                    <td>{{ record.text }}</td>
+                </tr>
+                {% end %}
+            </tbody>
+            {% else %}
+            <h3> No Results </h3>
+            {% end %}
+        </table>
+    </div>
+</div>
+
+<div style="display: None">
+     <div id="data-username">{{ user.name }}</div>
+</div>
+
+
+<script>
+
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function ToggleTypeClick(event) {
+        var type = $(event.target).data("type");
+        var jq_types = $("#types").first();
+        var types = jq_types.val().split('.');
+        var index = types.indexOf(type);
+        if (index >= 0){
+            types.splice(index, 1);
+            $(event.target).removeClass('btn-success');
+        }
+        else {
+            types.push(type);
+            $(event.target).addClass('btn-success');
+        }
+        types = types.filter(function (x) {return x != ""});
+        jq_types.val(types.join('.'));
+    }
+
+    function GoFind() {
+        var user_name = $("#data-username").text();
+        var types = $("#types").val();
+        var ds = 0;
+        var df = 0;
+        try{ds = Math.floor(new Date($('#date_start').val()).getTime() / 1000.);}catch(e){}
+        try{df = Math.floor(new Date($('#date_finish').val()).getTime() / 1000.);}catch(e){}
+        var search = "?username=" + user_name + '&types=' + types;
+        if (ds) search = search + '&ds=' + ds;
+        if (df) search = search + '&df=' + df;
+        console.log("search link: ", location.origin + location.pathname + search);
+        // location = location.origin + location.pathname + search;
+
+        $.ajax({
+            url: location.origin + location.pathname,
+            method: 'POST',
+            data: {
+                username: user_name,
+                types: types,
+                ds: ds || 0,
+                df: df || 0,
+                _xsrf: getCookie('_xsrf')
+            },
+            success: function (data) {
+                console.log(data);
+                var jq_table = $('#logtable');
+                jq_table.empty();
+                if (data.adm_logs && data.adm_logs.length)
+                    for (var i = 0; i < data.adm_logs.length; i++)
+                        jq_table.append(
+                            "<tr>\n" +
+                            "   <td>" + data.adm_logs[i].type + "</td>" +
+                            "   <td>" + data.adm_logs[i].created + "</td>"+
+                            "   <td>" + data.adm_logs[i].text + "</td>"+
+                            "</tr>"
+                        )
+                else {
+                    jq_table.append("<h3> No Results </h3>")
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) { console.log(arguments); alert(textStatus + ':' + errorThrown)}
+        });
+
+    }
+
+    // todo: При загрузке документа проанализировать location.search и выставить проэмулировать нажатие кнопок текущих выбранных типов
+    $(document).ready(function () {});
+
+
+</script>
+
+</body>
+</html>

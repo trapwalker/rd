@@ -199,7 +199,7 @@ var WCruiseControl = (function (_super) {
     };
 
     WCruiseControl.prototype._onClickChangeVisible = function (event) {
-        //console.log('WCruiseControl.prototype._onClickChangeVisible');
+        // console.log('WCruiseControl.prototype._onClickChangeVisible');
         event.data.changeVisible(!event.data.visible);
         returnFocusToMap();
     };
