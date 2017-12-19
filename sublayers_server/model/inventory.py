@@ -198,12 +198,9 @@ class Inventory(object):
             # todo: сначала поискать такой же стак, чтобы оно влезло в один стак
             position = self.get_free_position()
         if position is None:
-            from sublayers_server.model.agents import Agent
             log.warn("pos={}, max_size={}".format(position, self.max_size))
-            ag = self.owner if isinstance(self.owner, Agent) else self.owner.main_agent
-            log.warning("Item {} not added for agent {}".format(item, ag))
-            if ag:
-                ag.log.info("Item {} not added".format(item))
+            inventory_owner = getattr(self.owner, 'main_agent', None) or self.owner
+            log.warning("Item {} not added for owner {}".format(item, inventory_owner))
             return False
         if self.get_item(position=position) is not None:
             return False
