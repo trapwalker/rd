@@ -105,7 +105,7 @@ class PlayHandler(BaseHandler):
         ############################################
 
         user_id = self.get_secure_cookie("user")
-        if not user_id:
+        if not user_id or not self.current_user:
             self.redirect(self.get_login_url())
             return
 
