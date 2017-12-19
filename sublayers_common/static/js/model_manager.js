@@ -1178,7 +1178,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.PreEnterToLocation = function (event) {
-        //console.log('ClientManager.prototype.PreEnterToLocation', event);
+        // console.log('ClientManager.prototype.PreEnterToLocation', event);
         locationManager.load_city_image = false;
 
         function complete(load) {

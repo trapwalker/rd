@@ -45,7 +45,7 @@ $(document).ready(function () {
 
     chat.setActivePage(chat.page_global);
 
-    returnFocusToMap();
+    // returnFocusToMap();
 
     document.getElementById('divMainMenuBtnCharacter').onclick = function () {
         if (windowTemplateManager.isOpen('character'))
