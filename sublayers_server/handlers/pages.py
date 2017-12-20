@@ -41,7 +41,7 @@ class PlayHandler(BaseHandler):
         delta = t - last
         stat['last'] = t
         if delta > delay_to_forget:
-            log.debug('== Reset handler call status by user %r', user_id)
+            # log.debug('== Reset handler call status by user %r', user_id)
             stat['count'] = 1
             stat['sum'] = 0
         else:
@@ -130,12 +130,15 @@ class PlayHandler(BaseHandler):
                 raise tornado.web.HTTPError(417)
 
         user = self.current_user
+        electron = self.get_argument("mode", "") == "electron"
         # todo: ##REFACTORING
         if user is None:
+            if electron:
+                log.debug("### ELECTRON CLIENT without user!")
             self.redirect(self.get_login_url())
             return
 
-        electron = self.get_argument("mode", "") == "electron"
+        log.debug("%s Get play page [electron=%s]", user, electron)
 
         if options.mode == 'basic':
             coord = None
