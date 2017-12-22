@@ -4,7 +4,7 @@
         var slippymap = function (options) {
             var $, map, defaults, property;
             $ = window;
-            var map_link = jQuery("#settings_map_link").text() || "https://roaddogs.ru/map";
+            var map_link = jQuery("#settings_map_link").text() || "https://eu.roaddogs.online/map";
             defaults = {
                 div: "map",
                 fullscreen : true,

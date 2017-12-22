@@ -347,6 +347,11 @@ class MotionTask(TaskSingleton):
             tact_action(event=event, st=st, cc=0.0, turn=0.0)
             return
 
+        # Сначала устранить превышение допустимой скорости
+        if (abs(cur_cc) - abs(self.cc)) > EPS:
+            tact_action(event=event, st=st, cc=self.cc, turn=0.0)
+            return
+
         if not need_turn:
             break_dist = breaking_s_by_v(st=st, v=st.v0)
             ddist = dist - break_dist
@@ -371,13 +376,6 @@ class MotionTask(TaskSingleton):
             tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t)
             return
         tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
-
-
-
-
-
-
-
 
     def on_start(self, event):
         owner = self.owner
