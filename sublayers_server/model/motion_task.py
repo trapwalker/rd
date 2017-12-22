@@ -325,20 +325,12 @@ class MotionTask(TaskSingleton):
         return
 
 
-        ############ Конец варианта 1
-
-
-
-
-
-
+        ############ Вариант 2
         # Рассчитать от текущей скорости точку остановки
         dist = st.p0.distance(target_point)
-        if abs(st.v0) <= EPS:  # Если мы стоим
-            if dist <= EPSDIST:  # Вызвать полную остановку
-                # tact_action(event=event, st=st, cc=0.0, turn=0.0)
-                self._update_state(event=event, time=time, cc=0.0, turn=0.0, stop_a=False)
-                return
+        if (abs(st.v0) <= EPS) and (dist <= EPSDIST):  # Если мы почти стоим вызвать полную остановку
+            self._update_state(event=event, time=time, cc=0.0, turn=0.0, stop_a=False)
+            return
 
         # Параметры поворота
         need_turn = st._need_turn(target_point)
@@ -350,55 +342,41 @@ class MotionTask(TaskSingleton):
         min_acceptable_cc = copysign(min(0.05, abs(self.cc)), self.cc)
         min_acceptable_v = st.get_max_v_by_cc(min_acceptable_cc) * min_acceptable_cc
 
+        # Синхронизация знаков сс и текущей скорости
+        if (self.cc * st.v(time)) < 0:
+            tact_action(event=event, st=st, cc=0.0, turn=0.0)
+            return
+
         if not need_turn:
             break_dist = breaking_s_by_v(st=st, v=st.v0)
             ddist = dist - break_dist
             if abs(ddist) < EPSDIST:
-                tact_action(event=event, st=st, cc=0.0, turn=0.0)
-                return
+                time_stop = breaking_t_by_v(st, st.v0)
+                tact_action(event=event, st=st, cc=0.0, turn=0.0, next_time=time + time_stop)
             elif ddist < 0.0:
                 tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
-                return
+            elif ddist > 2 * break_dist:
+                next_time = event.time + 1
+                if abs(abs(cur_cc) - abs(self.cc)) < EPS:
+                    next_time = event.time + ddist / abs(st.v0)
+                tact_action(event=event, st=st, cc=self.cc, turn=0.0, next_time=next_time)
             else:
-                tact_action(event=event, st=st, cc=self.cc, turn=0.0)
-                return
-
-        # Параметры поворота
-        need_turn = st._need_turn(target_point, epsilon=0.3)
-        turn = st._get_turn_sign(target_point) if need_turn else 0.0
-        if st.v0 > 0:
-            turn = -turn
-
-        # Если мы находимся внутри минимального круга разворота, то проехать прямо
-        if dist < breaking_s_with_curve_by_v(st, min_acceptable_v):
-            tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
-            print 'inside!!!'
+                next_time = event.time + min(ddist / abs(st.v0), 1)
+                tact_action(event=event, st=st, cc=cur_cc, turn=0.0, next_time=next_time)
             return
 
-        # Рассчёт понятия "близко"
-        if dist < breaking_s_with_curve_by_v(st, st.v0):
-            if not need_turn:
-                tact_action(event=event, st=st, cc=0.0, turn=turn)
-                print 'PROSTO TORMOZIT!'
-            else:
-                if abs(min_acceptable_cc - cur_cc) < EPS:  # поворот без ускорения
-                    turn_fi = st._get_turn_fi(target_point)
-                    t = time + abs(turn_fi * st.r(st.t0) / st.v0)
-                    tact_action(event=event, st=st, cc=min_acceptable_cc, turn=turn, next_time=t)
-                    print 'PROSTO RAZVOROT!'
-                    return
-                tact_action(event=event, st=st, cc=min_acceptable_cc, turn=turn, next_time=time + 0.5)
-                print 'RAZVOROT SPIRAL!'
-            return
-
-        # Если поворачивает без ускорения, то поворачивать нужное кол-во времени
-        if need_turn and abs(self.cc - cur_cc) < EPS:
+        if -EPS < (abs(st.v0) - abs(min_acceptable_v)) and (dist > breaking_s_with_curve_by_v(st, st.v0)):
             turn_fi = st._get_turn_fi(target_point)
             t = time + abs(turn_fi * st.r(st.t0) / st.v0)
-            tact_action(event=event, st=st, cc=self.cc, turn=turn, next_time=t)
+            tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t)
             return
+        tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
 
-        tact_action(event=event, st=st, cc=self.cc, turn=turn)
+
+
+
+
+
 
 
     def on_start(self, event):
