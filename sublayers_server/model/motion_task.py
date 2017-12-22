@@ -244,6 +244,7 @@ class MotionTask(TaskSingleton):
             breaking_time = breaking_t_by_v(st, v)
             return abs(v) * breaking_time + 0.5 * st.a_braking * (breaking_time ** 2)
 
+        # todo: make method  _tact_action
         def tact_action(event, st, cc, turn, next_time=None, stop_a=False):
             time = event.time
             next_time = next_time or time + 1.0
@@ -252,17 +253,18 @@ class MotionTask(TaskSingleton):
             self._update_state(event=event, time=time, cc=cc, turn=turn, stop_a=stop_a)
             TaskPerformEvent(time=t, task=self).post()
 
-
-
-
         ############ Вариант 1
         dist = st.p0.distance(target_point)
         break_dist = breaking_s_by_v(st=st, v=st.v0)
         ddist = dist - break_dist
 
+        # Синхронизация знаков сс и текущей скорости
+        if self.cc * st.v0 < 0:
+            tact_action(event=event, st=st, cc=0.0, turn=0.0)
+            return
+
         # Минимальная приемлимая скорость
         min_acceptable_cc = copysign(min(0.05, abs(self.cc)), self.cc)
-        min_acceptable_v = st.get_max_v_by_cc(min_acceptable_cc) * min_acceptable_cc
 
         need_turn = st._need_turn(target_point, epsilon=0.2)
         turn = st._get_turn_sign(target_point) if need_turn else 0.0
@@ -270,39 +272,57 @@ class MotionTask(TaskSingleton):
             turn = -turn
 
         # Остановка
-        if dist <= EPSDIST and cur_cc <= min_acceptable_cc and break_dist <= dist / 2.0:  # Вызвать полную остановку
-            # tact_action(event=event, st=st, cc=0.0, turn=0.0)
+        # print 'dist={dist:.4f}, break_dist={break_dist:.4f}, curr_cc={cur_cc:.4f}, min_acceptable_cc={min_acceptable_cc:.4f}'.format(**locals())
+        if abs(cur_cc) <= EPS and abs(ddist) <= EPSDIST:  # Вызвать полную остановку
             self._update_state(event=event, time=time, cc=0.0, turn=0.0, stop_a=False)
+            return
+
+        if abs(cur_cc - min_acceptable_cc) <= EPS and abs(ddist) <= EPSDIST:  # Вызвать полную остановку
+            time_stop = breaking_t_by_v(st, st.v0)
+            tact_action(event=event, st=st, cc=0.0, turn=0.0, next_time=time + time_stop)
             return
 
         if not need_turn:
             if abs(ddist) < EPSDIST:
-                tact_action(event=event, st=st, cc=0.0, turn=0.0)
-                return
+                time_stop = breaking_t_by_v(st, st.v0)
+                tact_action(event=event, st=st, cc=0.0, turn=0.0, next_time=time + time_stop)
             elif ddist < 0.0:
                 tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
-                return
+            elif ddist > 2 * break_dist:
+                next_time = event.time + 1
+                if abs(abs(cur_cc) - abs(self.cc)) < EPS:
+                    next_time = event.time + ddist / abs(st.v0)
+                tact_action(event=event, st=st, cc=self.cc, turn=0.0, next_time=next_time)
             else:
-                tact_action(event=event, st=st, cc=self.cc, turn=0.0)
-                return
+                next_time = event.time + min(ddist / abs(st.v0), 1)
+                tact_action(event=event, st=st, cc=cur_cc, turn=0.0, next_time=next_time)
         else:
-            # Если нужен поворот, то считаем угол
-            turn_fi = st._get_turn_fi(target_point)
-            #
+            # Если нужен поворот, то сначала считаем насколько мы далеко от точки
+            curv_radius = ((st.v0 ** 2) / st.ac_max + st.r_min) * 2.0
+            if curv_radius > dist:  # Притормаживаем в повороте
+                tact_action(event=event, st=st, cc=min(min_acceptable_cc, self.cc), turn=turn, next_time=time + 0.5)
+            else:  # Рассчёт угла
+                turn_fi = st._get_turn_fi(target_point)
+                dt = 0.5
+                st.update(t=time, cc=None, turn=turn, stop_a=True)
+                angle_v = abs((st.fi(time + 0.05) - st.fi0) / 0.05)
+                if angle_v > EPS:
+                    dt = min(dt, abs(turn_fi / angle_v))
 
-            if abs(turn_fi) > 1.57:
-                # Если больше 90 градусов, то пытаемся развернуться с ускорением 0,5 секунд
-                tact_action(event=event, st=st, cc=self.cc, turn=turn, next_time=time + 0.5)
-                pass
-            else:
-                # Разворачиваемся без ускорения на нужный угол на текущем cc (а если он меньше минимального, то на в разгоне)
-                if abs(cur_cc) <= EPS:
-                    disired_cc = max(self.cc, min_acceptable_cc) if abs(ddist) > 2 * EPSDIST else min_acceptable_cc
-                    tact_action(event=event, st=st, cc=disired_cc, turn=turn, next_time=time + 0.5)
-                else:
-                    t = time + abs(turn_fi * st.r(st.t0) / st.v0)
-                    tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t, stop_a=True)
-        return 
+                if abs(turn_fi) > 1.57:  # Если больше 90 градусов, то пытаемся развернуться с ускорением  dt секунд
+                    if dist < breaking_s_with_curve_by_v(st, st.v0):
+                        disired_cc = min(min_acceptable_cc, self.cc)
+                    else:
+                        disired_cc = max(self.cc, min_acceptable_cc)
+                    tact_action(event=event, st=st, cc=disired_cc, turn=turn, next_time=time + dt)
+                else:  # Доворот
+                    if abs(cur_cc) <= EPS:  # Если стоим, то поворачиваем в разгоне
+                        disired_cc = max(self.cc, min_acceptable_cc) if abs(dist) > 2 * EPSDIST else min_acceptable_cc
+                        tact_action(event=event, st=st, cc=disired_cc, turn=turn, next_time=time + dt)
+                    else:  # Если едем, то доворачиваем на текущем CC
+                        t = time + abs(turn_fi * st.r(st.t0) / st.v0)
+                        tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t, stop_a=True)
+        return
 
 
         ############ Конец варианта 1
