@@ -16,6 +16,7 @@ class AIDispatcherQuest(Quest):
     )
 
     def refresh(self, event):
+        return
         for quest_proto in self.quests:
             if quest_proto.can_instantiate(event=event, agent=self.agent):
                 quest = quest_proto.instantiate(abstract=False, hirer=None)

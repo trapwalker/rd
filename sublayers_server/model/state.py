@@ -230,14 +230,15 @@ class MotionState(BaseMotionState):
         self.u_cc = 0.0
         self.update()
 
-    def _need_turn(self, target_point):
+    def _need_turn(self, target_point, epsilon=None):
+        epsilon = epsilon if epsilon is not None else EPS
         v_dir = Point.polar(r=1, fi=self.fi0)
         v_t = (target_point - self.p0)
         angle = abs(v_dir.angle_with(v_t))
         if self.cc >= 0:
-            return angle > EPS
+            return angle > epsilon
         else:
-            return abs(angle - pi) > EPS
+            return abs(angle - pi) > epsilon
 
     def _get_turn_sign(self, target_point):
         assert target_point is not None

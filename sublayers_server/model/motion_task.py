@@ -167,20 +167,27 @@ class MotionTask(TaskSingleton):
         time = st.update(t=time, cc=0.0, turn=0.0)
         assert time is None
 
-    def _update_state(self, event):
+    def _update_state(self, event, time=None, cc=None, turn=None, stop_a=None):
         owner = self.owner
         state = owner.state
         is_moving_before = state.is_moving
 
+        cc = cc if cc is not None else event and getattr(event, "cc", None)
+        time = time if time is not None else event and getattr(event, "time", None)
+        turn = turn if turn is not None else event and getattr(event, "turn", None)
+        stop_a = stop_a if stop_a is not None else event and getattr(event, "stop_a", None)
+
+        # assert cc is not None and time is not None and turn is not None and stop_a is not None, "{cc}, {time}, {turn}, {stop_a}".format(**locals())
+
         # работа с метрикой
-        way = state.way(t=event.time)
+        way = state.way(t=time)
         if owner.example and getattr(owner.example, "set_way", None):
             owner.example.set_way(dvalue=way)
             if owner.example.k_way_exp is None:
                 log.warning('Exp by riding rate is None: owner.example.k_way_exp')
-            owner.example.set_exp(dvalue=way * (owner.example.k_way_exp or 0), time=event.time, model_agent=owner.main_agent)
+            owner.example.set_exp(dvalue=way * (owner.example.k_way_exp or 0), time=time, model_agent=owner.main_agent)
 
-        state.update(t=event.time, cc=event.cc, turn=event.turn, stop_a=event.stop_a)
+        state.update(t=time, cc=cc, turn=turn, stop_a=stop_a)
         is_moving_after = state.is_moving
         owner.on_update(event=event)
         if is_moving_before != is_moving_after:
@@ -192,7 +199,10 @@ class MotionTask(TaskSingleton):
     def on_perform(self, event):
         super(MotionTask, self).on_perform(event=event)
         try:
-            self._update_state(event)
+            if self.target_point:
+                self.tact(event)
+            else:
+                self._update_state(event)
         except Exception as e:
             self.done()
             last_owner_position = self.owner.state.p0
@@ -212,6 +222,165 @@ class MotionTask(TaskSingleton):
             self.owner.set_motion(cc=0.0, time=event.time)
             # self.owner.server.stop()
 
+    def tact(self, event):
+        EPSDIST = 15
+        time = event.time
+        owner = self.owner
+        target_point = self.target_point
+        st = copy(owner.state)
+        st.update(t=time)
+        cur_cc = copysign(st.v0 / st.get_max_v_by_curr_v(v=st.v0), st.v0)
+
+        def breaking_s_with_curve_by_v(st, v):
+            r_min = (v ** 2) / st.ac_max + st.r_min
+            breaking_time = abs(v / st.a_braking)
+            breaking_s = abs(v) * breaking_time + 0.5 * st.a_braking * (breaking_time ** 2)
+            return r_min + breaking_s
+
+        def breaking_t_by_v(st, v):
+            return abs(v / st.a_braking)
+
+        def breaking_s_by_v(st, v):
+            breaking_time = breaking_t_by_v(st, v)
+            return abs(v) * breaking_time + 0.5 * st.a_braking * (breaking_time ** 2)
+
+        def tact_action(event, st, cc, turn, next_time=None, stop_a=False):
+            time = event.time
+            next_time = next_time or time + 1.0
+            state_time = st.update(t=time, cc=cc, turn=turn)
+            t = min(state_time, next_time) if state_time is not None else next_time
+            self._update_state(event=event, time=time, cc=cc, turn=turn, stop_a=stop_a)
+            TaskPerformEvent(time=t, task=self).post()
+
+
+
+
+        ############ Вариант 1
+        dist = st.p0.distance(target_point)
+        break_dist = breaking_s_by_v(st=st, v=st.v0)
+        ddist = dist - break_dist
+
+        # Минимальная приемлимая скорость
+        min_acceptable_cc = copysign(min(0.05, abs(self.cc)), self.cc)
+        min_acceptable_v = st.get_max_v_by_cc(min_acceptable_cc) * min_acceptable_cc
+
+        need_turn = st._need_turn(target_point, epsilon=0.2)
+        turn = st._get_turn_sign(target_point) if need_turn else 0.0
+        if st.v0 > 0:
+            turn = -turn
+
+        # Остановка
+        if dist <= EPSDIST and cur_cc <= min_acceptable_cc and break_dist <= dist / 2.0:  # Вызвать полную остановку
+            # tact_action(event=event, st=st, cc=0.0, turn=0.0)
+            self._update_state(event=event, time=time, cc=0.0, turn=0.0, stop_a=False)
+            return
+
+        if not need_turn:
+            if abs(ddist) < EPSDIST:
+                tact_action(event=event, st=st, cc=0.0, turn=0.0)
+                return
+            elif ddist < 0.0:
+                tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
+                return
+            else:
+                tact_action(event=event, st=st, cc=self.cc, turn=0.0)
+                return
+        else:
+            # Если нужен поворот, то считаем угол
+            turn_fi = st._get_turn_fi(target_point)
+            #
+
+            if abs(turn_fi) > 1.57:
+                # Если больше 90 градусов, то пытаемся развернуться с ускорением 0,5 секунд
+                tact_action(event=event, st=st, cc=self.cc, turn=turn, next_time=time + 0.5)
+                pass
+            else:
+                # Разворачиваемся без ускорения на нужный угол на текущем cc (а если он меньше минимального, то на в разгоне)
+                if abs(cur_cc) <= EPS:
+                    disired_cc = max(self.cc, min_acceptable_cc) if abs(ddist) > 2 * EPSDIST else min_acceptable_cc
+                    tact_action(event=event, st=st, cc=disired_cc, turn=turn, next_time=time + 0.5)
+                else:
+                    t = time + abs(turn_fi * st.r(st.t0) / st.v0)
+                    tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t, stop_a=True)
+        return 
+
+
+        ############ Конец варианта 1
+
+
+
+
+
+
+        # Рассчитать от текущей скорости точку остановки
+        dist = st.p0.distance(target_point)
+        if abs(st.v0) <= EPS:  # Если мы стоим
+            if dist <= EPSDIST:  # Вызвать полную остановку
+                # tact_action(event=event, st=st, cc=0.0, turn=0.0)
+                self._update_state(event=event, time=time, cc=0.0, turn=0.0, stop_a=False)
+                return
+
+        # Параметры поворота
+        need_turn = st._need_turn(target_point)
+        turn = st._get_turn_sign(target_point) if need_turn else 0.0
+        if st.v0 > 0:
+            turn = -turn
+
+        # Минимальная приемлимая скорость
+        min_acceptable_cc = copysign(min(0.05, abs(self.cc)), self.cc)
+        min_acceptable_v = st.get_max_v_by_cc(min_acceptable_cc) * min_acceptable_cc
+
+        if not need_turn:
+            break_dist = breaking_s_by_v(st=st, v=st.v0)
+            ddist = dist - break_dist
+            if abs(ddist) < EPSDIST:
+                tact_action(event=event, st=st, cc=0.0, turn=0.0)
+                return
+            elif ddist < 0.0:
+                tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
+                return
+            else:
+                tact_action(event=event, st=st, cc=self.cc, turn=0.0)
+                return
+
+        # Параметры поворота
+        need_turn = st._need_turn(target_point, epsilon=0.3)
+        turn = st._get_turn_sign(target_point) if need_turn else 0.0
+        if st.v0 > 0:
+            turn = -turn
+
+        # Если мы находимся внутри минимального круга разворота, то проехать прямо
+        if dist < breaking_s_with_curve_by_v(st, min_acceptable_v):
+            tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
+            print 'inside!!!'
+            return
+
+        # Рассчёт понятия "близко"
+        if dist < breaking_s_with_curve_by_v(st, st.v0):
+            if not need_turn:
+                tact_action(event=event, st=st, cc=0.0, turn=turn)
+                print 'PROSTO TORMOZIT!'
+            else:
+                if abs(min_acceptable_cc - cur_cc) < EPS:  # поворот без ускорения
+                    turn_fi = st._get_turn_fi(target_point)
+                    t = time + abs(turn_fi * st.r(st.t0) / st.v0)
+                    tact_action(event=event, st=st, cc=min_acceptable_cc, turn=turn, next_time=t)
+                    print 'PROSTO RAZVOROT!'
+                    return
+                tact_action(event=event, st=st, cc=min_acceptable_cc, turn=turn, next_time=time + 0.5)
+                print 'RAZVOROT SPIRAL!'
+            return
+
+        # Если поворачивает без ускорения, то поворачивать нужное кол-во времени
+        if need_turn and abs(self.cc - cur_cc) < EPS:
+            turn_fi = st._get_turn_fi(target_point)
+            t = time + abs(turn_fi * st.r(st.t0) / st.v0)
+            tact_action(event=event, st=st, cc=self.cc, turn=turn, next_time=t)
+            return
+
+        tact_action(event=event, st=st, cc=self.cc, turn=turn)
+
+
     def on_start(self, event):
         owner = self.owner
         old_tp = None if owner.cur_motion_task is None else owner.cur_motion_task.target_point
@@ -230,7 +399,9 @@ class MotionTask(TaskSingleton):
 
         if self.target_point:
             try:
-                self._calc_goto(start_time=event.time)
+                # self._calc_goto(start_time=event.time)
+                # self.tact(event, false_update)
+                TaskPerformEvent(time=event.time, task=self).post()
             except Exception as e:
                 self.done()
                 owner_position = self.owner.position(time=event.time)

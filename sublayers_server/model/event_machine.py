@@ -585,7 +585,6 @@ class BasicLocalServer(LocalServer):
         super(BasicLocalServer, self).on_agent_disconnect(agent, time)
         self.global_chat_room.exclude(agent=agent, time=time)
 
-
 ########################################################################################################################
 class QuickLocalServer(LocalServer):
     def load_world(self):
