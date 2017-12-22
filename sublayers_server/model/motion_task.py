@@ -295,7 +295,7 @@ class MotionTask(TaskSingleton):
                 tact_action(event=event, st=st, cc=self.cc, turn=0.0, next_time=next_time)
             else:
                 next_time = event.time + min(ddist / abs(st.v0), 1)
-                tact_action(event=event, st=st, cc=cur_cc, turn=0.0, next_time=next_time)
+                tact_action(event=event, st=st, cc=min(cur_cc, self.cc), turn=0.0, next_time=next_time)
         else:
             # Если нужен поворот, то сначала считаем насколько мы далеко от точки
             curv_radius = ((st.v0 ** 2) / st.ac_max + st.r_min) * 2.0
@@ -319,9 +319,12 @@ class MotionTask(TaskSingleton):
                     if abs(cur_cc) <= EPS:  # Если стоим, то поворачиваем в разгоне
                         disired_cc = max(self.cc, min_acceptable_cc) if abs(dist) > 2 * EPSDIST else min_acceptable_cc
                         tact_action(event=event, st=st, cc=disired_cc, turn=turn, next_time=time + dt)
-                    else:  # Если едем, то доворачиваем на текущем CC
-                        t = time + abs(turn_fi * st.r(st.t0) / st.v0)
-                        tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t, stop_a=True)
+                    else:
+                        if abs(self.cc - cur_cc) >= EPS and self.cc < cur_cc:  # Если едем, и нужно замедляться, то доворачиваем в торможении
+                            tact_action(event=event, st=st, cc=self.cc, turn=turn, next_time=time + dt)
+                        else:  # Если едем, и не нужно замедляться, то доворачиваем на текущем CC
+                            t = time + abs(turn_fi * st.r(st.t0) / st.v0)
+                            tact_action(event=event, st=st, cc=cur_cc, turn=turn, next_time=t, stop_a=True)
         return
 
 
