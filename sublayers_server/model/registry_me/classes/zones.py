@@ -71,7 +71,7 @@ class Zone(Node):
             from sublayers_server.model.agents import AI
             if main_agent and isinstance(main_agent, AI):
                 route = main_agent.event_quest and main_agent.event_quest.dc and main_agent.event_quest.dc.route
-                log.debug('Route %s for %s', route.uri, main_agent)
+                log.debug('Route %s for %s', route and route.node_hash(), main_agent)
             return
 
         if value:
