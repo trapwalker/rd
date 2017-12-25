@@ -257,6 +257,7 @@ class MotionTask(TaskSingleton):
         dist = st.p0.distance(target_point)
         break_dist = breaking_s_by_v(st=st, v=st.v0)
         ddist = dist - break_dist
+        curv_radius = ((st.v0 ** 2) / st.ac_max + st.r_min) * 2.0
 
         # Синхронизация знаков сс и текущей скорости
         if self.cc * st.v0 < 0:
@@ -289,16 +290,25 @@ class MotionTask(TaskSingleton):
             elif ddist < 0.0:
                 tact_action(event=event, st=st, cc=min_acceptable_cc, turn=0.0)
             elif ddist > 2 * break_dist:
-                next_time = event.time + 1
+                next_time = time + 1
+                turn = 0
+                stop_a = False
                 if abs(abs(cur_cc) - abs(self.cc)) < EPS:
-                    next_time = event.time + ddist / abs(st.v0)
-                tact_action(event=event, st=st, cc=self.cc, turn=0.0, next_time=next_time)
+                    # Если на максимальной скорости, то либо довернуть "точно по курсу", либо ехать дальше прямо
+                    need_turn = st._need_turn(target_point, epsilon=0.01)
+                    if need_turn and curv_radius > dist:
+                        turn = st._get_turn_sign(target_point) if need_turn else 0.0
+                        if st.v0 > 0: turn = -turn
+                        next_time = time + min(abs(st._get_turn_fi(target_point) * st.r(st.t0) / st.v0), 3.0)
+                        stop_a = True
+                    else:
+                        next_time = time + min(ddist / abs(st.v0), 10.0)
+                tact_action(event=event, st=st, cc=self.cc, turn=turn, next_time=next_time, stop_a=stop_a)
             else:
                 next_time = event.time + min(ddist / abs(st.v0), 1)
                 tact_action(event=event, st=st, cc=min(cur_cc, self.cc), turn=0.0, next_time=next_time)
         else:
             # Если нужен поворот, то сначала считаем насколько мы далеко от точки
-            curv_radius = ((st.v0 ** 2) / st.ac_max + st.r_min) * 2.0
             if curv_radius > dist:  # Притормаживаем в повороте
                 tact_action(event=event, st=st, cc=min(min_acceptable_cc, self.cc), turn=turn, next_time=time + 0.5)
             else:  # Рассчёт угла
@@ -404,7 +414,7 @@ class MotionTask(TaskSingleton):
             except Exception as e:
                 self.done()
                 owner_position = self.owner.position(time=event.time)
-                log.debug('_calc_goto error for %s %s cc=%s turn=%s tp=%s', self.owner, event.time, self.cc, self.turn, self.target_point)
+                log.debug('_calc_goto error for %s [%s] %s cc=%s turn=%s tp=%s', self.owner, owner.main_agent, event.time, self.cc, self.turn, self.target_point)
                 for line in self.debug_comments:
                     log.debug(line)
                 log.exception(e)
@@ -420,7 +430,19 @@ class MotionTask(TaskSingleton):
                     ))
                 # self.owner.server.stop()
         else:
-            self._calc_keybord(start_time=event.time)
+            try:
+                self._calc_keybord(start_time=event.time)
+            except Exception as e:
+                self.done()
+                owner_position = self.owner.position(time=event.time)
+                log.info('_calc_keybord error for {owner}[{owner.main_agent}] {event.time} cc={self.cc} turn={self.turn}'.format(**locals()))
+                log.exception(e)
+                if owner.main_agent:
+                    owner.main_agent.log.info('_calc_keybord error for {owner}[{owner.main_agent}] {event.time} cc={self.cc} turn={self.turn}'.format(
+                            **locals()))
+                self.owner.state = MotionState(t=event.time, **self.owner.init_state_params())
+                self.owner.state.p0 = owner_position
+                self.owner.set_motion(cc=0.0, time=event.time)
         owner.cur_motion_task = self
 
     def on_done(self, event=None):
