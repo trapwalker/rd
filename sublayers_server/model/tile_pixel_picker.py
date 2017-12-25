@@ -45,7 +45,8 @@ class TilePicker(object):
             img = Image.open(fn)
             return tid, img.load()
         except IOError as e:
-            log.warning('Tile %r not found: %r', os.path.abspath(fn), e.message)
+            pass
+            # log.warning('Tile %r not found: %r', os.path.abspath(fn), e.message)
             # todo: other exceptions
 
         return tid, None
