@@ -67,11 +67,11 @@ class Zone(Node):
         value = self.get_value(obj, time)
         if value is None:
             main_agent = getattr(obj, 'main_agent', None)
-            log.debug('%s [pos=%s | %s] not in zone %s', obj, obj.position(time), main_agent, self)
+            log.debug('%s [pos=%s | %s] not in zone %s', obj, obj.position(time), main_agent, self.uri)
             from sublayers_server.model.agents import AI
             if main_agent and isinstance(main_agent, AI):
                 route = main_agent.event_quest and main_agent.event_quest.dc and main_agent.event_quest.dc.route
-                log.debug('Route %s for %s', route, main_agent)
+                log.debug('Route %s for %s', route.uri, main_agent)
             return
 
         if value:
