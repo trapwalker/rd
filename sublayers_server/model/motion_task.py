@@ -293,10 +293,10 @@ class MotionTask(TaskSingleton):
                 next_time = time + 1
                 turn = 0
                 stop_a = False
-                if abs(abs(cur_cc) - abs(self.cc)) < EPS:
+                if abs(cur_cc - self.cc) < EPS:
                     # Если на максимальной скорости, то либо довернуть "точно по курсу", либо ехать дальше прямо
-                    need_turn = st._need_turn(target_point, epsilon=0.01)
-                    if need_turn and curv_radius > dist:
+                    need_turn = st._need_turn(target_point, epsilon=0.001)
+                    if need_turn and curv_radius <= dist:
                         turn = st._get_turn_sign(target_point) if need_turn else 0.0
                         if st.v0 > 0: turn = -turn
                         next_time = time + min(abs(st._get_turn_fi(target_point) * st.r(st.t0) / st.v0), 3.0)
