@@ -31,6 +31,9 @@ class AbstractRoute(Node):
     def next_point(self):
         pass
 
+    def __str__(self):
+        return "{}[acc={:.0f}|uri={}]".format(self.__class__.__name__, self.route_accuracy, self.parent and self.parent.uri)
+
 
 class Route(AbstractRoute):
     points = ListField(
@@ -109,6 +112,9 @@ class AreaRandomRoute(AbstractRoute):
         self._last_current_point = Point.random_gauss(self.center.as_point(), self.dispersion)
         return self._last_current_point.as_point()
 
+    def __str__(self):
+        return "{}[center={}, dispersion={}, deadline={}]".format(self.__class__.__name__, self.center, self.dispersion, self.route_deadline)
+
 
 class CompositeRoute(AbstractRoute):
     routes = ListField(
@@ -151,3 +157,6 @@ class CompositeRoute(AbstractRoute):
             # Инициализация следующего маршрута
             return self.nearest_point(current_point)
         return next_p
+
+    def __str__(self):
+        return "{}[{}]".format(self.__class__.__name__, ', '.join([str(r) for r in self.routes]))
