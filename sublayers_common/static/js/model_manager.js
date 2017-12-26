@@ -931,7 +931,7 @@ var ClientManager = (function () {
     };
 
     ClientManager.prototype.AgentConsoleEchoMessage = function (event){
-        //console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
+        console.log('ClientManager.prototype.AgentConsoleEchoMessage :', event.comment);
         chat.addMessageToSys(event.comment);
     };
 

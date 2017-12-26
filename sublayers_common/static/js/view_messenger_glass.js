@@ -908,6 +908,7 @@ var ViewMessengerGlass = (function () {
                         this.addMessageToLog(_("chat_log_die"));
                     break;
                 case 'SystemChatMessage':
+                    console.log(msg.text);
                     this.addMessageToSys(msg.text);
 
             }

@@ -84,6 +84,11 @@ class Route(AbstractRoute):
             self.current_index = 0
         return self.points[self.current_index].as_point()
 
+    def __str__(self):
+        return "{}[C={}, acc={:.0f}, uri={}, index={}/{}, P={}]".format(self.__class__.__name__, self.cyclic,
+                                                                 self.route_accuracy, self.parent and self.parent.uri,
+                                                                 self.current_index, len(self.points), self.get_current_point())
+
 
 class AreaRandomRoute(AbstractRoute):
     center = PositionField(caption=u"Точка патрулирования")
@@ -113,7 +118,7 @@ class AreaRandomRoute(AbstractRoute):
         return self._last_current_point.as_point()
 
     def __str__(self):
-        return "{}[center={}, dispersion={}, deadline={}]".format(self.__class__.__name__, self.center, self.dispersion, self.route_deadline)
+        return "{}[center={}, dispersion={}, deadline={}, P={}]".format(self.__class__.__name__, self.center, self.dispersion, self.route_deadline, self.get_current_point())
 
 
 class CompositeRoute(AbstractRoute):

@@ -266,7 +266,7 @@ class AgentConsoleNamespace(Namespace):
                 pos = agent.car.position(time)
                 x, y, z = Tileid(long(pos.x), long(pos.y), 26).parent(12).xyz()
                 route = agent.event_quest and agent.event_quest.dc and agent.event_quest.dc.route
-                r = '{} with route={}, ({:.2f}, {:.2f})'.format(agent.print_login(), route, x, y)
+                r = '{} with route={}, ({:.2f}, {:.2f}) EventQuest={} ActionQuest={}'.format(agent.print_login(), route, x, y, agent.event_quest, agent.action_quest)
                 log.debug(r)
                 self.write(r)
         else:
