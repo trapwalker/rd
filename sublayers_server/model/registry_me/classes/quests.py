@@ -318,6 +318,9 @@ class Quest(Node):
     active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', root_default=True, tags={'client'})
     build_view = BooleanField(caption=u'Отрисовывать ли данный квест в квестах задния.', root_default=True, tags={'client'})
 
+    def __str__(self):
+        return '{}[{}|{}]'.format(self.__class__.__name__, self.node_hash(), self.current_state)
+
     @property
     def agent(self):
         return self._agent

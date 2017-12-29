@@ -66,6 +66,14 @@ class Zone(Node):
             return
         value = self.get_value(obj, time)
         if value is None:
+            # main_agent = getattr(obj, 'main_agent', None)
+            # log.debug('%s [pos=%s | %s] not found in zone %s', obj, obj.position(time), main_agent, self.uri)
+            # from sublayers_server.model.agents import AI
+            # if main_agent and isinstance(main_agent, AI):
+            #     pos = obj.position(time)
+            #     x, y, z = Tileid(long(pos.x), long(pos.y), 26).parent(12).xyz()
+            #     route = main_agent.event_quest and main_agent.event_quest.dc and main_agent.event_quest.dc.route
+            #     log.debug('Route %s for %s, (%s, %s)', route, main_agent, x, y)
             return
 
         if value:

@@ -255,6 +255,22 @@ class AgentConsoleNamespace(Namespace):
         for npc in npcs:
             self.agent.example.profile.set_relationship(time=time, npc=npc, dvalue=int_dval)
 
+    @access_level(2)
+    def bot_info(self, name):
+        agent = self.agent.server.agents_by_name.get(name, None)
+        if agent:
+            from sublayers_server.model.agents import AI
+            from sublayers_server.model.tileid import Tileid
+            if agent.car and isinstance(agent, AI):
+                time = self.agent.server.get_time()
+                pos = agent.car.position(time)
+                x, y, z = Tileid(long(pos.x), long(pos.y), 26).parent(12).xyz()
+                route = agent.event_quest and agent.event_quest.dc and agent.event_quest.dc.route
+                r = '{} with route={}, ({:.2f}, {:.2f}) EventQuest={} ActionQuest={}'.format(agent.print_login(), route, x, y, agent.event_quest, agent.action_quest)
+                log.debug(r)
+                self.write(r)
+        else:
+            self.write('Not found')
 
 class UpdateAgentAPIEvent(Event):
     def __init__(self, api, **kw):
