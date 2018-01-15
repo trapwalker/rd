@@ -1,4 +1,4 @@
-var ConstMaxLengthToMoveMarker = 6;
+﻿var ConstMaxLengthToMoveMarker = 6;
 var ConstMaxAngleToMoveMarker = Math.PI / 90.;
 
 
@@ -518,6 +518,9 @@ var WCanvasStaticTownMarker = (function (_super) {
                         break;
                     case 'reg:///registry/poi/locations/towns/painted_rock':
                         icon_name = 'city_painted_rock';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/los_perros':
+                        icon_name = 'los_jetas';
                         break;
                     case 'reg:///registry/poi/locations/towns/nukeoil_006':
                     case 'reg:///registry/poi/locations/towns/nukeoil_005':
