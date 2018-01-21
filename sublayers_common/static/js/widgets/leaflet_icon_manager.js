@@ -1,4 +1,4 @@
-// Список Иконок для всех видов маркеров леафлета
+﻿// Список Иконок для всех видов маркеров леафлета
 var LeafletIconManager = (function(){
     function LeafletIconManager(){
         this.icons = {};
@@ -36,8 +36,8 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_los_jetas_full', '/static/content/locations/map_locations/los_jetas/map_icons/full.png', [80, 66]);
         this.load_new_icon('icon_los_jetas_circle', '/static/content/locations/map_locations/los_jetas/map_icons/circle.png', [80, 66]);
 
-        this.load_new_icon('icon_los_jetas_full', '/static/content/locations/map_locations/los_perros/map_icons/full.png', [80, 66]);
-        this.load_new_icon('icon_los_jetas_circle', '/static/content/locations/map_locations/los_perros/map_icons/circle.png', [80, 66]);
+        this.load_new_icon('icon_los_perros_full', '/static/content/locations/map_locations/los_perros/map_icons/full.png', [80, 66]);
+        this.load_new_icon('icon_los_perros_circle', '/static/content/locations/map_locations/los_perros/map_icons/circle.png', [80, 66]);
 
         this.load_new_icon('icon_tartron_full', '/static/content/locations/map_locations/tartron_parts/map_icons/full.png', [80, 73]);
         this.load_new_icon('icon_tartron_circle', '/static/content/locations/map_locations/tartron_parts/map_icons/circle.png', [80, 73]);
