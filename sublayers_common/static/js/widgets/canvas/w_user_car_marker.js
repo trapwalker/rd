@@ -520,7 +520,7 @@ var WCanvasStaticTownMarker = (function (_super) {
                         icon_name = 'city_painted_rock';
                         break;
                     case 'reg:///registry/poi/locations/towns/los_perros':
-                        icon_name = 'los_jetas';
+                        icon_name = 'los_perros';
                         break;
                     case 'reg:///registry/poi/locations/towns/nukeoil_006':
                     case 'reg:///registry/poi/locations/towns/nukeoil_005':
@@ -550,6 +550,12 @@ var WCanvasStaticTownMarker = (function (_super) {
                         break;
                     case 'reg:///registry/poi/locations/towns/walker_parts':
                         icon_name = 'walker';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/lucas_artesano':
+                        icon_name = 'lucas';
+                        break;
+                    case 'reg:///registry/poi/locations/towns/billys_store':
+                        icon_name = 'billy';
                         break;
                     default:
                         console.log('Не найдена иконка. Установлена стандартная. ', mobj.example.node_hash);
