@@ -40,11 +40,11 @@
        fx="746.02844"
        fy="-94.399826"
        r="374"
-       gradientTransform="matrix(-1.5813598,1.5152451e-8,-1.262635e-8,-1.3177276,2356.8108,116.72312)"
+       gradientTransform="matrix(-1.5813598,1.5152451e-8,-1.262635e-8,-1.3177276,2356.8108,118.72312)"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
-     id="base"
+     id="market"
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
@@ -62,7 +62,15 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:snap-nodes="false" />
+     inkscape:snap-nodes="false"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="956.03791,760.01896"
+       orientation="1,0"
+       id="guide3752"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -81,23 +89,23 @@
      id="layer1"
      transform="translate(0,-2.362448)">
     <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\ground+circle.png"
-       xlink:href="..\los_perros\ground+circle.png"
-       y="138.36244"
-       x="485"
-       id="landscape"
-       preserveAspectRatio="none"
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\ground+circle.png"
+       xlink:href="..\billys_store\ground+circle.png"
+       width="943"
        height="752"
-       width="943" />
+       preserveAspectRatio="none"
+       id="landscape"
+       x="485"
+       y="138.36244" />
     <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\base_bg.png"
-       xlink:href="..\los_perros\base_bg.png"
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market_bg.png"
+       xlink:href="..\billys_store\market_bg.png"
        class="building-back"
        style="display:none"
        width="943"
        height="752"
        preserveAspectRatio="none"
-       id="base-back"
+       id="market-back"
        x="485"
        y="138.36244" />
   </g>
@@ -108,26 +116,26 @@
      class="townPageWrap"
      transform="translate(0,2.3339844e-4)">
     <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\base.png"
-       xlink:href="..\los_perros\base.png"
-       width="815"
-       height="437"
-       preserveAspectRatio="none"
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market.png"
+       xlink:href="..\billys_store\market.png"
+       class="highlight-buildings"
+       y="302.97589"
+       x="528.98798"
        id="img_house1_off"
-       x="559.31323"
-       y="406.75903"
-       class="highlight-buildings" />
+       preserveAspectRatio="none"
+       height="513"
+       width="871" />
     <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\base_hover.png"
-       xlink:href="..\los_perros\base_hover.png"
-       width="815"
-       height="437"
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market_hover.png"
+       xlink:href="..\billys_store\market_hover.png"
+       width="871"
+       height="513"
        preserveAspectRatio="none"
        id="img_house1_on"
-       x="559.31323"
-       y="406.75903"
+       x="528.98798"
+       y="302.97589"
        class="highlight-buildings"
-       data-building="base"
+       data-building="market"
        style="display:none" />
     <g
        inkscape:groupmode="layer"
@@ -135,23 +143,23 @@
        inkscape:label="build_path">
       <path
          style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 h -43 a 374,374 0 1 1 680.363,214.518 z"
+         d="M 1229.639,709.854 A 331,331 0 1 0 627.5,520 h -43 a 374,374 0 1 1 680.363,214.518 z"
          id="path_h1"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
-         data-building="base" />
+         data-building="market" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="930"
+         x="956.38672"
          y="174"
          id="path_text_h1"
          class="town-build-path-text"><tspan
            sodipodi:role="line"
            id="tspan4204-9-7"
-           x="930"
+           x="956.38672"
            y="174"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:normal;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1">Base</tspan></text>
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:15px;font-family:Nouveau_IBM;text-align:center;text-anchor:middle;fill:#00ff00;fill-opacity:1">Trader</tspan></text>
     </g>
   </g>
 </svg>
