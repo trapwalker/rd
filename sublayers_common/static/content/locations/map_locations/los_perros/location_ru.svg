@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1920"
+   height="1080"
+   viewBox="0 0 1920 1080"
+   id="svg_town"
+   version="1.1"
+   inkscape:version="0.92.0 r15299"
+   sodipodi:docname="location_ru.svg">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5974">
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0.6"
+         offset="0"
+         id="stop5976" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:0;"
+         offset="1"
+         id="stop5978" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5974"
+       id="radialGradient5980"
+       cx="746.02844"
+       cy="-94.399826"
+       fx="746.02844"
+       fy="-94.399826"
+       r="374"
+       gradientTransform="matrix(-1.5813598,1.5152451e-8,-1.262635e-8,-1.3177276,2356.8108,116.72312)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.88297872"
+     inkscape:cx="956.5"
+     inkscape:cy="568.00001"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1600"
+     inkscape:window-height="847"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-nodes="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="background"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-2.362448)">
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\ground+circle.png"
+       xlink:href="..\los_perros\ground+circle.png"
+       y="138.36244"
+       x="485"
+       id="landscape"
+       preserveAspectRatio="none"
+       height="752"
+       width="943" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\base_bg.png"
+       xlink:href="..\los_perros\base_bg.png"
+       class="building-back"
+       style="display:none"
+       width="943"
+       height="752"
+       preserveAspectRatio="none"
+       id="base-back"
+       x="485"
+       y="138.36244" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="building"
+     class="townPageWrap"
+     transform="translate(0,2.3339844e-4)">
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\base.png"
+       xlink:href="..\los_perros\base.png"
+       width="815"
+       height="437"
+       preserveAspectRatio="none"
+       id="img_house1_off"
+       x="559.31323"
+       y="406.75903"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\los_perros\..\los_perros\base_hover.png"
+       xlink:href="..\los_perros\base_hover.png"
+       width="815"
+       height="437"
+       preserveAspectRatio="none"
+       id="img_house1_on"
+       x="559.31323"
+       y="406.75903"
+       class="highlight-buildings"
+       data-building="base"
+       style="display:none" />
+    <g
+       inkscape:groupmode="layer"
+       id="layer6"
+       inkscape:label="build_path">
+      <path
+         style="opacity:0.2;fill:url(#radialGradient5980);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.00000012;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1229.639,707.854 A 331,331 0 1 0 627.5,518 h -43 a 374,374 0 1 1 680.363,214.518 z"
+         id="path_h1"
+         inkscape:connector-curvature="0"
+         class="highlight-buildings"
+         data-building="base" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;line-height:15px;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+         x="930"
+         y="174"
+         id="path_text_h1"
+         class="town-build-path-text"><tspan
+           sodipodi:role="line"
+           id="tspan4204-9-7"
+           x="930"
+           y="174"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:15px;font-family:Nouveau_IBM;fill:#00ff00;fill-opacity:1;">База</tspan></text>
+    </g>
+  </g>
+</svg>
