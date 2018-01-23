@@ -555,7 +555,7 @@ var WCanvasStaticTownMarker = (function (_super) {
                         icon_name = 'lucas';
                         break;
                     case 'reg:///registry/poi/locations/towns/billys_store':
-                        icon_name = 'billy';
+                        icon_name = 'billys';
                         break;
                     default:
                         console.log('Не найдена иконка. Установлена стандартная. ', mobj.example.node_hash);

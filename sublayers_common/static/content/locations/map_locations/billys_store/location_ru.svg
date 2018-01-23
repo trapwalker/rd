@@ -44,7 +44,8 @@
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
-     id="market"
+     id="billys
+"
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
@@ -89,25 +90,25 @@
      id="layer1"
      transform="translate(0,-2.362448)">
     <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\ground+circle.png"
-       xlink:href="..\billys_store\ground+circle.png"
-       width="943"
-       height="752"
-       preserveAspectRatio="none"
-       id="landscape"
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\lucas_artesano\ground+circle.png"
+       xlink:href="..\lucas_artesano\ground+circle.png"
+       y="138.36244"
        x="485"
-       y="138.36244" />
+       id="landscape"
+       preserveAspectRatio="none"
+       height="752"
+       width="943" />
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market_bg.png"
        xlink:href="..\billys_store\market_bg.png"
-       class="building-back"
-       style="display:none"
-       width="943"
-       height="752"
-       preserveAspectRatio="none"
-       id="market-back"
+       y="138.36244"
        x="485"
-       y="138.36244" />
+       id="market-back"
+       preserveAspectRatio="none"
+       height="752"
+       width="943"
+       style="display:none"
+       class="building-back" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -118,25 +119,25 @@
     <image
        sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market.png"
        xlink:href="..\billys_store\market.png"
-       class="highlight-buildings"
-       y="302.97589"
-       x="528.98798"
-       id="img_house1_off"
-       preserveAspectRatio="none"
-       height="513"
-       width="871" />
-    <image
-       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market_hover.png"
-       xlink:href="..\billys_store\market_hover.png"
        width="871"
        height="513"
        preserveAspectRatio="none"
-       id="img_house1_on"
+       id="img_house1_off"
        x="528.98798"
        y="302.97589"
+       class="highlight-buildings" />
+    <image
+       sodipodi:absref="D:\gamedev\rd\sublayers_common\static\content\locations\map_locations\billys_store\..\billys_store\market_hover.png"
+       xlink:href="..\billys_store\market_hover.png"
+       style="display:none"
+       data-building="billys"
        class="highlight-buildings"
-       data-building="market"
-       style="display:none" />
+       y="302.97589"
+       x="528.98798"
+       id="img_house1_on"
+       preserveAspectRatio="none"
+       height="513"
+       width="871" />
     <g
        inkscape:groupmode="layer"
        id="layer6"
@@ -147,7 +148,7 @@
          id="path_h1"
          inkscape:connector-curvature="0"
          class="highlight-buildings"
-         data-building="market" />
+         data-building="billys" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;line-height:0%;font-family:Nouveau_IBM;letter-spacing:0px;word-spacing:0px;opacity:0.2;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"

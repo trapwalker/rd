@@ -36,8 +36,8 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_los_jetas_full', '/static/content/locations/map_locations/los_jetas/map_icons/full.png', [80, 66]);
         this.load_new_icon('icon_los_jetas_circle', '/static/content/locations/map_locations/los_jetas/map_icons/circle.png', [80, 66]);
 
-        this.load_new_icon('icon_los_jetas_full', '/static/content/locations/map_locations/los_perros/map_icons/full.png', [80, 66]);
-        this.load_new_icon('icon_los_jetas_circle', '/static/content/locations/map_locations/los_perros/map_icons/circle.png', [80, 66]);
+        this.load_new_icon('icon_los_perros_full', '/static/content/locations/map_locations/los_perros/map_icons/full.png', [80, 66]);
+        this.load_new_icon('icon_los_perros_circle', '/static/content/locations/map_locations/los_perros/map_icons/circle.png', [80, 66]);
 
         this.load_new_icon('icon_tartron_full', '/static/content/locations/map_locations/tartron_parts/map_icons/full.png', [80, 73]);
         this.load_new_icon('icon_tartron_circle', '/static/content/locations/map_locations/tartron_parts/map_icons/circle.png', [80, 73]);
@@ -54,11 +54,11 @@ var LeafletIconManager = (function(){
         this.load_new_icon('icon_walker_full', '/static/content/locations/map_locations/walker_parts/map_icons/full.png', [80, 73]);
         this.load_new_icon('icon_walker_circle', '/static/content/locations/map_locations/walker_parts/map_icons/circle.png', [80, 73]);
 
-        this.load_new_icon('icon_adriano_full', '/static/content/locations/map_locations/lucas_artesano/map_icons/full.png', [80, 73]);
-        this.load_new_icon('icon_adriano_circle', '/static/content/locations/map_locations/lucas_artesano/map_icons/circle.png', [80, 73]);
+        this.load_new_icon('icon_lucas_full', '/static/content/locations/map_locations/lucas_artesano/map_icons/full.png', [80, 73]);
+        this.load_new_icon('icon_lucas_circle', '/static/content/locations/map_locations/lucas_artesano/map_icons/circle.png', [80, 73]);
 
-        this.load_new_icon('icon_adriano_full', '/static/content/locations/map_locations/billys_store/map_icons/full.png', [80, 73]);
-        this.load_new_icon('icon_adriano_circle', '/static/content/locations/map_locations/billys_store/map_icons/circle.png', [80, 73]);
+        this.load_new_icon('icon_billys_full', '/static/content/locations/map_locations/billys_store/map_icons/full.png', [80, 73]);
+        this.load_new_icon('icon_billys_circle', '/static/content/locations/map_locations/billys_store/map_icons/circle.png', [80, 73]);
 
 
         // Создание иконки движущейся машинки V 1
