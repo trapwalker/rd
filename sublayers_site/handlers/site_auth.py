@@ -622,11 +622,12 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
                 client_id=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
                 scope=[],
                 response_type='code',
+                extra_params={"v": "5.74", "display": "page"}
             )
 
     def _on_get_user_info(self, response):
         if (response.code == 200) and (response.error is None):
-            body_id = str(json.loads(response.body)['response'][0]['uid'])
+            body_id = str(json.loads(response.body)['response'][0]['id'])
             if not body_id:
                 return None
             profile_user = User.get_by_vk_id(uid=body_id)
