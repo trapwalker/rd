@@ -600,7 +600,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
 
             acc_token = json.loads(response.body)['access_token']
 
-            args = {"access_token": acc_token}
+            args = {"access_token": acc_token, "v": "5.74"}
 
             path = url_concat('https://api.vk.com/method/users.get', args)
             response = http.fetch(request=path,
