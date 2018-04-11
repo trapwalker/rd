@@ -701,7 +701,7 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
         req = self.request
         electron = self.get_argument("mode", "") == "electron"
         redirect_uri = '{p}://{h}/{path}{mode}'.format(
-            p=req.protocol,
+            p='https',  # req.protocol, todo: из-за proxy nginx
             h=req.host,
             path="site_api/auth/facebook",
             mode="?mode=electron" if electron else "",
