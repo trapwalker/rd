@@ -59,7 +59,7 @@ class OsmWorker:
         for e in self.roads:
             self.db.sroads.insert(e)
             count += 1
-        print count
+        print(count)
 
 
 if __name__ == "__main__":
@@ -68,6 +68,6 @@ if __name__ == "__main__":
     #a = Connection()
     #db = a.maindb
 
-    print '========================='
-    print len(a.roads)
+    print('=========================')
+    print(len(a.roads))
 

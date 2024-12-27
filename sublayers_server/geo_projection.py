@@ -47,10 +47,10 @@ if __name__ == '__main__':
     def test_xy(xy1, z=18+8):
         ll2 = Mercator.unproject(xy1, 18)
         xy2 = Mercator.project(ll2, 18)        
-        print 'our: {xy1} -> {ll2:50s} -> {xy2:.0f} '.format(**locals())
+        print('our: {xy1} -> {ll2:50s} -> {xy2:.0f} '.format(**locals()))
         ll2 = mercantile.ul(*xy1.as_tuple() + (z,))
         xy2 = mercantile.tile(*ll2 + (z,))[:2]
-        print 'oth: {xy1} -> {ll2:50s} -> {xy2} '.format(**locals())
+        print('oth: {xy1} -> {ll2:50s} -> {xy2} '.format(**locals()))
 
     p = Point(x=40371667, y=22592826)
     test_xy(p)

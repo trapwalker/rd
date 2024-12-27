@@ -72,5 +72,5 @@ if __name__ == '__main__':
         u1='''unicode on1 line''',
         u2=u'''unicode\nmulti\nline''',
     )
-    print d
-    print dump(d, indent=2)
+    print(d)
+    print(dump(d, indent=2))

@@ -71,7 +71,7 @@ class GetUserRPGInfoHandler(BaseSiteHandler):
 
             # todo: Отправить доступные на данный момент перки
             d['free_point_perks'] = agent_ex.profile.role_class.start_free_point_perks - len(agent_ex.profile.perks)
-            # print len(agent_ex.profile.perks), agent_ex.profile.perks
+            # print(len(agent_ex.profile.perks), agent_ex.profile.perks)
             d['perks'] = []
             for perk in agent_ex.profile.role_class.start_perks:
                 if perk.can_apply(agent_ex):

@@ -33,7 +33,7 @@ def convert_pics(src_path, dest_path, func=None, f_new_fn=lambda old: old, **kw)
                     res = func(fn_src, fn_dest, **kw)
                 except Exception as e:
                     err = str(e)
-            print fn_src, '->', fn_dest, res, err
+            print(fn_src, '->', fn_dest, res, err)
             
             
     

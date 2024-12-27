@@ -77,6 +77,6 @@ if __name__ == '__main__':
     for i in xrange(2000):
         p = Point.random_gauss(Point(x * 256 + 127, y * 256 + 127), 500)
         xy = int(p.x), int(p.y)
-        print xy, tp[xy]
+        print(xy, tp[xy])
 
-    #print tp._cache.cache_info()
+    #print(tp._cache.cache_info())

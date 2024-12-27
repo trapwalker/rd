@@ -141,7 +141,7 @@ class Point(complex):
         return '[{}, {}]'.format(self.x, self.y)
 
     def __format__(self, format_spec):
-        # import sys; print >>sys.stderr, format_spec
+        # import sys; print(sys.stderr, format_spec)
         return '[{self.x:{format_spec}}, {self.y:{format_spec}}]'.format(**locals())
 
     def __add__(self, p):

@@ -30,6 +30,6 @@ class UnAltitudeTag(Tag):
 
 if __name__ == '__main__':
     t = Tag()
-    print t
+    print(t)
     v = VehicleFlyingTag()
-    print v
+    print(v)

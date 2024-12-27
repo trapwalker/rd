@@ -64,7 +64,7 @@ class Tileid2(long):
         # если аргумент 1, то проверить является ли он Tileid
         elif len(args) == 1:
             arg = args[0]
-            #print arg
+            #print(arg)
             # если аргумент является Tileid, то вернуть аргумент
             if isinstance(arg, Tileid2):
                 return arg
@@ -237,9 +237,9 @@ if __name__ == '__main__':
     p = Tileid2(0, 0, 9)
 
     for node in t.iter_up():
-        print node
+        print(node)
     for node in t:
-        print node
+        print(node)
 
 
 

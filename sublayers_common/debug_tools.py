@@ -104,7 +104,7 @@ if __name__ == '__main__':
     @call_log(logger=log)
     def test1(x, y='yy', z=13):
         if y == 'yy3':
-            print 3/10
+            print(3/10)
 
         if x > 0:
             return test1(x - 1, y='yy' + str(x), z=13)

@@ -23,10 +23,10 @@ if __name__ == '__main__':
     my_name = os.path.basename(sys.argv[0])
     params = sys.argv[1:]
     if not params:
-        print 'Usage: {my_name} 1234 my_process_pid_file.pid 4567 other_pid_file.pid'.format(my_name=my_name)
+        print('Usage: {my_name} 1234 my_process_pid_file.pid 4567 other_pid_file.pid'.format(my_name=my_name))
 
     for pid in params:
         try:
             kill(pid)
         except Exception as e:
-            print >>sys.stderr, e
+            print(e, file= sys.stderr)

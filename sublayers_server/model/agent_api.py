@@ -436,7 +436,7 @@ class AgentAPI(API):
         messages.InitCar(agent=self.agent, time=time).post()
         # todo: если машинка не новая, то отправитьв полное состояние (перезарядки и тд)
 
-        # print 'init_time'
+        # print('init_time')
         # t0 = self.agent.server.get_time()
         # for add_mul in xrange(1, 6):
         #     InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()

@@ -16,8 +16,8 @@ from sublayers_common import site_locale
 
 
 if __name__ == '__main__':
-    print 'start'
+    print('start')
     site_locale.load_locale_objects('../sublayers_common/static/locale/game', '../sublayers_world')
-    print 'end'
+    print('end')
 
 

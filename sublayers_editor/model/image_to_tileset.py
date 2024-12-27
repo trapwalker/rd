@@ -33,7 +33,7 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
 
     def is_color(pxl):
         # todo: возможно сделать нестрогое сравнение через rgb: r, g, b = pxl
-        # print pxl
+        # print(pxl)
         #return pxl == color
         r, g, b, a = pxl
         return r < 150 and g < 150 and b < 150
@@ -44,7 +44,7 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
     ts = Tileset()
 
     for fn in tile_file(zoom):
-        print fn
+        print(fn)
         im = Image.open(fn[0])
         pxs = im.load()
         width, height = im.size
@@ -130,15 +130,15 @@ if __name__ == '__main__':
                         x_start=759, y_start=1645, x_finish=767, y_finish=1653,
                         color=(0, 0, 0))
     #ts = Tileset(open('d:/ts_wood_11'))
-    print ts.level
+    print(ts.level)
     ts.save(open('d:/ts_scrub_12', 'w'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
     '''
     db_connection = Connection()
     db = db_connection.maindb
     ts = Tileset(open('d:/tiles/ts_road_15'))
-    print TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road')
+    print(TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road'))
     # ts = Tileset(open('d:/ts_water_12'))
-    # print TilesetToMongoDB(ts, db.tile_sets, '#0000FF', 'water')
+    # print(TilesetToMongoDB(ts, db.tile_sets, '#0000FF', 'water'))
     # ts = Tileset(open('d:/ts_wood_12'))
-    # print TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood')
+    # print(TilesetToMongoDB(ts, db.tile_sets, '#00FF00', 'wood'))

@@ -31,7 +31,7 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
 
     def is_color(pxl):
         # todo: возможно сделать нестрогое сравнение через rgb: r, g, b = pxl
-        # print pxl
+        # print(pxl)
         #return pxl == color
 
         # r, g, b = pxl
@@ -47,12 +47,12 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
     count = 0
 
     for fn in tile_file(zoom):
-        # print fn
+        # print(fn)
         count += 1
         current_prc = int(100 * count / all_tiles)
         if current_prc != last_prc:
             last_prc = current_prc
-            print '{} %'.format(last_prc)
+            print('{} %'.format(last_prc))
 
         im = Image.open(fn[0])
         pxs = im.load()
@@ -127,25 +127,25 @@ def MongoDBToTilesets(collection):
 
 
 if __name__ == '__main__':
-    print 'start zone 1'
+    print('start zone 1')
     ts = ImageToTileset(directory=r'd:/tiles/map_zones/roads', zoom=15,
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
-    print ts.level
+    print(ts.level)
     ts.save(open('d:/tiles/ts_road_z15_06-17', 'w'))
 
 
-    print 'start zone 2'
+    print('start zone 2')
     ts2 = ImageToTileset(directory=r'd:/tiles/map_zones/forest', zoom=15,
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
-    print ts2.level
+    print(ts2.level)
     ts2.save(open('d:/tiles/ts_forest_z15_06-17', 'w'))
 
 
-    print 'start zone 3'
+    print('start zone 3')
     ts3 = ImageToTileset(directory=r'd:/tiles/map_zones/water', zoom=15,
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
-    print ts3.level
+    print(ts3.level)
     ts3.save(open('d:/tiles/ts_water_z15_06-17', 'w'))

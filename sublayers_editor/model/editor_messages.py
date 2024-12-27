@@ -46,5 +46,5 @@ class AddObject(Message):
 
 if __name__ == "__main__":
     m = Message(None)
-    #print m.classname
-    print dumps(m.as_dict())
+    #print(m.classname)
+    print(dumps(m.as_dict()))

@@ -13,7 +13,7 @@ import re
 
 def set_terminate_handler(callback):
     def on_exit(sig, func=None):
-        print '====== terminate', sig, func
+        print('====== terminate', sig, func)
         log.debug('====== exit handler triggered')
         callback()
 
@@ -113,9 +113,9 @@ if __name__ == '__main__':
 
     import ctx_timer
     with ctx_timer.Timer(log_start=None):
-        print 'version =', HGVersion()
+        print('version =', HGVersion())
 
     with ctx_timer.Timer(log_start=None):        
-        print 'revision =',
+        print('revision =', end='')
         r = HGRevision()
-        print r
+        print(r)

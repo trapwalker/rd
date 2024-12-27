@@ -29,8 +29,7 @@ class EditorServer(object):
 
 
         log.info('EditorServer: Tilesets loaded !')
-        print 'EditorServer: Tilesets loaded !'
-
+        print('EditorServer: Tilesets loaded !')
 
     def addObject(self, position, object_type):
         log.info('EditorServer: Add object')
@@ -142,7 +141,7 @@ if __name__ == "__main__":
     #srv = EditorServer(app=None)
 
 
-    print 'Load Tilesets from files'
+    print('Load Tilesets from files')
     start = time.time()
 
     tss = {
@@ -151,12 +150,12 @@ if __name__ == "__main__":
         'road': Tileset(open('d:/ts_road_12')),
     }
 
-    print "Loaded: ", time.time() - start, "seconds."
+    print("Loaded: ", time.time() - start, "seconds.")
 
 
-    print '========================='
+    print('=========================')
 
-    print 'EditorServer: Tilesets loaded !'
+    print('EditorServer: Tilesets loaded !')
 
     sx, sy, sz = Tileid2(1174, 652, 11).index_child_first(15).xyz()
     fx, fy, fz = Tileid2(1188, 665, 11).index_child_first(15).xyz()
@@ -172,7 +171,7 @@ if __name__ == "__main__":
         exper_list.append((Tileid(x, y, z), a))
 
 
-    print 'Start experiment for ', len(exper_list), ' elements'
+    print('Start experiment for ', len(exper_list), ' elements')
     start = time.time()
 
     for e in exper_list:
@@ -180,8 +179,8 @@ if __name__ == "__main__":
             tss[key].intersect_by_ray(e[0], e[1], 10000)
 
 
-    print "it took", time.time() - start, "seconds."
-    print 'End experiment'
+    print("it took", time.time() - start, "seconds.")
+    print('End experiment')
 
 
 
@@ -189,12 +188,12 @@ if __name__ == "__main__":
     # >> use maindb
     # >> db.geo_objects.ensureIndex({ u'tileid' : 1})
     # a.db.geo_objects.ensureIndex({u'tileid' : 1})
-    # print a.db.geo_objects.getIndexes()
+    # print(a.db.geo_objects.getIndexes())
 
     # Удаление элементов из коллекции
     #for e in a.db.geo_objects.find():
-     #   print e
+     #   print(e)
         #a.db.geo_objects.remove(e)
-    print '========================='
+    print('=========================')
 
 

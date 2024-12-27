@@ -273,7 +273,7 @@ class MotionTask(TaskSingleton):
             turn = -turn
 
         # Остановка
-        # print 'dist={dist:.4f}, break_dist={break_dist:.4f}, curr_cc={cur_cc:.4f}, min_acceptable_cc={min_acceptable_cc:.4f}'.format(**locals())
+        # print('dist={dist:.4f}, break_dist={break_dist:.4f}, curr_cc={cur_cc:.4f}, min_acceptable_cc={min_acceptable_cc:.4f}'.format(**locals()))
         if abs(cur_cc) <= EPS and abs(ddist) <= EPSDIST:  # Вызвать полную остановку
             self._update_state(event=event, time=time, cc=0.0, turn=0.0, stop_a=False)
             return

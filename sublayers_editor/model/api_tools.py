@@ -126,5 +126,5 @@ if __name__ == '__main__':
             return x * 100 + y * 10 + z, self.g
 
     api = TestAPI()
-    print api.f(1, y=2)
-    print api(method='f', params=dict(x=1, y=2))
+    print(api.f(1, y=2))
+    print(api(method='f', params=dict(x=1, y=2)))

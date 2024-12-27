@@ -45,7 +45,7 @@ class PersonInfoHandler(FailWithoutAgentHandler):
             return
 
         agent.log.info('open PersonInfoHandler for person_name={}'.format(person_name))
-        # print 'open PersonInfoHandler for person_name={}'.format(person_name)
+        # print('open PersonInfoHandler for person_name={}'.format(person_name))
         if mode == 'city':
             self.render("person_info_chat.html", agent=person)
         elif mode == 'map':
@@ -67,7 +67,7 @@ class PersonInfoCorpseHandler(FailWithoutAgentHandler):
             return
         person = container.agent_donor
         car = container.donor_car
-        # print 'open PersonInfoCorpseHandler for person={}'.format(person)
+        # print('open PersonInfoCorpseHandler for person={}'.format(person))
         agent.log.info('open PersonInfoCorpseHandler for person={}'.format(person))
         lvl, (nxt_lvl, nxt_lvl_exp), rest_exp = person.example.profile.exp_table.by_exp(exp=person.example.profile.exp)
         target_agent_locale = agent.get_lang()

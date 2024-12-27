@@ -115,5 +115,5 @@ if __name__ == '__main__':
         log.debug('on_error(%s)', error)
 
     ff = async_deco(f, result_callback=on_result, error_callback=on_error, exceptions=(ZeroDivisionError, AttributeError,))
-    print ff(10)
+    print(ff(10))
         

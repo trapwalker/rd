@@ -59,7 +59,7 @@ def main():
         app.listen(options.port)
     except socket.error as e:
         log.critical(e)
-        print e
+        print(e)
     else:
         tornado.ioloop.IOLoop.instance().start()
 

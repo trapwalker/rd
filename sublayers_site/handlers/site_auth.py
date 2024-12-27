@@ -421,7 +421,7 @@ class SteamLoginHandler(RequestHandler):
                 params = response and response.get("params", None)
                 if params and params.get("result", None) == "OK" and params.get("steamid", None):
                     user_steamid = params["steamid"]
-                    # print 'User SteamID: {}'.format(user_steamid)
+                    # print('User SteamID: {}'.format(user_steamid))
                     # todo: поискать в базе, если нет, то зарегистрировать и перекинуть на ввод никнейма
                     cookie = self._on_get_user_info(user_steamid)
                     if cookie is not None:
@@ -632,7 +632,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
                 return None
             profile_user = User.get_by_vk_id(uid=body_id)
             if not profile_user:
-                print body_id
+                print(body_id)
                 # Регистрация
                 profile_user = User(vk_id=body_id)
                 profile_user.registration_status = 'nickname'  # Теперь ждём подтверждение ника, аватарки и авы

@@ -29,7 +29,7 @@ from sublayers_common.service_tools import HGRevision
 
 def clean_collection(db, collection):
     db[collection].remove({}, multi=True)
-    print 'Collection of "{}" cleaned. Now count is {}'.format(collection, db[collection].count())
+    print('Collection of "{}" cleaned. Now count is {}'.format(collection, db[collection].count()))
 
 
 def get_revision(pth):
@@ -43,10 +43,10 @@ def get_revision(pth):
 
 def call(cmd):
     res = []
-    print '>', cmd
+    print('>', cmd)
     with os.popen(cmd) as f:
         for line in f:
-            print line[:-1] if line.endswith('\n') else line
+            print(line[:-1] if line.endswith('\n') else line)
             res.append(line)
     return ''.join(res)
 
@@ -60,7 +60,7 @@ class Operations(object):
         rev1 = HGRevision(path)
 
         if rev0.hash != rev1.hash:
-            print 'Repo {} updated to {}'.format(path, rev1.branch)
+            print('Repo {} updated to {}'.format(path, rev1.branch))
             return True
 
     @staticmethod
@@ -88,13 +88,13 @@ class AdmCmd(cmd2.Cmd):
         self.operations = Operations
 
     def do_stat(self, arg):
-        print '{:20}: {:6}'.format('Agents count', self.db.agents.count())
-        print '{:20}: {:6}'.format('Profiles count', self.db.profiles.count())
+        print('{:20}: {:6}'.format('Agents count', self.db.agents.count()))
+        print('{:20}: {:6}'.format('Profiles count', self.db.profiles.count()))
     
     def do_reset(self, arg=None):
-        '''
+        """
             Reset server DB by collection name
-        '''
+        """
         if not arg:
             arg = 'agents'
 

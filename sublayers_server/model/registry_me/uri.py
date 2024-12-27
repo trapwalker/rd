@@ -300,12 +300,12 @@ if __name__ == '__main__':
     try:
         uri = URI(u'scheme:///path/to/the/some/object?x=3&y=4&x=#my anchor')
     except URIFormatError as e:
-        print 'fail', e
+        print('fail', e)
     else:
-        print 'ok', repr(uri)
+        print('ok', repr(uri))
         pp(uri.asdict().items())
 
-    print repr(URI(scheme='myscheme', path=['1', '2', '3']))
+    print(repr(URI(scheme='myscheme', path=['1', '2', '3'])))
     # todo: unit tests
 
 

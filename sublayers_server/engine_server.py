@@ -186,7 +186,7 @@ class Application(BaseApplication):
             except:
                 log.critical(repr(_message))
 
-            print _message
+            print(_message)
         except Exception as e:
             log.exception(e)
             log.debug('==== finally before stop')

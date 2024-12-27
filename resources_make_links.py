@@ -25,7 +25,7 @@ def mkpath(path):
     for i in range(1, len(items) + 1):
         p = os.path.join(*items[:i])
         if not os.path.exists(p):
-            print u'MAKE', p
+            print(u'MAKE', p)
             try:
                 os.mkdir(p)
             except Exception as e:
@@ -41,16 +41,16 @@ def make_links(root=RES_FOLDER_PATH):
         try:
             symlink(os.path.abspath(src), dest)
         except Exception as e:
-            print u']tFAIL:'
-            print repr(e)
+            print(u']tFAIL:')
+            print(repr(e))
 
 
 def symlink_os(source, link_name):
     cmd = u'mklink /D "{}" "{}"'.format(link_name, source)
-    print '>', cmd
+    print('>', cmd)
     err = os.popen3(cmd)[2].read().decode('cp866')
     if err:
-        print >>sys.stderr, 'FAIL:', err
+        print('FAIL:', err, file=sys.stderr)
 
 
 def symlink(source, link_name):

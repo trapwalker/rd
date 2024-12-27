@@ -29,8 +29,10 @@ VIRTUALENV_ARGS = ['python']
 #
 if 'PYTHONHOME' in os.environ:
     del os.environ['PYTHONHOME']
-    print "WARNING: ignoring the value of the PYTHONHOME environment " \
-          " variable! This value can corrupt the virtual python installation."
+    print(
+        "WARNING: ignoring the value of the PYTHONHOME environment "
+        " variable! This value can corrupt the virtual python installation."
+    )
 
 def use_virtualenv(argv, version=VIRTUALENV_VERSION, activate=True,
         requirements=None):

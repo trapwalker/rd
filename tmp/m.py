@@ -47,8 +47,8 @@ def fix_loca(fn):
     with open(fn) as f:
         s = f.read().decode('utf-8')
         s2, n2 = r.subn(repl, s)
-        #print s
-        print '#### total replaced:', n2
+        #print(s)
+        print('#### total replaced:', n2)
         s3, n3 = r.subn(repl, s2)
         assert n3 == 0, 'Double replace occured'
 
@@ -266,7 +266,7 @@ def fix_condition():
 
         s2, n2 = r.subn(repl, s)
         if n2:
-            print n2, s2
+            print(n2, s2)
             with open(ff.full_file_path, 'w') as f:
                 f.write(s2.encode('utf-8'))
 
@@ -281,7 +281,7 @@ if __name__ == '__main__':
 
     # if arg:
     #     for fname in arg:
-    #         print '======', fname
+    #         print('======', fname)
     #         fix_loca(fname)
     # else:
-    #     print 'No input files'
+    #     print('No input files')

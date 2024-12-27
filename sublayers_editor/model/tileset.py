@@ -282,7 +282,7 @@ class Tileset(object):
         '''
         # Получаем набор параметров сохранения
         bpn, mask, fork, d_encode, d_decode = self._save_auto_params()
-        print 'bpn=', bpn, mask, fork
+        print('bpn=', bpn, mask, fork)
         if not raw:
             f.write(SIGNATURE)
             pickle.dump(d_decode, f)
@@ -310,7 +310,7 @@ class Tileset(object):
         bpn = d_decode.pop('__bpn__')
         fork = d_decode.pop('__fork__')
         stack = [Link(self._tree, 0, 0)] # (parent, index, deep) <==> parent[index], deep
-        #print d_decode
+        #print(d_decode)
         for node_code in bitreader(f, bpn):
             if len(stack) == 0:
                 break
@@ -572,7 +572,7 @@ if __name__ == '__main__':
     zoom = 10
     for angle in xrange(0, 359):
         res =  ts.intersect_by_ray(Tileid(530, 530, 10), pi*(float(angle))/180, Tileid2(515, 515, 10).parent_by_lvl(1))
-        print res, angle
+        print(res, angle)
         if not (res is None):
             x, y, z = res[0]
             if (x > 0) and (y > 0):
