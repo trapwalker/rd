@@ -1,0 +1,97 @@
+version: '3.8'
+
+# Production override for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  # MongoDB with persistent storage and backups
+  mongodb:
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-rd}
+    volumes:
+      - /var/lib/mongodb/data:/data/db
+      - /var/lib/mongodb/config:/data/configdb
+      - ./backups:/backups
+    command: mongod --auth
+
+  # Redis with persistence
+  redis:
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - /var/lib/redis/data:/data
+
+  # FastAPI application (production build)
+  app:
+    build:
+      context: .
+      target: production
+    restart: always
+    environment:
+      - MONGODB_URL=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE:-rd}?authSource=admin
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://yourdomain.com}
+    ports:
+      - "8000:8000"
+    volumes:
+      # No source code mount in production
+      - ./logs:/app/logs
+      - ./sublayers_common/static:/app/sublayers_common/static:ro
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --no-access-log
+
+  # Nginx with SSL
+  nginx:
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx_conf/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx_conf/conf.d:/etc/nginx/conf.d:ro
+      - ./sublayers_common/static:/usr/share/nginx/html/static:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro  # Let's Encrypt certificates
+      - ./logs/nginx:/var/log/nginx
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # Log aggregator (optional)
+  # loki:
+  #   image: grafana/loki:latest
+  #   ports:
+  #     - "3100:3100"
+  #   volumes:
+  #     - ./loki-config.yml:/etc/loki/config.yml
+  #     - loki_data:/loki
+
+  # Monitoring (optional)
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus_data:/prometheus
+
+# Production volumes with backup strategy
+volumes:
+  loki_data:
+  prometheus_data:

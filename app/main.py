@@ -84,9 +84,12 @@ def create_app() -> FastAPI:
         logger.warning(f"Static directory not found: {settings.static_path}")
 
     # Include routers
-    # app.include_router(auth.router, prefix="/auth", tags=["auth"])
-    # app.include_router(game.router, prefix="/game", tags=["game"])
-    # app.include_router(api.router, prefix="/api", tags=["api"])
+    from app.routers import auth, game, users, websocket
+
+    app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+    app.include_router(users.router, prefix="/api/users", tags=["Users"])
+    app.include_router(game.router, prefix="/api/game", tags=["Game"])
+    app.include_router(websocket.router, tags=["WebSocket"])
 
     # Health check endpoint
     @app.get("/health")
