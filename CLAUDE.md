@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RoadDogs is a multi-player online game built with Python (Tornado web framework), MongoDB, and an Electron-based client. The game features a post-apocalyptic RPG world with vehicles, quests, inventory systems, and real-time multiplayer interactions via WebSockets.
+RoadDogs is a multi-player online game undergoing modernization from Python 2/Tornado to Python 3.12/FastAPI. The game features a post-apocalyptic RPG world with vehicles, quests, inventory systems, and real-time multiplayer interactions via WebSockets.
+
+**Current State**: Dual architecture during migration
+- ⚡ **New Stack**: FastAPI + Motor + Beanie (async/await)
+- 🔄 **Legacy Stack**: Tornado + MongoEngine (being phased out)
 
 ## Architecture
 
@@ -12,14 +16,24 @@ The codebase is structured as a monorepo with multiple server components:
 
 ### Core Components
 
-- **sublayers_server/** - Main game server handling game logic, event machine, agents, and WebSocket connections
-- **sublayers_site/** - Website/portal server for user authentication, profiles, ratings, and news
-- **sublayers_editor/** - Level/world editor server with WebSocket-based editing interface
-- **sublayers_world/** - Game world data including registry of items, quests, zones, NPCs, and map tiles
-- **sublayers_common/** - Shared code including handlers, static assets, localization, and utilities
+**New FastAPI Application**:
+- **app/** - Modern FastAPI application (⚡ NEW)
+  - `main.py` - FastAPI app with lifespan management
+  - `config.py` - Pydantic settings with env vars
+  - `database.py` - Async MongoDB with Motor + Beanie
+  - `models/` - Beanie Document models
+  - `routers/` - FastAPI route handlers
+  - `utils/` - Modern utilities and decorators
+
+**Legacy Components (being migrated)**:
+- **sublayers_server/** - Game server (Tornado) → migrating to FastAPI
+- **sublayers_site/** - Portal server (Tornado) → migrating to FastAPI
+- **sublayers_editor/** - Level editor server (Tornado)
+- **sublayers_world/** - Game world data (YAML files, static)
+- **sublayers_common/** - Shared utilities and static assets
 - **sublayers_admin/** - Administrative tools
-- **electron_client/** - Desktop client built with Electron, includes Steam integration
-- **cli/** - Command-line interface tools for managing agents, registry, backups, and updates
+- **electron_client/** - Desktop client (Electron + Steam)
+- **cli/** - Command-line interface tools
 
 ### Key Architecture Concepts
 
@@ -46,17 +60,50 @@ The codebase is structured as a monorepo with multiple server components:
 
 ## Development Commands
 
-### Server Startup
+### Environment Setup
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Create virtual environment with uv
+uv venv --python 3.12
 
-# Start MongoDB
+# Activate environment
+source .venv/bin/activate  # Unix
+# or
+.venv\Scripts\activate  # Windows
+
+# Install dependencies
+uv pip install -e .
+uv pip install -e src/ctx-timer/
+
+# Install dev dependencies
+uv pip install -e ".[dev]"
+```
+
+### FastAPI Server (New)
+
+```bash
+# Development with auto-reload
+uvicorn app.main:app --reload --port 8000
+
+# Or run directly
+python -m app.main
+
+# Production
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+
+# View API docs
+open http://localhost:8000/docs      # Swagger UI
+open http://localhost:8000/redoc     # ReDoc
+```
+
+### Legacy Tornado Servers (Being Phased Out)
+
+```bash
+# Start MongoDB first
 mongod
 
 # Start game server (basic mode)
-python sublayers_server/engine_server.py --mode=basic --port=8000
+.venv/bin/python3 sublayers_server/engine_server.py --mode=basic --port=8000
 
 # Start game server (quick mode)
 python sublayers_server/engine_server_quick.py --mode=quick --port=8005
