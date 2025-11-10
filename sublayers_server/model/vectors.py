@@ -253,7 +253,7 @@ class Point(complex):
 
 
 def normalize_angle(angle):
-    u"""
+    """
     Приводит полученный угол к диапазону 0 <= angle < 2 * pi
     """
     # todo: перейти на итеративный алгоритм
@@ -263,7 +263,7 @@ def normalize_angle(angle):
 
 
 def shortest_angle(angle):
-    u"""
+    """
     Приводит полученный угол к диапазону -pi < angle <= pi
     """
     ang = normalize_angle(angle)

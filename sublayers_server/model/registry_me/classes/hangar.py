@@ -24,9 +24,9 @@ class CarLotRefreshEvent(Event):
 
 
 class CarGroup(Subdoc):
-    count = IntField(caption=u'Количество машин этой группы в завозе')
+    count = IntField(caption='Количество машин этой группы в завозе')
     car_list = ListField(
-        caption=u"Машины данной группы",
+        caption="Машины данной группы",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car'),
     )
 
@@ -79,11 +79,11 @@ class CarLot(object):
 
 
 class Hangar(Institution):
-    margin = FloatField(caption=u'Маржа с которой торгует NPC', root_default=0.2)
-    limit_user_car = IntField(caption=u'Размер набора машин проданных пользователями')
-    lot_timeout = IntField(caption=u"Время жизни лота")
+    margin = FloatField(caption='Маржа с которой торгует NPC', root_default=0.2)
+    limit_user_car = IntField(caption='Размер набора машин проданных пользователями')
+    lot_timeout = IntField(caption="Время жизни лота")
     group_list = ListField(
-        caption=u"Набор правил формирования ассортимента",
+        caption="Набор правил формирования ассортимента",
         field=EmbeddedDocumentField(document_type=CarGroup),
     )
 

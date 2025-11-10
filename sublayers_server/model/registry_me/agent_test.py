@@ -36,7 +36,7 @@ import os
 
 
 def test1(reload, save_loaded):
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     agents = Agent.objects.skip(50).limit(50).as_pymongo()
     repeat = True
     a, i = None, 0

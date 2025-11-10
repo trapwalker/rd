@@ -22,9 +22,9 @@ class EditorServer(object):
 
 
         self.tss = {
-        #    u'wood': tileset.Tileset(open('d:/ts_scrub_12')),
-        #    u'water': tileset.Tileset(open('d:/ts_water_12')),
-           u'road': tileset.Tileset(open('d:/tiles/ts_road_15')),
+        #    'wood': tileset.Tileset(open('d:/ts_scrub_12')),
+        #    'water': tileset.Tileset(open('d:/ts_water_12')),
+           'road': tileset.Tileset(open('d:/tiles/ts_road_15')),
         }
 
 
@@ -33,40 +33,40 @@ class EditorServer(object):
 
     def addObject(self, position, object_type):
         log.info('EditorServer: Add object')
-        obj = {u'tileid': Tileid2(long(position[u'x']), long(position[u'y']), long(position[u'z'])),
-               u'object_type': object_type}
+        obj = {'tileid': Tileid2(long(position['x']), long(position['y']), long(position['z'])),
+               'object_type': object_type}
         self.db.geo_objects.insert(obj)
-        obj[u'position'] = position
+        obj['position'] = position
         for client in self.app.clients:
             client.api.client.addObject(obj)
 
     def delObject(self, id):
         log.info('EditorServer: Del object')
-        obj = self.db.geo_objects.find_one({u'_id': ObjectId(id)})
+        obj = self.db.geo_objects.find_one({'_id': ObjectId(id)})
         self.db.geo_objects.remove(obj)
         for client in self.app.clients:
             client.api.client.delObject(obj)
 
     def changeObject(self, position, id, **kw):
         log.info('EditorServer: Change object')
-        obj = self.db.geo_objects.find_one({u'_id': ObjectId(id)})
-        obj[u'tileid'] = Tileid2(long(position[u'x']), long(position[u'y']), long(position[u'z']))
+        obj = self.db.geo_objects.find_one({'_id': ObjectId(id)})
+        obj['tileid'] = Tileid2(long(position['x']), long(position['y']), long(position['z']))
         self.db.geo_objects.save(obj)
-        obj[u'position'] = position
+        obj['position'] = position
         for client in self.app.clients:
             client.api.client.changeObject(obj)
 
     def selectAreaByRect(self, client, min_point, max_point, select_zoom):
         log.info('EditorServer: Select area by rect')
-        min_tileid = Tileid2(long(min_point[u'x']), long(min_point[u'y']), long(min_point[u'z'])).parent_by_lvl(select_zoom)
-        max_tileid = Tileid2(long(max_point[u'x']), long(max_point[u'y']), long(max_point[u'z'])).parent_by_lvl(select_zoom)
+        min_tileid = Tileid2(long(min_point['x']), long(min_point['y']), long(min_point['z'])).parent_by_lvl(select_zoom)
+        max_tileid = Tileid2(long(max_point['x']), long(max_point['y']), long(max_point['z'])).parent_by_lvl(select_zoom)
         tile_list = list(Tileid2.iter_rect(min_tileid, max_tileid))
         res = []
         for tile in tile_list:
-            list_obj = self.db.geo_objects.find({u'tileid':{'$gte':tile.index_child_first(), '$lte': tile.index_child_last()}})
+            list_obj = self.db.geo_objects.find({'tileid':{'$gte':tile.index_child_first(), '$lte': tile.index_child_last()}})
             for e in list_obj:
                 x, y, z = Tileid2(e['tileid']).xyz()
-                e[u'position'] = {
+                e['position'] = {
                     'x': x,
                     'y': y,
                     'z': z
@@ -76,15 +76,15 @@ class EditorServer(object):
         ts_res = []
 
         # todo переписать данное место. Здесь забирается информация из бд, тут сразу есть цвет
-        current_zoom = long(min_point[u'z'])
-        #if long(min_point[u'z']) > 13:
+        current_zoom = long(min_point['z'])
+        #if long(min_point['z']) > 13:
         for tile in tile_list:
-            list_obj = self.db.tile_sets.find({u'tileid':{'$gte': tile, '$lte': tile.index_child_last()}})
+            list_obj = self.db.tile_sets.find({'tileid':{'$gte': tile, '$lte': tile.index_child_last()}})
             for e in list_obj:
                 x, y, z = Tileid2(e['tileid']).xyz()
                 # если размер тайла имеет смысл показывать на данном масштабе
                 if abs(current_zoom - z) < 6:
-                    e[u'position'] = {
+                    e['position'] = {
                         'x': x,
                         'y': y,
                         'z': z,
@@ -99,8 +99,8 @@ class EditorServer(object):
 
     def getRectsByArea(self, client, min_point, max_point, select_zoom):
         log.info('EditorServer: Send rect tiles')
-        min_tileid = Tileid2(long(min_point[u'x']), long(min_point[u'y']), long(min_point[u'z'])).parent_by_lvl(select_zoom)
-        max_tileid = Tileid2(long(max_point[u'x']), long(max_point[u'y']), long(max_point[u'z'])).parent_by_lvl(select_zoom)
+        min_tileid = Tileid2(long(min_point['x']), long(min_point['y']), long(min_point['z'])).parent_by_lvl(select_zoom)
+        max_tileid = Tileid2(long(max_point['x']), long(max_point['y']), long(max_point['z'])).parent_by_lvl(select_zoom)
         tile_list = Tileid2.iter_rect(min_tileid, max_tileid)
         res = []
         for tile in tile_list:
@@ -119,8 +119,8 @@ class EditorServer(object):
         log.info('EditorServer: Request Intersect With TS')
         res = []
         zoom = 26
-        tid = Tileid(long(point[u'x']), long(point[u'y']), long(point[u'z']))
-        b_tid = Tileid2(long(point[u'x']), long(point[u'y']), long(point[u'z'])).parent_by_lvl(17)
+        tid = Tileid(long(point['x']), long(point['y']), long(point['z']))
+        b_tid = Tileid2(long(point['x']), long(point['y']), long(point['z'])).parent_by_lvl(17)
         for key in self.tss:
             p = self.tss[key].intersect_by_ray(tid, angle, border_tid = b_tid)
             x, y, z = p[0]
@@ -186,8 +186,8 @@ if __name__ == "__main__":
 
     # Индексация по тайл айди, который может быть НЕ уникальным
     # >> use maindb
-    # >> db.geo_objects.ensureIndex({ u'tileid' : 1})
-    # a.db.geo_objects.ensureIndex({u'tileid' : 1})
+    # >> db.geo_objects.ensureIndex({ 'tileid' : 1})
+    # a.db.geo_objects.ensureIndex({'tileid' : 1})
     # print(a.db.geo_objects.getIndexes())
 
     # Удаление элементов из коллекции

@@ -47,7 +47,7 @@ class Effect(object):
                  absolute=False, message=None):
         super(Effect, self).__init__()
         self.absolute = absolute
-        self.message = message
+        str(self) = message
         self.name = name
         self.sign = sign
         self.is_stack = is_stack
@@ -98,9 +98,9 @@ class Effect(object):
                 method = getattr(owner, self.upd_method)
                 if method:
                     method(time=time)
-            if self.message:
+            if str(self):
                 if owner.owner:
-                    self.message(agent=owner.owner, subj=owner, effect=self, is_start=True).post()
+                    str(self)(agent=owner.owner, subj=owner, effect=self, is_start=True).post()
 
         owner.effects.append(self)
 
@@ -123,6 +123,6 @@ class Effect(object):
                 method = getattr(owner, self.upd_method)
                 if method:
                     method(time=time)
-            if self.message:
+            if str(self):
                 if owner.owner:
-                    self.message(agent=owner.owner, subj=owner, effect=self, is_start=False).post()
+                    str(self)(agent=owner.owner, subj=owner, effect=self, is_start=False).post()

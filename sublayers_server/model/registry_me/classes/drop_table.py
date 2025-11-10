@@ -12,7 +12,7 @@ import random
 
 class DropRecord(Subdoc):
     item = RegistryLinkField(
-        caption=u"Item",
+        caption="Item",
         document_type='sublayers_server.model.registry_me.classes.item.Item',
     )
     chance = FloatField(caption="Шанс выпадения предмета")
@@ -21,7 +21,7 @@ class DropRecord(Subdoc):
 
 class DropTable(Node):
     table = ListField(
-        caption=u'Таблица расстояний между локациями',
+        caption='Таблица расстояний между локациями',
         field=EmbeddedDocumentField(document_type=DropRecord),
     )
 

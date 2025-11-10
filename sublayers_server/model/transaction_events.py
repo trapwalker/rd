@@ -469,11 +469,11 @@ class TransactionGasStation(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: {} {}NC'.format(date_str, locale(lang=self.lang, key="tr_tgs_do_text"), str(sum_fuel))
+        info_string = '{}: {} {}NC'.format(date_str, locale(lang=self.lang, key="tr_tgs_do_text"), str(sum_fuel))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionGasStationLogMessage(agent=agent, time=self.time, d_fuel=self.fuel, tank_list=tank_list_log).post()
-        self.agent.adm_log(type="npc_transaction", text=u"GasStation<{}>: d_fuel={}  tanks={}".format(npc.node_hash(), self.fuel, tank_list_log))
+        self.agent.adm_log(type="npc_transaction", text="GasStation<{}>: d_fuel={}  tanks={}".format(npc.node_hash(), self.fuel, tank_list_log))
 
 
 class TransactionHangarSell(TransactionTownNPC):
@@ -492,7 +492,7 @@ class TransactionHangarSell(TransactionTownNPC):
         price = int(self.agent.example.profile.car.price * (1 - npc.margin * skill_effect))
 
         # todo: translate
-        info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangarsell_do_text"), locale(self.lang, self.agent.example.profile.car.title), str(price))
+        info_string = '{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangarsell_do_text"), locale(self.lang, self.agent.example.profile.car.title), str(price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -509,7 +509,7 @@ class TransactionHangarSell(TransactionTownNPC):
         messages.UserExampleCarSlots(agent=self.agent, time=self.time).post()
 
         TransactionHangarLogMessage(agent=self.agent, time=self.time, car=log_car, price=log_car.price, action="sell").post()
-        self.agent.adm_log(type="npc_transaction", text=u"Hangar<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Hangar<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionHangarBuy(TransactionTownNPC):
@@ -575,12 +575,12 @@ class TransactionHangarBuy(TransactionTownNPC):
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if self.agent.example.profile.car:
-                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangar_swap"), locale(self.lang, car_example.title),
+                info_string = '{}: {} {}, {}NC'.format(date_str, locale(lang=self.lang, key="tr_thangar_swap"), locale(self.lang, car_example.title),
                                                                str(new_car_price - old_car_price))
                 TransactionHangarLogMessage(agent=self.agent, time=self.time, car=self.agent.example.profile.car,
                                             price=self.agent.example.profile.car.price, action="sell").post()
             else:
-                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_thangar_buy"), locale(self.lang, car_example.title), str(-new_car_price))
+                info_string = '{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_thangar_buy"), locale(self.lang, car_example.title), str(-new_car_price))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -599,7 +599,7 @@ class TransactionHangarBuy(TransactionTownNPC):
             # Эвент квестов
             self.agent.example.profile.on_event(event=self, cls=quest_events.OnBuyCar)
             TransactionHangarLogMessage(agent=self.agent, time=self.time, car=car_example, price=car_example.price, action="buy").post()
-            self.agent.adm_log(type="npc_transaction", text=u"Hangar<{}>: {}".format(npc.node_hash(), info_string))
+            self.agent.adm_log(type="npc_transaction", text="Hangar<{}>: {}".format(npc.node_hash(), info_string))
             # Перезагружаем модельный инвентарь
             self.agent.reload_inventory(time=self.time, save=False, total_inventory=None)
         else:
@@ -638,10 +638,10 @@ class TransactionGirlApply(TransactionTownNPC):
 
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{}: {} {}, {}NC.'.format(date_str, locale(self.lang, "tr_tgirl_service_text"), locale(self.lang, service.title), str(-service.price))
+        info_string = '{}: {} {}, {}NC.'.format(date_str, locale(self.lang, "tr_tgirl_service_text"), locale(self.lang, service.title), str(-service.price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
-        self.agent.adm_log(type="npc_transaction", text=u"Girl<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Girl<{}>: {}".format(npc.node_hash(), info_string))
 
         messages.GirlInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash(), items=bonus_list).post()
 
@@ -680,10 +680,10 @@ class TransactionParkingSelect(TransactionTownNPC):
             date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
             # todo: translate
             if agent_ex.profile.car:
-                info_string = u'{}: {} {}, -{}NC'.format(date_str, locale(self.lang, "tr_tpark_swap"), locale(self.lang, car_list[self.car_number].title), str(summ_for_paying))
+                info_string = '{}: {} {}, -{}NC'.format(date_str, locale(self.lang, "tr_tpark_swap"), locale(self.lang, car_list[self.car_number].title), str(summ_for_paying))
                 TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=0, action="leave").post()
             else:
-                info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tpark_buy"), locale(self.lang, car_list[self.car_number].title), str(summ_for_paying))
+                info_string = '{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tpark_buy"), locale(self.lang, car_list[self.car_number].title), str(summ_for_paying))
             messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                            info_string=info_string).post()
 
@@ -704,7 +704,7 @@ class TransactionParkingSelect(TransactionTownNPC):
 
             messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
             messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
-            self.agent.adm_log(type="npc_transaction", text=u"Parking<{}>: {}".format(npc.node_hash(), info_string))
+            self.agent.adm_log(type="npc_transaction", text="Parking<{}>: {}".format(npc.node_hash(), info_string))
             TransactionParkingLogMessage(agent=self.agent, time=self.time, car=agent_ex.profile.car, price=summ_for_paying, action="select").post()
         else:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -725,7 +725,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: translate
-        info_string = u'{}: {} {}, 0NC'.format(date_str, locale(self.lang, "tr_tpark_leave"), locale(self.lang, agent_ex.profile.car.title))
+        info_string = '{}: {} {}, 0NC'.format(date_str, locale(self.lang, "tr_tpark_leave"), locale(self.lang, agent_ex.profile.car.title))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
 
@@ -747,7 +747,7 @@ class TransactionParkingLeave(TransactionTownNPC):
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
         TransactionParkingLogMessage(agent=self.agent, time=self.time, car=car_example, price=0,
                                      action="leave").post()
-        self.agent.adm_log(type="npc_transaction", text=u"Parking<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Parking<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionArmorerApply(TransactionTownNPC):
@@ -880,11 +880,11 @@ class TransactionArmorerApply(TransactionTownNPC):
         # Информация о транзакции
         now_date = datetime.now()
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tarmor_setup_text"), locale(self.lang, ex_car.title), str(int(all_price)))
+        info_string = '{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tarmor_setup_text"), locale(self.lang, ex_car.title), str(int(all_price)))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionArmorerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
-        self.agent.adm_log(type="npc_transaction", text=u"Armorer<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Armorer<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionMechanicApply(TransactionTownNPC):
@@ -1008,11 +1008,11 @@ class TransactionMechanicApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tarmor_setup_text"), locale(self.lang, ex_car.title), str(all_price))
+        info_string = '{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_tarmor_setup_text"), locale(self.lang, ex_car.title), str(all_price))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list, price=0).post()
-        self.agent.adm_log(type="npc_transaction", text=u"Mechanic<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Mechanic<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionMechanicRepairApply(TransactionTownNPC):
@@ -1058,11 +1058,11 @@ class TransactionMechanicRepairApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = u'{}: {} {}, 0NC'.format(date_str, locale(self.lang, "tr_tmechrepair_price"), locale(self.lang, ex_car.title))
+        info_string = '{}: {} {}, 0NC'.format(date_str, locale(self.lang, "tr_tmechrepair_price"), locale(self.lang, ex_car.title))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionMechanicRepairLogMessage(agent=self.agent, time=self.time, hp=self.hp, price=repair_cost).post()
-        self.agent.adm_log(type="npc_transaction", text=u"MechanicRepair<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="MechanicRepair<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionTunerApply(TransactionTownNPC):
@@ -1160,12 +1160,12 @@ class TransactionTunerApply(TransactionTownNPC):
         date_str = datetime.strftime(now_date.replace(year=now_date.year + 100), messages.NPCTransactionMessage._transaction_time_format)
         # todo: правильную стоимость услуг вывести сюда
         # todo: translate
-        info_string = info_string = u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_ttuner_price"), locale(self.lang, ex_car.title), str(0))
+        info_string = info_string = '{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_ttuner_price"), locale(self.lang, ex_car.title), str(0))
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionTunerLogMessage(agent=self.agent, time=self.time, setup_list=setup_list, remove_list=remove_list,
                                    price=0, pont_point=0).post()
-        self.agent.adm_log(type="npc_transaction", text=u"Tuner<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Tuner<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class TransactionTraderApply(TransactionTownNPC):
@@ -1205,7 +1205,7 @@ class TransactionTraderApply(TransactionTownNPC):
             if (item_ex is None) or (item_ex.amount < table_rec['count']):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} {}'.format(item_ex and locale(self.lang, item_ex.title), locale(self.lang, "tr_trader_no_count"))).post()
+                                     replica='{} {}'.format(item_ex and locale(self.lang, item_ex.title), locale(self.lang, "tr_trader_no_count"))).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
@@ -1213,14 +1213,14 @@ class TransactionTraderApply(TransactionTownNPC):
             if price is None:
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} {}'.format(locale(self.lang, item_ex.title), locale(self.lang, "tr_trader_no_trade"))).post()
+                                     replica='{} {}'.format(locale(self.lang, item_ex.title), locale(self.lang, "tr_trader_no_trade"))).post()
                 return
             item_sale_price = price.get_price(item=item_ex, skill_effect=skill_effect, perk_trader_effect=perk_trader_effect)['buy'] * float(table_rec['count']) / float(item_ex.stack_size)
             sale_price += item_sale_price
             sell_list.append(item_ex)
 
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
-            tr_msg_list.append(u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_sale"), locale(self.lang, item_ex.title), str(int(item_sale_price))))
+            tr_msg_list.append('{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_sale"), locale(self.lang, item_ex.title), str(int(item_sale_price))))
 
             item_ex.amount -= table_rec['count']
             if item_ex.amount == 0:
@@ -1239,7 +1239,7 @@ class TransactionTraderApply(TransactionTownNPC):
             if (price is None) or (not price.is_lot) or ((price.count < table_rec['count']) and not price.is_infinity):
                 self.repair_example_inventory()
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                           replica=u'{} {}'.format(locale(self.lang, price.item.title), locale(self.lang, "tr_trader_no_count"))).post()
+                                           replica='{} {}'.format(locale(self.lang, price.item.title), locale(self.lang, "tr_trader_no_count"))).post()
                 return
 
             # Проверяем покупает ли торговец этот итем и по чем (расчитываем навар игрока)
@@ -1248,7 +1248,7 @@ class TransactionTraderApply(TransactionTownNPC):
             buy_price += item_buy_price
             buy_list.append(price.item)
             # todo: текстовое описание на клиенте не будет совпадать с реальным, так как округление не так работает
-            tr_msg_list.append(u'{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_buy"), locale(self.lang, price.item.title), str(int(item_buy_price))))
+            tr_msg_list.append('{}: {} {}, {}NC'.format(date_str, locale(self.lang, "tr_trader_buy"), locale(self.lang, price.item.title), str(int(item_buy_price))))
 
             # Добавляем итемы в инвентарь игрока
             ex_car.inventory.add_item(item=price.item, count=table_rec['count'],
@@ -1291,7 +1291,7 @@ class TransactionTraderApply(TransactionTownNPC):
         messages.TraderClearMessage(agent=agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         TransactionTraderLogMessage(agent=agent, time=self.time, buy_list=buy_list, sell_list=sell_list,
                                     price=(buy_price - sale_price)).post()
-        self.agent.adm_log(type="npc_transaction", text=u"Trader<{}>: price={}".format(npc.node_hash(), buy_price - sale_price))
+        self.agent.adm_log(type="npc_transaction", text="Trader<{}>: price={}".format(npc.node_hash(), buy_price - sale_price))
 
         # Эвент для квестов
         self.agent.example.profile.on_event(event=self, cls=quest_events.OnTraderTransaction)
@@ -1309,17 +1309,17 @@ class TransactionSetRPGState(TransactionTownNPC):
         perk_rec = self.perks[perk_node_hash]
         profile = self.agent.example.profile
         # todo: ##REFACTORING
-        if ((perk_rec['perk'].driving_req > profile.driving.calc_value(value=self.skills[u'driving'])) or
-            (perk_rec['perk'].masking_req > profile.masking.calc_value(value=self.skills[u'masking'])) or
-            (perk_rec['perk'].shooting_req > profile.shooting.calc_value(value=self.skills[u'shooting'])) or
-            (perk_rec['perk'].leading_req > profile.leading.calc_value(value=self.skills[u'leading'])) or
-            (perk_rec['perk'].trading_req > profile.trading.calc_value(value=self.skills[u'trading'])) or
-            (perk_rec['perk'].engineering_req > profile.engineering.calc_value(value=self.skills[u'engineering'])) or
+        if ((perk_rec['perk'].driving_req > profile.driving.calc_value(value=self.skills['driving'])) or
+            (perk_rec['perk'].masking_req > profile.masking.calc_value(value=self.skills['masking'])) or
+            (perk_rec['perk'].shooting_req > profile.shooting.calc_value(value=self.skills['shooting'])) or
+            (perk_rec['perk'].leading_req > profile.leading.calc_value(value=self.skills['leading'])) or
+            (perk_rec['perk'].trading_req > profile.trading.calc_value(value=self.skills['trading'])) or
+            (perk_rec['perk'].engineering_req > profile.engineering.calc_value(value=self.skills['engineering'])) or
             (perk_rec['perk'].level_req > self.lvl)):
             return False
 
         for perk_req in perk_rec['perk'].perks_req:
-            if not self.perks[perk_req.node_hash()][u'state']:  # todo: ##REVIEW Menkent
+            if not self.perks[perk_req.node_hash()]['state']:  # todo: ##REVIEW Menkent
                 return False
         return True
 
@@ -1355,7 +1355,7 @@ class TransactionSetRPGState(TransactionTownNPC):
         max_p = math.floor(lvl / 10) + agent.example.profile.role_class.start_free_point_perks
         cur_p = 0
         for perk_node_hash in self.perks:
-            if self.perks[perk_node_hash][u'state']:
+            if self.perks[perk_node_hash]['state']:
                 cur_p += 1
         if cur_p > max_p:
             messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
@@ -1366,9 +1366,9 @@ class TransactionSetRPGState(TransactionTownNPC):
             self.perks[perk.node_hash()].update(perk=perk)
 
         for perk_node_hash in self.perks:
-            if self.perks[perk_node_hash][u'state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
+            if self.perks[perk_node_hash]['state'] and not self.is_available_perk(perk_node_hash=perk_node_hash):
                 messages.NPCReplicaMessage(agent=self.agent, time=self.time, npc=npc,
-                                     replica=u'{} %s!'.format(locale(self.lang, "tr_trainer_perk_no_set"), perk_node_hash)).post()
+                                     replica='{} %s!'.format(locale(self.lang, "tr_trainer_perk_no_set"), perk_node_hash)).post()
                 return  # todo: warning
 
         for buy_skill_name in self.buy_skills:
@@ -1388,7 +1388,7 @@ class TransactionSetRPGState(TransactionTownNPC):
             if hasattr(agent.example, skill_name):
                 ex_skill = getattr(agent.example.profile, skill_name, None)
                 need_value = ex_skill.value + (
-                    self.buy_skills[u'buy_' + skill_name] -
+                    self.buy_skills['buy_' + skill_name] -
                     getattr(self.agent.example.profile, 'buy_' + skill_name).value
                 )
                 old_sp += ex_skill.value
@@ -1399,7 +1399,7 @@ class TransactionSetRPGState(TransactionTownNPC):
         # Проверка факта сброса перков
         if price == 0:
             for perk in agent.example.profile.perks:
-                if not self.perks[perk.node_hash()][u'state']:
+                if not self.perks[perk.node_hash()]['state']:
                     price += npc.drop_price
                     break
 
@@ -1418,25 +1418,25 @@ class TransactionSetRPGState(TransactionTownNPC):
         agent.example.profile.set_balance(time=self.time, delta=-price)
 
         # Устанавливаем состояние
-        self.agent.example.profile.driving.value = self.skills[u'driving']
-        self.agent.example.profile.shooting.value = self.skills[u'shooting']
-        self.agent.example.profile.masking.value = self.skills[u'masking']
-        self.agent.example.profile.leading.value = self.skills[u'leading']
-        self.agent.example.profile.trading.value = self.skills[u'trading']
-        self.agent.example.profile.engineering.value = self.skills[u'engineering']
+        self.agent.example.profile.driving.value = self.skills['driving']
+        self.agent.example.profile.shooting.value = self.skills['shooting']
+        self.agent.example.profile.masking.value = self.skills['masking']
+        self.agent.example.profile.leading.value = self.skills['leading']
+        self.agent.example.profile.trading.value = self.skills['trading']
+        self.agent.example.profile.engineering.value = self.skills['engineering']
 
-        self.agent.example.profile.buy_driving.value = self.buy_skills[u'buy_driving']
-        self.agent.example.profile.buy_shooting.value = self.buy_skills[u'buy_shooting']
-        self.agent.example.profile.buy_masking.value = self.buy_skills[u'buy_masking']
-        self.agent.example.profile.buy_leading.value = self.buy_skills[u'buy_leading']
-        self.agent.example.profile.buy_trading.value = self.buy_skills[u'buy_trading']
-        self.agent.example.profile.buy_engineering.value = self.buy_skills[u'buy_engineering']
+        self.agent.example.profile.buy_driving.value = self.buy_skills['buy_driving']
+        self.agent.example.profile.buy_shooting.value = self.buy_skills['buy_shooting']
+        self.agent.example.profile.buy_masking.value = self.buy_skills['buy_masking']
+        self.agent.example.profile.buy_leading.value = self.buy_skills['buy_leading']
+        self.agent.example.profile.buy_trading.value = self.buy_skills['buy_trading']
+        self.agent.example.profile.buy_engineering.value = self.buy_skills['buy_engineering']
         # todo: ##REFACTORING
 
         agent_perks = agent.example.profile.perks
         for perk_node_hash in self.perks:
             perk_rec = self.perks[perk_node_hash]
-            if perk_rec[u'state']:
+            if perk_rec['state']:
                 if perk_rec['perk'] not in agent_perks :
                     agent_perks.append(perk_rec['perk'])
                     perk_count += 1
@@ -1452,12 +1452,12 @@ class TransactionSetRPGState(TransactionTownNPC):
 
         now_date = datetime.now()
         date_str = now_date.replace(year=now_date.year + 100).strftime(messages.NPCTransactionMessage._transaction_time_format)
-        info_string = u'{date_str}: {loc}, {price} NC'.format(date_str=date_str, loc=locale(self.lang, "tr_trainer_price"), price=-price)  # todo: translate
+        info_string = '{date_str}: {loc}, {price} NC'.format(date_str=date_str, loc=locale(self.lang, "tr_trainer_price"), price=-price)  # todo: translate
         messages.NPCTransactionMessage(agent=self.agent, time=self.time, npc_html_hash=npc.node_html(),
                                        info_string=info_string).post()
         TransactionTrainerLogMessage(agent=self.agent, time=self.time, skill_count=cur_sp - old_sp,
                                      buy_skill_count=buy_skill_count, perk_count=perk_count, price=price).post()
-        self.agent.adm_log(type="npc_transaction", text=u"Trainer<{}>: {}".format(npc.node_hash(), info_string))
+        self.agent.adm_log(type="npc_transaction", text="Trainer<{}>: {}".format(npc.node_hash(), info_string))
 
 
 class BagExchangeStartEvent(TransactionTownNPC):
@@ -1512,4 +1512,4 @@ class BagExchangeStartEvent(TransactionTownNPC):
         # todo: Сделать сообщение-обновление цен машинок у парковщика
         messages.ParkingInfoMessage(agent=self.agent, time=self.time, npc_node_hash=npc.node_hash()).post()
         messages.JournalParkingInfoMessage(agent=self.agent, time=self.time).post()
-        self.agent.adm_log(type="npc_transaction", text=u"ParkingBagAccess<{}>: price = {}".format(npc.node_hash(), car_price))
+        self.agent.adm_log(type="npc_transaction", text="ParkingBagAccess<{}>: price = {}".format(npc.node_hash(), car_price))

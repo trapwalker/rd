@@ -50,13 +50,13 @@ class Q(list):
 class Tileset(object):
     def __init__(self, value=ABSENT, level=None):
         if isinstance(value, file):
-            assert level is None, u'При инициализации из файла level не указывается.'
+            assert level is None, 'При инициализации из файла level не указывается.'
             self._tree = [None]
             self._level = None
             self._maxlevel = 0
             self.load(value)
         elif isinstance(value, Tileset):
-            assert level == None, u'При инициализации из тайлсета level не указывается.'
+            assert level == None, 'При инициализации из тайлсета level не указывается.'
             self._level = value.level
             self._maxlevel = value._maxlevel
             self._tree = copy.deepcopy(value._tree)
@@ -69,7 +69,7 @@ class Tileset(object):
 
     @property
     def level(self):
-        u'''Возвращает уровень индексируемого слоя.
+        '''Возвращает уровень индексируемого слоя.
         Если уровень слоя не был явно задан, то он оределяется
         по максимально глубокому добавленному тайлу.
         '''
@@ -77,26 +77,26 @@ class Tileset(object):
 
     @level.setter        
     def level(self, newlevel=None):
-        u'''Устанавливает уровень индексируемого слоя.
+        '''Устанавливает уровень индексируемого слоя.
         newlevel может быть установлен только в значение <= maxlevel
         '''
         assert self._maxlevel <= newlevel, \
-               u'В тайлсете есть тайлы с глубиной {0} > {1}'.format(self._maxlevel, newlevel)
+               'В тайлсете есть тайлы с глубиной {0} > {1}'.format(self._maxlevel, newlevel)
         self._level = newlevel
 
     def capacity(self):
-        u'''Мощность слоя level.'''
+        '''Мощность слоя level.'''
         return 4 ** self.level
 
     def set_tiles(self, ids, value=PRESENT):
-        u'''Установка статусов для списка тайлов ids в значение value.
+        '''Установка статусов для списка тайлов ids в значение value.
         ids -- итератор (например список) тайлов, заданных аналогично set_tile
         value -- новый статус тайлов, аналогично set_tile
         Функция возвращает кортеж со старыми значениями устанавливаемых узлов.'''
         return tuple(map(lambda id: self.set_tile(id, value), ids))
 
     def set_tile(self, tid=ROOT, value=PRESENT):
-        u'''Установка статуса тайла id в значение value.
+        '''Установка статуса тайла id в значение value.
         id -- Tileid или путь к тайлу в виде списка квадрантов (int)
             пример списка: [0, 1, 2, 3, 2, 1] <==> Tileid('tqrtstr')
         value -- новый статус тайла. Помимо PRESENT и ABSENT может содержать
@@ -133,7 +133,7 @@ class Tileset(object):
         return old
 
     def get_tile(self, tid):
-        u'''Определение статуса тайла id.'''
+        '''Определение статуса тайла id.'''
         # todo: не превращать iterable в Tileid
         id = tid if isinstance(tid, Tileid) else Tileid(tid)
 
@@ -145,11 +145,11 @@ class Tileset(object):
         return node
 
     def count_values(self, value=PRESENT): ## todo: убрать, если не нужна
-        u'''Подсчет количества узлов с заданным значением в дереве.'''
+        '''Подсчет количества узлов с заданным значением в дереве.'''
         return count_in_tree(self._tree, value, nodeClasses=Q)
 
     def count(self, value=PRESENT):
-        u'''Подсчет количества тайлов со статусом value.
+        '''Подсчет количества тайлов со статусом value.
         По умолчанию value = PRESENT'''
         def _cnt(node, level):
             if isinstance(node, Q):
@@ -162,7 +162,7 @@ class Tileset(object):
         return _cnt(self._tree[0], 0)
 
     def statistics(self):
-        u'''Получение статистики количества тайлов в различных статусах.
+        '''Получение статистики количества тайлов в различных статусах.
         Возвращает словарь {СТАТУС: КОЛИЧЕСТВО}.
         Количество ветвлений отражается под именем "__fork__"'''
         d = dict()
@@ -174,7 +174,7 @@ class Tileset(object):
                 else:
                     d[item] = cnt
             except TypeError:
-                raise TypeError, u'В качестве элемента дерева был использован \
+                raise TypeError, 'В качестве элемента дерева был использован \
                     нехешируемый объект: {0!r}. \nВ этом случае использовать \
                     данную функцию нельзя.'.format(item)
 
@@ -190,7 +190,7 @@ class Tileset(object):
         return d
 
     def iter_tree_deep(self):
-        u'''Итаратор обхода дерева в глубину.
+        '''Итаратор обхода дерева в глубину.
         Возвращает кортежи (Tileid, <значение_узла>).'''
         stack = [(Tileid(), self._tree[0])]
         while len(stack) > 0:
@@ -200,14 +200,14 @@ class Tileset(object):
                 stack.extend(reversed(zip(idnt.childs(), node)))
 
     def iter_leafs(self):
-        u'''Итератор обхода листьев дерева.
+        '''Итератор обхода листьев дерева.
         Возвращает кортежи (Tileid, <статус узла>).'''
         for i in self.iter_tree_deep():
             if not isinstance(i[1], Q):
                 yield i
 
     def remap(self, remap_dict):
-        u'''Замена элементов тайлсета по словарю remap_dict.'''
+        '''Замена элементов тайлсета по словарю remap_dict.'''
         def f(x):
             if isinstance(x, Q) and x == [x[0]] * 4:
                 return x[0]
@@ -220,7 +220,7 @@ class Tileset(object):
         self._tree[0] = map_tree(self._tree[0], f, Q)
         
     def _save_auto_params(self):
-        u'''Приватная функция возвращает словарь автоматически подобранных
+        '''Приватная функция возвращает словарь автоматически подобранных
         параметров для сохранения дерева в бинарный файл:
             bpn      - бит на узел (2, 4 или 8) в зависимости от разнообразия
                        значений в листьях дерева;
@@ -242,8 +242,8 @@ class Tileset(object):
         elif bpn <= 4: bpn = 4
         elif bpn <= 8: bpn = 8
         else:
-            raise Exception, u'Сохранение деревьев с количеством состояний ' \
-                             u'листьев, превышающим 254, не поддерживается.'
+            raise Exception, 'Сохранение деревьев с количеством состояний ' \
+                             'листьев, превышающим 254, не поддерживается.'
         mask = 2 ** bpn - 1
 
         # словарь кодирования значений узлов при сохранении
@@ -263,7 +263,7 @@ class Tileset(object):
                 codespace.remove(i)
                 keyspace.remove(i)
 
-        assert len(keyspace) + 1 <= len(codespace), u'некорректно определён BPN'
+        assert len(keyspace) + 1 <= len(codespace), 'некорректно определён BPN'
 
         # Выбираем в качестве кода для ветвления в дереве последний незанятый
         fork = codespace.pop()
@@ -277,7 +277,7 @@ class Tileset(object):
         return bpn, mask, fork, d_encode, d_decode
 
     def save(self, f, raw=False):
-        u'''Сохранение маски покрытия в файловый объект f.
+        '''Сохранение маски покрытия в файловый объект f.
             raw -- флаг, отключающий запись заголовка в файл.
         '''
         # Получаем набор параметров сохранения
@@ -302,8 +302,8 @@ class Tileset(object):
             f.write(chr(buf))
 
     def load(self, f):
-        u'''Загрузка маски покрытия из файлового объекта f.'''
-        assert f.read(len(SIGNATURE)) == SIGNATURE, u'Данный формат файла не поддерживается.'
+        '''Загрузка маски покрытия из файлового объекта f.'''
+        assert f.read(len(SIGNATURE)) == SIGNATURE, 'Данный формат файла не поддерживается.'
         d_decode = pickle.load(f) # todo: обработка ошибок
         self._maxlevel = 0
         self._level = d_decode.pop('__level__')
@@ -337,7 +337,7 @@ class Tileset(object):
                     self.set_tile(*i)
             return self
         else:
-            raise Exception, u'Type error: <{0}> += <{1}>'.format(type(self), type(other))
+            raise Exception, 'Type error: <{0}> += <{1}>'.format(type(self), type(other))
 
     def __eq__(self, other):
         ## Сравнение Tileset'ов без учета глубины
@@ -364,7 +364,7 @@ class Tileset(object):
 
 
     def intersect_by_ray(self, tid, a, border_tid=None, distance=0):
-        u'''
+        '''
             tid - объект класса Tileid
             a - угол в радианах от 0 <= a < 2*pi, относительно севера!
             border_tid - ограничивающий расчеты Tileid
@@ -525,13 +525,13 @@ def bitreader(f, bitcount):
         byte = f.read(1)
 
 def map_tree(tree, func, nodeClasses=(list, tuple)):
-    u'''Заменяет элементы в дереве tree на результаты фнкции func над ними.'''
+    '''Заменяет элементы в дереве tree на результаты фнкции func над ними.'''
     if isinstance(tree, nodeClasses):
         tree = Q(*[map_tree(i, func, nodeClasses) for i in tree])
     return func(tree)
     
 """def remap_tree(tree, d):
-    u'''Заменяет элементы в дереве tree по словарю d.'''
+    '''Заменяет элементы в дереве tree по словарю d.'''
     if isinstance(tree, Q):
         return [remap_tree(i, d) for i in r]
     else:
@@ -542,7 +542,7 @@ def map_tree(tree, func, nodeClasses=(list, tuple)):
 """
 
 def count_in_tree(tree, value, nodeClasses=(list, tuple)):
-    u'''Рекурсивный подсчет количества элементов value в дереве на списках
+    '''Рекурсивный подсчет количества элементов value в дереве на списках
     или кортежах.
     ВНИМАНИЕ! Нет проверки на циклические ссылки.'''
     if tree == value:

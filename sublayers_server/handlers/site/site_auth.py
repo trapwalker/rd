@@ -64,11 +64,11 @@ class StandardLoginHandler(BaseLoginHandler):
 
         user = User.get_by_email(email=email)
         if user:
-            return self.login_error_redirect(msg=u"Пользователь с таким email уже зарегистрирован.")
+            return self.login_error_redirect(msg="Пользователь с таким email уже зарегистрирован.")
 
         user = User.get_by_name(name=username)
         if user:
-            return self.login_error_redirect(msg=u"Пользователь с таким именем уже зарегистрирован.")
+            return self.login_error_redirect(msg="Пользователь с таким именем уже зарегистрирован.")
 
         # todo: check username unical
         user = User(name=username, raw_password=password, email=email).save()
@@ -84,10 +84,10 @@ class StandardLoginHandler(BaseLoginHandler):
 
         user = User.get_by_email(email=email)
         if not user:
-            return self.login_error_redirect(msg=u"Пользователь с таким email не найден.")
+            return self.login_error_redirect(msg="Пользователь с таким email не найден.")
 
         if not user.check_password(password):
-            return self.login_error_redirect(msg=u"Неверный email или пароль.")
+            return self.login_error_redirect(msg="Неверный email или пароль.")
 
         self.set_secure_cookie("user", str(user.id))
         return self.redirect("/")
@@ -104,7 +104,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 redirect_uri='localhost/login/google',
 #                 code=self.get_argument('code'))
 #             http = HTTPClient()
-#             path = u"https://www.googleapis.com/plus/v1/people/me?access_token=" + user[u'access_token']
+#             path = "https://www.googleapis.com/plus/v1/people/me?access_token=" + user['access_token']
 #             response = http.fetch(request=path,
 #                        method="GET", headers={'Content-Type': 'application/x-www-form-urlencoded'})
 #             cookie = self._on_get_user_info(response)
@@ -125,7 +125,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #     def _on_get_user_info(self, response):
 #         action = self.get_cookie("action")
 #         if (response.code == 200) and (response.error is None) and (action in ['1', '2']):
-#             body_id = json.loads(response.body)[u'id']
+#             body_id = json.loads(response.body)['id']
 #             db = self.application.db
 #             db_res = db.profiles.find({'auth': {'google': {'id': body_id}}}, {'id': 1})  # todo: migrate to async ODM
 #             user_ids = []
@@ -138,7 +138,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'google': {'id': body_id}}}))
 #                 return user_db_uid
 #             if (action == '2') and (user_id is not None):
-#                 return str(user_id[u'_id'])
+#                 return str(user_id['_id'])
 #             return None
 #
 #
@@ -211,7 +211,7 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'ok': {'id': body_id}}}))
 #                 return user_db_uid
 #             if (action == '2') and (user_id is not None):
-#                 return str(user_id[u'_id'])
+#                 return str(user_id['_id'])
 #             return None
 #
 #
@@ -278,5 +278,5 @@ class StandardLoginHandler(BaseLoginHandler):
 #                 user_db_uid = str(db.profiles.insert({'name': body_id, 'auth': {'vk': {'id': body_id}}}))
 #                 return user_db_uid
 #             if (action == '2') and (user_id is not None):
-#                 return str(user_id[u'_id'])
+#                 return str(user_id['_id'])
 #             return None

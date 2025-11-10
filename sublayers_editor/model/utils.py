@@ -2,7 +2,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from Queue import PriorityQueue, Full
+from queue import PriorityQueue, Full
 from time import time as _time
 from datetime import datetime
 import heapq

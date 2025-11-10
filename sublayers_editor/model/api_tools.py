@@ -52,7 +52,7 @@ def public_method(func):
             res = func(*av, **kw)
         except TypeError as e:
             log.error('API error: %s !-> %r', log_call, e)
-            raise EWrongParamsError(e.message)
+            raise EWrongParamsError(str(e))
         except Exception as e:
             log.error('API UNEXPECTED(!) error: %s !-> %r', log_call, e)
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -107,7 +107,7 @@ class API(object):
         # todo: check unicode
         data = dict(
             message_type='answer',
-            error=dict(cls=type(error).__name__, message=error.message) if error else None,
+            error=dict(cls=type(error).__name__, message=str(error)) if error else None,
             result=result,
         )
         if rpc_call_id is not None:

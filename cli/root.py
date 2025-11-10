@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
-import sys, os
+import sys
+import os
 import logging
 log = logging.getLogger(__name__)
 
 from mongoengine import connect
 import click
-from hgapi import Repo
 
 
 @click.group()
@@ -23,18 +23,16 @@ def root(ctx, db, verbose, project, world):
         logging.getLogger().setLevel('INFO')
 
     if not world:
-        world = os.path.join(project, u'sublayers_world')
+        world = os.path.join(project, 'sublayers_world')
 
-    main_repo = Repo(project)
-    world_repo = Repo(world)
+    # Git repo support (removed hgapi dependency)
+    # main_repo and world_repo can be added later if needed via gitpython
 
     ctx.obj.update(
         db=db,
         verbose=verbose,
         project=project,
         world=world,
-        main_repo=main_repo,
-        world_repo=world_repo,
     )
     db = connect(db=db)
     log.info('Use project root: %r', ctx.obj['project'])

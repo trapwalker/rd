@@ -40,7 +40,7 @@ class RevisionGettingError(Exception):
 
 def run(cmd):
     encoding = sys.getfilesystemencoding()
-    cmd = [word.encode(encoding) if isinstance(word, unicode) else word for word in cmd]
+    cmd = [word.encode(encoding) if isinstance(word, str) else word for word in cmd]
     data = subprocess.check_output(cmd, shell=os.name == "nt").decode(encoding)
     return data.strip()
     
@@ -49,7 +49,7 @@ HGRevisionCls = namedtuple('HGRevisionCls', 'hash num branch is_changed')
 
 class HGRevision(HGRevisionCls):
     # todo: exceptions
-    _rev_parser = re.compile("([0-9a-f]+)(\+?)\s(\d+)(\+?)\s(.*)")
+    _rev_parser = re.compile(r"([0-9a-f]+)(\+?)\s(\d+)(\+?)\s(.*)")
     # 7f9c68086b3e+ 1815+ website
     def __new__(cls, path=None):
         cmd = ['hg', 'id', '-ibn'] + (['-R', path] if path else [])

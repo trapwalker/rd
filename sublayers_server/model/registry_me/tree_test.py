@@ -20,7 +20,7 @@ if __name__ == '__main__':
     log.addHandler(handler(
         cls=logging.FileHandler,
         level='DEBUG',
-        fmt=u'%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s',
+        fmt='%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s',
         filename='tree_test.log',
         encoding='utf-8',
     ))
@@ -44,8 +44,8 @@ import os
 
 def test2(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    #reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    #reg = get_global_registry(path='../../../tmp', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     globals().update(locals())
 
@@ -53,7 +53,7 @@ def test2(reload=True, save_loaded=True):
 def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     #a = reg.get('/registry/mobiles/cars/heavy/btrs/05_m113a1/quick')
     #q = reg.get('/registry/agents/user/quick')
@@ -89,7 +89,7 @@ def test3(reload=True, save_loaded=True):
         for b in t.buildings:
             with Timer() as t1:
                 x = b.as_client_dict()
-                print(u'[{t1.duration:.3f}s] - {b.title}'.format(**locals()))
+                print('[{t1.duration:.3f}s] - {b.title}'.format(**locals()))
     print('TOTAL:', t0.duration)
 
     #T = lambda name: Timer(name=name, log_start=None, logger=log)
@@ -116,10 +116,10 @@ def test3(reload=True, save_loaded=True):
 def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     #from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path=u'../../../tmp', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../tmp', reload=reload, save_loaded=save_loaded)
     #ag = Agent.objects.filter({}).first()
 
-    #reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    #reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
     # c = reg.get('reg:///registry/mobiles/cars/light/motorcycles/honda_hornet')
     # cc = c.instantiate()
     # w = reg.get('reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/dshkm_twin')
@@ -164,7 +164,7 @@ def test5(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     # with T('Agent load'):
     #     a = Agent.objects.filter(login='q'*13).first()
@@ -176,7 +176,7 @@ def test5(reload=True, save_loaded=True):
     # with T():
     #     for i in xrange(100):
     #         p = a.profile.instantiate()
-    #c = reg.get(u'/registry/mobiles/cars/middle/vans/barkas_b1000kb')
+    #c = reg.get('/registry/mobiles/cars/middle/vans/barkas_b1000kb')
     #print(c)
     #print(c.slot_CC)
 
@@ -211,7 +211,7 @@ def test_perf(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     _tested = set()
     with T('deep_read_test', logger=log):
@@ -228,7 +228,7 @@ def test_localization(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
     from sublayers_common.site_locale import load_locale_objects
-    WORLD_PATH = u'../../../sublayers_world'
+    WORLD_PATH = '../../../sublayers_world'
 
     load_locale_objects('../../../sublayers_common/static/locale/game', WORLD_PATH)
 

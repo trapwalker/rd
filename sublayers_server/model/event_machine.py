@@ -73,7 +73,7 @@ class Server(object):
 
         self.reg = None  # Registry(name='registry')
         self.server_mode = options.mode
-        # self.reg.load(path=os.path.join(options.world_path, u'registry')) # todo: (!!) async call
+        # self.reg.load(path=os.path.join(options.world_path, 'registry')) # todo: (!!) async call
 
         self.zones = []
 
@@ -704,7 +704,7 @@ class QuickLocalServer(LocalServer):
                 try:
                     agent_exemplar.save()
                 except ValidationError as e:
-                    log.error(e.message)
+                    log.error(str(e))
                     for err_field, err in e.errors.items():
                         log.error('  {:20}: {}'.format(err_field, err))
             else:

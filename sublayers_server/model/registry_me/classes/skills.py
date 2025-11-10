@@ -14,16 +14,16 @@ import math
 
 
 class ClassSkill(Node):
-    target = StringField(caption=u"Целевой навык", tags={'client'})
-    bonus_step = IntField(caption=u"Шаг начисления бонуса", tags={'client'})
-    limit = IntField(caption=u"Предел роста навыка", tags={'client'})
+    target = StringField(caption="Целевой навык", tags={'client'})
+    bonus_step = IntField(caption="Шаг начисления бонуса", tags={'client'})
+    limit = IntField(caption="Предел роста навыка", tags={'client'})
 
 
 class Skill(Node):
-    value = IntField(caption=u"Уровень навыка", tags={'client'})
-    limit = IntField(caption=u"Предел прокачки навыка", tags={'client'})
-    mod = RegistryLinkField(caption=u"Модификатор навыка", document_type=ClassSkill)
-    description = LocalizedStringField(caption=u'Расширенное описание', tags={'client'})
+    value = IntField(caption="Уровень навыка", tags={'client'})
+    limit = IntField(caption="Предел прокачки навыка", tags={'client'})
+    mod = RegistryLinkField(caption="Модификатор навыка", document_type=ClassSkill)
+    description = LocalizedStringField(caption='Расширенное описание', tags={'client'})
 
     def get_bonuses(self, v):
         if v >= self.mod.bonus_step:
@@ -47,16 +47,16 @@ class Skill(Node):
 
 
 class SkillPriceItem(Subdoc):
-    count = IntField(caption=u"Количество", tags={'client'})
-    price = FloatField(caption=u"Цена", tags={'client'})
+    count = IntField(caption="Количество", tags={'client'})
+    price = FloatField(caption="Цена", tags={'client'})
 
 
 class BuySkill(Node):
-    value = IntField(caption=u"Количество купленных очков навыка", tags={'client'})
-    limit = IntField(caption=u"Предел покупки очков навыка", tags={'client'})
-    description = LocalizedStringField(caption=u"Расширенное описание", tags={'client'})
+    value = IntField(caption="Количество купленных очков навыка", tags={'client'})
+    limit = IntField(caption="Предел покупки очков навыка", tags={'client'})
+    description = LocalizedStringField(caption="Расширенное описание", tags={'client'})
     price = ListField(
-        caption=u'Таблица цен на очки навыков', tags={'client'},
+        caption='Таблица цен на очки навыков', tags={'client'},
         field=EmbeddedDocumentField(document_type=SkillPriceItem),
         readonly=True,
     )

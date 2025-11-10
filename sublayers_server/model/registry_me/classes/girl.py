@@ -16,16 +16,16 @@ import random
 
 
 class BonusRec(Subdoc):
-    item = EmbeddedNodeField(document_type=QuestItem, caption=u"Бонусный итем", reinst=True, tags={'client'})
-    chance = FloatField(caption=u'Шанс выпадения итема', tags={'client'})
+    item = EmbeddedNodeField(document_type=QuestItem, caption="Бонусный итем", reinst=True, tags={'client'})
+    chance = FloatField(caption='Шанс выпадения итема', tags={'client'})
 
 
 class ServiceRec(Subdoc):
-    title = LocalizedStringField(caption=u'Название услуги', tags={'client'})
-    price = IntField(caption=u'Цена услуги', tags={'client'})
-    image = StringField(caption=u'Изображение для услуги', tags={'client'})
+    title = LocalizedStringField(caption='Название услуги', tags={'client'})
+    price = IntField(caption='Цена услуги', tags={'client'})
+    image = StringField(caption='Изображение для услуги', tags={'client'})
     bonus_list = ListField(
-        caption=u"Список бонусов",
+        caption="Список бонусов",
         field=EmbeddedDocumentField(document_type=BonusRec),
         reinst=True,
     )
@@ -33,7 +33,7 @@ class ServiceRec(Subdoc):
 
 class Girl(Institution):
     service_list = ListField(
-        caption=u"Список бонусов",
+        caption="Список бонусов",
         field=EmbeddedDocumentField(document_type=ServiceRec, tags={'client'}),
         reinst=True,
         tags={'client'},

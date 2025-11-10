@@ -2,7 +2,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-from Queue import PriorityQueue, Full
+from queue import PriorityQueue, Full
 from time import time as _time
 from datetime import datetime
 import heapq
@@ -13,7 +13,7 @@ import json
 from uuid import uuid1 as get_uid, UUID
 from time import time as get_time  # todo: integer vs float time
 from weakref import WeakSet, ref
-from collections import Callable
+from collections.abc import Callable
 import random
 # import slugger  # todo: search good slugger lib
 
@@ -136,7 +136,7 @@ class TimeFormatter(object):
 time_log_format = TimeFormatter('{:%H:%M:%S.%f}')
 
 
-class TimelineQueue(object, PriorityQueue):
+class TimelineQueue(PriorityQueue):
     #__slots__ = ['EMPTY'] # todo: future python versions optimization
 
     @total_ordering
@@ -300,21 +300,21 @@ class SubscriptionList(WeakSet):
         except KeyError:
             pass
 
-KARMA_NAMES = [u'Новая надежда', u'Мессия', u'Спаситель', u'Святой', u'Герой', u'Страж', u'Борец', u'Спасатель',
-    u'Защитник', u'Друг людей', u'Правильный', u'Честный парень', u'Партнер', u'Славный малый', u'Поселенец',
-    u'Человек простой', u'Странник', u'Наблюдатель', u'Выживальщик', u'Авантюрист', u'Равнодушный', u'Циник',
-    u'Хулиган', u'Жулик', u'Изгой', u'Мошенник', u'Грабитель', u'Захватчик', u'Убийца', u'Псих', u'Больной ублюдок',
-    u'Маньяк', u'Антихрист']
-KARMA_NAMES_RU = [u'Новая надежда', u'Мессия', u'Спаситель', u'Святой', u'Герой', u'Страж', u'Борец', u'Спасатель',
-    u'Защитник', u'Друг людей', u'Правильный', u'Честный парень', u'Партнер', u'Славный малый', u'Поселенец',
-    u'Человек простой', u'Странник', u'Наблюдатель', u'Выживальщик', u'Авантюрист', u'Равнодушный', u'Циник', 
-    u'Хулиган', u'Жулик', u'Изгой', u'Мошенник', u'Грабитель', u'Захватчик', u'Убийца', u'Псих', u'Больной ублюдок', 
-    u'Маньяк', u'Антихрист']
-KARMA_NAMES_ENG = [u'New hope', u'Messiah', u'Savior', u'Saint', u'Hero', u'Guardian', u'Fighter', u'Rescuer',
-    u'Defender', u'Friend of the people', u'Proper', u'Honest guy', u'Partner', u'Good fellow', u'Settler',
-    u'Simple man', u'Wanderer', u'Spectator', u'Survivalist', u'Adventurer', u'Indifferent', u'Cynic', u'Bully',
-    u'Rogue', u'Outlaw', u'Rascal', u'Looter', u'Raider', u'Killer', u'Psycho', u'Sick bastard', u'Maniac', 
-    u'Antichrist']
+KARMA_NAMES = ['Новая надежда', 'Мессия', 'Спаситель', 'Святой', 'Герой', 'Страж', 'Борец', 'Спасатель',
+    'Защитник', 'Друг людей', 'Правильный', 'Честный парень', 'Партнер', 'Славный малый', 'Поселенец',
+    'Человек простой', 'Странник', 'Наблюдатель', 'Выживальщик', 'Авантюрист', 'Равнодушный', 'Циник',
+    'Хулиган', 'Жулик', 'Изгой', 'Мошенник', 'Грабитель', 'Захватчик', 'Убийца', 'Псих', 'Больной ублюдок',
+    'Маньяк', 'Антихрист']
+KARMA_NAMES_RU = ['Новая надежда', 'Мессия', 'Спаситель', 'Святой', 'Герой', 'Страж', 'Борец', 'Спасатель',
+    'Защитник', 'Друг людей', 'Правильный', 'Честный парень', 'Партнер', 'Славный малый', 'Поселенец',
+    'Человек простой', 'Странник', 'Наблюдатель', 'Выживальщик', 'Авантюрист', 'Равнодушный', 'Циник', 
+    'Хулиган', 'Жулик', 'Изгой', 'Мошенник', 'Грабитель', 'Захватчик', 'Убийца', 'Псих', 'Больной ублюдок', 
+    'Маньяк', 'Антихрист']
+KARMA_NAMES_ENG = ['New hope', 'Messiah', 'Savior', 'Saint', 'Hero', 'Guardian', 'Fighter', 'Rescuer',
+    'Defender', 'Friend of the people', 'Proper', 'Honest guy', 'Partner', 'Good fellow', 'Settler',
+    'Simple man', 'Wanderer', 'Spectator', 'Survivalist', 'Adventurer', 'Indifferent', 'Cynic', 'Bully',
+    'Rogue', 'Outlaw', 'Rascal', 'Looter', 'Raider', 'Killer', 'Psycho', 'Sick bastard', 'Maniac', 
+    'Antichrist']
 
 
 def getKarmaName(karma, lang):

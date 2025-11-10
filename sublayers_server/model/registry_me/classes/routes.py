@@ -13,7 +13,7 @@ from sublayers_server.model.vectors import Point
 
 
 class AbstractRoute(Node):
-    route_accuracy = IntField(root_default=100, caption=u"Точность подъезда к каждой точки маршрута")
+    route_accuracy = IntField(root_default=100, caption="Точность подъезда к каждой точки маршрута")
 
     def get_start_point(self):
         log.error('Call Abstract Method !!!! ')
@@ -38,14 +38,14 @@ class AbstractRoute(Node):
 class Route(AbstractRoute):
     points = ListField(
         root_default=list,
-        caption=u"Маршрут патрулирования",
-        field=PositionField(caption=u"Точка патрулирования", reinst=True,),
+        caption="Маршрут патрулирования",
+        field=PositionField(caption="Точка патрулирования", reinst=True,),
         reinst=True,
     )
 
-    current_index = IntField(root_default=0, caption=u"Текущий индекс")
-    reverse = BooleanField(root_default=False, caption=u"Правила выбора следующей точки")
-    cyclic = BooleanField(root_default=False, caption=u"Определяет, является ли маршрут циклическим")
+    current_index = IntField(root_default=0, caption="Текущий индекс")
+    reverse = BooleanField(root_default=False, caption="Правила выбора следующей точки")
+    cyclic = BooleanField(root_default=False, caption="Определяет, является ли маршрут циклическим")
 
     def get_start_point(self):
         return self.points[-1] if self.reverse else self.points[0]
@@ -91,11 +91,11 @@ class Route(AbstractRoute):
 
 
 class AreaRandomRoute(AbstractRoute):
-    center = PositionField(caption=u"Точка патрулирования")
-    _last_current_point = PositionField(caption=u"Последняя выбранная точка")
-    dispersion = IntField(root_default=100, caption=u"Разброс рандома")
-    _route_start_time = IntField(root_default=0, caption=u"Время старта маршрута")
-    route_deadline = IntField(root_default=0, caption=u"Минимальное время на маршруте")
+    center = PositionField(caption="Точка патрулирования")
+    _last_current_point = PositionField(caption="Последняя выбранная точка")
+    dispersion = IntField(root_default=100, caption="Разброс рандома")
+    _route_start_time = IntField(root_default=0, caption="Время старта маршрута")
+    route_deadline = IntField(root_default=0, caption="Минимальное время на маршруте")
 
     def get_start_point(self):
         return self.center
@@ -124,12 +124,12 @@ class AreaRandomRoute(AbstractRoute):
 class CompositeRoute(AbstractRoute):
     routes = ListField(
         root_default=list,
-        caption=u"Список маршрутов. Начинается с нулевого маршрута. Переключается на следующий только по завершении предыдущего",
-        field=EmbeddedDocumentField(document_type=AbstractRoute, caption=u"Маршруты по порядку"),
+        caption="Список маршрутов. Начинается с нулевого маршрута. Переключается на следующий только по завершении предыдущего",
+        field=EmbeddedDocumentField(document_type=AbstractRoute, caption="Маршруты по порядку"),
         reinst=True,
     )
 
-    current_route_index = IntField(root_default=0, caption=u"Индекс текущего маршрута в routes")
+    current_route_index = IntField(root_default=0, caption="Индекс текущего маршрута в routes")
 
     def get_start_point(self):
         return self.routes[self.current_route_index].get_start_point()

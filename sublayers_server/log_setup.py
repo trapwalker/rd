@@ -17,12 +17,12 @@ SUFFIX_BY_MODE = {
 }
 
 
-formatter_simple = Formatter(u'%(relativeCreated)08d %(levelname)-7s %(message)s')
-formatter_simple_for_agent = Formatter(u'%(asctime)s %(levelname)-7s %(message)s')
-formatter_complex = Formatter(u'%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s')
-formatter_websrv = Formatter(u'%(asctime)s %(levelname)-7s %(message)s')
-formatter_events = Formatter(u'%(asctime)s %(levelname)-7s %(message)s')
-formatter_stat = Formatter(u'%(message)s')
+formatter_simple = Formatter('%(relativeCreated)08d %(levelname)-7s %(message)s')
+formatter_simple_for_agent = Formatter('%(asctime)s %(levelname)-7s %(message)s')
+formatter_complex = Formatter('%(asctime)s %(levelname)-7s [%(filename)21s:%(lineno)-4d] %(message)s')
+formatter_websrv = Formatter('%(asctime)s %(levelname)-7s %(message)s')
+formatter_events = Formatter('%(asctime)s %(levelname)-7s %(message)s')
+formatter_stat = Formatter('%(message)s')
 
 
 def init(server_mode=None):

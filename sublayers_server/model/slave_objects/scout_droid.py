@@ -9,7 +9,7 @@ from sublayers_server.model.events import Event
 import sublayers_server.model.tags as tags
 from sublayers_server.model.inventory import ItemState
 
-u'''
+'''
     Двигающаяся турель! Дрон-разведчик.
 '''
 

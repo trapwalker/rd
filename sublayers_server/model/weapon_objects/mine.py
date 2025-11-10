@@ -19,9 +19,9 @@ class MineStartEvent(Event):
 
     def on_perform(self):
         super(MineStartEvent, self).on_perform()
-        if self.example_mine._cls == u"MapWeaponEffectMine":
+        if self.example_mine._cls == "MapWeaponEffectMine":
             SlowMine(time=self.time, starter=self.starter, example=self.example_mine)
-        elif self.example_mine._cls == u"MapWeaponBangMine":
+        elif self.example_mine._cls == "MapWeaponBangMine":
             BangMine(time=self.time, starter=self.starter, example=self.example_mine)
 
 

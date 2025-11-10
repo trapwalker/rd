@@ -11,7 +11,7 @@ ROOTBIN = 0b11  # зависит от метода представления т
 
 
 def bin2str(binary):  # зависит от метода представл ения тайла в памяти
-    u"""Преобразование бинарного представления индекса тайла в qrts-строку"""
+    """Преобразование бинарного представления индекса тайла в qrts-строку"""
     s = ''
     x = int(binary)
     while x > 0b11:
@@ -19,12 +19,12 @@ def bin2str(binary):  # зависит от метода представл ен
         x >>= 2
     if x != 0b11:
         raise ETileException(
-            u'Некорректный бинарный формат индекса тайла: {}'.format(bin(binary)))
+            'Некорректный бинарный формат индекса тайла: {}'.format(bin(binary)))
     return s
 
 
 def str2bin(string):  #
-    u"""Преобразование qrts-строки в бинарное представление индекса тайла.
+    """Преобразование qrts-строки в бинарное представление индекса тайла.
     Зависит от метода представления тайла в памяти.
     """
     s = string.lower()
@@ -34,12 +34,12 @@ def str2bin(string):  #
             x = (x << 2) | QRTS2BIN[i]
     except:
         raise ETileException(
-            u'Некорректный текстовый qrts-формат индекса тайла: {}'.format(string))
+            'Некорректный текстовый qrts-формат индекса тайла: {}'.format(string))
     return x
 
 
 def bin2xyz(binary):
-    u"""
+    """
     Преобразование бинарного представления индекса тайла в кортеж (x, y, zoom).
     Зависит от метода представления тайла в памяти.
     """
@@ -52,12 +52,12 @@ def bin2xyz(binary):
         b >>= 2
     if b != 0b11:
         raise ETileException(
-            u'Некорректный бинарный формат индекса тайла: {}'.format(bin(binary)))
+            'Некорректный бинарный формат индекса тайла: {}'.format(bin(binary)))
     return x, y, z
 
 
 def xyz2bin(x, y, z):
-    u"""
+    """
     Преобразование кортежа (x, y, zoom) в бинарное представление индекса тайла.
     Зависит от метода представления тайла в памяти.
     """
@@ -77,14 +77,14 @@ def iterbin(binary):  # зависит от метода представлен�
     while b > 0b11:
         yield int(b & 0b11)
         b >>= 2
-    assert b == 0b11, u'Некорректный бинарный формат индекса; {}'.format(bin(binary))
+    assert b == 0b11, 'Некорректный бинарный формат индекса; {}'.format(bin(binary))
 
 
 def iter2bin(itr):  # зависит от метода представления тайла в памяти
     shift = 0
     t = 0
     for i in itr:
-        assert 0 <= i < 4, u'Некорректный список для инициализации индекса тайла: {}'.format(itr)
+        assert 0 <= i < 4, 'Некорректный список для инициализации индекса тайла: {}'.format(itr)
         t |= (0b11 & i) << shift
         shift += 2
     t |= 0b11 << shift
@@ -92,7 +92,7 @@ def iter2bin(itr):  # зависит от метода представлени�
 
 
 class Tileid(long):
-    u"""
+    """
     Индекс тайла.
     Представляется в виде бинарной qrts-последовательности,
     финализируемой двумя старшими незначащими единичными разрядами.
@@ -118,7 +118,7 @@ class Tileid(long):
             if isinstance(arg, (int, long)):
                 bitlen = arg.bit_length()  # int.bit_length python 2.5 incompatible
                 assert (((bitlen % 2) == 0) and (bitlen >= 2) and (arg >> bitlen - 2 == 3)), \
-                    u'Incorrect binary tile id format: {}'.format(bin(arg))
+                    'Incorrect binary tile id format: {}'.format(bin(arg))
                 return long.__new__(cls, arg)
 
             if isinstance(arg, basestring):
@@ -128,7 +128,7 @@ class Tileid(long):
             if hasattr(arg, '__getitem__') or hasattr(arg, 'next') or hasattr(arg, '__iter__'):
                 return long.__new__(cls, iter2bin(arg))
 
-        raise ETileException(u'''Некорректный набор параметров "{!r}".
+        raise ETileException('''Некорректный набор параметров "{!r}".
             Ожидается: <qrts_bin>|<qrts_str>|(x, y, z)|<list>|<Tileid>
             где: qrts_bin -- int; qrts_str -- str;
             (x, y, z) -- tuple of three int
@@ -139,18 +139,18 @@ class Tileid(long):
         return self == ROOTBIN
 
     def parent(self, levelup=1):
-        u"""
+        """
         Возвращает предка на levelup уровней выше.
         При попытке получить предка корня генерируется исключение.
         Зависит от метода представления тайла в памяти.
         """
         z = self.zoom()
-        assert 0 <= levelup <= z, u'Некорректно указан относительный уровень предка.'
+        assert 0 <= levelup <= z, 'Некорректно указан относительный уровень предка.'
         mask = 2 ** ((z - levelup) * 2) - 1
         return Tileid((self & mask) | (0b11 << ((z - levelup) * 2)))
 
     def child(self, *args):
-        u"""
+        """
         Возвращает определйнного аргументом child потомка.
         child может быть индексом потомка (int), списком индексов [0,1,2,3],
         строкой 'qrts'. В случае строки или списка потомки берутся по цепочке вниз.
@@ -171,40 +171,40 @@ class Tileid(long):
         elif len(args) == 3:
             return self.child(Tileid(*args))
         else:
-            raise Exception(u'Некорректный набор параметров: {!r}'.format(args))
+            raise Exception('Некорректный набор параметров: {!r}'.format(args))
 
     def childs(self, level=1):
-        u"""Итератор, перечисляющий всех потомков на уровне level вниз от текущего."""
+        """Итератор, перечисляющий всех потомков на уровне level вниз от текущего."""
         assert isinstance(level, int) and level >= 0, \
-            u'Некорректное значение аргумента level: {}'.format(level)
+            'Некорректное значение аргумента level: {}'.format(level)
         size = 2 ** level
         for y in xrange(size):
             for x in xrange(size):
                 yield self.child(Tileid(x, y, level))
 
     def qrts(self):
-        u"""Представление индекса в виде qrts-строки."""
+        """Представление индекса в виде qrts-строки."""
         if not hasattr(self, '_qrts'):
             #noinspection PyAttributeOutsideInit
             self._qrts = bin2str(self)
         return self._qrts
 
     def xyz(self):
-        u"""Представление индекса в виде кортежа (x, y, zoom)."""
+        """Представление индекса в виде кортежа (x, y, zoom)."""
         if not hasattr(self, '_x'):
             #noinspection PyAttributeOutsideInit
             self._x, self._y, self._z = bin2xyz(self)
         return self._x, self._y, self._z
 
     def zoom(self):
-        u"""Возвращает масштаб тайла."""
+        """Возвращает масштаб тайла."""
         if not hasattr(self, '_z'):
             #noinspection PyAttributeOutsideInit
             self._x, self._y, self._z = bin2xyz(self)
         return self._z
 
     def __getitem__(self, idx):
-        u"""
+        """
         @param slice|int idx: Index or slice for get item or subset of tileid
         """
         if isinstance(idx, slice):
@@ -212,7 +212,7 @@ class Tileid(long):
 
         if idx < 0:
             idx = self.zoom() + idx
-        assert idx < self.zoom(), u'Out of range'
+        assert idx < self.zoom(), 'Out of range'
         return int((self >> (idx * 2)) & 0b11)
 
     def __reversed__(self):

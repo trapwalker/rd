@@ -14,7 +14,7 @@ from sublayers_common.site_locale import locale, locales_by_key, locale_objects
 DEFAULT_LANG = 'en'
 
 class LocalizedString(EmbeddedDocument):
-    _id = StringField(caption=u"Ключ из словаря локализации")
+    _id = StringField(caption="Ключ из словаря локализации")
     # TODO: Реализовать отдельные типы полей для локализованных строк, чтобы они брали значение по instance.get
     en = StringField()
     ru = StringField()
@@ -40,7 +40,7 @@ class LocalizedString(EmbeddedDocument):
         if _id:
             return unicode(_id)
 
-        return u''
+        return ''
 
 
     def as_dict(self):

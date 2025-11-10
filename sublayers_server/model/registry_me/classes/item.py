@@ -14,29 +14,29 @@ from sublayers_server.model.registry_me.tree import (
 
 
 class Item(Node):
-    icon = StringField(caption=u'Пиктограмма предмета')
+    icon = StringField(caption='Пиктограмма предмета')
     # todo: обсудить диапазон
-    amount = IntField(caption=u'Количество', doc=u'Реальное кличество предметов в стеке', tags={'client'})
-    stack_size = IntField(caption=u'Максимальный размер стека этих предметов в инвентаре', tags={'client'})
-    position = IntField(caption=u'Позиция в инвентаре')
-    base_price = FloatField(caption=u'Базовая цена за 1 стек', tags={'client'})
-    condition = IntField(caption=u'Состояние (если есть) предмета по 5-бальной шкале. По умолчанию состояния не определено.')
+    amount = IntField(caption='Количество', doc='Реальное кличество предметов в стеке', tags={'client'})
+    stack_size = IntField(caption='Максимальный размер стека этих предметов в инвентаре', tags={'client'})
+    position = IntField(caption='Позиция в инвентаре')
+    base_price = FloatField(caption='Базовая цена за 1 стек', tags={'client'})
+    condition = IntField(caption='Состояние (если есть) предмета по 5-бальной шкале. По умолчанию состояния не определено.')
 
-    description = LocalizedStringField(caption=u'Расширенное описание предмета')
+    description = LocalizedStringField(caption='Расширенное описание предмета')
 
-    inv_icon_big = StringField(caption=u'URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
-    inv_icon_mid = StringField(caption=u'URL глифа (средний размер) для блоков инвентарей', tags={'client'})
-    inv_icon_small = StringField(caption=u'URL глифа (малый размер) для блоков инвентарей', tags={'client'})
-    inv_icon_supersmall = StringField(caption=u'URL глифа (супер малый размер) для блоков инвентарей', tags={'client'})
-    inv_icon_xsmall = StringField(caption=u'URL глифа (самый малый размер) для блоков инвентарей', tags={'client'})
+    inv_icon_big = StringField(caption='URL глифа (большой разиер) для блоков инвентарей', tags={'client'})
+    inv_icon_mid = StringField(caption='URL глифа (средний размер) для блоков инвентарей', tags={'client'})
+    inv_icon_small = StringField(caption='URL глифа (малый размер) для блоков инвентарей', tags={'client'})
+    inv_icon_supersmall = StringField(caption='URL глифа (супер малый размер) для блоков инвентарей', tags={'client'})
+    inv_icon_xsmall = StringField(caption='URL глифа (самый малый размер) для блоков инвентарей', tags={'client'})
         
     # todo: move title attr to the root
-    activate_type = StringField(caption=u'Способ активации: none, self ...', tags={'client'})
-    activate_time = FloatField(caption=u'Время активации итема')
-    activate_disable_comment = LocalizedStringField(caption=u'Опсиание условий активации', tags={'client'})
+    activate_type = StringField(caption='Способ активации: none, self ...', tags={'client'})
+    activate_time = FloatField(caption='Время активации итема')
+    activate_disable_comment = LocalizedStringField(caption='Опсиание условий активации', tags={'client'})
 
     condition_map = MapField(
-        caption=u'Словарь состояний предмета (<числовой индекс>: <Локализуемый текст>)',
+        caption='Словарь состояний предмета (<числовой индекс>: <Локализуемый текст>)',
         field=LocalizedStringField(), root_default=dict,
     )
 
@@ -54,7 +54,7 @@ class Item(Node):
             return title
 
         def merge(c, t):
-            return u'{} {}{}'.format(c, t[:1].lower(), t[1:])
+            return '{} {}{}'.format(c, t[:1].lower(), t[1:])
 
         return LocalizedString(  #TODO: ##FIX ##LOCALIZATION Смерджить все возможные локали
             en=merge(condition_text.en, title.en),
@@ -66,9 +66,9 @@ class Item(Node):
         condition = self.condition
         condition_map = self.condition_map
         if not condition_map or not condition:
-            return LocalizedString(u'')
+            return LocalizedString('')
 
-        return condition_map.get(condition, LocalizedString(u''))
+        return condition_map.get(condition, LocalizedString(''))
 
     def ids(self):
         return dict(uid=self.uid, node_hash=self.node_hash())
@@ -92,11 +92,11 @@ class Item(Node):
         l = self._parent_list
         return l.index(h) if h in l else -1
 
-    # HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    # HTML_DESCRIPTION_TEMPLATE = Template("""
     #     {{ _(this.description) }}
     # """, whitespace='oneline')
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    HTML_DESCRIPTION_TEMPLATE = Template("""
         <div class="description-line left-align small">{{ _('item_price') }}:</div><div class="description-line right-align small">{{ "{:.0f}".format(this.base_price) }}NC</div>
         <div class="description-line left-align small">{{ _('item_stack_size') }}:</div><div class="description-line right-align small">{{ this.stack_size }}</div>
         {% set text_description = _(this.description) %}
@@ -181,16 +181,16 @@ class ItemUsable(Item):
     post_activate_items = ListField(
         field=RegistryLinkField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
-            caption=u"Итем который упадет в инвентарь",
+            caption="Итем который упадет в инвентарь",
             # todo: спрашивать о райзе у объекта?
         ),
-        caption=u'Список итемов которые упадут в инвентарь после активации',
+        caption='Список итемов которые упадут в инвентарь после активации',
     )
-    activate_success_audio = StringField(caption=u'Имя звука, сигнализизирующего об успешной активации итема', tags={'client'})
+    activate_success_audio = StringField(caption='Имя звука, сигнализизирующего об успешной активации итема', tags={'client'})
 
 
 class Tank(ItemUsable):
-    value_fuel = FloatField(caption=u'Объем канистры', tags={'client'})
+    value_fuel = FloatField(caption='Объем канистры', tags={'client'})
 
 
 class TankFull(Tank):
@@ -208,12 +208,12 @@ class TankFull(Tank):
 class TankEmpty(Tank):
     full_tank = EmbeddedNodeField(
         document_type=Item,
-        caption=u'Ссылка на полную канистру, получаемую заправкой этой пустой канистры',
+        caption='Ссылка на полную канистру, получаемую заправкой этой пустой канистры',
     )
 
 
 class BuildSet(ItemUsable):
-    build_points = FloatField(caption=u'Объем восстановления здоровья в единицах')
+    build_points = FloatField(caption='Объем восстановления здоровья в единицах')
 
     @classmethod
     def activate(cls):
@@ -246,7 +246,7 @@ class SlotLock(SlotItem):
 class MapWeaponItem(ItemUsable):
     generate_obj = EmbeddedNodeField(
         # document_type = # todo: Указать тип реестрового объекта
-        caption=u'Ссылка на объект генерации',
+        caption='Ссылка на объект генерации',
     )
 
 
@@ -265,7 +265,7 @@ class MapWeaponMineItem(MapWeaponItem):
 class MapWeaponRocketItem(MapWeaponItem):
     starter_obj_list = ListField(
         field=RegistryLinkField(),
-        caption=u'Список подходящих пусковых установок',
+        caption='Список подходящих пусковых установок',
     )
 
     @classmethod
@@ -312,24 +312,24 @@ class MapRadarItem(MapWeaponItem):
 
 
 class MechanicItem(SlotItem):
-    p_visibility_min = FloatField(caption=u"Коэффициент минимальной заметности")
-    p_visibility_max = FloatField(caption=u"Коэффициент максимальной заметности")
-    p_observing_range = FloatField(caption=u"Радиус обзора")
-    max_hp = FloatField(caption=u"Максимальное значение HP")
-    r_min = FloatField(caption=u"Минимальный радиус разворота")
-    mobility = FloatField(caption=u"Изменение манёвренности в поворотах")  # former ac_max
-    max_control_speed = FloatField(caption=u"Абсолютная максимальная скорость движения")
-    v_forward = FloatField(caption=u"Максимальная скорость движения вперед")
-    v_backward = FloatField(caption=u"Максимальная скорость движения назад")
-    a_forward = FloatField(caption=u"Ускорение разгона вперед")
-    a_backward = FloatField(caption=u"Ускорение разгона назад")
-    a_braking = FloatField(caption=u"Ускорение торможения")
-    max_fuel = FloatField(caption=u"Максимальное количество топлива")
-    p_fuel_rate = FloatField(caption=u"Расход топлива (л/с)")
-    r_cc_dirt = FloatField(caption=u"Резист к модификатору CC на бездорожье")
-    r_cc_wood = FloatField(caption=u"Резист к модификатору CC в лесу")
-    r_cc_slope = FloatField(caption=u"Резист к модификатору CC в горах")
-    r_cc_water = FloatField(caption=u"Резист к модификатору CC в воде")
+    p_visibility_min = FloatField(caption="Коэффициент минимальной заметности")
+    p_visibility_max = FloatField(caption="Коэффициент максимальной заметности")
+    p_observing_range = FloatField(caption="Радиус обзора")
+    max_hp = FloatField(caption="Максимальное значение HP")
+    r_min = FloatField(caption="Минимальный радиус разворота")
+    mobility = FloatField(caption="Изменение манёвренности в поворотах")  # former ac_max
+    max_control_speed = FloatField(caption="Абсолютная максимальная скорость движения")
+    v_forward = FloatField(caption="Максимальная скорость движения вперед")
+    v_backward = FloatField(caption="Максимальная скорость движения назад")
+    a_forward = FloatField(caption="Ускорение разгона вперед")
+    a_backward = FloatField(caption="Ускорение разгона назад")
+    a_braking = FloatField(caption="Ускорение торможения")
+    max_fuel = FloatField(caption="Максимальное количество топлива")
+    p_fuel_rate = FloatField(caption="Расход топлива (л/с)")
+    r_cc_dirt = FloatField(caption="Резист к модификатору CC на бездорожье")
+    r_cc_wood = FloatField(caption="Резист к модификатору CC в лесу")
+    r_cc_slope = FloatField(caption="Резист к модификатору CC в горах")
+    r_cc_water = FloatField(caption="Резист к модификатору CC в воде")
     PUBLIC_PARAMS = [
         "p_visibility_max",
         "p_visibility_min",
@@ -346,7 +346,7 @@ class MechanicItem(SlotItem):
         "r_cc_dirt",
     ]
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    HTML_DESCRIPTION_TEMPLATE = Template("""
         <br>
         {% for param in this.PUBLIC_PARAMS %}
             {% set v = getattr(this, param, None) %}
@@ -362,11 +362,11 @@ class MechanicItem(SlotItem):
 class TunerItem(SlotItem):
     class TunerImage(Subdoc):
         class TunerImageView(Subdoc):
-            link = StringField(caption=u"Ссылка на картинку", tags={'client'})
-            z_index = IntField(default=0, caption=u"Уровень отображения слоя", tags={'client'})
+            link = StringField(caption="Ссылка на картинку", tags={'client'})
+            z_index = IntField(default=0, caption="Уровень отображения слоя", tags={'client'})
 
         car = RegistryLinkField(
-            caption=u"Автомобиль, для которого указаны данные параметры",
+            caption="Автомобиль, для которого указаны данные параметры",
             document_type='sublayers_server.model.registry_me.classes.mobiles.Car'
         )
         top = EmbeddedDocumentField(document_type=TunerImageView, tags={'client'})
@@ -377,9 +377,9 @@ class TunerItem(SlotItem):
             d['car'] = self.car and self.car.node_hash()
             return d
 
-    pont_points = FloatField(caption=u"Очки крутости для итемов тюнера", tags={'client'})
+    pont_points = FloatField(caption="Очки крутости для итемов тюнера", tags={'client'})
     images = ListField(
-        caption=u'Изображения у тюнера', tags={'client'},
+        caption='Изображения у тюнера', tags={'client'},
         field=EmbeddedDocumentField(document_type=TunerImage),
     )
 
@@ -391,7 +391,7 @@ class TunerItem(SlotItem):
         # log.warning('{} not found in item: {}'.format(car_node_hash, self))
         return None
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    HTML_DESCRIPTION_TEMPLATE = Template("""
         <div class="mechanic-description-line left-align">{{ _('tiht__pont_points') }}: {{ '{:.0f}'.format(this.pont_points) }}</div>
         <div class="mechanic-description-line left-align">{{ _('tiht__compatibility') }}:
             {% if this.images %}
@@ -419,11 +419,11 @@ class ArmorerItem(SlotItem):
         middle = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags={'client'})
         big = EmbeddedDocumentField(document_type=ArmorerImagesSize, tags={'client'})
 
-    weight_class = IntField(caption=u"Класс тяжести итема у оружейника", tags={'client'})
-    direction = StringField(caption=u'Направление (FBRL)', tags={'client'})
+    weight_class = IntField(caption="Класс тяжести итема у оружейника", tags={'client'})
+    direction = StringField(caption='Направление (FBRL)', tags={'client'})
     armorer_images = EmbeddedDocumentField(
         document_type=ArmorerImages,
-        caption=u'Картинки оружейника',
-        doc=u'Ссылки на картинки у оружейника по масштабам.',
+        caption='Картинки оружейника',
+        doc='Ссылки на картинки у оружейника по масштабам.',
         tags={'client'},
     )

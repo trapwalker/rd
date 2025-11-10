@@ -42,7 +42,7 @@ class ServerAPI(API):
                 log.warning('Make new agent for %r #%s: qf=%s, srv_mode=%s', user.name, user.pk, user.quick,
                             options.mode)
                 if options.mode == 'quick':
-                    log.warning(u'ВНИМАНИЕ!!! Создан обычный тпользователь в режиме быстрой игры!')
+                    log.warning('ВНИМАНИЕ!!! Создан обычный тпользователь в режиме быстрой игры!')
 
                 agent_exemplar.save()
                 log.debug('New agent exemplar: %s', agent_exemplar)

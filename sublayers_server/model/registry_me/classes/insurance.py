@@ -17,18 +17,18 @@ import random
 class Insurance(QuestItem):
     # Ссылки на example всех городов
     towns = ListField(
-        caption=u"Последние координаты агента",
+        caption="Последние координаты агента",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Town'),
     )
 
     # Это поле должно быть иногда равно None
     car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
-        caption=u"Автомобиль по страховке",
+        caption="Автомобиль по страховке",
     )
 
-    icon_nukeoil = StringField(caption=u'URL icon_nukeoil', tags={'client'})
-    icon_right_panel = StringField(caption=u'URL icon_right_panel', tags={'client'})
+    icon_nukeoil = StringField(caption='URL icon_nukeoil', tags={'client'})
+    icon_right_panel = StringField(caption='URL icon_right_panel', tags={'client'})
 
     def add_to_inventory(self, inventory, event):
         # удалить другой итем-страховки

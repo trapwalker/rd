@@ -131,7 +131,7 @@ class MapLocation(Observer):
         self.visitors.append(agent)
 
     def on_re_enter(self, agent, event):
-        log.warning(u'ВНИМАНИЕ! [MapLocation.on_re_enter] Тут раньше сохранялся агент. Сохранение отключено для анализа производительности.')
+        log.warning('ВНИМАНИЕ! [MapLocation.on_re_enter] Тут раньше сохранялся агент. Сохранение отключено для анализа производительности.')
         # agent.save(event.time)  # todo: Уточнить можно ли сохранять здесь
         UserActualTradingMessage(agent=agent, time=event.time).post()
         if agent in self.visitors:
@@ -192,7 +192,7 @@ class MapLocation(Observer):
 
 
 class Town(MapLocation):
-    __str_template__ = u'<{self.classname} #{self.id}> => {self.town_name}'
+    __str_template__ = '<{self.classname} #{self.id}> => {self.town_name}'
 
     def __init__(self, time, **kw):  # todo: Конструировать на основе example
         super(Town, self).__init__(time=time, **kw)

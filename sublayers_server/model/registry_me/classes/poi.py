@@ -17,9 +17,9 @@ from sublayers_server.model.registry_me.tree import (
 
 
 class POI(Node):
-    position = PositionField(caption=u"Координаты")
-    p_visibility_min = FloatField(caption=u"Минимальный коэффициент заметности", tags={'parameter', 'param_aggregate'})
-    p_visibility_max = FloatField(caption=u"Максимальный коэффициент заметности", tags={'parameter', 'param_aggregate'})
+    position = PositionField(caption="Координаты")
+    p_visibility_min = FloatField(caption="Минимальный коэффициент заметности", tags={'parameter', 'param_aggregate'})
+    p_visibility_max = FloatField(caption="Максимальный коэффициент заметности", tags={'parameter', 'param_aggregate'})
 
     def get_modify_value(self, param_name, example_agent=None):
         return getattr(self, param_name, None)
@@ -38,67 +38,67 @@ class POI(Node):
 
 
 class POIObserver(POI):
-    p_observing_range = FloatField(caption=u"Радиус подбора лута", tags={'parameter', 'param_aggregate'})
-    p_vigilance = FloatField(caption=u"Коэффициент зоркости", tags={'parameter', 'param_aggregate'})
+    p_observing_range = FloatField(caption="Радиус подбора лута", tags={'parameter', 'param_aggregate'})
+    p_vigilance = FloatField(caption="Коэффициент зоркости", tags={'parameter', 'param_aggregate'})
 
 
 class PoiStash(POIObserver):
-    inventory = InventoryField(caption=u'Инвентарь', doc=u'Список предметов в инвентаре сундука')
-    # inventory_size = IntField(caption=u"размер инвентаря")
+    inventory = InventoryField(caption='Инвентарь', doc='Список предметов в инвентаре сундука')
+    # inventory_size = IntField(caption="размер инвентаря")
 
 
 class RadioTower(POIObserver):
-    radio_point_name = StringField(caption=u'Техническое имя', tags={'client'})
+    radio_point_name = StringField(caption='Техническое имя', tags={'client'})
     pass
 
 
 class RadiationArea(POIObserver):
-    radiation_dps = FloatField(caption=u"DPS зоны радиации")
+    radiation_dps = FloatField(caption="DPS зоны радиации")
 
 
 class MapRespawn(POIObserver):
-    respawn_time = FloatField(caption=u"Время респауна следующего объекта")
-    respawn_radius = FloatField(caption=u"Радиус разброса")
+    respawn_time = FloatField(caption="Время респауна следующего объекта")
+    respawn_radius = FloatField(caption="Радиус разброса")
     respawn_objects = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.POIObserver'),
     )
 
 
 class MapPowerUp(POIObserver):
-    model_class_name = StringField(caption=u'Имя модельного класса')
-    icon_name = StringField(caption=u'Имя иконки в iconManager')
-    activate_comment = LocalizedStringField(caption=u'Комментарий для лога')
-    life_time = FloatField(caption=u"Время жизни")
+    model_class_name = StringField(caption='Имя модельного класса')
+    icon_name = StringField(caption='Имя иконки в iconManager')
+    activate_comment = LocalizedStringField(caption='Комментарий для лога')
+    life_time = FloatField(caption="Время жизни")
 
 
 class MapPowerUpEffects(MapPowerUp):
     effects = ListField(
-        caption=u'Эффекты', doc=u'Список эффектов (URI), накладываемых при срабатывании PowerUp',
+        caption='Эффекты', doc='Список эффектов (URI), накладываемых при срабатывании PowerUp',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.effects.Effect'),
     )
-    effect_time = FloatField(caption=u"Время действия эффектов")
+    effect_time = FloatField(caption="Время действия эффектов")
 
 
 class MapPowerUpShield(MapPowerUp):
-    duration_time = FloatField(caption=u"Время действия щита")
+    duration_time = FloatField(caption="Время действия щита")
 
 
 class MapPowerUpAddItems(MapPowerUp):
     items = ListField(
-        caption=u'Итемы', doc=u'Список итемов, добавляемых при срабатывании PowerUp',
+        caption='Итемы', doc='Список итемов, добавляемых при срабатывании PowerUp',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item'),
     )
 
 
 class MapLocation(POIObserver):
-    svg_link = StringField(caption=u"Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
-    p_enter_range = FloatField(caption=u"Радиус входа в город", tags={'parameter', 'param_aggregate', 'client'})
+    svg_link = StringField(caption="Фон локации")  # todo: Сделать специальный атрибут для ссылки на файл
+    p_enter_range = FloatField(caption="Радиус входа в город", tags={'parameter', 'param_aggregate', 'client'})
 
 
 class Building(Subdoc):
-    name = StringField(caption=u'Техническое имя', tags={'client'})  # todo: identify string constrain
-    caption = LocalizedStringField(caption=u'Название', tags={'client'})
-    title = LocalizedStringField(caption=u'Заголовок', tags={'client'})
+    name = StringField(caption='Техническое имя', tags={'client'})  # todo: identify string constrain
+    caption = LocalizedStringField(caption='Название', tags={'client'})
+    title = LocalizedStringField(caption='Заголовок', tags={'client'})
     head = RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution', tags={'client'})
     instances = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.poi.Institution'),
@@ -109,17 +109,17 @@ class Building(Subdoc):
 class Town(MapLocation):
     static_image_list = ListField(
         field=StringField(),
-        caption=u'StaticImages', doc=u'Список статических файлов этого города'
+        caption='StaticImages', doc='Список статических файлов этого города'
     )
 
     buildings = ListField(  # todo: (!) Обойти все упоминания и исправить интерфейс
         field=EmbeddedDocumentField(document_type=Building),
-        caption=u'Здания', doc=u'В здании может располагаться несколько инстанций.',
+        caption='Здания', doc='В здании может располагаться несколько инстанций.',
         #tags={'client'},
     )
 
-    delay_attack = IntField(caption=u'Промежуток между атаками')
-    aggro_time = IntField(caption=u'Длительность агра города в секундах')
+    delay_attack = IntField(caption='Промежуток между атаками')
+    aggro_time = IntField(caption='Длительность агра города в секундах')
 
     _town_npc_list = None
 
@@ -154,28 +154,28 @@ class Town(MapLocation):
 
 
 class GasStation(Town):
-    u"""Заправочная станция"""
+    """Заправочная станция"""
 
 
 class Institution(Node):
-    trading = IntField(caption=u"Навык торговли NPC", root_default=0, tags={'client'})
-    karma = FloatField(caption=u"Значение кармы NPC", tags={'client'})
+    trading = IntField(caption="Навык торговли NPC", root_default=0, tags={'client'})
+    karma = FloatField(caption="Значение кармы NPC", tags={'client'})
     # Сумма следующих 3 коэффициентов должна давать 1
-    koef_karma = FloatField(caption=u"Коэффициент влияния кармы на отношение данного NPC")
-    koef_rel_index = FloatField(caption=u"Коэффициент влияния индекса отношения на отношение данного NPC")
-    koef_pont_points = FloatField(caption=u"Коэффициент влияния очков крутости на отношение данного NPC")
+    koef_karma = FloatField(caption="Коэффициент влияния кармы на отношение данного NPC")
+    koef_rel_index = FloatField(caption="Коэффициент влияния индекса отношения на отношение данного NPC")
+    koef_pont_points = FloatField(caption="Коэффициент влияния очков крутости на отношение данного NPC")
 
     hometown = RegistryLinkField(
-        doc=u"Ссылка на родной город НПЦ, необходимая для подсчёта расстояний между нпц",
+        doc="Ссылка на родной город НПЦ, необходимая для подсчёта расстояний между нпц",
         document_type='sublayers_server.model.registry_me.classes.poi.MapLocation',
-        caption=u"Родной город НПЦ",
+        caption="Родной город НПЦ",
     )
 
-    photo = StringField(caption=u"Фото", tags={'client'})  # todo: Сделать специальный атрибут для ссылки на файл
-    text = LocalizedStringField(caption=u"Текст приветствия", tags={'client'})
-    type = StringField(caption=u"Специальность NPC", tags={'client'})
+    photo = StringField(caption="Фото", tags={'client'})  # todo: Сделать специальный атрибут для ссылки на файл
+    text = LocalizedStringField(caption="Текст приветствия", tags={'client'})
+    type = StringField(caption="Специальность NPC", tags={'client'})
     quests = ListField(
-        caption=u"Генераторы квестов",
+        caption="Генераторы квестов",
         reinst=True,
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
@@ -192,22 +192,22 @@ class Institution(Node):
 
 
 class SlotWorker(Institution):
-    clear_cost = FloatField(caption=u'Стоимость освобождения слота', root_default=0.025, tags={'client'})
-    setup_cost = FloatField(caption=u'Стоимость установки в слот', root_default=0.05, tags={'client'})
-    margin_slot = FloatField(caption=u'Маржа с которой работает NPC', root_default=0.2, tags={'client'})
+    clear_cost = FloatField(caption='Стоимость освобождения слота', root_default=0.025, tags={'client'})
+    setup_cost = FloatField(caption='Стоимость установки в слот', root_default=0.05, tags={'client'})
+    margin_slot = FloatField(caption='Маржа с которой работает NPC', root_default=0.2, tags={'client'})
 
 
 class Trainer(Institution):
-    drop_price = IntField(caption=u"Цена за сброс перков и навыков", tags={'client'})
+    drop_price = IntField(caption="Цена за сброс перков и навыков", tags={'client'})
 
 
 class Mechanic(SlotWorker):
-    margin_repair = FloatField(caption=u'Маржа с которой ремонтирует NPC', root_default=0.2, tags={'client'})
-    repair_cost = FloatField(caption=u"Коэффициент стоимости ремонта от стоимости машины", root_default=0.5, tags={'client'})
+    margin_repair = FloatField(caption='Маржа с которой ремонтирует NPC', root_default=0.2, tags={'client'})
+    repair_cost = FloatField(caption="Коэффициент стоимости ремонта от стоимости машины", root_default=0.5, tags={'client'})
 
 
 class Parking(Institution):
-    cost_for_day_parking = FloatField(caption=u'Стоимость дня у парковщика', tags={'client'})
+    cost_for_day_parking = FloatField(caption='Стоимость дня у парковщика', tags={'client'})
 
     def get_car_price(self, car):
         # todo: сделать иначе работу с датой
@@ -224,10 +224,10 @@ class Parking(Institution):
 
 class Nukeoil(Institution):
     insurance_list = ListField(
-        caption=u"Список продаваемых страховок", tags={'client'},
+        caption="Список продаваемых страховок", tags={'client'},
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.insurance.Insurance'),
     )
 
 
 class GasStationNPC(Institution):
-    fuel_cost = FloatField(caption=u'Стоимость одного литра топлива', tags={'client'})
+    fuel_cost = FloatField(caption='Стоимость одного литра топлива', tags={'client'})

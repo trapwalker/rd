@@ -14,8 +14,8 @@ from sublayers_server.model.quest_events import OnPartyExp
 
 def inc_name_number(name):
     clear_name = name.rstrip('0123456789')
-    num = int(name[len(clear_name):] or u'0') + 1
-    return u'{}{}'.format(clear_name, num)
+    num = int(name[len(clear_name):] or '0') + 1
+    return '{}{}'.format(clear_name, num)
 
 
 class PartyGetPartyInfoEvent(Event):
@@ -175,7 +175,7 @@ class Invite(object):
 
 class PartyMember(object):
     def __init__(self, agent, party, time, category=2):
-        u"""
+        """
             category - значимость участника группы. 0 - глава, 1 - зам, 2 - рядовой
         """
         assert (agent is not None) and (party is not None)
@@ -496,7 +496,7 @@ class Party(object):
         return 'party__{}'.format(id(self))  # todo: use slug of name
 
     def as_html(self):
-        return u'<a class="party_link" id="{party.slug}">{party.name}</a>'.format(party=self)
+        return '<a class="party_link" id="{party.slug}">{party.name}</a>'.format(party=self)
 
     id = property(id)
 

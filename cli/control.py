@@ -120,7 +120,7 @@ def save(host='http://localhost:8000'):
 
 @root.group(name='user_access', invoke_without_command=True)
 @click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
-@click.option('--username' ,'-u', 'username', default='', type=click.STRING, help='Username')
+@click.option('--username' ,'-', 'username', default='', type=click.STRING, help='Username')
 @click.option('--access' ,'-a', 'access', default=0, type=click.INT, help='New Access Level')
 @click.pass_context
 def user_access_command(ctx, host, username, access):

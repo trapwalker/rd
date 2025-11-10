@@ -21,23 +21,23 @@ class Pair(EmbeddedDocument):
 
 class ExpTable(Node):
     user_exp_table = ListField(
-        caption=u'Таблица опыта пользователя',
+        caption='Таблица опыта пользователя',
         field=EmbeddedDocumentField(document_type=Pair),
     )
     car_exp_table = ListField(
-        caption=u'Таблица опыта машинки',
+        caption='Таблица опыта машинки',
         field=EmbeddedDocumentField(document_type=Pair),
     )
     car_exp_price = ListField(
-        caption=u'Таблица ценности машинки',
+        caption='Таблица ценности машинки',
         field=EmbeddedDocumentField(document_type=Pair),
     )
     car_m_exp = ListField(
-        caption=u'Таблица модификатора опыта получаемого на машинке',
+        caption='Таблица модификатора опыта получаемого на машинке',
         field=EmbeddedDocumentField(document_type=Pair),
     )
     car_driving_penalty = ListField(
-        caption=u'Таблица штрафа в скорость машинки за недостаток навыка вождения',
+        caption='Таблица штрафа в скорость машинки за недостаток навыка вождения',
         field=EmbeddedDocumentField(document_type=Pair),
     )
 

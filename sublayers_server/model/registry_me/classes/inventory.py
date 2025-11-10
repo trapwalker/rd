@@ -42,7 +42,7 @@ class LoadInventoryEvent(Event):
 
 
 class Inventory(Subdoc):
-    size = IntField(caption=u'Размер инвентаря', default=1)
+    size = IntField(caption='Размер инвентаря', default=1)
     items = ListField(reinst=True, field=EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.item.Item',
     ))
@@ -104,7 +104,7 @@ class Inventory(Subdoc):
         return None
 
     def placing(self):
-        u"""Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
+        """Расстановка неустановленных и расставленых с коллизией предметов по свободным ячейкам инвентаря"""
         changes = []
         positions = Counter((item.position for item in self.items or () if item.position is not None))
         i = 0

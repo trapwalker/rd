@@ -37,8 +37,8 @@ def clear_all_cookie(handler):
 
 
 def get_forum_cookie_str(username):
-    cookie_format = u"{}|{}".format
-    for_hash_str = u"{}{}".format(username, options.forum_cookie_secret)
+    cookie_format = "{}|{}".format
+    for_hash_str = "{}{}".format(username, options.forum_cookie_secret)
     hash = hashlib.md5(for_hash_str.encode('utf-8')).hexdigest()
     return cookie_format(username, hash)
 
@@ -133,7 +133,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 site=options.site_host,
                 site_proto=options.site_host_proto,
             )
-            log.debug(u'Confirmation email with token {user.auth.standard.email_confirmation_token.hex}: {msg}'.format(
+            log.debug('Confirmation email with token {user.auth.standard.email_confirmation_token.hex}: {msg}'.format(
                 **locals()))
             msg.send(self.application.email_sender)
         except Exception as e:
@@ -163,7 +163,7 @@ class StandardLoginHandler(BaseSiteHandler):
                     quick_user.car_index = qg_car_index
                     quick_user.teaching_state = ''
                     quick_user.save()
-                    self.finish({'status': u'Такой пользователь существует'})
+                    self.finish({'status': 'Такой пользователь существует'})
                     return
 
         try:
@@ -180,11 +180,11 @@ class StandardLoginHandler(BaseSiteHandler):
 
         # укниальный среди быстрых игроков.
         login_free = False
-        email = u''
+        email = ''
         password = str(randint(0,999999))
         while not login_free:
-            username = u'{}_{}'.format(nickname, str(randint(0, 999999)))
-            email = u'{}@{}'.format(username, username)
+            username = '{}_{}'.format(nickname, str(randint(0, 999999)))
+            email = '{}@{}'.format(username, username)
             login_free = (
                 User.get_by_email(email=email) is None and
                 User.get_by_name(name=username) is None
@@ -195,7 +195,7 @@ class StandardLoginHandler(BaseSiteHandler):
         clear_all_cookie(self)
         self.set_secure_cookie("user", str(user.id))
         # log.debug('User {} created sucessfully: {}'.format(user, result.raw_result))
-        self.finish({'status': u'Временный пользователь создан'})
+        self.finish({'status': 'Временный пользователь создан'})
 
     # @tornado.gen.coroutine
     # def _forum_setup(self, data):
@@ -548,7 +548,7 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
 
     def _on_get_user_info(self, user):
         if user:
-            body_id = str(user.get(u'id', ''))
+            body_id = str(user.get('id', ''))
             if not body_id:
                 return None
             profile_user = User.get_by_google_id(uid=body_id)
@@ -676,7 +676,7 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
 
     def _on_get_user_info(self, user):
         if user:
-            body_id = str(user.get(u'id', ''))
+            body_id = str(user.get('id', ''))
             if not body_id:
                 return None
             profile_user = User.get_by_twitter_id(uid=body_id)
@@ -731,7 +731,7 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
 
     def _on_get_user_info_fb(self, user):
         if user:
-            body_id = str(user.get(u'id', ''))
+            body_id = str(user.get('id', ''))
             if not body_id:
                 return None
             profile_user = User.get_by_fb_id(uid=body_id)

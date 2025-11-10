@@ -13,7 +13,7 @@ log = logging.getLogger(__name__ if __name__ != '__main__' else None)
 
 def fix_loca(fn):
     attr_names = 'title description caption'.split()
-    attr_names_rx = u'|'.join([u'(?:{})'.format(aname) for aname in attr_names])
+    attr_names_rx = '|'.join(['(?:{})'.format(aname) for aname in attr_names])
 
     r = re.compile(r"""
 	    ^
@@ -39,9 +39,9 @@ def fix_loca(fn):
         todo_en = '  #TODO: ##LOCALIZATION' if any(map(lambda c: ord(c) > 127, value)) else ''
         todo_ru = '  #TODO: ##LOCALIZATION' if all(map(lambda c: ord(c) < 127, value)) else ''
         return (
-            u'{tab}{name}: {comment_tab}{comment}\n'
-            u'{tab}    en: {value}{todo_en}\n'
-            u'{tab}    ru: {value}{todo_ru}\n'
+            '{tab}{name}: {comment_tab}{comment}\n'
+            '{tab}    en: {value}{todo_en}\n'
+            '{tab}    ru: {value}{todo_ru}\n'
         ).format(**locals())
 
     with open(fn) as f:
@@ -92,10 +92,10 @@ class Obj(object):
                         value_text = '<error>'
 
             if '\n' in value_text:
-                value_text = u'\n{tab}'.format(tab=' ' * indent).join(value_text.split('\n'))
+                value_text = '\n{tab}'.format(tab=' ' * indent).join(value_text.split('\n'))
 
-            l.append(u'{tab}{key:{key_align_to}{key_width}}: {value_text}'.format(tab=' ' * _root_tab_size, **locals()))
-        return u'\n'.join(l)
+            l.append('{tab}{key:{key_align_to}{key_width}}: {value_text}'.format(tab=' ' * _root_tab_size, **locals()))
+        return '\n'.join(l)
 
     def to_text(self, *av, **kw):
         return self._to_text(self.items(), *av, **kw)
@@ -108,7 +108,7 @@ class Obj(object):
         if self._parent is not None:
             items.append(('_parent', self._parent))
 
-        return u'{self.__class__.__name__}(\n{body}\n)'.format(
+        return '{self.__class__.__name__}(\n{body}\n)'.format(
             body=self._to_text(items, _root_tab_size=4, indent=4, key_align=True),
             self=self,
         ).encode('utf-8')
@@ -217,9 +217,9 @@ class FIWalker(FileIterator):
 
 
 def fix_condition():
-    conditions = (u'Нов.', u'Свеж.', u'Исп.', u'Изн.', u'Ржав.')
+    conditions = ('Нов.', 'Свеж.', 'Исп.', 'Изн.', 'Ржав.')
     condition2idx = dict(zip(conditions, [5, 4, 3, 2, 1]))
-    conditions_rx = u'|'.join([u'(?:{})'.format(c.replace('.', ur'\.')) for c in conditions])  #ur'(?:Нов\.)|(?:Свеж\.)|(?:Исп\.)|(?:Изн\.)|(?:Ржав\.)'
+    conditions_rx = '|'.join(['(?:{})'.format(c.replace('.', ur'\.')) for c in conditions])  #ur'(?:Нов\.)|(?:Свеж\.)|(?:Исп\.)|(?:Изн\.)|(?:Ржав\.)'
     r = re.compile(
         ur'''
             ^
@@ -252,9 +252,9 @@ def fix_condition():
         cond_old = cond
         cond = unicode(condition2idx[cond])
         res = (
-            u'{tab}{name}{title_spaces}: {value}{comment}'.format(**locals()) +
+            '{tab}{name}{title_spaces}: {value}{comment}'.format(**locals()) +
             (
-                (u'\n{tab}{cond_name:<{w}}: {cond}  # {cond_old}').format(**locals()) if name == 'title' else ''
+                ('\n{tab}{cond_name:<{w}}: {cond}  # {cond_old}').format(**locals()) if name == 'title' else ''
             )
         )
         return res

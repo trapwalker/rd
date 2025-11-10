@@ -100,17 +100,17 @@ class Email(object):
         #self._extra = kw
 
     def __unicode__(self):
-        return u"{self.__class__.__name__} to: {self.adr_to}, from: {self.adr_from}, sub: {self.subject}".format(self=self)
+        return "{self.__class__.__name__} to: {self.adr_to}, from: {self.adr_from}, sub: {self.subject}".format(self=self)
 
     def __str__(self):
         return unicode(self).encode(getattr(sys.stdout, 'encoding', None) or 'utf-8', errors='replace')
 
     def __repr__(self):
         _is_value_compact = lambda rv: len(rv) < 50 and r'\n' not in rv
-        return u"<{self.__class__.__name__}({params})".format(
+        return "<{self.__class__.__name__}({params})".format(
             self=self,
             params=', '.join((
-                u'{}={!r}'.format(k, v if _is_value_compact(repr(v)) else '...')
+                '{}={!r}'.format(k, v if _is_value_compact(repr(v)) else '...')
                 for k, v in self.__dict__.items()
                 if v is not None
             )),
@@ -131,7 +131,7 @@ class Email(object):
 
     def send(self, sender=None):
         if sender is None:
-            log.warning(u"FAIL to send {self} because sender is not defined".format(self=self))
+            log.warning("FAIL to send {self} because sender is not defined".format(self=self))
             return
             #raise EmailSendingError("Can't send email")
         return sender.send(self)
@@ -181,8 +181,8 @@ class EmailTemplate(object):
 
 email_confirmation_template_ru = EmailTemplate(
     mime_type='html',
-    subject=u"Road Dogs - подтвержение регистрации",
-    template=u"""
+    subject="Road Dogs - подтвержение регистрации",
+    template="""
         <body>
             <p>Вас приветствует <a href="{{site_proto}}://{{site}}"><b>Road Dogs</b></a> – 
                постъядерная MMORPG в жанре Грабитель/Торговец.</p>
@@ -202,8 +202,8 @@ email_confirmation_template_ru = EmailTemplate(
 
 email_confirmation_template_en = EmailTemplate(
     mime_type='html',
-    subject=u"Road Dogs - confirmation of registration",
-    template=u"""
+    subject="Road Dogs - confirmation of registration",
+    template="""
         <body>
             <p>Welcome to <a href="{{site_proto}}://{{site}}"><b>Road Dogs</b></a> - 
                post-nuclear MMORPG in the Privateer/Trader genre.</p>

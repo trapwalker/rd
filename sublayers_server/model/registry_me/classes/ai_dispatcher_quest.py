@@ -7,9 +7,9 @@ from sublayers_server.model.registry_me.classes.quests import Quest
 from sublayers_server.model.registry_me.tree import IntField, ListField, EmbeddedNodeField
 
 class AIDispatcherQuest(Quest):
-    refresh_time = IntField(caption=u'Интервал обновления квестов')
+    refresh_time = IntField(caption='Интервал обновления квестов')
     quests = ListField(
-        caption=u"Генераторы квестов",
+        caption="Генераторы квестов",
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.quests.Quest',
         ),

@@ -12,11 +12,11 @@ from sublayers_server.model.registry_me.tree import (
 
 class DistTownPair(Subdoc):
     town1 = RegistryLinkField(
-        caption=u"Текущая локация",
+        caption="Текущая локация",
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     town2 = RegistryLinkField(
-        caption=u"Текущая локация",
+        caption="Текущая локация",
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     distance = FloatField()
@@ -25,7 +25,7 @@ class DistTownPair(Subdoc):
 # TODO: ##OPTIMIZE
 class DistTable(Node):
     table = ListField(
-        caption=u'Таблица расстояний между локациями',
+        caption='Таблица расстояний между локациями',
         field=EmbeddedDocumentField(document_type=DistTownPair),
     )
 

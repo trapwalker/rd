@@ -16,7 +16,7 @@ import random
 
 
 class PowerUpAnimateHide(Subjective):
-    u""" Мессадж отправляется только в случае, если Power Up был кем-то подобран """
+    """ Мессадж отправляется только в случае, если Power Up был кем-то подобран """
     pass
 
 

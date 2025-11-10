@@ -110,7 +110,7 @@ class Agent(Object):
         max_iterations = 500
         for i in xrange(0, max_iterations):
             name_pair = NameGenerator.pair()
-            login = u'{}_{}_{}'.format(name_pair[0], name_pair[1], randint(100, 999))
+            login = '{}_{}_{}'.format(name_pair[0], name_pair[1], randint(100, 999))
             if self.server.agents_by_name.get(login, None) is None:
                 return login
         raise Exception(text='dont generate uniq agent name')
@@ -1008,7 +1008,7 @@ class User(Agent):
 
 
 class AI(Agent):
-    u""" Класс-родитель для всех агентов-ботов """
+    """ Класс-родитель для всех агентов-ботов """
     # def setup_logger(self, level=logging.INFO):
     #     logger_name = 'agent_{}'.format(self._login)
     #     log_file = 'log/agents/bot_{}.log'.format(logger_name)
@@ -1110,7 +1110,7 @@ class QuickUser(User):
         # Отправка сообщения об убийстве кого-то
         if target.main_agent:
             QuickGameArcadeTextMessage(agent=self, time=event.time,
-                                       text=u"{!r} {}".format(target.main_agent.print_login(), locale(lang=self.get_lang(), key="ta_kill_player"))).post()
+                                       text="{!r} {}".format(target.main_agent.print_login(), locale(lang=self.get_lang(), key="ta_kill_player"))).post()
         # Обработка серии убийств
         if self.time_of_end_kills_series and self.time_of_end_kills_series > event.time:  # Если серия убийств в процессе
             self.time_of_end_kills_series = event.time + 7.0
@@ -1121,7 +1121,7 @@ class QuickUser(User):
                 QuickGameArcadeTextMessage(agent=self, time=event.time, text=locale(lang=self.get_lang(), key="ta_tripple_kill")).post()
             else:
                 QuickGameArcadeTextMessage(agent=self, time=event.time,
-                                           text=u"{}: {!s}".format(locale(lang=self.get_lang(), key="ta_series_of_kill"), self.series_kills)).post()
+                                           text="{}: {!s}".format(locale(lang=self.get_lang(), key="ta_series_of_kill"), self.series_kills)).post()
             if self.series_kills > 1:
                 self.bonus_points += (self.series_kills - 1) * 5
         else:  # Если серия не начиналась или закончилась

@@ -9,7 +9,7 @@ from sublayers_server.model.registry_me.classes.perks import PerkPartyPassive
 
 class PartyTables(Node):
     leading = ListField(
-        caption=u'Таблица отношений уровня лидерства к количествую людей в пати',
+        caption='Таблица отношений уровня лидерства к количествую людей в пати',
         field=EmbeddedDocumentField(document_type='sublayers_server.model.registry_me.classes.exptable.Pair'),
     )
 

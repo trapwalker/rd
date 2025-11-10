@@ -35,28 +35,28 @@ class TraderRefreshEvent(Event):
 class PriceOption(Subdoc):
     # Товар сгенерируется только если URI не абстрактный
     item = RegistryLinkField(
-        caption=u'Товар',
+        caption='Товар',
         document_type='sublayers_server.model.registry_me.classes.item.Item',
     )
 
     # Вероятность появления товара при завозе, если 0 то товар не появится в ассортименте, но проавило будет
     # сгенермровано и торговец будет расчитывать цену покупки по нему
-    chance = FloatField(caption=u'Вероятность появления товара')
+    chance = FloatField(caption='Вероятность появления товара')
 
     # Количественные границы количества товара которое может сгенерироваться при завозе. если count_max = 0,
     # то количество товара бесконечно.
-    count_min = IntField(caption=u'Минимальное количество товара')
-    count_max = IntField(caption=u'Мaксимальное количество товара')
+    count_min = IntField(caption='Минимальное количество товара')
+    count_max = IntField(caption='Мaксимальное количество товара')
 
     # Допустимые границы цены товара при завозе. Обозначают множитель для номинальной цены товара.
     # Требования:
     #   - price_min <= price_max,
     #   - значения не могут быть отрицательными,
-    price_min = FloatField(caption=u'Коэффициент минимальной цены товара')
-    price_max = FloatField(caption=u'Коэффициент максимальной цены товара')
+    price_min = FloatField(caption='Коэффициент минимальной цены товара')
+    price_max = FloatField(caption='Коэффициент максимальной цены товара')
 
     # Коэффициент скорости изменения цены от количетва проданного/купленного товара
-    influence = FloatField(caption=u'Коэффициент скорости измениния цены товара')
+    influence = FloatField(caption='Коэффициент скорости измениния цены товара')
 
 
 class Price(object):
@@ -121,21 +121,21 @@ class Price(object):
 
 class Trader(Institution):
     # Время полного обновление ассортимента торговца (сек.)
-    refresh_time = IntField(caption=u"Интервал завоза (c, по умолчанию или 0 - никогда)")
+    refresh_time = IntField(caption="Интервал завоза (c, по умолчанию или 0 - никогда)")
 
     # Маржа (0..1)
-    margin = FloatField(caption=u'Коэффициент минимальной цены товара', root_default=0.2)
+    margin = FloatField(caption='Коэффициент минимальной цены товара', root_default=0.2)
 
     ignore_list = ListField(
-        caption=u"Список запрещенных товаров",
+        caption="Список запрещенных товаров",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item')
     )
     price_list = ListField(
-        caption=u"Набор правил формирования ассортимента",
+        caption="Набор правил формирования ассортимента",
         field=EmbeddedDocumentField(document_type=PriceOption),
     )
     items = ListField(
-        caption=u"Список товаров",
+        caption="Список товаров",
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.item.Item')
     )
 

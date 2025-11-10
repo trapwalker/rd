@@ -1,11 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
-import sys, os
+import sys
+import os
 import logging
 log = logging.getLogger(__name__)
-
-from hgapi import Repo, HgException
 
 
 def main(args=None):
@@ -27,7 +26,7 @@ def main(args=None):
         _hndl = logging.StreamHandler(sys.stderr)
         _hndl.setFormatter(logging.Formatter('%(levelname)-8s| %(message)s'))
         log.addHandler(_hndl)
-        log.log(logging.DEBUG if 'DISABLED' in e.message else logging.WARNING, e.message)
+        log.log(logging.DEBUG if 'DISABLED' in str(e) else logging.WARNING, str(e))
 
     from cli.root import root
     from cli import (

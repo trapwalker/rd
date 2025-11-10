@@ -45,7 +45,7 @@ class AdmFindUsers(AdmEngineHandler):
         if online_only:
             users = [agent.user for agent in server.agents_by_name.values() if agent.user and agent.connection]
         elif regexp_find and len(find_str) >= 3:
-            reg_ex_str = u".*{}.*".format(find_str)
+            reg_ex_str = ".*{}.*".format(find_str)
             users = User.objects(
                 __raw__={
                     "$and": [{"quick": False},

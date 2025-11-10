@@ -1395,7 +1395,7 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
 
 # todo: Перенести описание класса в модуль квестов
 class QuestsInitMessage(Message):
-    u"""Отправка всех квестов агента на клиент"""
+    """Отправка всех квестов агента на клиент"""
     def as_dict(self):
         d = super(QuestsInitMessage, self).as_dict()
         journal = [quest.as_client_dict() for quest in self.agent.example.profile.journal_quests]

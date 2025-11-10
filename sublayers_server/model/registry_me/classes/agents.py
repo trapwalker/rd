@@ -28,9 +28,9 @@ from itertools import chain
 class RelationshipRec(Subdoc):
     npc = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
-        caption=u"Целевой NPC",
+        caption="Целевой NPC",
     )
-    rel_index = FloatField(default=-100, caption=u"Накапливаемое отношение")
+    rel_index = FloatField(default=-100, caption="Накапливаемое отношение")
 
     def get_index_norm(self):
         return min(max(self.rel_index / 100.0, -1), 1)
@@ -48,51 +48,51 @@ class RelationshipRec(Subdoc):
 class AgentProfile(Node):
     '''Inheritable data about agent'''
     # todo: remove ##deprecated
-    quick_flag = BooleanField(caption=u'deprecated flag')
+    quick_flag = BooleanField(caption='deprecated flag')
 
     # todo: если будет нормально сохраняться current_location = None, то убрать флаг
-    in_location_flag = BooleanField(caption=u'Флаг для определения в городе агент или нет.')
+    in_location_flag = BooleanField(caption='Флаг для определения в городе агент или нет.')
 
-    about_self = StringField(root_default=u'', caption=u'О себе', tags={'client'})
+    about_self = StringField(root_default='', caption='О себе', tags={'client'})
 
     # Карма и отношения
-    karma = FloatField(root_default=0, caption=u"Значение кармы игрока")  # значения от -100 до 100 имеют влияние
+    karma = FloatField(root_default=0, caption="Значение кармы игрока")  # значения от -100 до 100 имеют влияние
     npc_rel_list = ListField(
         field=EmbeddedDocumentField(document_type=RelationshipRec, reinst=True),
-        caption=u'Список взаимоотношений игрока с NPCs',
+        caption='Список взаимоотношений игрока с NPCs',
         root_default=list,
         reinst=True,
     )
 
     # Поля статистики агента
-    value_exp = FloatField(root_default=0, caption=u"Количество опыта")
-    value_frag = IntField(root_default=0, caption=u"Количество убийств")
+    value_exp = FloatField(root_default=0, caption="Количество опыта")
+    value_frag = IntField(root_default=0, caption="Количество убийств")
 
     # Множитель саб залпового урона
-    sub_discharge_dmg = FloatField(caption=u"Множитель саб залпового урона ")  # значения от 0 до 1
+    sub_discharge_dmg = FloatField(caption="Множитель саб залпового урона ")  # значения от 0 до 1
 
     car = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.mobiles.Car',
-        caption=u"Активный автомобиль",
+        caption="Активный автомобиль",
         errors='ignore',
     )  # todo: test to prefix path like: /mobile/cars/*
     car_list = ListField(
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.mobiles.Car', reinst=True),
         root_default=list,
         reinst=True,
-        caption=u"Список всех машин, кроме активной",
+        caption="Список всех машин, кроме активной",
         errors='ignore',
     )
 
-    position = PositionField(caption=u"Последние координаты агента", reinst=True)
-    balance = FloatField(caption=u"Количество литров на счете агента", tags={'client'})  # todo: обсудить #release
+    position = PositionField(caption="Последние координаты агента", reinst=True)
+    balance = FloatField(caption="Количество литров на счете агента", tags={'client'})  # todo: обсудить #release
 
     last_town = RegistryLinkField(
-        caption=u"Последний посещенный город",
+        caption="Последний посещенный город",
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     current_location = RegistryLinkField(
-        caption=u"Текущая локация",
+        caption="Текущая локация",
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     # todo: party link
@@ -102,99 +102,99 @@ class AgentProfile(Node):
     # Механизм перков
     perks = ListField(
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),
-        caption=u'Список прокачанных перков',
+        caption='Список прокачанных перков',
         reinst=True,
     )
 
     # Механизм скилов
     exp_table = RegistryLinkField(
-        caption=u"Таблица опыта",
+        caption="Таблица опыта",
         root_default='reg:///registry/rpg_settings/exptable',
         document_type='sublayers_server.model.registry_me.classes.exptable.ExpTable',
     )
     role_class = RegistryLinkField(  # todo: Проверить нужно ли декларировать default
-        caption=u"Ролевой класс",
+        caption="Ролевой класс",
         document_type='sublayers_server.model.registry_me.classes.role_class.RoleClass',
     )
 
     # todo: Избавиться от пакета покупных скиллов.
     # Инфу этих документов нужно разместить в обычных скиллах.
     buy_driving = EmbeddedNodeField(
-        caption=u"Купленные очки навыка вождения",
+        caption="Купленные очки навыка вождения",
         root_default='reg:///registry/rpg_settings/buy_skill/driving',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_shooting = EmbeddedNodeField(
-        caption=u"Купленные очки навыка стрельбы",
+        caption="Купленные очки навыка стрельбы",
         root_default='reg:///registry/rpg_settings/buy_skill/shooting',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_masking = EmbeddedNodeField(
-        caption=u"Купленные очки навыка маскировки",
+        caption="Купленные очки навыка маскировки",
         root_default='reg:///registry/rpg_settings/buy_skill/masking',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_leading = EmbeddedNodeField(
-        caption=u"Купленные очки навыка лидерства",
+        caption="Купленные очки навыка лидерства",
         root_default='reg:///registry/rpg_settings/buy_skill/leading',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_trading = EmbeddedNodeField(
-        caption=u"Купленные очки навыка торговли",
+        caption="Купленные очки навыка торговли",
         root_default='reg:///registry/rpg_settings/buy_skill/trading',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
     buy_engineering = EmbeddedNodeField(
-        caption=u"Купленные очки навыка инженеринга",
+        caption="Купленные очки навыка инженеринга",
         root_default='reg:///registry/rpg_settings/buy_skill/engineering',
         document_type='sublayers_server.model.registry_me.classes.skills.BuySkill',
         reinst=True,
     )
 
     driving = EmbeddedNodeField(
-        caption=u"Навык вождения", tags={'skill'},
+        caption="Навык вождения", tags={'skill'},
         root_default='reg:///registry/rpg_settings/skill/driving',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     shooting = EmbeddedNodeField(
-        caption=u"Навык стрельбы", tags={'skill'},
+        caption="Навык стрельбы", tags={'skill'},
         root_default='reg:///registry/rpg_settings/skill/shooting',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     masking = EmbeddedNodeField(
-        caption=u"Навык маскировки", tags={'skill'},
+        caption="Навык маскировки", tags={'skill'},
         root_default='reg:///registry/rpg_settings/skill/masking',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     leading = EmbeddedNodeField(
-        caption=u"Навык лидерства", tags={'skill'},
+        caption="Навык лидерства", tags={'skill'},
         root_default='reg:///registry/rpg_settings/skill/leading',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     trading = EmbeddedNodeField(
-        caption=u"Навык торговли", tags={'skill'},
+        caption="Навык торговли", tags={'skill'},
         root_default='reg:///registry/rpg_settings/skill/trading',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
     engineering = EmbeddedNodeField(
-        caption=u"Навык инженеринга", tags={'skill'},
+        caption="Навык инженеринга", tags={'skill'},
         root_default='reg:///registry/rpg_settings/skill/engineering',
         document_type='sublayers_server.model.registry_me.classes.skills.Skill',
         reinst=True,
     )
 
     quests_unstarted = ListField(
-        caption=u"Список доступных (невзятых) квестов",
+        caption="Список доступных (невзятых) квестов",
         root_default=list,
         reinst=True,
         field=EmbeddedNodeField(
@@ -203,7 +203,7 @@ class AgentProfile(Node):
         errors='ignore',
     )
     quests_active = ListField(
-        caption=u"Список активных квестов",
+        caption="Список активных квестов",
         root_default=list,
         reinst=True,
         field=EmbeddedNodeField(
@@ -212,7 +212,7 @@ class AgentProfile(Node):
         errors='ignore',
     )
     quests_ended = ListField(
-        caption=u"Список законченных квестов (пройденных или проваленных)",
+        caption="Список законченных квестов (пройденных или проваленных)",
         root_default=list,
         reinst=True,
         field=EmbeddedNodeField(
@@ -221,7 +221,7 @@ class AgentProfile(Node):
         errors='ignore',
     )
     class_quest = RegistryLinkField(
-        caption=u"Прототип классового квеста",
+        caption="Прототип классового квеста",
         document_type='sublayers_server.model.registry_me.classes.quests.Quest',
         root_default='reg:///registry/quests/class_quests/start_quest'
     )
@@ -230,12 +230,12 @@ class AgentProfile(Node):
         field=EmbeddedNodeField(document_type='sublayers_server.model.registry_me.classes.notes.Note'),
         root_default=list,
         reinst=True,
-        caption=u"Список доступных нотесов",
+        caption="Список доступных нотесов",
         errors='ignore',
     )
 
-    quest_inventory = QuestInventoryField(caption=u"Квестовый инвентарь", reinst=True,)
-    party_capacity_count = IntField(root_default=1, caption=u"Стартовое значение количества человек в пати")
+    quest_inventory = QuestInventoryField(caption="Квестовый инвентарь", reinst=True,)
+    party_capacity_count = IntField(root_default=1, caption="Стартовое значение количества человек в пати")
 
     def set_role_class(self, role_class_ex, registry):
         mod_0 = registry.get("reg:///registry/rpg_settings/class_skill/empty_0")
@@ -624,11 +624,11 @@ class AIQuickAgentProfile(AIAgentProfile):pass
 
 class Agent(RLResolveMixin, Document):
     '''Agent account in database'''
-    user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
-    login = StringField(caption=u'Уникальное имя пользователя', tags={'client'}, sparse=True)
-    profile = EmbeddedNodeField(caption=u'Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
-    teaching_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом обучения из основной игры')
-    quick_flag = BooleanField(default=False, caption=u'Является ли этот агент агентом быстрой игры')
+    user_id = StringField(caption='Идентификатор профиля владельца', sparse=True, identify=True)  # todo: renamed from `profile_id`
+    login = StringField(caption='Уникальное имя пользователя', tags={'client'}, sparse=True)
+    profile = EmbeddedNodeField(caption='Профиль агента (наследуемые параметры)', document_type=AgentProfile, tags={'client'})
+    teaching_flag = BooleanField(default=False, caption='Является ли этот агент агентом обучения из основной игры')
+    quick_flag = BooleanField(default=False, caption='Является ли этот агент агентом быстрой игры')
 
     def __init__(self, *av, **kw):
         super(Agent, self).__init__(*av, **kw)
@@ -655,10 +655,10 @@ class Agent(RLResolveMixin, Document):
         )
 
     def __unicode__(self):
-        return u'<{self.__class__.__name__}({qf}{tf}):{self.login}>'.format(
+        return '<{self.__class__.__name__}({qf}{tf}):{self.login}>'.format(
             self=self,
-            qf=u'Q' if self.quick_flag else 'q',
-            tf=u'T' if self.teaching_flag else 't',
+            qf='Q' if self.quick_flag else 'q',
+            tf='T' if self.teaching_flag else 't',
         )
 
     def check_class_quests(self, event):

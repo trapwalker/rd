@@ -20,7 +20,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 from tornado.options import options
-from urlparse import urlparse
+from urllib.parse import urlparse
 from pymongo import MongoClient
 import mongoengine
 

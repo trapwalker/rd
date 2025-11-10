@@ -63,49 +63,49 @@ class QuestInventoryField(EmbeddedDocumentField):
 
 
 class QuestItem(Item):
-    group_id = StringField(caption=u'Тип квестового айтема')
-    starttime = FloatField(tags={'client'}, caption=u'Время добавления итема в инвентарь', doc=u'Время старта квеста')
-    deadline = IntField(tags={'client'}, caption=u'Время жизни итема в инвентаре', doc=u'')
+    group_id = StringField(caption='Тип квестового айтема')
+    starttime = FloatField(tags={'client'}, caption='Время добавления итема в инвентарь', doc='Время старта квеста')
+    deadline = IntField(tags={'client'}, caption='Время жизни итема в инвентаре', doc='')
 
-    effect_title = LocalizedStringField(caption=u'Наименование эффекта квестового итема для окна персонажа')
-    effect_description = LocalizedStringField(caption=u'Описание эффекта квестового итема для окна персонажа')
+    effect_title = LocalizedStringField(caption='Наименование эффекта квестового итема для окна персонажа')
+    effect_description = LocalizedStringField(caption='Описание эффекта квестового итема для окна персонажа')
 
     # аддитивные модификаторы скилов
-    driving     = FloatField(caption=u"Модификатор навыка вождения", tags={'client', 'aggregate'})
-    shooting    = FloatField(caption=u"Модификатор навыка стрельбы", tags={'client', 'aggregate'})
-    masking     = FloatField(caption=u"Модификатор навыка маскировки", tags={'client', 'aggregate'})
-    leading     = FloatField(caption=u"Модификатор навыка лидерства", tags={'client', 'aggregate'})
-    trading     = FloatField(caption=u"Модификатор навыка торговли", tags={'client', 'aggregate'})
-    engineering = FloatField(caption=u"Модификатор навыка инженеринга", tags={'client', 'aggregate'})
+    driving     = FloatField(caption="Модификатор навыка вождения", tags={'client', 'aggregate'})
+    shooting    = FloatField(caption="Модификатор навыка стрельбы", tags={'client', 'aggregate'})
+    masking     = FloatField(caption="Модификатор навыка маскировки", tags={'client', 'aggregate'})
+    leading     = FloatField(caption="Модификатор навыка лидерства", tags={'client', 'aggregate'})
+    trading     = FloatField(caption="Модификатор навыка торговли", tags={'client', 'aggregate'})
+    engineering = FloatField(caption="Модификатор навыка инженеринга", tags={'client', 'aggregate'})
 
     # другие модификаторы (как в перках)
-    p_visibility_min   = FloatField(caption=u"Коэффициент минимальной заметности", tags={"aggregate"})
-    p_visibility_max   = FloatField(caption=u"Коэффициент максимальной заметности", tags={"aggregate"})
-    p_observing_range  = FloatField(caption=u"Радиус обзора", tags={"aggregate"})
-    max_hp             = FloatField(caption=u"Максимальное значение HP", tags={"aggregate"})
-    r_min              = FloatField(caption=u"Минимальный радиус разворота", tags={"aggregate"})
-    mobility           = FloatField(caption=u"Манёвренность при поворотах", tags={"aggregate"})  # former ac_max
-    max_control_speed  = FloatField(caption=u"Абсолютная максимальная скорость движения", tags={"aggregate"})
-    v_forward          = FloatField(caption=u"Максимальная скорость движения вперед", tags={"aggregate"})
-    v_backward         = FloatField(caption=u"Максимальная скорость движения назад", tags={"aggregate"})
-    a_forward          = FloatField(caption=u"Ускорение разгона вперед", tags={"aggregate"})
-    a_backward         = FloatField(caption=u"Ускорение разгона назад", tags={"aggregate"})
-    a_braking          = FloatField(caption=u"Ускорение торможения", tags={"aggregate"})
-    max_fuel           = FloatField(caption=u"Максимальное количество топлива", tags={"aggregate"})
-    p_fuel_rate        = FloatField(caption=u"Расход топлива (л/с)", tags={"aggregate"})
+    p_visibility_min   = FloatField(caption="Коэффициент минимальной заметности", tags={"aggregate"})
+    p_visibility_max   = FloatField(caption="Коэффициент максимальной заметности", tags={"aggregate"})
+    p_observing_range  = FloatField(caption="Радиус обзора", tags={"aggregate"})
+    max_hp             = FloatField(caption="Максимальное значение HP", tags={"aggregate"})
+    r_min              = FloatField(caption="Минимальный радиус разворота", tags={"aggregate"})
+    mobility           = FloatField(caption="Манёвренность при поворотах", tags={"aggregate"})  # former ac_max
+    max_control_speed  = FloatField(caption="Абсолютная максимальная скорость движения", tags={"aggregate"})
+    v_forward          = FloatField(caption="Максимальная скорость движения вперед", tags={"aggregate"})
+    v_backward         = FloatField(caption="Максимальная скорость движения назад", tags={"aggregate"})
+    a_forward          = FloatField(caption="Ускорение разгона вперед", tags={"aggregate"})
+    a_backward         = FloatField(caption="Ускорение разгона назад", tags={"aggregate"})
+    a_braking          = FloatField(caption="Ускорение торможения", tags={"aggregate"})
+    max_fuel           = FloatField(caption="Максимальное количество топлива", tags={"aggregate"})
+    p_fuel_rate        = FloatField(caption="Расход топлива (л/с)", tags={"aggregate"})
 
-    dps_rate           = FloatField(caption=u"Множитель модификации урона автоматического оружия", tags={"aggregate"})
-    damage_rate        = FloatField(caption=u"Множитель модификации урона залпового оружия", tags={"aggregate"})
-    time_recharge_rate = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия", tags={"aggregate"})
-    radius_rate        = FloatField(caption=u"Множитель модификации дальности стрельбы", tags={"aggregate"})
+    dps_rate           = FloatField(caption="Множитель модификации урона автоматического оружия", tags={"aggregate"})
+    damage_rate        = FloatField(caption="Множитель модификации урона залпового оружия", tags={"aggregate"})
+    time_recharge_rate = FloatField(caption="Множитель модификации времени перезарядки залпового оружия", tags={"aggregate"})
+    radius_rate        = FloatField(caption="Множитель модификации дальности стрельбы", tags={"aggregate"})
 
-    repair_rate         = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду", tags={"aggregate"})
-    repair_rate_on_stay = FloatField(caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={"aggregate"})
+    repair_rate         = FloatField(caption="Процент ХП восстанавливающийся каждую секунду", tags={"aggregate"})
+    repair_rate_on_stay = FloatField(caption="Процент ХП восстанавливающийся каждую секунду в стоячем положении", tags={"aggregate"})
 
-    crit_rate           = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={"aggregate"})
-    crit_power          = FloatField(caption=u"Сила крита [0 .. сколько угодно]", tags={"aggregate"})
+    crit_rate           = FloatField(caption="Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]", tags={"aggregate"})
+    crit_power          = FloatField(caption="Сила крита [0 .. сколько угодно]", tags={"aggregate"})
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""            
+    HTML_DESCRIPTION_TEMPLATE = Template("""            
         {% set text_description = _(this.description) %}
         {% if text_description %}
             <div class="description-line">{{ text_description }}</div>

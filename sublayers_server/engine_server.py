@@ -180,7 +180,7 @@ class Application(BaseApplication):
             else:
                 _message = e
 
-            _message = u'{} port: {}'.format(_message, options.port)
+            _message = '{} port: {}'.format(_message, options.port)
             try:
                 log.critical(_message)
             except:
@@ -222,11 +222,11 @@ def main():
         app.start()
     except pymongo.errors.ConnectionFailure as e:
         try:
-            msg = str(e).decode('cp1251') if os.name == 'nt' else repr(e)
+            msg = str(e) if os.name == 'nt' else repr(e)
         except:
             msg = repr(e)
 
-        log.critical(u'Databse error: %s', msg)
+        log.critical('Databse error: %s', msg)
         sys.exit(1)
     except Exception as e:
         log.exception(e)

@@ -21,12 +21,17 @@ import six
 import codecs
 import copy
 from uuid import uuid1 as get_uuid
-from collections import deque, Counter, Hashable
+from collections import deque, Counter
+from collections.abc import Hashable
 from fnmatch import fnmatch
 import random
 
 from mongoengine import connect, Document, EmbeddedDocument, ValidationError
-from mongoengine.queryset.queryset import QuerySetNoDeRef
+try:
+    from mongoengine.queryset.queryset import QuerySetNoDeRef
+except ImportError:
+    # In newer mongoengine versions, QuerySetNoDeRef was renamed
+    from mongoengine.queryset.queryset import QuerySetNoCache as QuerySetNoDeRef
 from mongoengine.base import get_document
 from mongoengine.base.metaclasses import DocumentMetaclass
 from mongoengine.errors import DoesNotExist
@@ -67,7 +72,7 @@ class RegistryNodeFormatError(RegistryError):
 
 class RegistryNodeIsNotFound(RegistryError):
     def __init__(self, message, base_uri, rest_path, *av, **kw):
-        super(RegistryNodeIsNotFound, self).__init__(*av, **kw)
+        super(RegistryNodeIsNotFound, self).__init__(message, *av, **kw)
         self.message = message
         self.usage_path = []
         self.base_uri = base_uri
@@ -86,7 +91,7 @@ class RegistryNodeIsNotFound(RegistryError):
 
     def __str__(self):
         # todo: do it unicode safe by message
-        return '{self.message} # {self.usage}=={self.uri}'.format(self=self)
+        return '{str(self)} # {self.usage}=={self.uri}'.format(self=self)
 
 class Nil:
     """Impossible value of field"""
@@ -455,7 +460,7 @@ class SubdocToolsMixin(object):
                 value = repr(value)
 
             if isinstance(value, basestring) and '\n' in value and (indent_size or indent):
-                value = (u'\n' + u' ' * (indent + 2) * indent_size).join(value.split('\n'))
+                value = ('\n' + ' ' * (indent + 2) * indent_size).join(value.split('\n'))
 
             return value
 
@@ -500,7 +505,7 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     meta = dict(
         allow_inheritance=True,
     )
-    __cls__ = StringField(caption=u"Deprecated class name", not_inherited=True)
+    __cls__ = StringField(caption="Deprecated class name", not_inherited=True)
 
     # def __init__(self, **kw):
     #     cls = self.__class__
@@ -702,8 +707,8 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
 
 
 class ParamRange(Subdoc):
-    min = FloatField(default=1.0, doc=u"Минимальное значение генерации")
-    max = FloatField(default=1.0, doc=u"Максимальное значение генерации")
+    min = FloatField(default=1.0, doc="Минимальное значение генерации")
+    max = FloatField(default=1.0, doc="Максимальное значение генерации")
 
     def __init__(self, **kw):
         super(ParamRange, self).__init__(**kw)
@@ -724,23 +729,23 @@ class Node(Subdoc, SubdocToolsMixin):
         allow_inheritance=True,
     )
     _empty_overrided_fields = ListField(field=StringField(), not_inherited=True)
-    uri = StringField(caption=u'Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
-    name = StringField(caption=u"Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
+    uri = StringField(caption='Уникальный адрес узла в реестре (None для EmbeddedNode)', not_inherited=True)
+    name = StringField(caption="Техническое имя в пространстве имён узла-контейнера (owner)", not_inherited=True)
     parent = RegistryLinkField(document_type='self', not_inherited=True)
     owner = RegistryLinkField(document_type='self', not_inherited=True)
     uid = UUIDField(default=get_uuid, unique=True, not_inherited=True, tags={"client"})
-    #is_instant = BooleanField(default=False, not_inherited=True, doc=u"Признак инкапсулированной декларации объекта")
-    abstract = BooleanField(default=True, not_inherited=True, doc=u"Абстракция - Признак абстрактности узла")
-    title = LocalizedStringField(caption=u"Название", tags={"client"})
-    can_instantiate = BooleanField(root_default=True, doc=u"Инстанцируемый - Признак возможности инстанцирования")
-    doc = LocalizedStringField(caption=u"Описание узла реестра")
-    tags = ListField(field=StringField(), not_inherited=True, caption=u"Теги", doc=u"Набор тегов объекта")
+    #is_instant = BooleanField(default=False, not_inherited=True, doc="Признак инкапсулированной декларации объекта")
+    abstract = BooleanField(default=True, not_inherited=True, doc="Абстракция - Признак абстрактности узла")
+    title = LocalizedStringField(caption="Название", tags={"client"})
+    can_instantiate = BooleanField(root_default=True, doc="Инстанцируемый - Признак возможности инстанцирования")
+    doc = LocalizedStringField(caption="Описание узла реестра")
+    tags = ListField(field=StringField(), not_inherited=True, caption="Теги", doc="Набор тегов объекта")
 
     #uri = StringField(unique=True, null=True, not_inherited=True)
     subnodes = MapField(field=EmbeddedNodeField(), not_inherited=True)
     # todo: make `owner` property
-    filename = StringField(caption=u"Имя файла, с декларацией объекта", not_inherited=True)
-    aliases = ListField(field=StringField(), not_inherited=True, caption=u"Алиасы узла", doc=u"Линки могут резолвиться по алиасам")
+    filename = StringField(caption="Имя файла, с декларацией объекта", not_inherited=True)
+    aliases = ListField(field=StringField(), not_inherited=True, caption="Алиасы узла", doc="Линки могут резолвиться по алиасам")
 
     def __init__(self, parent=None, _uri=None, _empty_overrided_fields=None, _reg_init=False, **kw):
         cls = type(self)
@@ -835,7 +840,7 @@ class Node(Subdoc, SubdocToolsMixin):
         return super(Node, self).__iter__()
 
     def node_hash(self):  # todo: (!) rename to proto_uri
-        #u'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
+        #'''uri первого попавшегося абстрактного узла в цепочке наследования включющей данный узел'''
         uri = self.uri
         if uri:
             return uri
@@ -1297,7 +1302,7 @@ def patch_field_getter(field_class):
 
 
 def _patch_all_fields_to_inheritance_support():
-    u"""
+    """
     Патчит все типы полей, импортированные в этом модуле
     для эффективной поддержки наследования в нодах реестра
     """

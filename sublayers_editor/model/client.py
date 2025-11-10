@@ -31,8 +31,8 @@ class Client(object):
     def addObject(self, obj):
         log.info('Client: Add object to client')
         for tile in self.cur_rect:
-            if Tileid(obj[u'tileid']).in_tile(tile):
-                self.objects[obj[u'_id']] = obj
+            if Tileid(obj['tileid']).in_tile(tile):
+                self.objects[obj['_id']] = obj
                 mes = dict(
                     cls='receiveAddObject',
                     obj=obj
@@ -41,18 +41,18 @@ class Client(object):
 
     def delObject(self, obj):
         log.info('Client: Del object from client')
-        if self.objects.has_key(obj[u'_id']):
+        if self.objects.has_key(obj['_id']):
             mes = dict(
                 cls='receiveDelObject',
                 obj=obj
             )
-            del self.objects[obj[u'_id']]
+            del self.objects[obj['_id']]
             self.connection.send(dumps(mes))
 
     def changeObject(self, obj):
         log.info('Client: Change object')
-        if self.objects.has_key(obj[u'_id']):
-            self.objects[obj[u'_id']] = obj
+        if self.objects.has_key(obj['_id']):
+            self.objects[obj['_id']] = obj
             mes = dict(
                 cls='receiveChangeObject',
                 obj=obj,
@@ -60,7 +60,7 @@ class Client(object):
             self.connection.send(dumps(mes))
         else:
             for tile in self.cur_rect:
-                if Tileid(obj[u'tileid']).in_tile(tile):
+                if Tileid(obj['tileid']).in_tile(tile):
                     self.addObject(obj)
 
     def sendRects(self, rects):
@@ -80,13 +80,13 @@ class Client(object):
         list_send = []
         for obj in self.objects:
             for tile in self.cur_rect:
-                if Tileid(self.objects[obj][u'tileid']).in_tile(tile):
+                if Tileid(self.objects[obj]['tileid']).in_tile(tile):
                     break
             else: list_send.append(self.objects[obj])
 
         # удаление объектов из self.objects
         for obj in list_send:
-            del self.objects[obj[u'_id']]
+            del self.objects[obj['_id']]
 
         # отправка на клиент
         if len(list_send) > 0:
@@ -100,13 +100,13 @@ class Client(object):
         list_send_leaf = []
         for obj in self.ts_leafs:
             for tile in self.cur_rect:
-                if Tileid(self.ts_leafs[obj][u'tileid']).in_tile(tile):
+                if Tileid(self.ts_leafs[obj]['tileid']).in_tile(tile):
                     break
             else: list_send_leaf.append(self.ts_leafs[obj])
 
         # удаление листьев из self.ts_leafs
         for obj in list_send_leaf:
-            del self.ts_leafs[obj[u'_id']]
+            del self.ts_leafs[obj['_id']]
 
         # отправка на клиент
         if len(list_send_leaf) > 0:
@@ -122,8 +122,8 @@ class Client(object):
         # запись новых объектов к себе в список
         list_send = []
         for obj in objects:
-            if not self.objects.has_key(obj[u'_id']):
-                self.objects[obj[u'_id']] = obj
+            if not self.objects.has_key(obj['_id']):
+                self.objects[obj['_id']] = obj
                 list_send.append(obj)
 
         # отправка на клиент
@@ -140,8 +140,8 @@ class Client(object):
         # запись новых объектов к себе в список
         list_send = []
         for obj in objects:
-            if not self.ts_leafs.has_key(obj[u'_id']):
-                self.ts_leafs[obj[u'_id']] = obj
+            if not self.ts_leafs.has_key(obj['_id']):
+                self.ts_leafs[obj['_id']] = obj
                 list_send.append(obj)
 
         # отправка на клиент

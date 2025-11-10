@@ -115,7 +115,7 @@ def setup():
     try:
         os.makedirs(os.path.join(INSTALLATION_FOLDER, 'temp'))
     except WindowsError as e:
-        log.warning("Can't make nginx/temp folder: %s", e.message)
+        log.warning("Can't make nginx/temp folder: %s", str(e))
 
     log.debug('Extracting zip file...')
     arch_root_name = os.path.commonprefix(dist.namelist())

@@ -212,7 +212,7 @@ def test5(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path=u'../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
 
     log.debug('Start expanding reg')
     # with T('reg Expand_links'):

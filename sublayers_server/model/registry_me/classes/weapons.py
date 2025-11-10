@@ -20,15 +20,15 @@ class RocketLauncher(ArmorerItem):
 
 
 class Weapon(ArmorerItem):
-    ammo = RegistryLinkField(caption=u'Боеприпас', document_type=Item,)  # todo: store set of ammo types
-    direction = StringField(caption=u'Направление (FBRL)', tags={'client'})
-    ammo_per_shot = FloatField(caption=u'Расход патронов за выстрел (< 0)')
-    ammo_per_second = FloatField(caption=u'Расход патронов в секунду')
-    radius = FloatField(caption=u'Дальность стрельбы (м)', tags={"param_randomize"})
-    width = FloatField(caption=u'Ширина сектора стрельбы (град)', tags={"param_randomize"})
-    power_penetration = FloatField(caption=u'Мощность оружия (пробитие)')
-    weapon_audio = ListField(caption=u'Имена звуков стрельбы', field=StringField(), tags={'client'})
-    weapon_animation = ListField(caption=u'Типы анимаций', field=StringField(), tags={'client'})
+    ammo = RegistryLinkField(caption='Боеприпас', document_type=Item,)  # todo: store set of ammo types
+    direction = StringField(caption='Направление (FBRL)', tags={'client'})
+    ammo_per_shot = FloatField(caption='Расход патронов за выстрел (< 0)')
+    ammo_per_second = FloatField(caption='Расход патронов в секунду')
+    radius = FloatField(caption='Дальность стрельбы (м)', tags={"param_randomize"})
+    width = FloatField(caption='Ширина сектора стрельбы (град)', tags={"param_randomize"})
+    power_penetration = FloatField(caption='Мощность оружия (пробитие)')
+    weapon_audio = ListField(caption='Имена звуков стрельбы', field=StringField(), tags={'client'})
+    weapon_animation = ListField(caption='Типы анимаций', field=StringField(), tags={'client'})
 
     # Атрибуты для рандомных параметров
     rand_range_radius = EmbeddedDocumentField(document_type=ParamRange)
@@ -110,14 +110,14 @@ class Weapon(ArmorerItem):
 
 class Cannon(Weapon):
     is_auto = False
-    dmg = FloatField(caption=u'Урон за выстрел', tags={"param_randomize"})
-    area_dmg = FloatField(caption=u'Урон за выстрел')
-    time_recharge = FloatField(caption=u'Время перезарядки (с)')
+    dmg = FloatField(caption='Урон за выстрел', tags={"param_randomize"})
+    area_dmg = FloatField(caption='Урон за выстрел')
+    time_recharge = FloatField(caption='Время перезарядки (с)')
 
     rand_range_dmg = EmbeddedDocumentField(document_type=ParamRange)
     rand_modifier_dmg = FloatField(root_default=1.0)
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    HTML_DESCRIPTION_TEMPLATE = Template("""
         <div class="description-line left-align small">{{ _('w__weight_class') }}:</div><div class="description-line right-align small">
             {{ {
                 1: _('w__weight_class__light'),
@@ -140,13 +140,13 @@ class Cannon(Weapon):
 
 class MachineGun(Weapon):
     is_auto = True
-    dps = FloatField(caption=u'Урон в секунду', tags={"param_randomize"})
-    animation_tracer_rate = FloatField(caption=u'Количество трассеров отрисовываемых в секунду')
+    dps = FloatField(caption='Урон в секунду', tags={"param_randomize"})
+    animation_tracer_rate = FloatField(caption='Количество трассеров отрисовываемых в секунду')
 
     rand_range_dps = EmbeddedDocumentField(document_type=ParamRange)
     rand_modifier_dps = FloatField(root_default=1.0)
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    HTML_DESCRIPTION_TEMPLATE = Template("""
         <div class="description-line left-align small">{{ _('w__weight_class') }}:</div><div class="description-line right-align small">
             {{ {
                 1: _('w__weight_class__light'),

@@ -15,22 +15,22 @@ from sublayers_server.model.registry_me.tree import (
 
 
 class Perk(Node):
-    icon = StringField(caption=u'Пиктограмма перка', tags={'client'})
-    description = LocalizedStringField(caption=u'Расширенное описание перка')
+    icon = StringField(caption='Пиктограмма перка', tags={'client'})
+    description = LocalizedStringField(caption='Расширенное описание перка')
 
-    driving_req     = IntField(caption=u"Необходимый уровень навыка вождения", tags={'client'})
-    shooting_req    = IntField(caption=u"Необходимый уровень навыка стрельбы", tags={'client'})
-    masking_req     = IntField(caption=u"Необходимый уровень навыка маскировки", tags={'client'})
-    leading_req     = IntField(caption=u"Необходимый уровень навыка лидерства", tags={'client'})
-    trading_req     = IntField(caption=u"Необходимый уровень навыка торговли", tags={'client'})
-    engineering_req = IntField(caption=u"Необходимый уровень навыка инженеринга", tags={'client'})
-    level_req       = IntField(caption=u"Необходимый уровень персонажа", tags={'client'})
+    driving_req     = IntField(caption="Необходимый уровень навыка вождения", tags={'client'})
+    shooting_req    = IntField(caption="Необходимый уровень навыка стрельбы", tags={'client'})
+    masking_req     = IntField(caption="Необходимый уровень навыка маскировки", tags={'client'})
+    leading_req     = IntField(caption="Необходимый уровень навыка лидерства", tags={'client'})
+    trading_req     = IntField(caption="Необходимый уровень навыка торговли", tags={'client'})
+    engineering_req = IntField(caption="Необходимый уровень навыка инженеринга", tags={'client'})
+    level_req       = IntField(caption="Необходимый уровень персонажа", tags={'client'})
     perks_req       = ListField(
-        caption=u'Список прокачанных перков',
+        caption='Список прокачанных перков',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.perks.Perk'),
     )
     role_class_req  = RegistryLinkField(
-        caption=u"Требование к ролевому классу",
+        caption="Требование к ролевому классу",
         document_type='sublayers_server.model.registry_me.classes.role_class.RoleClass',
     )
 
@@ -73,7 +73,7 @@ class Perk(Node):
         'role_class_req',
     ]
 
-    HTML_DESCRIPTION_TEMPLATE = Template(u"""
+    HTML_DESCRIPTION_TEMPLATE = Template("""
         <br>
         {% for param in this.PUBLIC_PARAMS %}
             {% set v = getattr(this, param, None) %}
@@ -104,46 +104,46 @@ class Perk(Node):
 
 
 class PerkPassive(Perk):
-    p_visibility_min   = FloatField(caption=u"Коэффициент минимальной заметности")
-    p_visibility_max   = FloatField(caption=u"Коэффициент максимальной заметности")
-    p_observing_range  = FloatField(caption=u"Радиус обзора")
-    max_hp             = FloatField(caption=u"Максимальное значение HP")
-    r_min              = FloatField(caption=u"Минимальный радиус разворота")
-    mobility           = FloatField(caption=u"Изменение манёвренности в поворотах")  # former ac_max
-    max_control_speed  = FloatField(caption=u"Абсолютная максимальная скорость движения")
-    v_forward          = FloatField(caption=u"Максимальная скорость движения вперед")
-    v_backward         = FloatField(caption=u"Максимальная скорость движения назад")
-    a_forward          = FloatField(caption=u"Ускорение разгона вперед")
-    a_backward         = FloatField(caption=u"Ускорение разгона назад")
-    a_braking          = FloatField(caption=u"Ускорение торможения")
-    max_fuel           = FloatField(caption=u"Максимальное количество топлива")
-    p_fuel_rate        = FloatField(caption=u"Расход топлива (л/с)")
-    p_armor            = FloatField(caption=u"Броня автомобиля")
-    dps_rate           = FloatField(caption=u"Множитель модификации урона автоматического оружия")
-    damage_rate        = FloatField(caption=u"Множитель модификации урона залпового оружия")
-    time_recharge_rate = FloatField(caption=u"Множитель модификации времени перезарядки залпового оружия")
-    radius_rate        = FloatField(caption=u"Множитель модификации дальности стрельбы")
+    p_visibility_min   = FloatField(caption="Коэффициент минимальной заметности")
+    p_visibility_max   = FloatField(caption="Коэффициент максимальной заметности")
+    p_observing_range  = FloatField(caption="Радиус обзора")
+    max_hp             = FloatField(caption="Максимальное значение HP")
+    r_min              = FloatField(caption="Минимальный радиус разворота")
+    mobility           = FloatField(caption="Изменение манёвренности в поворотах")  # former ac_max
+    max_control_speed  = FloatField(caption="Абсолютная максимальная скорость движения")
+    v_forward          = FloatField(caption="Максимальная скорость движения вперед")
+    v_backward         = FloatField(caption="Максимальная скорость движения назад")
+    a_forward          = FloatField(caption="Ускорение разгона вперед")
+    a_backward         = FloatField(caption="Ускорение разгона назад")
+    a_braking          = FloatField(caption="Ускорение торможения")
+    max_fuel           = FloatField(caption="Максимальное количество топлива")
+    p_fuel_rate        = FloatField(caption="Расход топлива (л/с)")
+    p_armor            = FloatField(caption="Броня автомобиля")
+    dps_rate           = FloatField(caption="Множитель модификации урона автоматического оружия")
+    damage_rate        = FloatField(caption="Множитель модификации урона залпового оружия")
+    time_recharge_rate = FloatField(caption="Множитель модификации времени перезарядки залпового оружия")
+    radius_rate        = FloatField(caption="Множитель модификации дальности стрельбы")
 
 
 class PerkRepairPassive(PerkPassive):
-    repair_rate = FloatField(root_default=0, caption=u"Процент ХП восстанавливающийся каждую секунду")
-    repair_rate_on_stay = FloatField(root_default=0, caption=u"Процент ХП восстанавливающийся каждую секунду в стоячем положении")
+    repair_rate = FloatField(root_default=0, caption="Процент ХП восстанавливающийся каждую секунду")
+    repair_rate_on_stay = FloatField(root_default=0, caption="Процент ХП восстанавливающийся каждую секунду в стоячем положении")
 
 
 class PerkCritPassive(PerkPassive):
-    crit_rate = FloatField(caption=u"Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
-    crit_power = FloatField(caption=u"Сила крита [0 .. сколько угодно]")
+    crit_rate = FloatField(caption="Шанс крита [0 .. сколько угодно, но больше 1 нет смысла]")
+    crit_power = FloatField(caption="Сила крита [0 .. сколько угодно]")
 
 
 class PerkPartyPassive(PerkPassive):
-    additional_capacity = IntField(root_default=0, caption=u"Дополнительные слоты в пати")
-    party_exp_modifier = FloatField(root_default=0, caption=u"Процент увеличение экспы в пати")
+    additional_capacity = IntField(root_default=0, caption="Дополнительные слоты в пати")
+    party_exp_modifier = FloatField(root_default=0, caption="Процент увеличение экспы в пати")
 
 
 class PerkActivateItemsPassive(PerkPassive):  # Перки, влияющие на активацию итемов
-    repair_build_rate = FloatField(root_default=0, caption=u"Коэффициент дополнительного хила от ремкомплектов")
+    repair_build_rate = FloatField(root_default=0, caption="Коэффициент дополнительного хила от ремкомплектов")
 
 
 class PerkTraderPassive(PerkPassive):
-    trader_sell = FloatField(root_default=0, caption=u"Уменьшение маржи торговца при покупке у торговца")
-    trader_buy = FloatField(root_default=0, caption=u"Уменьшение маржи торговца при продаже торговцу")
+    trader_sell = FloatField(root_default=0, caption="Уменьшение маржи торговца при покупке у торговца")
+    trader_buy = FloatField(root_default=0, caption="Уменьшение маржи торговца при продаже торговцу")

@@ -8,13 +8,13 @@ from sublayers_server.model.registry_me.tree import Node, StringField, IntField,
 
 
 class Effect(Node):
-    param_name  = StringField(caption=u'Параметр')
-    m_name      = StringField(caption=u'Модификатор')
-    r_name      = StringField(caption=u'Резист')
-    upd_method  = StringField(caption=u'Callback', root_default=None)
-    sign        = IntField(caption=u'Знак', root_default=-1)
-    is_stack    = BooleanField(caption=u'Стекается?', root_default=False)
-    absolute    = BooleanField(caption=u'Абсолютное значение', root_default=False)
+    param_name  = StringField(caption='Параметр')
+    m_name      = StringField(caption='Модификатор')
+    r_name      = StringField(caption='Резист')
+    upd_method  = StringField(caption='Callback', root_default=None)
+    sign        = IntField(caption='Знак', root_default=-1)
+    is_stack    = BooleanField(caption='Стекается?', root_default=False)
+    absolute    = BooleanField(caption='Абсолютное значение', root_default=False)
 
     # def __init__(self, **kw):
     #     super(Effect, self).__init__(**kw)

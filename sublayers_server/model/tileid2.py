@@ -15,7 +15,7 @@ MAX_ZOOM = 2**MAX_BIT_ZOOM - 1 # допустимые значениядля z  
 
 
 def xyz2bin(x, y, z):
-    u"""
+    """
     Преобразование кортежа (x, y, zoom) в бинарное представление индекса тайла.
     """
     if z > MAX_ZOOM:
@@ -30,7 +30,7 @@ def xyz2bin(x, y, z):
 
 
 def bin2xyz(binary):
-    u"""
+    """
     Преобразование бинарного представления индекса тайла в кортеж (x, y, zoom).
     """
     b = long(binary)
@@ -47,7 +47,7 @@ def bin2xyz(binary):
 
 
 class Tileid2(long):
-    u"""
+    """
     Индекс тайла.
     Представляется в виде бинарной последовательности из 64 бит,
     младшие 8 бит отвечают за глубину тайла (объекта, т.е. z - координата)
@@ -75,7 +75,7 @@ class Tileid2(long):
             if isinstance(arg, long):
                 return long.__new__(cls, arg)
 
-        raise ETileException(u'''Некорректный набор параметров "{!r}".
+        raise ETileException('''Некорректный набор параметров "{!r}".
             Ожидается: (x, y, z)|<Tileid>
             где: (x, y, z) -- tuple of three int
             <Tileid> -- объект типа Tileid'''.format(args))
@@ -84,46 +84,46 @@ class Tileid2(long):
         return self == ROOTBIN
 
     def xyz(self):
-        u"""Представление индекса в виде кортежа (x, y, zoom)."""
+        """Представление индекса в виде кортежа (x, y, zoom)."""
         if not hasattr(self, '_x'):
             self._x, self._y, self._z = bin2xyz(self)
         return self._x, self._y, self._z
 
     def zoom(self):
-        u"""Возвращает z координату Tileid."""
+        """Возвращает z координату Tileid."""
         if not hasattr(self, '_z'):
             #noinspection PyAttributeOutsideInit
             self._x, self._y, self._z = bin2xyz(self)
         return self._z
 
     def parent(self, levelup=1):
-        u"""
+        """
         Возвращает предка на levelup уровней выше.
         При попытке получить предка корня генерируется исключение.
         """
         z = self.zoom()
-        assert 0 <= levelup <= z, u'Некорректно указан относительный уровень предка '
+        assert 0 <= levelup <= z, 'Некорректно указан относительный уровень предка '
         z -= levelup
         mask = (2 ** (z << 1) - 1) << (MAX_BIT_COUNT - (z << 1))
         return Tileid2(((self & mask) | z))
 
     def parent_by_lvl(self, level):
-        u"""
+        """
         Возвращает предка на level уровне.
         При попытке получить предка корня генерируется исключение.
         """
         z = self.zoom()
-        assert 0 <= level <= z, u'Некорректно указан уровень предка.'
+        assert 0 <= level <= z, 'Некорректно указан уровень предка.'
         return self.parent(z - level)
 
     def index_child_first(self, level=1):
         z = self.zoom()
-        assert z + level < MAX_ZOOM, u'Достигнут максимальный зум.'
+        assert z + level < MAX_ZOOM, 'Достигнут максимальный зум.'
         return Tileid2(self + level)
 
     def index_child_last(self):
         z = self.zoom()
-        assert z < MAX_ZOOM, u'Достигнут максимальный зум.'
+        assert z < MAX_ZOOM, 'Достигнут максимальный зум.'
         return Tileid2(self | (2 ** (MAX_BIT_COUNT - (z << 1)) - 1))
 
     def in_tile(self, tile):
@@ -137,9 +137,9 @@ class Tileid2(long):
         return False
 
     def childs(self, level=1):
-        u"""Итератор, перечисляющий всех потомков на уровне level вниз от текущего."""
+        """Итератор, перечисляющий всех потомков на уровне level вниз от текущего."""
         assert isinstance(level, int) and level >= 0 and level + self.zoom() < MAX_ZOOM, \
-            u'Некорректное значение аргумента level: {}'.format(level)
+            'Некорректное значение аргумента level: {}'.format(level)
         size = 2 ** level
         sx, sy, sz = self.index_child_first(level).xyz()
         for y in xrange(size):
@@ -177,10 +177,10 @@ class Tileid2(long):
     def iter_rect(cls, tl, br):
         # возвращает итератор тайлов по выбранному прямоугольнику
         # проверить корректность tl и br
-        assert tl.zoom() == br.zoom(), u'Аргументы не должны иметь разные Z'
+        assert tl.zoom() == br.zoom(), 'Аргументы не должны иметь разные Z'
         x1, y1, z = tl.xyz()
         x2, y2, z = br.xyz()
-        assert (x1 <= x2) and (y1 <= y2), u'Неправильно задан прямоугольник'
+        assert (x1 <= x2) and (y1 <= y2), 'Неправильно задан прямоугольник'
 
         # получить список Tileid на уровне z
         tile_list = []

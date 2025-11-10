@@ -23,10 +23,10 @@ import os
 
 class Zone(Node):
     effects = ListField(
-        caption=u'Эффекты', doc=u'Список эффектов (URI), действующих в зоне',
+        caption='Эффекты', doc='Список эффектов (URI), действующих в зоне',
         field=RegistryLinkField(document_type='sublayers_server.model.registry_me.classes.effects.Effect'),
     )
-    order_key = StringField(caption=u'Порядковый ключ', doc=u'Алфавитный ключ, определяющий порядок загрузки зон')
+    order_key = StringField(caption='Порядковый ключ', doc='Алфавитный ключ, определяющий порядок загрузки зон')
 
     def __init__(self, **kw):
         super(Zone, self).__init__(**kw)
@@ -93,8 +93,8 @@ class ZoneDirt(Zone):
 
 
 class FileZone(Zone):
-    path = StringField(caption=u'Путь', doc=u'Файловый путь к файлу/каталогу с описанием зоны')  # todo: FilepathField
-    max_map_zoom = IntField(root_default=18, caption=u'Максимальная тайловая глубина')  # todo: default?
+    path = StringField(caption='Путь', doc='Файловый путь к файлу/каталогу с описанием зоны')  # todo: FilepathField
+    max_map_zoom = IntField(root_default=18, caption='Максимальная тайловая глубина')  # todo: default?
 
 
 class TilesetZone(FileZone):
@@ -124,11 +124,11 @@ class TilesetZone(FileZone):
 
 
 class RasterZone(FileZone):
-    pixel_depth = IntField(caption=u'Глубина пикселя', doc=u'Тайловый уровень пикселя ресурсных изображений')
-    extension = StringField(root_default='.jpg', caption=u'Расширение тайлов')
+    pixel_depth = IntField(caption='Глубина пикселя', doc='Тайловый уровень пикселя ресурсных изображений')
+    extension = StringField(root_default='.jpg', caption='Расширение тайлов')
     channel = IntField(
-        root_default=None, caption=u'Канал',
-        doc=u'Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)',
+        root_default=None, caption='Канал',
+        doc='Номер цветовой компоненты со значением поля зоны (None -- брать цвет целиком)',
     )
     def __init__(self, **kw):
         super(RasterZone, self).__init__(**kw)

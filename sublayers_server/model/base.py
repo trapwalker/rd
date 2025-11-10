@@ -9,7 +9,7 @@ from sublayers_server.model.parameters import Parameter
 
 import sys
 from abc import ABCMeta
-from counterset import CounterSet
+from sublayers_server.model.counterset import CounterSet
 from uuid import uuid1 as get_uid
 
 # todo: GEO-index

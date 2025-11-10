@@ -59,7 +59,7 @@ def load_locale_objects(path, *other_paths):
 
         # Сборка js-файлов локалей для клиента
         with codecs.open(join(mypath, locale, '.compiled.js'), 'w', encoding='utf-8') as f:
-            f.write(u'locale_object = {};'.format(json.dumps(locale_object, ensure_ascii=False)))
+            f.write('locale_object = {};'.format(json.dumps(locale_object, ensure_ascii=False)))
 
 
 def locale(lang, key):

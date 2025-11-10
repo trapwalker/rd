@@ -3,7 +3,7 @@
 import os
 import sys
 
-RES_FOLDER_PATH = u'resources.bin'
+RES_FOLDER_PATH = 'resources.bin'
 
 class PathError(Exception):
     pass
@@ -12,26 +12,26 @@ class PathError(Exception):
 def iter4links(root=RES_FOLDER_PATH):
     for src, dirs, files in os.walk(root):
         if not dirs:
-            dest = src.replace(root, u'').lstrip(os.path.sep)
-            if not os.path.basename(dest).startswith(u'.'):
+            dest = src.replace(root, '').lstrip(os.path.sep)
+            if not os.path.basename(dest).startswith('.'):
                 yield src, dest
 
 
 def mkpath(path):
     path = os.path.normpath(path)
-    if path == u'.':
+    if path == '.':
         return 
     items = path.split(os.path.sep)
     for i in range(1, len(items) + 1):
         p = os.path.join(*items[:i])
         if not os.path.exists(p):
-            print(u'MAKE', p)
+            print('MAKE', p)
             try:
                 os.mkdir(p)
             except Exception as e:
-                raise PathError(u'''Can't create directory "{}": {}'''.format(p, repr(e)))
+                raise PathError('''Can't create directory "{}": {}'''.format(p, repr(e)))
         elif not os.path.isdir(p):
-            raise PathError(u'Path "{}" already exists and this is not a directory.'.format(p))
+            raise PathError('Path "{}" already exists and this is not a directory.'.format(p))
 
 
 def make_links(root=RES_FOLDER_PATH):
@@ -41,12 +41,12 @@ def make_links(root=RES_FOLDER_PATH):
         try:
             symlink(os.path.abspath(src), dest)
         except Exception as e:
-            print(u']tFAIL:')
+            print(']tFAIL:')
             print(repr(e))
 
 
 def symlink_os(source, link_name):
-    cmd = u'mklink /D "{}" "{}"'.format(link_name, source)
+    cmd = 'mklink /D "{}" "{}"'.format(link_name, source)
     print('>', cmd)
     err = os.popen3(cmd)[2].read().decode('cp866')
     if err:

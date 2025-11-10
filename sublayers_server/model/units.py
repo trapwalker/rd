@@ -27,7 +27,7 @@ from tornado.options import options
 
 
 class Unit(Observer):
-    u"""Abstract class for any controlled GEO-entities"""
+    """Abstract class for any controlled GEO-entities"""
 
     def __init__(self, time, direction=None, owner=None, **kw):
         """
@@ -396,7 +396,7 @@ class Unit(Observer):
 
 
 class Mobile(Unit):
-    u"""Class of mobile units"""
+    """Class of mobile units"""
 
     def __init__(self, time, **kw):
         super(Mobile, self).__init__(time=time, **kw)

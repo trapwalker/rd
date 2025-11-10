@@ -11,7 +11,7 @@ from pymongo import Connection
 #TODO: Если выбранный файл (тайл) полностью одного цвета - учесть это специальным вызовом ts.set_tile
 
 def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finish=None, color=(0, 0, 0)):
-    u''' Получает на вход:
+    ''' Получает на вход:
     directory - директория с тайлами,
     zoom - уровень зума тайлов,
     x_start, y_start - стартовые координаты x,y для тайлсета
@@ -85,7 +85,7 @@ def TilesetToImage(tileset, file_name, fillcolor=None, pencolor=None):
 
 
 def TilesetToMongoDB(tileset, collection, color, ts_name):
-    u"""
+    """
     color: для отрисовки в эдиторе. Используется:
         #555555 - дороги
         #00FF00 - леса
@@ -96,9 +96,9 @@ def TilesetToMongoDB(tileset, collection, color, ts_name):
     for leaf in tileset.iter_leafs():
         if leaf[1] == 1:
             x, y, z = leaf[0].xyz()
-            obj = {u'tileid': Tileid2(long(x), long(y), long(z)),
-                   u'color': color,
-                   u'ts_name': ts_name
+            obj = {'tileid': Tileid2(long(x), long(y), long(z)),
+                   'color': color,
+                   'ts_name': ts_name
             }
             collection.insert(obj)
             count +=1
@@ -108,8 +108,8 @@ def TilesetToMongoDB(tileset, collection, color, ts_name):
 
 def MongoDBToTileset(collection, ts_name):
     ts = Tileset()
-    for obj in collection.find({u'ts_name': ts_name}):
-        x, y, z = Tileid2(obj[u'tileid']).xyz()
+    for obj in collection.find({'ts_name': ts_name}):
+        x, y, z = Tileid2(obj['tileid']).xyz()
         ts.set_tile(Tileid(x, y, z))
     return ts
 
@@ -117,10 +117,10 @@ def MongoDBToTileset(collection, ts_name):
 def MongoDBToTilesets(collection):
     tss = {}
     for obj in collection.find():
-        if not tss.has_key(obj[u'ts_name']):
-            tss[obj[u'ts_name']] = Tileset()
-        x, y, z = Tileid2(obj[u'tileid']).xyz()
-        tss[obj[u'ts_name']].set_tile(Tileid(x, y, z))
+        if not tss.has_key(obj['ts_name']):
+            tss[obj['ts_name']] = Tileset()
+        x, y, z = Tileid2(obj['tileid']).xyz()
+        tss[obj['ts_name']].set_tile(Tileid(x, y, z))
     return tss
 
 

@@ -11,7 +11,7 @@ if __name__ == '__main__':
 import re
 from collections import OrderedDict
 from operator import itemgetter
-from urllib import splitvalue, quote, unquote
+from urllib.parse import quote, unquote
 from pprint import pformat
 import string
 
@@ -23,6 +23,13 @@ class URIFormatError(Exception):
     pass
 
 
+def splitvalue(s):
+    """Split a parameter string into key and value (Python 2 urllib.splitvalue replacement)"""
+    if '=' in s:
+        return s.split('=', 1)
+    else:
+        return (s, '')
+
 def splitparams(params_str):
     params = params_str.split('&') if params_str else []
     return tuple([splitvalue(s) for s in params])
@@ -33,7 +40,7 @@ class URI(tuple):
     __slots__ = ()
     _fields = ('scheme', 'storage', 'path', 'params', 'anchor')
 
-    _RE_URI = re.compile(ur'''
+    _RE_URI = re.compile(r'''
         ^
         (?:(?P<scheme>\w+)://)?  #? scheme is necessary
         (?P<storage>[^/]+)?
@@ -298,7 +305,7 @@ class Selector(URI):
 if __name__ == '__main__':
     from pprint import pprint as pp
     try:
-        uri = URI(u'scheme:///path/to/the/some/object?x=3&y=4&x=#my anchor')
+        uri = URI('scheme:///path/to/the/some/object?x=3&y=4&x=#my anchor')
     except URIFormatError as e:
         print('fail', e)
     else:

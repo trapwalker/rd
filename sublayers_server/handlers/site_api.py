@@ -53,7 +53,7 @@ class APIGetCarInfoHandler2(BaseHandler):
 
 
 class APIGetUserInfoHandler(BaseHandler):
-    u"""Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой"""
+    """Возвращает словарь с полями информации о пользователе и строку-шаблон с его машинкой"""
     def get(self):
         # todo: ##REFACTORING
         log.error('Error! Site API called!')

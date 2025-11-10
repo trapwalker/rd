@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from itertools import chain
-from collections import Iterable, Callable
+from collections.abc import Iterable, Callable
 import re
 
 # todo: add AgentLogStream
@@ -104,9 +104,9 @@ class Console(object):
 
 
     def _call_fmt(self, cmd, av, kw):
-        return u'{}({})'.format(cmd, u', '.join(chain(
+        return '{}({})'.format(cmd, ', '.join(chain(
             map(repr, av),
-            (u'{k}={v!r}'.format(k=k, v=v) for k, v in kw.items())
+            ('{k}={v!r}'.format(k=k, v=v) for k, v in kw.items())
         )))
 
     def on_cmd(self, cmdline):
@@ -129,9 +129,9 @@ class Console(object):
             if not isinstance(result, basestring):
                 result = repr(result)
                 
-            self.stream_log.write(u'RESULT: {}\n'.format(result))  # todo: pformat
+            self.stream_log.write('RESULT: {}\n'.format(result))  # todo: pformat
         except ConsoleCommandExecutionError as e:
-            # self.stream_log.write(u'ERROR: {!r}\n'.format(e))  # todo: pformat
+            # self.stream_log.write('ERROR: {!r}\n'.format(e))  # todo: pformat
             raise e  # info: раньше не было этой строки. Только логирование выше
         except Exception as e:
             # log.exception(repr(e))
@@ -144,14 +144,14 @@ class Console(object):
         # todo: test to valid console function
         try:
             if isinstance(func, Callable):
-                self.stream_log.write(u'CALL: {}\n'.format(self._call_fmt(f, av, kw)))
+                self.stream_log.write('CALL: {}\n'.format(self._call_fmt(f, av, kw)))
                 return func(*av, **kw)
             else:
-                self.stream_log.write(u'ECHO: {}\n'.format(f))
+                self.stream_log.write('ECHO: {}\n'.format(f))
                 return func
         except Exception as e:
             # log.exception('User console error:')
-            raise ConsoleCommandExecutionError('{}: {}'.format(e.__class__.__name__, e.message))
+            raise ConsoleCommandExecutionError('{}: {}'.format(e.__class__.__name__, str(e)))
 
 
 if __name__ == '__main__':

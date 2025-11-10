@@ -24,9 +24,9 @@ class QuestEvent(Event):
 
 
 class QuestTimer(Subdoc):
-    time = FloatField(caption=u"Время", doc=u"Время срабатывания таймера")
-    name = StringField(caption=u"Название", doc=u"Имя таймера для идентификации")
-    uid  = UUIDField(caption=u"UID", doc=u"Уникальный идентификатор таймера")
+    time = FloatField(caption="Время", doc="Время срабатывания таймера")
+    name = StringField(caption="Название", doc="Имя таймера для идентификации")
+    uid  = UUIDField(caption="UID", doc="Уникальный идентификатор таймера")
 
 
 class OnTimer(QuestEvent):

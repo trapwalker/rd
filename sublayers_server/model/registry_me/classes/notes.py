@@ -51,8 +51,8 @@ class Note(Subdoc):
 
 
 class MapMarkerNote(Note):
-    position = PositionField(caption=u"Координаты объекта", tags={'client'})
-    radius = FloatField(caption=u"Радиус взаимодействия с объектом", tags={'client'})
+    position = PositionField(caption="Координаты объекта", tags={'client'})
+    radius = FloatField(caption="Радиус взаимодействия с объектом", tags={'client'})
 
     def is_near(self, position):
         radius = self.radius or 0  # todo: review !!! if self.radius is None
@@ -66,12 +66,12 @@ class MaskingMapMarkerNote(MapMarkerNote): pass
 class MaskingTurretMapMarkerNote(MapMarkerNote): pass
 
 class NPCPageNote(Note):
-    page_caption = LocalizedStringField(caption=u'Название кнопки у нпц', tags={'client'})
-    btn1_caption = LocalizedStringField(default=LocalizedString(ru=u'<br>Сдать', en=u'<br>Complete'), caption=u'Текст для кнопки btn1', tags={'client'})
+    page_caption = LocalizedStringField(caption='Название кнопки у нпц', tags={'client'})
+    btn1_caption = LocalizedStringField(default=LocalizedString(ru='<br>Сдать', en='<br>Complete'), caption='Текст для кнопки btn1', tags={'client'})
     npc = RegistryLinkField(
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
         tags={'client'},
-        caption=u"Целевой NPC ноты",
+        caption="Целевой NPC ноты",
     )
 
 class NPCDeliveryNote(NPCPageNote): pass
@@ -91,9 +91,9 @@ class MapActivationRadarsNoteFinish(NPCPageNote): pass
 # Классовые ноты
 class FirstOutNote(Note): pass
 class NPCTypePageNote(Note):
-    page_caption = LocalizedStringField(caption=u'Название кнопки у нпц', tags={'client'})
-    btn1_caption = LocalizedStringField(default=LocalizedString(ru=u'<br>Сдать', en=u'<br>Complete'), caption=u'Текст для кнопки btn1', tags={'client'})
-    npc_type = StringField(caption=u'Тип NPC', tags={'client'})
+    page_caption = LocalizedStringField(caption='Название кнопки у нпц', tags={'client'})
+    btn1_caption = LocalizedStringField(default=LocalizedString(ru='<br>Сдать', en='<br>Complete'), caption='Текст для кнопки btn1', tags={'client'})
+    npc_type = StringField(caption='Тип NPC', tags={'client'})
 
 class VisitTrainerNote(NPCTypePageNote): pass
 class SelectTeacherNote(NPCTypePageNote): pass

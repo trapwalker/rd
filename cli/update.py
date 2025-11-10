@@ -51,7 +51,7 @@ def update(ctx, dest, no_db, clean_agents, reset_profiles, host, no_reload, no_r
         upd_res = repo.hg_command('update', br)
         new_id = repo.hg_id()
         is_updated = old_id != new_id
-        log.info(u'{:8} repo: {} UPDATED({}): {}'.format(title, 'IS    ' if is_updated else 'IS NOT', br, upd_res.strip()))
+        log.info('{:8} repo: {} UPDATED({}): {}'.format(title, 'IS    ' if is_updated else 'IS NOT', br, upd_res.strip()))
         return is_updated
 
     is_updated_main = upd('Main', main_repo)

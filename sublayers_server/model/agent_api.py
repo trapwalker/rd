@@ -75,9 +75,9 @@ class AgentConsoleNamespace(Namespace):
         else:
             party = self.agent.party
             if party:
-                self.write(u'Your party is {}'.format(party.as_html()))
+                self.write('Your party is {}'.format(party.as_html()))
             else:
-                self.write(u'You are not in party')
+                self.write('You are not in party')
 
     def die(self):
         self.agent.die(time=self.agent.server.get_time())
@@ -106,21 +106,21 @@ class AgentConsoleNamespace(Namespace):
             agent = self.agent.server.agents_by_name.get(user.strip())
 
         if agent is None:
-            self.write(u'User `{}` is not found.'.format(user))
-            log.warning(u'Странный пользователь передан команде /money: {!r}'.format(user))
+            self.write('User `{}` is not found.'.format(user))
+            log.warning('Странный пользователь передан команде /money: {!r}'.format(user))
             return None
 
         if value is not None:
             value = int(value)
             if value > 100000:
                 self.write(random.choice([  # todo: вынести вариации диалогов в ямл
-                    u'А харя не треснет?',
-                    u'Поди заработай, халявщик!',
-                    u'Не евгей ли вы случайно, судагь?',
-                    u'Слипнется.',
-                    u'Может тебе ещё и ключи от тачки, где лут лежит?',
-                    u'Губа не дура',
-                    u'Да ты охренел!',
+                    'А харя не треснет?',
+                    'Поди заработай, халявщик!',
+                    'Не евгей ли вы случайно, судагь?',
+                    'Слипнется.',
+                    'Может тебе ещё и ключи от тачки, где лут лежит?',
+                    'Губа не дура',
+                    'Да ты охренел!',
                 ]))
             agent.example.profile.set_balance(time=self.agent.server.get_time(), new_balance=value)
 
@@ -141,7 +141,7 @@ class AgentConsoleNamespace(Namespace):
         self.agent.example.profile.set_karma(value=int(value), time=self.agent.server.get_time())
 
     def clear_quests(self, value=None):
-        if value == 'all' or value == u'all':
+        if value == 'all' or value == 'all':
             self.agent.example.profile.quests_unstarted = []
             self.agent.example.profile.quests_ended = []
         self.agent.example.profile.quests_active = []
@@ -294,7 +294,7 @@ class InitTimeEvent(Event):
 
 
 class SetPartyEvent(Event):
-    def __init__(self, agent, name=None, description=u'', exp_share_type=False, **kw):
+    def __init__(self, agent, name=None, description='', exp_share_type=False, **kw):
         super(SetPartyEvent, self).__init__(server=agent.server, **kw)
         self.agent = agent
         self.name = name
@@ -581,7 +581,7 @@ class AgentAPI(API):
         self.set_party(name=name)
 
     @public_method
-    def set_party(self, name=None, description=u'', exp_share_type=False):
+    def set_party(self, name=None, description='', exp_share_type=False):
         # todo: review
         assert name is None or isinstance(name, unicode)
         assert description is None or isinstance(description, unicode)

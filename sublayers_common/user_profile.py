@@ -80,9 +80,9 @@ class User(Document):
     avatar_link = StringField(default='/static/content/avatars/dog_def.png', max_length=255)
     role_class_uri = StringField(default='/registry/rpg_settings/role_class/chosen_one', max_length=255)
     teaching_state = StringField(default="", max_length=30)  # "" - не известно, "cancel" - отменено, "done" - завершено, "map" - карта, "city" - город
-    start_position = PositionField(caption=u"Стартовые координаты")
+    start_position = PositionField(caption="Стартовые координаты")
 
-    access_level = IntField(default=0, caption=u"0 - Игрок, 1 - Гейм-мастер, 2 - Модератор, 10 - Администратор") # Просто на будущее задел
+    access_level = IntField(default=0, caption="0 - Игрок, 1 - Гейм-мастер, 2 - Модератор, 10 - Администратор") # Просто на будущее задел
 
     ban_time = DateTimeField(default=datetime.datetime.now, auto_now_on_insert=True)  # Время, до которого игрок не может зайти в игру
     ban_reason = StringField(default='', max_length=255)  # todo: заменить на LocalizedStringField

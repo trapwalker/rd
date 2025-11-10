@@ -299,7 +299,7 @@ def agents_export(ctx, logins, dest, fn_format, clean_wildcard, no_clean):
             try:
                 echo_out = sys.stdout if dest else destination_to_save
                 click.echo('#' * 80, file=echo_out)
-                click.echo(u'## {}'.format(agent), file=echo_out)
+                click.echo('## {}'.format(agent), file=echo_out)
                 with Timer() as tm1:
                     agent.save_to_file(destination_to_save)
             except Exception as e:
@@ -309,7 +309,7 @@ def agents_export(ctx, logins, dest, fn_format, clean_wildcard, no_clean):
             else:
                 count_ok += 1
                 log.info(
-                    u'Saved to %s DONE (%.2fs): %s',
+                    'Saved to %s DONE (%.2fs): %s',
                     destination_to_save if dest else destination_to_save.name,
                     tm1.duration,
                     agent,

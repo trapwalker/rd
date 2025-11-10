@@ -152,7 +152,7 @@ class ChatRoom(object):
         return len(self.members)
 
     def __str__(self):
-        return u'<ChatRoom {self.name}/{n}>'.format(self=self, n=len(self))
+        return '<ChatRoom {self.name}/{n}>'.format(self=self, n=len(self))
 
     id = property(id)
 
@@ -270,7 +270,7 @@ class PrivateChatRoom(ChatRoom):
     def __init__(self, agent, recipient, time):
         assert isinstance(agent._login, unicode)
         assert isinstance(recipient._login, unicode)
-        super(PrivateChatRoom, self).__init__(time=time, name=(u"{!s} -> {!s}".format(agent._login, recipient.user.name)))  # todo: use unicode
+        super(PrivateChatRoom, self).__init__(time=time, name=("{!s} -> {!s}".format(agent._login, recipient.user.name)))  # todo: use unicode
         self.include(agent=agent, time=time)
         self.include(agent=recipient, time=time)
 
@@ -281,7 +281,7 @@ class PrivateChatRoom(ChatRoom):
             # удаление себя из списка rooms
             del self.rooms[self.name]
 
-        self.on_message(agent=agent, msg_text=u'Пользователь покинул чат', time=time)
+        self.on_message(agent=agent, msg_text='Пользователь покинул чат', time=time)
 
 
 class GlobalChatRoom(ChatRoom):

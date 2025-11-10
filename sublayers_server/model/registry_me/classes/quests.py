@@ -28,7 +28,7 @@ instantiate_stat = dict()
 
 
 def unicode_args_substitution(func, template_renderer, **kw_dict):
-    u"""Декоратор для вызывабельных объектов.
+    """Декоратор для вызывабельных объектов.
     Перебирает все аргументы `func` и обрабатывает темплетным подстановщиком `template_renderer`,
     передавая в него добавочный контекст `kw_dict`
     """
@@ -80,10 +80,10 @@ def script_compile(code, fn):
 
 
 class LogRecord(Subdoc):
-    quest_uid   = UUIDField(doc=u"UID of quest", tags={'client'})
-    time        = FloatField(tags={'client'}, doc=u"Время создания записи")
-    text        = StringField(tags={'client'}, doc=u"Текст записи")
-    position    = PositionField(tags={'client'}, doc=u"Привязанная к записи позиция на карте")
+    quest_uid   = UUIDField(doc="UID of quest", tags={'client'})
+    time        = FloatField(tags={'client'}, doc="Время создания записи")
+    text        = StringField(tags={'client'}, doc="Текст записи")
+    position    = PositionField(tags={'client'}, doc="Привязанная к записи позиция на карте")
     # target  # todo: target of log record
 
     def __init__(self, quest=None, **kw):
@@ -92,8 +92,8 @@ class LogRecord(Subdoc):
 
 
 class QuestRange(Subdoc):
-    min = FloatField(doc=u"Минимальное значение генерации")
-    max = FloatField(doc=u"Максимальное значение генерации")
+    min = FloatField(doc="Минимальное значение генерации")
+    max = FloatField(doc="Максимальное значение генерации")
 
     def __init__(self, **kw):
         super(QuestRange, self).__init__(**kw)
@@ -139,15 +139,15 @@ class FailByCancelState(FailState):
 
 # todo: ##DEPRECATED
 class QuestState(Node):
-    id = StringField(doc=u"Идентификационное имя состояния внутри кевеста для использования в скриптах")
-    enter_state_message = LocalizedStringField(doc=u"Сообщение в журнал при входе в состояние")
-    exit_state_message = LocalizedStringField(doc=u"Сообщение в журнал при выходе из состояния")
-    status = StringField(doc=u"Статус квеста при данном текущем состоянии (None/active/end)")
-    result = StringField(doc=u"Результат квеста данном текущем состоянии (None/win/fail)")
+    id = StringField(doc="Идентификационное имя состояния внутри кевеста для использования в скриптах")
+    enter_state_message = LocalizedStringField(doc="Сообщение в журнал при входе в состояние")
+    exit_state_message = LocalizedStringField(doc="Сообщение в журнал при выходе из состояния")
+    status = StringField(doc="Статус квеста при данном текущем состоянии (None/active/end)")
+    result = StringField(doc="Результат квеста данном текущем состоянии (None/win/fail)")
 
-    on_enter = StringField(caption=u"Python скрипт, выполняемый при входе в состояние")
-    on_exit = StringField(caption=u"Python скрипт, выполняемый при выходе из состояния")
-    on_event = StringField(caption=u"Python скрипт, выполняемый по факту любого события")
+    on_enter = StringField(caption="Python скрипт, выполняемый при входе в состояние")
+    on_exit = StringField(caption="Python скрипт, выполняемый при выходе из состояния")
+    on_event = StringField(caption="Python скрипт, выполняемый по факту любого события")
 
     def _exec_event_handler(self, quest, handler, event):
         code_text = getattr(self, handler, None)
@@ -164,7 +164,7 @@ class QuestState(Node):
 
         quest.local_context.update(state=self, event=event)
         try:
-            exec code in quest.global_context, quest.local_context
+            exec(code, quest.global_context, quest.local_context)
         except Exception as e:
             log.exception('Runtime error in quest handler `%s`.', handler)
             quest._set_error_status(handler, event, e)
@@ -217,21 +217,21 @@ class QuestState(Node):
 ## - like(diff=1, dest=login|None, who=None|npc|location)
 
 class QuestEndRec(Document):
-    user_id = StringField(caption=u'Идентификатор профиля владельца', sparse=True, identify=True)
+    user_id = StringField(caption='Идентификатор профиля владельца', sparse=True, identify=True)
     quest = EmbeddedNodeField(
         document_type='sublayers_server.model.registry_me.classes.quests.Quest',
     )
 
 
 class Quest(Node):
-    first_state     = StringField(caption=u'Начальное состояние', doc=u'Id начального состояния квеста')
-    current_state   = StringField(caption=u'Текущее состояние', doc=u'Имя текущего состояния квеста')
+    first_state     = StringField(caption='Начальное состояние', doc='Id начального состояния квеста')
+    current_state   = StringField(caption='Текущее состояние', doc='Имя текущего состояния квеста')
     states          = ListField(
         field=EmbeddedNodeField(document_type=QuestState),
         root_default=list,
         readonly=True,  # todo: ##DEPRECATED
-        caption=u"Состояния квеста",
-        doc=u"Список возможных состояний квестов. Состояния включают в себя логику переходов.",
+        caption="Состояния квеста",
+        doc="Список возможных состояний квестов. Состояния включают в себя логику переходов.",
     )
     # todo: change states list to MapField (states inheritance support)
     # todo: ##FIXIT в стейтах внутри квеста почему-то реинстанцируются строки с кодом обработчиков событий
@@ -240,43 +240,43 @@ class Quest(Node):
         field=EmbeddedDocumentField(document_type=quest_events.QuestTimer),
         root_default=dict,
         reinst=True,
-        caption=u"Установленные таймеры",
-        doc=u"Список установленных квестом таймеров",
+        caption="Установленные таймеры",
+        doc="Список установленных квестом таймеров",
     )
     dc          = GenericEmbeddedDocumentField(
         default=lambda: DynamicSubdoc(),
         not_inherited=True,
         reinst=True,
-        caption=u'Динамический контекст',
-        doc=u'Персистентное динамическое хранилище данных состояния квеста (не поддерживает EmbeddedNodeField)',
+        caption='Динамический контекст',
+        doc='Персистентное динамическое хранилище данных состояния квеста (не поддерживает EmbeddedNodeField)',
     )
-    on_generate = StringField(caption=u'Скрипт генерации квеста', doc=u'''Python-скрпт, генерирующий квест.
+    on_generate = StringField(caption='Скрипт генерации квеста', doc='''Python-скрпт, генерирующий квест.
         Любое исключение в скрипте отменяет его создание. Исключение Cancel тихо отменяет.''')
-    on_start    = StringField(caption=u'Скрипт старта квеста', doc=u'''Python-скрпт, выполняющийся перед установкой
+    on_start    = StringField(caption='Скрипт старта квеста', doc='''Python-скрпт, выполняющийся перед установкой
         стартового состояния. Любое исключение в скрипте отменяет принятие квеста. Исключение Cancel тихо отменяет.''')
-    caption     = LocalizedStringField(tags={'client'}, caption=u'Заголовок квеста', doc=u'Может строиться и меняться по шаблону')
-    text        = LocalizedStringField(tags={'client'}, caption=u'Текст, оспровождающий квест', doc=u'Может строиться и меняться по шаблону')
-    text_short  = LocalizedStringField(tags={'client'}, caption=u'Короткий текст квеста', doc=u'Может строиться и меняться по шаблону')
-    typename    = LocalizedStringField(tags={'client'}, caption=u'Тип квеста', doc=u'Может быть произвольным')
-    list_icon   = StringField(tags={'client'}, caption=u'Пиктограмма для списков', doc=u'Мальенькая картинка для отображения в списках')  # todo: use UrlField
-    map_icon_full    = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
-    map_icon_circle  = StringField(tags={'client'}, caption=u'Пиктограмма отображения нот на карте', doc=u'')  # todo: use UrlField
-    level       = IntField(tags={'client'}, caption=u'Уровень квеста', doc=u'Обычно число, но подлежит обсуждению')  # todo: обсудить
-    starttime   = FloatField(tags={'client'}, caption=u'Начало выполнения', doc=u'Время старта квеста')
-    endtime     = FloatField(root_default=0, caption=u'Завершение выполнения', doc=u'Время завершения/провала квеста')
-    generation_group = StringField(caption=u'Тэг семейство квеста')
-    generation_max_count = IntField(root_default=1, caption=u'Максимально еколичество квестов данного типа у агента')
-    generation_cooldown = IntField(root_default=0, caption=u'Cooldown после завершения', doc=u'Время, которое должно пройти после завершения квеста для следующей генерации')
-    deadline    = IntField(tags={'client'}, caption=u'Срок выполнения этапа', doc=u'datetime до провала текущего этапа. Может меняться')
-    design_speed = FloatField(caption=u'Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
-    generate_time = IntField(root_default=0, caption=u"Время генерации квеста")
-    shelf_life_time = IntField(root_default=0, caption=u"Время срока годности сгенерированного, но не взятого квеста")
+    caption     = LocalizedStringField(tags={'client'}, caption='Заголовок квеста', doc='Может строиться и меняться по шаблону')
+    text        = LocalizedStringField(tags={'client'}, caption='Текст, оспровождающий квест', doc='Может строиться и меняться по шаблону')
+    text_short  = LocalizedStringField(tags={'client'}, caption='Короткий текст квеста', doc='Может строиться и меняться по шаблону')
+    typename    = LocalizedStringField(tags={'client'}, caption='Тип квеста', doc='Может быть произвольным')
+    list_icon   = StringField(tags={'client'}, caption='Пиктограмма для списков', doc='Мальенькая картинка для отображения в списках')  # todo: use UrlField
+    map_icon_full    = StringField(tags={'client'}, caption='Пиктограмма отображения нот на карте', doc='')  # todo: use UrlField
+    map_icon_circle  = StringField(tags={'client'}, caption='Пиктограмма отображения нот на карте', doc='')  # todo: use UrlField
+    level       = IntField(tags={'client'}, caption='Уровень квеста', doc='Обычно число, но подлежит обсуждению')  # todo: обсудить
+    starttime   = FloatField(tags={'client'}, caption='Начало выполнения', doc='Время старта квеста')
+    endtime     = FloatField(root_default=0, caption='Завершение выполнения', doc='Время завершения/провала квеста')
+    generation_group = StringField(caption='Тэг семейство квеста')
+    generation_max_count = IntField(root_default=1, caption='Максимально еколичество квестов данного типа у агента')
+    generation_cooldown = IntField(root_default=0, caption='Cooldown после завершения', doc='Время, которое должно пройти после завершения квеста для следующей генерации')
+    deadline    = IntField(tags={'client'}, caption='Срок выполнения этапа', doc='datetime до провала текущего этапа. Может меняться')
+    design_speed = FloatField(caption='Скорость в px/с с которой должен двигаться игрок чтобы успеть (если = 0, то время не ограничено)', root_default=3)
+    generate_time = IntField(root_default=0, caption="Время генерации квеста")
+    shelf_life_time = IntField(root_default=0, caption="Время срока годности сгенерированного, но не взятого квеста")
     hirer       = RegistryLinkField(
-        tags={'client'}, caption=u'Заказчик', doc=u'NPC-заказчик квеста',
+        tags={'client'}, caption='Заказчик', doc='NPC-заказчик квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Institution',
     )
     town        = RegistryLinkField(
-        caption=u'Город выдачи', doc=u'Город выдачи квеста',
+        caption='Город выдачи', doc='Город выдачи квеста',
         document_type='sublayers_server.model.registry_me.classes.poi.Town',
     )
     history     = ListField(
@@ -284,39 +284,39 @@ class Quest(Node):
         root_default=list,
         tags={'client'},
         reinst=True,
-        caption=u"Журнал квеста",
-        doc=u"Записи добавляются в журнал методом quest.log(...)",
+        caption="Журнал квеста",
+        doc="Записи добавляются в журнал методом quest.log(...)",
     )
-    total_reward_money = IntField(root_default=0, caption=u'Общая сумма награды в нукойнах')
-    karma_coef = FloatField(root_default=0, caption=u'Часть кармы от общей награды')
-    money_coef = FloatField(root_default=0, caption=u'Часть нукойнов от общей награды')
-    reward_money = IntField(root_default=0, caption=u'Сумма денежной награды', tags={'client'})
-    reward_karma = FloatField(root_default=0, caption=u'Величина кармической награды')
-    reward_relation_hirer = FloatField(caption=u'Награда в отношение за выполнение')
-    reward_exp = FloatField(root_default=0, caption=u'Награда в exp за квест')
+    total_reward_money = IntField(root_default=0, caption='Общая сумма награды в нукойнах')
+    karma_coef = FloatField(root_default=0, caption='Часть кармы от общей награды')
+    money_coef = FloatField(root_default=0, caption='Часть нукойнов от общей награды')
+    reward_money = IntField(root_default=0, caption='Сумма денежной награды', tags={'client'})
+    reward_karma = FloatField(root_default=0, caption='Величина кармической награды')
+    reward_relation_hirer = FloatField(caption='Награда в отношение за выполнение')
+    reward_exp = FloatField(root_default=0, caption='Награда в exp за квест')
     reward_items = ListField(
         root_default=list,
-        caption=u"Список итемов награды",
+        caption="Список итемов награды",
         field=EmbeddedNodeField(
             document_type='sublayers_server.model.registry_me.classes.item.Item',
-            caption=u"Итем для награды",
+            caption="Итем для награды",
             tags={'client'},
         ),
         tags={'client'},
     )
     reward_items_list = ListField(
         root_default=list,
-        caption=u"Список возможных комплектов для награды",
+        caption="Список возможных комплектов для награды",
         field=ListField(
-            caption=u"Список возможных наборов итемов для награды",
+            caption="Список возможных наборов итемов для награды",
             field=EmbeddedNodeField(
                 document_type='sublayers_server.model.registry_me.classes.item.Item',
-                caption=u"Необходимый итем",
+                caption="Необходимый итем",
             ),
         ),
     )
-    active_notes_view = BooleanField(caption=u'Отображение визуальных нот.', root_default=True, tags={'client'})
-    build_view = BooleanField(caption=u'Отрисовывать ли данный квест в квестах задния.', root_default=True, tags={'client'})
+    active_notes_view = BooleanField(caption='Отображение визуальных нот.', root_default=True, tags={'client'})
+    build_view = BooleanField(caption='Отрисовывать ли данный квест в квестах задния.', root_default=True, tags={'client'})
 
     def __str__(self):
         return '{}[{}|{}]'.format(self.__class__.__name__, self.node_hash(), self.current_state)
@@ -446,7 +446,7 @@ class Quest(Node):
             **kw
         )
         try:
-            exec code in self.global_context, self.local_context
+            exec(code, self.global_context, self.local_context)
         finally:
             del self.local_context
 
@@ -502,7 +502,7 @@ class Quest(Node):
                 **kw
             )
             try:
-                exec code in self.global_context, self.local_context
+                exec(code, self.global_context, self.local_context)
             finally:
                 del self.local_context
 
@@ -514,7 +514,7 @@ class Quest(Node):
         try:
             self.on_start_(event, **kw)
         except Cancel as e:
-            # log.debug('Starting quest is canceled {uri}: {e.message}'.format(uri=fn, e=e)) # todo: не знаю что такое fn
+            # log.debug('Starting quest is canceled {uri}: {str(e)}'.format(uri=fn, e=e)) # todo: не знаю что такое fn
             return False
         except Exception as e:
             log.exception('Runtime error in quest handler `on_start`.')
@@ -609,7 +609,7 @@ class Quest(Node):
             try:
                 agent_example.quests_active.remove(self)
             except ValueError as e:
-                log.warning(u'Квеста (%r) не оказалось в списке активных по его окончании у агента %r', self, self.agent)
+                log.warning('Квеста (%r) не оказалось в списке активных по его окончании у агента %r', self, self.agent)
                 log.exception(e)
 
     # todo: ##DEPRECATED
@@ -657,7 +657,7 @@ class Quest(Node):
     def _template_render(self, template, **kw):
         if template is None:
             log.warning('quest text to render is None in quest: {!r}; context: {!r}'.format(self, kw))
-            return u''
+            return ''
         try:
             context = dict(self.global_context, **self.local_context)
             context.update(kw)
@@ -668,12 +668,12 @@ class Quest(Node):
 
     def do_state_exit(self, state, event):
         state.on_exit_(quest=self, event=event)
-        assert self._go_state_name is None, u'State switching cause into the state exit handler: {}, {}'.format(
+        assert self._go_state_name is None, 'State switching cause into the state exit handler: {}, {}'.format(
             state, self,
         )
 
     def do_state_enter(self, state, event):
-        assert self._go_state_name is None, u'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
+        assert self._go_state_name is None, 'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
             st=state, self=self,
         )
         #self._go_state_name = None
@@ -686,7 +686,7 @@ class Quest(Node):
     def do_event(self, event):
         state = self.state
         assert state, 'Calling Quest.on_event {self!r} with undefined state: {self.current_state!r}'.format(**locals())
-        assert self._go_state_name is None, u'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
+        assert self._go_state_name is None, 'State switching artefacft ({self._go_state_name}): {st}, {self}'.format(
             st=state, self=self,
         )
         #self._go_state_name = None
@@ -962,10 +962,10 @@ class QuestDelMessage(messages.Message):
 class AIQuickQuest(Quest):
     route = ListField(
         root_default=list,
-        caption=u"Маршрут патрулирования",
-        field=PositionField(caption=u"Точка патрулирования"),
+        caption="Маршрут патрулирования",
+        field=PositionField(caption="Точка патрулирования"),
     )
-    route_index = IntField(caption=u'Индекс текущей точки патрулирования')
+    route_index = IntField(caption='Индекс текущей точки патрулирования')
 
     def get_next_route_point(self):
         if not self.route:
@@ -1000,8 +1000,8 @@ class AIQuickQuest(Quest):
 
 
 class MarkerMapObject(Subdoc):
-    position = PositionField(caption=u"Координаты объекта")
-    radius = FloatField(default=50, caption=u"Радиус взаимодействия с объектом", tags={'client'})
+    position = PositionField(caption="Координаты объекта")
+    radius = FloatField(default=50, caption="Радиус взаимодействия с объектом", tags={'client'})
 
     def is_near(self, position, radius=None):
         radius = radius or self.radius
