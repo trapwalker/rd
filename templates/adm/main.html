@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0f0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .admin-card {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-card:hover {
+            background: #0f0;
+            color: #000;
+        }
+        .admin-card h3 {
+            margin-bottom: 10px;
+        }
+        .admin-card p {
+            color: #888;
+            font-size: 12px;
+        }
+        .admin-card:hover p {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 Admin Dashboard</h1>
+    <p>Logged in as: {{ current_user.username }} (Level {{ current_user.access_level }})</p>
+
+    <div class="admin-grid">
+        <div class="admin-card" onclick="location.href='/adm/find'">
+            <h3>👤 Find Users</h3>
+            <p>Search and manage users</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/statistics/server'">
+            <h3>📊 Server Statistics</h3>
+            <p>View server metrics and bot status</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/statistics/handlers'">
+            <h3>⚙️ Handler Statistics</h3>
+            <p>Monitor request handler performance</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/statistics/events'">
+            <h3>🎯 Event Statistics</h3>
+            <p>View game event metrics</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/api/admin/users/status'">
+            <h3>👥 User Status</h3>
+            <p>View all online agents and NPCs</p>
+        </div>
+
+        <div class="admin-card" onclick="location.href='/api/admin/server/status'">
+            <h3>🖥️ Server Status</h3>
+            <p>Check server health and uptime</p>
+        </div>
+    </div>
+</body>
+</html>

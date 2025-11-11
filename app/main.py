@@ -86,6 +86,7 @@ def create_app() -> FastAPI:
     # Include routers
     from app.routers import (
         admin,
+        admin_ui,
         auth,
         game,
         inventory,
@@ -111,6 +112,7 @@ def create_app() -> FastAPI:
     app.include_router(teaching.router, prefix="/api/teaching", tags=["Teaching"])
     app.include_router(person_info.router, tags=["PersonInfo"])
     app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+    app.include_router(admin_ui.router, tags=["AdminUI"])
     app.include_router(statistics.router, prefix="/statistics", tags=["Statistics"])
     app.include_router(mobile.router, tags=["Mobile"])
 

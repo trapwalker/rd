@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User: {{ user.username }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #0f0;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .user-info, .actions {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            color: #888;
+            display: inline-block;
+            width: 150px;
+        }
+        .value {
+            color: #0f0;
+        }
+        .banned {
+            color: #f00;
+            font-weight: bold;
+        }
+        button, input[type="submit"] {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 5px;
+        }
+        button:hover, input[type="submit"]:hover {
+            background: #0f0;
+            color: #000;
+        }
+        input[type="number"], input[type="text"] {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        a {
+            color: #0f0;
+            text-decoration: none;
+        }
+        .action-form {
+            display: inline-block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>👤 User: {{ user.username }}</h1>
+    <a href="/adm/find">← Back to Search</a>
+
+    <div class="user-info">
+        <h2>User Information</h2>
+        <div class="info-row">
+            <span class="label">Username:</span>
+            <span class="value">{{ user.username }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ user.email or 'N/A' }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Level:</span>
+            <span class="value">{{ user.level }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Experience:</span>
+            <span class="value">{{ user.experience }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Coins:</span>
+            <span class="value">{{ user.coins }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Access Level:</span>
+            <span class="value">{{ user.access_level }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Banned:</span>
+            <span class="{{ 'banned' if user.is_banned else 'value' }}">
+                {{ 'Yes' if user.is_banned else 'No' }}
+                {% if user.is_banned %}(until {{ user.ban_time }}){% endif %}
+            </span>
+        </div>
+        {% if user.ban_reason %}
+        <div class="info-row">
+            <span class="label">Ban Reason:</span>
+            <span class="banned">{{ user.ban_reason }}</span>
+        </div>
+        {% endif %}
+        <div class="info-row">
+            <span class="label">Created:</span>
+            <span class="value">{{ user.created_at }}</span>
+        </div>
+    </div>
+
+    <div class="actions">
+        <h2>Moderation Actions</h2>
+
+        <form class="action-form" method="post">
+            <input type="hidden" name="action" value="ban">
+            <input type="number" name="minutes" placeholder="Minutes" value="60">
+            <input type="text" name="reason" placeholder="Ban reason">
+            <input type="submit" value="Ban User">
+        </form>
+
+        <form class="action-form" method="post">
+            <input type="hidden" name="action" value="ban">
+            <input type="hidden" name="minutes" value="-1">
+            <input type="submit" value="Unban User">
+        </form>
+
+        <form class="action-form" method="post">
+            <input type="hidden" name="action" value="silent">
+            <input type="number" name="minutes" placeholder="Minutes" value="30">
+            <input type="submit" value="Silence User">
+        </form>
+
+        <form class="action-form" method="post">
+            <input type="hidden" name="action" value="silent">
+            <input type="hidden" name="minutes" value="0">
+            <input type="submit" value="Unsilence User">
+        </form>
+
+        <form class="action-form" method="post">
+            <input type="hidden" name="action" value="access_level">
+            <input type="number" name="new_level" placeholder="New Level" value="0" min="0" max="10">
+            <input type="submit" value="Set Access Level">
+        </form>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="/adm/agent?username={{ user.username }}">View Agent Details →</a> |
+        <a href="/adm/gamelogs?username={{ user.username }}">View Game Logs →</a>
+    </div>
+</body>
+</html>

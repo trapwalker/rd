@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Users</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0f0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .search-box {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        input {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 3px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        button {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        button:hover {
+            background: #0f0;
+            color: #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #0f0;
+        }
+        th {
+            background: #0a0a0a;
+            color: #0f0;
+        }
+        tr:hover {
+            background: #0f0;
+            color: #000;
+        }
+        a {
+            color: #0f0;
+            text-decoration: none;
+        }
+        tr:hover a {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Find Users</h1>
+    <a href="/adm/main">← Back to Dashboard</a>
+
+    <div class="search-box">
+        <form method="get">
+            <input type="text" name="find" value="{{ find }}" placeholder="Username or email...">
+            <button type="submit">Search</button>
+            <label><input type="checkbox" name="online" value="1"> Online only</label>
+            <label><input type="checkbox" name="regexp" value="1"> Regex</label>
+        </form>
+    </div>
+
+    {% if users %}
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Level</th>
+                <th>Access Level</th>
+                <th>Banned</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td><a href="/adm/user?username={{ user.username }}">{{ user.username }}</a></td>
+                <td>{{ user.email or 'N/A' }}</td>
+                <td>{{ user.level }}</td>
+                <td>{{ user.access_level }}</td>
+                <td>{{ 'Yes' if user.is_banned else 'No' }}</td>
+                <td>
+                    <a href="/adm/user?username={{ user.username }}">View</a> |
+                    <a href="/adm/agent?username={{ user.username }}">Agent</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; padding: 40px; color: #666;">
+        {{ 'No users found' if find else 'Enter search criteria to find users' }}
+    </p>
+    {% endif %}
+</body>
+</html>
