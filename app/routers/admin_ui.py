@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 LOGIN_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_-]{2,19}$')
+SAFE_SEARCH_PATTERN = re.compile(r'^[a-zA-Z0-9_\-\.@]{3,50}$')
 
 # Initialize Jinja2 templates
 try:
@@ -173,20 +174,34 @@ async def adm_find_users_handler(
         # users = [agent.user for agent in server.agents_by_name.values()
         #          if agent.user and agent.connection]
         pass
-    elif regexp and len(find) >= 3:
-        # Regex search across multiple fields
-        # TODO: Implement regex search when needed
-        # For now, simple username search
-        users = await User.find(
-            User.username.regex(f".*{find}.*", "i"),
-            User.is_quick == False
-        ).limit(50).to_list()
-    elif find and LOGIN_RE.match(find):
-        # Simple username contains search
-        users = await User.find(
-            User.username.regex(f".*{find}.*", "i"),
-            User.is_quick == False
-        ).limit(50).to_list()
+    elif find:
+        # Security: Validate input before using in regex
+        if len(find) < 3:
+            logger.warning(f"Search query too short: {find}")
+            # Return empty results for too-short queries
+        elif not SAFE_SEARCH_PATTERN.match(find):
+            logger.warning(
+                f"Invalid search query rejected: {find} "
+                f"(by user {current_user.username})"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid search query. Use only: a-zA-Z0-9_-.@"
+            )
+        elif regexp:
+            # Regex search - escape special characters for safety
+            import re
+            escaped_find = re.escape(find)
+            users = await User.find(
+                User.username.regex(f"^{escaped_find}", "i"),
+                User.is_quick == False
+            ).limit(50).to_list()
+        elif LOGIN_RE.match(find):
+            # Simple username search (already validated by LOGIN_RE)
+            users = await User.find(
+                User.username.regex(f"^{find}", "i"),
+                User.is_quick == False
+            ).limit(50).to_list()
 
     logger.info(
         f"Admin user search by {current_user.username}: '{find}' "

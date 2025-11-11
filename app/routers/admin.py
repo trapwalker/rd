@@ -1,4 +1,4 @@
-"""Admin API routes (localhost only)."""
+"""Admin API routes (localhost only with enhanced security)."""
 
 import logging
 from typing import Any
@@ -6,7 +6,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.config import get_settings
-from app.core.deps import ServerStateDep, get_server_state
+from app.core.deps import CurrentActiveUser, ServerStateDep, get_server_state
 from app.models.user import User
 from app.utils.deprecation import migration_target
 
@@ -18,18 +18,74 @@ settings = get_settings()
 
 def check_localhost(request: Request) -> None:
     """
-    Check if request is from localhost.
+    Check if request is from localhost with proxy detection.
+
+    Security enhancements:
+    - Detects X-Forwarded-For header (indicates proxy)
+    - Checks multiple localhost representations
+    - Logs all access attempts
 
     Raises:
-        HTTPException: If request is not from localhost
+        HTTPException: If request is not from localhost or is proxied
     """
+    # Detect if request is proxied (security risk)
+    if 'x-forwarded-for' in request.headers:
+        logger.error(
+            f"Admin API access attempt through proxy detected! "
+            f"X-Forwarded-For: {request.headers['x-forwarded-for']}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin API requires direct connection (no proxy)"
+        )
+
+    # Check client IP
     client_host = request.client.host if request.client else None
 
     if client_host not in ("127.0.0.1", "localhost", "::1"):
-        logger.warning(f"Admin API access denied from {client_host}")
+        logger.warning(
+            f"Admin API access denied from {client_host}. "
+            f"Path: {request.url.path}"
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin API only accessible from localhost"
+        )
+
+
+def check_admin_access(
+    request: Request,
+    current_user: CurrentActiveUser,
+    required_level: int = 10
+) -> None:
+    """
+    Check both localhost AND admin privileges.
+
+    Two-factor security:
+    1. Must be from localhost
+    2. Must have admin access level
+
+    Args:
+        request: FastAPI request
+        current_user: Authenticated user
+        required_level: Minimum access level (default 10 = admin)
+
+    Raises:
+        HTTPException: If either check fails
+    """
+    # First check: localhost
+    check_localhost(request)
+
+    # Second check: admin privileges
+    if current_user.access_level < required_level:
+        logger.warning(
+            f"Admin API access denied for user {current_user.username} "
+            f"(level {current_user.access_level} < {required_level}). "
+            f"Path: {request.url.path}"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Admin access level {required_level} required"
         )
 
 
@@ -66,19 +122,26 @@ async def server_save(
 @migration_target("sublayers_server.handlers.adm_api.srv_control.ServerShutdownHandler")
 async def server_shutdown(
     request: Request,
+    current_user: CurrentActiveUser,
     server_state: ServerStateDep = None,
 ) -> dict[str, str]:
     """
-    Trigger server shutdown (localhost only).
+    Trigger server shutdown (DANGEROUS - requires admin auth).
 
-    DANGEROUS: Stops the server gracefully.
+    Security: Requires both localhost AND admin level 10.
+    Stops the server gracefully.
+
+    Args:
+        request: FastAPI request
+        current_user: Must be admin (level 10)
+        server_state: Server state for maintenance mode
 
     Returns:
         Shutdown confirmation
 
     Migration from: sublayers_server.handlers.adm_api.srv_control.ServerShutdownHandler
     """
-    check_localhost(request)
+    check_admin_access(request, current_user, required_level=10)
 
     # Set server to maintenance mode first
     if server_state:
@@ -154,11 +217,14 @@ async def user_status_handler(
 @migration_target("sublayers_server.handlers.adm_api.user_control.UserAccessLevelSetup")
 async def user_access_level_setup(
     request: Request,
+    current_user: CurrentActiveUser,
     username: str,
     access: int,
 ) -> dict[str, str]:
     """
-    Set user access level (localhost only).
+    Set user access level (requires admin auth).
+
+    Security: Requires both localhost AND admin level 10.
 
     Access levels:
     - 0: Player
@@ -167,6 +233,8 @@ async def user_access_level_setup(
     - 10: Administrator
 
     Args:
+        request: FastAPI request
+        current_user: Must be admin (level 10)
         username: Username to modify
         access: New access level (0-10)
 
@@ -175,7 +243,7 @@ async def user_access_level_setup(
 
     Migration from: sublayers_server.handlers.adm_api.user_control.UserAccessLevelSetup
     """
-    check_localhost(request)
+    check_admin_access(request, current_user, required_level=10)
 
     if not username or access is None:
         raise HTTPException(
@@ -183,8 +251,8 @@ async def user_access_level_setup(
             detail="Bad arguments: username and access required"
         )
 
-    # Ensure access level is non-negative
-    access = max(int(access), 0)
+    # Validate access level range (0-10)
+    access = max(0, min(int(access), 10))
 
     # Find user by username
     user = await User.find_one(User.username == username)

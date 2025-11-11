@@ -98,7 +98,13 @@ manager = ConnectionManager()
 @migration_target("sublayers_server.handlers.client_connector.AgentSocketHandler")
 async def websocket_endpoint(websocket: WebSocket):
     """
-    WebSocket endpoint for real-time game communication.
+    Secure WebSocket endpoint for real-time game communication.
+
+    Security:
+    - Token passed in first message (NOT in URL)
+    - 5-second auth timeout
+    - Connection ID uses UUID (not predictable)
+    - Message size limit (8KB)
 
     Handles:
     - Player movement
@@ -106,12 +112,29 @@ async def websocket_endpoint(websocket: WebSocket):
     - Real-time updates
     - Chat messages
     """
-    connection_id = str(id(websocket))
+    import asyncio
+    from uuid import uuid4
+
+    connection_id = str(uuid4())  # Use UUID instead of id(websocket)
     user: User | None = None
 
     try:
-        # Extract token from query params if present
-        token = websocket.query_params.get("token")
+        # Accept connection first
+        await websocket.accept()
+
+        # Wait for authentication message (5 second timeout)
+        try:
+            auth_msg = await asyncio.wait_for(
+                websocket.receive_json(),
+                timeout=5.0
+            )
+        except asyncio.TimeoutError:
+            await websocket.close(code=4408, reason="Auth timeout")
+            logger.warning("WebSocket auth timeout")
+            return
+
+        # Extract token from first message
+        token = auth_msg.get("auth_token") or auth_msg.get("token")
 
         if token:
             payload = decode_access_token(token)
@@ -119,8 +142,11 @@ async def websocket_endpoint(websocket: WebSocket):
                 user_id = payload.get("sub")
                 if user_id:
                     user = await User.get(user_id)
+                    if not user or not user.is_active:
+                        await websocket.close(code=4403, reason="User inactive")
+                        return
 
-        # Accept connection
+        # Register connection
         await manager.connect(websocket, connection_id, user)
 
         # Send welcome message
@@ -129,11 +155,21 @@ async def websocket_endpoint(websocket: WebSocket):
             "status": "connected",
             "authenticated": user is not None,
             "user_id": str(user.id) if user else None,
+            "connection_id": connection_id,
+            "max_message_size": 8192,
         })
 
-        # Message loop
+        # Message loop with size limit
         async for message in websocket.iter_text():
             try:
+                # Check message size (8KB limit)
+                if len(message) > 8192:
+                    await websocket.send_json({
+                        "type": "error",
+                        "error": "Message too large (max 8KB)"
+                    })
+                    continue
+
                 data = json.loads(message)
                 message_type = data.get("type")
 

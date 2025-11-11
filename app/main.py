@@ -38,6 +38,31 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Connect to database
     await Database.connect(settings)
 
+    # Initialize rate limiter
+    redis_client = None
+    if settings.redis_url:
+        try:
+            import redis.asyncio as aioredis
+            redis_client = await aioredis.from_url(
+                settings.redis_url,
+                encoding="utf-8",
+                decode_responses=True
+            )
+            # Test connection
+            await redis_client.ping()
+            logger.info("Redis connected for rate limiting")
+        except Exception as e:
+            logger.warning(f"Redis connection failed: {e}. Using in-memory rate limiting")
+            redis_client = None
+
+    from app.core.redis_rate_limiter import init_rate_limiter
+    init_rate_limiter(
+        redis_client=redis_client,
+        max_calls=5,
+        window_seconds=90,
+        ban_seconds=20
+    )
+
     # Load game world data
     # await load_world_registry(settings.world_path)
 
@@ -47,6 +72,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     logger.info("Shutting down application")
+
+    # Close Redis connection
+    if redis_client:
+        await redis_client.close()
+        logger.info("Redis connection closed")
+
     await Database.disconnect()
     logger.info("Application shutdown complete")
 
@@ -64,13 +95,14 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # CORS middleware
+    # CORS middleware with security restrictions
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_credentials=settings.environment != "production",  # Only in dev
+        allow_methods=["GET", "POST", "PUT", "DELETE"],  # Explicit whitelist
+        allow_headers=["content-type", "authorization", "accept", "accept-language"],
+        max_age=3600,  # Cache preflight for 1 hour
     )
 
     # Mount static files

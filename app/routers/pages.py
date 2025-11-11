@@ -15,7 +15,7 @@ from app.core.deps import (
     check_server_not_closed,
     get_server_state,
 )
-from app.core.rate_limiting import check_play_frequency, get_frequency_limiter
+from app.core.redis_rate_limiter import get_rate_limiter
 from app.models.user import User
 from app.utils.deprecation import migration_target
 
@@ -103,14 +103,22 @@ async def play_handler(
             }
         )
 
-    # Rate limiting check
+    # Rate limiting check (Redis-based, distributed)
     try:
-        limiter = get_frequency_limiter()
-        limiter.check_frequency(str(user.id), "/play")
+        limiter = get_rate_limiter()
+        await limiter.check_frequency(
+            user_id=str(user.id),
+            endpoint="/play",
+            max_calls=5,  # 5 requests
+            window_seconds=90  # per 90 seconds
+        )
     except HTTPException as e:
         if e.status_code == status.HTTP_429_TOO_MANY_REQUESTS:
-            # Return 429 response
+            logger.warning(f"Rate limit exceeded for {user.username} on /play")
             raise
+    except RuntimeError:
+        # Rate limiter not initialized - log warning but allow request
+        logger.warning("Rate limiter not initialized - allowing request")
 
     # Detect electron mode
     is_electron = mode == "electron"

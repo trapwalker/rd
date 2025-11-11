@@ -278,25 +278,46 @@
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                console.log('WebSocket connected');
-                document.getElementById('connection-status').className = 'status-connected';
-                document.getElementById('connection-status').textContent = 'CONNECTED';
-                reconnectAttempts = 0;
+                console.log('WebSocket connected - sending auth');
+                document.getElementById('connection-status').className = 'status-connecting';
+                document.getElementById('connection-status').textContent = 'AUTHENTICATING...';
 
-                // Hide loading screen
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                }, 1000);
+                // SECURITY: Send auth token in message (NOT in URL)
+                const token = localStorage.getItem('jwt_token') || getCookie('token');
+                ws.send(JSON.stringify({
+                    auth_token: token
+                }));
             };
 
             ws.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
+
+                    // Handle connection confirmation
+                    if (data.type === 'connection' && data.status === 'connected') {
+                        console.log('Authenticated successfully');
+                        document.getElementById('connection-status').className = 'status-connected';
+                        document.getElementById('connection-status').textContent = 'CONNECTED';
+                        reconnectAttempts = 0;
+
+                        // Hide loading screen
+                        setTimeout(() => {
+                            document.getElementById('loading-screen').style.display = 'none';
+                        }, 1000);
+                    }
+
                     handleMessage(data);
                 } catch (error) {
                     console.error('Failed to parse message:', error);
                 }
             };
+
+            // Helper to get cookie
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
 
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);

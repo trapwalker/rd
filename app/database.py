@@ -60,11 +60,32 @@ class Database:
             raise RuntimeError("Database not initialized")
         return cls.database
 
+    @classmethod
+    def get_client(cls) -> AsyncIOMotorClient:
+        """Get MongoDB client instance."""
+        if cls.client is None:
+            raise RuntimeError("Database not initialized")
+        return cls.client
+
 
 @asynccontextmanager
 async def get_db_session() -> AsyncGenerator[AsyncIOMotorDatabase, None]:
-    """Get database session as context manager."""
+    """
+    Get database session with transaction support.
+
+    Note: MongoDB transactions require a replica set.
+    This will fail on standalone MongoDB instances.
+    """
     db = Database.get_database()
-    async with await db.client.start_session() as session:
+    client = Database.get_client()
+
+    session = await client.start_session()
+    try:
         async with session.start_transaction():
             yield db
+            # Transaction commits automatically on successful exit
+    except Exception:
+        # Transaction aborts automatically on exception
+        raise
+    finally:
+        await session.end_session()
