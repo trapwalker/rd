@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory - Road Dogs{% endblock %}
+
+{% block head %}
+<style>
+    .inventory-container {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+        min-height: 600px;
+    }
+
+    .inventory-sidebar {
+        background-color: #2a2a2a;
+        border: 1px solid #ff6b00;
+        border-radius: 5px;
+        padding: 20px;
+    }
+
+    .inventory-main {
+        background-color: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 5px;
+        padding: 20px;
+    }
+
+    .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .inventory-slot {
+        aspect-ratio: 1;
+        background-color: #1a1a1a;
+        border: 2px solid #444;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+    }
+
+    .inventory-slot:hover {
+        border-color: #ff6b00;
+        transform: translateY(-2px);
+    }
+
+    .inventory-slot.filled {
+        border-color: #666;
+    }
+
+    .inventory-slot .item-icon {
+        font-size: 32px;
+    }
+
+    .inventory-slot .item-quantity {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .stats-section {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #444;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        font-size: 14px;
+    }
+
+    .stat-label {
+        color: #999;
+    }
+
+    .stat-value {
+        color: #ff6b00;
+        font-weight: bold;
+    }
+
+    h2 {
+        color: #ff6b00;
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="color: #ff6b00; margin-bottom: 20px;">🎒 Inventory</h1>
+
+<div class="inventory-container">
+    <!-- Sidebar -->
+    <div class="inventory-sidebar">
+        <div class="stats-section">
+            <h2>📊 Stats</h2>
+            <div class="stat-item">
+                <span class="stat-label">Weight:</span>
+                <span class="stat-value">45 / 100 kg</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Capacity:</span>
+                <span class="stat-value">12 / 20 slots</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Value:</span>
+                <span class="stat-value">$2,450</span>
+            </div>
+        </div>
+
+        <div>
+            <h2>⚡ Quick Actions</h2>
+            <button style="width: 100%; padding: 10px; margin: 5px 0; background-color: #ff6b00; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🧹 Sort Items
+            </button>
+            <button style="width: 100%; padding: 10px; margin: 5px 0; background-color: #444; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🗑️ Drop All Junk
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Inventory Grid -->
+    <div class="inventory-main">
+        <h2>🚗 Car: {{ car_id }}</h2>
+
+        <div class="inventory-grid">
+            <!-- Sample filled slots -->
+            <div class="inventory-slot filled">
+                <div class="item-icon">🔫</div>
+                <div class="item-quantity">1</div>
+            </div>
+            <div class="inventory-slot filled">
+                <div class="item-icon">🛡️</div>
+                <div class="item-quantity">1</div>
+            </div>
+            <div class="inventory-slot filled">
+                <div class="item-icon">💊</div>
+                <div class="item-quantity">5</div>
+            </div>
+            <div class="inventory-slot filled">
+                <div class="item-icon">🔧</div>
+                <div class="item-quantity">3</div>
+            </div>
+
+            <!-- Empty slots -->
+            {% for i in range(16) %}
+            <div class="inventory-slot"></div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background-color: #1a1a1a; border-radius: 5px;">
+            <p style="color: #999; font-size: 14px;">
+                ℹ️ <strong>Note:</strong> This is a placeholder inventory interface.
+                The full inventory system with real items will be implemented soon.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

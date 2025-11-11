@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied - Road Dogs{% endblock %}
+
+{% block head %}
+<style>
+    .banned-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+    }
+
+    .banned-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+    }
+
+    .banned-title {
+        font-size: 36px;
+        color: #ff3333;
+        margin-bottom: 10px;
+    }
+
+    .banned-message {
+        font-size: 18px;
+        color: #cccccc;
+        margin-bottom: 20px;
+        max-width: 600px;
+    }
+
+    .banned-reason {
+        background-color: #2a2a2a;
+        border-left: 4px solid #ff3333;
+        padding: 15px 20px;
+        margin: 20px 0;
+        max-width: 600px;
+        text-align: left;
+    }
+
+    .banned-reason strong {
+        color: #ff6b00;
+    }
+
+    .server-closed {
+        border-left-color: #ff6b00;
+    }
+
+    .back-link {
+        margin-top: 30px;
+    }
+
+    .back-link a {
+        color: #ff6b00;
+        text-decoration: none;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: 2px solid #ff6b00;
+        border-radius: 5px;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+    .back-link a:hover {
+        background-color: #ff6b00;
+        color: #1a1a1a;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="banned-container">
+    {% if is_server_closed %}
+        <div class="banned-icon">🔧</div>
+        <h1 class="banned-title">Server Maintenance</h1>
+        <p class="banned-message">
+            The server is currently under maintenance. Please try again later.
+        </p>
+        {% if reason %}
+        <div class="banned-reason server-closed">
+            <strong>Reason:</strong> {{ reason }}
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="banned-icon">🚫</div>
+        <h1 class="banned-title">Access Denied</h1>
+        <p class="banned-message">
+            Your account has been temporarily suspended.
+        </p>
+        {% if reason %}
+        <div class="banned-reason">
+            <strong>Reason:</strong> {{ reason }}
+        </div>
+        {% endif %}
+        <p style="color: #999; margin-top: 20px;">
+            If you believe this is a mistake, please contact support.
+        </p>
+    {% endif %}
+
+    <div class="back-link">
+        <a href="/">Return to Homepage</a>
+    </div>
+</div>
+{% endblock %}

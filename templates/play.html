@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="{{ user_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Dogs - Play</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #game-canvas {
+            flex: 1;
+            background-color: #1a1a1a;
+            position: relative;
+        }
+
+        #loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-center;
+            z-index: 1000;
+        }
+
+        .loading-logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-text {
+            font-size: 18px;
+            color: #ff6b00;
+            margin-bottom: 30px;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 4px;
+            background-color: #2a2a2a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background-color: #ff6b00;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ff6b00;
+        }
+
+        .hud-item {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .hud-label {
+            color: #ff6b00;
+            font-weight: bold;
+        }
+
+        #connection-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-connected {
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .status-connecting {
+            background-color: rgba(255, 165, 0, 0.2);
+            border: 1px solid #ffa500;
+            color: #ffa500;
+        }
+
+        .status-disconnected {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        {% if first_enter %}
+        #tutorial-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 900;
+        }
+
+        .tutorial-box {
+            background-color: #2a2a2a;
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .tutorial-title {
+            font-size: 28px;
+            color: #ff6b00;
+            margin-bottom: 20px;
+        }
+
+        .tutorial-message {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .tutorial-button {
+            background-color: #ff6b00;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .tutorial-button:hover {
+            background-color: #ff8c33;
+            transform: translateY(-2px);
+        }
+
+        .tutorial-button.secondary {
+            background-color: transparent;
+            border: 2px solid #ff6b00;
+            color: #ff6b00;
+        }
+
+        .tutorial-button.secondary:hover {
+            background-color: rgba(255, 107, 0, 0.1);
+        }
+        {% endif %}
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen">
+            <div class="loading-logo">🚗</div>
+            <div class="loading-text">Connecting to Road Dogs...</div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <div style="margin-top: 20px; font-size: 12px; color: #666;">
+                Server: {{ server_mode }} | Player: {{ user_name }}
+            </div>
+        </div>
+
+        <!-- Game Canvas -->
+        <div id="game-canvas"></div>
+
+        <!-- HUD -->
+        <div id="hud">
+            <div class="hud-item">
+                <span class="hud-label">Player:</span> {{ user_name }}
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Balance:</span> $<span id="balance">{{ user_balance }}</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Insurance:</span> {{ insurance_name }}
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">Position:</span>
+                (<span id="pos-x">{{ start_coord.x|round(1) }}</span>, <span id="pos-y">{{ start_coord.y|round(1) }}</span>)
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div id="connection-status" class="status-connecting">CONNECTING...</div>
+
+        {% if first_enter %}
+        <!-- Tutorial Overlay -->
+        <div id="tutorial-overlay">
+            <div class="tutorial-box">
+                <h2 class="tutorial-title">Welcome to Road Dogs!</h2>
+                <p class="tutorial-message">
+                    Would you like to start with a tutorial to learn the basics of the game?
+                    The tutorial will teach you how to move, interact with objects, and survive in the wasteland.
+                </p>
+                <div>
+                    <button class="tutorial-button" onclick="startTutorial()">Start Tutorial</button>
+                    <button class="tutorial-button secondary" onclick="skipTutorial()">Skip Tutorial</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Game configuration
+        const CONFIG = {
+            wsPort: {{ ws_port }},
+            mapLink: "{{ map_link }}",
+            serverMode: "{{ server_mode }}",
+            hostName: "{{ host_name }}",
+            userLang: "{{ user_lang }}",
+            startCoord: {{ start_coord|tojson }},
+            electron: {{ electron|tojson }},
+            connectionDelay: {{ connection_delay }},
+        };
+
+        // WebSocket connection
+        let ws = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+            console.log('Connecting to WebSocket:', wsUrl);
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                document.getElementById('connection-status').className = 'status-connected';
+                document.getElementById('connection-status').textContent = 'CONNECTED';
+                reconnectAttempts = 0;
+
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 1000);
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (error) {
+                    console.error('Failed to parse message:', error);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                document.getElementById('connection-status').className = 'status-disconnected';
+                document.getElementById('connection-status').textContent = 'ERROR';
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                document.getElementById('connection-status').className = 'status-disconnected';
+                document.getElementById('connection-status').textContent = 'DISCONNECTED';
+
+                // Attempt to reconnect
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    console.log(`Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`);
+                    setTimeout(connectWebSocket, 2000 * reconnectAttempts);
+                }
+            };
+        }
+
+        function handleMessage(data) {
+            console.log('Received message:', data);
+
+            switch (data.type) {
+                case 'connection':
+                    console.log('Connection established:', data);
+                    break;
+                case 'pong':
+                    // Handle pong response
+                    break;
+                case 'move_ack':
+                    // Update position
+                    if (data.position) {
+                        document.getElementById('pos-x').textContent = data.position.x.toFixed(1);
+                        document.getElementById('pos-y').textContent = data.position.y.toFixed(1);
+                    }
+                    break;
+                case 'chat':
+                    // Handle chat message
+                    console.log(`[${data.username}]: ${data.message}`);
+                    break;
+                default:
+                    console.log('Unknown message type:', data.type);
+            }
+        }
+
+        function sendMessage(type, data = {}) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type, ...data }));
+            }
+        }
+
+        // Ping every 30 seconds
+        setInterval(() => {
+            sendMessage('ping');
+        }, 30000);
+
+        // Tutorial functions
+        {% if first_enter %}
+        function startTutorial() {
+            document.getElementById('tutorial-overlay').style.display = 'none';
+            // TODO: Start tutorial sequence
+            console.log('Starting tutorial...');
+        }
+
+        function skipTutorial() {
+            document.getElementById('tutorial-overlay').style.display = 'none';
+            // TODO: Mark tutorial as skipped
+            console.log('Tutorial skipped');
+        }
+        {% endif %}
+
+        // Initialize
+        window.onload = () => {
+            console.log('Game initializing...', CONFIG);
+            setTimeout(connectWebSocket, CONFIG.connectionDelay);
+        };
+
+        // Cleanup on page unload
+        window.onbeforeunload = () => {
+            if (ws) {
+                ws.close();
+            }
+        };
+    </script>
+</body>
+</html>
