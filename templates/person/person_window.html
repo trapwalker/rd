@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ person.username if person else 'Unknown' }} - Player Info</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            padding: 20px;
+        }
+        .person-window {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .header {
+            background: #1a1a1a;
+            padding: 20px;
+            border-bottom: 2px solid #ff6b00;
+            text-align: center;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #444;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        .username {
+            font-size: 24px;
+            color: #ff6b00;
+            margin-bottom: 5px;
+        }
+        .level {
+            color: #999;
+            font-size: 14px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+        }
+        .stat-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .stat-label {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            color: #ff6b00;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .car-section {
+            padding: 20px;
+            background: #1a1a1a;
+            margin: 0 20px 20px;
+            border-radius: 5px;
+        }
+        .section-title {
+            color: #ff6b00;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .actions {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn {
+            background: #444;
+            border: 2px solid #666;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: #ff6b00;
+            border-color: #ff6b00;
+        }
+    </style>
+</head>
+<body>
+    <div class="person-window">
+        <div class="header">
+            <div class="avatar">👤</div>
+            <div class="username">{{ person.display_name or person.username if person else 'Unknown Player' }}</div>
+            <div class="level">Level {{ lvl if lvl else 1 }}</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Experience</div>
+                <div class="stat-value">{{ person.experience if person else 0 }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Balance</div>
+                <div class="stat-value">${{ person.coins if person else 0 }}</div>
+            </div>
+        </div>
+
+        {% if car %}
+        <div class="car-section">
+            <div class="section-title">🚗 Vehicle</div>
+            <p>Car information will be displayed here</p>
+        </div>
+        {% endif %}
+
+        {% if is_corpse %}
+        <div style="padding: 20px; background: rgba(255, 0, 0, 0.1); margin: 0 20px 20px; border-radius: 5px; text-align: center;">
+            <p style="color: #ff3333;">💀 Deceased</p>
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            {% if not is_corpse %}
+            <button class="btn">Send Message</button>
+            <button class="btn">View Profile</button>
+            {% else %}
+            <button class="btn">Loot Container</button>
+            {% endif %}
+            <button class="btn" onclick="window.close()">Close</button>
+        </div>
+    </div>
+</body>
+</html>
