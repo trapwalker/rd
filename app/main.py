@@ -90,9 +90,11 @@ def create_app() -> FastAPI:
         game,
         inventory,
         menus,
+        mobile,
         pages,
         person_info,
         profile,
+        statistics,
         teaching,
         users,
         websocket,
@@ -109,6 +111,8 @@ def create_app() -> FastAPI:
     app.include_router(teaching.router, prefix="/api/teaching", tags=["Teaching"])
     app.include_router(person_info.router, tags=["PersonInfo"])
     app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+    app.include_router(statistics.router, prefix="/statistics", tags=["Statistics"])
+    app.include_router(mobile.router, tags=["Mobile"])
 
     # Health check endpoint
     @app.get("/health")

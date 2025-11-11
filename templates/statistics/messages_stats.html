@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Message Statistics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0f0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #0f0;
+        }
+        th {
+            background: #0a0a0a;
+            color: #0f0;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #0f0;
+            color: #000;
+        }
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>📨 Message Statistics</h1>
+
+    {% if messages_metrics %}
+    <table>
+        <thead>
+            <tr>
+                <th>Message Type</th>
+                <th>Count</th>
+                <th>Total Time (ms)</th>
+                <th>Avg Time (ms)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for msg_type, metrics in messages_metrics.items() %}
+            <tr>
+                <td>{{ msg_type }}</td>
+                <td>{{ metrics.count }}</td>
+                <td>{{ metrics.total_time }}</td>
+                <td>{{ metrics.avg_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No message statistics available</div>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Statistics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #0f0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            color: #0f0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .bot-section {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .bot-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 3px;
+        }
+        .btn {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 5px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+        .btn:hover {
+            background: #0f0;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Server Statistics</h1>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Active Players</div>
+                <div class="stat-value">{{ server_stat.active_players }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Active NPCs</div>
+                <div class="stat-value">{{ server_stat.active_npcs }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">WebSocket Connections</div>
+                <div class="stat-value">{{ server_stat.websocket_connections }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Uptime (seconds)</div>
+                <div class="stat-value">{{ server_stat.uptime_seconds }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Memory Usage (MB)</div>
+                <div class="stat-value">{{ server_stat.memory_usage_mb }}</div>
+            </div>
+        </div>
+
+        {% if quick_game_bot_info %}
+        <div class="bot-section">
+            <h2>Quick Game Bots</h2>
+            {% for bot in quick_game_bot_info %}
+            <div class="bot-item">
+                <span>{{ bot.name }}</span>
+                <button class="btn" onclick="toggleBot('{{ bot.name }}')">Toggle</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleBot(botName) {
+            fetch('/statistics/server', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=bot_change&bot_name=${botName}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert(`Bot ${botName} toggled`);
+                }
+            });
+        }
+
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            location.reload();
+        }, 5000);
+    </script>
+</body>
+</html>

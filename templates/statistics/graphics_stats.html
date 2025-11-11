@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphics Statistics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0f0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .date-range {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .file-list {
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .file-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 3px;
+        }
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        input {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        button {
+            background: #0a0a0a;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 5px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0f0;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>📈 Server Statistics Graphics</h1>
+
+    <div class="date-range">
+        <h2>Date Range</h2>
+        <p>Start: {{ start_date }}</p>
+        <p>End: {{ end_date }}</p>
+        <form method="get">
+            <input type="date" name="start" value="{{ start_date }}">
+            <input type="date" name="end" value="{{ end_date }}">
+            <button type="submit">Update Range</button>
+        </form>
+        <form method="get">
+            <label>Last days:</label>
+            <input type="number" name="last_days" value="7" min="1" max="365">
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <div class="file-list">
+        <h2>Server Statistics Files</h2>
+        {% if file_list %}
+            {% for file in file_list %}
+            <div class="file-item">{{ file }}</div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">No stat files found in date range</div>
+        {% endif %}
+    </div>
+
+    <div class="file-list">
+        <h2>Event Statistics Files</h2>
+        {% if event_file_list %}
+            {% for file in event_file_list %}
+            <div class="file-item">{{ file }}</div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">No event stat files found in date range</div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RoadDogs Mobile</title>
+    <style>
+        @font-face {
+            font-family: Nouveau_IBM;
+            src: url('{{ host_name }}/static/fonts/Nouveau_IBM.ttf');
+        }
+
+        @font-face {
+            font-family: MICRADI;
+            src: url('{{ host_name }}/static/fonts/micradi.ttf');
+        }
+
+        @font-face {
+            font-family: FreePixel;
+            src: url('{{ host_name }}/static/fonts/FreePixel.ttf');
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Nouveau_IBM, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        #main {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #map, #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        #zoomators {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            pointer-events: all;
+        }
+        .mobile-btn-menu, .mobile-btn {
+            background: rgba(14, 75, 0, 0.8);
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .mobile-btn-menu:active, .mobile-btn:active {
+            background: #0f0;
+            color: #000;
+        }
+        .zoom-btn {
+            position: absolute;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            background: rgba(14, 75, 0, 0.8);
+            border: 2px solid #0f0;
+            color: #0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            pointer-events: all;
+            border-radius: 5px;
+        }
+        .zoom-btn.plus { top: 10px; }
+        .zoom-btn.minus { top: 70px; }
+        #AutoFireBtn, #DischargeFireBtn, #RocketFireBtn {
+            position: absolute;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            background: #0e4b00;
+            border: 2px solid #0f0;
+            border-radius: 50%;
+            pointer-events: all;
+            background-size: 70% 70%;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+        #AutoFireBtn { right: 20px; }
+        #DischargeFireBtn { right: 90px; }
+        #RocketFireBtn { right: 160px; }
+        #consoleWrap, #menuWrap {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0f0;
+            padding: 20px;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="map" class="global-shift global-size"></div>
+        <canvas id="canvas" class="global-shift global-size"></canvas>
+    </div>
+    <div id="overlay">
+        <div id="zoomators">
+            <div id="carInfoBtn" class="mobile-btn-menu">Car</div>
+            <div id="inventoryInfoBtn" class="mobile-btn-menu">Bag</div>
+            <div id="menuBtn" class="mobile-btn" style="display: none">Menu</div>
+        </div>
+        <div class="zoomator zoom-btn plus" data-zoom="1">+</div>
+        <div class="zoomator zoom-btn minus" data-zoom="-1">-</div>
+
+        <div id="AutoFireBtn"></div>
+        <div id="DischargeFireBtn"></div>
+        <div id="RocketFireBtn"></div>
+
+        <div id="consoleWrap">
+            <div id="console">Mobile console placeholder</div>
+            <div id="consoleClose" class="mobile-btn">Close</div>
+        </div>
+        <div id="menuWrap">
+            <div id="menu">
+                <div id="KalmanSet" class="menu-btn">Client Kalman</div>
+                <div id="CameraPositionAnimation" class="menu-btn active">Camera Position Animation</div>
+                <div id="CameraRotateAnimation" class="menu-btn active">Camera Rotate Animation</div>
+                <div id="BotsPositionAnimation" class="menu-btn">Bots Position Animation</div>
+            </div>
+            <div id="menuClose" class="mobile-btn">Close</div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.hostname}:{{ ws_port }}/ws`;
+
+        console.log('Mobile client initialized');
+        console.log('WebSocket URL:', wsUrl);
+
+        // TODO: Initialize mobile game client
+        // - Connect to WebSocket
+        // - Initialize map
+        // - Setup touch controls
+        // - Handle weapon buttons
+    </script>
+</body>
+</html>

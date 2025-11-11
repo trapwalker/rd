@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Handler Statistics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 {
+            color: #0f0;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a1a;
+            border: 2px solid #0f0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #0f0;
+        }
+        th {
+            background: #0a0a0a;
+            color: #0f0;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #0f0;
+            color: #000;
+        }
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚙️ Handler Statistics</h1>
+
+    {% if handlers_metrics %}
+    <table>
+        <thead>
+            <tr>
+                <th>Handler Name</th>
+                <th>Request Count</th>
+                <th>Total Time (ms)</th>
+                <th>Avg Time (ms)</th>
+                <th>Errors</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for handler in handlers_metrics %}
+            <tr>
+                <td>{{ handler.name }}</td>
+                <td>{{ handler.count }}</td>
+                <td>{{ handler.total_time }}</td>
+                <td>{{ handler.avg_time }}</td>
+                <td>{{ handler.errors }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No handler statistics available</div>
+    {% endif %}
+</body>
+</html>
