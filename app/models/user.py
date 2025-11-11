@@ -92,13 +92,29 @@ class User(Document):
     class Settings:
         name = "users"
         indexes = [
+            # Unique indexes for authentication
             "email",
             "username",
+
+            # OAuth provider indexes (sparse for nullable fields)
             [("google_id", 1)],
             [("vk_id", 1)],
             [("facebook_id", 1)],
             [("steam_id", 1)],
             [("twitter_id", 1)],
+
+            # Performance indexes for common queries
+            [("is_active", 1)],  # Filter active users
+            [("level", -1), ("experience", -1)],  # Leaderboard query
+            [("created_at", -1)],  # Recent users
+            [("last_login", -1)],  # Active users tracking
+
+            # Moderation indexes
+            [("ban_time", 1)],  # Check bans
+            [("access_level", 1)],  # Admin queries
+
+            # Compound index for search
+            [("username", 1), ("quick", 1)],  # Admin search
         ]
 
     @property

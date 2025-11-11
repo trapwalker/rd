@@ -207,7 +207,7 @@
                 <div class="loading-progress"></div>
             </div>
             <div style="margin-top: 20px; font-size: 12px; color: #666;">
-                Server: {{ server_mode }} | Player: {{ user_name }}
+                Server: {{ server_mode|e }} | Player: {{ user_name|e }}
             </div>
         </div>
 
@@ -217,13 +217,13 @@
         <!-- HUD -->
         <div id="hud">
             <div class="hud-item">
-                <span class="hud-label">Player:</span> {{ user_name }}
+                <span class="hud-label">Player:</span> {{ user_name|e }}
             </div>
             <div class="hud-item">
-                <span class="hud-label">Balance:</span> $<span id="balance">{{ user_balance }}</span>
+                <span class="hud-label">Balance:</span> $<span id="balance">{{ user_balance|int }}</span>
             </div>
             <div class="hud-item">
-                <span class="hud-label">Insurance:</span> {{ insurance_name }}
+                <span class="hud-label">Insurance:</span> {{ insurance_name|e }}
             </div>
             <div class="hud-item">
                 <span class="hud-label">Position:</span>
@@ -253,16 +253,16 @@
     </div>
 
     <script>
-        // Game configuration
+        // Game configuration (XSS-safe)
         const CONFIG = {
-            wsPort: {{ ws_port }},
-            mapLink: "{{ map_link }}",
-            serverMode: "{{ server_mode }}",
-            hostName: "{{ host_name }}",
-            userLang: "{{ user_lang }}",
+            wsPort: {{ ws_port|int }},
+            mapLink: {{ map_link|tojson }},
+            serverMode: {{ server_mode|tojson }},
+            hostName: {{ host_name|tojson }},
+            userLang: {{ user_lang|tojson }},
             startCoord: {{ start_coord|tojson }},
             electron: {{ electron|tojson }},
-            connectionDelay: {{ connection_delay }},
+            connectionDelay: {{ connection_delay|int }},
         };
 
         // WebSocket connection

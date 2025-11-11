@@ -146,22 +146,32 @@ async def get_leaderboard(limit: int = 100) -> list[dict[str, Any]]:
 
     Returns top players by level and experience.
     """
-    # Get top users
-    users = await User.find(
-        User.is_active == True
-    ).sort(-User.level, -User.experience).limit(limit).to_list()
+    from app.core.validators import validate_pagination
+    from app.core.exceptions import DatabaseException
 
-    return [
-        {
-            "rank": idx + 1,
-            "user_id": str(user.id),
-            "username": user.username,
-            "display_name": user.display_name or user.username,
-            "level": user.level,
-            "experience": user.experience,
-        }
-        for idx, user in enumerate(users)
-    ]
+    # Validate pagination
+    _, limit = validate_pagination(skip=0, limit=limit, max_limit=500)
+
+    try:
+        # Get top users
+        users = await User.find(
+            User.is_active == True
+        ).sort(-User.level, -User.experience).limit(limit).to_list()
+
+        return [
+            {
+                "rank": idx + 1,
+                "user_id": str(user.id),
+                "username": user.username,
+                "display_name": user.display_name or user.username,
+                "level": user.level,
+                "experience": user.experience,
+            }
+            for idx, user in enumerate(users)
+        ]
+
+    except Exception as e:
+        raise DatabaseException("Failed to fetch leaderboard", original_error=e)
 
 
 # ==================== Helper Functions ====================

@@ -27,6 +27,10 @@ settings = get_settings()
 # Initialize Jinja2 templates
 try:
     templates = Jinja2Templates(directory="templates")
+    # Register XSS protection filters
+    from app.core.template_filters import TEMPLATE_FILTERS
+    for filter_name, filter_func in TEMPLATE_FILTERS.items():
+        templates.env.filters[filter_name] = filter_func
 except Exception as e:
     logger.warning(f"Templates directory not found: {e}")
     templates = None

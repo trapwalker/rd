@@ -183,6 +183,18 @@ async def move_item(
     Returns:
         Success status and updated inventory state
     """
+    from app.core.validators import validate_container_id, validate_item_id, validate_quantity
+    from app.core.exceptions import GameException
+
+    # Validate input
+    from_container_id = validate_container_id(from_container_id)
+    to_container_id = validate_container_id(to_container_id)
+    item_id = validate_item_id(item_id)
+    quantity = validate_quantity(quantity, min_val=1, max_val=1000)
+
+    if from_container_id == to_container_id:
+        raise GameException("Source and destination containers must be different")
+
     # TODO: Implement item movement logic
     # - Validate user has access to both containers
     # - Check if item exists and has sufficient quantity
@@ -221,6 +233,12 @@ async def use_item(
     Returns:
         Result of using the item
     """
+    from app.core.validators import validate_item_id
+    from app.core.exceptions import ItemNotFoundException
+
+    # Validate input
+    item_id = validate_item_id(item_id)
+
     # TODO: Implement item usage logic
     # - Validate user owns the item
     # - Execute item effect (heal, boost, etc.)
@@ -255,6 +273,12 @@ async def drop_item(
     Returns:
         Success status
     """
+    from app.core.validators import validate_item_id, validate_quantity
+
+    # Validate input
+    item_id = validate_item_id(item_id)
+    quantity = validate_quantity(quantity, min_val=1, max_val=1000)
+
     # TODO: Implement item dropping logic
     # - Remove from inventory
     # - Create loot container at player position
@@ -286,6 +310,11 @@ async def get_item_details(
     Returns:
         Item details including stats, description, etc.
     """
+    from app.core.validators import validate_item_id
+
+    # Validate input
+    item_id = validate_item_id(item_id)
+
     # TODO: Load item from registry or database
 
     logger.info(f"User {current_user.username} requesting details for {item_id}")

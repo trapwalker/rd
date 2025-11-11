@@ -95,6 +95,25 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Register exception handlers
+    from pydantic import ValidationError
+    from fastapi import HTTPException
+    from app.core.exceptions import (
+        DatabaseException,
+        GameException,
+        database_exception_handler,
+        game_exception_handler,
+        generic_exception_handler,
+        http_exception_handler,
+        validation_exception_handler,
+    )
+
+    app.add_exception_handler(GameException, game_exception_handler)
+    app.add_exception_handler(DatabaseException, database_exception_handler)
+    app.add_exception_handler(ValidationError, validation_exception_handler)
+    app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(Exception, generic_exception_handler)
+
     # CORS middleware with security restrictions
     app.add_middleware(
         CORSMiddleware,
